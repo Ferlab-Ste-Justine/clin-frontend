@@ -18,10 +18,20 @@ const fs = require('fs');
 const chalk = require('react-dev-utils/chalk');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const paths = require('../config/paths');
+const clearConsole = require('react-dev-utils/clearConsole');
+
+const isInteractive = process.stdout.isTTY;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appIndexJs])) {
   process.exit(1);
 }
 
-console.log(chalk.cyan('Starting the proxy is not implemented...\n'));
+console.log('\nRunning as ' + process.env.NODE_ENV + ' environment, using:');
+console.log(JSON.stringify(paths));
+
+if (isInteractive) {
+  clearConsole();
+}
+
+console.log(chalk.cyan('\nStarting the proxy is not implemented...\n'));

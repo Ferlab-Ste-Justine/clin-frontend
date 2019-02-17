@@ -5,6 +5,7 @@
   "dependencies": {
     "@babel/core": "7.2.2",
     "@svgr/webpack": "4.1.0",
+    "antd": "^3.13.2",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "9.0.0",
     "babel-jest": "23.6.0",
@@ -33,6 +34,7 @@
     "jest-resolve": "23.6.0",
     "jest-watch-typeahead": "^0.2.1",
     "mini-css-extract-plugin": "0.5.0",
+    "node-sass": "^4.11.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "pnp-webpack-plugin": "1.2.1",
     "pnpm": "^2.25.6",
@@ -56,7 +58,8 @@
   },
   "scripts": {
     "start": "node ./server/scripts/start.js",
-    "dev": "node ./server/scripts/start.js & node ./client/scripts/start.js",
+    "dev-client": "node ./client/scripts/start.js",
+    "dev-server": "nodemon --watch ./server ./server/scripts/start.js",
     "build": "node ./client/scripts/build.js",
     "test": "node ./client/scripts/test.js"
   },
@@ -118,5 +121,8 @@
     "presets": [
       "react-app"
     ]
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }

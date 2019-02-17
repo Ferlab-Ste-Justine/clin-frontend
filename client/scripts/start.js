@@ -14,7 +14,6 @@ process.on('unhandledRejection', err => {
 // Ensure environment variables are read.
 require('../config/env');
 
-
 const fs = require('fs');
 const chalk = require('react-dev-utils/chalk');
 const webpack = require('webpack');
@@ -98,7 +97,9 @@ checkBrowsers(paths.appPath, isInteractive)
       if (isInteractive) {
         clearConsole();
       }
-      console.log(chalk.cyan('Starting the development server...\n'));
+      console.log('\nRunning as ' + process.env.NODE_ENV + ' environment, using:');
+      console.log(JSON.stringify(paths));
+      console.log(chalk.cyan('\nStarting the development server...\n'));
       openBrowser(urls.localUrlForBrowser);
     });
 
