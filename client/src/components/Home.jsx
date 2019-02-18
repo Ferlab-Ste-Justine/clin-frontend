@@ -1,10 +1,10 @@
 import React from 'react'
-import { DatePicker } from 'antd';
+import MyEnhancedForm from './../components/forms/Example'
 
 const Home = () => (
     <div>
         Hello World
-        <DatePicker/>
+        <MyEnhancedForm/>
     </div>
 )
 
