@@ -1,19 +1,31 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import * as ACTIONS from '../constants/ActionTypes';
+import { call, spawn, all } from 'redux-saga/effects';
 
-/* Example */
-function* fetchUser(action) {
-    try {
-        yield put({type: ACTIONS.SHOW_LOADING});
-        const user = yield call(new Promise.resolve(), action);
-        yield put({type: ACTIONS.USER_FETCH_SUCCEEDED, user: user});
-    } catch (e) {
-        yield put({type: ACTIONS.USER_FETCH_FAILED, message: e.message});
-    }
+import watchLoadApp from './app'
+//import watchFetchUser from './user'
+
+export default function* rootSaga() {
+    yield all([
+        watchLoadApp(),
+    ])
 }
 
-function* sagas() {
-    yield takeLatest(ACTIONS.USER_FETCH_REQUESTED, fetchUser);
-}
+/*
+export default function* rootSaga() {
+    const sagas = [
+        watchLoadApp,
+        //watchFetchUser,
+    ];
 
-export default sagas;
+    yield sagas.map(saga =>
+        spawn(function* () {
+            while (true) {
+                try {
+                    yield call(saga)
+                    break
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+        })
+    );
+}*/

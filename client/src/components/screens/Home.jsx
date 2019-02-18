@@ -1,5 +1,5 @@
 import React from 'react'
-import MyEnhancedForm from './../components/forms/Example'
+import MyEnhancedForm from '../forms/Example'
 
 const Home = () => (
     <div>

@@ -4,7 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import { createBrowserHistory } from 'history'
 
 import createRootReducer from './reducers'
-import sagas from './sagas';
+import rootSaga from './sagas';
 
 export const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
@@ -30,7 +30,7 @@ export default function configureStore(preloadedState={}) {
         });
     }
 
-    sagaMiddleware.run(sagas);
+    sagaMiddleware.run(rootSaga);
 
     return store
 }

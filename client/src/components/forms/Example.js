@@ -13,6 +13,7 @@ const MyForm = props => {
     } = props;
     return (
         <form onSubmit={handleSubmit}>
+            {errors.name && touched.name && <p>{errors.name}</p>}
             <input
                 type="text"
                 onChange={handleChange}
@@ -20,14 +21,13 @@ const MyForm = props => {
                 value={values.name}
                 name="name"
             />
-            {errors.name && touched.name && <p>{errors.name}</p>}
             <Field
                 name="lastName"
                 placeholder="Baby"
                 render={({ field, form }) => (
                     <div>
-                       <DatePicker name="date" onChange={(moment, value) => { form.setFieldValue('date', value) }}/>
                         {errors.date && touched.date && <p>{errors.date}</p>}
+                        <DatePicker name="date" onChange={(moment, value) => { form.setFieldValue('date', value) }}/>
                     </div>
                 )}
             />
@@ -39,15 +39,8 @@ const MyForm = props => {
 const MyEnhancedForm = withFormik({
     mapPropsToValues: () => ({ name: '', date: '' }),
 
-
-
-
     // Custom sync validation
     validate: values => {
-
-        console.log(values);
-
-
         const errors = {};
 
         if (!values.name) {

@@ -28,6 +28,7 @@ dependencies:
   history: 4.7.2
   html-webpack-plugin: 4.0.0-alpha.2
   identity-obj-proxy: 3.0.0
+  immer: 2.0.0
   jest: 23.6.0
   jest-pnp-resolver: 1.0.2
   jest-resolve: 23.6.0
@@ -5256,6 +5257,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
+  /immer/2.0.0:
+    dev: false
+    resolution:
+      integrity: sha512-qwwvbGbidU0P5SjO4s1wZ9hjNj8fQ908UVtKDSAYgxuDiY1MFylCvsQJSr/fUUo3aeHdxZapdpzPi3vpwTUXUQ==
   /immutable/3.7.6:
     dev: false
     engines:
@@ -11812,6 +11817,7 @@ specifiers:
   history: ^4.7.2
   html-webpack-plugin: 4.0.0-alpha.2
   identity-obj-proxy: 3.0.0
+  immer: ^2.0.0
   jest: 23.6.0
   jest-pnp-resolver: 1.0.2
   jest-resolve: 23.6.0

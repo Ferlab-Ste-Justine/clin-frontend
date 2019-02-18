@@ -11,8 +11,8 @@ const store = configureStore();
 
 const render = () => {
     ReactDOM.render(
-            <Provider store={store}>
-                <App history={history} />
+            <Provider id='provider' store={store}>
+                <App id='app' history={history}/>
             </Provider>,
         document.getElementById('root')
     )
