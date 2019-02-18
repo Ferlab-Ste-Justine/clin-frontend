@@ -1,35 +1,36 @@
-import { applyMiddleware, compose, createStore } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux'
+import { routerMiddleware } from 'connected-react-router'
 import createSagaMiddleware from 'redux-saga';
-import rootReducer from './reducers';
-import sagas from './sagas';
-import { routerMiddleware } from 'react-router-redux'
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history'
 
-export const history = createHistory()
+import createRootReducer from './reducers'
+import sagas from './sagas';
+
+export const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
-const reduxRouterMiddleware = routerMiddleware(history)
 
 export default function configureStore(preloadedState={}) {
     const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-    const enhancer = composeEnhancer(
-        applyMiddleware(
-            reduxRouterMiddleware,
-            sagaMiddleware,
+    const store = createStore(
+        createRootReducer(history),
+        preloadedState,
+        composeEnhancer(
+            applyMiddleware(
+                routerMiddleware(history),
+                sagaMiddleware
+            ),
         ),
     );
 
-    const store = createStore(rootReducer, preloadedState, enhancer);
-
-    // Hot reloading
+    // Enable Webpack hot module replacement for reducers
     if (module.hot) {
-        // Enable Webpack hot module replacement for reducers
         module.hot.accept('./reducers', () => {
-            store.replaceReducer(configureStore);
+            store.replaceReducer(createRootReducer(history));
         });
     }
 
-    sagaMiddleware.run(sagas)
+    sagaMiddleware.run(sagas);
 
     return store
 }

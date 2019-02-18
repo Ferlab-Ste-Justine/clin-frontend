@@ -1,8 +1,8 @@
 import React from 'react'
 import { Route, Switch } from 'react-router'
-import NoMatch from '../components/NoMatch'
 import Navigation from '../components/Navigation'
 import Home from '../components/Home'
+import NoMatch from '../components/NoMatch'
 
 const routes = (
     <div>

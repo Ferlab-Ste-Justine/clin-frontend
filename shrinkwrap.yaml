@@ -1,7 +1,7 @@
 dependencies:
   '@babel/core': 7.2.2
   '@svgr/webpack': 4.1.0
-  antd: 3.13.2
+  antd: 3.13.4
   babel-core: 7.0.0-bridge.0
   babel-eslint: 9.0.0
   babel-jest: 23.6.0
@@ -10,6 +10,7 @@ dependencies:
   babel-preset-react-app: 7.0.1
   bfj: 6.1.1
   case-sensitive-paths-webpack-plugin: 2.2.0
+  connected-react-router: 6.3.1
   css-loader: 1.0.0
   dotenv: 6.0.0
   dotenv-expand: 4.2.0
@@ -23,6 +24,7 @@ dependencies:
   file-loader: 2.0.0
   fork-ts-checker-webpack-plugin-alt: 0.4.14
   fs-extra: 7.0.1
+  history: 4.7.2
   html-webpack-plugin: 4.0.0-alpha.2
   identity-obj-proxy: 3.0.0
   jest: 23.6.0
@@ -38,6 +40,7 @@ dependencies:
   postcss-loader: 3.0.0
   postcss-preset-env: 6.5.0
   postcss-safe-parser: 4.0.1
+  prop-types: 15.7.2
   react: 16.8.2
   react-app-polyfill: 0.2.1
   react-dev-utils: 7.0.3
@@ -46,7 +49,6 @@ dependencies:
   react-redux: 6.0.0
   react-router: 4.3.1
   react-router-dom: 4.3.1
-  react-router-redux: 5.0.0-alpha.9
   redux: 4.0.1
   redux-saga: 1.0.1
   redux-saga-router: 2.2.0
@@ -689,7 +691,7 @@ packages:
   /@babel/plugin-transform-named-capturing-groups-regex/7.3.0/@babel!core@7.2.2:
     dependencies:
       '@babel/core': 7.2.2
-      regexp-tree: 0.1.1
+      regexp-tree: 0.1.4
     dev: false
     id: registry.npmjs.org/@babel/plugin-transform-named-capturing-groups-regex/7.3.0
     peerDependencies:
@@ -1121,7 +1123,7 @@ packages:
     dependencies:
       '@svgr/plugin-jsx': 4.1.0
       camelcase: 5.0.0
-      cosmiconfig: 5.0.7
+      cosmiconfig: 5.1.0
     dev: false
     engines:
       node: '>=8'
@@ -1150,7 +1152,7 @@ packages:
       integrity: sha512-xwu+9TGziuN7cu7p+vhCw2EJIfv8iDNMzn2dR0C7fBYc8q+SRtYTcg4Uyn8ZWh6DM+IZOlVrS02VEMT0FQzXSA==
   /@svgr/plugin-svgo/4.0.3:
     dependencies:
-      cosmiconfig: 5.0.7
+      cosmiconfig: 5.1.0
       merge-deep: 3.0.2
       svgo: 1.1.1
     dev: false
@@ -1505,7 +1507,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-UpkkTp8egEN21KZNvY7sTcabLlkHvLvS71EVPk4CYi77Z9AaGGCaVn7i72tbOgWDrQp2wjIg8WgMbKBdK7GtWA==
-  /antd/3.13.2:
+  /antd/3.13.4:
     dependencies:
       '@ant-design/icons': 1.1.16
       '@ant-design/icons-react': /@ant-design/icons-react/1.1.2/@ant-design!icons@1.1.16
@@ -1523,7 +1525,7 @@ packages:
       prop-types: 15.7.2
       raf: 3.4.1
       rc-animate: 2.6.0
-      rc-calendar: 9.10.8
+      rc-calendar: 9.10.9
       rc-cascader: 0.17.1
       rc-checkbox: 2.1.6
       rc-collapse: 1.10.3
@@ -1562,7 +1564,7 @@ packages:
       react: '>=16.0.0'
       react-dom: '>=16.0.0'
     resolution:
-      integrity: sha512-6wA0iQgyDjmDrIy59Dwbt4+vt9F3RYh8DwSF7yIxEquT6Cmzou/0wGVqLNzY11ErewnjxgB8w60cQ5VejSecIQ==
+      integrity: sha512-tdnL+XKneuCoigOrQhHxUt2IediQUt4lQVePLMGUmGyPRCwK7ozirAHSsDG2ciK8L9TIG0cxMIn5SuQsDGTH7w==
   /anymatch/2.0.0:
     dependencies:
       micromatch: 3.1.10
@@ -1964,7 +1966,7 @@ packages:
       integrity: sha1-5h+uBaHKiAGq3uV6bWa4zvr0QWc=
   /babel-plugin-macros/2.5.0:
     dependencies:
-      cosmiconfig: 5.0.7
+      cosmiconfig: 5.1.0
       resolve: 1.10.0
     dev: false
     resolution:
@@ -2591,17 +2593,6 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-s12sN2R5+sw+lHR9QdDQ9SOP/LU=
-  /cli-table3/0.5.1:
-    dependencies:
-      object-assign: 4.1.1
-      string-width: 2.1.1
-    dev: false
-    engines:
-      node: '>=6'
-    optionalDependencies:
-      colors: 1.3.3
-    resolution:
-      integrity: sha512-7Qg2Jrep1S/+Q3EceiZtQcDPWxhAvBw+ERf1162v4sikJrvojMHFqXt8QIVha8UlH9rgU0BeWPytZ9/TzYqlUw==
   /cli-width/2.2.0:
     dev: false
     resolution:
@@ -2708,12 +2699,6 @@ packages:
       node: '>=0.1.90'
     resolution:
       integrity: sha1-FopHAXVran9RoSzgyXv6KMCE7WM=
-  /colors/1.3.3:
-    dev: false
-    engines:
-      node: '>=0.1.90'
-    resolution:
-      integrity: sha512-mmGt/1pZqYRjMxB1axhTo16/snVZ5krrKkcmMeVKxzECMMXoCgnvTPp10QgHfcbQZw8Dq2jMNG6je4JlWU0gWg==
   /combined-stream/1.0.7:
     dependencies:
       delayed-stream: 1.0.0
@@ -2818,6 +2803,19 @@ packages:
       node: '>=0.8'
     resolution:
       integrity: sha512-e54B99q/OUoH64zYYRf3HBP5z24G38h5D3qXu23JGRoigpX5Ss4r9ZnDk3g0Z8uQC2x2lPaJ+UlWBc1ZWBWdLg==
+  /connected-react-router/6.3.1:
+    dependencies:
+      immutable: 3.8.2
+      seamless-immutable: 7.1.4
+    dev: false
+    peerDependencies:
+      history: ^4.7.2
+      react: ^16.4.0
+      react-redux: ^6.0.0
+      react-router: ^4.3.1
+      redux: ^3.6.0 || ^4.0.0
+    resolution:
+      integrity: sha512-nhuQiLOAQlCgkCypGSUhycgaqqTh2IUwVFvzw2y13v8JqB92yTk3yeAKG6X1b0IcD7S4gQizYbjgejf7DJjbyw==
   /console-browserify/1.1.0:
     dependencies:
       date-now: 0.1.4
@@ -2908,17 +2906,18 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-6e5vDdrXZD+t5v0L8CrurPeybg4Fmf+FCSYxXKYVAqLUtyCSbuyqE059d0kDthTNRzKVjL7QMgNpEUlsoYH3iQ==
-  /cosmiconfig/5.0.7:
+  /cosmiconfig/5.1.0:
     dependencies:
       import-fresh: 2.0.0
       is-directory: 0.3.1
       js-yaml: 3.12.1
+      lodash.get: 4.4.2
       parse-json: 4.0.0
     dev: false
     engines:
       node: '>=4'
     resolution:
-      integrity: sha512-PcLqxTKiDmNT6pSpy4N6KtuPwb53W+2tzNvwOZw0WH9N6O0vLIBq0x8aj8Oj75ere4YcGi48bDFCL+3fRJdlNA==
+      integrity: sha512-kCNPvthka8gvLtzAxQXvWo4FxqRB+ftRZyPZNuab5ngvM9Y7yw7hbEysglptLgpkGX9nAOKTBVkHUAe8xtYR6Q==
   /create-ecdh/4.0.3:
     dependencies:
       bn.js: 4.11.8
@@ -3233,7 +3232,7 @@ packages:
       integrity: sha512-WcKx5OY+KoSIAxBW6UBBRay1U6vkYheCdjyVNDm85zt5K9mHoGOfsOsqIszfAqrQQFIIKgjh2+FDgIj/zsl21Q==
   /cssnano/4.1.10:
     dependencies:
-      cosmiconfig: 5.0.7
+      cosmiconfig: 5.1.0
       cssnano-preset-default: 4.0.7
       is-resolvable: 1.1.0
       postcss: 7.0.14
@@ -6587,6 +6586,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-gteb/zCmfEAF/9XiUVMArZyk168=
+  /lodash.get/4.4.2:
+    dev: false
+    resolution:
+      integrity: sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
   /lodash.isarguments/3.1.0:
     dev: false
     resolution:
@@ -8834,7 +8837,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-oBLPpiT6Q4t6YvD/pkLcmofBP1p01TX0Otse8Q4+Mxt8J+VSDflLZGIgf62EwkvRwsQUkLPjZVFBsldnPKLzjg==
-  /rc-calendar/9.10.8:
+  /rc-calendar/9.10.9:
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
@@ -8845,7 +8848,7 @@ packages:
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
-      integrity: sha512-AILzd0rCU8mkdVe2hAU4eV++7l0mWp/heHn5m8fs8ZoAhuHs0ifZGedHiqqqcK+tqUawzHrD0aY54H7fIUnZ+Q==
+      integrity: sha512-PSDMKtsLDowGi+Letc+RQU2z07rA6XW2iiQDI6QR3Cp+3fI25eASvuiI7iEX6tezgAJDeA4eggKyhtGBQvNbjQ==
   /rc-cascader/0.17.1:
     dependencies:
       array-tree-filter: 2.1.0
@@ -9317,17 +9320,6 @@ packages:
       react: '>=15'
     resolution:
       integrity: sha512-c/MlywfxDdCp7EnB7YfPMOfMD3tOtIjrQlj/CKfNMBxdmpJP8xcz5P/UAFn3JbnQCNUxsHyVVqllF9LhgVyFCA==
-  /react-router-redux/5.0.0-alpha.9:
-    dependencies:
-      history: 4.7.2
-      prop-types: 15.7.2
-      react-router: 4.3.1
-    deprecated: This project is no longer maintained.
-    dev: false
-    peerDependencies:
-      react: '>=15'
-    resolution:
-      integrity: sha512-euSgNIANnRXr4GydIuwA7RZCefrLQzIw5WdXspS8NPYbV+FxrKSS9MKG7U9vb6vsKHONnA4VxrVNWfnMUnUQAw==
   /react-router/4.3.1:
     dependencies:
       history: 4.7.2
@@ -9534,15 +9526,11 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-J6SDjUgDxQj5NusnOtdFxDwN/+HWykR8GELwctJ7mdqhcyy1xEc4SRFHUXvxTp661YaVKAjfRLZ9cCqS6tn32A==
-  /regexp-tree/0.1.1:
-    dependencies:
-      cli-table3: 0.5.1
-      colors: 1.3.3
-      yargs: 12.0.5
+  /regexp-tree/0.1.4:
     dev: false
     hasBin: true
     resolution:
-      integrity: sha512-HwRjOquc9QOwKTgbxvZTcddS5mlNlwePMQ3NFL8broajMLD5CXDAqas8Y5yxJH5QtZp5iRor3YCILd5pz71Cgw==
+      integrity: sha512-DohP6WXzgrc7gFs9GsTQgigUfMXZqXkPk+20qkMF6YCy0Qk0FsHL1/KtxTycGR/62DHRtJ1MHQF2g8YzywP4kA==
   /regexpp/2.0.1:
     dev: false
     engines:
@@ -9939,6 +9927,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-jrBtualyMzOCTT9VMGQRSYR85dE=
+  /seamless-immutable/7.1.4:
+    dev: false
+    resolution:
+      integrity: sha512-XiUO1QP4ki4E2PHegiGAlu6r82o5A+6tRh7IkGGTVg/h+UoeX4nFBeCGPOhb4CYjvkqsfm/TUtvOMYC1xmV30A==
   /select-hose/2.0.0:
     dev: false
     resolution:
@@ -11676,13 +11668,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-VCIyR1wJoEBZUqk5PA+oOBF6ypbwh5aNB3I50guxAL/quggdfs4TtNHQrSazFA3fYZ+tEqfs0zIGlv0c/rgjbQ==
-  /yargs-parser/11.1.1:
-    dependencies:
-      camelcase: 5.0.0
-      decamelize: 1.2.0
-    dev: false
-    resolution:
-      integrity: sha512-C6kB/WJDiaxONLJQnF8ccx9SEeoTTLek8RVbaOIsrAUS8VrBEXfmeSnCZxygc+XC2sNMBIwOOnfcxiynjHsVSQ==
   /yargs-parser/5.0.0:
     dependencies:
       camelcase: 3.0.0
@@ -11729,23 +11714,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-e7SkEx6N6SIZ5c5H22RTZae61qtn3PYUE8JYbBFlK9sYmh3DMQ6E5ygtaG/2BW0JZi4WGgTR2IV5ChqlqrDGVQ==
-  /yargs/12.0.5:
-    dependencies:
-      cliui: 4.1.0
-      decamelize: 1.2.0
-      find-up: 3.0.0
-      get-caller-file: 1.0.3
-      os-locale: 3.1.0
-      require-directory: 2.1.1
-      require-main-filename: 1.0.1
-      set-blocking: 2.0.0
-      string-width: 2.1.1
-      which-module: 2.0.0
-      y18n: 4.0.0
-      yargs-parser: 11.1.1
-    dev: false
-    resolution:
-      integrity: sha512-Lhz8TLaYnxq/2ObqHDql8dX8CJi97oHxrjUcYtzKbbykPtVW9WB+poxI+NM2UIzsMgNCZTIf0AQwsjK5yMAqZw==
   /yargs/7.1.0:
     dependencies:
       camelcase: 3.0.0
@@ -11779,6 +11747,7 @@ specifiers:
   babel-preset-react-app: ^7.0.1
   bfj: 6.1.1
   case-sensitive-paths-webpack-plugin: 2.2.0
+  connected-react-router: ^6.3.1
   css-loader: 1.0.0
   dotenv: 6.0.0
   dotenv-expand: 4.2.0
@@ -11792,6 +11761,7 @@ specifiers:
   file-loader: 2.0.0
   fork-ts-checker-webpack-plugin-alt: 0.4.14
   fs-extra: 7.0.1
+  history: ^4.7.2
   html-webpack-plugin: 4.0.0-alpha.2
   identity-obj-proxy: 3.0.0
   jest: 23.6.0
@@ -11808,6 +11778,7 @@ specifiers:
   postcss-loader: 3.0.0
   postcss-preset-env: 6.5.0
   postcss-safe-parser: 4.0.1
+  prop-types: ^15.7.2
   react: ^16.8.2
   react-app-polyfill: ^0.2.1
   react-dev-utils: ^7.0.3
@@ -11816,7 +11787,6 @@ specifiers:
   react-redux: ^6.0.0
   react-router: ^4.3.1
   react-router-dom: ^4.3.1
-  react-router-redux: ^5.0.0-alpha.9
   redux: ^4.0.1
   redux-saga: ^1.0.1
   redux-saga-router: ^2.2.0
