@@ -1,20 +1,8 @@
-import { all, call, put, takeLatest } from 'redux-saga/effects';
-import { addLocaleData } from 'react-intl'
+import { all, put, takeLatest } from 'redux-saga/effects';
 import { updateIntl } from 'react-intl-redux'
-import fr from 'react-intl/locale-data/fr';
-import en from 'react-intl/locale-data/en';
 
 import * as actions from '../actions/type';
-
-const locales = {
-    fr: {
-        'home.greeting': 'Bonjour'
-    },
-    en: {
-        'home.greeting': 'Hello'
-    },
-};
-addLocaleData([...fr, ...en]);
+import locales from '../locales';
 
 export function* loadApp(action) {
     yield put({type: actions.START_LOADING_ANIMATION});
