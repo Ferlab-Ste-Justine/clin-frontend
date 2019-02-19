@@ -1,9 +1,17 @@
 import { produce } from 'immer'
+import fr_FR from 'antd/lib/locale-provider/fr_FR';
+import moment from 'moment';
+import 'moment/locale/fr';
+
 import * as actions from '../actions/type'
 
 const initialState = {
     showLoadingAnimation: true,
     lastError: null,
+    locale: {
+        lang: null,
+        antd: null
+    }
 };
 
 const appReducer = (state = initialState, action) => produce(state, draft => {
@@ -21,9 +29,14 @@ const appReducer = (state = initialState, action) => produce(state, draft => {
             draft.showLoadingAnimation = false;
             break;
 
-        //case actions.APP_FETCH_REQUESTED:
-        //case actions.APP_FETCH_SUCCEEDED:
-        //case actions.APP_FETCH_FAILED:
+        case actions.APP_CHANGE_LANGUAGE_REQUESTED:
+            if (action.payload.language === 'fr') {
+                draft.locale.lang = action.payload.language;
+                draft.locale.antd = fr_FR;
+                moment.locale(action.payload.language);
+            }
+            break;
+
         default:
             break;
     }

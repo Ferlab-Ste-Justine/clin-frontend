@@ -1,11 +1,15 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { Button } from 'antd';
+import { FormattedMessage } from 'react-intl'
+
 import MyEnhancedForm from '../forms/Example'
 
 const Home = () => (
     <div>
-        Hello World
+        <Button type={"primary"}><FormattedMessage id="home.greeting" defaultMessage=' ' /></Button>
         <MyEnhancedForm/>
     </div>
-)
+);
 
-export default Home
+export default connect()(Home)

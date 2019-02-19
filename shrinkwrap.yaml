@@ -36,6 +36,7 @@ dependencies:
   less: 3.9.0
   less-loader: 4.1.0
   mini-css-extract-plugin: 0.5.0
+  moment: 2.24.0
   node-sass: 4.11.0
   optimize-css-assets-webpack-plugin: 5.0.1
   pnp-webpack-plugin: 1.2.1
@@ -50,6 +51,8 @@ dependencies:
   react-dev-utils: 7.0.3
   react-dom: 16.8.2
   react-hot-loader: 4.6.5
+  react-intl: 2.8.0
+  react-intl-redux: 2.1.0
   react-redux: 6.0.0
   react-router: 4.3.1
   react-router-dom: 4.3.1
@@ -5441,6 +5444,26 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-NXXgESC2nNVtU+pqmC9e6R8B1GpKxzsAQhffvh5AL79qKnodd+L7tnEQmTiUAVngqLalPbSqRA7XGIEL5nCd0Q==
+  /intl-format-cache/2.1.0:
+    dev: false
+    resolution:
+      integrity: sha1-BKNp/sv61tpgBbrh8UMzMy3PkxY=
+  /intl-messageformat-parser/1.4.0:
+    dev: false
+    resolution:
+      integrity: sha1-tD1FqXRoytvkQzHXS7Ho3qRPwHU=
+  /intl-messageformat/2.2.0:
+    dependencies:
+      intl-messageformat-parser: 1.4.0
+    dev: false
+    resolution:
+      integrity: sha1-NFvNRt5jC3aDMwwuUhd/9eq0hPw=
+  /intl-relativeformat/2.1.0:
+    dependencies:
+      intl-messageformat: 2.2.0
+    dev: false
+    resolution:
+      integrity: sha1-AQ8RBYAiUfQKxH0OPhogE0iiVd8=
   /invariant/2.2.4:
     dependencies:
       loose-envify: 1.4.0
@@ -9376,6 +9399,28 @@ packages:
       react-dom: ^15.0.0 || ^16.0.0
     resolution:
       integrity: sha512-ZPAJEWVd8KDdm6dcK0iWrnJiGHruLrcbkIpqn/wQmNjnROpsm2nzrWh23Yh3I/XAjB+35pMa/ZgariwGqwFD9A==
+  /react-intl-redux/2.1.0:
+    dependencies:
+      prop-types: 15.7.2
+    dev: false
+    peerDependencies:
+      react-intl: ^2.2.2
+      react-redux: ^5.0.1 || ^6.0.0
+    resolution:
+      integrity: sha512-RpV3ch/DcCD7zfG2kwHLPZ9kyZ15YCySh0j6r8CSF7LbqbPT/MN90p5nKQTy0rEfXJU02kmzcZ3swMQUMdHHjw==
+  /react-intl/2.8.0:
+    dependencies:
+      hoist-non-react-statics: 2.5.5
+      intl-format-cache: 2.1.0
+      intl-messageformat: 2.2.0
+      intl-relativeformat: 2.1.0
+      invariant: 2.2.4
+    dev: false
+    peerDependencies:
+      prop-types: ^15.5.4
+      react: ^0.14.9 || ^15.0.0 || ^16.0.0
+    resolution:
+      integrity: sha512-1cSasNkHxZOXYYhms9Q1tSEWF8AWZQNq3nPLB/j8mYV0ZTSt2DhGQXHfKrKQMu4cgj9J1Crqg7xFPICTBgzqtQ==
   /react-is/16.8.2:
     dev: false
     resolution:
@@ -11880,6 +11925,7 @@ specifiers:
   less: ^3.9.0
   less-loader: ^4.1.0
   mini-css-extract-plugin: 0.5.0
+  moment: ^2.24.0
   node-sass: ^4.11.0
   nodemon: ^1.18.10
   optimize-css-assets-webpack-plugin: 5.0.1
@@ -11895,6 +11941,8 @@ specifiers:
   react-dev-utils: ^7.0.3
   react-dom: ^16.8.2
   react-hot-loader: ^4.6.5
+  react-intl: ^2.8.0
+  react-intl-redux: ^2.1.0
   react-redux: ^6.0.0
   react-router: ^4.3.1
   react-router-dom: ^4.3.1

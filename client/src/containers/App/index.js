@@ -4,7 +4,9 @@ import { Route, Switch } from 'react-router'
 import { ConnectedRouter } from 'connected-react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import { IntlProvider } from 'react-intl-redux'
 import { Spin } from 'antd';
+import { LocaleProvider } from 'antd';
 
 import 'antd/dist/antd.less';
 
@@ -16,26 +18,30 @@ import './style.scss'
 
 import { loadApp } from './../../actions/app'
 
-class Index extends React.Component {
+class App extends React.Component {
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.actions.loadApp();
     }
 
     render() {
         const { app, history } = this.props;
         return (
-            <ConnectedRouter id='router' history={history}>
-                <Spin id='loading-animation' size='large' spinning={app.showLoadingAnimation}>
-                    <div id='container'>
-                        <Navigation id='navigator' />
-                        <Switch id='switch'>
-                            <Route id='route-home' exact path='/' component={Home} />
-                            <Route id='route-nomatch' component={NoMatch} />
-                        </Switch>
-                    </div>
-                </Spin>
-            </ConnectedRouter>
+            <IntlProvider id='locale-intl'>
+                <LocaleProvider id='locale-antd' locale={app.locale.antd}>
+                    <ConnectedRouter id='router' history={history}>
+                        <Spin id='loading-animation' size='large' spinning={app.showLoadingAnimation}>
+                            <div id='container'>
+                                <Navigation id='navigator' />
+                                <Switch id='switch'>
+                                    <Route id='route-home' exact path='/' component={Home} />
+                                    <Route id='route-nomatch' component={NoMatch} />
+                                </Switch>
+                            </div>
+                        </Spin>
+                    </ConnectedRouter>
+                </LocaleProvider>
+            </IntlProvider>
         )
     }
 }
@@ -57,6 +63,6 @@ function mapDispatchToProps(dispatch) {
 const ConnectedApp = connect(
     mapStateToProps,
     mapDispatchToProps
-)(Index);
+)(App);
 
 export default hot(module)(ConnectedApp);

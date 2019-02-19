@@ -1,31 +1,38 @@
-import { call, spawn, all } from 'redux-saga/effects';
+import { all } from 'redux-saga/effects';
 
-import watchLoadApp from './app'
-//import watchFetchUser from './user'
+import appSagas from './app';
+//import userSagas from './user'
 
 export default function* rootSaga() {
     yield all([
-        watchLoadApp(),
+        appSagas.loadApplicationSaga(),
+        appSagas.changeLanguageSaga(),
     ])
 }
 
 /*
-export default function* rootSaga() {
-    const sagas = [
-        watchLoadApp,
-        //watchFetchUser,
-    ];
-
-    yield sagas.map(saga =>
-        spawn(function* () {
+const makeRestartable = (saga) => {
+    return function* () {
+        yield spawn(function* () {
             while (true) {
                 try {
-                    yield call(saga)
-                    break
+                    yield call(saga);
+                    console.error('Unexpected rootSaga termination.', saga);
                 } catch (e) {
-                    console.log(e)
+                    console.error('Saga error, the saga will be restarted', e);
                 }
+                //yield delay(1);
             }
         })
-    );
-}*/
+    };
+};
+
+const rootSagas = [
+    appSagas.loadApplicationSaga,
+    appSagas.changeLanguageSaga,
+].map(makeRestartable);
+
+export default function* rootSaga() {
+    yield rootSagas.map(saga => call(saga));
+}
+*/
