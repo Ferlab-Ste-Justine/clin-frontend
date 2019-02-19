@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Spin } from 'antd';
 
-import 'antd/dist/antd.css'
+import 'antd/dist/antd.less';
 
 import Navigation from '../../components/Navigation'
 import Home from '../../components/screens/Home'

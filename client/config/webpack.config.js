@@ -24,7 +24,6 @@ const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 
-
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
@@ -39,6 +38,8 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -66,7 +67,7 @@ module.exports = function(webpackEnv) {
   const env = getClientEnvironment(publicUrl);
 
   // common function to get style loaders
-  const getStyleLoaders = (cssOptions, preProcessor) => {
+  const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions={}) => {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -106,6 +107,7 @@ module.exports = function(webpackEnv) {
       loaders.push({
         loader: require.resolve(preProcessor),
         options: {
+          ...preProcessorOptions,
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       });
@@ -334,7 +336,6 @@ module.exports = function(webpackEnv) {
                 customize: require.resolve(
                   'babel-preset-react-app/webpack-overrides'
                 ),
-                
                 plugins: [
                   [
                     require.resolve('babel-plugin-named-asset-import'),
@@ -415,6 +416,38 @@ module.exports = function(webpackEnv) {
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent,
               }),
+            },
+            // Opt-in support for Ant Design LESS Theme Customization
+            {
+              test: lessRegex,
+              exclude: lessModuleRegex,
+              use: getStyleLoaders(
+                  {
+                    importLoaders: 2,
+                    sourceMap: isEnvProduction
+                        ? shouldUseSourceMap
+                        : isEnvDevelopment,
+                  },
+                  'less-loader',
+                  {
+                    javascriptEnabled: true,
+                    modifyVars: {
+                        'primary-color': '#1890ff', // primary color for all components
+                        'link-color': '#1890ff', // link color
+                        'success-color': '#52c41a', // success state color
+                        'warning-color': '#faad14', // warning state color
+                        'error-color': '#f5222d',  // error state color
+                        'font-size-base': '14px',  // major text font size
+                        'heading-color': 'rgba(0, 0, 0, .85)', // heading text color
+                        'text-color': 'rgba(0, 0, 0, .65)', // major text color
+                        'text-color-secondary': 'rgba(0, 0, 0, .45)',  // secondary text color
+                        'disabled-color': 'rgba(0, 0, 0, .25)', // disable state color
+                        'border-radius-base': '4px', // major border radius
+                        'border-color-base': '#d9d9d9', // major border color
+                        'box-shadow-base': '0 2px 8px rgba(0, 0, 0, .15)' // major shadow for layers
+                      }
+                  }
+              ),
             },
             // Opt-in support for SASS (using .scss or .sass extensions).
             // By default we support SASS Modules with the
