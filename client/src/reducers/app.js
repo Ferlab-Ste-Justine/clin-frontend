@@ -1,7 +1,9 @@
 import { produce } from 'immer'
-import fr_FR from 'antd/lib/locale-provider/fr_FR';
 import moment from 'moment';
-import 'moment/locale/fr';
+import 'moment/locale/fr-ca';
+import 'moment/locale/en-ca';
+import fr_FR from 'antd/lib/locale-provider/fr_FR';
+import en_US from 'antd/lib/locale-provider/en_US';
 
 import * as actions from '../actions/type'
 
@@ -33,7 +35,11 @@ const appReducer = (state = initialState, action) => produce(state, draft => {
             if (action.payload.language === 'fr') {
                 draft.locale.lang = action.payload.language;
                 draft.locale.antd = fr_FR;
-                moment.locale(action.payload.language);
+                moment.locale(action.payload.language  + '-ca');
+            } else if (action.payload.language === 'en') {
+                draft.locale.lang = action.payload.language;
+                draft.locale.antd = en_US;
+                moment.locale(action.payload.language + '-ca');
             }
             break;
 

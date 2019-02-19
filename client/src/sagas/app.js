@@ -1,4 +1,4 @@
-import { all, put, takeLatest } from 'redux-saga/effects';
+import { put, takeLatest } from 'redux-saga/effects';
 import { updateIntl } from 'react-intl-redux'
 
 import * as actions from '../actions/type';
@@ -7,29 +7,23 @@ import locales from '../locales';
 export function* loadApp(action) {
     yield put({type: actions.START_LOADING_ANIMATION});
     try {
-        const app = yield {};
-        yield all([
-            put({type: actions.APP_FETCH_SUCCEEDED, payload: app}),
-            put({type: actions.APP_CHANGE_LANGUAGE_REQUESTED, payload:{ language: 'fr' } }),
-            put({type: actions.STOP_LOADING_ANIMATION})
-        ]);
+        yield put({type: actions.APP_FETCH_SUCCEEDED});
+        yield put({type: actions.APP_CHANGE_LANGUAGE_REQUESTED, payload:{ language: 'fr' }});
+        yield put({type: actions.STOP_LOADING_ANIMATION});
     } catch (e) {
-        yield all([
-            put({type: actions.APP_FETCH_FAILED, message: e.message}),
-            put({type: actions.STOP_LOADING_ANIMATION})
-        ]);
+        yield put({type: actions.APP_FETCH_FAILED, message: e.message});
+        yield put({type: actions.STOP_LOADING_ANIMATION});
     }
 }
 
 export function* changeLanguage(action) {
     try {
-        yield all([
-            put({type: actions.APP_CHANGE_LANGUAGE_SUCCEEDED, language: action.payload.language}),
-            put(updateIntl({
-                locale: action.payload.language,
-                messages: locales[action.payload.language],
-            })),
-        ]);
+       yield put({type: actions.APP_CHANGE_LANGUAGE_SUCCEEDED, language: action.payload.language});
+       yield put(updateIntl({
+            locale: action.payload.language,
+            messages: locales[action.payload.language],
+       }));
+
     } catch (e) {
         yield put({type: actions.APP_CHANGE_LANGUAGE_FAILED, message: e.message});
     }

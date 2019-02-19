@@ -1,19 +1,16 @@
-import { call, put, all, takeLatest } from 'redux-saga/effects';
+import { put, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/type';
 
 export function* fetchUser(action) {
     yield put({type: actions.START_LOADING_ANIMATION});
     try {
-        const user = yield {};
-        yield all([
-            put({type: actions.USER_FETCH_SUCCEEDED, user: user}),
-            put({type: actions.STOP_LOADING_ANIMATION})
-        ]);
+        //@TODO
+        const user = {};
+        yield put({type: actions.USER_FETCH_SUCCEEDED, user: user});
+        yield put({type: actions.STOP_LOADING_ANIMATION});
     } catch (e) {
-        yield all([
-            put({type: actions.USER_FETCH_FAILED, message: e.message}),
-            put({type: actions.STOP_LOADING_ANIMATION})
-        ]);
+        yield put({type: actions.USER_FETCH_FAILED, message: e.message});
+        yield put({type: actions.STOP_LOADING_ANIMATION});
     }
 }
 
@@ -22,5 +19,5 @@ function* watchFetchUser() {
 }
 
 export default {
-    loadUser: watchFetchUser,
+    loadUserSaga: watchFetchUser,
 };
