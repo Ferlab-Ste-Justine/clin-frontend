@@ -1,5 +1,5 @@
 import { put, takeLatest } from 'redux-saga/effects';
-import { updateIntl } from 'react-intl-redux';
+import { updateIntl } from 'react-intl-redux'; // eslint-ignore-line
 
 import * as actions from '../actions/type';
 import locales from '../locales';
