@@ -1,0 +1,8 @@
+#container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.ant-spin-nested-loading > div > .ant-spin {
+  max-height: none;
+}
