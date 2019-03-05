@@ -1,13 +1,10 @@
-import { Provider } from 'react-redux';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import configureStore from 'redux-mock-store';
+import ReactDOM from '@hot-loader/react-dom';
 
-import { App } from './index';
+import NoMatch from '../../components/screens/NoMatch';
 
 const root = document.createElement('div');
 
 it('renders without crashing', () => {
-  ReactDOM.render((<App/>), root);
-  ReactDOM.unmountComponentAtNode(root);
+  ReactDOM.render(<NoMatch />, root);
 });

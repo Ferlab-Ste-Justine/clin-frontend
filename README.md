@@ -1,8 +1,10 @@
 # clin-frontend
 
 ### Development Set-up
+* Install Node.js LTS 10.14.1 using [nvm](https://github.com/creationix/nvm/blob/master/README.md)
 * `npm install -g pnpm`
-* `pnpm i`
+* `pnpm install -g pnpm`
+* `pnpm i` https://github.com/pnpm/pnpm/issues/1360
 
 ### Available Scripts
 

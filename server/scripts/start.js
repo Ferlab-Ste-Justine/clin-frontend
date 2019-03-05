@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 // Do this as the first thing so that any code reading it knows the right env.
@@ -23,7 +24,7 @@ const clearConsole = require('react-dev-utils/clearConsole');
 const isInteractive = process.stdout.isTTY;
 
 // Warn and crash if required files are missing
-if (!checkRequiredFiles([ paths.appIndexJs ])) {
+if (!checkRequiredFiles([paths.appIndexJs])) {
   process.exit(1);
 }
 
