@@ -4,3 +4,5 @@ export const fetchUser = uid => ({
   type: actions.USER_FETCH_REQUESTED,
   payload: uid,
 });
+
+export const updateUser = () => ({});
