@@ -4,11 +4,19 @@ import createSagaMiddleware from 'redux-saga';
 import { cancel } from 'redux-saga/effects';
 import { createBrowserHistory } from 'history';
 
+import locales from './locales';
 import createRootReducer from './reducers';
 import createRootSaga from './sagas';
 
 export const history = createBrowserHistory();
 const sagaMiddleware = createSagaMiddleware();
+
+export const initialState = {
+  intl: {
+    locale: 'en',
+    messages: locales.en,
+  },
+};
 
 export default function configureStore(preloadedState = {}) {
   const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line no-underscore-dangle, max-len

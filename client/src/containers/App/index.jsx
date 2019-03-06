@@ -6,16 +6,14 @@ import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { IntlProvider } from 'react-intl-redux';
-import { Spin, LocaleProvider } from 'antd';
+import { Layout, Spin, LocaleProvider } from 'antd';
 
 import 'antd/dist/antd.less';
+import './style.scss';
 
-import Navigation from '../../components/Navigation';
 import Home from '../../components/screens/Home';
 import Example from '../../components/screens/Example';
 import NoMatch from '../../components/screens/NoMatch';
-
-import './style.scss';
 
 import { loadApp } from '../../actions/app';
 import { appShapeShape } from '../../reducers/app';
@@ -32,15 +30,16 @@ export class App extends React.Component {
       <IntlProvider id="locale-intl">
         <LocaleProvider id="locale-antd" locale={app.locale.antd}>
           <ConnectedRouter id="router" history={history}>
-            <Spin id="loading-animation" size="large" spinning={app.showLoadingAnimation}>
-              <div id="container">
-                <Navigation id="navigator" />
+            <Spin id="spinner" size="large" spinning={app.showLoadingAnimation}>
+              <Layout id="layout">
                 <Switch id="switch">
                   <Route id="route-home" exact path="/" component={Home} />
+                  <Route id="route-entity-list" exact path="/list" component={Home} />
+                  <Route id="route-entity-summary" exact path="/summary" component={Home} />
                   <Route id="route-example" exact path="/example" component={Example} />
                   <Route id="route-nomatch" component={NoMatch} />
                 </Switch>
-              </div>
+              </Layout>
             </Spin>
           </ConnectedRouter>
         </LocaleProvider>

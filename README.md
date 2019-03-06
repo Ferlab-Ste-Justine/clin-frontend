@@ -9,7 +9,7 @@
 ### Available Scripts
 
 ##### `pnpm start`
-Runs the app in the development mode.<br>
+Runs the app in development mode.<br>
 Point your browser to [http://localhost:3000](http://localhost:3000) to view.
 
 ##### `pnpm test`

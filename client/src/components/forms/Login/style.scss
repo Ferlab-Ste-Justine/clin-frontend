@@ -1,0 +1,18 @@
+div#login {
+
+  width: fit-content;
+  box-shadow: 10px 10px 30px -10px rgba(0,0,0,1);
+
+  form.ant-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    div.ant-form-item {
+      width: 100%;
+    }
+
+  }
+
+}

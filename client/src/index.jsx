@@ -3,11 +3,11 @@ import React from 'react';
 import ReactDOM from '@hot-loader/react-dom';
 
 import HotConnectedApp, { ConnectedApp } from './containers/App';
-import configureStore, { history } from './configureStore';
+import configureStore, { history, initialState } from './configureStore';
 
 import { unregister } from './serviceWorker';
 
-const store = configureStore();
+const store = configureStore(initialState);
 const App = module.hot ? HotConnectedApp : ConnectedApp;
 
 const render = () => {
