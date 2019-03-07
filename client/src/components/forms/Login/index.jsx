@@ -7,8 +7,8 @@ import { injectIntl } from 'react-intl';
 
 import './style.scss';
 
-const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
+const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 class LoginForm extends React.Component {
   constructor() {

@@ -8,6 +8,7 @@ export default function* rootSaga() {
     appSagas.loadApplicationSaga(),
     appSagas.changeLanguageSaga(),
     userSagas.authenticateUserSaga(),
+    userSagas.invalidateUserSaga(),
     userSagas.userPasswordRecoverySaga(),
   ]);
 }

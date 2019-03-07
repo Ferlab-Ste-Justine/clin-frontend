@@ -3,16 +3,25 @@ import * as actions from '../actions/type';
 
 // @TODO
 export function* authUser(action) {
-  console.log(action); // eslint-disable-line
-
-
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
-    const user = { username: 'mock' };
+    const user = { username: action.payload.username };
     yield put({ type: actions.USER_AUTHENTICATION_SUCCEEDED, payload: user });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.USER_AUTHENTICATION_FAILED, message: e.message });
+    yield put({ type: actions.STOP_LOADING_ANIMATION });
+  }
+}
+
+// @TODO
+export function* invalidateUser() {
+  yield put({ type: actions.START_LOADING_ANIMATION });
+  try {
+    yield put({ type: actions.USER_INVALIDATION_SUCCEEDED });
+    yield put({ type: actions.STOP_LOADING_ANIMATION });
+  } catch (e) {
+    yield put({ type: actions.USER_INVALIDATION_FAILED, message: e.message });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
@@ -47,6 +56,10 @@ function* watchAuthUser() {
   yield takeLatest(actions.USER_AUTHENTICATION_REQUESTED, authUser);
 }
 
+function* watchInvalidateUser() {
+  yield takeLatest(actions.USER_INVALIDATION_REQUESTED, invalidateUser);
+}
+
 function* watchUserAuthRecovery() {
   yield takeLatest(actions.USER_PASSWORD_RECOVERY_REQUESTED, userAuthRecovery);
 }
@@ -57,6 +70,7 @@ function* watchFetchUser() {
 
 export default {
   authenticateUserSaga: watchAuthUser,
+  invalidateUserSaga: watchInvalidateUser,
   userPasswordRecoverySaga: watchUserAuthRecovery,
   loadUserDataSaga: watchFetchUser,
 };

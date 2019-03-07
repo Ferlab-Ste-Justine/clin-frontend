@@ -63,8 +63,8 @@ export class App extends React.Component {
                           : <Redirect to="/list" />
                       )}
                     />
-                    <PrivateRoute exact path="/list" component={ListScreen} />
-                    <PrivateRoute path="/summary/:id" component={SummaryScreen} />
+                    <PrivateRoute exact path="/list" Component={ListScreen} />
+                    <PrivateRoute path="/summary/:id" Component={SummaryScreen} />
                     <Route component={NoMatchScreen} />
                   </Switch>
                 </ConnectedRouter>
