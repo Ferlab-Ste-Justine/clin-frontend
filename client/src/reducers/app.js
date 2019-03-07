@@ -18,7 +18,7 @@ export const initialAppState = {
   },
 };
 
-export const appShapeShape = {
+export const appShape = {
   showLoadingAnimation: PropTypes.bool.isRequired,
   lastError: PropTypes.string,
   locale: PropTypes.shape({

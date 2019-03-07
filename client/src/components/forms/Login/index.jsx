@@ -38,25 +38,25 @@ class LoginForm extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    const { form, handleLogin } = this.props;
+    const { form, handleAuthentication } = this.props;
     form.validateFields((err, values) => {
       if (!err) {
         this.setState({
           submitLoading: true,
           forgotLoading: false,
         });
-        handleLogin(values);
+        handleAuthentication(values);
       }
     });
   }
 
   handleClick() {
-    const { handleForgottenPassword } = this.props;
+    const { handlePasswordRecovery } = this.props;
     this.setState({
       submitLoading: false,
       forgotLoading: true,
     });
-    handleForgottenPassword();
+    handlePasswordRecovery();
   }
 
   render() {
@@ -69,7 +69,7 @@ class LoginForm extends React.Component {
     const passwordField = intl.formatMessage({ id: 'form.login.passwordField' });
     const submitButton = intl.formatMessage({ id: 'form.login.submitButton' });
 
-    const usernameError = form.isFieldTouched('userName') && form.getFieldError('userName');
+    const usernameError = form.isFieldTouched('username') && form.getFieldError('username');
     const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
 
     return (
@@ -81,7 +81,7 @@ class LoginForm extends React.Component {
                 validateStatus={usernameError ? 'error' : ''}
                 help={usernameError || ''}
               >
-                {form.getFieldDecorator('userName', {
+                {form.getFieldDecorator('username', {
                   rules: [{ required: true, message: formErrorIsRequired }],
                 })(
                   <Input prefix={<Icon type="user" />} placeholder={usernameField} autoComplete="off" />,
@@ -135,8 +135,8 @@ class LoginForm extends React.Component {
 LoginForm.propTypes = {
   form: PropTypes.shape({}).isRequired,
   intl: PropTypes.shape({}).isRequired,
-  handleLogin: PropTypes.func.isRequired,
-  handleForgottenPassword: PropTypes.func.isRequired,
+  handleAuthentication: PropTypes.func.isRequired,
+  handlePasswordRecovery: PropTypes.func.isRequired,
 };
 
 const IntlLoginForm = injectIntl(LoginForm);

@@ -2,6 +2,7 @@ import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -12,13 +13,15 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import 'antd/dist/antd.less';
 import './style.scss';
 
+import PrivateRoute from '../PrivateRoute';
 import HomeScreen from '../../components/screens/Home';
 import ListScreen from '../../components/screens/List';
 import SummaryScreen from '../../components/screens/Summary';
 import NoMatchScreen from '../../components/screens/NoMatch';
 
 import { loadApp } from '../../actions/app';
-import { appShapeShape } from '../../reducers/app';
+import { appShape } from '../../reducers/app';
+import { userShape } from '../../reducers/user';
 
 export class App extends React.Component {
   componentWillMount() {
@@ -27,7 +30,9 @@ export class App extends React.Component {
   }
 
   render() {
-    const { app, history, router } = this.props;
+    const {
+      app, history, router, user,
+    } = this.props;
 
     return (
       <IntlProvider key="locale-intl">
@@ -49,9 +54,17 @@ export class App extends React.Component {
               <Layout id="layout">
                 <ConnectedRouter key="router" history={history}>
                   <Switch location={router.location}>
-                    <Route exact path="/" component={HomeScreen} />
-                    <Route exact path="/list" component={ListScreen} />
-                    <Route exact path="/summary" component={SummaryScreen} />
+                    <Route
+                      exact
+                      path="/"
+                      render={props => (
+                        !user.username
+                          ? <HomeScreen {...props} />
+                          : <Redirect to="/list" />
+                      )}
+                    />
+                    <PrivateRoute exact path="/list" component={ListScreen} />
+                    <PrivateRoute path="/summary/:id" component={SummaryScreen} />
                     <Route component={NoMatchScreen} />
                   </Switch>
                 </ConnectedRouter>
@@ -64,15 +77,21 @@ export class App extends React.Component {
   }
 }
 
+App.defaultProps = {
+  user: userShape,
+};
+
 App.propTypes = {
   actions: PropTypes.shape({}).isRequired,
-  app: PropTypes.shape(appShapeShape).isRequired,
+  app: PropTypes.shape(appShape).isRequired,
+  user: PropTypes.shape(userShape),
   router: PropTypes.shape({}).isRequired,
   history: PropTypes.shape({}).isRequired,
 };
 
 const mapStateToProps = state => ({
   app: state.app,
+  user: state.user,
   router: state.router,
 });
 
