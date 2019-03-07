@@ -6,14 +6,16 @@ import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { IntlProvider } from 'react-intl-redux';
-import { Layout, Spin, LocaleProvider } from 'antd';
+import { Layout, LocaleProvider } from 'antd';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import 'antd/dist/antd.less';
 import './style.scss';
 
-import Home from '../../components/screens/Home';
-import Example from '../../components/screens/Example';
-import NoMatch from '../../components/screens/NoMatch';
+import HomeScreen from '../../components/screens/Home';
+import ListScreen from '../../components/screens/List';
+import SummaryScreen from '../../components/screens/Summary';
+import NoMatchScreen from '../../components/screens/NoMatch';
 
 import { loadApp } from '../../actions/app';
 import { appShapeShape } from '../../reducers/app';
@@ -25,43 +27,53 @@ export class App extends React.Component {
   }
 
   render() {
-    const { app, history } = this.props;
+    const { app, history, router } = this.props;
+
     return (
-      <IntlProvider id="locale-intl">
-        <LocaleProvider id="locale-antd" locale={app.locale.antd}>
-          <ConnectedRouter id="router" history={history}>
-            <Spin id="spinner" size="large" spinning={app.showLoadingAnimation}>
+      <IntlProvider key="locale-intl">
+        <LocaleProvider key="locale-antd" locale={app.locale.antd}>
+          <TransitionGroup>
+            <CSSTransition
+              key={router.location.key}
+              timeout={{
+                enter: 300,
+                exit: 900,
+              }}
+              classNames={{
+                enter: 'animated fadeIn',
+                exit: 'animated fadeOut',
+              }}
+              mountOnEnter
+              unmountOnExit
+            >
               <Layout id="layout">
-                <Switch id="switch">
-                  <Route id="route-home" exact path="/" component={Home} />
-                  <Route id="route-entity-list" exact path="/list" component={Home} />
-                  <Route id="route-entity-summary" exact path="/summary" component={Home} />
-                  <Route id="route-example" exact path="/example" component={Example} />
-                  <Route id="route-nomatch" component={NoMatch} />
-                </Switch>
+                <ConnectedRouter key="router" history={history}>
+                  <Switch location={router.location}>
+                    <Route exact path="/" component={HomeScreen} />
+                    <Route exact path="/list" component={ListScreen} />
+                    <Route exact path="/summary" component={SummaryScreen} />
+                    <Route component={NoMatchScreen} />
+                  </Switch>
+                </ConnectedRouter>
               </Layout>
-            </Spin>
-          </ConnectedRouter>
+            </CSSTransition>
+          </TransitionGroup>
         </LocaleProvider>
       </IntlProvider>
     );
   }
 }
 
-App.defaultProps = {
-  actions: null,
-  app: null,
-  history: null,
-};
-
 App.propTypes = {
-  actions: PropTypes.shape({}),
-  app: PropTypes.shape(appShapeShape),
-  history: PropTypes.shape({}),
+  actions: PropTypes.shape({}).isRequired,
+  app: PropTypes.shape(appShapeShape).isRequired,
+  router: PropTypes.shape({}).isRequired,
+  history: PropTypes.shape({}).isRequired,
 };
 
 const mapStateToProps = state => ({
   app: state.app,
+  router: state.router,
 });
 
 const mapDispatchToProps = dispatch => ({

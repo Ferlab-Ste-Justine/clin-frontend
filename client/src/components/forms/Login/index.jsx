@@ -1,103 +1,143 @@
-/* eslint-disable */
 import React from 'react';
-import { Card, Row, Col, Divider, Form, Typography, Icon, Input, Button } from 'antd';
+import PropTypes from 'prop-types';
+import {
+  Card, Row, Col, Divider, Form, Typography, Icon, Input, Button,
+} from 'antd';
 import { injectIntl } from 'react-intl';
 
 import './style.scss';
 
-const hasErrors = (fieldsError) => {
-    return Object.keys(fieldsError).some(field => fieldsError[field]);
-}
+const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
+
 
 class LoginForm extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      animationClass: '',
+      submitLoading: false,
+      forgotLoading: false,
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+  }
 
-    constructor() {
-        super();
-        this.state = {
-            loading: false
-        };
-        this._handleSubmit = this._handleSubmit.bind(this);
-    }
+  componentDidMount() {
+    // this.props.form.validateFields();
+    // this.props.form.resetFields();
+    this.setState({
+      animationClass: 'animated flipInX',
+    });
+  }
 
-    componentDidMount() {
-        this.props.form.validateFields();
-        this.props.form.resetFields();
-    }
+  componentWillUnmount() {
+    this.setState({
+      animationClass: 'animated zoomOut',
+    });
+  }
 
-    _handleSubmit(e) {
-        e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                this.setState({
-                    loading: true
-                });
-                this.props.handleSubmit(values);
-            }
+  handleSubmit(e) {
+    e.preventDefault();
+    const { form, handleLogin } = this.props;
+    form.validateFields((err, values) => {
+      if (!err) {
+        this.setState({
+          submitLoading: true,
+          forgotLoading: false,
         });
-    }
+        handleLogin(values);
+      }
+    });
+  }
 
-    render() {
-        const { form, intl } = this.props;
-        const formErrorIsRequired = intl.formatMessage({id: 'common.form.error.isRequired'});
-        const formTextForgotPassword = intl.formatMessage({id: 'form.login.forgotPassword'});
-        const formTextHowToRegister = intl.formatMessage({id: 'form.login.howToRegister'});
-        const usernameField = intl.formatMessage({id: 'form.login.usernameField'});
-        const passwordField = intl.formatMessage({id: 'form.login.passwordField'});
-        const submitButton = intl.formatMessage({id: 'form.login.submitButton'});
+  handleClick() {
+    const { handleForgottenPassword } = this.props;
+    this.setState({
+      submitLoading: false,
+      forgotLoading: true,
+    });
+    handleForgottenPassword();
+  }
 
-        const usernameError = form.isFieldTouched('userName') && form.getFieldError('userName');
-        const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
+  render() {
+    const { form, intl } = this.props;
+    const { animationClass, submitLoading, forgotLoading } = this.state;
+    const formErrorIsRequired = intl.formatMessage({ id: 'common.form.error.isRequired' });
+    const formTextForgotPassword = intl.formatMessage({ id: 'form.login.forgotPassword' });
+    const formTextHowToRegister = intl.formatMessage({ id: 'form.login.howToRegister' });
+    const usernameField = intl.formatMessage({ id: 'form.login.usernameField' });
+    const passwordField = intl.formatMessage({ id: 'form.login.passwordField' });
+    const submitButton = intl.formatMessage({ id: 'form.login.submitButton' });
 
-        return (
-            <Card id="login">
-                <Form onSubmit={this._handleSubmit} autoComplete="off">
-                    <Form.Item
-                        validateStatus={usernameError ? 'error' : ''}
-                        help={usernameError || ''}
-                    >
-                        {form.getFieldDecorator('userName', {
-                            rules: [{required: true, message: formErrorIsRequired}],
-                        })(
-                            <Input prefix={<Icon type="user"/>} placeholder={usernameField} autoComplete="off" />
-                        )}
-                    </Form.Item>
-                    <Form.Item
-                        validateStatus={passwordError ? 'error' : ''}
-                        help={passwordError || ''}
-                    >
-                        {form.getFieldDecorator('password', {
-                            rules: [{required: true, message: formErrorIsRequired}],
-                        })(
-                            <Input prefix={<Icon type="lock"/>} type="password" placeholder={passwordField} autoComplete="off" />
-                        )}
-                    </Form.Item>
-                    <Form.Item>
-                        <Row type="flex" justify="space-between">
-                            <Col span={14}>
-                                <a href="#">
-                                    {formTextForgotPassword}
-                                </a>
-                            </Col>
-                            <Col span={8}>
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    icon="login"
-                                    loading={this.state.loading}
-                                    disabled={hasErrors(form.getFieldsError())}
-                                >
-                                    {submitButton}
-                                </Button>
-                            </Col>
-                        </Row>
-                    </Form.Item>
-                    <Divider />
-                    <Card.Meta description={formTextHowToRegister} />
-                </Form>
-            </Card>
-        );
-    }
+    const usernameError = form.isFieldTouched('userName') && form.getFieldError('userName');
+    const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
+
+    return (
+      <Card id="login" className={animationClass}>
+        <Form onSubmit={this.handleSubmit}>
+          <Row type="flex" justify="space-between">
+            <Col className="left" span={11}>
+              <Form.Item
+                validateStatus={usernameError ? 'error' : ''}
+                help={usernameError || ''}
+              >
+                {form.getFieldDecorator('userName', {
+                  rules: [{ required: true, message: formErrorIsRequired }],
+                })(
+                  <Input prefix={<Icon type="user" />} placeholder={usernameField} autoComplete="off" />,
+                )}
+              </Form.Item>
+              <Form.Item
+                validateStatus={passwordError ? 'error' : ''}
+                help={passwordError || ''}
+              >
+                {form.getFieldDecorator('password', {
+                  rules: [{ required: true, message: formErrorIsRequired }],
+                })(
+                  <Input prefix={<Icon type="lock" />} type="password" placeholder={passwordField} autoComplete="off" />,
+                )}
+              </Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon="login"
+                loading={submitLoading}
+                disabled={(forgotLoading || hasErrors(form.getFieldsError()))}
+              >
+                {submitButton}
+              </Button>
+            </Col>
+            <Col>
+              <Divider type="vertical" />
+            </Col>
+            <Col className="right" span={10}>
+              <Typography.Paragraph type="secondary">
+                {formTextHowToRegister}
+              </Typography.Paragraph>
+              <Divider />
+              <Button
+                type="secondary"
+                icon="meh"
+                loading={forgotLoading}
+                disabled={(submitLoading || hasErrors(form.getFieldsError()))}
+                onClick={this.handleClick}
+              >
+                {formTextForgotPassword}
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    );
+  }
 }
+
+LoginForm.propTypes = {
+  form: PropTypes.shape({}).isRequired,
+  intl: PropTypes.shape({}).isRequired,
+  handleLogin: PropTypes.func.isRequired,
+  handleForgottenPassword: PropTypes.func.isRequired,
+};
 
 const IntlLoginForm = injectIntl(LoginForm);
 

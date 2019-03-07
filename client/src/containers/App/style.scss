@@ -1,13 +1,13 @@
+$use-all: true;
+@import '/../../../../node_modules/animate-sass/animate';
+
 #root {
   display: block;
-}
-
-#layout {
   width: 100vw;
   height: 100vh;
 }
 
-#layout:after {
+#root:after {
   background-image: url(/images/wallpaper.jpg);
   background-size: cover;
   content:'';
@@ -17,6 +17,11 @@
   width:inherit;
   height:inherit;
   opacity:0.5;
+}
+
+#layout {
+  height: 100vh;
+  z-index: 1;
 }
 
 #spinner {
@@ -29,4 +34,8 @@
 
 #content {
   z-index: 2;
+}
+
+.hidden {
+   display: none;
 }

@@ -2,6 +2,7 @@ dependencies:
   '@babel/core': 7.2.2
   '@hot-loader/react-dom': 16.8.3
   '@svgr/webpack': 4.1.0
+  animate-sass: 0.8.2
   antd: 3.14.1
   babel-core: 7.0.0-bridge.0
   babel-eslint: 9.0.0
@@ -60,6 +61,7 @@ dependencies:
   react-redux: 6.0.1
   react-router: 4.3.1
   react-router-dom: 4.3.1
+  react-transition-group: 2.6.0
   redux: 4.0.1
   redux-mock-store: 1.5.3
   redux-saga: 1.0.2
@@ -1569,6 +1571,10 @@ packages:
       node: '>=0.4.2'
     resolution:
       integrity: sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
+  /animate-sass/0.8.2:
+    dev: false
+    resolution:
+      integrity: sha512-6sZ34dusqb1HdZLNpJUNaZc0CuuLgFI8SqlyaxbSSKE9zqfoNtOeO3IpVUCqvaSm/oMNH1VlEAsJlppjg+idKQ==
   /ansi-align/2.0.0:
     dependencies:
       string-width: 2.1.1
@@ -3625,6 +3631,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-gd3ypIPfOMr9h5jIKq8E3sHOTCjeirnl0WK5ZdS1AW0Odt0b1PaWaHdJ4Qk4klv+YB9aJBS7mESXjFoDQPu6DA==
+  /dom-helpers/3.4.0:
+    dependencies:
+      '@babel/runtime': 7.3.4
+    dev: false
+    resolution:
+      integrity: sha512-LnuPJ+dwqKDIyotW1VzmOZ5TONUN7CwkCR5hrgawTUbkBGYdeoNLZo6nNfGkCrjtE1nXXaj7iMMpDa8/d9WoIA==
   /dom-matches/2.0.0:
     dev: false
     resolution:
@@ -8871,7 +8883,7 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-      react-is: 16.8.3
+      react-is: 16.8.4
     dev: false
     resolution:
       integrity: sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9522,6 +9534,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Y4rC1ZJmsxxkkPuMLwvKvlL1Zfpbcu+Bf4ZigkHup3v9EfdYhAlWAaVyA19olXq2o2mGn0w+dFKvk3pVVlYcIA==
+  /react-is/16.8.4:
+    dev: false
+    resolution:
+      integrity: sha512-PVadd+WaUDOAciICm/J1waJaSvgq+4rHE/K70j0PFqKhkTBsPv/82UGQJNXAngz1fOQLLxI6z1sEDmJDQhCTAA==
   /react-lazy-load/3.0.13:
     dependencies:
       eventlistener: 0.0.1
@@ -9593,6 +9609,18 @@ packages:
       react-dom: ^0.14.0 || ^15.0.1 || ^16.0.0
     resolution:
       integrity: sha512-fM6DXX7+22eOcYE9cgaXUfioZL/Zw6fwS6aPMDBt0kLHl4H4fFNEbp4JsJQdEWMLUNFtUytNcvd9KRml22Tp5w==
+  /react-transition-group/2.6.0:
+    dependencies:
+      dom-helpers: 3.4.0
+      loose-envify: 1.4.0
+      prop-types: 15.7.2
+      react-lifecycles-compat: 3.0.4
+    dev: false
+    peerDependencies:
+      react: '>=15.0.0'
+      react-dom: '>=15.0.0'
+    resolution:
+      integrity: sha512-VzZ+6k/adL3pJHo4PU/MHEPjW59/TGQtRsXC+wnxsx2mxjQKNHnDdJL/GpYuPJIsyHGjYbBQfIJ2JNOAdPc8GQ==
   /react/16.8.3:
     dependencies:
       loose-envify: 1.4.0
@@ -12023,6 +12051,7 @@ specifiers:
   '@babel/core': 7.2.2
   '@hot-loader/react-dom': ^16.8.3
   '@svgr/webpack': 4.1.0
+  animate-sass: ^0.8.2
   antd: ^3.13.2
   babel-core: 7.0.0-bridge.0
   babel-eslint: 9.0.0
@@ -12081,6 +12110,7 @@ specifiers:
   react-redux: ^6.0.0
   react-router: ^4.3.1
   react-router-dom: ^4.3.1
+  react-transition-group: ^2.6.0
   redux: ^4.0.1
   redux-mock-store: ^1.5.3
   redux-saga: ^1.0.1

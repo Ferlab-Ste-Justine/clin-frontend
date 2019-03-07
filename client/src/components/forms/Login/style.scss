@@ -13,6 +13,24 @@ div#login {
       width: 100%;
     }
 
+    div.ant-divider-vertical {
+      height: 100%;
+    }
+
+    div.ant-row-flex .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: inherit;
+    }
+
+    div.ant-row-flex .right {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      justify-content: inherit;
+      margin-top: 20px;
+    }
+
   }
 
 }

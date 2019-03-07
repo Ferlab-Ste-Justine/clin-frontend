@@ -1,21 +1,26 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
+import { Card, Empty } from 'antd';
 
-import Header from '../../Header';
 import Content from '../../Content';
-import Footer from '../../Footer';
 
 import './style.scss';
 
-const NoMatch = () => (
+const NoMatchScreen = ({ intl }) => (
   <>
-    <Header />
     <Content>
-      <FormattedMessage id="screen.nomatch.404" defaultMessage=" " />
+      <Card className="animated rotateIn">
+        <Empty
+          description={intl.formatMessage({ id: 'screen.nomatch.404' })}
+        />
+      </Card>
     </Content>
-    <Footer />
   </>
 );
 
-export default connect()(NoMatch);
+NoMatchScreen.propTypes = {
+  intl: PropTypes.shape({}).isRequired,
+};
+
+export default injectIntl(NoMatchScreen);
