@@ -1,8 +1,41 @@
-#container {
+$use-all: true;
+@import '/../../../../node_modules/animate-sass/animate';
+
+#root {
+  display: block;
   width: 100vw;
   height: 100vh;
 }
 
+#root:after {
+  background-image: url(/images/wallpaper.jpg);
+  background-size: cover;
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  width:inherit;
+  height:inherit;
+  opacity:0.5;
+}
+
+#layout {
+  height: 100vh;
+  z-index: 1;
+}
+
+#spinner {
+  z-index: 9999;
+}
+
 .ant-spin-nested-loading > div > .ant-spin {
   max-height: none;
+}
+
+#content {
+  z-index: 2;
+}
+
+.hidden {
+   display: none;
 }

@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import { Layout } from 'antd';
 
-const Navigation = () => (
-  <nav>
+const Header = () => (
+  <Layout.Header id="header">
     <FormattedMessage id="nav.home" defaultMessage=" " />
-  </nav>
+  </Layout.Header>
 );
 
-export default connect()(Navigation);
+export default connect()(Header);

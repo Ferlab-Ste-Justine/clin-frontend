@@ -1,12 +1,15 @@
 import { all } from 'redux-saga/effects';
 
 import appSagas from './app';
-// import userSagas from './user'
+import userSagas from './user';
 
 export default function* rootSaga() {
   yield all([
     appSagas.loadApplicationSaga(),
     appSagas.changeLanguageSaga(),
+    userSagas.authenticateUserSaga(),
+    userSagas.invalidateUserSaga(),
+    userSagas.userPasswordRecoverySaga(),
   ]);
 }
 

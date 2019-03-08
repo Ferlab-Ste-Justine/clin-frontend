@@ -9,7 +9,7 @@
 ### Available Scripts
 
 ##### `pnpm start`
-Runs the app in the development mode.<br>
+Runs the app in development mode.<br>
 Point your browser to [http://localhost:3000](http://localhost:3000) to view.
 
 ##### `pnpm test`
@@ -24,3 +24,32 @@ It correctly bundles React in production mode and optimizes the build for the be
 * [Progressive Web App](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 * [Advanced Configurations](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 * [Troubleshooting Failures to Minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+### Payload
+
+##### Success
+
+```
+{
+  "code": 201,
+  "message": "ENTITY_CREATED"
+  "data": {}
+}
+```
+
+```
+{
+  "code": 200,
+  "message": "OK"
+  "data": [{}]
+}
+```
+
+##### Error
+
+```
+{
+  "code": 404,
+  "error": "NOT_FOUND"
+}
+```
