@@ -29,7 +29,7 @@ const data = [{
   address: 'London No. 2 Lake Park',
 }];
 
-export class ListScreen extends React.Component {
+class ListScreen extends React.Component {
   constructor() {
     super();
     this.state = {
