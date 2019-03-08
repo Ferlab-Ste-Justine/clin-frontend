@@ -113,9 +113,9 @@ class ListScreen extends React.Component {
       <>
         <Content>
           <Card>
-            <Button onClick={this.setAgeSort}>Sort age</Button>
-            <Button onClick={this.clearFilters}>Clear filters</Button>
-            <Button onClick={this.clearAll}>Clear filters and sorters</Button>
+            <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
+            <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>
+            <Button onClick={this.clearAll} htmlType="button">Clear filters and sorters</Button>
             <Table columns={columns} dataSource={data} onChange={this.handleChange} />
           </Card>
         </Content>
