@@ -117,6 +117,7 @@ class LoginForm extends React.Component {
               <Divider />
               <Button
                 type="secondary"
+                htmlType="button"
                 icon="meh"
                 loading={forgotLoading}
                 disabled={(submitLoading || hasErrors(form.getFieldsError()))}
