@@ -74,9 +74,9 @@ class LoginForm extends React.Component {
 
     return (
       <Card id="login" className={animationClass}>
-        <Form onSubmit={this.handleSubmit}>
-          <Row type="flex" justify="space-between">
-            <Col className="left" span={11}>
+        <Row type="flex" justify="space-between">
+          <Col className="left" span={11}>
+            <Form onSubmit={this.handleSubmit}>
               <Form.Item
                 validateStatus={usernameError ? 'error' : ''}
                 help={usernameError || ''}
@@ -106,28 +106,28 @@ class LoginForm extends React.Component {
               >
                 {submitButton}
               </Button>
-            </Col>
-            <Col>
-              <Divider type="vertical" />
-            </Col>
-            <Col className="right" span={10}>
-              <Typography.Paragraph type="secondary">
-                {formTextHowToRegister}
-              </Typography.Paragraph>
-              <Divider />
-              <Button
-                type="secondary"
-                htmlType="button"
-                icon="meh"
-                loading={forgotLoading}
-                disabled={(submitLoading || hasErrors(form.getFieldsError()))}
-                onClick={this.handleClick}
-              >
-                {formTextForgotPassword}
-              </Button>
-            </Col>
-          </Row>
-        </Form>
+            </Form>
+          </Col>
+          <Col>
+            <Divider type="vertical" />
+          </Col>
+          <Col className="right" span={10}>
+            <Typography.Paragraph type="secondary">
+              {formTextHowToRegister}
+            </Typography.Paragraph>
+            <Divider />
+            <Button
+              type="secondary"
+              htmlType="button"
+              icon="meh"
+              loading={forgotLoading}
+              disabled={forgotLoading}
+              onClick={this.handleClick}
+            >
+              {formTextForgotPassword}
+            </Button>
+          </Col>
+        </Row>
       </Card>
     );
   }
