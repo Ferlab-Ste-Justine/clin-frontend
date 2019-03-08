@@ -35,7 +35,7 @@ export class App extends React.Component {
     } = this.props;
 
     return (
-      <Spin key="layout" size="large" spinning={app.showLoadingAnimation}>
+      <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
         <IntlProvider key="locale-intl">
           <LocaleProvider key="locale-antd" locale={app.locale.antd}>
             <TransitionGroup>
