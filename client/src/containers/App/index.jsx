@@ -7,7 +7,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { IntlProvider } from 'react-intl-redux';
-import { Layout, LocaleProvider } from 'antd';
+import { Spin, Layout, LocaleProvider } from 'antd';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import 'antd/dist/antd.less';
@@ -51,24 +51,27 @@ export class App extends React.Component {
               mountOnEnter
               unmountOnExit
             >
-              <Layout id="layout">
-                <ConnectedRouter key="router" history={history}>
-                  <Switch location={router.location}>
-                    <Route
-                      exact
-                      path="/"
-                      render={props => (
-                        !user.username
-                          ? <HomeScreen {...props} />
-                          : <Redirect to="/list" />
-                      )}
-                    />
-                    <PrivateRoute exact path="/list" Component={ListScreen} />
-                    <PrivateRoute path="/summary/:id" Component={SummaryScreen} />
-                    <Route component={NoMatchScreen} />
-                  </Switch>
-                </ConnectedRouter>
-              </Layout>
+              <Spin id="loading-animation" size="large" spinning={app.showLoadingAnimation}>
+                <Layout id="layout">
+                  <ConnectedRouter key="router" history={history}>
+
+                    <Switch location={router.location}>
+                      <Route
+                        exact
+                        path="/"
+                        render={props => (
+                          !user.username
+                            ? <HomeScreen {...props} />
+                            : <Redirect to="/list" />
+                        )}
+                      />
+                      <PrivateRoute exact path="/list" Component={ListScreen} />
+                      <PrivateRoute path="/summary/:id" Component={SummaryScreen} />
+                      <Route component={NoMatchScreen} />
+                    </Switch>
+                  </ConnectedRouter>
+                </Layout>
+              </Spin>
             </CSSTransition>
           </TransitionGroup>
         </LocaleProvider>
