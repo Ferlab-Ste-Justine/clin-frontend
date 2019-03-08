@@ -35,27 +35,28 @@ export class App extends React.Component {
     } = this.props;
 
     return (
-      <IntlProvider key="locale-intl">
-        <LocaleProvider key="locale-antd" locale={app.locale.antd}>
-          <TransitionGroup>
-            <CSSTransition
-              key={router.location.key}
-              timeout={{
-                enter: 300,
-                exit: 900,
-              }}
-              classNames={{
-                enter: 'animated fadeIn',
-                exit: 'animated fadeOut',
-              }}
-              mountOnEnter
-              unmountOnExit
-            >
-              <Spin id="loading-animation" size="large" spinning={app.showLoadingAnimation}>
-                <Layout id="layout">
-                  <ConnectedRouter key="router" history={history}>
-
-                    <Switch location={router.location}>
+      <Spin key="layout" size="large" spinning={app.showLoadingAnimation}>
+        <IntlProvider key="locale-intl">
+          <LocaleProvider key="locale-antd" locale={app.locale.antd}>
+            <TransitionGroup>
+              <CSSTransition
+                key={`transition-${router.location.key}`}
+                timeout={{
+                  enter: 300,
+                  exit: 900,
+                }}
+                classNames={{
+                  enter: 'animated fadeIn',
+                  exit: 'animated fadeOut',
+                }}
+                mountOnEnter
+                unmountOnExit
+              >
+                <Layout id="layout" key="layout">
+                  <ConnectedRouter key="connected-router" history={history}>
+                    <Switch key="switch">
+                      <PrivateRoute exact path="/list" Component={ListScreen} key="route-list" />
+                      <PrivateRoute path="/summary/:id" Component={SummaryScreen} key="route-summary" />
                       <Route
                         exact
                         path="/"
@@ -64,18 +65,17 @@ export class App extends React.Component {
                             ? <HomeScreen {...props} />
                             : <Redirect to="/list" />
                         )}
+                        key="route-home"
                       />
-                      <PrivateRoute exact path="/list" Component={ListScreen} />
-                      <PrivateRoute path="/summary/:id" Component={SummaryScreen} />
-                      <Route component={NoMatchScreen} />
+                      <Route component={NoMatchScreen} key="route-nomatch" />
                     </Switch>
                   </ConnectedRouter>
                 </Layout>
-              </Spin>
-            </CSSTransition>
-          </TransitionGroup>
-        </LocaleProvider>
-      </IntlProvider>
+              </CSSTransition>
+            </TransitionGroup>
+          </LocaleProvider>
+        </IntlProvider>
+      </Spin>
     );
   }
 }
