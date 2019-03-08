@@ -45,7 +45,7 @@ class LoginForm extends React.Component {
           submitLoading: true,
           forgotLoading: false,
         });
-        handleAuthentication(values);
+        handleAuthentication(values.username, values.password);
       }
     });
   }
