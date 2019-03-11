@@ -1,12 +1,14 @@
 import React from 'react';
-import { Layout } from 'antd';
+import { Col, Row } from 'antd';
 
 const Content = (props) => {
-  const { children } = props; // eslint-disable-line react/prop-types
+  const { children, type } = props; // eslint-disable-line react/prop-types
   return (
-    <Layout.Content id="content">
-      {children}
-    </Layout.Content>
+    <Row id="container" type="flex">
+      <Col id={`${type || 'stretched'}-screen`} span={24}>
+        {children}
+      </Col>
+    </Row>
   );
 };
 

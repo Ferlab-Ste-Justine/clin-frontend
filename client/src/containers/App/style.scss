@@ -19,11 +19,6 @@ $use-all: true;
   opacity:0.5;
 }
 
-#layout {
-  height: 100vh;
-  z-index: 1;
-}
-
 #spinner {
   z-index: 9999;
 }
@@ -32,10 +27,35 @@ $use-all: true;
   max-height: none;
 }
 
-#content {
-  z-index: 2;
+#layout {
+  height: 100vh;
+  z-index: 1;
 }
 
-.hidden {
-   display: none;
+#header {
+}
+
+#footer {
+}
+
+#container {
+  z-index: 2;
+  height: 100%;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+#centered-screen {
+   justify-content: center;
+   align-items: center;
+ }
+
+#stretched-screen {
+  justify-content: space-between;
+  div.ant-card {
+    height: 100%;
+  }
 }

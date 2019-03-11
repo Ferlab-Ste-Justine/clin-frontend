@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 
 const Footer = () => (
   <Layout.Footer id="footer">
-    <p />
+    Hello. I am the footer.
   </Layout.Footer>
 );
 

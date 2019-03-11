@@ -12,11 +12,9 @@ import './style.scss';
 
 
 const HomeScreen = ({ actions }) => (
-  <>
-    <Content>
-      <LoginForm handleAuthentication={actions.authUser} handlePasswordRecovery={actions.userPasswordRecovery} />
-    </Content>
-  </>
+  <Content type="centered">
+    <LoginForm handleAuthentication={actions.authUser} handlePasswordRecovery={actions.userPasswordRecovery} />
+  </Content>
 );
 
 HomeScreen.propTypes = {

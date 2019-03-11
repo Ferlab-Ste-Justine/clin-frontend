@@ -39,7 +39,7 @@ export default function configureStore(preloadedState = {}) {
 
   sagaMiddleware.run(createRootSaga);
 
-  if (module.hot) {
+  if (process.env.NODE_ENV === 'development' && module.hot) {
     module.hot.accept('./reducers', () => {
       store.replaceReducer(createRootReducer(history));
     });

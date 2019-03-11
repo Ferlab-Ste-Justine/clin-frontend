@@ -23,8 +23,6 @@ class LoginForm extends React.Component {
   }
 
   componentDidMount() {
-    // this.props.form.validateFields();
-    // this.props.form.resetFields();
     this.setState({
       animationClass: 'animated flipInX',
     });
@@ -62,7 +60,7 @@ class LoginForm extends React.Component {
   render() {
     const { form, intl } = this.props;
     const { animationClass, submitLoading, forgotLoading } = this.state;
-    const formErrorIsRequired = intl.formatMessage({ id: 'common.form.error.isRequired' });
+    const formErrorIsRequired = intl.formatMessage({ id: 'form.error.isRequired' });
     const formTextForgotPassword = intl.formatMessage({ id: 'form.login.forgotPassword' });
     const formTextHowToRegister = intl.formatMessage({ id: 'form.login.howToRegister' });
     const usernameField = intl.formatMessage({ id: 'form.login.usernameField' });

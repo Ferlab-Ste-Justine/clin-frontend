@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { Button, Card, Table } from 'antd';
+import { Link } from 'react-router-dom';
 
 import Content from '../../Content';
+import Footer from '../../Footer';
+import Header from '../../Header';
 
 import './style.scss';
 
@@ -28,6 +31,7 @@ const data = [{
   age: 32,
   address: 'London No. 2 Lake Park',
 }];
+
 
 class ListScreen extends React.Component {
   constructor() {
@@ -72,8 +76,6 @@ class ListScreen extends React.Component {
 
 
   render() {
-    // const { intl } = this.props;
-
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
@@ -85,6 +87,7 @@ class ListScreen extends React.Component {
         { text: 'Joe', value: 'Joe' },
         { text: 'Jim', value: 'Jim' },
       ],
+      render: text => (<Link to="/summary/123">{text}</Link>),
       filteredValue: filteredInfo.name || null,
       onFilter: (value, record) => record.name.includes(value),
       sorter: (a, b) => a.name.length - b.name.length,
@@ -110,16 +113,16 @@ class ListScreen extends React.Component {
     }];
 
     return (
-      <>
-        <Content>
-          <Card>
-            <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
-            <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>
-            <Button onClick={this.clearAll} htmlType="button">Clear filters and sorters</Button>
-            <Table columns={columns} dataSource={data} onChange={this.handleChange} />
-          </Card>
-        </Content>
-      </>
+      <Content>
+        <Header />
+        <Card>
+          <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
+          <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>
+          <Button onClick={this.clearAll} htmlType="button">Clear filters and sorters</Button>
+          <Table columns={columns} dataSource={data} onChange={this.handleChange} />
+        </Card>
+        <Footer />
+      </Content>
     );
   }
 }
