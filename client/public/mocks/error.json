@@ -1,4 +1,4 @@
 {
-  "code": 404,
-  "error": "NOT_FOUND"
+  "message": "NOT_FOUND",
+  "error": "Example long exception or error message"
 }

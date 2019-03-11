@@ -32,7 +32,6 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ```
 {
-  "code": 201,
   "message": "ENTITY_CREATED"
   "data": {}
 }
@@ -40,9 +39,8 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ```
 {
-  "code": 200,
   "message": "OK"
-  "data": [{}]
+  "data": []
 }
 ```
 
@@ -50,7 +48,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ```
 {
-  "code": 404,
-  "error": "NOT_FOUND"
+  "message": "NOT_FOUND",
+  "error": "Long exception or error message"
 }
 ```
