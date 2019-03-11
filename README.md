@@ -2,6 +2,7 @@
 
 ### Development Set-up
 * Install Node.js LTS 10.14.1 using [nvm](https://github.com/creationix/nvm/blob/master/README.md)
+* `cp .env.development .env.development.local`
 * `npm install -g pnpm`
 * `pnpm install -g pnpm`
 * `pnpm i` https://github.com/pnpm/pnpm/issues/1360
