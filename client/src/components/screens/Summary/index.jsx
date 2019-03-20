@@ -2,13 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import {
-  Card, Col, Row, Layout, Radio, Icon, Empty, Button, Tabs, PageHeader, List,
+  Card, Col, Row, Layout, Radio, Icon, Empty, Button, Tabs, PageHeader, Typography,
 } from 'antd';
 import { Link } from 'react-router-dom';
 
 import Content from '../../Content';
 import Footer from '../../Footer';
 import Header from '../../Header';
+import DataList from '../../DataList';
 
 import './style.scss';
 
@@ -43,79 +44,45 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
     </Layout.Content>
     <Card>
       <PageHeader
-        title="MRN:483726 - Sainte_justine"
+        title={(<Typography.Title level={4}>MRN:483726 - Sainte_justine</Typography.Title>)}
         extra="Date de dernière modification : 30-10-2019 12:24"
       />
-
-      <Card
-        type="inner"
-        title="Information Générale"
-      >
-        <List
-          size="small"
-          dataSource={[
-            { label: 'Label 1', text: 'Text 1' },
-            { label: 'Label 2', text: 'Text 2' },
-            { label: 'Label 3', text: 'Text 3' },
-            { label: 'Label 4', text: 'Text 4' },
-            { label: 'Label 5', text: 'Text 5' },
-          ]}
-          renderItem={item => (
-            <List.Item>
-              {item.label}
-              {' '}
-              {item.text}
-            </List.Item>
-          )}
-        />
-      </Card>
-
-      <Card
-        type="inner"
-        title="Soumission"
-      >
-        <List
-          size="small"
-          dataSource={[
-            { label: 'Label 1', text: 'Text 1' },
-            { label: 'Label 2', text: 'Text 2' },
-            { label: 'Label 3', text: 'Text 3' },
-            { label: 'Label 4', text: 'Text 4' },
-            { label: 'Label 5', text: 'Text 5' },
-          ]}
-          renderItem={item => (
-            <List.Item>
-              {item.label}
-              {' '}
-              {item.text}
-            </List.Item>
-          )}
-        />
-      </Card>
-
-      <Card
-        type="inner"
-        title="Famille"
-      >
-        <List
-          size="small"
-          dataSource={[
-            { label: 'Label 1', text: 'Text 1' },
-            { label: 'Label 2', text: 'Text 2' },
-            { label: 'Label 3', text: 'Text 3' },
-            { label: 'Label 4', text: 'Text 4' },
-            { label: 'Label 5', text: 'Text 5' },
-          ]}
-          renderItem={item => (
-            <List.Item>
-              {item.label}
-              {' '}
-              {item.text}
-            </List.Item>
-          )}
-        />
-      </Card>
-
+      <Row type="flex">
+        <Col span={12}>
+          <DataList
+            title="Information Générale"
+            dataSource={[
+              { label: 'Label1', value: 'Content1' },
+              { label: 'Label2', value: 'Content2' },
+              { label: 'Label3', value: 'Content3' },
+              { label: 'Label4', value: 'Content4' },
+            ]}
+          />
+        </Col>
+        <Col push={1} span={12}>
+          <DataList
+            title="Soumission"
+            dataSource={[
+              { label: 'Label1', value: 'Content1' },
+              { label: 'Label2', value: 'Content2' },
+              { label: 'Label3', value: 'Content3' },
+              { label: 'Label4', value: 'Content4' },
+            ]}
+          />
+        </Col>
+        <Col span={11}>
+          <br />
+          <DataList
+            title="Famille"
+            dataSource={[
+              { label: 'Label1', value: 'Content1' },
+              { label: 'Label2', value: 'Content2' },
+              { label: 'Label3', value: 'Content3' },
+              { label: 'Label4', value: 'Content4' },
+            ]}
+          />
+        </Col>
+      </Row>
       <br />
       <br />
       <Tabs defaultActiveKey="patient" onChange={() => {}}>

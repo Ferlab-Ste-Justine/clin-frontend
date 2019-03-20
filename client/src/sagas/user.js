@@ -1,51 +1,51 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/type';
-// import Api from '../helpers/api';
+import Api from '../helpers/api';
 
-// @TODO
-export function* authUser(action) {
+
+function* login(action) {
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
-    yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
+    const response = yield Api.login(action.payload.username, action.payload.password);
+
+    console.log(response); // eslint-disable-line
+
     const user = {
-      username: action.payload.username,
+      username: response.data.user,
     };
-    yield put({ type: actions.USER_AUTHENTICATION_SUCCEEDED, payload: user });
+    yield put({ type: actions.USER_LOGIN_SUCCEEDED, payload: user });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
-    yield put({ type: actions.USER_AUTHENTICATION_FAILED, message: e.message });
+    yield put({ type: actions.USER_LOGIN_FAILED, message: e.message });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
 
-// @TODO
-export function* invalidateUser() {
+function* logout() {
+  yield put({ type: actions.START_LOADING_ANIMATION });
+  try {
+    yield Api.logout();
+    yield put({ type: actions.USER_LOGOUT_SUCCEEDED });
+    yield put({ type: actions.STOP_LOADING_ANIMATION });
+  } catch (e) {
+    yield put({ type: actions.USER_LOGOUT_FAILED, message: e.message });
+    yield put({ type: actions.STOP_LOADING_ANIMATION });
+  }
+}
+
+function* recover(action) {
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
-    yield put({ type: actions.USER_INVALIDATION_SUCCEEDED });
+    yield put({ type: actions.USER_RECOVERY_SUCCEEDED, payload: action.payload });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
-    yield put({ type: actions.USER_INVALIDATION_FAILED, message: e.message });
+    yield put({ type: actions.USER_RECOVERY_FAILED, message: e.message });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
 
-// @TODO
-export function* userAuthRecovery(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
-  try {
-    yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
-    yield put({ type: actions.USER_PASSWORD_RECOVERY_SUCCEEDED, payload: action.payload });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
-  } catch (e) {
-    yield put({ type: actions.USER_PASSWORD_RECOVERY_FAILED, message: e.message });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
-  }
-}
-
-// @TODO
-export function* fetchUser(action) {
+function* fetch(action) {
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
@@ -57,25 +57,25 @@ export function* fetchUser(action) {
   }
 }
 
-function* watchAuthUser() {
-  yield takeLatest(actions.USER_AUTHENTICATION_REQUESTED, authUser);
+function* watchUserLogin() {
+  yield takeLatest(actions.USER_LOGIN_REQUESTED, login);
 }
 
-function* watchInvalidateUser() {
-  yield takeLatest(actions.USER_INVALIDATION_REQUESTED, invalidateUser);
+function* watchUserLogout() {
+  yield takeLatest(actions.USER_LOGOUT_REQUESTED, logout);
 }
 
-function* watchUserAuthRecovery() {
-  yield takeLatest(actions.USER_PASSWORD_RECOVERY_REQUESTED, userAuthRecovery);
+function* watchUserRecover() {
+  yield takeLatest(actions.USER_RECOVERY_REQUESTED, recover);
 }
 
-function* watchFetchUser() {
-  yield takeLatest(actions.USER_FETCH_REQUESTED, fetchUser);
+function* watchUserFetch() {
+  yield takeLatest(actions.USER_FETCH_REQUESTED, fetch);
 }
 
 export default {
-  authenticateUserSaga: watchAuthUser,
-  invalidateUserSaga: watchInvalidateUser,
-  userPasswordRecoverySaga: watchUserAuthRecovery,
-  loadUserDataSaga: watchFetchUser,
+  userLoginSaga: watchUserLogin,
+  userLogoutSaga: watchUserLogout,
+  userRecoverSaga: watchUserRecover,
+  userFetchSaga: watchUserFetch,
 };

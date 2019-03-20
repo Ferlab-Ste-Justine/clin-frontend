@@ -12,6 +12,7 @@ import Header from '../../Header';
 
 import './style.scss';
 
+
 const data = [{
   key: '1',
   name: 'John Brown',

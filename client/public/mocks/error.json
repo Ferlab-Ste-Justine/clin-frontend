@@ -1,4 +1,3 @@
 {
-  "message": "NOT_FOUND",
-  "error": "Example long exception or error message"
+  "errors": ["NOT_FOUND"],
 }
