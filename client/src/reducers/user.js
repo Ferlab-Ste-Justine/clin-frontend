@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
+
 import * as actions from '../actions/type';
 
 export const initialUserState = {
@@ -15,11 +16,11 @@ const userReducer = (state = initialUserState, action) => produce(state, (draft)
   switch (action.type) {
     case actions.USER_LOGIN_FAILED:
     case actions.USER_LOGOUT_SUCCEEDED:
-      draft = initialUserState;
+      draft.username = initialUserState.username;
       break;
 
     case actions.USER_LOGIN_SUCCEEDED:
-      draft.username = action.payload.username;
+      draft.username = action.payload.data.data.user.username;
       break;
 
     default:

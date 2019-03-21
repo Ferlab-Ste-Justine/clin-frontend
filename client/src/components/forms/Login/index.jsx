@@ -58,8 +58,11 @@ class LoginForm extends React.Component {
   }
 
   render() {
-    const { form, intl } = this.props;
-    const { animationClass, submitLoading, forgotLoading } = this.state;
+    const { appIsLoading, form, intl } = this.props;
+    const { animationClass } = this.state;
+    const { submitLoading, forgotLoading } = this.state;
+    const submitLoadingState = submitLoading && appIsLoading;
+    const forgotLoadingState = forgotLoading && appIsLoading;
     const formErrorIsRequired = intl.formatMessage({ id: 'form.error.isRequired' });
     const formTextForgotPassword = intl.formatMessage({ id: 'form.login.forgotPassword' });
     const formTextHowToRegister = intl.formatMessage({ id: 'form.login.howToRegister' });
@@ -99,8 +102,8 @@ class LoginForm extends React.Component {
                 type="primary"
                 htmlType="submit"
                 icon="login"
-                loading={submitLoading}
-                disabled={(forgotLoading || hasErrors(form.getFieldsError()))}
+                loading={submitLoadingState}
+                disabled={(forgotLoadingState || hasErrors(form.getFieldsError()))}
               >
                 {submitButton}
               </Button>
@@ -118,8 +121,8 @@ class LoginForm extends React.Component {
               type="secondary"
               htmlType="button"
               icon="meh"
-              loading={forgotLoading}
-              disabled={forgotLoading}
+              loading={forgotLoadingState}
+              disabled={submitLoadingState || forgotLoadingState}
               onClick={this.handleClick}
             >
               {formTextForgotPassword}
@@ -132,6 +135,7 @@ class LoginForm extends React.Component {
 }
 
 LoginForm.propTypes = {
+  appIsLoading: PropTypes.bool.isRequired,
   form: PropTypes.shape({}).isRequired,
   intl: PropTypes.shape({}).isRequired,
   handleAuthentication: PropTypes.func.isRequired,

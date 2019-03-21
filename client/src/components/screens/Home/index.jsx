@@ -7,18 +7,26 @@ import Content from '../../Content';
 import LoginForm from '../../forms/Login';
 
 import { loginUser, recoverUser } from '../../../actions/user';
+import { appShape } from '../../../reducers/app';
 
 import './style.scss';
 
-
-const HomeScreen = ({ actions }) => (
-  <Content type="centered">
-    <LoginForm handleAuthentication={actions.loginUser} handlePasswordRecovery={actions.recoverUser} />
-  </Content>
-);
+const HomeScreen = ({ app, actions }) => {
+  const { showLoadingAnimation } = app;
+  return (
+    <Content type="centered">
+      <LoginForm
+        appIsLoading={showLoadingAnimation}
+        handleAuthentication={actions.loginUser}
+        handlePasswordRecovery={actions.recoverUser}
+      />
+    </Content>
+  );
+};
 
 HomeScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
+  app: PropTypes.shape(appShape).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -28,7 +36,12 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
+const mapStateToProps = state => ({
+  app: state.app,
+});
+
+
 export default connect(
-  () => ({}),
+  mapStateToProps,
   mapDispatchToProps,
 )(HomeScreen);
