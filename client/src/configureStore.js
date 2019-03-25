@@ -19,7 +19,12 @@ export const initialState = {
 };
 
 export default function configureStore(preloadedState = {}) {
-  const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; // eslint-disable-line no-underscore-dangle, max-len
+  let composeEnhancer = compose;
+  if (process.env.NODE_ENV === 'development' && window.__REDUX_DEVTOOLS_EXTENSION__) { // eslint-disable-line no-underscore-dangle, max-len
+    composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ // eslint-disable-line no-underscore-dangle
+      trace: true,
+    });
+  }
 
   const store = createStore(
     createRootReducer(history),
@@ -34,7 +39,7 @@ export default function configureStore(preloadedState = {}) {
 
   sagaMiddleware.run(createRootSaga);
 
-  if (module.hot) {
+  if (process.env.NODE_ENV === 'development' && module.hot) {
     module.hot.accept('./reducers', () => {
       store.replaceReducer(createRootReducer(history));
     });

@@ -2,6 +2,7 @@
 
 ### Development Set-up
 * Install Node.js LTS 10.14.1 using [nvm](https://github.com/creationix/nvm/blob/master/README.md)
+* `cp .env.development .env.development.local`
 * `npm install -g pnpm`
 * `pnpm install -g pnpm`
 * `pnpm i` https://github.com/pnpm/pnpm/issues/1360
@@ -31,7 +32,6 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ```
 {
-  "code": 201,
   "message": "ENTITY_CREATED"
   "data": {}
 }
@@ -39,9 +39,8 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ```
 {
-  "code": 200,
   "message": "OK"
-  "data": [{}]
+  "data": []
 }
 ```
 
@@ -49,7 +48,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ```
 {
-  "code": 404,
-  "error": "NOT_FOUND"
+  "message": "NOT_FOUND",
+  "error": "Long exception or error message"
 }
 ```

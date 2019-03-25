@@ -1,4 +1,3 @@
 {
-  "code": 404,
-  "error": "NOT_FOUND"
+  "errors": ["NOT_FOUND"],
 }

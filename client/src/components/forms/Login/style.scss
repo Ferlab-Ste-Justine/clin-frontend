@@ -1,36 +1,31 @@
 div#login {
 
-  width: fit-content;
   box-shadow: 10px 10px 30px -10px rgba(0,0,0,1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-  form.ant-form {
+  div.ant-form-item, button.ant-btn {
+    width: 100%;
+  }
+
+  div.ant-divider-vertical {
+    height: 100%;
+  }
+
+  div.ant-row-flex .left {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    justify-content: inherit;
+  }
 
-    div.ant-form-item {
-      width: 100%;
-    }
-
-    div.ant-divider-vertical {
-      height: 100%;
-    }
-
-    div.ant-row-flex .left {
-      display: flex;
-      flex-direction: column;
-      justify-content: inherit;
-    }
-
-    div.ant-row-flex .right {
-      display: flex;
-      flex-direction: column;
-      text-align: center;
-      justify-content: inherit;
-      margin-top: 20px;
-    }
-
+  div.ant-row-flex .right {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: inherit;
+    margin-top: 20px;
   }
 
 }

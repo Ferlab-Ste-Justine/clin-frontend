@@ -1,24 +1,32 @@
-// https://github.com/axios/axios
-
 import axios from 'axios';
 
-const auth = () => ({ });
-const invalidateAuth = () => ({ });
-const recoverAuth = () => ({ });
+const successCallback = payload => ({ payload });
+const errorCallback = error => ({ error });
 
-/*
-const data = { 'bar': 123 };
-const options = {
-  method: 'POST',
-  headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  data: qs.stringify(data),
-  url,
+const config = {
+  crossdomain: true,
+  withCredentials: true,
 };
-axios(options);
- */
+
+const login = (username, password) => axios.post('http://localhost:3000/auth', {
+  username,
+  password,
+}, config)
+  .then(successCallback)
+  .catch(errorCallback);
+
+const logout = () => axios.delete('http://localhost:3000/auth', config)
+  .then(successCallback)
+  .catch(errorCallback);
+
+export class ApiError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
 
 export default {
-  auth,
-  invalidateAuth,
-  recoverAuth,
+  login,
+  logout,
 };

@@ -6,9 +6,9 @@ import appReducer from './app';
 import userReducer from './user';
 
 const rootReducer = history => combineReducers({
-  router: connectRouter(history),
-  intl: intlReducer,
   app: appReducer,
+  intl: intlReducer,
+  router: connectRouter(history),
   user: userReducer,
 });
 

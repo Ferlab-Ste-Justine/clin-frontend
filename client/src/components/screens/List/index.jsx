@@ -1,11 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
-import { Button, Card, Table } from 'antd';
+import {
+  Button, Card, Table,
+} from 'antd';
+import { Link } from 'react-router-dom';
 
 import Content from '../../Content';
+import Footer from '../../Footer';
+import Header from '../../Header';
 
 import './style.scss';
+
 
 const data = [{
   key: '1',
@@ -24,6 +30,111 @@ const data = [{
   address: 'Sidney No. 1 Lake Park',
 }, {
   key: '4',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '5',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '6',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '7',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '8',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '9',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '10',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '11',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '12',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '13',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '14',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '15',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '16',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '17',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '18',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '19',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '20',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '21',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '22',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '23',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '24',
+  name: 'Jim Red',
+  age: 32,
+  address: 'London No. 2 Lake Park',
+}, {
+  key: '25',
   name: 'Jim Red',
   age: 32,
   address: 'London No. 2 Lake Park',
@@ -70,10 +181,7 @@ class ListScreen extends React.Component {
     });
   }
 
-
   render() {
-    // const { intl } = this.props;
-
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
@@ -85,6 +193,7 @@ class ListScreen extends React.Component {
         { text: 'Joe', value: 'Joe' },
         { text: 'Jim', value: 'Jim' },
       ],
+      render: text => (<Link to="/summary/123">{text}</Link>),
       filteredValue: filteredInfo.name || null,
       onFilter: (value, record) => record.name.includes(value),
       sorter: (a, b) => a.name.length - b.name.length,
@@ -110,16 +219,44 @@ class ListScreen extends React.Component {
     }];
 
     return (
-      <>
-        <Content>
-          <Card>
-            <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
-            <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>
-            <Button onClick={this.clearAll} htmlType="button">Clear filters and sorters</Button>
-            <Table columns={columns} dataSource={data} onChange={this.handleChange} />
-          </Card>
-        </Content>
-      </>
+      <Content>
+        <Header />
+        <Card>
+          <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
+          <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>
+          <Button onClick={this.clearAll} htmlType="button">Clear filters and sorters</Button>
+          <Table
+            columns={columns}
+            dataSource={data}
+            size="middle"
+            onChange={this.handleChange}
+            pagination={{
+              showTotal: (total, range) => (`${range[0]}-${range[1]} of ${total} items`),
+              pageSize: 5,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              defaultCurrent: 1,
+              total: 25,
+            }}
+
+            /* onRow={(record, rowIndex) => {
+              return {
+                onClick: (event) => {},       // click row
+                onDoubleClick: (event) => {}, // double click row
+                onContextMenu: (event) => {}  // right button click row
+                onMouseEnter: (event) => {}   // mouse enter row
+                onMouseLeave: (event) => {}   // mouse leave row
+              };
+            }}
+            onHeaderRow={(column) => {
+              return {
+                onClick: () => {},        // click header row
+              };
+            }} */
+          />
+        </Card>
+        <Footer />
+      </Content>
     );
   }
 }

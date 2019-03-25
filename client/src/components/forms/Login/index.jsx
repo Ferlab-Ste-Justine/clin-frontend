@@ -23,8 +23,6 @@ class LoginForm extends React.Component {
   }
 
   componentDidMount() {
-    // this.props.form.validateFields();
-    // this.props.form.resetFields();
     this.setState({
       animationClass: 'animated flipInX',
     });
@@ -60,9 +58,12 @@ class LoginForm extends React.Component {
   }
 
   render() {
-    const { form, intl } = this.props;
-    const { animationClass, submitLoading, forgotLoading } = this.state;
-    const formErrorIsRequired = intl.formatMessage({ id: 'common.form.error.isRequired' });
+    const { appIsLoading, form, intl } = this.props;
+    const { animationClass } = this.state;
+    const { submitLoading, forgotLoading } = this.state;
+    const submitLoadingState = submitLoading && appIsLoading;
+    const forgotLoadingState = forgotLoading && appIsLoading;
+    const formErrorIsRequired = intl.formatMessage({ id: 'form.error.isRequired' });
     const formTextForgotPassword = intl.formatMessage({ id: 'form.login.forgotPassword' });
     const formTextHowToRegister = intl.formatMessage({ id: 'form.login.howToRegister' });
     const usernameField = intl.formatMessage({ id: 'form.login.usernameField' });
@@ -74,9 +75,9 @@ class LoginForm extends React.Component {
 
     return (
       <Card id="login" className={animationClass}>
-        <Form onSubmit={this.handleSubmit}>
-          <Row type="flex" justify="space-between">
-            <Col className="left" span={11}>
+        <Row type="flex" justify="space-between">
+          <Col className="left" span={11}>
+            <Form onSubmit={this.handleSubmit}>
               <Form.Item
                 validateStatus={usernameError ? 'error' : ''}
                 help={usernameError || ''}
@@ -101,39 +102,40 @@ class LoginForm extends React.Component {
                 type="primary"
                 htmlType="submit"
                 icon="login"
-                loading={submitLoading}
-                disabled={(forgotLoading || hasErrors(form.getFieldsError()))}
+                loading={submitLoadingState}
+                disabled={(forgotLoadingState || hasErrors(form.getFieldsError()))}
               >
                 {submitButton}
               </Button>
-            </Col>
-            <Col>
-              <Divider type="vertical" />
-            </Col>
-            <Col className="right" span={10}>
-              <Typography.Paragraph type="secondary">
-                {formTextHowToRegister}
-              </Typography.Paragraph>
-              <Divider />
-              <Button
-                type="secondary"
-                htmlType="button"
-                icon="meh"
-                loading={forgotLoading}
-                disabled={(submitLoading || hasErrors(form.getFieldsError()))}
-                onClick={this.handleClick}
-              >
-                {formTextForgotPassword}
-              </Button>
-            </Col>
-          </Row>
-        </Form>
+            </Form>
+          </Col>
+          <Col>
+            <Divider type="vertical" />
+          </Col>
+          <Col className="right" span={10}>
+            <Typography.Paragraph type="secondary">
+              {formTextHowToRegister}
+            </Typography.Paragraph>
+            <Divider />
+            <Button
+              type="secondary"
+              htmlType="button"
+              icon="meh"
+              loading={forgotLoadingState}
+              disabled={submitLoadingState || forgotLoadingState}
+              onClick={this.handleClick}
+            >
+              {formTextForgotPassword}
+            </Button>
+          </Col>
+        </Row>
       </Card>
     );
   }
 }
 
 LoginForm.propTypes = {
+  appIsLoading: PropTypes.bool.isRequired,
   form: PropTypes.shape({}).isRequired,
   intl: PropTypes.shape({}).isRequired,
   handleAuthentication: PropTypes.func.isRequired,

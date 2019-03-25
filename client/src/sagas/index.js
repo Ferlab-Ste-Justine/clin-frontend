@@ -7,9 +7,8 @@ export default function* rootSaga() {
   yield all([
     appSagas.loadApplicationSaga(),
     appSagas.changeLanguageSaga(),
-    userSagas.authenticateUserSaga(),
-    userSagas.invalidateUserSaga(),
-    userSagas.userPasswordRecoverySaga(),
+    userSagas.userLoginSaga(),
+    userSagas.userLogoutSaga(),
   ]);
 }
 

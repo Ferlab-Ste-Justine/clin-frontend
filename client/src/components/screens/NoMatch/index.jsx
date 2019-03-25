@@ -7,16 +7,15 @@ import Content from '../../Content';
 
 import './style.scss';
 
+
 const NoMatchScreen = ({ intl }) => (
-  <>
-    <Content>
-      <Card className="animated rotateIn">
-        <Empty
-          description={intl.formatMessage({ id: 'screen.nomatch.404' })}
-        />
-      </Card>
-    </Content>
-  </>
+  <Content type="centered">
+    <Card className="animated rotateIn">
+      <Empty
+        description={intl.formatMessage({ id: 'screen.nomatch.404' })}
+      />
+    </Card>
+  </Content>
 );
 
 NoMatchScreen.propTypes = {
