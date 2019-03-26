@@ -36,7 +36,7 @@ Serves the static assets from the `build` directory.
 
 Update `docker.env`
 
-For Local Environment:
+For Local Environments:
 ```
 docker-compose up
 ```
