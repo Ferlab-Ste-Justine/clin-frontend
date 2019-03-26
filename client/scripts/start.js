@@ -100,7 +100,7 @@ checkBrowsers(paths.appPath, isInteractive)
         }
         console.log('\nRunning as ' + process.env.NODE_ENV + ' environment, using:');
         console.log(JSON.stringify(paths));
-        console.log(chalk.cyan('\nStarting the development server...\n'));
+        console.log(chalk.cyan('\nDevelopment Server started.\n'));
         openBrowser(urls.localUrlForBrowser);
       });
 
