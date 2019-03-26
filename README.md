@@ -17,6 +17,9 @@ Point your browser to [http://localhost:3000](http://localhost:3000) to view.
 Launches the test runner in the interactive watch mode.<br>
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
+
+### Production Set-up
+
 ##### `pnpm run build`
 Builds the app for production into the `build` directory, compatible with [these browsers](https://browserl.ist/?q=last+3+version%2C+not+op_mini+all%2C+not+%3C+1%25).<br>
 It correctly bundles React in production mode and optimizes the build for the best performance.
@@ -26,29 +29,14 @@ It correctly bundles React in production mode and optimizes the build for the be
 * [Advanced Configurations](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 * [Troubleshooting Failures to Minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
-### Payload
+##### `pnpm run serve`
+Serves the static assets from the `build` directory.
 
-##### Success
+## Docker Set-up
 
-```
-{
-  "message": "ENTITY_CREATED"
-  "data": {}
-}
-```
+Update `docker.env`
 
+For Local Environment:
 ```
-{
-  "message": "OK"
-  "data": []
-}
-```
-
-##### Error
-
-```
-{
-  "message": "NOT_FOUND",
-  "error": "Long exception or error message"
-}
+docker-compose up
 ```
