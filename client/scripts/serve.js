@@ -25,8 +25,7 @@ if (!checkRequiredFiles([paths.appBuildHtml])) {
   process.exit(1);
 }
 
-// Tools like Cloud9 rely on this.
-const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 2000;
+const PORT = parseInt(process.env.PORT, 10) || 2000;
 
 const expressOptions = {
   dotfiles  : 'ignore',
@@ -50,7 +49,7 @@ app.get('/*', function(req, res) {
 
 http.createServer({
   ignoreTrailingSlash: true,
-}, app).listen(DEFAULT_PORT);
+}, app).listen(PORT);
 
 /* @TODO
 https.createServer({
