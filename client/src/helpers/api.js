@@ -8,14 +8,14 @@ const config = {
   withCredentials: true,
 };
 
-const login = (username, password) => axios.post('http://localhost:3000/auth', {
+const login = (username, password) => axios.post(`${window.CLIN.apiBaseUrl}/auth`, {
   username,
   password,
 }, config)
   .then(successCallback)
   .catch(errorCallback);
 
-const logout = () => axios.delete('http://localhost:3000/auth', config)
+const logout = () => axios.delete(`${window.CLIN.apiBaseUrl}/auth`, config)
   .then(successCallback)
   .catch(errorCallback);
 
