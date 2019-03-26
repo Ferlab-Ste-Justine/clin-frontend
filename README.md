@@ -7,8 +7,6 @@
 * `pnpm install -g pnpm`
 * `pnpm i` https://github.com/pnpm/pnpm/issues/1360
 
-### Available Scripts
-
 ##### `pnpm start`
 Runs the app in development mode.<br>
 Point your browser to [http://localhost:3000](http://localhost:3000) to view.
@@ -32,11 +30,12 @@ It correctly bundles React in production mode and optimizes the build for the be
 ##### `pnpm run serve`
 Serves the static assets from the `build` directory.
 
-## Docker Set-up
+
+### Docker Set-up
 
 Update `docker.env`
 
-For Local Environments:
+##### Development Environment
 ```
 docker-compose up
 ```
