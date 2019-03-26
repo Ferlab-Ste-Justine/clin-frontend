@@ -7,5 +7,6 @@
 /client/build
 
 # .env
+.env
 .env.local
 .env.*.local
