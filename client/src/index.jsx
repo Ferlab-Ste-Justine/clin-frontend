@@ -6,6 +6,8 @@ import HotConnectedApp, { ConnectedApp } from './containers/App';
 import configureStore, { history, initialState } from './configureStore';
 
 import { unregister } from './serviceWorker';
+import './helpers/chromi';
+
 
 const store = configureStore(initialState);
 const App = module.hot ? HotConnectedApp : ConnectedApp;

@@ -1,32 +1,20 @@
-import axios from 'axios';
+// @NOTE Konami Code : up up down down left right left right b a
 
-const successCallback = payload => ({ payload });
-const errorCallback = error => ({ error });
+import clippy from 'clippyjs';
 
-const config = {
-  crossdomain: true,
-  withCredentials: true,
+let cursor = 0;
+const KONAMI_CODE = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+
+const activate = () => {
+  clippy.load('Clippy', (agent) => {
+    window.agent = agent;
+    agent.show();
+    agent.play('Greeting');
+    agent.speak('Je suis Chromi!');
+  });
 };
 
-const login = (username, password) => axios.post(`${window.CLIN.apiBaseUrl}/auth`, {
-  username,
-  password,
-}, config)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const logout = () => axios.delete(`${window.CLIN.apiBaseUrl}/auth`, config)
-  .then(successCallback)
-  .catch(errorCallback);
-
-export class ApiError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = this.constructor.name;
-  }
-}
-
-export default {
-  login,
-  logout,
-};
+document.addEventListener('keydown', (e) => {
+  cursor = (e.keyCode === KONAMI_CODE[cursor]) ? cursor + 1 : 0;
+  if (cursor === KONAMI_CODE.length) activate();
+});
