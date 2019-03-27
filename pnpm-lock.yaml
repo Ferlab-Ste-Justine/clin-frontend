@@ -13,6 +13,7 @@ dependencies:
   babel-preset-react-app: 7.0.2
   bfj: 6.1.1
   case-sensitive-paths-webpack-plugin: 2.2.0
+  clippyjs: 0.0.3
   connected-react-router: 6.3.2
   css-loader: 1.0.0
   dotenv: 6.0.0
@@ -2791,6 +2792,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-/xnt6Kml5XkyQUewwR8PvLq+1jk=
+  /clippyjs/0.0.3:
+    dependencies:
+      jquery: 3.3.1
+    dev: false
+    resolution:
+      integrity: sha512-i4sPaKbCA6PfXiwxNK35E1io6AXN7VGwEGZR9sE8RqOgXPNtRWKbFubmx87JwSuwIrdClO/rkTMjhl2ZyOHjug==
   /cliui/3.2.0:
     dependencies:
       string-width: 1.0.2
@@ -6539,6 +6546,10 @@ packages:
       node: '>=4.0.0'
     resolution:
       integrity: sha512-O7Uw+w/zEWgbL6OcHbyACKSj0PkQeUgmehdoXVSxt92QFCq4+1390Rwh5moI2K/OgC7D8RHRZqHZxT2husMJHA==
+  /jquery/3.3.1:
+    dev: false
+    resolution:
+      integrity: sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg==
   /js-base64/2.5.1:
     dev: false
     resolution:
@@ -12036,6 +12047,7 @@ specifiers:
   babel-preset-react-app: ^7.0.1
   bfj: 6.1.1
   case-sensitive-paths-webpack-plugin: 2.2.0
+  clippyjs: ^0.0.3
   connected-react-router: ^6.3.1
   css-loader: 1.0.0
   dotenv: 6.0.0

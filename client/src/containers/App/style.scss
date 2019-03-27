@@ -59,3 +59,29 @@ $use-all: true;
     height: 100%;
   }
 }
+
+.clippy, .clippy-balloon {
+  z-index: 10000;
+  position: absolute;
+}
+
+.clippy-content {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: .4em;
+  padding: 4px 8px;
+}
+
+.clippy-content:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color: #FFFFFF;
+  border-bottom: 0;
+  margin-left: -10px;
+  margin-bottom: -10px;
+}

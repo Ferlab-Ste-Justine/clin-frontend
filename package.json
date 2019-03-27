@@ -17,6 +17,7 @@
     "babel-preset-react-app": "^7.0.1",
     "bfj": "6.1.1",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
+    "clippyjs": "^0.0.3",
     "connected-react-router": "^6.3.1",
     "css-loader": "1.0.0",
     "dotenv": "6.0.0",
