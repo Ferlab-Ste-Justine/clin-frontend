@@ -2,6 +2,7 @@ import { applyMiddleware, compose, createStore } from 'redux';
 import { routerMiddleware } from 'connected-react-router';
 import createSagaMiddleware from 'redux-saga';
 import { cancel } from 'redux-saga/effects';
+import createSagaMonitor from '@clarketm/saga-monitor';
 import { createBrowserHistory } from 'history';
 
 import locales from './locales';
@@ -9,7 +10,17 @@ import createRootReducer from './reducers';
 import createRootSaga from './sagas';
 
 export const history = createBrowserHistory();
-const sagaMiddleware = createSagaMiddleware();
+const monitor = process.env.NODE_ENV === 'development' ? createSagaMonitor({
+  level: 'log',
+  verbose: false,
+  color: '#4000F4',
+  effectTrigger: true,
+  effectResolve: true,
+  effectReject: true,
+  effectCancel: true,
+  actionDispatch: true,
+}) : null;
+const sagaMiddleware = createSagaMiddleware({ sagaMonitor: monitor });
 
 export const initialState = {
   intl: {

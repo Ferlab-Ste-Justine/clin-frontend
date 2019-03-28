@@ -1,5 +1,6 @@
 dependencies:
   '@babel/core': 7.2.2
+  '@clarketm/saga-monitor': 2.0.1
   '@hot-loader/react-dom': 16.8.5
   '@svgr/webpack': 4.1.0
   animate-sass: 0.8.2
@@ -1042,6 +1043,15 @@ packages:
     dev: false
     resolution:
       integrity: sha512-aPvkXyU2SPOnztlgo8n9cEiXW755mgyvueUPcpStqdzoSPm0fjO0vQBjLkt3JKJW7ufikfcnMTTPsN1xaTsBPA==
+  /@clarketm/saga-monitor/2.0.1:
+    dependencies:
+      '@redux-saga/core': 1.0.2
+      '@redux-saga/is': 1.0.2
+    dev: false
+    peerDependencies:
+      redux-saga: '>=1.0'
+    resolution:
+      integrity: sha512-JlU2eRMdt/JLy37V5Q5KWASt+98vyapeLxiPJ+iT3NqCF+cdPVZpncrUxfBsY9o5U29aQe0+tvvS0Ysj+jrZ+A==
   /@cnakazawa/watch/1.0.3:
     dependencies:
       exec-sh: 0.3.2
@@ -3099,6 +3109,7 @@ packages:
     resolution:
       integrity: sha512-yPiS3fQd842RZDgo/TAKGgS0f3p2nxssF1H65DIZvZv0Od5CygP8puHXn3IQiM/39VAvgCbdaMQpresrbGgt9g==
   /core-js/1.2.7:
+    deprecated: 'core-js@<2.6.5 is no longer maintained. Please, upgrade to core-js@3 or at least to actual version of core-js@2.'
     dev: false
     resolution:
       integrity: sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
@@ -8978,7 +8989,7 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-      react-is: 16.8.5
+      react-is: 16.8.6
     dev: false
     resolution:
       integrity: sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9624,6 +9635,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-sudt2uq5P/2TznPV4Wtdi+Lnq3yaYW8LfvPKLM9BKD8jJNBkxMVyB0C9/GmVhLw7Jbdmndk/73n7XQGeN9A3QQ==
+  /react-is/16.8.6:
+    dev: false
+    resolution:
+      integrity: sha512-aUk3bHfZ2bRSVFFbbeVS4i+lNPZr3/WM5jT2J5omUVV1zzcs1nAaf3l51ctA5FFvCRbhrH0bdAsRRQddFJZPtA==
   /react-lazy-load/3.0.13:
     dependencies:
       eventlistener: 0.0.1
@@ -12034,6 +12049,7 @@ packages:
       integrity: sha1-a6MY6xaWFyf10oT46gA+jWFU0Mg=
 specifiers:
   '@babel/core': 7.2.2
+  '@clarketm/saga-monitor': ^2.0.1
   '@hot-loader/react-dom': ^16.8.3
   '@svgr/webpack': 4.1.0
   animate-sass: ^0.8.2
@@ -12101,7 +12117,7 @@ specifiers:
   react-transition-group: ^2.6.0
   redux: ^4.0.1
   redux-mock-store: ^1.5.3
-  redux-saga: ^1.0.1
+  redux-saga: ^1.0.2
   redux-saga-router: ^2.2.0
   resolve: 1.10.0
   sass-loader: 7.1.0

@@ -1,10 +1,13 @@
 version: '3'
 services:
-
   web:
     image: chusj/clin-frontend
-    build: .
     ports:
-      - "2000:2000"
+    - "2000:2000"
     deploy:
       replicas: 2
+    networks:
+    - webnet
+
+networks:
+  webnet:

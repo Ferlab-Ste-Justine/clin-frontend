@@ -4,6 +4,7 @@
   "versionName": "Prototype",
   "dependencies": {
     "@babel/core": "7.2.2",
+    "@clarketm/saga-monitor": "^2.0.1",
     "@hot-loader/react-dom": "^16.8.3",
     "@svgr/webpack": "4.1.0",
     "animate-sass": "^0.8.2",
@@ -71,7 +72,7 @@
     "react-transition-group": "^2.6.0",
     "redux": "^4.0.1",
     "redux-mock-store": "^1.5.3",
-    "redux-saga": "^1.0.1",
+    "redux-saga": "^1.0.2",
     "redux-saga-router": "^2.2.0",
     "resolve": "1.10.0",
     "sass-loader": "7.1.0",

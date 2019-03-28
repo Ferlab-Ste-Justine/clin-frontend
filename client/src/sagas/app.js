@@ -3,7 +3,7 @@ import { updateIntl } from 'react-intl-redux'; // eslint-ignore-line
 
 import * as actions from '../actions/type';
 import locales from '../locales';
-// import Api from '../helpers/api';
+
 
 export function* loadApp() {
   yield put({ type: actions.START_LOADING_ANIMATION });
