@@ -1,11 +1,11 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { all, put, takeLatest } from 'redux-saga/effects';
 import { updateIntl } from 'react-intl-redux'; // eslint-ignore-line
 
 import * as actions from '../actions/type';
 import locales from '../locales';
 
 
-export function* loadApp() {
+function* loadApp() {
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     yield put({ type: actions.APP_FETCH_SUCCEEDED });
@@ -17,7 +17,7 @@ export function* loadApp() {
   }
 }
 
-export function* changeLanguage(action) {
+function* changeLanguage(action) {
   try {
     yield put({ type: actions.APP_CHANGE_LANGUAGE_SUCCEEDED, language: action.payload.language });
     yield put(updateIntl({
@@ -37,7 +37,9 @@ function* watchChangeAppLanguage() {
   yield takeLatest(actions.APP_CHANGE_LANGUAGE_REQUESTED, changeLanguage);
 }
 
-export default {
-  changeLanguageSaga: watchChangeAppLanguage,
-  loadApplicationSaga: watchLoadApp,
-};
+export default function* watchedAppSagas() {
+  yield all([
+    watchLoadApp(),
+    watchChangeAppLanguage(),
+  ]);
+}

@@ -1,4 +1,4 @@
-import { put, takeLatest } from 'redux-saga/effects';
+import { all, put, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
@@ -74,9 +74,11 @@ function* watchUserFetch() {
   yield takeLatest(actions.USER_FETCH_REQUESTED, fetch);
 }
 
-export default {
-  userLoginSaga: watchUserLogin,
-  userLogoutSaga: watchUserLogout,
-  userRecoverSaga: watchUserRecover,
-  userFetchSaga: watchUserFetch,
-};
+export default function* watchedUserSagas() {
+  yield all([
+    watchUserLogin(),
+    watchUserRecover(),
+    watchUserFetch(),
+    watchUserLogout(),
+  ]);
+}
