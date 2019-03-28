@@ -1,40 +1,30 @@
-import { all } from 'redux-saga/effects';
+import {
+  all, call, spawn, delay,
+} from 'redux-saga/effects';
 
-import appSagas from './app';
-import userSagas from './user';
+import watchedAppSagas from './app';
+import watchedUserSagas from './user';
 
-export default function* rootSaga() {
-  yield all([
-    appSagas.loadApplicationSaga(),
-    appSagas.changeLanguageSaga(),
-    userSagas.userLoginSaga(),
-    userSagas.userLogoutSaga(),
-  ]);
-}
 
-/*
-const makeRestartable = (saga) => {
-    return function* () {
-        yield spawn(function* () {
-            while (true) {
-                try {
-                    yield call(saga);
-                    console.error('Unexpected rootSaga termination.', saga);
-                } catch (e) {
-                    console.error('Saga error, the saga will be restarted', e);
-                }
-                //yield delay(1);
-            }
-        })
-    };
+const makeRestartable = saga => function* restableSaga() {
+  yield spawn(function* spawnedRestableSaga() {
+    while (true) {
+      try {
+        yield call(saga);
+        console.error('Unexpected rootSaga termination.', saga); // eslint-disable-line no-console
+      } catch (e) {
+        console.error('Saga error, the saga will be restarted', e); // eslint-disable-line no-console
+      }
+      yield delay(1000);
+    }
+  });
 };
 
 const rootSagas = [
-    appSagas.loadApplicationSaga,
-    appSagas.changeLanguageSaga,
+  watchedAppSagas,
+  watchedUserSagas,
 ].map(makeRestartable);
 
 export default function* rootSaga() {
-    yield rootSagas.map(saga => call(saga));
+  yield all(rootSagas.map(saga => call(saga)));
 }
-*/
