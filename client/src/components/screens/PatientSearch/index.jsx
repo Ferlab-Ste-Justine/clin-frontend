@@ -7,6 +7,7 @@ import {
 import { Link } from 'react-router-dom';
 
 import Header from '../../Header';
+import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 
@@ -221,6 +222,7 @@ class ListScreen extends React.Component {
     return (
       <Content>
         <Header />
+        <Navigation />
         <Card>
           <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
           <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>
