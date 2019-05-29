@@ -430,19 +430,23 @@ module.exports = function (webpackEnv) {
                 {
                   javascriptEnabled: true,
                   modifyVars: {
-                    'primary-color': '#1890ff', // primary color for all components
-                    'link-color': '#1890ff', // link color
-                    'success-color': '#52c41a', // success state color
-                    'warning-color': '#faad14', // warning state color
-                    'error-color': '#f5222d', // error state color
-                    'font-size-base': '14px', // major text font size
-                    'heading-color': 'rgba(0, 0, 0, .85)', // heading text color
-                    'text-color': 'rgba(0, 0, 0, .65)', // major text color
-                    'text-color-secondary': 'rgba(0, 0, 0, .45)', // secondary text color
-                    'disabled-color': 'rgba(0, 0, 0, .25)', // disable state color
-                    'border-radius-base': '4px', // major border radius
-                    'border-color-base': '#d9d9d9', // major border color
-                    'box-shadow-base': '0 2px 8px rgba(0, 0, 0, .15)', // major shadow for layers
+                    // hack: 'true; @import "../../../../../../../client/src/containers/App/theme.less";', // Override with less file
+                    'primary-color': '#4795CA', // primary color for all components
+                    'secondary-color': '#364B93', // secondary color for all components
+                    'success-color': '#A0D911', // success state color
+                    'info-color': '#4795CA', // info state color
+                    'warning-color': '#FAAD14', // warning state color
+                    'error-color': '#D41A24', // error state color
+                    'disabled-color': '#AAAAAA', // disable state color
+                    'font-size-base': '12px', // major text font size
+                    'highlight-color': '#D41A24', // form errors
+                    'processing-color': '#364B93', // progress color
+                    'heading-color': '#FFFFFF', // header text color
+                    'layout-header-background': '#364B93', // header background color
+                    'text-color': '#222222', // major text color
+                    'text-color-secondary': '#AAAAAA', // secondary text color
+                    'text-color-warning': '#FAAD14',
+                    'text-color-danger': '#D41A24',
                   },
                 },
               ),

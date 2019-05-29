@@ -23,6 +23,8 @@ class LoginForm extends React.Component {
   }
 
   componentDidMount() {
+    const { form } = this.props;
+    form.validateFields();
     this.setState({
       animationClass: 'animated flipInX',
     });
@@ -64,6 +66,7 @@ class LoginForm extends React.Component {
     const submitLoadingState = submitLoading && appIsLoading;
     const forgotLoadingState = forgotLoading && appIsLoading;
     const formErrorIsRequired = intl.formatMessage({ id: 'form.error.isRequired' });
+    const formErrorIsNotEmail = intl.formatMessage({ id: 'form.error.isNotEmail' });
     const formTextForgotPassword = intl.formatMessage({ id: 'form.login.forgotPassword' });
     const formTextHowToRegister = intl.formatMessage({ id: 'form.login.howToRegister' });
     const usernameField = intl.formatMessage({ id: 'form.login.usernameField' });
@@ -83,9 +86,12 @@ class LoginForm extends React.Component {
                 help={usernameError || ''}
               >
                 {form.getFieldDecorator('username', {
-                  rules: [{ required: true, message: formErrorIsRequired }],
+                  rules: [
+                    { required: true, message: formErrorIsRequired },
+                    { type: 'email', message: formErrorIsNotEmail },
+                  ],
                 })(
-                  <Input prefix={<Icon type="user" />} placeholder={usernameField} autoComplete="off" />,
+                  <Input prefix={<Icon type="mail" />} placeholder={usernameField} autoComplete="off" />,
                 )}
               </Form.Item>
               <Form.Item

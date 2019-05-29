@@ -8,8 +8,8 @@ $use-all: true;
 }
 
 #root:after {
-  background-image: url(/images/wallpaper.jpg);
-  background-size: cover;
+  // background-image: url(/images/wallpaper.jpg);
+  // background-size: cover;
   content:'';
   position:absolute;
   top:0;
@@ -32,10 +32,20 @@ $use-all: true;
   z-index: 1;
 }
 
-#header {
+header#header {
+  padding: 0 15px;
+  h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
+    line-height: unset;
+  }
 }
 
-#footer {
+#navigation {
+  background-color: #B0C4DE;
+  padding: 10px 10px 15px 10px;
+}
+
+footer#footer {
+  padding: 10px 15px;
 }
 
 #container {
@@ -54,10 +64,24 @@ $use-all: true;
  }
 
 #stretched-screen {
-  justify-content: space-between;
   div.ant-card {
     height: 100%;
   }
+}
+
+#stretched-centered-screen {
+  div.ant-card {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .clippy, .clippy-balloon {

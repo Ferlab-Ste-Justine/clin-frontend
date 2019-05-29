@@ -6,12 +6,13 @@ import {
 } from 'antd';
 import { Link } from 'react-router-dom';
 
+import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import Header from '../../Header';
 import DataList from '../../DataList';
 
 import './style.scss';
+
 
 const SummaryScreen = ({ intl }) => ( // eslint-disable-line
   <Content>

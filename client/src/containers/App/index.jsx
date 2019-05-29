@@ -14,8 +14,8 @@ import './style.scss';
 
 import PrivateRoute from '../PrivateRoute';
 import HomeScreen from '../../components/screens/Home';
-import ListScreen from '../../components/screens/List';
-import SummaryScreen from '../../components/screens/Summary';
+import PatientSearchScreen from '../../components/screens/PatientSearch';
+import PatientScreen from '../../components/screens/Patient';
 import NoMatchScreen from '../../components/screens/NoMatch';
 
 import { loadApp } from '../../actions/app';
@@ -40,15 +40,15 @@ export class App extends React.Component {
             <Layout id="layout" key="layout">
               <ConnectedRouter key="connected-router" history={history}>
                 <Switch key="switch">
-                  <PrivateRoute exact path="/list" Component={ListScreen} key="route-list" />
-                  <PrivateRoute path="/summary/:id" Component={SummaryScreen} key="route-summary" />
+                  <PrivateRoute path="/patient/:id" Component={PatientScreen} key="route-patient" />
+                  <PrivateRoute exact path="/patient/search" Component={PatientSearchScreen} key="route-patient-search" />
                   <Route
                     exact
                     path="/"
                     render={props => (
                       !user.username
                         ? <HomeScreen {...props} />
-                        : <Redirect to="/list" />
+                        : <Redirect to="/patient/search" />
                     )}
                     key="route-home"
                   />

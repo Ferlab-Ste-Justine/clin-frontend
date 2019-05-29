@@ -1,72 +1,43 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-
 import React from 'react';
 import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-// import { FormattedMessage } from 'react-intl';
 import {
-  Layout, Dropdown, Typography, Menu, Icon, Row, Col,
+  Layout, Typography, Row, Col,
 } from 'antd';
-
-import { logoutUser } from '../actions/user';
-import { userShape } from '../reducers/user';
+import { Mobile, Tablet, Desktop } from '../containers/Responsive';
 
 
-const menu = actions => (
-  <Menu>
-    <Menu.Item key="submenu:logout" onClick={actions.logoutUser}>
-      <span>
-        <Icon type="logout" />
-        {' '}
-Logout
-      </span>
-    </Menu.Item>
-  </Menu>
-);
-
-const Header = ({ actions, user }) => (
-  <Layout.Header id="header">
-    <Row type="flex" justify="space-between">
-      <Col span={6} align="start" style={{ marginTop: 9 }}>
-        <Typography.Title style={{ color: 'white' }}>
-          <span>
-            <Icon type="code" />
-            {' CLIN'}
-          </span>
-        </Typography.Title>
-      </Col>
-      <Col span={6} align="end">
-        <Dropdown overlay={menu(actions)}>
-          <a className="ant-dropdown-link" href="#">
-            <span className="ant-dropdown-link">
-              <Icon type="user" />
-              {` ${user.username} `}
-              <Icon type="down" />
-            </span>
-          </a>
-        </Dropdown>
-      </Col>
-    </Row>
-  </Layout.Header>
-);
-
-Header.propTypes = {
-  actions: PropTypes.shape({}).isRequired,
-  user: PropTypes.shape(userShape).isRequired,
+const Header = ({ intl }) => {
+  const title = intl.formatMessage({ id: 'header.title' });
+  return (
+    <Layout.Header id="header">
+      <Row type="flex">
+        <Col span={19}>
+          <Desktop><Typography.Title level={1}>{ title }</Typography.Title></Desktop>
+          <Tablet><Typography.Title level={2}>{ title }</Typography.Title></Tablet>
+          <Mobile><Typography.Title level={4}>{ title }</Typography.Title></Mobile>
+        </Col>
+        <Col span={3} align="end">
+          <img alt="Centre hospitalier universitaire Sainte-Justine" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+CHUSJ+]" />
+        </Col>
+        <Col span={2} align="end">
+          <img alt="Ministère de la Santé et des Services sociaux" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+MIN.+SANTE+]" />
+        </Col>
+      </Row>
+    </Layout.Header>
+  );
 };
 
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({
-    logoutUser,
-  }, dispatch),
-});
+Header.propTypes = {
+  intl: PropTypes.shape({}).isRequired,
+};
 
 const mapStateToProps = state => ({
-  user: state.user,
+  intl: state.intl,
 });
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
-)(Header);
+  {},
+)(injectIntl(Header));
