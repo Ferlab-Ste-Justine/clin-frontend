@@ -13,15 +13,15 @@ const Header = ({ intl }) => {
   return (
     <Layout.Header id="header">
       <Row type="flex">
-        <Col span={19}>
+        <Col span={17}>
           <Desktop><Typography.Title level={1}>{ title }</Typography.Title></Desktop>
           <Tablet><Typography.Title level={2}>{ title }</Typography.Title></Tablet>
           <Mobile><Typography.Title level={4}>{ title }</Typography.Title></Mobile>
         </Col>
-        <Col span={3} align="end">
+        <Col span={4} align="end">
           <img alt="Centre hospitalier universitaire Sainte-Justine" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+CHUSJ+]" />
         </Col>
-        <Col span={2} align="end">
+        <Col span={3} align="end">
           <img alt="Ministère de la Santé et des Services sociaux" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+MIN.+SANTE+]" />
         </Col>
       </Row>
