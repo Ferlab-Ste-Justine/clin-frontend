@@ -5,7 +5,7 @@ export const fetchPatient = uid => ({
   payload: uid,
 });
 
-export const searchPatient = (query) => ({
+export const searchPatient = query => ({
   type: actions.PATIENT_SEARCH_REQUESTED,
   payload: {
     query,
