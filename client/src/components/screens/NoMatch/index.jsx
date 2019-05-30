@@ -12,7 +12,7 @@ import './style.scss';
 
 
 const NoMatchScreen = ({ intl }) => (
-  <Content type="centered">
+  <Content type="stretched-centered">
     <Header />
     <Navigation />
     <Card className="animated rotateIn">
