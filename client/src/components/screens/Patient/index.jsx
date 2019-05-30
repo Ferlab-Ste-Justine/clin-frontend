@@ -7,6 +7,7 @@ import {
 import { Link } from 'react-router-dom';
 
 import Header from '../../Header';
+import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import DataList from '../../DataList';
@@ -17,6 +18,7 @@ import './style.scss';
 const SummaryScreen = ({ intl }) => ( // eslint-disable-line
   <Content>
     <Header />
+    <Navigation />
     <Layout.Content style={{ backgroundColor: '#B0C4DE', padding: 10, paddingBottom: 15 }}>
       <Row type="flex" justify="space-between" align="middle">
         <Col span={6} align="start">

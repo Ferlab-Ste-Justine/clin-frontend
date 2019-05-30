@@ -430,23 +430,23 @@ module.exports = function (webpackEnv) {
                 {
                   javascriptEnabled: true,
                   modifyVars: {
-                    // hack: 'true; @import "../../../../../../../client/src/containers/App/theme.less";', // Override with less file
-                    'primary-color': '#4795CA', // primary color for all components
-                    'secondary-color': '#364B93', // secondary color for all components
-                    'success-color': '#A0D911', // success state color
-                    'info-color': '#4795CA', // info state color
-                    'warning-color': '#FAAD14', // warning state color
-                    'error-color': '#D41A24', // error state color
-                    'disabled-color': '#AAAAAA', // disable state color
-                    'font-size-base': '12px', // major text font size
-                    'highlight-color': '#D41A24', // form errors
+                    'primary-color': '#364B93', // primary color for all components
+                    'secondary-color': '#4795CA', // secondary color for all components
                     'processing-color': '#364B93', // progress color
-                    'heading-color': '#FFFFFF', // header text color
-                    'layout-header-background': '#364B93', // header background color
+                    'success-color': '#77a309', // success state color
+                    'info-color': '#4795CA', // info state color
                     'text-color': '#222222', // major text color
-                    'text-color-secondary': '#AAAAAA', // secondary text color
-                    'text-color-warning': '#FAAD14',
-                    'text-color-danger': '#D41A24',
+                    'text-color-secondary': '#444444', // secondary text color
+                    'warning-color': '#FAAD14', // warning state color
+                    'text-color-warning': '#c47309',
+                    'error-color': '#D41A24', // error state color
+                    'text-color-danger': '#991219',
+                    'disabled-color': '#AAAAAA', // disable state color
+                    'item-active-bg': '#eff8ff',
+                    'item-hover-bg': '#eff8ff',
+                    'font-size-base': '12px',
+                    'font-size-sm': '10px',
+                    // hack: 'true; @import "../../../../../../../client/src/containers/App/theme.less";', // Override with less file
                   },
                 },
               ),
