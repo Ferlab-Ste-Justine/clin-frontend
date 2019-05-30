@@ -430,19 +430,23 @@ module.exports = function (webpackEnv) {
                 {
                   javascriptEnabled: true,
                   modifyVars: {
-                    'primary-color': '#1890ff', // primary color for all components
-                    'link-color': '#1890ff', // link color
-                    'success-color': '#52c41a', // success state color
-                    'warning-color': '#faad14', // warning state color
-                    'error-color': '#f5222d', // error state color
-                    'font-size-base': '14px', // major text font size
-                    'heading-color': 'rgba(0, 0, 0, .85)', // heading text color
-                    'text-color': 'rgba(0, 0, 0, .65)', // major text color
-                    'text-color-secondary': 'rgba(0, 0, 0, .45)', // secondary text color
-                    'disabled-color': 'rgba(0, 0, 0, .25)', // disable state color
-                    'border-radius-base': '4px', // major border radius
-                    'border-color-base': '#d9d9d9', // major border color
-                    'box-shadow-base': '0 2px 8px rgba(0, 0, 0, .15)', // major shadow for layers
+                    'primary-color': '#364B93', // primary color for all components
+                    'secondary-color': '#4795CA', // secondary color for all components
+                    'processing-color': '#364B93', // progress color
+                    'success-color': '#77a309', // success state color
+                    'info-color': '#4795CA', // info state color
+                    'text-color': '#222222', // major text color
+                    'text-color-secondary': '#444444', // secondary text color
+                    'warning-color': '#FAAD14', // warning state color
+                    'text-color-warning': '#c47309',
+                    'error-color': '#D41A24', // error state color
+                    'text-color-danger': '#991219',
+                    'disabled-color': '#AAAAAA', // disable state color
+                    'item-active-bg': '#eff8ff',
+                    'item-hover-bg': '#eff8ff',
+                    'font-size-base': '12px',
+                    'font-size-sm': '10px',
+                    // hack: 'true; @import "../../../../../../../client/src/containers/App/theme.less";', // Override with less file
                   },
                 },
               ),

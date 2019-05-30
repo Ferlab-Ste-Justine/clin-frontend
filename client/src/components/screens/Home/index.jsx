@@ -1,9 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Card } from 'antd';
 
+import Header from '../../Header';
+import Navigation from '../../Navigation';
 import Content from '../../Content';
+import Footer from '../../Footer';
 import LoginForm from '../../forms/Login';
 
 import { loginUser, recoverUser } from '../../../actions/user';
@@ -11,15 +16,20 @@ import { appShape } from '../../../reducers/app';
 
 import './style.scss';
 
-const HomeScreen = ({ app, actions }) => {
+const HomeScreen = ({ app, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
   return (
-    <Content type="centered">
-      <LoginForm
-        appIsLoading={showLoadingAnimation}
-        handleAuthentication={actions.loginUser}
-        handlePasswordRecovery={actions.recoverUser}
-      />
+    <Content type="stretched-centered">
+      <Header />
+      <Navigation />
+      <Card>
+        <LoginForm
+          appIsLoading={showLoadingAnimation}
+          handleAuthentication={actions.loginUser}
+          handlePasswordRecovery={actions.recoverUser}
+        />
+      </Card>
+      <Footer />
     </Content>
   );
 };
@@ -27,6 +37,7 @@ const HomeScreen = ({ app, actions }) => {
 HomeScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   app: PropTypes.shape(appShape).isRequired,
+  intl: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -38,10 +49,11 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   app: state.app,
+  intl: state.intl,
 });
 
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(HomeScreen);
+)(injectIntl(HomeScreen));
