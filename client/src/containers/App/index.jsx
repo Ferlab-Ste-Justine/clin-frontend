@@ -40,8 +40,8 @@ export class App extends React.Component {
             <Layout id="layout" key="layout">
               <ConnectedRouter key="connected-router" history={history}>
                 <Switch key="switch">
-                  <PrivateRoute path="/patient/:uid" Component={PatientScreen} key="route-patient" />
                   <PrivateRoute exact path="/patient/search" Component={PatientSearchScreen} key="route-patient-search" />
+                  <PrivateRoute path="/patient/:uid" Component={PatientScreen} key="route-patient" />
                   <Route
                     exact
                     path="/"

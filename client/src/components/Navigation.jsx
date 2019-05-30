@@ -64,15 +64,15 @@ const Navigation = ({
   app, intl, user, actions,
 }) => (
   <Layout.Content id="navigation">
-    <Row type="flex" justify="space-between" align="middle">
+    <Row type="flex" justify="space-between">
       <Col span={16} align="start">
         { user.username !== null && navigationMenu(intl, actions)}
       </Col>
-      <Col span={4}>
+      <Col span={8} align="end">
         {user.username !== null && (
           <Dropdown overlay={userMenu(intl, actions)}>
             { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a className="ant-dropdown-link">
+            <a className="ant-dropdown-link" style={{ paddingRight: '25px' }}>
               <span className="ant-dropdown-link">
                 <Icon type="user" />
                 {` ${user.username} `}
@@ -81,8 +81,6 @@ const Navigation = ({
             </a>
           </Dropdown>
         )}
-      </Col>
-      <Col span={4} align="end">
         {app.locale.lang !== null && (
           <Dropdown overlay={languageMenu(intl, actions)}>
             { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
