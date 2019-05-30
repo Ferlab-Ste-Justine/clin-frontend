@@ -194,7 +194,7 @@ class ListScreen extends React.Component {
         { text: 'Joe', value: 'Joe' },
         { text: 'Jim', value: 'Jim' },
       ],
-      render: text => (<Link to="/summary/123">{text}</Link>),
+      render: text => (<Link to="/patient/123">{text}</Link>),
       filteredValue: filteredInfo.name || null,
       onFilter: (value, record) => record.name.includes(value),
       sorter: (a, b) => a.name.length - b.name.length,
@@ -222,6 +222,7 @@ class ListScreen extends React.Component {
     return (
       <Content>
         <Header />
+        <Navigation />
         <Card>
           <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
           <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>

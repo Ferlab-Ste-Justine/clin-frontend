@@ -27,7 +27,7 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
         <Col span={10} align="center">
           <Radio.Group>
             <Radio.Button>
-              <Link to="/summary/122">
+              <Link to="/patient/122">
                 <Icon type="left" />
                 {' '}
                   MRN:483726
@@ -35,14 +35,14 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
             </Radio.Button>
             <Radio.Button disabled>Search Results 1 of 25</Radio.Button>
             <Radio.Button>
-              <Link to="/summary/124">
+              <Link to="/patient/124">
                   MRN:483726
                 <Icon type="right" />
               </Link>
             </Radio.Button>
           </Radio.Group>
         </Col>
-        <Col span={6} align="end"><Link to="/list"><Button icon="left">Back to Search</Button></Link></Col>
+        <Col span={6} align="end"><Link to="/patient/search"><Button icon="left">Back to Search</Button></Link></Col>
       </Row>
     </Layout.Content>
     <Card>
