@@ -1,6 +1,10 @@
 $use-all: true;
 @import '/../../../../node_modules/animate-sass/animate';
 
+$header-color: #364B93;
+$navigation-color: #c6d6ef;
+$footer-color: #f5f5f5;
+
 #root {
   display: block;
   width: 100vw;
@@ -34,18 +38,21 @@ $use-all: true;
 
 header#header {
   padding: 0 15px;
+  background-color: $header-color;
   h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
     line-height: unset;
+    color: #ffffff;
   }
 }
 
 #navigation {
-  background-color: #B0C4DE;
+  background-color: $navigation-color;
   padding: 10px 10px 15px 10px;
 }
 
 footer#footer {
   padding: 10px 15px;
+  background-color: $footer-color;
 }
 
 #container {
