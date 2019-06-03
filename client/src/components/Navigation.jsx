@@ -11,12 +11,13 @@ import { appShape } from '../reducers/app';
 import { changeLanguage } from '../actions/app';
 import { userShape } from '../reducers/user';
 import { logoutUser } from '../actions/user';
+import navigate from '../actions/router';
 
 
-const navigationMenu = (intl, router) => {
+const navigationMenu = (intl, router, actions) => {
   const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
   return (
-    <Menu mode="horizontal" selectedKeys={[router.location.pathname]}>
+    <Menu onClick={(e) => { actions.navigate(e.key); }} mode="horizontal" selectedKeys={[router.location.pathname]}>
       <Menu.Item key="/patient/search">
         <Icon type="search" />
         {patientSearch}
@@ -118,6 +119,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     logoutUser,
     changeLanguage,
+    navigate,
   }, dispatch),
 });
 
