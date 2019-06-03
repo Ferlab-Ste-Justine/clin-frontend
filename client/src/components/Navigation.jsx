@@ -13,12 +13,20 @@ import { userShape } from '../reducers/user';
 import { logoutUser } from '../actions/user';
 
 
-const navigationMenu = () => (
-  <Menu />
-);
+const navigationMenu = (intl, router) => {
+  const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
+  return (
+    <Menu mode="horizontal" selectedKeys={[router.location.pathname]}>
+      <Menu.Item key="/patient/search">
+        <Icon type="search" />
+        {patientSearch}
+      </Menu.Item>
+    </Menu>
+  );
+};
 
 const userMenu = (intl, actions) => {
-  const logout = intl.formatMessage({ id: 'navigation.logout' });
+  const logout = intl.formatMessage({ id: 'navigation.user.logout' });
 
   return (
     <Menu>
@@ -61,12 +69,12 @@ const languageMenu = (intl, actions) => {
 };
 
 const Navigation = ({
-  app, intl, user, actions,
+  app, intl, user, router, actions,
 }) => (
   <Layout.Content id="navigation">
-    <Row type="flex" justify="space-between">
+    <Row type="flex" justify="space-between" align="middle">
       <Col span={16} align="start">
-        { user.username !== null && navigationMenu(intl, actions)}
+        { user.username !== null && navigationMenu(intl, router, actions)}
       </Col>
       <Col span={8} align="end">
         {user.username !== null && (
@@ -103,6 +111,7 @@ Navigation.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
   intl: PropTypes.shape({}).isRequired,
   user: PropTypes.shape(userShape).isRequired,
+  router: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -116,6 +125,7 @@ const mapStateToProps = state => ({
   app: state.app,
   intl: state.intl,
   user: state.user,
+  router: state.router,
 });
 
 export default connect(

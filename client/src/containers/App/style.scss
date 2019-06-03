@@ -48,6 +48,16 @@ header#header {
 #navigation {
   background-color: $navigation-color;
   padding: 10px 10px 15px 10px;
+  ul.ant-menu {
+    background-color: $navigation-color;
+    top: unset;
+    line-height: unset;
+    border-bottom: 2px solid $navigation-color;
+    li.ant-menu-item {
+      color: $header-color;
+      padding: 0px 12px 0px 5px;
+    }
+  }
 }
 
 footer#footer {
