@@ -47,7 +47,7 @@ header#header {
 
 #navigation {
   background-color: $navigation-color;
-  padding: 10px 10px 15px 10px;
+  padding: 12px 10px 15px 10px;
   ul.ant-menu {
     background-color: $navigation-color;
     top: unset;
@@ -99,6 +99,24 @@ h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+
+div.datalist {
+  height: auto;
+  div.ant-card-body {
+    padding: 4px 10px 2px 11px;
+  }
+}
+
+
+div.ant-page-header {
+  padding: 0px;
+  span.ant-page-header-title-view-extra {
+    top: 5px;
+    right: 0px;
+    bottom: 10px;
+  }
 }
 
 .clippy, .clippy-balloon {
