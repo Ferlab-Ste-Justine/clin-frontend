@@ -5,10 +5,10 @@ import {
 } from 'antd';
 
 const DataList = (props) => {
-  const { title, dataSource } = props;
+  const { title, dataSource, style } = props;
   const header = (<Typography.Title level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
   return (
-    <Card title={header} type="inner" size="small" hoverable>
+    <Card className="datalist" title={header} type="inner" size="small" hoverable style={style}>
       <List
         size="small"
         dataSource={dataSource}
@@ -32,6 +32,11 @@ const DataList = (props) => {
 DataList.propTypes = {
   title: PropTypes.string.isRequired,
   dataSource: PropTypes.shape([{ label: PropTypes.string.isRequired, value: PropTypes.any }]).isRequired,
+  style: PropTypes.shape({}),
+};
+
+DataList.defaultProps = {
+  style: {},
 };
 
 export default DataList;

@@ -4,6 +4,8 @@ import {
 
 import watchedAppSagas from './app';
 import watchedUserSagas from './user';
+import watchedPatientSagas from './patient';
+import watchedRouterSagas from './router';
 
 
 const makeRestartable = saga => function* restableSaga() {
@@ -23,6 +25,8 @@ const makeRestartable = saga => function* restableSaga() {
 const rootSagas = [
   watchedAppSagas,
   watchedUserSagas,
+  watchedPatientSagas,
+  watchedRouterSagas,
 ].map(makeRestartable);
 
 export default function* rootSaga() {
