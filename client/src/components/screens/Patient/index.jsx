@@ -97,13 +97,13 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
           </Row>
           <br />
           <br />
-          <br />
           <Row type="flex">
             <Typography.Title level={4}>
                 Consultation(s) génétique(s)
             </Typography.Title>
             <Table
               style={{ width: '100%' }}
+              pagination={false}
               size="small"
               dataSource={[{
                 uid: 'CI930983',
@@ -133,12 +133,15 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
               }]}
             />
           </Row>
+          <br />
+          <br />
           <Row type="flex">
             <Typography.Title level={4}>
                 Requête(s)
             </Typography.Title>
             <Table
               style={{ width: '100%' }}
+              pagination={false}
               size="small"
               dataSource={[{
                 uid: 'SR000002',
@@ -190,12 +193,15 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
               ]}
             />
           </Row>
+          <br />
+          <br />
           <Row type="flex">
             <Typography.Title level={4}>
                 Échantillon(s)
             </Typography.Title>
             <Table
               style={{ width: '100%' }}
+              pagination={false}
               size="small"
               dataSource={[{
                 uid: 'SP000002',
@@ -234,6 +240,7 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
             </Typography.Title>
             <Table
               style={{ width: '100%' }}
+              pagination={false}
               size="small"
               dataSource={[{
                 ontologie: 'HPO',
@@ -293,12 +300,15 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
               ]}
             />
           </Row>
+          <br />
+          <br />
           <Row type="flex">
             <Typography.Title level={4}>
                 Indication(s)
             </Typography.Title>
             <Table
               style={{ width: '100%' }}
+              pagination={false}
               size="small"
               dataSource={[{
                 notes: 'Suspicion d\'une mutation a transmission récessive qui atteint le tissus musculaire',
@@ -316,12 +326,15 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
               }]}
             />
           </Row>
+          <br />
+          <br />
           <Row type="flex">
             <Typography.Title level={4}>
               Observation(s) générale(s)
             </Typography.Title>
             <Table
               style={{ width: '100%' }}
+              pagination={false}
               size="small"
               dataSource={[{
                 /* eslint-disable-next-line */
@@ -340,6 +353,8 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
               }]}
             />
           </Row>
+          <br />
+          <br />
           <Row type="flex">
             <br />
             <Col span={24}>
@@ -369,12 +384,14 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
               />
             </Col>
           </Row>
+          <br />
           <Row type="flex">
             <Typography.Title level={4}>
               Histoire familiale
             </Typography.Title>
             <Table
               style={{ width: '100%' }}
+              pagination={false}
               size="small"
               dataSource={[{
                 notes: 'Mariage consanguin des parents (cousins)',
