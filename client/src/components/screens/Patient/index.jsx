@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import {
-  Card, Col, Row, Layout, Radio, Icon, Empty, Button, Tabs, PageHeader, Typography, Table,
+  Card, Col, Row, Layout, Radio, Icon, Button, Tabs, PageHeader, Typography, Table,
 } from 'antd';
 import { Link } from 'react-router-dom';
 
@@ -42,7 +42,13 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
             </Radio.Button>
           </Radio.Group>
         </Col>
-        <Col span={6} align="end"><Link to="/patient/search"><Button type="primary" icon="left">Back to Search</Button></Link></Col>
+        <Col span={6} align="end">
+          <Link to="/patient/search">
+            <Button type="primary" icon="left">
+            Back to Search
+            </Button>
+          </Link>
+        </Col>
       </Row>
     </Layout.Content>
     <Card className="entity" style={{ height: '100%' }}>
@@ -52,6 +58,7 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
       />
       <Tabs defaultActiveKey="patient" onChange={() => {}}>
         <Tabs.TabPane tab="Patient" key="patient">
+          <br />
           <Row type="flex" gutter="32">
             <Col span={12}>
               <DataList
@@ -220,9 +227,174 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
           </Row>
         </Tabs.TabPane>
         <Tabs.TabPane tab="Clinique" key="clinique">
-          <Card>
-            <Empty />
-          </Card>
+          <br />
+          <Row type="flex">
+            <Typography.Title level={4}>
+                Signe(s) clinique(s)
+            </Typography.Title>
+            <Table
+              style={{ width: '100%' }}
+              size="small"
+              dataSource={[{
+                ontologie: 'HPO',
+                code: 'HP:0003202',
+                term: 'Skeletal muscle atrophy',
+                notes: '',
+                observed: 'Oui',
+                consultation: '2019-12-01',
+                apparition: '31-03-2019',
+              },
+              {
+                ontologie: 'HPO',
+                code: 'HP:0003202',
+                term: 'Skeletal muscle atrophy',
+                notes: '',
+                observed: 'Oui',
+                consultation: '2019-12-01',
+                apparition: '31-03-2019',
+              }]}
+              columns={[{
+                title: 'Ontologie',
+                dataIndex: 'ontologie',
+                key: 'ontologie',
+              },
+              {
+                title: 'Code',
+                dataIndex: 'code',
+                key: 'code',
+              },
+              {
+                title: 'Terme',
+                dataIndex: 'term',
+                key: 'term',
+              },
+              {
+                title: 'Notes',
+                dataIndex: 'notes',
+                key: 'notes',
+              },
+
+              {
+                title: 'Observé',
+                dataIndex: 'observed',
+                key: 'observed',
+              },
+              {
+                title: 'Consultation',
+                dataIndex: 'consultation',
+                key: 'consultation',
+              },
+              {
+                title: 'Apparition',
+                dataIndex: 'apparition',
+                key: 'apparition',
+              },
+
+              ]}
+            />
+          </Row>
+          <Row type="flex">
+            <Typography.Title level={4}>
+                Indication(s)
+            </Typography.Title>
+            <Table
+              style={{ width: '100%' }}
+              size="small"
+              dataSource={[{
+                notes: 'Suspicion d\'une mutation a transmission récessive qui atteint le tissus musculaire',
+                consultation: '2019-12-01',
+              }]}
+              columns={[{
+                title: 'Notes',
+                dataIndex: 'notes',
+                key: 'notes',
+              },
+              {
+                title: 'Consultation',
+                dataIndex: 'consultation',
+                key: 'consultation',
+              }]}
+            />
+          </Row>
+          <Row type="flex">
+            <Typography.Title level={4}>
+              Observation(s) générale(s)
+            </Typography.Title>
+            <Table
+              style={{ width: '100%' }}
+              size="small"
+              dataSource={[{
+                /* eslint-disable-next-line */
+                notes: 'Le patient a été adressé par son medecin de famille apres une consultation datant de 2019-10-12 pour retard de l\'acquisition de la marche',
+                consultation: '2019-12-01',
+              }]}
+              columns={[{
+                title: 'Notes',
+                dataIndex: 'notes',
+                key: 'notes',
+              },
+              {
+                title: 'Consultation',
+                dataIndex: 'consultation',
+                key: 'consultation',
+              }]}
+            />
+          </Row>
+          <Row type="flex">
+            <br />
+            <Col span={24}>
+              <Typography.Title level={4}>
+                  Famille
+              </Typography.Title>
+            </Col>
+          </Row>
+          <Row type="flex" gutter="32">
+            <Col span={12}>
+              <DataList
+                title="Informations générales"
+                dataSource={[
+                  { label: 'ID Famille', value: 'FA03939' },
+                  { label: 'Configuration', value: 'trio +' },
+                ]}
+              />
+            </Col>
+            <Col span={12}>
+              <DataList
+                title="Membres de la famille"
+                dataSource={[
+                  { label: 'Proband', value: 'PT000001' },
+                  { label: 'Père', value: 'PT000002' },
+                  { label: 'Mère', value: 'PT000003' },
+                ]}
+              />
+            </Col>
+          </Row>
+          <Row type="flex">
+            <Typography.Title level={4}>
+              Histoire familiale
+            </Typography.Title>
+            <Table
+              style={{ width: '100%' }}
+              size="small"
+              dataSource={[{
+                notes: 'Mariage consanguin des parents (cousins)',
+                datetime: '2019-02-12 13h00',
+              }, {
+                notes: 'Cas simillaire de cousin maternel (sans plus de précision sur l\'étiologie)',
+                datetime: '2019-02-12 13h00',
+              }]}
+              columns={[{
+                title: 'Notes',
+                dataIndex: 'notes',
+                key: 'notes',
+              },
+              {
+                title: 'Date et heure',
+                dataIndex: 'datetime',
+                key: 'datetime',
+              }]}
+            />
+          </Row>
         </Tabs.TabPane>
       </Tabs>
     </Card>
