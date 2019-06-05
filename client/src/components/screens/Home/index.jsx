@@ -16,8 +16,9 @@ import { appShape } from '../../../reducers/app';
 
 import './style.scss';
 
-const HomeScreen = ({ app, actions }) => { // eslint-disable-line
+const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
+  window.CLIN.translate = intl.formatMessage;
   return (
     <Content type="stretched-centered">
       <Header />

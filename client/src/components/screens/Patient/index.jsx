@@ -15,7 +15,7 @@ import DataList from '../../DataList';
 import './style.scss';
 
 
-const SummaryScreen = ({ intl }) => ( // eslint-disable-line
+const PatientScreen = ({ intl }) => ( // eslint-disable-line
   <Content type="auto">
     <Header />
     <Navigation />
@@ -419,8 +419,8 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
   </Content>
 );
 
-SummaryScreen.propTypes = {
+PatientScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(SummaryScreen);
+export default injectIntl(PatientScreen);

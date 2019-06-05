@@ -4,6 +4,8 @@ const fr = {
   'lang.en.short': 'EN',
   'lang.fr.short': 'FR',
   'header.title': 'Centre québécois de génomique clinique',
+  'message.error.generic': 'Action échouée... ',
+  'message.success.generic': 'Action été effectuée avec succès!',
   'navigation.main.searchPatient': 'Recherche de patient',
   'navigation.user.logout': 'Déconnexion',
   'response.error.Ok': 'Ok',
