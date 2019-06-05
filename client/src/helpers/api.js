@@ -19,6 +19,18 @@ const logout = () => axios.delete(`${window.CLIN.apiBaseUrl}/auth`, config)
   .then(successCallback)
   .catch(errorCallback);
 
+const getPatient = uid => axios.post(`${window.CLIN.apiBaseUrl}/patient`, {
+  uid,
+}, config)
+  .then(successCallback)
+  .catch(errorCallback);
+
+const searchPatient = uid => axios.post(`${window.CLIN.apiBaseUrl}/patient`, {
+  uid,
+}, config)
+  .then(successCallback)
+  .catch(errorCallback);
+
 export class ApiError extends Error {
   constructor(message) {
     super(message);
@@ -29,4 +41,6 @@ export class ApiError extends Error {
 export default {
   login,
   logout,
+  getPatient,
+  searchPatient,
 };
