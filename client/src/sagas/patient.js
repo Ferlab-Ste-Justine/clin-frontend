@@ -9,6 +9,9 @@ function* fetch(action) {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
+    // if (response.error) {
+    //  throw new ApiError(response.error);
+    // }
     yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: action.payload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
@@ -23,6 +26,9 @@ function* search(action) {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
+    // if (response.error) {
+    //  throw new ApiError(response.error);
+    // }
     yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: action.payload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
