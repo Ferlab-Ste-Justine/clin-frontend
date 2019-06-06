@@ -23,7 +23,7 @@ const Header = ({ intl }) => {
         </Col>
         <Col span={3} align="end">
           {/* eslint-disable-next-line max-len */}
-          <img height="50" alt="Ministère de la Santé et des Services sociaux" src="/images/msss.png" />
+          <img height="45" alt="Ministère de la Santé et des Services sociaux" src="/images/msss.png" />
         </Col>
       </Row>
     </Layout.Header>
