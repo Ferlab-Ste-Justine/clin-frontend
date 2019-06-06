@@ -19,12 +19,11 @@ const Header = ({ intl }) => {
           <Mobile><Typography.Title level={4}>{ title }</Typography.Title></Mobile>
         </Col>
         <Col span={4} align="end">
-          {/* eslint-disable-next-line max-len */}
-          <img alt="Centre hospitalier universitaire Sainte-Justine" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+CHUSJ+]" />
+          <img height="55" alt="Centre hospitalier universitaire Sainte-Justine" src="/images/chusj.png" />
         </Col>
         <Col span={3} align="end">
           {/* eslint-disable-next-line max-len */}
-          <img alt="Ministère de la Santé et des Services sociaux" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+MIN.+SANTE+]" />
+          <img height="50" alt="Ministère de la Santé et des Services sociaux" src="/images/msss.png" />
         </Col>
       </Row>
     </Layout.Header>

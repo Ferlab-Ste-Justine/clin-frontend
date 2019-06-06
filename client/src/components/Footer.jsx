@@ -4,34 +4,27 @@ import { Layout, Row, Col } from 'antd';
 
 const Footer = () => (
   <Layout.Footer id="footer">
-    <Row type="flex" justify="space-between">
+    <Row type="flex" justify="space-between" align="middle">
       <Col align="start">
-        {/* eslint-disable-next-line max-len */}
-        <img alt="Centre universitaire de santé McGill" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+MCGILL+]" />
+        <img height="20" alt="Centre universitaire de santé McGill" src="/images/mcgill.gif" />
       </Col>
       <Col align="center">
-        {/* eslint-disable-next-line max-len */}
-        <img alt="Centre hospitalier urbain de Montréal" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+CHUM+]" />
+        <img height="45" alt="Centre hospitalier urbain de Montréal" src="/images/chum.png" />
       </Col>
       <Col align="center">
-        {/* eslint-disable-next-line max-len */}
-        <img alt="Hôpital général juif" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+HGJ+]" />
+        <img height="40" alt="Hôpital général juif" src="/images/hgj.png" />
       </Col>
       <Col align="center">
-        {/* eslint-disable-next-line max-len */}
-        <img alt="CHU du Québec" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+CHUQ+]" />
+        <img height="42" alt="CHU du Québec" src="/images/chu.png" />
       </Col>
       <Col align="center">
-        {/* eslint-disable-next-line max-len */}
-        <img alt="Hôpital Maisonneuve-Rosement" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+HMR+]" />
+        <img height="40" alt="Hôpital Maisonneuve-Rosemont" src="/images/hmr.gif" />
       </Col>
       <Col align="center">
-        {/* eslint-disable-next-line max-len */}
-        <img alt="Institut de cardiologie de Montréal" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+ICM+]" />
+        <img height="35" alt="Institut de cardiologie de Montréal" src="/images/icm.png" />
       </Col>
       <Col align="end">
-        {/* eslint-disable-next-line max-len */}
-        <img alt="Centre hospitalier universitaire de Sherbrooke" src="https://dummyimage.com/100x45/FFFFFF/000000.png&text=[+LOGO+CHUS+]" />
+        <img height="50" alt="Centre hospitalier universitaire de Sherbrooke" src="/images/chus.gif" />
       </Col>
     </Row>
   </Layout.Footer>

@@ -30,6 +30,7 @@ const en = {
   'form.login.forgotPassword': 'Forgotten Password',
   'form.login.howToRegister': 'To obtain an account, write to us at xx@ksks.org',
   'screen.nomatch.404': '404 - Not Found',
+  'screen.patientsearch.placeholder': 'Available search criterias: MRN, ID Patient, RAMQ, Nom, Prénom, ID Famille, ID Specimen et Étude',
 };
 
 export default en;
