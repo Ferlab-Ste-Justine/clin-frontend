@@ -42,6 +42,8 @@ pnpm serve
 
 `cp -p docker.env .env`
 
+`docker network create -d overlay --attachable proxy`
+
 ###### Local Environment
 
 `docker-compose up`
