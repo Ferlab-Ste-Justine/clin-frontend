@@ -1,13 +1,51 @@
-version: '3'
+version: '3.3'
 services:
   web:
-    image: chusj/clin-frontend
+    build:
+      context: .
+    image: localhost:5000/clin-frontend
     ports:
-    - "2000:2000"
+      - "2000:2000"
     deploy:
       replicas: 2
     networks:
-    - webnet
+      - webnet
+      - proxy
+    env_file:
+      - .env
+
+  nginx:
+    image: 'nginx:1'
+    ports:
+      - '80:80'
+    networks:
+      - proxy
+    command: |
+      /bin/bash -c "echo '
+      server {
+        listen 80;
+        add_header X-Frame-Options "SAMEORIGIN";
+        location / {
+            proxy_pass http://web:2000;
+            proxy_http_version 1.1;
+            proxy_set_header Connection keep-alive;
+            proxy_set_header Upgrade $$http_upgrade;
+            proxy_set_header Host $$host;
+            proxy_set_header X-Real-IP $$remote_addr;
+            proxy_cache_bypass $$http_upgrade;
+        }
+        location /api/auth {
+            proxy_pass http://auth:3000/auth;
+            proxy_http_version 1.1;
+            proxy_set_header Connection keep-alive;
+            proxy_set_header Upgrade $$http_upgrade;
+            proxy_set_header Host $$host;
+            proxy_set_header X-Real-IP $$remote_addr;
+            proxy_cache_bypass $$http_upgrade;
+        }
+      }' | tee /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
   webnet:
+  proxy:
+    external: true
