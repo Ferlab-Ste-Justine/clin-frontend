@@ -11,7 +11,26 @@ export const changeLanguage = language => ({
   },
 });
 
-export const catchError = error => ({
-  type: actions.APP_ERROR,
-  payload: error,
+export const success = message => ({
+  type: actions.SHOW_NOTIFICATION,
+  payload: {
+    type: 'success',
+    message,
+  },
+});
+
+export const error = message => ({
+  type: actions.SHOW_NOTIFICATION,
+  payload: {
+    type: 'error',
+    message,
+  },
+});
+
+export const warning = message => ({
+  type: actions.SHOW_NOTIFICATION,
+  payload: {
+    type: 'warning',
+    message,
+  },
 });

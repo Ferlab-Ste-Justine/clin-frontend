@@ -1,0 +1,21 @@
+div.ant-select-selection__placeholder, div.ant-select-search__field__placeholder {
+  padding-left: 20px;
+}
+
+th.column-action, td.column-action {
+  text-align: right !important;
+}
+
+
+#components-table-demo-resizable-column .react-resizable {
+  position: relative;
+}
+
+#components-table-demo-resizable-column .react-resizable-handle {
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  bottom: 0;
+  right: -5px;
+  cursor: col-resize;
+}

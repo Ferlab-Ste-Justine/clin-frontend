@@ -11,7 +11,7 @@ import { appShape } from '../reducers/app';
 import { changeLanguage } from '../actions/app';
 import { userShape } from '../reducers/user';
 import { logoutUser } from '../actions/user';
-import navigate from '../actions/router';
+import { navigate } from '../actions/router';
 
 
 const navigationMenu = (intl, router, actions) => {
@@ -19,7 +19,6 @@ const navigationMenu = (intl, router, actions) => {
   return (
     <Menu onClick={(e) => { actions.navigate(e.key); }} mode="horizontal" selectedKeys={[router.location.pathname]}>
       <Menu.Item key="/patient/search">
-        <Icon type="search" />
         {patientSearch}
       </Menu.Item>
     </Menu>

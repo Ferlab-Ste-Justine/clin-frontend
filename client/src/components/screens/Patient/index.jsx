@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   Card, Col, Row, Layout, Radio, Icon, Button, Tabs, PageHeader, Typography, Table,
 } from 'antd';
@@ -13,9 +15,13 @@ import Footer from '../../Footer';
 import DataList from '../../DataList';
 
 import './style.scss';
+import { patientShape } from '../../../reducers/patient';
+import { searchShape } from '../../../reducers/search';
+
+import { navigateToPatientScreen } from '../../../actions/router';
 
 
-const SummaryScreen = ({ intl }) => ( // eslint-disable-line
+const PatientScreen = ({ intl, patient, search, actions }) => ( // eslint-disable-line
   <Content type="auto">
     <Header />
     <Navigation />
@@ -35,10 +41,10 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
             </Radio.Button>
             <Radio.Button disabled style={{ color: '#000000' }}>Search Results 1 of 25</Radio.Button>
             <Radio.Button>
-              <Link to="/patient/483727">
+              <button type="button" onClick={actions.navigateToPatientScreen.apply('PA000011')}>
                   MRN:483727
                 <Icon type="right" />
-              </Link>
+              </button>
             </Radio.Button>
           </Radio.Group>
         </Col>
@@ -419,8 +425,25 @@ const SummaryScreen = ({ intl }) => ( // eslint-disable-line
   </Content>
 );
 
-SummaryScreen.propTypes = {
+PatientScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
+  patient: PropTypes.shape(patientShape).isRequired,
+  search: PropTypes.shape(searchShape).isRequired,
 };
 
-export default injectIntl(SummaryScreen);
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({
+    navigateToPatientScreen,
+  }, dispatch),
+});
+
+const mapStateToProps = state => ({
+  intl: state.intl,
+  patient: state.patient,
+  search: state.search,
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(injectIntl(PatientScreen));

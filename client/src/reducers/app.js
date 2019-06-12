@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
+import { message } from 'antd';
 import moment from 'moment';
 import 'moment/locale/fr';
 import 'moment/locale/en-ca';
@@ -9,9 +10,9 @@ import * as enUS from 'antd/lib/locale-provider/en_US'; // eslint-ignore-line ca
 
 import * as actions from '../actions/type';
 
+
 export const initialAppState = {
   showLoadingAnimation: true,
-  lastError: null,
   locale: {
     lang: null,
     antd: null,
@@ -20,7 +21,6 @@ export const initialAppState = {
 
 export const appShape = {
   showLoadingAnimation: PropTypes.bool.isRequired,
-  lastError: PropTypes.string,
   locale: PropTypes.shape({
     lang: PropTypes.string,
     antd: PropTypes.shape({}),
@@ -29,8 +29,8 @@ export const appShape = {
 
 const appReducer = (state = initialAppState, action) => produce(state, (draft) => {
   switch (action.type) {
-    case actions.APP_ERROR:
-      draft.lastError = action.payload;
+    case actions.SHOW_NOTIFICATION:
+      message[action.payload.type](action.payload.message);
       break;
 
     case actions.START_LOADING_ANIMATION:

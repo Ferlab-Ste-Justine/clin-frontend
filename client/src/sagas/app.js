@@ -1,7 +1,8 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
-import { updateIntl } from 'react-intl-redux'; // eslint-ignore-line
+import { updateIntl } from 'react-intl-redux';
 
 import * as actions from '../actions/type';
+import { error } from '../actions/app';
 import locales from '../locales';
 
 
@@ -13,6 +14,7 @@ function* loadApp() {
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.APP_FETCH_FAILED, message: e.message });
+    yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
@@ -26,6 +28,7 @@ function* changeLanguage(action) {
     }));
   } catch (e) {
     yield put({ type: actions.APP_CHANGE_LANGUAGE_FAILED, message: e.message });
+    yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
   }
 }
 

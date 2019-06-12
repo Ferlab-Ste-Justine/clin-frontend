@@ -1,9 +1,13 @@
+/* eslint-disable */
+
 const fr = {
   'lang.en.long': 'English',
   'lang.fr.long': 'Français',
   'lang.en.short': 'EN',
   'lang.fr.short': 'FR',
   'header.title': 'Centre québécois de génomique clinique',
+  'message.error.generic': 'Action échouée... ',
+  'message.success.generic': 'Action été effectuée avec succès!',
   'navigation.main.searchPatient': 'Recherche de patient',
   'navigation.user.logout': 'Déconnexion',
   'response.error.Ok': 'Ok',
@@ -28,6 +32,7 @@ const fr = {
   'form.login.forgotPassword': 'Mot de passe oublié ?',
   'form.login.howToRegister': 'Pour obtenir un compte, nous écrire à xx@ksks.org',
   'screen.nomatch.404': '404 - Introuvable',
+  'screen.patientsearch.placeholder': 'Critères de recherche acceptés: MRN, ID Patient, RAMQ, Nom, Prénom, ID Famille, ID Specimen et Étude',
 };
 
 export default fr;

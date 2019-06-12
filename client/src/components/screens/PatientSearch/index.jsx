@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import {
-  Button, Card, Table,
+  Card, Table, AutoComplete, Row, Col, Input, Icon,
 } from 'antd';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -13,249 +14,193 @@ import Footer from '../../Footer';
 
 import './style.scss';
 
+/*
+const ResizeableTitle = (props) => {
+  const { onResize, width, ...restProps } = props; // eslint-disable-line
 
-const data = [{
-  key: '1',
-  name: 'John Brown',
-  age: 32,
-  address: 'New York No. 1 Lake Park',
-}, {
-  key: '2',
-  name: 'Jim Green',
-  age: 42,
-  address: 'London No. 1 Lake Park',
-}, {
-  key: '3',
-  name: 'Joe Black',
-  age: 32,
-  address: 'Sidney No. 1 Lake Park',
-}, {
-  key: '4',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '5',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '6',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '7',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '8',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '9',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '10',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '11',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '12',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '13',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '14',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '15',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '16',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '17',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '18',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '19',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '20',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '21',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '22',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '23',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '24',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}, {
-  key: '25',
-  name: 'Jim Red',
-  age: 32,
-  address: 'London No. 2 Lake Park',
-}];
+  if (!width) {
+    return <th {...restProps} />;
+  }
 
-class ListScreen extends React.Component {
+  return (
+    <Resizable width={width} height={0} onResize={onResize}>
+      <th {...restProps} />
+    </Resizable>
+  );
+};
+*/
+
+const columns = [
+  {
+    title: 'Patient ID',
+    dataIndex: 'pid',
+    render: text => <Link to={`/patient/${text}`}>{text}</Link>, // eslint-disable-line
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.pid - b.pid,
+  },
+  {
+    title: 'MRN',
+    dataIndex: 'mrn',
+  },
+  {
+    title: 'Institution',
+    dataIndex: 'institution',
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.institution - b.institution,
+  },
+  {
+    title: 'Nom',
+    dataIndex: 'lastname',
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.lastname - b.lastname,
+  },
+  {
+    title: 'Prénom',
+    dataIndex: 'firstname',
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.firstname - b.firstname,
+  },
+  {
+    title: 'Date de naissance',
+    dataIndex: 'dob',
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.dob - b.dob,
+  },
+  {
+    title: 'Famille ID',
+    dataIndex: 'fid',
+    render: text => <Link to={`/patient/family/${text}`}>{text}</Link>, // eslint-disable-line
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.fid - b.fid,
+  },
+  {
+    title: 'Position',
+    dataIndex: 'position',
+    filters: [
+      {
+        text: 'Proband',
+        value: 'Proband',
+      },
+      {
+        text: 'Parent',
+        value: 'notproband',
+      },
+    ],
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.request - b.request,
+    onFilter: (value, record) => record.position.indexOf(value) === 0,
+  },
+  {
+    title: 'Médecin référent',
+    dataIndex: 'practicionner',
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.practicionner - b.practicionner,
+  },
+  {
+    title: 'Étude',
+    dataIndex: 'study',
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.study - b.study,
+  },
+  {
+    title: 'Requête',
+    dataIndex: 'request',
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.request - b.request,
+  },
+  {
+    title: 'Statut',
+    dataIndex: 'status',
+    filters: [
+      {
+        text: 'En cours',
+        value: 'En cours',
+      },
+      {
+        text: 'Complété',
+        value: 'Complété',
+      },
+    ],
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.request - b.request,
+    onFilter: (value, record) => record.status.indexOf(value) === 0,
+  },
+
+];
+
+const dataset = [
+  {
+    pid: 'PT000030',
+    mrn: '45821',
+    institution: 'CHUSJ',
+    lastname: 'Legendre',
+    firstname: 'Bruno',
+    dob: '2018-09-11',
+    fid: 'FA93837',
+    position: 'Proband',
+    practicionner: 'Dr. Patrick DUJARDIN',
+    study: 'Rapidomix',
+    request: 'SR000002',
+    status: 'En cours',
+  },
+  {
+    pid: 'PT000045',
+    mrn: '45822',
+    institution: 'CHUSJ',
+    lastname: 'Tartempion',
+    firstname: 'Roger',
+    dob: '2018-08-11',
+    fid: 'FA181717',
+    position: 'Parent',
+    practicionner: 'Dr. Patrick DUJARDIN',
+    study: 'Rapidomix',
+    request: 'SR000003',
+    status: 'Complétée',
+  },
+];
+
+class PatientSearchScreen extends React.Component {
   constructor() {
     super();
-    this.state = {
-      filteredInfo: null,
-      sortedInfo: null,
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.clearFilters = this.clearFilters.bind(this);
-    this.clearAll = this.clearAll.bind(this);
-    this.setAgeSort = this.setAgeSort.bind(this);
-  }
-
-  setAgeSort() {
-    this.setState({
-      sortedInfo: {
-        order: 'descend',
-        columnKey: 'age',
-      },
-    });
-  }
-
-  clearAll() {
-    this.setState({
-      filteredInfo: null,
-      sortedInfo: null,
-    });
-  }
-
-  clearFilters() {
-    this.setState({ filteredInfo: null });
-  }
-
-  handleChange(pagination, filters, sorter) {
-    // console.log('Various parameters', pagination, filters, sorter);
-    this.setState({
-      filteredInfo: filters,
-      sortedInfo: sorter,
-    });
+    this.handleSearchChange = () => {};
   }
 
   render() {
-    let { sortedInfo, filteredInfo } = this.state;
-    sortedInfo = sortedInfo || {};
-    filteredInfo = filteredInfo || {};
-    const columns = [{
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      filters: [
-        { text: 'Joe', value: 'Joe' },
-        { text: 'Jim', value: 'Jim' },
-      ],
-      render: text => (<Link to="/patient/123">{text}</Link>),
-      filteredValue: filteredInfo.name || null,
-      onFilter: (value, record) => record.name.includes(value),
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
-    }, {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: (a, b) => a.age - b.age,
-      sortOrder: sortedInfo.columnKey === 'age' && sortedInfo.order,
-    }, {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      filters: [
-        { text: 'London', value: 'London' },
-        { text: 'New York', value: 'New York' },
-      ],
-      filteredValue: filteredInfo.address || null,
-      onFilter: (value, record) => record.address.includes(value),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortOrder: sortedInfo.columnKey === 'address' && sortedInfo.order,
-    }];
-
+    const { search, intl } = this.props;
+    const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
     return (
       <Content>
         <Header />
         <Navigation />
         <Card>
-          <Button onClick={this.setAgeSort} htmlType="button">Sort age</Button>
-          <Button onClick={this.clearFilters} htmlType="button">Clear filters</Button>
-          <Button onClick={this.clearAll} htmlType="button">Clear filters and sorters</Button>
-          <Table
-            columns={columns}
-            dataSource={data}
-            size="middle"
-            onChange={this.handleChange}
-            pagination={{
-              showTotal: (total, range) => (`${range[0]}-${range[1]} of ${total} items`),
-              pageSize: 5,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              defaultCurrent: 1,
-              total: 25,
-            }}
-
-            /* onRow={(record, rowIndex) => {
-              return {
-                onClick: (event) => {},       // click row
-                onDoubleClick: (event) => {}, // double click row
-                onContextMenu: (event) => {}  // right button click row
-                onMouseEnter: (event) => {}   // mouse enter row
-                onMouseLeave: (event) => {}   // mouse leave row
-              };
-            }}
-            onHeaderRow={(column) => {
-              return {
-                onClick: () => {},        // click header row
-              };
-            }} */
-          />
+          <Row type="flex" justify="center">
+            <Col span={24}>
+              <AutoComplete
+                dataSource={search}
+                onChange={this.handleSearchChange}
+                size="large"
+                style={{ width: '100%' }}
+                optionLabelProp="text"
+                placeholder={placeholderText}
+                allowClear
+                autoFocus
+              >
+                <Input prefix={<Icon type="search" />} />
+              </AutoComplete>
+            </Col>
+          </Row>
+          <Row type="flex" justify="center">
+            <Col span={24}>
+              <br />
+              <Table
+                bordered
+                dataSource={dataset}
+                columns={columns}
+                title={() => <div style={{ textAlign: 'right' }}>2 / 100 Patients</div>}
+                size="small"
+              />
+            </Col>
+          </Row>
         </Card>
         <Footer />
       </Content>
@@ -263,8 +208,9 @@ class ListScreen extends React.Component {
   }
 }
 
-ListScreen.propTypes = {
+PatientSearchScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
+  search: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(ListScreen);
+export default injectIntl(PatientSearchScreen);
