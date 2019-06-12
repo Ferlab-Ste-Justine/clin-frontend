@@ -34,7 +34,7 @@ services:
             proxy_set_header X-Real-IP $$remote_addr;
             proxy_cache_bypass $$http_upgrade;
         }
-        location /api/auth {
+        location /api/auth {  ### this service is defined in clin-proxy-api
             proxy_pass http://auth:3000/auth;
             proxy_http_version 1.1;
             proxy_set_header Connection keep-alive;
