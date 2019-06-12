@@ -7,7 +7,6 @@ import { produce } from 'immer';
 export const initialSearchState = {
   patient: {
     query: null,
-    current: null,
     results: [],
   },
 };
@@ -15,7 +14,6 @@ export const initialSearchState = {
 export const searchShape = {
   patient: PropTypes.shape({
     query: PropTypes.string,
-    current: PropTypes.number,
     results: PropTypes.array,
   }),
 };

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const en = {
   'lang.en.long': 'English',
   'lang.fr.long': 'Français',

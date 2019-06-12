@@ -14,6 +14,21 @@ import Footer from '../../Footer';
 
 import './style.scss';
 
+/*
+const ResizeableTitle = (props) => {
+  const { onResize, width, ...restProps } = props; // eslint-disable-line
+
+  if (!width) {
+    return <th {...restProps} />;
+  }
+
+  return (
+    <Resizable width={width} height={0} onResize={onResize}>
+      <th {...restProps} />
+    </Resizable>
+  );
+};
+*/
 
 const columns = [
   {
@@ -22,41 +37,34 @@ const columns = [
     render: text => <Link to={`/patient/${text}`}>{text}</Link>, // eslint-disable-line
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.pid - b.pid,
-    fixed: 'left',
-    width: 100,
   },
   {
     title: 'MRN',
     dataIndex: 'mrn',
-    width: 150,
   },
   {
     title: 'Institution',
     dataIndex: 'institution',
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.institution - b.institution,
-    width: 150,
   },
   {
     title: 'Nom',
     dataIndex: 'lastname',
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.lastname - b.lastname,
-    width: 150,
   },
   {
     title: 'Prénom',
     dataIndex: 'firstname',
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.firstname - b.firstname,
-    width: 150,
   },
   {
     title: 'Date de naissance',
     dataIndex: 'dob',
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.dob - b.dob,
-    width: 150,
   },
   {
     title: 'Famille ID',
@@ -64,7 +72,6 @@ const columns = [
     render: text => <Link to={`/patient/family/${text}`}>{text}</Link>, // eslint-disable-line
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.fid - b.fid,
-    width: 150,
   },
   {
     title: 'Position',
@@ -79,29 +86,27 @@ const columns = [
         value: 'notproband',
       },
     ],
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.request - b.request,
     onFilter: (value, record) => record.position.indexOf(value) === 0,
-    width: 150,
   },
   {
     title: 'Médecin référent',
     dataIndex: 'practicionner',
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.practicionner - b.practicionner,
-    width: 150,
   },
   {
     title: 'Étude',
     dataIndex: 'study',
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.study - b.study,
-    width: 150,
   },
   {
     title: 'Requête',
     dataIndex: 'request',
     sortDirections: ['descend', 'ascend'],
     sorter: (a, b) => a.request - b.request,
-    width: 150,
   },
   {
     title: 'Statut',
@@ -116,17 +121,11 @@ const columns = [
         value: 'Complété',
       },
     ],
+    sortDirections: ['descend', 'ascend'],
+    sorter: (a, b) => a.request - b.request,
     onFilter: (value, record) => record.status.indexOf(value) === 0,
-    width: 150,
   },
-  {
-    title: 'Actions',
-    key: 'action',
-    fixed: 'right',
-    width: 50,
-    className: 'column-action',
-    render: () => [<Icon type="folder-open" />],
-  },
+
 ];
 
 const dataset = [
@@ -192,13 +191,13 @@ class PatientSearchScreen extends React.Component {
           </Row>
           <Row type="flex" justify="center">
             <Col span={24}>
+              <br />
               <Table
                 bordered
-                size="small"
-                pagination={{ position: 'both' }}
                 dataSource={dataset}
                 columns={columns}
-                scroll={{ x: 1800 }}
+                title={() => <div style={{ textAlign: 'right' }}>2 / 100 Patients</div>}
+                size="small"
               />
             </Col>
           </Row>

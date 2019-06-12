@@ -2,7 +2,9 @@ import * as actions from './type';
 
 export const fetchPatient = uid => ({
   type: actions.PATIENT_FETCH_REQUESTED,
-  payload: uid,
+  payload: {
+    uid,
+  },
 });
 
 export const searchPatient = query => ({
