@@ -8,11 +8,26 @@ import Api, { ApiError } from '../helpers/api';
 function* fetch(action) {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
-    const response = yield Api.getPatientById(action.payload.uid);
-    if (response.error) {
-      throw new ApiError(response.error);
+    const patientResponse = yield Api.getPatientById(action.payload.uid);
+    if (patientResponse.error) {
+      throw new ApiError(patientResponse.error);
     }
-    yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
+    const clinicalImpressionsResponse = yield Api.getClinicalImpressionsByPatientId(action.payload.uid);
+    const medicalObservationsResponse = yield Api.getMedicalObservationsByPatientId(action.payload.uid);
+    const phenotypeObservationsResponse = yield Api.getPhenotypeObservationsByPatientId(action.payload.uid);
+    // const familyHistoryResponse = yield Api.getFamilyHistoryByPatientId(action.payload.uid);
+    // const serviceRequestsResponse = yield Api.getServiceRequestByPatientId(action.payload.uid);
+    // const specimensResponse = yield Api.getSpecimensByPatientId(action.payload.uid);
+    const patientPayload = {
+      patientResponse: patientResponse.payload.data,
+      clinicalImpressionsResponse: clinicalImpressionsResponse.payload.data,
+      medicalObservationsResponse: medicalObservationsResponse.payload.data,
+      phenotypeObservationsResponse: phenotypeObservationsResponse.payload.data,
+      // familyHistoryResponse: familyHistoryResponse.payload.data,
+      // serviceRequestsResponse: serviceRequestsResponse.payload.data,
+      // specimensResponse: specimensResponse.payload.data,
+    };
+    yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: patientPayload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
