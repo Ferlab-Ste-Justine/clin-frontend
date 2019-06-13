@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { push } from 'connected-react-router';
 import { all, put, takeLatest } from 'redux-saga/effects';
 
@@ -21,7 +19,7 @@ function* navigate(action) {
 function* navigateToPatientScreen(action) {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
-    yield put({ type: actions.PATIENT_FETCH_REQUESTED, payload: { uid: action.payload.uid } })
+    yield put({ type: actions.PATIENT_FETCH_REQUESTED, payload: { uid: action.payload.uid } });
     yield put(push(`/patient/${action.payload.uid}`));
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
