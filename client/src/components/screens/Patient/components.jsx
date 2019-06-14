@@ -28,11 +28,11 @@ export const PatientNavigation = ({
   const currentPatientMRN = patient.details.mrn;
   const currentPatientIndex = 1;
 
-  const previousPatientId = 'PA000010';
+  const previousPatientId = 'PA00223';
   const previousPatientMRN = '483724';
 
 
-  const nextPatientId = 'PA000012';
+  const nextPatientId = 'PA00223';
   const nextPatientMRN = '483726';
 
 

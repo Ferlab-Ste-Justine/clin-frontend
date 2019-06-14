@@ -21,6 +21,10 @@ const getPatientById = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}
   .then(successCallback)
   .catch(errorCallback);
 
+const getAllResourcesByPatientId = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}/resources`)
+  .then(successCallback)
+  .catch(errorCallback);
+
 const getClinicalImpressionsByPatientId = uid => axios.get(
   `${window.CLIN.patientApiBaseUrl}/${uid}/clinicalImpressions`,
 )
@@ -73,6 +77,7 @@ export default {
   login,
   logout,
   getPatientById,
+  getAllResourcesByPatientId,
   getClinicalImpressionsByPatientId,
   getMedicalObservationsByPatientId,
   getPhenotypeObservationsByPatientId,

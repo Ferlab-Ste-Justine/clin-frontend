@@ -55,7 +55,7 @@ class PatientScreen extends React.Component {
     const ethnicity = intl.formatMessage({ id: 'screen.patient.details.ethnicity' });
     const study = intl.formatMessage({ id: 'screen.patient.details.study' });
     const proband = intl.formatMessage({ id: 'screen.patient.details.proband' });
-    const preferringPracticioner = intl.formatMessage({ id: 'screen.patient.details.referringPracticioner' });
+    const preferringPractitioner = intl.formatMessage({ id: 'screen.patient.details.preferringPractitioner' });
     const mln = intl.formatMessage({ id: 'screen.patient.details.mln' });
     const id = intl.formatMessage({ id: 'screen.patient.details.id' });
     const practitioner = intl.formatMessage({ id: 'screen.patient.details.practitioner' });
@@ -81,7 +81,7 @@ class PatientScreen extends React.Component {
     const apparition = intl.formatMessage({ id: 'screen.patient.details.apparition' });
     const identification = intl.formatMessage({ id: 'screen.patient.header.identification' });
     const additionalInformation = intl.formatMessage({ id: 'screen.patient.header.additionalInformation' });
-    const referringPracticioner = intl.formatMessage({ id: 'screen.patient.header.referringPracticioner' });
+    const referringPractitioner = intl.formatMessage({ id: 'screen.patient.header.referringPractitioner' });
     const geneticalConsultations = intl.formatMessage({ id: 'screen.patient.header.geneticalConsultations' });
     const requests = intl.formatMessage({ id: 'screen.patient.header.requests' });
     const samples = intl.formatMessage({ id: 'screen.patient.header.samples' });
@@ -157,6 +157,7 @@ class PatientScreen extends React.Component {
 
     const familyHistoryResults = [
       { notes: 'Mariage consanguin des parents (cousins)', datetime: '2019-02-12 13h00' },
+      /* eslint-disable-next-line */
       { notes: 'Cas simillaire de cousin maternel (sans plus de précision sur l\'étiologie)', datetime: '2019-02-12 13h00' },
     ];
 
@@ -207,9 +208,9 @@ class PatientScreen extends React.Component {
                   />
                   <DataList
                     style={{ marginTop: '10px' }}
-                    title={referringPracticioner}
+                    title={referringPractitioner}
                     dataSource={[
-                      { label: preferringPracticioner, value: 'Dr. Patrick DUJARDIN' },
+                      { label: preferringPractitioner, value: 'Dr. Patrick DUJARDIN' },
                       { label: mln, value: ' 000002516' },
                     ]}
                   />

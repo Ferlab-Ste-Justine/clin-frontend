@@ -12,26 +12,16 @@ function* fetch(action) {
     if (patientResponse.error) {
       throw new ApiError(patientResponse.error);
     }
-    const clinicalImpressionsResponse = yield Api.getClinicalImpressionsByPatientId(action.payload.uid);
-    const medicalObservationsResponse = yield Api.getMedicalObservationsByPatientId(action.payload.uid);
-    const phenotypeObservationsResponse = yield Api.getPhenotypeObservationsByPatientId(action.payload.uid);
-    const familyHistoryResponse = yield Api.getFamilyHistoryByPatientId(action.payload.uid);
-    const serviceRequestsResponse = yield Api.getServiceRequestByPatientId(action.payload.uid);
-    const specimensResponse = yield Api.getSpecimensByPatientId(action.payload.uid);
+    const resourcesResponse = yield Api.getAllResourcesByPatientId(action.payload.uid);
     const patientPayload = {
       patientResponse: patientResponse.payload.data,
-      clinicalImpressionsResponse: clinicalImpressionsResponse.payload.data,
-      medicalObservationsResponse: medicalObservationsResponse.payload.data,
-      phenotypeObservationsResponse: phenotypeObservationsResponse.payload.data,
-      familyHistoryResponse: familyHistoryResponse.payload.data,
-      serviceRequestsResponse: serviceRequestsResponse.payload.data,
-      specimensResponse: specimensResponse.payload.data,
+      resourcesResponse: resourcesResponse.payload.data,
     };
-    yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: patientPayload });
+    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientPayload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
-    yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
+    yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
@@ -44,11 +34,11 @@ function* search(action) {
     if (response.error) {
       throw new ApiError(response.error);
     }
-    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: response.payload });
+    yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
-    yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
+    yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
