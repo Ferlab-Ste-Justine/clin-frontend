@@ -5,7 +5,9 @@ import { produce } from 'immer';
 import * as actions from '../actions/type';
 
 export const initialPatientState = {
-  details: {},
+  details: {
+    mrn: null,
+  },
   clinicalImpressions: {},
   serviceRequests: {},
   specimens: {},
@@ -31,6 +33,7 @@ export const patientShape = {
 const patientReducer = (state = initialPatientState, action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.PATIENT_FETCH_SUCCEEDED:
+      // eslint-disable-next-line
       console.log(action.payload);
 
       /*

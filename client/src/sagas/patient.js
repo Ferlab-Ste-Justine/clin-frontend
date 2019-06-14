@@ -15,17 +15,17 @@ function* fetch(action) {
     const clinicalImpressionsResponse = yield Api.getClinicalImpressionsByPatientId(action.payload.uid);
     const medicalObservationsResponse = yield Api.getMedicalObservationsByPatientId(action.payload.uid);
     const phenotypeObservationsResponse = yield Api.getPhenotypeObservationsByPatientId(action.payload.uid);
-    // const familyHistoryResponse = yield Api.getFamilyHistoryByPatientId(action.payload.uid);
-    // const serviceRequestsResponse = yield Api.getServiceRequestByPatientId(action.payload.uid);
-    // const specimensResponse = yield Api.getSpecimensByPatientId(action.payload.uid);
+    const familyHistoryResponse = yield Api.getFamilyHistoryByPatientId(action.payload.uid);
+    const serviceRequestsResponse = yield Api.getServiceRequestByPatientId(action.payload.uid);
+    const specimensResponse = yield Api.getSpecimensByPatientId(action.payload.uid);
     const patientPayload = {
       patientResponse: patientResponse.payload.data,
       clinicalImpressionsResponse: clinicalImpressionsResponse.payload.data,
       medicalObservationsResponse: medicalObservationsResponse.payload.data,
       phenotypeObservationsResponse: phenotypeObservationsResponse.payload.data,
-      // familyHistoryResponse: familyHistoryResponse.payload.data,
-      // serviceRequestsResponse: serviceRequestsResponse.payload.data,
-      // specimensResponse: specimensResponse.payload.data,
+      familyHistoryResponse: familyHistoryResponse.payload.data,
+      serviceRequestsResponse: serviceRequestsResponse.payload.data,
+      specimensResponse: specimensResponse.payload.data,
     };
     yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: patientPayload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));

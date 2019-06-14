@@ -8,6 +8,7 @@ export const initialSearchState = {
   patient: {
     query: null,
     results: [],
+    total: 0,
   },
 };
 
@@ -15,6 +16,7 @@ export const searchShape = {
   patient: PropTypes.shape({
     query: PropTypes.string,
     results: PropTypes.array,
+    total: PropTypes.number,
   }),
 };
 
