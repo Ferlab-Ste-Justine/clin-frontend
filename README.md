@@ -46,14 +46,40 @@ pnpm serve
 
 ###### Local Environment
 
-`docker-compose up`
+`
+copy docker.env .env
+docker-compose up --build`
 
-###### Pushing Changes to DockerHub
+###### Pushing Changes to Qa/Prod
 
 ```
-docker login
-docker build . --tag=chusj/clin-frontend
-docker images [TAKE THE LATEST ID)
-docker tag [LATEST ID] chusj/clin-frontend:latest
-docker push
+copy docker.env .env
+docker-compose build 
+docker push localhost:5000/clin-frontend-nginx:latest
+
+docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.0
+
+docker push localhost:5000/clin-frontend-nginx:1.0
+
+docker stack deploy -c docker-compose.yml qa-frontend
+docker service update qa-frontend_nginx --image localhost:5000/clin-frontend-nginx:1.0
+
+```
+#### Update a service to another version i.e. (1.1)
+
+```
+copy docker.env .env
+
+nano .env -- fix environment
+docker-compose build
+docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.1
+docker push localhost:5000/clin-frontend-nginx:1.1
+docker service update qa-frontend_nginx --image localhost:5000/clin-frontend-nginx:1.1
+
+```
+To scale the service up or down...
+```
+docker service scale qa-frontend_nginx=3
+or
+use portainer (port 9000)
 ```

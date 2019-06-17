@@ -1,0 +1,11 @@
+FROM node:10.14.1-alpine
+ADD . /code
+WORKDIR /code
+RUN npm install -g pnpm
+RUN pnpm install
+RUN pnpm run build
+
+FROM nginx:1
+
+COPY --from=0 /code/client/build /usr/share/nginx/html/
+COPY --from=0 /code/client/build /var/www/html/
