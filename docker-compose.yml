@@ -1,21 +1,24 @@
 version: '3.3'
 services:
-  web:
-    build:
-      context: .
-    image: localhost:5000/clin-frontend
-    ports:
-      - "2000:2000"
-    deploy:
-      replicas: 2
-    networks:
-      - webnet
-      - proxy
-    env_file:
-      - .env
+#  web:
+#    build:
+#      context: .
+#    image: localhost:5000/clin-frontend
+#    ports:
+#      - "2000:2000"
+#    deploy:
+#      replicas: 2
+#    networks:
+#      - webnet
+#      - proxy
+#    env_file:
+#      - .env
 
   nginx:
-    image: 'nginx:1'
+    build:
+      context: .
+      dockerfile: Dockerfile-static
+    image: localhost:5000/clin-frontend-nginx
     ports:
       - '80:80'
     networks:
@@ -25,8 +28,12 @@ services:
       server {
         listen 80;
         add_header X-Frame-Options "SAMEORIGIN";
-        location / {
-            proxy_pass http://web:2000;
+        root /usr/share/nginx/html;
+        index index.html;
+        server_name localhost;
+
+        location /api/auth {  ### this service is defined in clin-proxy-api
+            proxy_pass http://auth:3000/auth;
             proxy_http_version 1.1;
             proxy_set_header Connection keep-alive;
             proxy_set_header Upgrade $$http_upgrade;
@@ -34,8 +41,8 @@ services:
             proxy_set_header X-Real-IP $$remote_addr;
             proxy_cache_bypass $$http_upgrade;
         }
-        location /api/auth {  ### this service is defined in clin-proxy-api
-            proxy_pass http://auth:3000/auth;
+        location /api/patient {  ### this service is defined in clin-proxy-api
+            proxy_pass http://patient:4000/patient;
             proxy_http_version 1.1;
             proxy_set_header Connection keep-alive;
             proxy_set_header Upgrade $$http_upgrade;
