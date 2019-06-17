@@ -1,18 +1,5 @@
 version: '3.3'
 services:
-#  web:
-#    build:
-#      context: .
-#    image: localhost:5000/clin-frontend
-#    ports:
-#      - "2000:2000"
-#    deploy:
-#      replicas: 2
-#    networks:
-#      - webnet
-#      - proxy
-#    env_file:
-#      - .env
 
   nginx:
     build:
