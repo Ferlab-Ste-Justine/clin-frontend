@@ -13,7 +13,7 @@ function* login(action) {
       throw new ApiError(response.error);
     }
     yield put({ type: actions.USER_LOGIN_SUCCEEDED, payload: response.payload });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
+    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
   } catch (e) {
     yield put({ type: actions.USER_LOGIN_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));

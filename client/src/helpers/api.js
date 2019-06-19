@@ -21,7 +21,7 @@ const getPatientById = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}
   .then(successCallback)
   .catch(errorCallback);
 
-const getAllPatients = () => axios.get(`${window.CLIN.patientApiBaseUrl}`)
+const getAllPatients = () => axios.get(`${window.CLIN.patientApiBaseUrl}/search`)
   .then(successCallback)
   .catch(errorCallback);
 

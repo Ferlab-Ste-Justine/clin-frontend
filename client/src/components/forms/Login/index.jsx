@@ -84,14 +84,20 @@ class LoginForm extends React.Component {
               <Form.Item
                 validateStatus={usernameError ? 'error' : ''}
                 help={usernameError || ''}
+
               >
                 {form.getFieldDecorator('username', {
                   rules: [
                     { required: true, message: formErrorIsRequired },
                     { type: 'email', message: formErrorIsNotEmail },
                   ],
+                  initialValue: 'nyanofthemoon@gmail.com',
                 })(
-                  <Input prefix={<Icon type="mail" />} placeholder={usernameField} autoComplete="off" />,
+                  <Input
+                    prefix={<Icon type="mail" />}
+                    placeholder={usernameField}
+                    autoComplete="off"
+                  />,
                 )}
               </Form.Item>
               <Form.Item
@@ -100,8 +106,14 @@ class LoginForm extends React.Component {
               >
                 {form.getFieldDecorator('password', {
                   rules: [{ required: true, message: formErrorIsRequired }],
+                  initialValue: 'qwerty123',
                 })(
-                  <Input prefix={<Icon type="lock" />} type="password" placeholder={passwordField} autoComplete="off" />,
+                  <Input
+                    prefix={<Icon type="lock" />}
+                    type="password"
+                    placeholder={passwordField}
+                    autoComplete="off"
+                  />,
                 )}
               </Form.Item>
               <Button

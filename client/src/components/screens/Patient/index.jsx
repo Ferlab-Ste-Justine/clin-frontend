@@ -137,7 +137,7 @@ class PatientScreen extends React.Component {
                       { label: ethnicity, value: patient.details.ethnicity },
                       { label: pfamily, value: patient.family.id },
                       { label: proband, value: patient.details.proband },
-                      { label: study, value: patient.study },
+                      { label: study, value: patient.study.name },
                     ]}
                   />
                   <DataList

@@ -2,7 +2,6 @@ import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch } from 'react-router';
-import { Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -20,7 +19,6 @@ import NoMatchScreen from '../../components/screens/NoMatch';
 
 import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
-import { userShape } from '../../reducers/user';
 
 export class App extends React.Component {
   componentWillMount() {
@@ -30,7 +28,7 @@ export class App extends React.Component {
 
   render() {
     const {
-      app, history, user,
+      app, history,
     } = this.props;
 
     return (
@@ -42,16 +40,7 @@ export class App extends React.Component {
                 <Switch key="switch">
                   <PrivateRoute exact path="/patient/search" Component={PatientSearchScreen} key="route-patient-search" />
                   <PrivateRoute path="/patient/:uid" Component={PatientScreen} key="route-patient" />
-                  <Route
-                    exact
-                    path="/"
-                    render={props => (
-                      !user.username
-                        ? <HomeScreen {...props} />
-                        : <Redirect to="/patient/search" />
-                    )}
-                    key="route-home"
-                  />
+                  <Route exact path="/" component={HomeScreen} key="route-home" />
                   <Route component={NoMatchScreen} key="route-nomatch" />
                 </Switch>
               </ConnectedRouter>
@@ -63,20 +52,14 @@ export class App extends React.Component {
   }
 }
 
-App.defaultProps = {
-  user: userShape,
-};
-
 App.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   app: PropTypes.shape(appShape).isRequired,
-  user: PropTypes.shape(userShape),
   history: PropTypes.shape({}).isRequired,
 };
 
 const mapStateToProps = state => ({
   app: state.app,
-  user: state.user,
 });
 
 const mapDispatchToProps = dispatch => ({
