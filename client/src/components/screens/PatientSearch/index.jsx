@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
   Card, Table, AutoComplete, Row, Col, Input, Icon,
 } from 'antd';
@@ -13,6 +15,8 @@ import Content from '../../Content';
 import Footer from '../../Footer';
 
 import './style.scss';
+// import { searchShape } from '../../../reducers/search';
+import { navigateToPatientScreen } from '../../../actions/router';
 
 /*
 const ResizeableTitle = (props) => {
@@ -166,7 +170,7 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    const { search, intl } = this.props;
+    const { intl } = this.props;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
     return (
       <Content>
@@ -176,7 +180,7 @@ class PatientSearchScreen extends React.Component {
           <Row type="flex" justify="center">
             <Col span={24}>
               <AutoComplete
-                dataSource={search}
+                // dataSource={search}
                 onChange={this.handleSearchChange}
                 size="large"
                 style={{ width: '100%' }}
@@ -196,7 +200,7 @@ class PatientSearchScreen extends React.Component {
                 bordered
                 dataSource={dataset}
                 columns={columns}
-                title={() => <div style={{ textAlign: 'right' }}>2 / 100 Patients</div>}
+                title={() => <div style={{ textAlign: 'right' }}>SEARCH_TOTAL / ACL_TOTAL Patients</div>}
                 size="small"
               />
             </Col>
@@ -210,7 +214,21 @@ class PatientSearchScreen extends React.Component {
 
 PatientSearchScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
-  search: PropTypes.shape({}).isRequired,
+  // search: PropTypes.shape(searchShape).isRequired,
 };
 
-export default injectIntl(PatientSearchScreen);
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({
+    navigateToPatientScreen,
+  }, dispatch),
+});
+
+const mapStateToProps = state => ({
+  intl: state.intl,
+  search: state.search,
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(injectIntl(PatientSearchScreen));

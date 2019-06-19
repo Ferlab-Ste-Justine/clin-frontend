@@ -55,7 +55,7 @@ class PatientScreen extends React.Component {
     const ethnicity = intl.formatMessage({ id: 'screen.patient.details.ethnicity' });
     const study = intl.formatMessage({ id: 'screen.patient.details.study' });
     const proband = intl.formatMessage({ id: 'screen.patient.details.proband' });
-    const preferringPractitioner = intl.formatMessage({ id: 'screen.patient.details.preferringPractitioner' });
+    const preferringPractitioner = intl.formatMessage({ id: 'screen.patient.details.referringPractitioner' });
     const mln = intl.formatMessage({ id: 'screen.patient.details.mln' });
     const id = intl.formatMessage({ id: 'screen.patient.details.id' });
     const practitioner = intl.formatMessage({ id: 'screen.patient.details.practitioner' });
@@ -95,72 +95,6 @@ class PatientScreen extends React.Component {
     const patientTab = intl.formatMessage({ id: 'screen.patient.tab.patient' });
     const clinicalTab = intl.formatMessage({ id: 'screen.patient.tab.clinical' });
 
-    const ontologyResults = [{
-      ontologie: 'HPO',
-      code: 'HP:0003202',
-      term: 'Skeletal muscle atrophy',
-      notes: '',
-      observed: 'Oui',
-      consultation: '2019-12-01',
-      apparition: '31-03-2019',
-    },
-    {
-      ontologie: 'HPO',
-      code: 'HP:0003202',
-      term: 'Skeletal muscle atrophy',
-      notes: '',
-      observed: 'Oui',
-      consultation: '2019-12-01',
-      apparition: '31-03-2019',
-    }];
-
-    const geneticalConsultationResults = [
-      {
-        uid: 'CI930983',
-        practitioner: 'Dr. Patrick DUJARDIN',
-        age: '329 jours',
-        date: '2019-02-12',
-      },
-    ];
-
-    const requestResults = [
-      {
-        uid: 'SR000002',
-        date: '2019-02-12',
-        type: 'WXS',
-        author: 'Julie GAUTHIER',
-        specimen: 'SP000002',
-        consulation: 'CI930983',
-        status: 'completé',
-      },
-    ];
-
-    const sampleResults = [
-      {
-        uid: 'SP000002',
-        barcode: '38939eiku77',
-        type: 'ADN',
-        request: 'SR000002',
-      },
-    ];
-
-    const indicationResults = [{
-      notes: 'Suspicion d\'une mutation a transmission récessive qui atteint le tissus musculaire',
-      consultation: '2019-12-01',
-    }];
-
-    const generalObservationResults = [{
-      /* eslint-disable-next-line */
-      notes: 'Le patient a été adressé par son medecin de famille apres une consultation datant de 2019-10-12 pour retard de l\'acquisition de la marche',
-      consultation: '2019-12-01',
-    }];
-
-    const familyHistoryResults = [
-      { notes: 'Mariage consanguin des parents (cousins)', datetime: '2019-02-12 13h00' },
-      /* eslint-disable-next-line */
-      { notes: 'Cas simillaire de cousin maternel (sans plus de précision sur l\'étiologie)', datetime: '2019-02-12 13h00' },
-    ];
-
     return (
       <Content type="auto">
         <Header />
@@ -185,14 +119,14 @@ class PatientScreen extends React.Component {
                   <DataList
                     title={identification}
                     dataSource={[
-                      { label: identifier, value: 'PT000001' },
-                      { label: mrn, value: '4533941' },
-                      { label: ramq, value: 'BERF18106921' },
-                      { label: organization, value: 'CHUSJ' },
-                      { label: firstName, value: 'Stéphane' },
-                      { label: lastName, value: 'Bertrand' },
-                      { label: dateOfBirth, value: '2018-10-11' },
-                      { label: gender, value: 'Masculin' },
+                      { label: identifier, value: patient.details.id },
+                      { label: mrn, value: patient.details.mrn },
+                      { label: ramq, value: patient.details.ramq },
+                      { label: organization, value: patient.organization.name },
+                      { label: firstName, value: patient.details.firstName },
+                      { label: lastName, value: patient.details.lastName },
+                      { label: dateOfBirth, value: patient.details.birthDate },
+                      { label: gender, value: patient.details.gender },
                     ]}
                   />
                 </Col>
@@ -200,18 +134,18 @@ class PatientScreen extends React.Component {
                   <DataList
                     title={additionalInformation}
                     dataSource={[
-                      { label: ethnicity, value: 'Canadien-Français' },
-                      { label: pfamily, value: 'FA00393' },
-                      { label: proband, value: 'Oui' },
-                      { label: study, value: 'Rapidomics' },
+                      { label: ethnicity, value: patient.details.ethnicity },
+                      { label: pfamily, value: patient.family.id },
+                      { label: proband, value: patient.details.proband },
+                      { label: study, value: patient.study },
                     ]}
                   />
                   <DataList
                     style={{ marginTop: '10px' }}
                     title={referringPractitioner}
                     dataSource={[
-                      { label: preferringPractitioner, value: 'Dr. Patrick DUJARDIN' },
-                      { label: mln, value: ' 000002516' },
+                      { label: preferringPractitioner, value: patient.practitioner.name },
+                      { label: mln, value: patient.practitioner.mln },
                     ]}
                   />
                 </Col>
@@ -230,7 +164,7 @@ class PatientScreen extends React.Component {
                     { title: date, dataIndex: 'date', key: 'date' },
                     { title: ageAtConsultation, dataIndex: 'age', key: 'age' },
                   ]}
-                  dataSource={geneticalConsultationResults}
+                  dataSource={patient.consultations}
                 />
               </Row>
               <br />
@@ -250,7 +184,7 @@ class PatientScreen extends React.Component {
                     { title: consultation, dataIndex: 'consulation', key: 'consulation' },
                     { title: status, dataIndex: 'status', key: 'status' },
                   ]}
-                  dataSource={requestResults}
+                  dataSource={patient.requests}
                 />
               </Row>
               <br />
@@ -267,7 +201,7 @@ class PatientScreen extends React.Component {
                     { title: type, dataIndex: 'type', key: 'type' },
                     { title: request, dataIndex: 'request', key: 'request' },
                   ]}
-                  dataSource={sampleResults}
+                  dataSource={patient.samples}
                 />
               </Row>
             </Tabs.TabPane>
@@ -284,13 +218,13 @@ class PatientScreen extends React.Component {
                       { title: ontology, dataIndex: 'ontologie', key: 'ontologie' },
                       { title: code, dataIndex: 'code', key: 'code' },
                       { title: term, dataIndex: 'term', key: 'term' },
-                      { title: notes, dataIndex: 'notes', key: 'notes' },
+                      { title: notes, dataIndex: 'note', key: 'note' },
                       { title: observed, dataIndex: 'observed', key: 'observed' },
-                      { title: consultation, dataIndex: 'consultation', key: 'consultation' },
+                      { title: consultation, dataIndex: 'date', key: 'date' },
                       { title: apparition, dataIndex: 'apparition', key: 'apparition' },
                     ]
                   }
-                  dataSource={ontologyResults}
+                  dataSource={patient.onthology}
                 />
               </Row>
               <br />
@@ -302,10 +236,10 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   size="small"
                   columns={[
-                    { title: notes, dataIndex: 'notes', key: 'notes' },
-                    { title: consultation, dataIndex: 'consultation', key: 'consultation' },
+                    { title: notes, dataIndex: 'note', key: 'note' },
+                    { title: consultation, dataIndex: 'date', key: 'date' },
                   ]}
-                  dataSource={indicationResults}
+                  dataSource={patient.indications}
                 />
               </Row>
               <br />
@@ -317,10 +251,10 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   size="small"
                   columns={[
-                    { title: notes, dataIndex: 'notes', key: 'notes' },
-                    { title: consultation, dataIndex: 'consultation', key: 'consultation' },
+                    { title: notes, dataIndex: 'note', key: 'note' },
+                    { title: consultation, dataIndex: 'date', key: 'date' },
                   ]}
-                  dataSource={generalObservationResults}
+                  dataSource={patient.observations}
                 />
               </Row>
               <br />
@@ -345,9 +279,9 @@ class PatientScreen extends React.Component {
                   <DataList
                     title={familyMembers}
                     dataSource={[
-                      { label: proband, value: 'PT000001' },
-                      { label: father, value: 'PT000002' },
-                      { label: mother, value: 'PT000003' },
+                      { label: proband, value: patient.family.members.proband },
+                      { label: father, value: patient.family.members.mother },
+                      { label: mother, value: patient.family.members.father },
                     ]}
                   />
                 </Col>
@@ -360,10 +294,10 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   size="small"
                   columns={[
-                    { title: notes, dataIndex: 'notes', key: 'notes' },
-                    { title: dateAndTime, dataIndex: 'datetime', key: 'datetime' },
+                    { title: notes, dataIndex: 'note', key: 'note' },
+                    { title: dateAndTime, dataIndex: 'date', key: 'date' },
                   ]}
-                  dataSource={familyHistoryResults}
+                  dataSource={patient.family.history}
                 />
               </Row>
             </Tabs.TabPane>

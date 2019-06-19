@@ -32,6 +32,7 @@ function* navigateToPatientScreen(action) {
 function* navigateToPatientSearchScreen() {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
+    yield put({ type: actions.PATIENT_SEARCH_REQUESTED });
     yield put(push('/patient/search'));
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });

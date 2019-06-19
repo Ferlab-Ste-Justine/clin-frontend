@@ -21,48 +21,11 @@ const getPatientById = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}
   .then(successCallback)
   .catch(errorCallback);
 
-const getAllResourcesByPatientId = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}/resources`)
+const getAllPatients = () => axios.get(`${window.CLIN.patientApiBaseUrl}`)
   .then(successCallback)
   .catch(errorCallback);
 
-const getClinicalImpressionsByPatientId = uid => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/${uid}/clinicalImpressions`,
-)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const getMedicalObservationsByPatientId = uid => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/${uid}/observations/medical`,
-)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const getPhenotypeObservationsByPatientId = uid => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/${uid}/observations/phenotype`,
-)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const getServiceRequestByPatientId = uid => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/${uid}/serviceRequests`,
-)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const getSpecimensByPatientId = uid => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/${uid}/specimens`,
-)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const getFamilyHistoryByPatientId = uid => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/${uid}/familyMemberHistory`,
-)
-  .then(successCallback)
-  .catch(errorCallback);
-
-// @TODO - Elastic Search
-const searchPatientByContent = query => axios.get(`${window.CLIN.patientApiBaseUrl}/query/${query}`)
+const searchAllPatients = query => axios.get(`${window.CLIN.patientApiBaseUrl}/search/${query}`)
   .then(successCallback)
   .catch(errorCallback);
 
@@ -77,12 +40,6 @@ export default {
   login,
   logout,
   getPatientById,
-  getAllResourcesByPatientId,
-  getClinicalImpressionsByPatientId,
-  getMedicalObservationsByPatientId,
-  getPhenotypeObservationsByPatientId,
-  getServiceRequestByPatientId,
-  getSpecimensByPatientId,
-  getFamilyHistoryByPatientId,
-  searchPatientByContent,
+  getAllPatients,
+  searchAllPatients,
 };

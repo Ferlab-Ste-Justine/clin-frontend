@@ -12,12 +12,7 @@ function* fetch(action) {
     if (patientResponse.error) {
       throw new ApiError(patientResponse.error);
     }
-    const resourcesResponse = yield Api.getAllResourcesByPatientId(action.payload.uid);
-    const patientPayload = {
-      patientResponse: patientResponse.payload.data,
-      resourcesResponse: resourcesResponse.payload.data,
-    };
-    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientPayload });
+    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientResponse.payload.data });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
@@ -30,7 +25,13 @@ function* fetch(action) {
 function* search(action) {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
-    const response = yield Api.getPatientById(action.payload.query);
+    let response = null;
+
+    if (!action.payload || !action.payload.query) {
+      response = yield Api.getAllPatients();
+    } else {
+      response = yield Api.searchAllPatients(action.payload.query);
+    }
     if (response.error) {
       throw new ApiError(response.error);
     }
