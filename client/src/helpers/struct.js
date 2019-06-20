@@ -6,8 +6,8 @@ export const normalizePatientDetails = (fhirPatient) => {
   const struct = Object.assign({}, initialPatientState.details);
 
   struct.id = fhirPatient.id;
-  struct.firstName = 'N/A';
-  struct.lastName = 'N/A';
+  struct.firstName = (fhirPatient.name ? fhirPatient.name[0].given[0] : '');
+  struct.lastName = (fhirPatient.name ? fhirPatient.name[0].family : '');
   struct.birthDate = fhirPatient.birthDate;
   struct.gender = fhirPatient.gender;
   struct.ethnicity = fhirPatient.ethnicity;
@@ -133,7 +133,7 @@ export const normalizePatientOntology = fhirPatient => fhirPatient.observations.
       ontologie: 'HPO',
       code: (current.phenotype[0] ? current.phenotype[0].code : ''),
       term: (current.phenotype[0] ? current.phenotype[0].display : ''),
-      note: 'N/A',
+      note: (current.note[0] ? current.note[0].text : ''),
       observed: 'N/A',
       consultation: 'N/A',
       date: (current.effective ? current.effective.dateTime : ''),
