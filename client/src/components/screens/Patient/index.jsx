@@ -42,7 +42,9 @@ class PatientScreen extends React.Component {
   }
 
   render() {
-    const { intl, patient, search } = this.props;
+    const {
+      intl, patient, search, actions,
+    } = this.props;
 
     const identifier = intl.formatMessage({ id: 'screen.patient.details.id' });
     const mrn = intl.formatMessage({ id: 'screen.patient.details.mrn' });
@@ -95,6 +97,24 @@ class PatientScreen extends React.Component {
     const familyMembers = intl.formatMessage({ id: 'screen.patient.header.familyMembers' });
     const patientTab = intl.formatMessage({ id: 'screen.patient.tab.patient' });
     const clinicalTab = intl.formatMessage({ id: 'screen.patient.tab.clinical' });
+    const motherLink = patient.family.members.mother ? (
+          <a /* eslint-disable-line */
+            data-patient-id={patient.family.members.mother}
+            onClick={(e) => {
+              actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
+            }}
+          >
+            {patient.family.members.mother}
+          </a>) : '';
+    const fatherLink = patient.family.members.father ? (
+          <a /* eslint-disable-line */
+            data-patient-id={patient.family.members.father}
+            onClick={(e) => {
+              actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
+            }}
+          >
+            {patient.family.members.father}
+          </a>) : '';
 
     return (
       <Content type="auto">
@@ -297,8 +317,8 @@ class PatientScreen extends React.Component {
                     title={familyMembers}
                     dataSource={[
                       { label: proband, value: patient.family.members.proband },
-                      { label: father, value: patient.family.members.mother },
-                      { label: mother, value: patient.family.members.father },
+                      { label: father, value: fatherLink },
+                      { label: mother, value: motherLink },
                     ]}
                   />
                 </Col>
