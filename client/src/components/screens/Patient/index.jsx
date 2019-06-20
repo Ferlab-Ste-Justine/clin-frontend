@@ -160,9 +160,9 @@ class PatientScreen extends React.Component {
               <Row type="flex">
                 <Typography.Title level={4}>{geneticalConsultations}</Typography.Title>
                 <ResizableAntdTable
+                  bordered
                   style={{ width: '100%' }}
                   pagination={false}
-                  size="small"
                   columns={[
                     { title: id, dataIndex: 'id', key: 'id' },
                     { title: practitioner, dataIndex: 'practitioner', key: 'practitioner' },
@@ -170,6 +170,8 @@ class PatientScreen extends React.Component {
                     { title: ageAtConsultation, dataIndex: 'age', key: 'age' },
                   ]}
                   dataSource={patient.consultations}
+                  size="small"
+                  rowKey="id"
                 />
               </Row>
               <br />
@@ -177,9 +179,9 @@ class PatientScreen extends React.Component {
               <Row type="flex">
                 <Typography.Title level={4}>{requests}</Typography.Title>
                 <ResizableAntdTable
+                  bordered
                   style={{ width: '100%' }}
                   pagination={false}
-                  size="small"
                   columns={[
                     { title: id, dataIndex: 'id', key: 'id' },
                     { title: date, dataIndex: 'date', key: 'date' },
@@ -190,6 +192,8 @@ class PatientScreen extends React.Component {
                     { title: status, dataIndex: 'status', key: 'status' },
                   ]}
                   dataSource={patient.requests}
+                  size="small"
+                  rowKey="id"
                 />
               </Row>
               <br />
@@ -197,9 +201,9 @@ class PatientScreen extends React.Component {
               <Row type="flex">
                 <Typography.Title level={4}>{samples}</Typography.Title>
                 <ResizableAntdTable
+                  bordered
                   style={{ width: '100%' }}
                   pagination={false}
-                  size="small"
                   columns={[
                     { title: id, dataIndex: 'id', key: 'id' },
                     { title: barcode, dataIndex: 'barcode', key: 'barcode' },
@@ -207,6 +211,8 @@ class PatientScreen extends React.Component {
                     { title: request, dataIndex: 'request', key: 'request' },
                   ]}
                   dataSource={patient.samples}
+                  size="small"
+                  rowKey="id"
                 />
               </Row>
             </Tabs.TabPane>
@@ -215,9 +221,9 @@ class PatientScreen extends React.Component {
               <Row type="flex">
                 <Typography.Title level={4}>{clinicalSigns}</Typography.Title>
                 <ResizableAntdTable
+                  bordered
                   style={{ width: '100%' }}
                   pagination={false}
-                  size="small"
                   columns={
                     [
                       { title: ontology, dataIndex: 'ontologie', key: 'ontologie' },
@@ -230,6 +236,8 @@ class PatientScreen extends React.Component {
                     ]
                   }
                   dataSource={patient.onthology}
+                  size="small"
+                  rowKey="date"
                 />
               </Row>
               <br />
@@ -237,14 +245,16 @@ class PatientScreen extends React.Component {
               <Row type="flex">
                 <Typography.Title level={4}>{indications}</Typography.Title>
                 <ResizableAntdTable
+                  bordered
                   style={{ width: '100%' }}
                   pagination={false}
-                  size="small"
                   columns={[
                     { title: notes, dataIndex: 'note', key: 'note' },
                     { title: consultation, dataIndex: 'date', key: 'date' },
                   ]}
                   dataSource={patient.indications}
+                  size="small"
+                  rowKey="consultation"
                 />
               </Row>
               <br />
@@ -252,14 +262,16 @@ class PatientScreen extends React.Component {
               <Row type="flex">
                 <Typography.Title level={4}>{generalObservations}</Typography.Title>
                 <ResizableAntdTable
+                  bordered
                   style={{ width: '100%' }}
                   pagination={false}
-                  size="small"
                   columns={[
                     { title: notes, dataIndex: 'note', key: 'note' },
                     { title: consultation, dataIndex: 'date', key: 'date' },
                   ]}
                   dataSource={patient.observations}
+                  size="small"
+                  rowKey="consultation"
                 />
               </Row>
               <br />
@@ -295,14 +307,16 @@ class PatientScreen extends React.Component {
               <Row type="flex">
                 <Typography.Title level={4}>{familyHistory}</Typography.Title>
                 <ResizableAntdTable
+                  bordered
                   style={{ width: '100%' }}
                   pagination={false}
-                  size="small"
                   columns={[
                     { title: notes, dataIndex: 'note', key: 'note' },
                     { title: dateAndTime, dataIndex: 'date', key: 'date' },
                   ]}
                   dataSource={patient.family.history}
+                  size="small"
+                  rowKey="date"
                 />
               </Row>
             </Tabs.TabPane>
