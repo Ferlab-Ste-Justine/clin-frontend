@@ -109,14 +109,18 @@ class PatientScreen extends React.Component {
         />
         <Card className="entity" style={{ height: '100%' }}>
           <PageHeader
-            title={(<Typography.Title level={2}>Stéphane Bertrand</Typography.Title>)}
+            title={(
+              <Typography.Title level={2}>
+                {`${patient.details.firstName} ${patient.details.lastName}`}
+              </Typography.Title>
+            )}
             extra={`${dateOfBirth} : 2018-10-11`}
           />
           <Tabs defaultActiveKey="patient">
             <Tabs.TabPane tab={patientTab} key="patient">
               <br />
-              <Row type="flex" gutter="32">
-                <Col span={12}>
+              <Row type="flex" gutter={32}>
+                <Col span={12} className="gutter-row">
                   <DataList
                     title={identification}
                     dataSource={[
@@ -131,7 +135,7 @@ class PatientScreen extends React.Component {
                     ]}
                   />
                 </Col>
-                <Col span={12}>
+                <Col span={12} className="gutter-row">
                   <DataList
                     title={additionalInformation}
                     dataSource={[
@@ -266,8 +270,8 @@ class PatientScreen extends React.Component {
                   <Typography.Title level={4}>{family}</Typography.Title>
                 </Col>
               </Row>
-              <Row type="flex" gutter="32">
-                <Col span={12}>
+              <Row type="flex" gutter={32}>
+                <Col span={12} className="gutter-row">
                   <DataList
                     title={generalInformation}
                     dataSource={[
@@ -276,7 +280,7 @@ class PatientScreen extends React.Component {
                     ]}
                   />
                 </Col>
-                <Col span={12}>
+                <Col span={12} className="gutter-row">
                   <DataList
                     title={familyMembers}
                     dataSource={[

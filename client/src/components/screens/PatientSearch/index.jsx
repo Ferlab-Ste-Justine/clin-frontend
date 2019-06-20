@@ -74,7 +74,7 @@ class PatientSearchScreen extends React.Component {
                 dataSource={dataSet}
                 pagination={{
                   defaultPageSize: 25,
-                  pageSizeOptions: [10, 25, 50, 100],
+                  pageSizeOptions: ['10', '25', '50', '100'],
                   showSizeChanger: true,
                   showQuickJumper: true,
                 }}
@@ -83,7 +83,7 @@ class PatientSearchScreen extends React.Component {
                     title: 'Patient ID',
                     dataIndex: 'pid',
                     render: text => (
-                      <navigation
+                      <a /* eslint-disable-line */
                         data-patient-id={text}
                         onClick={(e) => {
                           const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
@@ -91,7 +91,7 @@ class PatientSearchScreen extends React.Component {
                         }}
                       >
                         {text}
-                      </navigation>
+                      </a>
                     ),
                     sortDirections: ['descend', 'ascend'],
                     sorter: (a, b) => a.pid - b.pid,
@@ -128,11 +128,11 @@ class PatientSearchScreen extends React.Component {
                     title: 'Famille ID',
                     dataIndex: 'fid',
                     render: text => (
-                      <navigation
+                      <a /* eslint-disable-line */
                         data-patient-family-id={text}
                       >
                         {text}
-                      </navigation>
+                      </a>
                     ),
                     sortDirections: ['descend', 'ascend'],
                     sorter: (a, b) => a.fid - b.fid,
@@ -193,6 +193,7 @@ class PatientSearchScreen extends React.Component {
                 ]}
                 title={() => <div style={{ textAlign: 'right' }}>{`${dataSet.length} / ${search.patient.total} Patients`}</div>}
                 size="small"
+                rowKey="pid"
               />
             </Col>
           </Row>

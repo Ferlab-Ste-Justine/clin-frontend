@@ -133,7 +133,7 @@ export const normalizePatientOntology = fhirPatient => fhirPatient.observations.
       ontologie: 'HPO',
       code: (current.phenotype[0] ? current.phenotype[0].code : ''),
       term: (current.phenotype[0] ? current.phenotype[0].display : ''),
-      note: (current.note[0] ? current.note[0].text : ''),
+      note: (current.note ? current.note[0].text : ''),
       observed: 'N/A',
       consultation: 'N/A',
       date: (current.effective ? current.effective.dateTime : ''),
