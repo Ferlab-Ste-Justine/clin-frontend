@@ -39,6 +39,7 @@ const searchReducer = (state = initialSearchState, action) => produce(state, (dr
           study: normalizePatientStudy(hit._source),
           requests: normalizePatientRequests(hit._source),
         };
+
         return patient;
       });
       break;

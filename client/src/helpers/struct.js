@@ -6,14 +6,14 @@ export const normalizePatientDetails = (fhirPatient) => {
   const struct = Object.assign({}, initialPatientState.details);
 
   struct.id = fhirPatient.id;
-  struct.firstName = '*** John ***';
-  struct.lastName = '*** Doe ***';
+  struct.firstName = 'N/A';
+  struct.lastName = 'N/A';
   struct.birthDate = fhirPatient.birthDate;
   struct.gender = fhirPatient.gender;
   struct.ethnicity = fhirPatient.ethnicity;
   struct.proband = fhirPatient.isProband;
-  struct.mrn = fhirPatient.identifier.MR;
-  struct.ramq = fhirPatient.identifier.JHN;
+  struct.mrn = (fhirPatient.identifier ? fhirPatient.identifier.MR : '');
+  struct.ramq = (fhirPatient.identifier ? fhirPatient.identifier.JHN : '');
 
   return struct;
 };
@@ -24,8 +24,8 @@ export const normalizePatientFamily = (fhirPatient) => {
   struct.id = fhirPatient.familyId;
   struct.composition = fhirPatient.familyComposition;
   struct.members.proband = fhirPatient.id;
-  struct.members.mother = '*** ??? ***';
-  struct.members.father = '*** ??? ***';
+  struct.members.mother = 'N/A';
+  struct.members.father = 'N/A';
   struct.history = fhirPatient.familyMemberHistory.reduce((result, current) => {
     result.push({
       id: current.id,
@@ -43,7 +43,7 @@ export const normalizePatientStudy = (fhirPatient) => {
 
   if (fhirPatient.studies[0]) {
     struct.id = fhirPatient.studies[0].id;
-    struct.name = fhirPatient.studies[0].name;
+    struct.name = fhirPatient.studies[0].title;
   }
 
   return struct;
@@ -70,8 +70,10 @@ export const normalizePatientPractitioner = (fhirPatient) => {
 export const normalizePatientOrganization = (fhirPatient) => {
   const struct = Object.assign({}, initialPatientState.organization);
 
-  struct.id = fhirPatient.organization.id;
-  struct.name = fhirPatient.organization.name;
+  if (fhirPatient.organization) {
+    struct.id = fhirPatient.organization.id;
+    struct.name = fhirPatient.organization.name;
+  }
 
   return struct;
 };
@@ -81,8 +83,9 @@ export const normalizePatientConsultations = fhirPatient => fhirPatient.clinical
     id: current.id,
     age: current.runtimePatientAge,
     date: current.effective.dateTime,
-    practitioner: '*** Dr Potato ***',
+    practitioner: 'N/A',
   });
+
   return result;
 }, []);
 
@@ -91,51 +94,62 @@ export const normalizePatientRequests = fhirPatient => fhirPatient.serviceReques
     id: current.id,
     date: current.authoredOn,
     type: current.code.text,
-    author: '*** Mme Patate ***',
-    specimen: '*** SP000002 ***',
-    consulation: '*** CI930983 ***',
+    author: 'N/A',
+    specimen: 'N/A',
+    consulation: 'N/A',
     status: current.status,
   });
+
   return result;
 }, []);
 
 export const normalizePatientObservations = fhirPatient => fhirPatient.observations.reduce((result, current) => {
-  if (!current.phenotype) {
+  if (current.code.text.toLowerCase().indexOf('medical') !== -1) {
     result.push({
       id: current.id,
       date: current.effective.dateTime,
       note: current.note[0].text,
     });
   }
+
+  return result;
+}, []);
+
+export const normalizePatientIndications = fhirPatient => fhirPatient.observations.reduce((result, current) => {
+  if (current.code.text.toLowerCase().indexOf('indication') !== -1) {
+    result.push({
+      id: current.id,
+      date: current.effective.dateTime,
+      note: (current.note[0] ? current.note[0].text : ''),
+    });
+  }
+
   return result;
 }, []);
 
 export const normalizePatientOntology = fhirPatient => fhirPatient.observations.reduce((result, current) => {
-  if (current.phenotype) {
+  if (current.code.text.toLowerCase().indexOf('phenotype') !== -1 && current.phenotype) {
     result.push({
-      ontologie: '*** HPO ***',
-      code: current.phenotype[0].code,
-      term: current.phenotype[0].display,
-      note: '*** ??? ***',
-      observed: '*** Oui ***',
+      ontologie: 'HPO',
+      code: (current.phenotype[0] ? current.phenotype[0].code : ''),
+      term: (current.phenotype[0] ? current.phenotype[0].display : ''),
+      note: 'N/A',
+      observed: 'N/A',
+      consultation: 'N/A',
       date: current.effective.dateTime,
-      apparition: '*** 31-03-2019 ***',
     });
   }
+
   return result;
 }, []);
 
 export const normalizePatientSamples = fhirPatient => fhirPatient.specimens.reduce((result, current) => {
   result.push({
+    type: 'DNA',
     id: current.id,
-    barcode: '*** 38939eiku77 ***',
-    type: current.container[0],
+    barcode: current.container[0],
     request: current.request[0],
   });
+
   return result;
 }, []);
-
-export const normalizePatientIndications = () => [{
-  note: '*** Suspicion d\'une mutation a transmission récessive qui atteint le tissus musculaire ***',
-  date: '*** 2019-12-01 ***',
-}];

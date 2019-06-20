@@ -36,7 +36,7 @@ class PatientSearchScreen extends React.Component {
         firstname: result.details.firstName,
         dob: result.details.birthDate,
         fid: result.family.id,
-        position: result.details.proband ? 'Proband' : '',
+        position: result.details.proband ? 'Proband' : 'Parent',
         practitioner: result.practitioner.name,
         study: result.study,
         request: (lastRequest ? lastRequest.id : ''),
@@ -71,11 +71,27 @@ class PatientSearchScreen extends React.Component {
               <Table
                 bordered
                 dataSource={dataSet}
+                pagination={{
+                  defaultPageSize: 25,
+                  pageSizeOptions: [10, 25, 50, 100],
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                }}
                 columns={[
                   {
                     title: 'Patient ID',
                     dataIndex: 'pid',
-                    render: text => <div data-patient-id={text} onClick={(e) => { const id = e.currentTarget.attributes['data-patient-id'].nodeValue; console.log(id); actions.navigateToPatientScreen(id); }}>{text}</div>, // eslint-disable-line
+                    render: text => (
+                      <navigation
+                        data-patient-id={text}
+                        onClick={(e) => {
+                          const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
+                          actions.navigateToPatientScreen(id);
+                        }}
+                      >
+                        {text}
+                      </navigation>
+                    ),
                     sortDirections: ['descend', 'ascend'],
                     sorter: (a, b) => a.pid - b.pid,
                   },
@@ -110,7 +126,13 @@ class PatientSearchScreen extends React.Component {
                   {
                     title: 'Famille ID',
                     dataIndex: 'fid',
-                    render: text => <a disabled href={`/patient/family/${text}`}>{text}</a>, // eslint-disable-line
+                    render: text => (
+                      <navigation
+                        data-patient-family-id={text}
+                      >
+                        {text}
+                      </navigation>
+                    ),
                     sortDirections: ['descend', 'ascend'],
                     sorter: (a, b) => a.fid - b.fid,
                   },
@@ -124,7 +146,7 @@ class PatientSearchScreen extends React.Component {
                       },
                       {
                         text: 'Parent',
-                        value: 'notproband',
+                        value: 'Parent',
                       },
                     ],
                     sortDirections: ['descend', 'ascend'],
@@ -154,12 +176,12 @@ class PatientSearchScreen extends React.Component {
                     dataIndex: 'status',
                     filters: [
                       {
-                        text: 'En cours',
-                        value: 'En cours',
+                        text: 'Actif',
+                        value: 'active',
                       },
                       {
                         text: 'Complété',
-                        value: 'Complété',
+                        value: 'completed',
                       },
                     ],
                     sortDirections: ['descend', 'ascend'],

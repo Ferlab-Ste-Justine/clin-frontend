@@ -159,7 +159,7 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   size="small"
                   columns={[
-                    { title: id, dataIndex: 'uid', key: 'uid' },
+                    { title: id, dataIndex: 'id', key: 'id' },
                     { title: practitioner, dataIndex: 'practitioner', key: 'practitioner' },
                     { title: date, dataIndex: 'date', key: 'date' },
                     { title: ageAtConsultation, dataIndex: 'age', key: 'age' },
@@ -176,7 +176,7 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   size="small"
                   columns={[
-                    { title: id, dataIndex: 'uid', key: 'uid' },
+                    { title: id, dataIndex: 'id', key: 'id' },
                     { title: date, dataIndex: 'date', key: 'date' },
                     { title: type, dataIndex: 'type', key: 'type' },
                     { title: author, dataIndex: 'author', key: 'author' },
@@ -196,7 +196,7 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   size="small"
                   columns={[
-                    { title: id, dataIndex: 'uid', key: 'uid' },
+                    { title: id, dataIndex: 'id', key: 'id' },
                     { title: barcode, dataIndex: 'barcode', key: 'barcode' },
                     { title: type, dataIndex: 'type', key: 'type' },
                     { title: request, dataIndex: 'request', key: 'request' },
@@ -220,8 +220,8 @@ class PatientScreen extends React.Component {
                       { title: term, dataIndex: 'term', key: 'term' },
                       { title: notes, dataIndex: 'note', key: 'note' },
                       { title: observed, dataIndex: 'observed', key: 'observed' },
-                      { title: consultation, dataIndex: 'date', key: 'date' },
-                      { title: apparition, dataIndex: 'apparition', key: 'apparition' },
+                      { title: consultation, dataIndex: 'consultation', key: 'consultation' },
+                      { title: apparition, dataIndex: 'date', key: 'date' },
                     ]
                   }
                   dataSource={patient.onthology}
