@@ -82,7 +82,7 @@ export const normalizePatientConsultations = fhirPatient => fhirPatient.clinical
   result.push({
     id: current.id,
     age: current.runtimePatientAge,
-    date: current.effective.dateTime,
+    date: (current.effective ? current.effective.dateTime : ''),
     practitioner: 'N/A',
   });
 
@@ -93,7 +93,7 @@ export const normalizePatientRequests = fhirPatient => fhirPatient.serviceReques
   result.push({
     id: current.id,
     date: current.authoredOn,
-    type: current.code.text,
+    type: (current.code ? current.code.text : ''),
     author: 'N/A',
     specimen: 'N/A',
     consulation: 'N/A',
@@ -107,8 +107,8 @@ export const normalizePatientObservations = fhirPatient => fhirPatient.observati
   if (current.code.text.toLowerCase().indexOf('medical') !== -1) {
     result.push({
       id: current.id,
-      date: current.effective.dateTime,
-      note: current.note[0].text,
+      date: (current.effective ? current.effective.dateTime : ''),
+      note: (current.note[0] ? current.note[0].text : ''),
     });
   }
 
@@ -119,7 +119,7 @@ export const normalizePatientIndications = fhirPatient => fhirPatient.observatio
   if (current.code.text.toLowerCase().indexOf('indication') !== -1) {
     result.push({
       id: current.id,
-      date: current.effective.dateTime,
+      date: (current.effective ? current.effective.dateTime : ''),
       note: (current.note[0] ? current.note[0].text : ''),
     });
   }
@@ -136,7 +136,7 @@ export const normalizePatientOntology = fhirPatient => fhirPatient.observations.
       note: 'N/A',
       observed: 'N/A',
       consultation: 'N/A',
-      date: current.effective.dateTime,
+      date: (current.effective ? current.effective.dateTime : ''),
     });
   }
 
@@ -147,8 +147,8 @@ export const normalizePatientSamples = fhirPatient => fhirPatient.specimens.redu
   result.push({
     type: 'DNA',
     id: current.id,
-    barcode: current.container[0],
-    request: current.request[0],
+    barcode: (current.container ? current.container[0] : ''),
+    request: (current.request ? current.request[0] : ''),
   });
 
   return result;
