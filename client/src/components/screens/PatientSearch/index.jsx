@@ -4,8 +4,9 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Table, AutoComplete, Row, Col, Input, Icon,
+  Card, AutoComplete, Row, Col, Input, Icon,
 } from 'antd';
+import ResizableAntdTable from 'resizable-antd-table';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -68,7 +69,7 @@ class PatientSearchScreen extends React.Component {
           <Row type="flex" justify="center">
             <Col span={24}>
               <br />
-              <Table
+              <ResizableAntdTable
                 bordered
                 dataSource={dataSet}
                 pagination={{

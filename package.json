@@ -75,6 +75,7 @@
     "redux-mock-store": "^1.5.3",
     "redux-saga": "^1.0.2",
     "redux-saga-router": "^2.2.0",
+    "resizable-antd-table": "^1.0.1",
     "resolve": "1.10.0",
     "sass-loader": "7.1.0",
     "style-loader": "0.23.1",

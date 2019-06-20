@@ -6,8 +6,9 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Col, Row, Tabs, PageHeader, Typography, Table,
+  Card, Col, Row, Tabs, PageHeader, Typography,
 } from 'antd';
+import ResizableAntdTable from 'resizable-antd-table';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -154,7 +155,7 @@ class PatientScreen extends React.Component {
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{geneticalConsultations}</Typography.Title>
-                <Table
+                <ResizableAntdTable
                   style={{ width: '100%' }}
                   pagination={false}
                   size="small"
@@ -171,7 +172,7 @@ class PatientScreen extends React.Component {
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{requests}</Typography.Title>
-                <Table
+                <ResizableAntdTable
                   style={{ width: '100%' }}
                   pagination={false}
                   size="small"
@@ -191,7 +192,7 @@ class PatientScreen extends React.Component {
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{samples}</Typography.Title>
-                <Table
+                <ResizableAntdTable
                   style={{ width: '100%' }}
                   pagination={false}
                   size="small"
@@ -209,7 +210,7 @@ class PatientScreen extends React.Component {
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{clinicalSigns}</Typography.Title>
-                <Table
+                <ResizableAntdTable
                   style={{ width: '100%' }}
                   pagination={false}
                   size="small"
@@ -231,7 +232,7 @@ class PatientScreen extends React.Component {
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{indications}</Typography.Title>
-                <Table
+                <ResizableAntdTable
                   style={{ width: '100%' }}
                   pagination={false}
                   size="small"
@@ -246,7 +247,7 @@ class PatientScreen extends React.Component {
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{generalObservations}</Typography.Title>
-                <Table
+                <ResizableAntdTable
                   style={{ width: '100%' }}
                   pagination={false}
                   size="small"
@@ -289,7 +290,7 @@ class PatientScreen extends React.Component {
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{familyHistory}</Typography.Title>
-                <Table
+                <ResizableAntdTable
                   style={{ width: '100%' }}
                   pagination={false}
                   size="small"
