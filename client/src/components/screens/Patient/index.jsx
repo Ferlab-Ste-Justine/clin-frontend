@@ -255,9 +255,9 @@ class PatientScreen extends React.Component {
                       { title: apparition, dataIndex: 'date', key: 'date' },
                     ]
                   }
-                  dataSource={patient.onthology}
+                  dataSource={patient.ontology}
                   size="small"
-                  rowKey="date"
+                  rowKey="code"
                 />
               </Row>
               <br />
