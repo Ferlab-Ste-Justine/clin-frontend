@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
+import _ from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
@@ -7,6 +8,7 @@ import { connect } from 'react-redux';
 import {
   Col, Row, Layout, Radio, Icon, Button, Typography,
 } from 'antd';
+
 
 import { patientShape } from '../../../reducers/patient';
 import { searchShape } from '../../../reducers/search';
@@ -18,23 +20,15 @@ export const PatientNavigation = ({
   intl, patient, search, navigateToPatientScreen, navigateToPatientSearchScreen,
 }) => {
   const backToSearch = intl.formatMessage({ id: 'screen.patient.backToSearch' });
-
   const patients = search.patient;
-
-
-  // @TODO INFER PREVIOUS AND NEXT BASED ON CURRENT PATIENT ID
-
-  // const currentPatientId = 'PA000011';
+  const patientsCount = patients.total;
+  const currentPatientId = patient.details.id;
   const currentPatientMRN = patient.details.mrn;
-  const currentPatientIndex = 1;
-
-  const previousPatientId = 'PA00225';
-  const previousPatientMRN = '483724';
-
-
-  const nextPatientId = 'PA00225';
-  const nextPatientMRN = '483726';
-
+  const currentPatientIndex = _.findIndex(patients.results, { details: { id: currentPatientId } });
+  const previousPatientIndex = (currentPatientIndex - 1) >= 0 ? (currentPatientIndex - 1) : null;
+  const previousPatient = previousPatientIndex ? patients.results[previousPatientIndex] : null;
+  const nextPatientIndex = (currentPatientIndex + 1) < patientsCount ? (currentPatientIndex + 1) : null;
+  const nextPatient = nextPatientIndex ? patients.results[nextPatientIndex] : null;
 
   return (
     <Layout.Content
@@ -48,21 +42,25 @@ export const PatientNavigation = ({
         </Col>
         <Col span={10} align="center">
           <Radio.Group>
-            <Radio.Button>
-              <a href="#" data-patient-id={previousPatientId} onClick={navigateToPatientScreen}>
-                <Icon type="left" />
-                <Text>{`MRN: ${previousPatientMRN}`}</Text>
-              </a>
-            </Radio.Button>
+            { previousPatient ? (
+              <Radio.Button>
+                <a href="#" data-patient-id={previousPatient.details.id} onClick={navigateToPatientScreen}>
+                  <Icon type="left" />
+                  <Text>{`MRN: ${previousPatient.details.mrn}`}</Text>
+                </a>
+              </Radio.Button>
+            ) : null }
             <Radio.Button disabled>
-              <Text>{`Search Results ${currentPatientIndex} of ${patients.results.length}`}</Text>
+              <Text>{`Search Results ${currentPatientIndex} of ${patientsCount}`}</Text>
             </Radio.Button>
-            <Radio.Button>
-              <a href="#" data-patient-id={nextPatientId} onClick={navigateToPatientScreen}>
-                <Text>{`MRN: ${nextPatientMRN}`}</Text>
-                <Icon type="right" />
-              </a>
-            </Radio.Button>
+            { nextPatient ? (
+              <Radio.Button>
+                <a href="#" data-patient-id={nextPatient.details.id} onClick={navigateToPatientScreen}>
+                  <Text>{`MRN: ${nextPatient.details.mrn}`}</Text>
+                  <Icon type="right" />
+                </a>
+              </Radio.Button>
+            ) : null }
           </Radio.Group>
         </Col>
         <Col span={6} align="end">
