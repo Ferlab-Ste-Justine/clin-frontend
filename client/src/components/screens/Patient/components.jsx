@@ -24,10 +24,10 @@ export const PatientNavigation = ({
   const currentPatientId = patient.details.id;
   const currentPatientMRN = patient.details.mrn;
   const currentPatientIndex = _.findIndex(patients.results, { details: { id: currentPatientId } });
-  const previousPatientIndex = (currentPatientIndex - 1) >= 0 ? (currentPatientIndex - 1) : null;
-  const previousPatient = previousPatientIndex ? patients.results[previousPatientIndex] : null;
-  const nextPatientIndex = (currentPatientIndex + 1) < patientsCount ? (currentPatientIndex + 1) : null;
-  const nextPatient = nextPatientIndex ? patients.results[nextPatientIndex] : null;
+  const previousPatientIndex = currentPatientIndex > 0 ? (currentPatientIndex - 1) : null;
+  const previousPatient = previousPatientIndex !== null ? patients.results[previousPatientIndex] : null;
+  const nextPatientIndex = currentPatientIndex < patientsCount ? (currentPatientIndex + 1) : null;
+  const nextPatient = nextPatientIndex !== null ? patients.results[nextPatientIndex] : null;
 
   return (
     <Layout.Content
@@ -36,7 +36,8 @@ export const PatientNavigation = ({
       <Row type="flex" justify="space-between" align="middle">
         <Col span={6} align="start">
           <Button type="secondary">
-            <Text strong>{`MRN: ${currentPatientMRN}`}</Text>
+            <Icon type="idcard" />
+            <Text strong>{`MRN ${currentPatientMRN}`}</Text>
           </Button>
         </Col>
         <Col span={10} align="center">
@@ -44,19 +45,23 @@ export const PatientNavigation = ({
             { previousPatient ? (
               <Radio.Button>
                 <a href="#" data-patient-id={previousPatient.details.id} onClick={navigateToPatientScreen}>
-                  <Icon type="left" />
-                  <Text>{`MRN: ${previousPatient.details.mrn}`}</Text>
+                  <Icon type="caret-left" />
+                  <Text>
+                    {` MRN ${previousPatient.details.mrn}`}
+                  </Text>
                 </a>
               </Radio.Button>
             ) : null }
             <Radio.Button disabled>
-              <Text>{`Search Results ${currentPatientIndex} of ${patientsCount}`}</Text>
+              <Text>{`${(currentPatientIndex + 1)} / ${patientsCount}`}</Text>
             </Radio.Button>
             { nextPatient ? (
               <Radio.Button>
                 <a href="#" data-patient-id={nextPatient.details.id} onClick={navigateToPatientScreen}>
-                  <Text>{`MRN: ${nextPatient.details.mrn}`}</Text>
-                  <Icon type="right" />
+                  <Text>
+                    {`MRN ${nextPatient.details.mrn} `}
+                  </Text>
+                  <Icon type="caret-right" />
                 </a>
               </Radio.Button>
             ) : null }
