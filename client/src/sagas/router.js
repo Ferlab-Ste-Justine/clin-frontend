@@ -2,7 +2,6 @@ import { push } from 'connected-react-router';
 import { all, put, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
-import Api, { ApiError } from '../helpers/api';
 
 
 function* navigate(action) {
@@ -20,12 +19,7 @@ function* navigate(action) {
 function* navigateToPatientScreen(action) {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
-    const response = yield Api.getPatientById(action.payload.uid);
-    if (response.error) {
-      yield put({ type: actions.PATIENT_FETCH_FAILED });
-      throw new ApiError(response.error);
-    }
-    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: response.payload });
+    yield put({ type: actions.PATIENT_FETCH_REQUESTED, payload: { uid: action.payload.uid } });
     yield put(push(`/patient/${action.payload.uid}`));
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
@@ -38,6 +32,7 @@ function* navigateToPatientScreen(action) {
 function* navigateToPatientSearchScreen() {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
+    yield put({ type: actions.PATIENT_SEARCH_REQUESTED });
     yield put(push('/patient/search'));
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });

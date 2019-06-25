@@ -4,9 +4,11 @@ import {
   Card, List, Row, Col, Typography,
 } from 'antd';
 
+
 const DataList = (props) => {
   const { title, dataSource, style } = props;
   const header = (<Typography.Title level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
+
   return (
     <Card className="datalist" title={header} type="inner" size="small" hoverable style={style}>
       <List
@@ -31,7 +33,7 @@ const DataList = (props) => {
 
 DataList.propTypes = {
   title: PropTypes.string.isRequired,
-  dataSource: PropTypes.shape([{ label: PropTypes.string.isRequired, value: PropTypes.any }]).isRequired,
+  dataSource: PropTypes.array.isRequired, /* eslint-disable-line */
   style: PropTypes.shape({}),
 };
 

@@ -44,6 +44,7 @@ dependencies:
   jest-watch-typeahead: 0.2.1
   less: 3.9.0
   less-loader: 4.1.0
+  lodash: 4.17.11
   mini-css-extract-plugin: 0.5.0
   moment: 2.24.0
   node-sass: 4.11.0
@@ -71,6 +72,7 @@ dependencies:
   redux-mock-store: 1.5.3
   redux-saga: 1.0.2
   redux-saga-router: 2.2.0
+  resizable-antd-table: 1.0.1
   resolve: 1.10.0
   sass-loader: 7.1.0
   style-loader: 0.23.1
@@ -10121,6 +10123,10 @@ packages:
     dev: false
     resolution:
       integrity: sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+  /resizable-antd-table/1.0.1:
+    dev: false
+    resolution:
+      integrity: sha512-I9zeI8vBmFMekQec6y6i1IXpnFiP5/+snBM5MBD51WYeUPIiZvAumB/YxLMH5jM+5jsjrq/fEXcbIjPoqfgdPw==
   /resize-observer-polyfill/1.5.1:
     dev: false
     resolution:
@@ -12120,6 +12126,7 @@ specifiers:
   jest-watch-typeahead: ^0.2.1
   less: ^3.9.0
   less-loader: ^4.1.0
+  lodash: ^4.17.11
   mini-css-extract-plugin: 0.5.0
   moment: ^2.24.0
   node-sass: ^4.11.0
@@ -12147,6 +12154,7 @@ specifiers:
   redux-mock-store: ^1.5.3
   redux-saga: ^1.0.2
   redux-saga-router: ^2.2.0
+  resizable-antd-table: ^1.0.1
   resolve: 1.10.0
   sass-loader: 7.1.0
   style-loader: 0.23.1
