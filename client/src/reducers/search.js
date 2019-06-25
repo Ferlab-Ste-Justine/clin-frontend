@@ -9,8 +9,14 @@ import {
   normalizePatientStudy,
 } from '../helpers/struct';
 
+/* eslint-disable */
 
 export const initialSearchState = {
+  autocomplete: {
+    query: null,
+    results: [],
+    total: 0,
+  },
   patient: {
     query: null,
     results: [],
@@ -19,6 +25,11 @@ export const initialSearchState = {
 };
 
 export const searchShape = {
+  autocomplete: PropTypes.shape({
+    query: PropTypes.string,
+    results: PropTypes.array,
+    total: PropTypes.number,
+  }),
   patient: PropTypes.shape({
     query: PropTypes.string,
     results: PropTypes.array,
@@ -39,8 +50,24 @@ const searchReducer = (state = initialSearchState, action) => produce(state, (dr
           study: normalizePatientStudy(hit._source),
           requests: normalizePatientRequests(hit._source),
         };
-
         return patient;
+      });
+      break;
+
+    case actions.PATIENT_AUTOCOMPLETE_REQUESTED:
+      draft.autocomplete.query = action.payload.query;
+      break;
+
+    case actions.PATIENT_AUTOCOMPLETE_FAILED:
+      draft.autocomplete.total = initialSearchState.autocomplete.total;
+      draft.autocomplete.results = initialSearchState.autocomplete.results;
+      break;
+
+    case actions.PATIENT_AUTOCOMPLETE_SUCCEEDED:
+      draft.autocomplete.total = action.payload.data.data.total;
+      draft.autocomplete.results = action.payload.data.data.hits.map((hit) => {
+        const details = normalizePatientDetails(hit._source);
+        return `${details.id} ${details.firstName} ${details.lastName}`;
       });
       break;
 
