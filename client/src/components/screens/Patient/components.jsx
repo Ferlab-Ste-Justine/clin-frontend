@@ -9,7 +9,6 @@ import {
   Col, Row, Layout, Radio, Icon, Button, Typography,
 } from 'antd';
 
-
 import { patientShape } from '../../../reducers/patient';
 import { searchShape } from '../../../reducers/search';
 
