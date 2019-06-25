@@ -191,7 +191,7 @@ class PatientSearchScreen extends React.Component {
                   },
 
                 ]}
-                title={() => <div style={{ textAlign: 'right' }}>{`${dataSet.length} / ${search.patient.total} Patients`}</div>}
+                title={() => <div style={{ textAlign: 'right' }}>{`${search.patient.total} Patients`}</div>}
                 size="small"
                 rowKey="pid"
               />

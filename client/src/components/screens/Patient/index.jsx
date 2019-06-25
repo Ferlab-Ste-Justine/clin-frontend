@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Col, Row, Tabs, PageHeader, Typography,
+  Card, Col, Row, Tabs, PageHeader, Typography, Icon,
 } from 'antd';
 import ResizableAntdTable from 'resizable-antd-table';
 
@@ -136,8 +136,16 @@ class PatientScreen extends React.Component {
             )}
             extra={`${dateOfBirth} : 2018-10-11`}
           />
-          <Tabs defaultActiveKey="patient">
-            <Tabs.TabPane tab={patientTab} key="patient">
+          <Tabs key={patient.details.id} defaultActiveKey="patient">
+            <Tabs.TabPane
+              key="patient"
+              tab={(
+                <span>
+                  <Icon type="profile" />
+                  {patientTab}
+                </span>
+                )}
+            >
               <br />
               <Row type="flex" gutter={32}>
                 <Col span={12} className="gutter-row">
@@ -236,7 +244,15 @@ class PatientScreen extends React.Component {
                 />
               </Row>
             </Tabs.TabPane>
-            <Tabs.TabPane tab={clinicalTab} key="clinique">
+            <Tabs.TabPane
+              key="clinique"
+              tab={(
+                <span>
+                  <Icon type="reconciliation" />
+                  {clinicalTab}
+                </span>
+                  )}
+            >
               <br />
               <Row type="flex">
                 <Typography.Title level={4}>{clinicalSigns}</Typography.Title>

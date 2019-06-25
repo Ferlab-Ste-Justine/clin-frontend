@@ -1,7 +1,7 @@
 {
   "name": "clin-frontend",
-  "version": "0.2.0",
-  "versionName": "Prototype",
+  "version": "1.0.0",
+  "versionName": "Alpha Strain",
   "dependencies": {
     "@babel/core": "7.2.2",
     "@clarketm/saga-monitor": "^2.0.1",

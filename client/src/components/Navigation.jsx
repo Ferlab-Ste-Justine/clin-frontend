@@ -17,7 +17,14 @@ import { navigateToPatientSearchScreen } from '../actions/router';
 const navigationMenu = (intl, router, actions) => {
   const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
   return (
-    <Menu onClick={() => { actions.navigateToPatientSearchScreen(); }} mode="horizontal" selectedKeys={[router.location.pathname]}>
+    <Menu
+      onClick={() => {
+        actions.navigateToPatientSearchScreen();
+      }}
+      mode="horizontal"
+      selectedKeys={[router.location.pathname]
+          }
+    >
       <Menu.Item key="/patient/search">
         {patientSearch}
       </Menu.Item>
@@ -94,7 +101,7 @@ const Navigation = ({
             { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a className="ant-dropdown-link">
               <span className="ant-dropdown-link">
-                <Icon type="language" />
+                <Icon type="flag" />
                 {` ${intl.formatMessage({ id: `lang.${app.locale.lang}.long` })} `}
                 <Icon type="down" />
               </span>
