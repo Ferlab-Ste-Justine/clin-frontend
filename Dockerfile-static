@@ -1,9 +1,8 @@
 FROM node:10.14.1-alpine
 ADD . /code
 WORKDIR /code
-RUN npm install -g pnpm
-RUN pnpm install
-RUN pnpm run build
+RUN npm install
+RUN npm run build
 
 FROM nginx:1
 
