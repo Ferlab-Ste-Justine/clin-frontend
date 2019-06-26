@@ -1,7 +1,9 @@
-import { all, put, takeLatest } from 'redux-saga/effects';
+import {
+  all, put, debounce, takeLatest,
+} from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
-import { success, error } from '../actions/app';
+import { error } from '../actions/app';
 import Api, { ApiError } from '../helpers/api';
 
 
@@ -13,11 +15,32 @@ function* fetch(action) {
       throw new ApiError(patientResponse.error);
     }
     yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientResponse.payload.data });
-    yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
+    yield put({ type: actions.STOP_LOADING_ANIMATION });
+  }
+}
+
+function* autoComplete(action) {
+  try {
+    if (!action.payload.partial) {
+      yield put({ type: actions.START_LOADING_ANIMATION });
+    }
+    const response = action.payload.partial
+      ? yield Api.getPartialPatientsByAutoComplete(action.payload.query)
+      : yield Api.getFullPatientsByAutoComplete(action.payload.query);
+    if (response.error) {
+      throw new ApiError(response.error);
+    }
+    yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
+    if (!action.payload.partial) {
+      yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
+      yield put({ type: actions.STOP_LOADING_ANIMATION });
+    }
+  } catch (e) {
+    yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
@@ -36,7 +59,6 @@ function* search(action) {
       throw new ApiError(response.error);
     }
     yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
-    yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
@@ -49,6 +71,10 @@ function* watchPatientFetch() {
   yield takeLatest(actions.PATIENT_FETCH_REQUESTED, fetch);
 }
 
+function* debouncePatientAutoComplete() {
+  yield debounce(250, actions.PATIENT_AUTOCOMPLETE_REQUESTED, autoComplete);
+}
+
 function* watchPatientSearch() {
   yield takeLatest(actions.PATIENT_SEARCH_REQUESTED, search);
 }
@@ -56,6 +82,7 @@ function* watchPatientSearch() {
 export default function* watchedPatientSagas() {
   yield all([
     watchPatientFetch(),
+    debouncePatientAutoComplete(),
     watchPatientSearch(),
   ]);
 }

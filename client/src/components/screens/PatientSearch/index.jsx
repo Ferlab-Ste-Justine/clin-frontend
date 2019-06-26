@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
@@ -16,12 +18,42 @@ import Footer from '../../Footer';
 import './style.scss';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
+import { autoCompletePartialPatients, autoCompleteFullPatients, searchPatientsByQuery } from '../../../actions/patient';
 
 
 class PatientSearchScreen extends React.Component {
   constructor() {
     super();
-    this.handleSearchChange = () => {};
+    this.state = {
+      autoCompleteIsOpen: false
+    };
+    this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
+    this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
+    this.handleAutoCompletePressEnter = this.handleAutoCompletePressEnter.bind(this);
+  }
+
+  handleAutoCompleteChange(query) {
+    this.props.actions.autoCompletePartialPatients(query);
+    this.setState({
+      autoCompleteIsOpen: true
+    })
+  }
+
+  handleAutoCompleteSelect(value) {
+    const patientId = value.split(' ')[0] || null;
+    if (patientId) {
+      this.props.actions.navigateToPatientScreen(patientId);
+    }
+  }
+
+  handleAutoCompletePressEnter(e) {
+    this.setState({
+      autoCompleteIsOpen: false
+    })
+    const query = e.currentTarget.attributes['value'].nodeValue;
+    if (query) {
+      this.props.actions.autoCompleteFullPatients(query)
+    }
   }
 
   render() {
@@ -54,15 +86,19 @@ class PatientSearchScreen extends React.Component {
           <Row type="flex" justify="center">
             <Col span={24}>
               <AutoComplete
-                onChange={this.handleSearchChange}
                 size="large"
                 style={{ width: '100%' }}
                 optionLabelProp="text"
                 placeholder={placeholderText}
                 allowClear
                 autoFocus
+                defaultActiveFirstOption={false}
+                dataSource={search.autocomplete.results}
+                onChange={this.handleAutoCompleteChange}
+                onSelect={this.handleAutoCompleteSelect}
+                open={this.state.autoCompleteIsOpen}
               >
-                <Input prefix={<Icon type="search" />} />
+                <Input prefix={<Icon type="search" />} onPressEnter={this.handleAutoCompletePressEnter} />
               </AutoComplete>
             </Col>
           </Row>
@@ -213,6 +249,9 @@ PatientSearchScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
+    autoCompletePartialPatients,
+    autoCompleteFullPatients,
+    searchPatientsByQuery,
   }, dispatch),
 });
 
