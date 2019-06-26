@@ -21,11 +21,15 @@ const getPatientById = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}
   .then(successCallback)
   .catch(errorCallback);
 
-const getPartialPatientsByAutoComplete = query => axios.get(`${window.CLIN.patientApiBaseUrl}/autocomplete/partial/${query}`)
+const getPartialPatientsByAutoComplete = query => axios.get(
+  `${window.CLIN.patientApiBaseUrl}/autocomplete/partial/${query}`,
+)
   .then(successCallback)
   .catch(errorCallback);
 
-const getFullPatientsByAutoComplete = query => axios.get(`${window.CLIN.patientApiBaseUrl}/autocomplete/full/${query}`)
+const getFullPatientsByAutoComplete = query => axios.get(
+  `${window.CLIN.patientApiBaseUrl}/autocomplete/full/${query}`,
+)
   .then(successCallback)
   .catch(errorCallback);
 
