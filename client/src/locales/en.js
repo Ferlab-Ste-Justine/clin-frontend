@@ -85,6 +85,17 @@ const en = {
   'screen.patient.tab.patient': 'Patient Information',
   'screen.patient.tab.clinical': 'Clinical Information',
   'screen.patientsearch.placeholder': 'Available search criterias: MRN, ID Patient, RAMQ, Nom, Prénom, ID Famille, ID Specimen et Étude',
+  'screen.patientsearch.table.patientId': 'Patient ID',
+  'screen.patientsearch.table.mrn': 'MRN',
+  'screen.patientsearch.table.organization': 'Organization',
+  'screen.patientsearch.table.firstName': 'First Name',
+  'screen.patientsearch.table.lastName': 'Last Name',
+  'screen.patientsearch.table.dob': 'Date of Birth',
+  'screen.patientsearch.table.familyId': 'Family ID',
+  'screen.patientsearch.table.position': 'Position',
+  'screen.patientsearch.table.practitioner': 'Referring Practitioner',
+  'screen.patientsearch.table.request': 'Request',
+  'screen.patientsearch.table.status': 'Status',
 };
 
 export default en;

@@ -1,3 +1,10 @@
+@import '/../../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
+@import '/../../../../../node_modules/@blueprintjs/table/src/table.scss';
+
+div.bp3-table-container {
+  height: auto;
+}
+
 div.ant-select-selection__placeholder, div.ant-select-search__field__placeholder {
   padding-left: 20px;
 }
@@ -5,7 +12,6 @@ div.ant-select-selection__placeholder, div.ant-select-search__field__placeholder
 th.column-action, td.column-action {
   text-align: right !important;
 }
-
 
 #components-table-demo-resizable-column .react-resizable {
   position: relative;
