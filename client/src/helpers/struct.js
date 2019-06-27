@@ -97,9 +97,13 @@ export const normalizePatientRequests = fhirPatient => fhirPatient.serviceReques
     id: current.id,
     date: current.authoredOn,
     type: (current.code ? current.code.text : ''),
-    author: 'N/A',
-    specimen: 'N/A',
-    consulation: 'N/A',
+    author: [
+      current.name[0].prefix[0],
+      current.name[0].given[0],
+      current.name[0].family,
+    ].join(' '),
+    specimen: (current.specimen ? current.specimen[0].id : ''),
+    consulation: current.ci_ref || '',
     status: current.status,
   });
 
@@ -137,7 +141,7 @@ export const normalizePatientOntology = fhirPatient => fhirPatient.observations.
       code: (current.phenotype[0] ? current.phenotype[0].code : ''),
       term: (current.phenotype[0] ? current.phenotype[0].display : ''),
       note: (current.note ? current.note[0].text : ''),
-      observed: 'N/A',
+      observed: current.observed || '',
       consultation: 'N/A',
       date: (current.effective ? current.effective.dateTime : ''),
     });
