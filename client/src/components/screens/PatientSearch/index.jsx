@@ -237,7 +237,7 @@ class PatientSearchScreen extends React.Component {
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
 
     return (
-      <Content>
+      <Content type="auto">
         <Header />
         <Navigation />
         <Card>
