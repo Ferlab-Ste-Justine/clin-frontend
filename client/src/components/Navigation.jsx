@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Layout, Row, Col, Dropdown, Menu, Icon,
+  Row, Col, Dropdown, Menu, Icon,
 } from 'antd';
 
 import { appShape } from '../reducers/app';
@@ -78,7 +78,7 @@ const languageMenu = (intl, actions) => {
 const Navigation = ({
   app, intl, user, router, actions,
 }) => (
-  <Layout.Content id="navigation">
+  <nav id="navigation">
     <Row type="flex" justify="space-between" align="middle">
       <Col span={16} align="start">
         { user.username !== null && navigationMenu(intl, router, actions)}
@@ -110,7 +110,7 @@ const Navigation = ({
         )}
       </Col>
     </Row>
-  </Layout.Content>
+  </nav>
 );
 
 Navigation.propTypes = {
