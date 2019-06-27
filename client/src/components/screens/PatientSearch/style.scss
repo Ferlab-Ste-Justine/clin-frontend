@@ -9,6 +9,17 @@ div.ant-select-selection__placeholder, div.ant-select-search__field__placeholder
   padding-left: 20px;
 }
 
+div.ant-tag {
+  line-height: initial;
+  padding: 1px 0px;
+  font-size: 9px;
+  position: relative;
+  top: -1px;
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 th.column-action, td.column-action {
   text-align: right !important;
 }

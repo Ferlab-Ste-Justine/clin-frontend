@@ -1,15 +1,13 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag,
 } from 'antd';
 import {
-  Column, Table, Utils, ColumnHeaderCell, Cell, RenderMode,
+  Column, Table, Utils, Cell, RenderMode, // ColumnHeaderCell
 } from '@blueprintjs/table';
 
 import Header from '../../Header';
@@ -22,6 +20,18 @@ import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
 import { autoCompletePartialPatients, autoCompleteFullPatients, searchPatientsByQuery } from '../../../actions/patient';
 
+
+/*
+const getColumnHeaderCellRenderer = name => () => {
+  <ColumnHeaderCell name={name} />;
+};
+*/
+
+const renderBodyContextMenu = context => (
+  <Menu>
+    <Menu.Item context={context}>Copy</Menu.Item>
+  </Menu>
+);
 
 class PatientSearchScreen extends React.Component {
   constructor() {
@@ -36,28 +46,16 @@ class PatientSearchScreen extends React.Component {
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
     this.handleAutoCompletePressEnter = this.handleAutoCompletePressEnter.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
-    this.renderBodyContextMenu = this.renderBodyContextMenu.bind(this);
     this.getCellRenderer = this.getCellRenderer.bind(this);
-    this.getColumnHeaderCellRenderer = this.getColumnHeaderCellRenderer.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
   }
 
   componentDidMount() {
-    const columnId = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.patientId' });
-    const columnMrn = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.mrn' });
-    const columnOrganization = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.organization' });
-    const columnFirstName = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.firstName' });
-    const columnLastName = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.lastName' });
-    const columnDob = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.dob' });
-    const columnFamilyId = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.familyId' });
-    const columnPosition = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.position' });
-    const columnPractitioner = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' });
-    const columnRequest = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.request' });
-    const columnStatus = this.props.intl.formatMessage({ id: 'screen.patientsearch.table.status' });
+    const { intl } = this.props;
 
     this.setState({
       columnWidths: [
-        75,
+        100,
         100,
         100,
         300,
@@ -72,59 +70,58 @@ class PatientSearchScreen extends React.Component {
       columns: [
         <Column
           key="1"
-          name={columnStatus}
-          cellRenderer={this.getCellRenderer('status')}
-          // columnHeaderCellRenderer={this.getColumnHeaderCellRenderer(columnStatus).bind(this)}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
+          cellRenderer={this.getCellRenderer('status', 'status-tag')}
+          // columnHeaderCellRenderer={getColumnHeaderCellRenderer(columnStatus).bind(this)}
         />,
         <Column
           key="2"
-          name={columnId}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
           cellRenderer={this.getCellRenderer('id', 'patient-link')}
-          // columnHeaderCellRenderer={this.getColumnHeaderCellRenderer(columnId).bind(this)}
         />,
         <Column
           key="3"
-          name={columnMrn}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.mrn' })}
           cellRenderer={this.getCellRenderer('mrn')}
         />,
         <Column
           key="4"
-          name={columnOrganization}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.organization' })}
           cellRenderer={this.getCellRenderer('organization')}
         />,
         <Column
           key="5"
-          name={columnFirstName}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
           cellRenderer={this.getCellRenderer('firstName')}
         />,
         <Column
           key="6"
-          name={columnLastName}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
           cellRenderer={this.getCellRenderer('lastName')}
         />,
         <Column
           key="7"
-          name={columnDob}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
           cellRenderer={this.getCellRenderer('dob')}
         />,
         <Column
           key="8"
-          name={columnFamilyId}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.familyId' })}
           cellRenderer={this.getCellRenderer('familyId')}
         />,
         <Column
           key="9"
-          name={columnPosition}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.position' })}
           cellRenderer={this.getCellRenderer('proband')}
         />,
         <Column
           key="10"
-          name={columnPractitioner}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' })}
           cellRenderer={this.getCellRenderer('practitioner')}
         />,
         <Column
           key="11"
-          name={columnRequest}
+          name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
           cellRenderer={this.getCellRenderer('request')}
         />,
       ],
@@ -155,14 +152,16 @@ class PatientSearchScreen extends React.Component {
     switch (type) {
       case 'patient-link':
         return (row) => {
-          const value = this.state.data[row] ? this.state.data[row][key] : '';
+          const { actions } = this.props;
+          const { data } = this.state;
+          const value = data[row] ? data[row][key] : '';
           return (
             <Cell>
               <a /* eslint-disable-line */
                 data-patient-id={value}
                 onClick={(e) => {
                   const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
-                  this.props.actions.navigateToPatientScreen(id);
+                  actions.navigateToPatientScreen(id);
                 }}
               >
                 {value}
@@ -170,38 +169,43 @@ class PatientSearchScreen extends React.Component {
             </Cell>
           );
         };
+      case 'status-tag':
+        return (row) => {
+          const { data } = this.state;
+          const value = data[row] ? data[row][key] : '';
+          return (
+            <Cell>
+              {value && (
+              <Tag color={value === 'completed' ? 'green' : ''}>
+                {value}
+              </Tag>
+              )
+                }
+            </Cell>
+          );
+        };
+
       default:
-        return row => (
-          <Cell>{this.state.data[row] ? this.state.data[row][key] : ''}</Cell>
-        );
+        return (row) => {
+          const { data } = this.state;
+          return <Cell>{data[row] ? data[row][key] : ''}</Cell>;
+        };
     }
   }
 
-  getColumnHeaderCellRenderer(name) {
-    return () => {
-      <ColumnHeaderCell name={name} />;
-    };
-  }
-
-  renderBodyContextMenu(context) {
-    return (
-      <Menu>
-        <Menu.Item context={context}>Copy</Menu.Item>
-      </Menu>
-    );
-  }
-
   handleAutoCompleteChange(query) {
-    this.props.actions.autoCompletePartialPatients(query);
+    const { actions } = this.props;
+    actions.autoCompletePartialPatients(query);
     this.setState({
       autoCompleteIsOpen: true,
     });
   }
 
   handleAutoCompleteSelect(value) {
+    const { actions } = this.props;
     const patientId = value.split(' ')[0] || null;
     if (patientId) {
-      this.props.actions.navigateToPatientScreen(patientId);
+      actions.navigateToPatientScreen(patientId);
     }
   }
 
@@ -209,9 +213,10 @@ class PatientSearchScreen extends React.Component {
     this.setState({
       autoCompleteIsOpen: false,
     });
+    const { actions } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
     if (query) {
-      this.props.actions.autoCompleteFullPatients(query);
+      actions.autoCompleteFullPatients(query);
     }
   }
 
@@ -219,12 +224,16 @@ class PatientSearchScreen extends React.Component {
     if (oldIndex === newIndex) {
       return;
     }
-    const nextChildren = Utils.reorderArray(this.state.columns, oldIndex, newIndex, length);
+    const { columns } = this.state;
+    const nextChildren = Utils.reorderArray(columns, oldIndex, newIndex, length);
     this.setState({ columns: nextChildren });
   }
 
   render() {
     const { intl, search } = this.props;
+    const {
+      data, columns, columnWidths, autoCompleteIsOpen,
+    } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
 
     return (
@@ -246,7 +255,7 @@ class PatientSearchScreen extends React.Component {
                 dataSource={search.autocomplete.results}
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
-                open={this.state.autoCompleteIsOpen}
+                open={autoCompleteIsOpen}
               >
                 <Input prefix={<Icon type="search" />} onPressEnter={this.handleAutoCompletePressEnter} />
               </AutoComplete>
@@ -256,7 +265,7 @@ class PatientSearchScreen extends React.Component {
             <Col align="end" span={24}>
               <br />
               <Typography.Text>
-                {this.state.data.length}
+                {data.length}
                 {' '}
 Patients
               </Typography.Text>
@@ -265,16 +274,16 @@ Patients
           <Row type="flex" justify="center">
             <Col span={24}>
               <Table
-                numRows={(this.state.data.length + 1)}
+                numRows={data.length + 1}
                 enableColumnReordering
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
-                bodyContextMenuRenderer={this.renderBodyContextMenu}
+                bodyContextMenuRenderer={renderBodyContextMenu}
                 enableGhostCells
-                columnWidths={this.state.columnWidths}
+                columnWidths={columnWidths}
                 renderMode={RenderMode.BATCH}
               >
-                { this.state.columns.map(column => (column)) }
+                { columns.map(column => (column)) }
               </Table>
             </Col>
           </Row>
