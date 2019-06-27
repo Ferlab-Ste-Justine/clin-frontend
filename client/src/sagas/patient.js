@@ -25,9 +25,6 @@ function* fetch(action) {
 
 function* autoComplete(action) {
   try {
-    if (!action.payload.partial) {
-      yield put({ type: actions.START_LOADING_ANIMATION });
-    }
     const response = action.payload.partial
       ? yield Api.getPartialPatientsByAutoComplete(action.payload.query)
       : yield Api.getFullPatientsByAutoComplete(action.payload.query);
@@ -37,11 +34,9 @@ function* autoComplete(action) {
     yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
     if (!action.payload.partial) {
       yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
-      yield put({ type: actions.STOP_LOADING_ANIMATION });
     }
   } catch (e) {
     yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
 

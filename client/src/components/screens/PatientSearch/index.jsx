@@ -4,10 +4,10 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination,
 } from 'antd';
 import {
-  Column, Table, Utils, Cell, RenderMode, // ColumnHeaderCell
+  Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
 } from '@blueprintjs/table';
 
 import Header from '../../Header';
@@ -41,6 +41,9 @@ class PatientSearchScreen extends React.Component {
       columns: [],
       columnWidths: [],
       data: [],
+      loading: TableLoadingOption.CELLS,
+      pageSize: 25,
+      page: 1,
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -48,6 +51,9 @@ class PatientSearchScreen extends React.Component {
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.getCellRenderer = this.getCellRenderer.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
+    this.handleTableCellsRendered = this.handleTableCellsRendered.bind(this);
   }
 
   componentDidMount() {
@@ -65,7 +71,7 @@ class PatientSearchScreen extends React.Component {
         100,
         100,
         200,
-        100,
+        1000,
       ],
       columns: [
         <Column
@@ -212,6 +218,7 @@ class PatientSearchScreen extends React.Component {
   handleAutoCompletePressEnter(e) {
     this.setState({
       autoCompleteIsOpen: false,
+      loading: TableLoadingOption.CELLS,
     });
     const { actions } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
@@ -229,12 +236,49 @@ class PatientSearchScreen extends React.Component {
     this.setState({ columns: nextChildren });
   }
 
+  /* eslint-disable */
+
+  handlePageChange(page, pageSize) {
+    this.setState({
+      page,
+      pageSize,
+      loading: TableLoadingOption.CELLS,
+    })
+  }
+
+  handlePageSizeChange(page, pageSize) {
+    this.setState({
+      page,
+      pageSize,
+      loading: TableLoadingOption.CELLS,
+    })
+  }
+
+  handleTableCellsRendered() {
+    this.setState({
+      loading: null
+    })
+  }
+
   render() {
     const { intl, search } = this.props;
     const {
-      data, columns, columnWidths, autoCompleteIsOpen,
+      data, columns, columnWidths, autoCompleteIsOpen, pageSize, page, loading,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
+
+    const pagination = (
+      <Pagination
+        total={data.length}
+        defaultPageSize={pageSize}
+        current={page}
+        pageSizeOptions={[25, 50, 100, 200, 500]}
+        showSizeChanger
+        showTotal={(total, range) => (<Typography>{`${range[0]}-${range[1]} of ${total} items`}</Typography>)}
+        onChange={this.handlePageChange}
+        onShowSizeChange={this.handlePageSizeChange}
+      />
+    );
 
     return (
       <Content type="auto">
@@ -264,17 +308,14 @@ class PatientSearchScreen extends React.Component {
           <Row type="flex" justify="end">
             <Col align="end" span={24}>
               <br />
-              <Typography.Text>
-                {data.length}
-                {' '}
-Patients
-              </Typography.Text>
+              { pagination }
+              <br />
             </Col>
           </Row>
           <Row type="flex" justify="center">
             <Col span={24}>
               <Table
-                numRows={data.length + 1}
+                numRows={pageSize}
                 enableColumnReordering
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
@@ -282,9 +323,15 @@ Patients
                 enableGhostCells
                 columnWidths={columnWidths}
                 renderMode={RenderMode.BATCH}
+                loadingOptions={[ loading ]}
+                onCompleteRender={this.handleTableCellsRendered}
               >
                 { columns.map(column => (column)) }
               </Table>
+            </Col>
+            <Col align="end" span={24}>
+              <br />
+              { pagination }
             </Col>
           </Row>
         </Card>

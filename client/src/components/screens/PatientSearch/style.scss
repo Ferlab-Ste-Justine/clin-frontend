@@ -5,6 +5,11 @@ div.bp3-table-container {
   height: auto;
 }
 
+div.ant-select-selection__placeholder, div.ant-select-search__field__placeholder {
+  padding-top: 1px;
+  padding-left: 20px;
+}
+
 div.ant-tag {
   line-height: initial;
   padding: 1px 0px;
