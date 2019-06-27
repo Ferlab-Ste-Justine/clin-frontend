@@ -102,7 +102,7 @@ class PatientSearchScreen extends React.Component {
         <Column
           key="7"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
-          cellRenderer={this.getCellRenderer('dob')}
+          cellRenderer={this.getCellRenderer('birthDate')}
         />,
         <Column
           key="8"
