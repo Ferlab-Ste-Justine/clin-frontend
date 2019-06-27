@@ -85,28 +85,24 @@ const Navigation = ({
       </Col>
       <Col span={8} align="end">
         {user.username !== null && (
-          <Dropdown overlay={userMenu(intl, actions)}>
-            { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a className="ant-dropdown-link" style={{ paddingRight: '25px' }}>
-              <span className="ant-dropdown-link">
-                <Icon type="user" />
-                {` ${user.username} `}
-                <Icon type="down" />
-              </span>
-            </a>
-          </Dropdown>
+        <Dropdown overlay={userMenu(intl, actions)}>
+          { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <a className="ant-dropdown-link" style={{ paddingRight: '25px' }}>
+            <Icon type="user" />
+            {` ${user.username} `}
+            <Icon type="down" />
+          </a>
+        </Dropdown>
         )}
         {app.locale.lang !== null && (
-          <Dropdown overlay={languageMenu(intl, actions)}>
-            { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a className="ant-dropdown-link">
-              <span className="ant-dropdown-link">
-                <Icon type="flag" />
-                {` ${intl.formatMessage({ id: `lang.${app.locale.lang}.long` })} `}
-                <Icon type="down" />
-              </span>
-            </a>
-          </Dropdown>
+        <Dropdown overlay={languageMenu(intl, actions)}>
+          { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+          <a className="ant-dropdown-link">
+            <Icon type="flag" />
+            {` ${intl.formatMessage({ id: `lang.${app.locale.lang}.long` })} `}
+            <Icon type="down" />
+          </a>
+        </Dropdown>
         )}
       </Col>
     </Row>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Layout, Row, Col } from 'antd';
+import {
+  Layout, Row, Col, BackTop, Icon,
+} from 'antd';
 
 const Footer = () => (
   <Layout.Footer id="footer">
@@ -27,6 +29,9 @@ const Footer = () => (
         <img height="50" alt="Centre hospitalier universitaire de Sherbrooke" src="/images/chus.gif" />
       </Col>
     </Row>
+    <BackTop>
+      <Icon className="icon-large" type="up-circle" theme="filled" />
+    </BackTop>
   </Layout.Footer>
 );
 
