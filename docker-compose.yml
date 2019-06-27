@@ -6,21 +6,26 @@ services:
       context: .
       dockerfile: Dockerfile-static
     image: localhost:5000/clin-frontend-nginx
+    volumes:
+#     - ./data/certbot/conf:/etc/letsencrypt  --for local usage
+      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
     ports:
-      - '80:80'
+      - 443:443
     networks:
       - proxy
     command: |
       /bin/bash -c "echo '
       server {
-        listen 80;
+        listen 443 ssl;
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
         index index.html;
-        server_name localhost;
+        server_name clin.cr-ste-justine.xyz;
+        ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         location /api/auth {  ### this service is defined in clin-proxy-api
-            proxy_pass http://auth:3000/auth;
+            proxy_pass https://auth:3000/auth;
             proxy_http_version 1.1;
             proxy_set_header Connection keep-alive;
             proxy_set_header Upgrade $$http_upgrade;
@@ -29,7 +34,7 @@ services:
             proxy_cache_bypass $$http_upgrade;
         }
         location /api/patient {  ### this service is defined in clin-proxy-api
-            proxy_pass http://patient:4000/patient;
+            proxy_pass https://patient:4000/patient;
             proxy_http_version 1.1;
             proxy_set_header Connection keep-alive;
             proxy_set_header Upgrade $$http_upgrade;
@@ -40,6 +45,5 @@ services:
       }' | tee /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
-  webnet:
   proxy:
     external: true
