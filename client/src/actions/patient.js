@@ -7,25 +7,21 @@ export const fetchPatient = uid => ({
   },
 });
 
-export const autoCompletePartialPatients = query => ({
+export const autoCompletePatients = (type, query, page, size) => ({
   type: actions.PATIENT_AUTOCOMPLETE_REQUESTED,
   payload: {
-    query,
-    partial: true,
+    type: type || 'partial',
+    query: query || null,
+    page: page || 1,
+    size: size || 25,
   },
 });
 
-export const autoCompleteFullPatients = query => ({
-  type: actions.PATIENT_AUTOCOMPLETE_REQUESTED,
-  payload: {
-    query,
-    partial: false,
-  },
-});
-
-export const searchPatientsByQuery = query => ({
+export const searchPatientsByQuery = (query, page, size) => ({
   type: actions.PATIENT_SEARCH_REQUESTED,
   payload: {
-    query,
+    query: query || null,
+    page: page || 1,
+    size: size || 25,
   },
 });

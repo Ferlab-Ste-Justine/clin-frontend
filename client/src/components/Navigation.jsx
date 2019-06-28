@@ -4,31 +4,36 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Row, Col, Dropdown, Menu, Icon,
+  Row, Col, Dropdown, Menu, Icon, Tabs,
 } from 'antd';
 
 import { appShape } from '../reducers/app';
 import { changeLanguage } from '../actions/app';
 import { userShape } from '../reducers/user';
 import { logoutUser } from '../actions/user';
-import { navigateToPatientSearchScreen } from '../actions/router';
+import { navigateToPatientSearchScreen, navigate } from '../actions/router';
 
 
+/*eslint-disable*/
+// onClick={navigateToPatientSearchScreen}
 const navigationMenu = (intl, router, actions) => {
   const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
+  let tabForRoute = router.location.pathname;
+  if (tabForRoute.indexOf('/patient/') !== -1) {
+    tabForRoute = '/patient/search';
+  }
   return (
-    <Menu
-      onClick={() => {
-        actions.navigateToPatientSearchScreen();
+    <Tabs type="card" activeKey={tabForRoute} style={{ top: -9 }} onChange={(activeKey)=> {
+        if (activeKey === '/patient/search') {
+          actions.navigateToPatientSearchScreen();
+        } else {
+          actions.navigate(activeKey)
+        }
       }}
-      mode="horizontal"
-      selectedKeys={[router.location.pathname]
-          }
     >
-      <Menu.Item key="/patient/search">
-        {patientSearch}
-      </Menu.Item>
-    </Menu>
+      <Tabs.TabPane tab={patientSearch} key="/patient/search" />
+      <Tabs.TabPane tab="Recherche de Variants" key="/variant/search" />
+    </Tabs>
   );
 };
 
@@ -78,8 +83,8 @@ const languageMenu = (intl, actions) => {
 const Navigation = ({
   app, intl, user, router, actions,
 }) => (
-  <nav id="navigation">
-    <Row type="flex" justify="space-between" align="middle">
+  <nav id="navigation" style={{ position: 'relative', height: 42 }}>
+    <Row type="flex" justify="space-between">
       <Col span={16} align="start">
         { user.username !== null && navigationMenu(intl, router, actions)}
       </Col>
@@ -122,6 +127,7 @@ const mapDispatchToProps = dispatch => ({
     logoutUser,
     changeLanguage,
     navigateToPatientSearchScreen,
+    navigate,
   }, dispatch),
 });
 

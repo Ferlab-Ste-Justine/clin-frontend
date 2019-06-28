@@ -12,6 +12,7 @@ import {
 /* eslint-disable */
 
 export const initialSearchState = {
+  lastSearchType: null,
   autocomplete: {
     query: null,
     results: [],
@@ -25,6 +26,7 @@ export const initialSearchState = {
 };
 
 export const searchShape = {
+  lastSearchType: PropTypes.string,
   autocomplete: PropTypes.shape({
     query: PropTypes.string,
     results: PropTypes.array,
@@ -54,13 +56,24 @@ const searchReducer = (state = initialSearchState, action) => produce(state, (dr
       });
       break;
 
+    case actions.PATIENT_SEARCH_REQUESTED:
+      draft.lastSearchType = 'patient';
+      draft.patient.query = action.payload.query || null;
+      break;
+
     case actions.PATIENT_AUTOCOMPLETE_REQUESTED:
-      draft.autocomplete.query = action.payload.query;
+      draft.lastSearchType = 'autocomplete';
+      draft.autocomplete.query = action.payload.query || null;
       break;
 
     case actions.PATIENT_AUTOCOMPLETE_FAILED:
       draft.autocomplete.total = initialSearchState.autocomplete.total;
       draft.autocomplete.results = initialSearchState.autocomplete.results;
+      break;
+
+    case actions.PATIENT_SEARCH_FAILED:
+      draft.patient.total = initialSearchState.patient.total;
+      draft.patient.results = initialSearchState.patient.results;
       break;
 
     case actions.PATIENT_AUTOCOMPLETE_SUCCEEDED:
