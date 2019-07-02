@@ -32,7 +32,7 @@ const navigationMenu = (intl, router, actions) => {
       }}
     >
       <Tabs.TabPane tab={patientSearch} key="/patient/search" />
-      <Tabs.TabPane tab="Recherche de Variants" key="/variant/search" />
+        { /* <Tabs.TabPane tab="Recherche de Variants" key="/variant/search" /> */ }
     </Tabs>
   );
 };

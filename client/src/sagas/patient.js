@@ -27,7 +27,7 @@ function* fetch(action) {
 
 function* autoComplete(action) {
   try {
-    const response = Api.getPatientsByAutoComplete(
+    const response = yield Api.getPatientsByAutoComplete(
       action.payload.type,
       action.payload.query,
       action.payload.page,
@@ -38,7 +38,7 @@ function* autoComplete(action) {
       throw new ApiError(response.error);
     }
     yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
-    if (!action.payload.partial) {
+    if (action.payload.type !== 'partial') {
       yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
     }
   } catch (e) {

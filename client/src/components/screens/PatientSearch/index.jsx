@@ -136,23 +136,27 @@ class PatientSearchScreen extends React.Component {
 
   static getDerivedStateFromProps(nextProps) {
     const searchType = nextProps.search.lastSearchType;
-    const data = nextProps.search[searchType].results.map((result) => {
-      const lastRequest = result.requests[result.requests.length - 1];
-      return {
-        status: (lastRequest ? lastRequest.status : ''),
-        id: result.details.id,
-        mrn: result.details.mrn,
-        organization: result.organization.name,
-        firstName: result.details.firstName,
-        lastName: result.details.lastName,
-        birthDate: result.details.birthDate,
-        familyId: result.family.id,
-        proband: result.details.proband,
-        practitioner: result.practitioner.name,
-        request: (lastRequest ? lastRequest.id : ''),
-      };
-    });
-    return { data };
+    if (searchType !== 'autocomplete') {
+      const data = nextProps.search[searchType].results.map((result) => {
+        const lastRequest = result.requests[result.requests.length - 1];
+        return {
+          status: (lastRequest ? lastRequest.status : ''),
+          id: result.details.id,
+          mrn: result.details.mrn,
+          organization: result.organization.name,
+          firstName: result.details.firstName,
+          lastName: result.details.lastName,
+          birthDate: result.details.birthDate,
+          familyId: result.family.id,
+          proband: result.details.proband,
+          practitioner: result.practitioner.name,
+          request: (lastRequest ? lastRequest.id : ''),
+        };
+      });
+      return { data };
+    }
+
+    return null;
   }
 
   getCellRenderer(key, type) {
@@ -305,7 +309,7 @@ class PatientSearchScreen extends React.Component {
                 total={search.patient.total}
                 pageSize={size}
                 current={page}
-                pageSizeOptions={[25, 50, 100]}
+                pageSizeOptions={['25', '50', '100' ]}
                 showSizeChanger
                 showTotal={(total, range) => (<Typography>{`${range[0]}-${range[1]} of ${total} items`}</Typography>)}
                 onChange={this.handlePageChange}
