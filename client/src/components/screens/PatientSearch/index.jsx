@@ -4,10 +4,10 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination,
 } from 'antd';
 import {
-  Column, Table, Utils, Cell, RenderMode, // ColumnHeaderCell
+  Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
 } from '@blueprintjs/table';
 
 import Header from '../../Header';
@@ -18,7 +18,7 @@ import Footer from '../../Footer';
 import './style.scss';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
-import { autoCompletePartialPatients, autoCompleteFullPatients, searchPatientsByQuery } from '../../../actions/patient';
+import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
 
 
 /*
@@ -41,6 +41,9 @@ class PatientSearchScreen extends React.Component {
       columns: [],
       columnWidths: [],
       data: [],
+      loading: TableLoadingOption.CELLS,
+      size: 25,
+      page: 1,
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -48,6 +51,9 @@ class PatientSearchScreen extends React.Component {
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.getCellRenderer = this.getCellRenderer.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
+    this.handleTableCellsRendered = this.handleTableCellsRendered.bind(this);
   }
 
   componentDidMount() {
@@ -65,7 +71,7 @@ class PatientSearchScreen extends React.Component {
         100,
         100,
         200,
-        100,
+        1000,
       ],
       columns: [
         <Column
@@ -102,7 +108,7 @@ class PatientSearchScreen extends React.Component {
         <Column
           key="7"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
-          cellRenderer={this.getCellRenderer('dob')}
+          cellRenderer={this.getCellRenderer('birthDate')}
         />,
         <Column
           key="8"
@@ -129,23 +135,28 @@ class PatientSearchScreen extends React.Component {
   }
 
   static getDerivedStateFromProps(nextProps) {
-    const data = nextProps.search.patient.results.map((result) => {
-      const lastRequest = result.requests[result.requests.length - 1];
-      return {
-        status: (lastRequest ? lastRequest.status : ''),
-        id: result.details.id,
-        mrn: result.details.mrn,
-        organization: result.organization.name,
-        firstName: result.details.firstName,
-        lastName: result.details.lastName,
-        birthDate: result.details.birthDate,
-        familyId: result.family.id,
-        proband: result.details.proband,
-        practitioner: result.practitioner.name,
-        request: (lastRequest ? lastRequest.id : ''),
-      };
-    });
-    return { data };
+    const searchType = nextProps.search.lastSearchType;
+    if (searchType !== 'autocomplete') {
+      const data = nextProps.search[searchType].results.map((result) => {
+        const lastRequest = result.requests[result.requests.length - 1];
+        return {
+          status: (lastRequest ? lastRequest.status : ''),
+          id: result.details.id,
+          mrn: result.details.mrn,
+          organization: result.organization.name,
+          firstName: result.details.firstName,
+          lastName: result.details.lastName,
+          birthDate: result.details.birthDate,
+          familyId: result.family.id,
+          proband: result.details.proband,
+          practitioner: result.practitioner.name,
+          request: (lastRequest ? lastRequest.id : ''),
+        };
+      });
+      return { data };
+    }
+
+    return null;
   }
 
   getCellRenderer(key, type) {
@@ -195,7 +206,7 @@ class PatientSearchScreen extends React.Component {
 
   handleAutoCompleteChange(query) {
     const { actions } = this.props;
-    actions.autoCompletePartialPatients(query);
+    actions.autoCompletePatients('partial', query);
     this.setState({
       autoCompleteIsOpen: true,
     });
@@ -210,13 +221,15 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleAutoCompletePressEnter(e) {
+    const { page, size } = this.state;
     this.setState({
       autoCompleteIsOpen: false,
+      loading: TableLoadingOption.CELLS,
     });
     const { actions } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
     if (query) {
-      actions.autoCompleteFullPatients(query);
+      actions.autoCompletePatients('complete', query, page, size);
     }
   }
 
@@ -229,15 +242,43 @@ class PatientSearchScreen extends React.Component {
     this.setState({ columns: nextChildren });
   }
 
+  /* eslint-disable */
+
+  handlePageChange(page, size) {
+    const { actions } = this.props;
+    const { search } = this.props;
+    this.setState({
+      page,
+      size,
+      loading: TableLoadingOption.CELLS,
+    })
+
+    if (search.lastSearchType === 'autocomplete') {
+      actions.autoCompletePatients('partial', search.autocomplete.query, page, size);
+    } else {
+      actions.searchPatientsByQuery(search.patient.query, page, size);
+    }
+  }
+
+  handlePageSizeChange(page, size) {
+    this.handlePageChange(page, size)
+  }
+
+  handleTableCellsRendered() {
+    this.setState({
+      loading: null
+    })
+  }
+
   render() {
     const { intl, search } = this.props;
     const {
-      data, columns, columnWidths, autoCompleteIsOpen,
+      data, columns, columnWidths, autoCompleteIsOpen, size, page, loading,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
 
     return (
-      <Content>
+      <Content type="auto">
         <Header />
         <Navigation />
         <Card>
@@ -264,17 +305,23 @@ class PatientSearchScreen extends React.Component {
           <Row type="flex" justify="end">
             <Col align="end" span={24}>
               <br />
-              <Typography.Text>
-                {data.length}
-                {' '}
-Patients
-              </Typography.Text>
+              <Pagination
+                total={search.patient.total}
+                pageSize={size}
+                current={page}
+                pageSizeOptions={['25', '50', '100' ]}
+                showSizeChanger
+                showTotal={(total, range) => (<Typography>{`${range[0]}-${range[1]} of ${total} items`}</Typography>)}
+                onChange={this.handlePageChange}
+                onShowSizeChange={this.handlePageSizeChange}
+              />
+              <br />
             </Col>
           </Row>
           <Row type="flex" justify="center">
             <Col span={24}>
               <Table
-                numRows={data.length + 1}
+                numRows={size}
                 enableColumnReordering
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
@@ -282,6 +329,8 @@ Patients
                 enableGhostCells
                 columnWidths={columnWidths}
                 renderMode={RenderMode.BATCH}
+                loadingOptions={[ loading ]}
+                onCompleteRender={this.handleTableCellsRendered}
               >
                 { columns.map(column => (column)) }
               </Table>
@@ -303,8 +352,7 @@ PatientSearchScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
-    autoCompletePartialPatients,
-    autoCompleteFullPatients,
+    autoCompletePatients,
     searchPatientsByQuery,
   }, dispatch),
 });

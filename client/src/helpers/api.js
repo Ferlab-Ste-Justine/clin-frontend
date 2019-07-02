@@ -21,23 +21,33 @@ const getPatientById = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}
   .then(successCallback)
   .catch(errorCallback);
 
-const getPartialPatientsByAutoComplete = query => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/autocomplete/partial/${query}`,
+const getPatientsByAutoComplete = (type, query, page, size) => axios.get(
+  `${window.CLIN.patientApiBaseUrl}/autocomplete`, {
+    params: {
+      type,
+      query,
+      page,
+      size,
+    },
+  },
 )
   .then(successCallback)
   .catch(errorCallback);
 
-const getFullPatientsByAutoComplete = query => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/autocomplete/full/${query}`,
-)
+const getAllPatients = (page, size) => axios.get(`${window.CLIN.patientApiBaseUrl}/search`, {
+  params: {
+    page,
+    size,
+  },
+})
   .then(successCallback)
   .catch(errorCallback);
 
-const getAllPatients = () => axios.get(`${window.CLIN.patientApiBaseUrl}/search`)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const searchAllPatients = query => axios.get(`${window.CLIN.patientApiBaseUrl}/search/${query}`)
+const searchPatients = (query, page, size) => axios.post(`${window.CLIN.patientApiBaseUrl}/search`, {
+  query,
+  page,
+  size,
+})
   .then(successCallback)
   .catch(errorCallback);
 
@@ -52,8 +62,7 @@ export default {
   login,
   logout,
   getPatientById,
-  getPartialPatientsByAutoComplete,
-  getFullPatientsByAutoComplete,
+  getPatientsByAutoComplete,
   getAllPatients,
-  searchAllPatients,
+  searchPatients,
 };
