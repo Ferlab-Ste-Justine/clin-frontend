@@ -12,7 +12,7 @@ export const normalizePatientDetails = (fhirPatient) => {
   struct.birthDate = fhirPatient.birthDate;
   struct.gender = fhirPatient.gender;
   struct.ethnicity = fhirPatient.ethnicity;
-  struct.proband = fhirPatient.isProband;
+  struct.proband = fhirPatient.isProband ? 'Proband' : 'Parent';
   struct.mrn = (fhirPatient.identifier ? fhirPatient.identifier.MR : '');
   struct.ramq = (fhirPatient.identifier ? fhirPatient.identifier.JHN : '');
 

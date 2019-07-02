@@ -336,6 +336,7 @@ class PatientSearchScreen extends React.Component {
                 renderMode={RenderMode.BATCH}
                 loadingOptions={[ loading ]}
                 onCompleteRender={this.handleTableCellsRendered}
+                style={{ height: '100%' }}
               >
                 { columns.map(column => (column)) }
               </Table>
