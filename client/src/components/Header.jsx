@@ -12,19 +12,34 @@ const Header = ({ intl }) => {
   const title = intl.formatMessage({ id: 'header.title' });
   return (
     <Layout.Header id="header">
-      <Row type="flex">
-        <Col span={17}>
-          <Desktop><Typography.Title level={1}>{ title }</Typography.Title></Desktop>
-          <Tablet><Typography.Title level={2}>{ title }</Typography.Title></Tablet>
-          <Mobile><Typography.Title level={4}>{ title }</Typography.Title></Mobile>
-        </Col>
-        <Col span={4} align="end">
-          <img height="55" alt="Centre hospitalier universitaire Sainte-Justine" src="/images/chusj.png" />
-        </Col>
-        <Col span={3} align="end">
-          {/* eslint-disable-next-line max-len */}
-          <img height="45" alt="Ministère de la Santé et des Services sociaux" src="/images/msss.png" />
-        </Col>
+      <Row type="flex" justify="center">
+        <Desktop>
+          <Col span={16}>
+            <Typography.Title level={1}>{ title }</Typography.Title>
+          </Col>
+          <Col span={8} align="end">
+            <img height="55" alt="Centre hospitalier universitaire Sainte-Justine" src="/images/chusj.png" />
+            <img height="45" style={{ marginLeft: 20 }} alt="Ministère de la Santé et des Services sociaux" src="/images/msss.png" />
+          </Col>
+        </Desktop>
+        <Tablet>
+          <Col span={15}>
+            <Typography.Title level={2}>{ title }</Typography.Title>
+          </Col>
+          <Col span={9} align="end">
+            <img height="50" alt="Centre hospitalier universitaire Sainte-Justine" src="/images/chusj.png" />
+            <img height="40" style={{ marginLeft: 10 }} alt="Ministère de la Santé et des Services sociaux" src="/images/msss.png" />
+          </Col>
+        </Tablet>
+        <Mobile>
+          <Col span={15}>
+            <Typography.Title level={4}>{ title }</Typography.Title>
+          </Col>
+          <Col span={9} align="end">
+            <img height="35" alt="Centre hospitalier universitaire Sainte-Justine" src="/images/chusj.png" />
+            <img height="30" style={{ marginLeft: 10 }} alt="Ministère de la Santé et des Services sociaux" src="/images/msss.png" />
+          </Col>
+        </Mobile>
       </Row>
     </Layout.Header>
   );

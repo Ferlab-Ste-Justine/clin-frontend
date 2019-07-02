@@ -62,7 +62,7 @@ const searchReducer = (state = initialSearchState, action) => produce(state, (dr
       break;
 
     case actions.PATIENT_AUTOCOMPLETE_REQUESTED:
-      draft.lastSearchType = 'autocomplete';
+      draft.lastSearchType = action.payload.type === 'partial' ? 'autocomplete' : 'patient';
       draft.autocomplete.query = action.payload.query || null;
       break;
 

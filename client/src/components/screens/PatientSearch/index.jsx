@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
@@ -206,7 +208,9 @@ class PatientSearchScreen extends React.Component {
 
   handleAutoCompleteChange(query) {
     const { actions } = this.props;
-    actions.autoCompletePatients('partial', query);
+    const { page, size } = this.state;
+
+    actions.autoCompletePatients('partial', query, page, size);
     this.setState({
       autoCompleteIsOpen: true,
     });
@@ -228,6 +232,7 @@ class PatientSearchScreen extends React.Component {
     });
     const { actions } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
+
     if (query) {
       actions.autoCompletePatients('complete', query, page, size);
     }
@@ -331,6 +336,7 @@ class PatientSearchScreen extends React.Component {
                 renderMode={RenderMode.BATCH}
                 loadingOptions={[ loading ]}
                 onCompleteRender={this.handleTableCellsRendered}
+                style={{ height: '100%' }}
               >
                 { columns.map(column => (column)) }
               </Table>

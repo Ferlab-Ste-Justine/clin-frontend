@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import {
   Row, Col, Dropdown, Menu, Icon, Tabs,
 } from 'antd';
+import { Tablet, Desktop } from '../containers/Responsive';
 
 import { appShape } from '../reducers/app';
 import { changeLanguage } from '../actions/app';
@@ -14,7 +15,6 @@ import { logoutUser } from '../actions/user';
 import { navigateToPatientSearchScreen, navigate } from '../actions/router';
 
 
-/*eslint-disable*/
 // onClick={navigateToPatientSearchScreen}
 const navigationMenu = (intl, router, actions) => {
   const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
@@ -23,16 +23,20 @@ const navigationMenu = (intl, router, actions) => {
     tabForRoute = '/patient/search';
   }
   return (
-    <Tabs type="card" activeKey={tabForRoute} style={{ top: -9 }} onChange={(activeKey)=> {
+    <Tabs
+      type="card"
+      activeKey={tabForRoute}
+      style={{ top: -9 }}
+      onChange={(activeKey) => {
         if (activeKey === '/patient/search') {
           actions.navigateToPatientSearchScreen();
         } else {
-          actions.navigate(activeKey)
+          actions.navigate(activeKey);
         }
       }}
     >
       <Tabs.TabPane tab={patientSearch} key="/patient/search" />
-        { /* <Tabs.TabPane tab="Recherche de Variants" key="/variant/search" /> */ }
+      { /* <Tabs.TabPane tab="Recherche de Variants" key="/variant/search" /> */ }
     </Tabs>
   );
 };
@@ -84,30 +88,34 @@ const Navigation = ({
   app, intl, user, router, actions,
 }) => (
   <nav id="navigation" style={{ position: 'relative', height: 42 }}>
-    <Row type="flex" justify="space-between">
-      <Col span={16} align="start">
+    <Row type="flex">
+      <Col span={10} align="start">
         { user.username !== null && navigationMenu(intl, router, actions)}
       </Col>
-      <Col span={8} align="end">
+      <Col span={11} align="end">
         {user.username !== null && (
         <Dropdown overlay={userMenu(intl, actions)}>
           { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
           <a className="ant-dropdown-link" style={{ paddingRight: '25px' }}>
-            <Icon type="user" />
+            <Desktop><Icon type="user" /></Desktop>
             {` ${user.username} `}
-            <Icon type="down" />
+            <Desktop><Icon type="down" /></Desktop>
+            <Tablet><Icon type="down" /></Tablet>
           </a>
         </Dropdown>
         )}
+      </Col>
+      <Col span={3} align="end">
         {app.locale.lang !== null && (
-        <Dropdown overlay={languageMenu(intl, actions)}>
-          { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <a className="ant-dropdown-link">
-            <Icon type="flag" />
-            {` ${intl.formatMessage({ id: `lang.${app.locale.lang}.long` })} `}
-            <Icon type="down" />
-          </a>
-        </Dropdown>
+          <Dropdown overlay={languageMenu(intl, actions)}>
+            { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a className="ant-dropdown-link">
+              <Desktop><Icon type="flag" /></Desktop>
+              {` ${intl.formatMessage({ id: `lang.${app.locale.lang}.long` })} `}
+              <Desktop><Icon type="down" /></Desktop>
+              <Tablet><Icon type="down" /></Tablet>
+            </a>
+          </Dropdown>
         )}
       </Col>
     </Row>
