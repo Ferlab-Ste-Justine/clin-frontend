@@ -254,8 +254,7 @@ class PatientSearchScreen extends React.Component {
     const { search } = this.props;
     this.setState({
       page,
-      size,
-      loading: TableLoadingOption.CELLS,
+      size
     })
 
     if (search.lastSearchType === 'autocomplete') {
