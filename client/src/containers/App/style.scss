@@ -49,6 +49,7 @@ header#header {
 }
 
 nav#navigation {
+  z-index: 0;
   background-color: $navigation-color;
   padding: 12px 10px 15px 10px;
   ul.ant-menu {
@@ -82,6 +83,7 @@ nav#navigation {
 }
 
 footer#footer {
+  z-index: 0;
   padding: 10px 15px;
   background-color: $footer-color;
 
