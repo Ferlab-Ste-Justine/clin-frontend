@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import {
   Col, Row, Layout, Radio, Icon, Button, Typography,
 } from 'antd';
+import { Desktop } from '../../../containers/Responsive';
 
 import { patientShape } from '../../../reducers/patient';
 import { searchShape } from '../../../reducers/search';
@@ -34,13 +35,13 @@ export const PatientNavigation = ({
       className="patient-navigation"
     >
       <Row type="flex" justify="space-between" align="middle">
-        <Col span={6} align="start">
+        <Col sm={6} md={6} lg={6} align="start">
           <Button type="secondary">
             <Icon type="idcard" />
             <Text strong>{`MRN ${currentPatientMRN}`}</Text>
           </Button>
         </Col>
-        <Col span={10} align="center">
+        <Col sm={16} md={14} lg={12} align="center">
           <Radio.Group>
             { previousPatient ? (
               <Radio.Button>
@@ -67,10 +68,10 @@ export const PatientNavigation = ({
             ) : null }
           </Radio.Group>
         </Col>
-        <Col span={6} align="end">
+        <Col sm={2} md={4} lg={6} align="end">
           <a href="#" onClick={navigateToPatientSearchScreen}>
             <Button type="primary" icon="left">
-              {backToSearch}
+              <Desktop>{backToSearch}</Desktop>
             </Button>
           </a>
         </Col>

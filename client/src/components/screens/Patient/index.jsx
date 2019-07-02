@@ -127,7 +127,7 @@ class PatientScreen extends React.Component {
           navigateToPatientScreen={this.handleNavigationToPatientScreen}
           navigateToPatientSearchScreen={this.handleNavigationToPatientSearchScreen}
         />
-        <Card className="entity" style={{ height: '100%' }}>
+        <Card className="entity">
           <PageHeader
             title={(
               <Typography.Title level={2}>
@@ -139,6 +139,7 @@ class PatientScreen extends React.Component {
           <Tabs key={patient.details.id} defaultActiveKey="patient">
             <Tabs.TabPane
               key="patient"
+              style={{ height: '100%' }}
               tab={(
                 <span>
                   <Icon type="profile" />
@@ -252,6 +253,7 @@ class PatientScreen extends React.Component {
                   {clinicalTab}
                 </span>
                   )}
+              style={{ height: '100%' }}
             >
               <br />
               <Row type="flex">
