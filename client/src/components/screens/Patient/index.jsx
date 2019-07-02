@@ -325,8 +325,8 @@ class PatientScreen extends React.Component {
                   <DataList
                     title={generalInformation}
                     dataSource={[
-                      { label: familyId, value: 'FA03939' },
-                      { label: configuration, value: 'trio +' },
+                      { label: familyId, value: patient.family.id },
+                      { label: configuration, value: patient.family.composition },
                     ]}
                   />
                 </Col>

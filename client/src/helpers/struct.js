@@ -29,14 +29,14 @@ export const normalizePatientFamily = (fhirPatient) => {
   struct.members.proband = fhirPatient.id;
   struct.members.mother = mother ? mother.id : '';
   struct.members.father = father ? father.id : '';
-  struct.history = fhirPatient.familyMemberHistory.reduce((result, current) => {
+  struct.history = fhirPatient.familyMemberHistory ? fhirPatient.familyMemberHistory.reduce((result, current) => {
     result.push({
       id: current.id,
       date: current.date,
       note: current.note[0].text,
     });
     return result;
-  }, []);
+  }, []) : [];
 
   return struct;
 };
@@ -44,7 +44,7 @@ export const normalizePatientFamily = (fhirPatient) => {
 export const normalizePatientStudy = (fhirPatient) => {
   const struct = Object.assign({}, initialPatientState.study);
 
-  if (fhirPatient.studies[0]) {
+  if (fhirPatient.studies && fhirPatient.studies[0]) {
     struct.id = fhirPatient.studies[0].id;
     struct.name = fhirPatient.studies[0].title;
   }
@@ -56,7 +56,7 @@ export const normalizePatientStudy = (fhirPatient) => {
 export const normalizePatientPractitioner = (fhirPatient) => {
   const struct = Object.assign({}, initialPatientState.practitioner);
 
-  if (fhirPatient.practitioners[0]) {
+  if (fhirPatient.practitioners && fhirPatient.practitioners[0]) {
     struct.id = fhirPatient.practitioners[0].id;
     struct.rid = fhirPatient.practitioners[0].role_id;
     struct.mln = fhirPatient.practitioners[0].identifier.MD;
@@ -81,82 +81,88 @@ export const normalizePatientOrganization = (fhirPatient) => {
   return struct;
 };
 
-export const normalizePatientConsultations = fhirPatient => fhirPatient.clinicalImpressions.reduce((result, current) => {
-  result.push({
-    id: current.id,
-    age: current.runtimePatientAge,
-    date: (current.effective ? current.effective.dateTime : ''),
-    practitioner: 'N/A',
-  });
-
-  return result;
-}, []);
-
-export const normalizePatientRequests = fhirPatient => fhirPatient.serviceRequests.reduce((result, current) => {
-  result.push({
-    id: current.id,
-    date: current.authoredOn,
-    type: (current.code ? current.code.text : ''),
-    author: [
-      current.name[0].prefix[0],
-      current.name[0].given[0],
-      current.name[0].family,
-    ].join(' '),
-    specimen: (current.specimen ? current.specimen[0].id : ''),
-    consulation: current.ci_ref || '',
-    status: current.status,
-  });
-
-  return result;
-}, []);
-
-export const normalizePatientObservations = fhirPatient => fhirPatient.observations.reduce((result, current) => {
-  if (current.code.text.toLowerCase().indexOf('medical') !== -1) {
+export const normalizePatientConsultations = fhirPatient => (fhirPatient.clinicalImpressions
+  ? fhirPatient.clinicalImpressions.reduce((result, current) => {
     result.push({
       id: current.id,
+      age: current.runtimePatientAge,
       date: (current.effective ? current.effective.dateTime : ''),
-      note: (current.note[0] ? current.note[0].text : ''),
+      practitioner: 'N/A',
     });
-  }
 
-  return result;
-}, []);
+    return result;
+  }, []) : []);
 
-export const normalizePatientIndications = fhirPatient => fhirPatient.observations.reduce((result, current) => {
-  if (current.code.text.toLowerCase().indexOf('indication') !== -1) {
+export const normalizePatientRequests = fhirPatient => (fhirPatient.serviceRequests
+  ? fhirPatient.serviceRequests.reduce((result, current) => {
     result.push({
       id: current.id,
-      date: (current.effective ? current.effective.dateTime : ''),
-      note: (current.note[0] ? current.note[0].text : ''),
+      date: current.authoredOn,
+      type: (current.code ? current.code.text : ''),
+      author: [
+        current.name[0].prefix[0],
+        current.name[0].given[0],
+        current.name[0].family,
+      ].join(' '),
+      specimen: (current.specimen ? current.specimen[0].id : ''),
+      consulation: current.ci_ref || '',
+      status: current.status,
     });
-  }
 
-  return result;
-}, []);
+    return result;
+  }, []) : []);
 
-export const normalizePatientOntology = fhirPatient => fhirPatient.observations.reduce((result, current) => {
-  if (current.code.text.toLowerCase().indexOf('phenotype') !== -1 && current.phenotype) {
+export const normalizePatientObservations = fhirPatient => (fhirPatient.observations
+  ? fhirPatient.observations.reduce((result, current) => {
+    if (current.code.text.toLowerCase().indexOf('medical') !== -1) {
+      result.push({
+        id: current.id,
+        date: (current.effective ? current.effective.dateTime : ''),
+        note: (current.note[0] ? current.note[0].text : ''),
+      });
+    }
+
+    return result;
+  }, []) : []);
+
+export const normalizePatientIndications = fhirPatient => (fhirPatient.observations
+  ? fhirPatient.observations.reduce((result, current) => {
+    if (current.code.text.toLowerCase().indexOf('indication') !== -1) {
+      result.push({
+        id: current.id,
+        date: (current.effective ? current.effective.dateTime : ''),
+        note: (current.note[0] ? current.note[0].text : ''),
+      });
+    }
+
+    return result;
+  }, []) : []);
+
+export const normalizePatientOntology = fhirPatient => (fhirPatient.observations
+  ? fhirPatient.observations.reduce((result, current) => {
+    if (current.code.text.toLowerCase().indexOf('phenotype') !== -1 && current.phenotype) {
+      result.push({
+        ontologie: 'HPO',
+        code: (current.phenotype[0] ? current.phenotype[0].code : ''),
+        term: (current.phenotype[0] ? current.phenotype[0].display : ''),
+        note: (current.note ? current.note[0].text : ''),
+        observed: current.observed || '',
+        consultation: 'N/A',
+        date: (current.effective ? current.effective.dateTime : ''),
+      });
+    }
+
+    return result;
+  }, []) : []);
+
+export const normalizePatientSamples = fhirPatient => (fhirPatient.specimens
+  ? fhirPatient.specimens.reduce((result, current) => {
     result.push({
-      ontologie: 'HPO',
-      code: (current.phenotype[0] ? current.phenotype[0].code : ''),
-      term: (current.phenotype[0] ? current.phenotype[0].display : ''),
-      note: (current.note ? current.note[0].text : ''),
-      observed: current.observed || '',
-      consultation: 'N/A',
-      date: (current.effective ? current.effective.dateTime : ''),
+      type: 'DNA',
+      id: current.id,
+      barcode: (current.container ? current.container[0] : ''),
+      request: (current.request ? current.request[0] : ''),
     });
-  }
 
-  return result;
-}, []);
-
-export const normalizePatientSamples = fhirPatient => fhirPatient.specimens.reduce((result, current) => {
-  result.push({
-    type: 'DNA',
-    id: current.id,
-    barcode: (current.container ? current.container[0] : ''),
-    request: (current.request ? current.request[0] : ''),
-  });
-
-  return result;
-}, []);
+    return result;
+  }, []) : []);
