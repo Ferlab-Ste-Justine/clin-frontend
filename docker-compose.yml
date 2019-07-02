@@ -8,7 +8,8 @@ services:
     image: localhost:5000/clin-frontend-nginx
     volumes:
 #     - ./data/certbot/conf:/etc/letsencrypt  --for local usage
-      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
+#      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
+      - "sshfsdata:/etc/letsencrypt"
     ports:
       - 443:443
     networks:
@@ -47,3 +48,10 @@ services:
 networks:
   proxy:
     external: true
+
+volumes:
+  sshfsdata:
+    driver: vieux/sshfs:latest
+    driver_opts:
+      sshcmd: "ubuntu@10.10.0.19:/home/ubuntu/sshvolume/certbot/conf"
+      allow_other: ""
