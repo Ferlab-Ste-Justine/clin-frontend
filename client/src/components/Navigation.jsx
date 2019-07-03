@@ -26,7 +26,6 @@ const navigationMenu = (intl, router, actions) => {
     <Tabs
       type="card"
       activeKey={tabForRoute}
-      style={{ top: -9 }}
       onChange={(activeKey) => {
         if (activeKey === '/patient/search') {
           actions.navigateToPatientSearchScreen();
@@ -87,7 +86,7 @@ const languageMenu = (intl, actions) => {
 const Navigation = ({
   app, intl, user, router, actions,
 }) => (
-  <nav id="navigation" style={{ position: 'relative', height: 42 }}>
+  <nav id="navigation">
     <Row type="flex">
       <Col span={10} align="start">
         { user.username !== null && navigationMenu(intl, router, actions)}
@@ -96,7 +95,7 @@ const Navigation = ({
         {user.username !== null && (
         <Dropdown overlay={userMenu(intl, actions)}>
           { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <a className="ant-dropdown-link" style={{ paddingRight: '25px' }}>
+          <a className="ant-dropdown-link">
             <Desktop><Icon type="user" /></Desktop>
             {` ${user.username} `}
             <Desktop><Icon type="down" /></Desktop>

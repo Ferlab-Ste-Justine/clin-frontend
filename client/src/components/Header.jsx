@@ -12,7 +12,7 @@ const Header = ({ intl }) => {
   const title = intl.formatMessage({ id: 'header.title' });
   return (
     <Layout.Header id="header">
-      <Row type="flex" justify="center">
+      <Row type="flex">
         <Desktop>
           <Col span={16}>
             <Typography.Title level={1}>{ title }</Typography.Title>

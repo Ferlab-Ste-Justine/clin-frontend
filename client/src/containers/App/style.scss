@@ -4,28 +4,16 @@ $use-all: true;
 $header-background-color: #095797;
 $header-font-color: #FFFFFF;
 $link-color: #E88367;
-$footer-background-color: #223653;
+$footer-background-color: #EEEEEE;
 $footer-font-color: #FFFFFF;
-$navigation-color: #dbe9ff;
+$navigation-color: #223653;
 $navigation-tab: #FFFFFF;
-$navigation-tab-active: #FCD8A2;
+$navigation-tab-active: #FFFFFF;
 
 #root {
   display: block;
   width: 100vw;
   height: 100vh;
-}
-
-#root:after {
-  // background-image: url(/images/wallpaper.jpg);
-  // background-size: cover;
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  width:inherit;
-  height:inherit;
-  opacity:0.5;
 }
 
 #spinner {
@@ -37,7 +25,6 @@ $navigation-tab-active: #FCD8A2;
 }
 
 #layout {
-  height: 100vh;
   z-index: 1;
 }
 
@@ -51,14 +38,43 @@ header#header {
 }
 
 nav#navigation {
-  z-index: 0;
   background-color: $navigation-color;
-  padding: 12px 10px 15px 10px;
+
+  div.ant-card {
+    flex: 1;
+    border-bottom: none;
+  }
+
+  div.ant-row-flex {
+    padding: 12px 10px;
+    height: 42px;
+  }
+
+  div.ant-tabs-nav-wrap {
+    position: relative;
+    top: -3px;
+  }
+
+  div.ant-tabs-bar {
+    border-bottom: none;
+  }
+
+  div.ant-tabs-tab {
+    color: $link-color;
+    margin-right: 10px;
+    background-color: $navigation-tab;
+    border: none;
+  }
+
+  div.ant-tabs-tab-active {
+    background-color: $navigation-tab-active;
+    border: none;
+  }
+
   ul.ant-menu {
     background-color: $navigation-color;
     top: unset;
     line-height: unset;
-    border-bottom-color: $navigation-color;
     li.ant-menu-item {
       color: $link-color;
       padding: 5px 5px 2px 5px;
@@ -70,22 +86,9 @@ nav#navigation {
     font-size: 12px;
     color: $link-color;
   }
-
-  div.ant-tabs-tab {
-    color: $link-color;
-    margin-right: 10px;
-    background-color: $navigation-tab;
-    border-bottom-color: transparent;
-  }
-
-  div.ant-tabs-tab-active {
-    background-color: $navigation-tab-active;
-    border-bottom-color: transparent;
-  }
 }
 
 footer#footer {
-  z-index: 0;
   padding: 10px 15px;
   background-color: $footer-background-color;
   color: $footer-font-color;
@@ -93,36 +96,6 @@ footer#footer {
   i.icon-large {
     font-size: 48px;
     color: $link-color;
-  }
-}
-
-#container {
-  z-index: 2;
-  height: 100%;
-
-  > div {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-#centered-screen {
-   justify-content: center;
-   align-items: center;
- }
-
-#stretched-screen {
-  div.ant-card {
-    height: 100%;
-  }
-}
-
-#stretched-centered-screen {
-  div.ant-card {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }
 
@@ -146,6 +119,17 @@ div.ant-page-header {
     right: 0px;
     bottom: 10px;
   }
+}
+
+div.ant-spin-nested-loading, div.ant-spin-container, div.ant-col-24, div#spinner, section#layout, div#content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+}
+
+div.ant-card {
+  flex: 1;
 }
 
 .clippy, .clippy-balloon {
