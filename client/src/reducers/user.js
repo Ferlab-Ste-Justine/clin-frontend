@@ -16,6 +16,7 @@ const userReducer = (state = initialUserState, action) => produce(state, (draft)
   switch (action.type) {
     case actions.USER_LOGIN_FAILED:
     case actions.USER_LOGOUT_SUCCEEDED:
+    case actions.USER_LOGOUT_FAILED:
       draft.username = initialUserState.username;
       break;
 
