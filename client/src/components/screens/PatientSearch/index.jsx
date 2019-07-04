@@ -41,7 +41,6 @@ class PatientSearchScreen extends React.Component {
     this.state = {
       autoCompleteIsOpen: false,
       columns: [],
-      columnWidths: [],
       data: [],
       loading: TableLoadingOption.CELLS,
       size: 25,
@@ -62,19 +61,6 @@ class PatientSearchScreen extends React.Component {
     const { intl } = this.props;
 
     this.setState({
-      columnWidths: [
-        100,
-        100,
-        100,
-        300,
-        120,
-        120,
-        100,
-        100,
-        100,
-        200,
-        1000,
-      ],
       columns: [
         <Column
           key="1"
@@ -277,16 +263,18 @@ class PatientSearchScreen extends React.Component {
   render() {
     const { intl, search } = this.props;
     const {
-      data, columns, columnWidths, autoCompleteIsOpen, size, page, loading,
+      data, columns, autoCompleteIsOpen, size, page, loading,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
+    const total = search.patient.total;
+    const current = ((page-1)*size)+1
 
     return (
-      <Content type="auto">
+      <Content>
         <Header />
         <Navigation />
         <Card>
-          <Row type="flex" justify="center">
+          <Row>
             <Col span={24}>
               <AutoComplete
                 size="large"
@@ -306,39 +294,45 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
           </Row>
-          <Row type="flex" justify="end">
-            <Col align="end" span={24}>
+
+          <Row>
+            <Col span={24}>
               <br />
-              <Pagination
-                total={search.patient.total}
-                pageSize={size}
-                current={page}
-                pageSizeOptions={['25', '50', '100' ]}
-                showSizeChanger
-                showTotal={(total, range) => (<Typography>{`${range[0]}-${range[1]} of ${total} items`}</Typography>)}
-                onChange={this.handlePageChange}
-                onShowSizeChange={this.handlePageSizeChange}
-              />
-              <br />
+
+          <Typography>{`${current}-${(size*page)} of ${total} items`}</Typography>
             </Col>
           </Row>
-          <Row type="flex" justify="center">
+
+          <Row>
             <Col span={24}>
+              <br />
               <Table
                 numRows={size}
                 enableColumnReordering
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
                 bodyContextMenuRenderer={renderBodyContextMenu}
-                enableGhostCells
-                columnWidths={columnWidths}
                 renderMode={RenderMode.BATCH}
                 loadingOptions={[ loading ]}
+                enableGhostCells
                 onCompleteRender={this.handleTableCellsRendered}
-                style={{ height: '100%' }}
               >
                 { columns.map(column => (column)) }
               </Table>
+            </Col>
+          </Row>
+          <Row>
+            <Col align="end" span={24}>
+              <br />
+              <Pagination
+                  total={search.patient.total}
+                  pageSize={size}
+                  current={page}
+                  pageSizeOptions={['25', '50', '100' ]}
+                  showSizeChanger
+                  onChange={this.handlePageChange}
+                  onShowSizeChange={this.handlePageSizeChange}
+              />
             </Col>
           </Row>
         </Card>

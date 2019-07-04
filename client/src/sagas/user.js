@@ -32,7 +32,6 @@ function* logout() {
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.USER_LOGOUT_FAILED, payload: e });
-    yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }

@@ -430,11 +430,11 @@ module.exports = function (webpackEnv) {
                 {
                   javascriptEnabled: true,
                   modifyVars: {
-                    'primary-color': '#364B93', // primary color for all components
-                    'secondary-color': '#4795CA', // secondary color for all components
-                    'processing-color': '#364B93', // progress color
+                    'primary-color': '#E88367', // primary color for all components
+                    'secondary-color': '#dbe9ff', // secondary color for all components
+                    'processing-color': '#E88367', // progress color
                     'success-color': '#77a309', // success state color
-                    'info-color': '#4795CA', // info state color
+                    'info-color': '#E88367', // info state color
                     'text-color': '#222222', // major text color
                     'text-color-secondary': '#444444', // secondary text color
                     'warning-color': '#FAAD14', // warning state color
