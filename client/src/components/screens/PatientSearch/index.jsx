@@ -193,13 +193,16 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleAutoCompleteChange(query) {
-    const { actions } = this.props;
-    const { page, size } = this.state;
+    if (query.length > 0) {
+      const { actions } = this.props;
+      const { size } = this.state;
 
-    actions.autoCompletePatients('partial', query, page, size);
-    this.setState({
-      autoCompleteIsOpen: true,
-    });
+      actions.autoCompletePatients('partial', query, 1, size);
+      this.setState({
+        page: 1,
+        autoCompleteIsOpen: true,
+      });
+    }
   }
 
   handleAutoCompleteSelect(value) {
@@ -211,16 +214,19 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleAutoCompletePressEnter(e) {
-    const { page, size } = this.state;
+    const { size } = this.state;
     this.setState({
       autoCompleteIsOpen: false,
+      page: 1,
       loading: TableLoadingOption.CELLS,
     });
     const { actions } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
 
-    if (query) {
-      actions.autoCompletePatients('complete', query, page, size);
+    if (!query || query.length < 1) {
+      actions.searchPatientsByQuery(null, 1, size);
+    } else {
+      actions.autoCompletePatients('complete', query, 1, size);
     }
   }
 
@@ -232,8 +238,6 @@ class PatientSearchScreen extends React.Component {
     const nextChildren = Utils.reorderArray(columns, oldIndex, newIndex, length);
     this.setState({ columns: nextChildren });
   }
-
-  /* eslint-disable */
 
   handlePageChange(page, size) {
     const { actions } = this.props;
