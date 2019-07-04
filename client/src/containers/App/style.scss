@@ -35,10 +35,25 @@ header#header {
     line-height: unset;
     color: $header-font-color;
   }
+
+  ul.ant-menu {
+    background-color: $navigation-color;
+    top: unset;
+    line-height: unset;
+    li.ant-menu-item {
+      color: $link-color;
+      padding: 5px 5px 2px 5px;
+    }
+  }
+  a.ant-dropdown-link {
+    padding-top: 2px;
+    padding-right: 25px;
+    font-size: 12px;
+    color: $link-color;
+  }
 }
 
 nav#navigation {
-  background-color: $navigation-color;
 
   div.ant-card {
     flex: 1;
@@ -66,26 +81,15 @@ nav#navigation {
     border: none;
   }
 
+  div.ant-tabs-top {
+    overflow: visible;
+  }
+
   div.ant-tabs-tab-active {
     background-color: $navigation-tab-active;
     border: none;
   }
 
-  ul.ant-menu {
-    background-color: $navigation-color;
-    top: unset;
-    line-height: unset;
-    li.ant-menu-item {
-      color: $link-color;
-      padding: 5px 5px 2px 5px;
-    }
-  }
-  a.ant-dropdown-link {
-    padding-top: 2px;
-    padding-right: 25px;
-    font-size: 12px;
-    color: $link-color;
-  }
 }
 
 footer#footer {
@@ -130,6 +134,10 @@ div.ant-spin-nested-loading, div.ant-spin-container, div.ant-col-24, div#spinner
 
 div.ant-card {
   flex: 1;
+}
+
+div.ant-tabs-nav .ant-tabs-tab-active {
+  color: $link-color;
 }
 
 .clippy, .clippy-balloon {
