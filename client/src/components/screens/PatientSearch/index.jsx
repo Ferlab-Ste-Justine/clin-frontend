@@ -41,7 +41,6 @@ class PatientSearchScreen extends React.Component {
     this.state = {
       autoCompleteIsOpen: false,
       columns: [],
-      columnWidths: [],
       data: [],
       loading: TableLoadingOption.CELLS,
       size: 25,
@@ -62,19 +61,6 @@ class PatientSearchScreen extends React.Component {
     const { intl } = this.props;
 
     this.setState({
-      columnWidths: [
-        100,
-        100,
-        100,
-        300,
-        120,
-        120,
-        100,
-        100,
-        100,
-        200,
-        1000,
-      ],
       columns: [
         <Column
           key="1"
@@ -277,7 +263,7 @@ class PatientSearchScreen extends React.Component {
   render() {
     const { intl, search } = this.props;
     const {
-      data, columns, columnWidths, autoCompleteIsOpen, size, page, loading,
+      data, columns, autoCompleteIsOpen, size, page, loading,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
     const total = search.patient.total;
@@ -326,9 +312,9 @@ class PatientSearchScreen extends React.Component {
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
                 bodyContextMenuRenderer={renderBodyContextMenu}
-                columnWidths={columnWidths}
                 renderMode={RenderMode.BATCH}
                 loadingOptions={[ loading ]}
+                enableGhostCells
                 onCompleteRender={this.handleTableCellsRendered}
               >
                 { columns.map(column => (column)) }
