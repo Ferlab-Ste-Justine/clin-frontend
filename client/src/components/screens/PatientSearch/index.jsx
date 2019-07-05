@@ -239,18 +239,24 @@ class PatientSearchScreen extends React.Component {
     this.setState({ columns: nextChildren });
   }
 
-  handlePageChange(page, size) {
-    const { actions } = this.props;
-    const { search } = this.props;
+  handlePageChange(page, nextSize) {
+    const { search, actions } = this.props;
+    const { size } = this.state;
     this.setState({
       page,
-      size
+      size: nextSize
     })
 
     if (search.lastSearchType === 'autocomplete') {
       actions.autoCompletePatients('partial', search.autocomplete.query, page, size);
     } else {
       actions.searchPatientsByQuery(search.patient.query, page, size);
+    }
+
+    if (size === nextSize) {
+      window.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, document.body.scrollHeight);
     }
   }
 
