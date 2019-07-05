@@ -8,6 +8,7 @@ function* navigate(action) {
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     yield put(push(action.payload.location));
+    window.scrollTo(0, 0);
     yield put({ type: actions.ROUTER_NAVIGATION_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
@@ -21,6 +22,7 @@ function* navigateToPatientScreen(action) {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.PATIENT_FETCH_REQUESTED, payload: { uid: action.payload.uid } });
     yield put(push(`/patient/${action.payload.uid}`));
+    window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
@@ -34,6 +36,7 @@ function* navigateToPatientSearchScreen() {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
     yield put(push('/patient/search'));
+    window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
