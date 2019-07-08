@@ -11,6 +11,7 @@ import {
 import {
   Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
 } from '@blueprintjs/table';
+import saveCsv from 'save-csv';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -56,6 +57,7 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleTableCellsRendered = this.handleTableCellsRendered.bind(this);
+    this.exportToTsv = this.exportToTsv.bind(this);
   }
 
   componentDidMount() {
@@ -159,6 +161,16 @@ class PatientSearchScreen extends React.Component {
     }
 
     return null;
+  }
+
+  exportToTsv() {
+    const pages = Math.ceil((this.props.search[lastSearchType].total / this.state.size));
+    const filename = `${this.props.search.lastSearchType}_${this.state.page}of${pages}.tsv`
+
+    saveCsv(this.state.data, {
+      filename: filename,
+      sep: '\t',
+    })
   }
 
   getCellRenderer(key, type) {
@@ -314,7 +326,7 @@ class PatientSearchScreen extends React.Component {
                 total={search.patient.total}
                 pageSize={size}
                 current={page}
-                pageSizeOptions={['25', '50', '100' ]}
+                pageSizeOptions={['25', '50', '100', '250', '500', '1000' ]}
                 showSizeChanger
                 showTotal={(total, range) => (<Typography>{`${range[0]}-${range[1]} of ${total} items`}</Typography>)}
                 onChange={this.handlePageChange}
