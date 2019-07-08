@@ -4,14 +4,10 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Row, Col, Dropdown, Menu, Icon, Tabs,
+  Row, Col, Tabs,
 } from 'antd';
-import { Tablet, Desktop } from '../containers/Responsive';
 
-import { appShape } from '../reducers/app';
-import { changeLanguage } from '../actions/app';
 import { userShape } from '../reducers/user';
-import { logoutUser } from '../actions/user';
 import { navigateToPatientSearchScreen, navigate } from '../actions/router';
 
 
@@ -26,7 +22,6 @@ const navigationMenu = (intl, router, actions) => {
     <Tabs
       type="card"
       activeKey={tabForRoute}
-      style={{ top: -9 }}
       onChange={(activeKey) => {
         if (activeKey === '/patient/search') {
           actions.navigateToPatientSearchScreen();
@@ -41,82 +36,13 @@ const navigationMenu = (intl, router, actions) => {
   );
 };
 
-const userMenu = (intl, actions) => {
-  const logout = intl.formatMessage({ id: 'navigation.user.logout' });
-
-  return (
-    <Menu>
-      <Menu.Item key="logout" onClick={actions.logoutUser}>
-        <span>
-          <Icon type="logout" />
-          {` ${logout}`}
-        </span>
-      </Menu.Item>
-    </Menu>
-  );
-};
-
-const languageMenu = (intl, actions) => {
-  const langFr = intl.formatMessage({ id: 'lang.fr.long' });
-  const langEn = intl.formatMessage({ id: 'lang.en.long' });
-
-  return (
-    <Menu>
-      <Menu.Item
-        onClick={() => {
-          actions.changeLanguage('fr');
-        }}
-      >
-        <span>
-          {langFr}
-        </span>
-      </Menu.Item>
-      <Menu.Item
-        onClick={() => {
-          actions.changeLanguage('en');
-        }}
-      >
-        <span>
-          {langEn}
-        </span>
-      </Menu.Item>
-    </Menu>
-  );
-};
-
 const Navigation = ({
-  app, intl, user, router, actions,
+  intl, user, router, actions,
 }) => (
-  <nav id="navigation" style={{ position: 'relative', height: 42 }}>
+  <nav id="navigation">
     <Row type="flex">
-      <Col span={10} align="start">
+      <Col span={24} align="start">
         { user.username !== null && navigationMenu(intl, router, actions)}
-      </Col>
-      <Col span={11} align="end">
-        {user.username !== null && (
-        <Dropdown overlay={userMenu(intl, actions)}>
-          { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <a className="ant-dropdown-link" style={{ paddingRight: '25px' }}>
-            <Desktop><Icon type="user" /></Desktop>
-            {` ${user.username} `}
-            <Desktop><Icon type="down" /></Desktop>
-            <Tablet><Icon type="down" /></Tablet>
-          </a>
-        </Dropdown>
-        )}
-      </Col>
-      <Col span={3} align="end">
-        {app.locale.lang !== null && (
-          <Dropdown overlay={languageMenu(intl, actions)}>
-            { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a className="ant-dropdown-link">
-              <Desktop><Icon type="flag" /></Desktop>
-              {` ${intl.formatMessage({ id: `lang.${app.locale.lang}.long` })} `}
-              <Desktop><Icon type="down" /></Desktop>
-              <Tablet><Icon type="down" /></Tablet>
-            </a>
-          </Dropdown>
-        )}
       </Col>
     </Row>
   </nav>
@@ -124,7 +50,6 @@ const Navigation = ({
 
 Navigation.propTypes = {
   actions: PropTypes.shape({}).isRequired,
-  app: PropTypes.shape(appShape).isRequired,
   intl: PropTypes.shape({}).isRequired,
   user: PropTypes.shape(userShape).isRequired,
   router: PropTypes.shape({}).isRequired,
@@ -132,15 +57,12 @@ Navigation.propTypes = {
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
-    logoutUser,
-    changeLanguage,
     navigateToPatientSearchScreen,
     navigate,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
-  app: state.app,
   intl: state.intl,
   user: state.user,
   router: state.router,

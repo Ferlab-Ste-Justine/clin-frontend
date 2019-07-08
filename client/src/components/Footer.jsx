@@ -6,7 +6,7 @@ import {
 import { Mobile, Tablet, Desktop } from '../containers/Responsive';
 
 const Footer = () => (
-  <Layout.Footer id="footer" style={{ zIndex: 0 }}>
+  <Layout.Footer id="footer">
     <Row type="flex" justify="space-between" align="middle">
       <Desktop>
         <Col span={3} align="start">

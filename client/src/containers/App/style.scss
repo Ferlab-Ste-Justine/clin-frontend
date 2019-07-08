@@ -1,29 +1,19 @@
 $use-all: true;
 @import '/../../../../node_modules/animate-sass/animate';
 
-$header-color: #FFF8DC;
-$navigation-color: #FFFAF0;
-$footer-color: #FFFAF0;
-$link-color: #000000;
-$navigation-tab: #FFF8DC;
-$navigation-tab-active: #fcd8a2;
+$header-background-color: #095797;
+$header-font-color: #FFFFFF;
+$link-color: #E88367;
+$footer-background-color: #EEEEEE;
+$footer-font-color: #FFFFFF;
+$navigation-color: #223653;
+$navigation-tab: #FFFFFF;
+$navigation-tab-active: #FFFFFF;
 
 #root {
   display: block;
   width: 100vw;
   height: 100vh;
-}
-
-#root:after {
-  // background-image: url(/images/wallpaper.jpg);
-  // background-size: cover;
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  width:inherit;
-  height:inherit;
-  opacity:0.5;
 }
 
 #spinner {
@@ -35,28 +25,21 @@ $navigation-tab-active: #fcd8a2;
 }
 
 #layout {
-  height: 100vh;
   z-index: 1;
 }
 
 header#header {
   padding: 0 15px;
-  background-color: $header-color;
+  background-color: $header-background-color;
   h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
     line-height: unset;
-    color: #000000;
+    color: $header-font-color;
   }
-}
 
-nav#navigation {
-  z-index: 0;
-  background-color: $navigation-color;
-  padding: 12px 10px 15px 10px;
   ul.ant-menu {
     background-color: $navigation-color;
     top: unset;
     line-height: unset;
-    border-bottom-color: $navigation-color;
     li.ant-menu-item {
       color: $link-color;
       padding: 5px 5px 2px 5px;
@@ -68,58 +51,55 @@ nav#navigation {
     font-size: 12px;
     color: $link-color;
   }
+}
+
+nav#navigation {
+
+  div.ant-card {
+    flex: 1;
+    border-bottom: none;
+  }
+
+  div.ant-row-flex {
+    padding: 12px 10px;
+    height: 42px;
+  }
+
+  div.ant-tabs-nav-wrap {
+    position: relative;
+    top: -3px;
+  }
+
+  div.ant-tabs-bar {
+    border-bottom: none;
+  }
 
   div.ant-tabs-tab {
     color: $link-color;
     margin-right: 10px;
     background-color: $navigation-tab;
-    border-bottom-color: transparent;
+    border: none;
+  }
+
+  div.ant-tabs-top {
+    overflow: visible;
   }
 
   div.ant-tabs-tab-active {
     background-color: $navigation-tab-active;
-    border-bottom-color: transparent;
+    border: none;
   }
+
 }
 
 footer#footer {
-  z-index: 0;
   padding: 10px 15px;
-  background-color: $footer-color;
+  background-color: $footer-background-color;
+  color: $footer-font-color;
 
   i.icon-large {
     font-size: 48px;
     color: $link-color;
-  }
-}
-
-#container {
-  z-index: 2;
-  height: 100%;
-
-  > div {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-#centered-screen {
-   justify-content: center;
-   align-items: center;
- }
-
-#stretched-screen {
-  div.ant-card {
-    height: 100%;
-  }
-}
-
-#stretched-centered-screen {
-  div.ant-card {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 }
 
@@ -143,6 +123,21 @@ div.ant-page-header {
     right: 0px;
     bottom: 10px;
   }
+}
+
+div.ant-spin-nested-loading, div.ant-spin-container, div.ant-col-24, div#spinner, section#layout, div#content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+}
+
+div.ant-card {
+  flex: 1;
+}
+
+div.ant-tabs-nav .ant-tabs-tab-active {
+  color: $link-color;
 }
 
 .clippy, .clippy-balloon {
