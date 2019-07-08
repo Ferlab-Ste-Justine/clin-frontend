@@ -9,7 +9,7 @@ import {
 import {
   Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
 } from '@blueprintjs/table';
-import saveCsv from 'save-csv';
+import { ExportToCsv } from 'export-to-csv';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -197,12 +197,15 @@ class PatientSearchScreen extends React.Component {
     const { search } = this.props;
     const { lastSearchType } = search;
     const pages = Math.ceil((search[lastSearchType].total / size));
-    const filename = `${lastSearchType}_${page}of${pages}.tsv`;
-
-    saveCsv(data, {
+    const filename = `${lastSearchType}_${page}of${pages}`;
+    const csvExporter = new ExportToCsv({
       filename,
-      sep: '\t',
+      fieldSeparator: '\t',
+      showLabels: true,
+      useKeysAsHeaders: true,
     });
+
+    csvExporter.generateCsv(data);
   }
 
   handleAutoCompleteChange(query) {
@@ -312,17 +315,21 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
           </Row>
-          <br />
-          <Row>
+          <Row type="flex" align="bottom" style={{ paddingBottom: 5, paddingTop: 5 }}>
             <Col span={12} align="start">
-              <Button type="primary" shape="round" icon="download" onClick={this.exportToTsv}>Export Page to TSV</Button>
-            </Col>
-            <Col span={12} align="end">
-              <br />
               <Typography>{`${current}-${(size * page)} of ${total} items`}</Typography>
             </Col>
+            <Col span={12} align="end">
+              <Button
+                type="primary"
+                shape="round"
+                icon="download"
+                size="small"
+                onClick={this.exportToTsv}
+              >
+              </Button>
+            </Col>
           </Row>
-          <br />
           <Row>
             <Col span={24}>
               <Table

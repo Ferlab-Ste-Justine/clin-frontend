@@ -30,6 +30,7 @@ dependencies:
   eslint-plugin-import: 2.14.0
   eslint-plugin-jsx-a11y: 6.1.2
   eslint-plugin-react: 7.12.4
+  export-to-csv: 0.2.1
   express: 4.16.4
   file-loader: 2.0.0
   fork-ts-checker-webpack-plugin-alt: 0.4.14
@@ -4402,6 +4403,10 @@ packages:
       node: '>= 6'
     resolution:
       integrity: sha512-p2Gmc0CLxOgkyA93ySWmHFYHUPFIHG6XZ06l7WArWAsrqYVaVEkOU5NtT5i68KUyGKbkQgDCkiT65bWmdoL6Bw==
+  /export-to-csv/0.2.1:
+    dev: false
+    resolution:
+      integrity: sha512-KTbrd3CAZ0cFceJEZr1e5uiMasabeCpXq1/5uvVxDl53o4jXJHnltasQoj2NkzrxD8hU9kdwjnMhoir/7nNx/A==
   /express/4.16.4:
     dependencies:
       accepts: 1.3.5
@@ -12209,6 +12214,7 @@ specifiers:
   eslint-plugin-import: 2.14.0
   eslint-plugin-jsx-a11y: 6.1.2
   eslint-plugin-react: 7.12.4
+  export-to-csv: ^0.2.1
   express: ^4.16.4
   file-loader: 2.0.0
   fork-ts-checker-webpack-plugin-alt: 0.4.14
