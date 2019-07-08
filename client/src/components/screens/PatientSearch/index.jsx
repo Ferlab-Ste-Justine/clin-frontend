@@ -1,16 +1,15 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button,
 } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
 } from '@blueprintjs/table';
+import saveCsv from 'save-csv';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -55,6 +54,7 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleTableCellsRendered = this.handleTableCellsRendered.bind(this);
+    this.exportToTsv = this.exportToTsv.bind(this);
   }
 
   componentDidMount() {
@@ -192,6 +192,19 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
+  exportToTsv() {
+    const { page, size, data } = this.state;
+    const { search } = this.props;
+    const { lastSearchType } = search;
+    const pages = Math.ceil((search[lastSearchType].total / size));
+    const filename = `${lastSearchType}_${page}of${pages}.tsv`;
+
+    saveCsv(data, {
+      filename,
+      sep: '\t',
+    });
+  }
+
   handleAutoCompleteChange(query) {
     if (query.length > 0) {
       const { actions } = this.props;
@@ -244,8 +257,8 @@ class PatientSearchScreen extends React.Component {
     const { search } = this.props;
     this.setState({
       page,
-      size
-    })
+      size,
+    });
 
     if (search.lastSearchType === 'autocomplete') {
       actions.autoCompletePatients('partial', search.autocomplete.query, page, size);
@@ -255,23 +268,24 @@ class PatientSearchScreen extends React.Component {
   }
 
   handlePageSizeChange(page, size) {
-    this.handlePageChange(page, size)
+    this.handlePageChange(page, size);
   }
 
   handleTableCellsRendered() {
     this.setState({
-      loading: null
-    })
+      loading: null,
+    });
   }
 
   render() {
     const { intl, search } = this.props;
+    const { patient } = search;
+    const { total } = patient;
     const {
-      data, columns, autoCompleteIsOpen, size, page, loading,
+      columns, autoCompleteIsOpen, size, page, loading,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
-    const total = search.patient.total;
-    const current = ((page-1)*size)+1
+    const current = ((page - 1) * size) + 1;
 
     return (
       <Content>
@@ -298,26 +312,27 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
           </Row>
-
+          <br />
           <Row>
-            <Col span={24}>
+            <Col span={12} align="start">
+              <Button type="primary" shape="round" icon="download" onClick={this.exportToTsv}>Export Page to TSV</Button>
+            </Col>
+            <Col span={12} align="end">
               <br />
-
-          <Typography>{`${current}-${(size*page)} of ${total} items`}</Typography>
+              <Typography>{`${current}-${(size * page)} of ${total} items`}</Typography>
             </Col>
           </Row>
-
+          <br />
           <Row>
             <Col span={24}>
-              <br />
               <Table
-                numRows={size}
+                numRows={(size <= total ? size : total)}
                 enableColumnReordering
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
                 bodyContextMenuRenderer={renderBodyContextMenu}
                 renderMode={RenderMode.BATCH}
-                loadingOptions={[ loading ]}
+                loadingOptions={[loading]}
                 enableGhostCells
                 onCompleteRender={this.handleTableCellsRendered}
               >
@@ -325,17 +340,17 @@ class PatientSearchScreen extends React.Component {
               </Table>
             </Col>
           </Row>
+          <br />
           <Row>
             <Col align="end" span={24}>
-              <br />
               <Pagination
-                  total={search.patient.total}
-                  pageSize={size}
-                  current={page}
-                  pageSizeOptions={['25', '50', '100' ]}
-                  showSizeChanger
-                  onChange={this.handlePageChange}
-                  onShowSizeChange={this.handlePageSizeChange}
+                total={search.patient.total}
+                pageSize={size}
+                current={page}
+                pageSizeOptions={['25', '50', '100', '250', '500', '1000']}
+                showSizeChanger
+                onChange={this.handlePageChange}
+                onShowSizeChange={this.handlePageSizeChange}
               />
             </Col>
           </Row>
