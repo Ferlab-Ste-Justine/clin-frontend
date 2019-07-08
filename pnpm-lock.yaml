@@ -30,6 +30,7 @@ dependencies:
   eslint-plugin-import: 2.14.0
   eslint-plugin-jsx-a11y: 6.1.2
   eslint-plugin-react: 7.12.4
+  export-to-csv: 0.2.1
   express: 4.16.4
   file-loader: 2.0.0
   fork-ts-checker-webpack-plugin-alt: 0.4.14
@@ -77,7 +78,6 @@ dependencies:
   resizable-antd-table: 1.0.1
   resolve: 1.10.0
   sass-loader: 7.1.0
-  save-csv: 4.1.0
   style-loader: 0.23.1
   terser-webpack-plugin: 1.2.2
   url-loader: 1.1.2
@@ -4402,6 +4402,10 @@ packages:
       node: '>= 6'
     resolution:
       integrity: sha512-p2Gmc0CLxOgkyA93ySWmHFYHUPFIHG6XZ06l7WArWAsrqYVaVEkOU5NtT5i68KUyGKbkQgDCkiT65bWmdoL6Bw==
+  /export-to-csv/0.2.1:
+    dev: false
+    resolution:
+      integrity: sha512-KTbrd3CAZ0cFceJEZr1e5uiMasabeCpXq1/5uvVxDl53o4jXJHnltasQoj2NkzrxD8hU9kdwjnMhoir/7nNx/A==
   /express/4.16.4:
     dependencies:
       accepts: 1.3.5
@@ -10386,10 +10390,6 @@ packages:
       webpack: ^3.0.0 || ^4.0.0
     resolution:
       integrity: sha512-+G+BKGglmZM2GUSfT9TLuEp6tzehHPjAMoRRItOojWIqIGPloVCMhNIQuG639eJ+y033PaGTSjLaTHts8Kw79w==
-  /save-csv/4.1.0:
-    dev: false
-    resolution:
-      integrity: sha512-42leo58/ud4+xnXiSmY0T6p74UjucuYImlPgFyzmx/NY9ClJWqFYpO7/RB+2whJ6bv5VmbwT0yQCHA8NbPEDxg==
   /sax/1.2.4:
     dev: false
     resolution:
@@ -12209,6 +12209,7 @@ specifiers:
   eslint-plugin-import: 2.14.0
   eslint-plugin-jsx-a11y: 6.1.2
   eslint-plugin-react: 7.12.4
+  export-to-csv: ^0.2.1
   express: ^4.16.4
   file-loader: 2.0.0
   fork-ts-checker-webpack-plugin-alt: 0.4.14
@@ -12256,7 +12257,6 @@ specifiers:
   resizable-antd-table: ^1.0.1
   resolve: 1.10.0
   sass-loader: 7.1.0
-  save-csv: ^4.1.0
   style-loader: 0.23.1
   terser-webpack-plugin: 1.2.2
   url-loader: 1.1.2
