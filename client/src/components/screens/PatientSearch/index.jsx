@@ -327,6 +327,7 @@ class PatientSearchScreen extends React.Component {
                 size="small"
                 onClick={this.exportToTsv}
               >
+                Download Page to TSV
               </Button>
             </Col>
           </Row>
