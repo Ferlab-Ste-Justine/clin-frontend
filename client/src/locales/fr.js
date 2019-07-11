@@ -66,7 +66,7 @@ const fr = {
   'screen.patient.details.configuration': 'Configuration',
   'screen.patient.details.dateAndTime': 'Date et heure',
   'screen.patient.details.ontology': 'Ontologie',
-  'screen.patient.details.observed': 'Observé',
+  'screen.patient.details.observed': 'Interprétation',
   'screen.patient.details.apparition': 'Apparition',
   'screen.patient.header.identification': 'Identification',
   'screen.patient.header.additionalInformation': 'Informations additionnelles',
