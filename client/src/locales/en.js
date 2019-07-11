@@ -1,5 +1,4 @@
-/* eslint-disable */
-
+/* eslint-disable max-len */
 const en = {
   'lang.en.long': 'English',
   'lang.fr.long': 'Français',

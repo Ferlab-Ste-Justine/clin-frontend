@@ -1,5 +1,4 @@
-/* eslint-disable */
-
+/* eslint-disable max-len */
 const fr = {
   'lang.en.long': 'English',
   'lang.fr.long': 'Français',
@@ -95,7 +94,7 @@ const fr = {
   'screen.patientsearch.table.position': 'Position',
   'screen.patientsearch.table.practitioner': 'Médecin référent',
   'screen.patientsearch.table.request': 'Requête',
-  'screen.patientsearch.table.status': 'Status',
+  'screen.patientsearch.table.status': 'Statut',
   'screen.patientsearch.download': 'Téléchargez la page en TSV',
   'screen.patientsearch.pagination': '%d-%d sur %d résulats',
 };
