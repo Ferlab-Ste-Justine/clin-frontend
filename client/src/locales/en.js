@@ -51,7 +51,7 @@ const en = {
   'screen.patient.details.date': 'Date',
   'screen.patient.details.ageAtConsultation': 'Patient Age At Consultation',
   'screen.patient.details.type': 'Type',
-  'screen.patient.details.author': 'Author',
+  'screen.patient.details.author': 'Requester',
   'screen.patient.details.specimen': 'Specimen',
   'screen.patient.details.consultation': 'Consultation',
   'screen.patient.details.status': 'Status',
