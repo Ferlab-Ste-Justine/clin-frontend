@@ -43,13 +43,22 @@ pnpm serve
 `cp -p docker.env .env`
 
 ```
+#Obtain certificate from letsencrypt
+#Copy certificate to sshvolume
+##ssh to manager box
+#Install sshfs
+sudo apt-get install sshfs
+##copy certbot to sshvolume and configure
+sudo cp -r certbot /home/ubuntu/sshvolume
+sudo chown -R ubuntu:root certbot
+sudo chmod  -R 0771 certbot
 # Create the proxy network to connect all necessary services together
 docker network create -d overlay --attachable proxy
 # Install on all box sshfs docker volume pluggin
 docker plugin install vieux/sshfs DEBUG=1 sshkey.source=/home/ubuntu/.ssh/
 # (Optional) Tot test the sshvolume with vieux/sshfs (does not work on macosx)
 # Create the volumen sshvolume on all box
-docker volume create -d vieux/sshfs -o sshcmd=ubuntu@142.1.177.220:/home/ubuntu/sshvolume/certbot/conf -o allow_other sshvolume
+docker volume create -d vieux/sshfs -o sshcmd=ubuntu@10.10.0.19:/home/ubuntu/sshvolume/certbot/conf -o allow_other sshvolume
 # To Test (does not work on docker for macosx)
 docker run -it -v sshvolume:/sshvolume busybox ls /sshvolume
 ```
@@ -69,12 +78,12 @@ copy docker.env .env
 docker-compose build 
 docker push localhost:5000/clin-frontend-nginx:latest
 
-docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.0
+docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.1.2
 
-docker push localhost:5000/clin-frontend-nginx:1.0
+docker push localhost:5000/clin-frontend-nginx:1.1.2
 
-docker stack deploy -c docker-compose.yml qa-frontend
-docker service update qa-frontend_nginx --image localhost:5000/clin-frontend-nginx:1.0
+docker stack deploy -c docker-compose.yml qaFront
+docker service update qaFront_nginx --image localhost:5000/clin-frontend-nginx:1.1.2
 
 ```
 #### Update a service to another version i.e. (1.1)
@@ -84,9 +93,9 @@ copy docker.env .env
 
 nano .env -- fix environment
 docker-compose build
-docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.1
+docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.1.2
 docker push localhost:5000/clin-frontend-nginx:1.1
-docker service update qaFront_nginx --image localhost:5000/clin-frontend-nginx:1.1
+docker service update qaFront_nginx --image localhost:5000/clin-frontend-nginx:1.1.2
 
 ```
 To scale the service up or down...
