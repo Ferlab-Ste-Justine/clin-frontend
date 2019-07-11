@@ -43,7 +43,7 @@ const en = {
   'screen.patient.details.family': 'Family',
   'screen.patient.details.ethnicity': 'Ethnicity',
   'screen.patient.details.study': 'Study',
-  'screen.patient.details.proband': 'Proband',
+  'screen.patient.details.proband': 'Position',
   'screen.patient.details.referringPractitioner': 'Referring Practitioner',
   'screen.patient.details.mln': 'MLN',
   'screen.patient.details.id': 'ID',
