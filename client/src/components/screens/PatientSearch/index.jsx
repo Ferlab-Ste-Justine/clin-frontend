@@ -275,9 +275,12 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleTableCellsRendered() {
-    this.setState({
-      loading: null,
-    });
+    const { loading } = this.state;
+    if (loading) {
+      this.setState({
+        loading: null,
+      });
+    }
   }
 
   render() {
