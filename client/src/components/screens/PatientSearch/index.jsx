@@ -157,15 +157,17 @@ class PatientSearchScreen extends React.Component {
           const value = data[row] ? data[row][key] : '';
           return (
             <Cell>
-              <a /* eslint-disable-line */
-                data-patient-id={value}
-                onClick={(e) => {
-                  const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
-                  actions.navigateToPatientScreen(id);
-                }}
-              >
-                <Text>{value}</Text>
-              </a>
+              <Text>
+                <a /* eslint-disable-line */
+                  data-patient-id={value}
+                  onClick={(e) => {
+                    const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
+                    actions.navigateToPatientScreen(id);
+                  }}
+                >
+                  {value}
+                </a>
+              </Text>
             </Cell>
           );
         };
