@@ -209,7 +209,7 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleAutoCompleteChange(query) {
-    if (query.length > 0) {
+    if (query && query.length > 0) {
       const { actions } = this.props;
       const { size } = this.state;
 
