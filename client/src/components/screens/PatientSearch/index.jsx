@@ -28,7 +28,7 @@ const getColumnHeaderCellRenderer = name => () => {
   <ColumnHeaderCell name={name} />;
 };
 */
-
+const { Text } = Typography;
 const renderBodyContextMenu = context => (
   <Menu>
     <Menu.Item context={context}>Copy</Menu.Item>
@@ -87,17 +87,17 @@ class PatientSearchScreen extends React.Component {
         <Column
           key="5"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
-          cellRenderer={this.getCellRenderer('firstName')}
+          cellRenderer={this.getCellRenderer('firstName', 'bold-string')}
         />,
         <Column
           key="6"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
-          cellRenderer={this.getCellRenderer('lastName')}
+          cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
         />,
         <Column
           key="7"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
-          cellRenderer={this.getCellRenderer('birthDate')}
+          cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
         />,
         <Column
           key="8"
@@ -164,11 +164,23 @@ class PatientSearchScreen extends React.Component {
                   actions.navigateToPatientScreen(id);
                 }}
               >
-                {value}
+                <Text>{value}</Text>
               </a>
             </Cell>
           );
         };
+
+      case 'bold-string':
+        return (row) => {
+          const { data } = this.state;
+          const value = data[row] ? data[row][key] : '';
+          return (
+            <Cell>
+              <Text strong>{value}</Text>
+            </Cell>
+          );
+        };
+
       case 'status-tag':
         return (row) => {
           const { data } = this.state;
@@ -179,8 +191,7 @@ class PatientSearchScreen extends React.Component {
               <Tag color={value === 'completed' ? 'green' : ''}>
                 {value}
               </Tag>
-              )
-                }
+              )}
             </Cell>
           );
         };
@@ -188,7 +199,12 @@ class PatientSearchScreen extends React.Component {
       default:
         return (row) => {
           const { data } = this.state;
-          return <Cell>{data[row] ? data[row][key] : ''}</Cell>;
+          const value = data[row] ? data[row][key] : '';
+          return (
+            <Cell>
+              <Text>{value}</Text>
+            </Cell>
+          );
         };
     }
   }
