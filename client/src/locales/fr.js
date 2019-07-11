@@ -96,6 +96,8 @@ const fr = {
   'screen.patientsearch.table.practitioner': 'Médecin référent',
   'screen.patientsearch.table.request': 'Requête',
   'screen.patientsearch.table.status': 'Status',
+  'screen.patientsearch.download': 'Téléchargez la page en TSV',
+  'screen.patientsearch.pagination': '%d-%d sur %d résulats',
 };
 
 export default fr;

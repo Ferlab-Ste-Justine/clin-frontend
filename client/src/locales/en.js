@@ -96,6 +96,8 @@ const en = {
   'screen.patientsearch.table.practitioner': 'Referring Practitioner',
   'screen.patientsearch.table.request': 'Request',
   'screen.patientsearch.table.status': 'Status',
+  'screen.patientsearch.download': 'Download Page to TSV',
+  'screen.patientsearch.pagination': '%d-%d of %d results',
 };
 
 export default en;

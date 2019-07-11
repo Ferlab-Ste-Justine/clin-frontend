@@ -10,6 +10,7 @@ import {
   Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
 } from '@blueprintjs/table';
 import { ExportToCsv } from 'export-to-csv';
+import { format } from 'util';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -291,7 +292,10 @@ class PatientSearchScreen extends React.Component {
       columns, autoCompleteIsOpen, size, page, loading,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
+    const downloadText = intl.formatMessage({ id: 'screen.patientsearch.download' });
+    const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
     const current = ((page - 1) * size) + 1;
+    const pageTotal = size * page;
 
     return (
       <Content>
@@ -320,7 +324,9 @@ class PatientSearchScreen extends React.Component {
           </Row>
           <Row type="flex" align="bottom" style={{ paddingBottom: 5, paddingTop: 5 }}>
             <Col span={12} align="start">
-              <Typography>{`${current}-${(size * page)} of ${total} items`}</Typography>
+              <Typography>
+                { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
+              </Typography>
             </Col>
             <Col span={12} align="end">
               <Button
@@ -330,7 +336,7 @@ class PatientSearchScreen extends React.Component {
                 size="small"
                 onClick={this.exportToTsv}
               >
-                Download Page to TSV
+                {downloadText}
               </Button>
             </Col>
           </Row>
