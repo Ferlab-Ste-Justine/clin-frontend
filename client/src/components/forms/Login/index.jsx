@@ -24,6 +24,7 @@ class LoginForm extends React.Component {
 
   componentDidMount() {
     const { form } = this.props;
+    document.querySelector('#login .autofocus input').autofocus = true;
     form.validateFields();
     this.setState({
       animationClass: 'animated flipInX',
@@ -72,7 +73,6 @@ class LoginForm extends React.Component {
     const usernameField = intl.formatMessage({ id: 'form.login.usernameField' });
     const passwordField = intl.formatMessage({ id: 'form.login.passwordField' });
     const submitButton = intl.formatMessage({ id: 'form.login.submitButton' });
-
     const usernameError = form.isFieldTouched('username') && form.getFieldError('username');
     const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
 
@@ -84,7 +84,6 @@ class LoginForm extends React.Component {
               <Form.Item
                 validateStatus={usernameError ? 'error' : ''}
                 help={usernameError || ''}
-
               >
                 {form.getFieldDecorator('username', {
                   rules: [
@@ -96,6 +95,8 @@ class LoginForm extends React.Component {
                     prefix={<Icon type="mail" />}
                     placeholder={usernameField}
                     autoComplete="off"
+                    allowClear
+                    className="autofocus"
                   />,
                 )}
               </Form.Item>
@@ -108,9 +109,10 @@ class LoginForm extends React.Component {
                 })(
                   <Input
                     prefix={<Icon type="lock" />}
-                    type="password"
                     placeholder={passwordField}
+                    allowClear
                     autoComplete="off"
+                    type="password"
                   />,
                 )}
               </Form.Item>
