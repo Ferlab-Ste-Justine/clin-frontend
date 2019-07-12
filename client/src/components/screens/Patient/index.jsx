@@ -58,6 +58,7 @@ class PatientScreen extends React.Component {
     const ethnicity = intl.formatMessage({ id: 'screen.patient.details.ethnicity' });
     const study = intl.formatMessage({ id: 'screen.patient.details.study' });
     const proband = intl.formatMessage({ id: 'screen.patient.details.proband' });
+    const position = intl.formatMessage({ id: 'screen.patient.details.position' });
     const preferringPractitioner = intl.formatMessage({ id: 'screen.patient.details.referringPractitioner' });
     const mln = intl.formatMessage({ id: 'screen.patient.details.mln' });
     const id = intl.formatMessage({ id: 'screen.patient.details.id' });
@@ -175,7 +176,7 @@ class PatientScreen extends React.Component {
                     dataSource={[
                       { label: ethnicity, value: patient.details.ethnicity },
                       { label: pfamily, value: patient.family.id },
-                      { label: proband, value: patient.details.proband },
+                      { label: position, value: patient.details.proband },
                       { label: study, value: patient.study.name },
                     ]}
                   />
