@@ -130,12 +130,17 @@ class PatientScreen extends React.Component {
         <Card className="entity">
           <PageHeader
             title={(
-              <Typography.Title level={2}>
-                {`${patient.details.firstName} ${patient.details.lastName}`}
-              </Typography.Title>
+              <div>
+                <Typography.Title level={2} style={{ display: 'inline' }}>
+                  {`${patient.details.firstName} ${patient.details.lastName}`}
+                </Typography.Title>
+                <Typography.Title level={2} style={{ fontWeight: 'normal', display: 'inline' }}>
+                  {`, ${patient.details.birthDate}`}
+                </Typography.Title>
+              </div>
             )}
-            extra={`${dateOfBirth} : 2018-10-11`}
           />
+          <br />
           <Tabs key={patient.details.id} defaultActiveKey="patient">
             <Tabs.TabPane
               key="patient"
