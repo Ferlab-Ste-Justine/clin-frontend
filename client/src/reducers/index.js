@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import { connectRouter } from 'connected-react-router'; // eslint-ignore-line
-import { intlReducer } from 'react-intl-redux'; // eslint-ignore-line
+import { connectRouter } from 'connected-react-router';
+import { intlReducer } from 'react-intl-redux';
 
 import appReducer from './app';
 import patientReducer from './patient';

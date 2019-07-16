@@ -1,5 +1,4 @@
-/* eslint-disable */
-
+/* eslint-disable max-len */
 const fr = {
   'lang.en.long': 'English',
   'lang.fr.long': 'Français',
@@ -45,6 +44,7 @@ const fr = {
   'screen.patient.details.ethnicity': 'Ethnicité',
   'screen.patient.details.study': 'Étude',
   'screen.patient.details.proband': 'Proband',
+  'screen.patient.details.position': 'Position',
   'screen.patient.details.referringPractitioner': 'Médecin référent',
   'screen.patient.details.mln': 'MLN',
   'screen.patient.details.id': 'ID',
@@ -52,7 +52,7 @@ const fr = {
   'screen.patient.details.date': 'Date',
   'screen.patient.details.ageAtConsultation': 'Âge du patient à la consultation',
   'screen.patient.details.type': 'Type',
-  'screen.patient.details.author': 'Auteur',
+  'screen.patient.details.author': 'Requérant',
   'screen.patient.details.specimen': 'Spécimen',
   'screen.patient.details.consultation': 'Consultation',
   'screen.patient.details.status': 'Statut',
@@ -67,7 +67,7 @@ const fr = {
   'screen.patient.details.configuration': 'Configuration',
   'screen.patient.details.dateAndTime': 'Date et heure',
   'screen.patient.details.ontology': 'Ontologie',
-  'screen.patient.details.observed': 'Observé',
+  'screen.patient.details.observed': 'Interprétation',
   'screen.patient.details.apparition': 'Apparition',
   'screen.patient.header.identification': 'Identification',
   'screen.patient.header.additionalInformation': 'Informations additionnelles',
@@ -95,7 +95,9 @@ const fr = {
   'screen.patientsearch.table.position': 'Position',
   'screen.patientsearch.table.practitioner': 'Médecin référent',
   'screen.patientsearch.table.request': 'Requête',
-  'screen.patientsearch.table.status': 'Status',
+  'screen.patientsearch.table.status': 'Statut',
+  'screen.patientsearch.download': 'Téléchargez la page en TSV',
+  'screen.patientsearch.pagination': '%d-%d sur %d résulats',
 };
 
 export default fr;

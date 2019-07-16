@@ -13,7 +13,10 @@ const flush = () => store.each((value, key) => {
   }
 });
 
-module.exports = {
+export default {
+  keys: {
+    location: 'LOCATION',
+  },
   read,
   write,
   remove,

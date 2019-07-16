@@ -1,16 +1,16 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button,
 } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
 } from '@blueprintjs/table';
+import { ExportToCsv } from 'export-to-csv';
+import { format } from 'util';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -28,7 +28,7 @@ const getColumnHeaderCellRenderer = name => () => {
   <ColumnHeaderCell name={name} />;
 };
 */
-
+const { Text } = Typography;
 const renderBodyContextMenu = context => (
   <Menu>
     <Menu.Item context={context}>Copy</Menu.Item>
@@ -55,6 +55,7 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleTableCellsRendered = this.handleTableCellsRendered.bind(this);
+    this.exportToTsv = this.exportToTsv.bind(this);
   }
 
   componentDidMount() {
@@ -86,17 +87,17 @@ class PatientSearchScreen extends React.Component {
         <Column
           key="5"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
-          cellRenderer={this.getCellRenderer('firstName')}
+          cellRenderer={this.getCellRenderer('firstName', 'bold-string')}
         />,
         <Column
           key="6"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
-          cellRenderer={this.getCellRenderer('lastName')}
+          cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
         />,
         <Column
           key="7"
           name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
-          cellRenderer={this.getCellRenderer('birthDate')}
+          cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
         />,
         <Column
           key="8"
@@ -156,18 +157,32 @@ class PatientSearchScreen extends React.Component {
           const value = data[row] ? data[row][key] : '';
           return (
             <Cell>
-              <a /* eslint-disable-line */
-                data-patient-id={value}
-                onClick={(e) => {
-                  const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
-                  actions.navigateToPatientScreen(id);
-                }}
-              >
-                {value}
-              </a>
+              <Text>
+                <a /* eslint-disable-line */
+                  data-patient-id={value}
+                  onClick={(e) => {
+                    const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
+                    actions.navigateToPatientScreen(id);
+                  }}
+                >
+                  {value}
+                </a>
+              </Text>
             </Cell>
           );
         };
+
+      case 'bold-string':
+        return (row) => {
+          const { data } = this.state;
+          const value = data[row] ? data[row][key] : '';
+          return (
+            <Cell>
+              <Text strong>{value}</Text>
+            </Cell>
+          );
+        };
+
       case 'status-tag':
         return (row) => {
           const { data } = this.state;
@@ -178,8 +193,7 @@ class PatientSearchScreen extends React.Component {
               <Tag color={value === 'completed' ? 'green' : ''}>
                 {value}
               </Tag>
-              )
-                }
+              )}
             </Cell>
           );
         };
@@ -187,13 +201,34 @@ class PatientSearchScreen extends React.Component {
       default:
         return (row) => {
           const { data } = this.state;
-          return <Cell>{data[row] ? data[row][key] : ''}</Cell>;
+          const value = data[row] ? data[row][key] : '';
+          return (
+            <Cell>
+              <Text>{value}</Text>
+            </Cell>
+          );
         };
     }
   }
 
+  exportToTsv() {
+    const { page, size, data } = this.state;
+    const { search } = this.props;
+    const { lastSearchType } = search;
+    const pages = Math.ceil((search[lastSearchType].total / size));
+    const filename = `${lastSearchType}_${page}of${pages}`;
+    const csvExporter = new ExportToCsv({
+      filename,
+      fieldSeparator: '\t',
+      showLabels: true,
+      useKeysAsHeaders: true,
+    });
+
+    csvExporter.generateCsv(data);
+  }
+
   handleAutoCompleteChange(query) {
-    if (query.length > 0) {
+    if (query && query.length > 0) {
       const { actions } = this.props;
       const { size } = this.state;
 
@@ -239,45 +274,46 @@ class PatientSearchScreen extends React.Component {
     this.setState({ columns: nextChildren });
   }
 
-  handlePageChange(page, nextSize) {
-    const { search, actions } = this.props;
-    const { size } = this.state;
+  handlePageChange(page, size) {
+    const { actions } = this.props;
+    const { search } = this.props;
     this.setState({
       page,
-      size: nextSize
-    })
+      size,
+    });
 
     if (search.lastSearchType === 'autocomplete') {
       actions.autoCompletePatients('partial', search.autocomplete.query, page, size);
     } else {
       actions.searchPatientsByQuery(search.patient.query, page, size);
     }
-
-    if (size === nextSize) {
-      window.scrollTo(0, 0);
-    } else {
-      window.scrollTo(0, document.body.scrollHeight);
-    }
   }
 
   handlePageSizeChange(page, size) {
-    this.handlePageChange(page, size)
+    this.handlePageChange(page, size);
   }
 
   handleTableCellsRendered() {
-    this.setState({
-      loading: null
-    })
+    const { loading } = this.state;
+    if (loading) {
+      this.setState({
+        loading: null,
+      });
+    }
   }
 
   render() {
     const { intl, search } = this.props;
+    const { patient } = search;
+    const { total } = patient;
     const {
-      data, columns, autoCompleteIsOpen, size, page, loading,
+      columns, autoCompleteIsOpen, size, page, loading,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
-    const total = search.patient.total;
-    const current = ((page-1)*size)+1
+    const downloadText = intl.formatMessage({ id: 'screen.patientsearch.download' });
+    const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
+    const current = ((page - 1) * size) + 1;
+    const pageTotal = size * page;
 
     return (
       <Content>
@@ -304,26 +340,34 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
           </Row>
-
-          <Row>
-            <Col span={24}>
-              <br />
-
-          <Typography>{`${current}-${(size*page)} of ${total} items`}</Typography>
+          <Row type="flex" align="bottom" style={{ paddingBottom: 5, paddingTop: 5 }}>
+            <Col span={12} align="start">
+              <Typography>
+                { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
+              </Typography>
+            </Col>
+            <Col span={12} align="end">
+              <Button
+                type="primary"
+                shape="round"
+                icon="download"
+                size="small"
+                onClick={this.exportToTsv}
+              >
+                {downloadText}
+              </Button>
             </Col>
           </Row>
-
           <Row>
             <Col span={24}>
-              <br />
               <Table
-                numRows={size}
+                numRows={(size <= total ? size : total)}
                 enableColumnReordering
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
                 bodyContextMenuRenderer={renderBodyContextMenu}
                 renderMode={RenderMode.BATCH}
-                loadingOptions={[ loading ]}
+                loadingOptions={[loading]}
                 enableGhostCells
                 onCompleteRender={this.handleTableCellsRendered}
               >
@@ -331,17 +375,17 @@ class PatientSearchScreen extends React.Component {
               </Table>
             </Col>
           </Row>
+          <br />
           <Row>
             <Col align="end" span={24}>
-              <br />
               <Pagination
-                  total={search.patient.total}
-                  pageSize={size}
-                  current={page}
-                  pageSizeOptions={['25', '50', '100' ]}
-                  showSizeChanger
-                  onChange={this.handlePageChange}
-                  onShowSizeChange={this.handlePageSizeChange}
+                total={search.patient.total}
+                pageSize={size}
+                current={page}
+                pageSizeOptions={['25', '50', '100', '250', '500', '1000']}
+                showSizeChanger
+                onChange={this.handlePageChange}
+                onShowSizeChange={this.handlePageSizeChange}
               />
             </Col>
           </Row>

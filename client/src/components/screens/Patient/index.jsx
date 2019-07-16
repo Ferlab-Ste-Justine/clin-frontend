@@ -58,6 +58,7 @@ class PatientScreen extends React.Component {
     const ethnicity = intl.formatMessage({ id: 'screen.patient.details.ethnicity' });
     const study = intl.formatMessage({ id: 'screen.patient.details.study' });
     const proband = intl.formatMessage({ id: 'screen.patient.details.proband' });
+    const position = intl.formatMessage({ id: 'screen.patient.details.position' });
     const preferringPractitioner = intl.formatMessage({ id: 'screen.patient.details.referringPractitioner' });
     const mln = intl.formatMessage({ id: 'screen.patient.details.mln' });
     const id = intl.formatMessage({ id: 'screen.patient.details.id' });
@@ -130,12 +131,17 @@ class PatientScreen extends React.Component {
         <Card className="entity">
           <PageHeader
             title={(
-              <Typography.Title level={2}>
-                {`${patient.details.firstName} ${patient.details.lastName}`}
-              </Typography.Title>
+              <div>
+                <Typography.Title level={2} style={{ display: 'inline' }}>
+                  {`${patient.details.firstName} ${patient.details.lastName}`}
+                </Typography.Title>
+                <Typography.Title level={2} style={{ fontWeight: 'normal', display: 'inline' }}>
+                  {`, ${patient.details.birthDate}`}
+                </Typography.Title>
+              </div>
             )}
-            extra={`${dateOfBirth} : 2018-10-11`}
           />
+          <br />
           <Tabs key={patient.details.id} defaultActiveKey="patient">
             <Tabs.TabPane
               key="patient"
@@ -170,7 +176,7 @@ class PatientScreen extends React.Component {
                     dataSource={[
                       { label: ethnicity, value: patient.details.ethnicity },
                       { label: pfamily, value: patient.family.id },
-                      { label: proband, value: patient.details.proband },
+                      { label: position, value: patient.details.proband },
                       { label: study, value: patient.study.name },
                     ]}
                   />

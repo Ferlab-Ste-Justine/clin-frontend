@@ -3,6 +3,7 @@ import { all, put, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/type';
 import { success, error } from '../actions/app';
 import Api, { ApiError } from '../helpers/api';
+import LocalStore from '../helpers/storage/local';
 
 
 function* login(action) {
@@ -13,7 +14,13 @@ function* login(action) {
       throw new ApiError(response.error);
     }
     yield put({ type: actions.USER_LOGIN_SUCCEEDED, payload: response.payload });
-    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
+    const redirect = LocalStore.read(LocalStore.keys.location);
+    if (redirect) {
+      LocalStore.remove(LocalStore.keys.location);
+      yield put({ type: actions.ROUTER_NAVIGATION_REQUESTED, payload: { location: redirect } });
+    } else {
+      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
+    }
   } catch (e) {
     yield put({ type: actions.USER_LOGIN_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
@@ -28,6 +35,7 @@ function* logout() {
     if (response.error) {
       throw new ApiError(response.error);
     }
+    LocalStore.remove(LocalStore.keys.location);
     yield put({ type: actions.USER_LOGOUT_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {

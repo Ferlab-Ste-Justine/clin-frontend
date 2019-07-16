@@ -1,11 +1,8 @@
-/* eslint-disable */
-
 import {
   all, put, debounce, takeLatest,
 } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
-import { error } from '../actions/app';
 import Api, { ApiError } from '../helpers/api';
 
 
@@ -20,8 +17,8 @@ function* fetch(action) {
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
-    yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
     yield put({ type: actions.STOP_LOADING_ANIMATION });
+    yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
 
@@ -31,7 +28,7 @@ function* autoComplete(action) {
       action.payload.type,
       action.payload.query,
       action.payload.page,
-      action.payload.size
+      action.payload.size,
     );
 
     if (response.error) {
@@ -43,6 +40,7 @@ function* autoComplete(action) {
     }
   } catch (e) {
     yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
+    yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
 
@@ -61,6 +59,7 @@ function* search(action) {
     yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
   } catch (e) {
     yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
+    yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
 

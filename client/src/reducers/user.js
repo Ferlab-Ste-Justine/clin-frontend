@@ -4,6 +4,7 @@ import { produce } from 'immer';
 
 import * as actions from '../actions/type';
 
+
 export const initialUserState = {
   username: null,
   firstName: null,
@@ -16,11 +17,12 @@ export const userShape = {
   lastName: PropTypes.string,
 };
 
-const userReducer = (state = initialUserState, action) => produce(state, (draft) => { // eslint-disable-line no-unused-vars, max-len
+const userReducer = (state = initialUserState, action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGIN_FAILED:
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_LOGOUT_FAILED:
+    case actions.USER_SESSION_HAS_EXPIRED:
       draft.username = initialUserState.username;
       draft.firstName = initialUserState.firstName;
       draft.lastName = initialUserState.lastName;

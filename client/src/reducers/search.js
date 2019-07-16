@@ -9,8 +9,6 @@ import {
   normalizePatientStudy,
 } from '../helpers/struct';
 
-/* eslint-disable */
-
 export const initialSearchState = {
   lastSearchType: null,
   autocomplete: {
