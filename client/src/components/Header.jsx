@@ -65,7 +65,7 @@ const Header = ({
     <Layout.Header id="header">
       <Row type="flex">
         <Col span={16}>
-          <img width="90%" alt={title} src="/images/cqgc.jpg" />
+          <img className="logo" alt={title} src="/images/cqgc.png" />
         </Col>
         <Col span={5} align="end">
           {user.username !== null && (
