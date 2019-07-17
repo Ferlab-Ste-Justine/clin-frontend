@@ -17,7 +17,7 @@ export const userShape = {
   lastName: PropTypes.string,
 };
 
-const userReducer = (state = initialUserState, action) => produce(state, (draft) => {
+const userReducer = (state = Object.assign({}, initialUserState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:

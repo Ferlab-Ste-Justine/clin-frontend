@@ -38,7 +38,7 @@ export const searchShape = {
   }),
 };
 
-const searchReducer = (state = initialSearchState, action) => produce(state, (draft) => {
+const searchReducer = (state = Object.assign({}, initialSearchState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
