@@ -15,7 +15,9 @@ const flush = () => store.each((value, key) => {
 
 export default {
   keys: {
-    location: 'LOCATION',
+    lastId: 'LAST_ID',
+    lastScreen: 'LAST_SCREEN',
+    lastScreenState: 'LAST_SCREEN_STATE',
   },
   read,
   write,

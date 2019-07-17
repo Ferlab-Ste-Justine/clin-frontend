@@ -12,7 +12,6 @@ function* navigate(action) {
     yield put(push(location));
     window.scrollTo(0, 0);
     yield put({ type: actions.ROUTER_NAVIGATION_SUCCEEDED });
-    LocalStore.write(LocalStore.keys.location, location);
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.ROUTER_NAVIGATION_FAILED, message: e.message });
@@ -21,15 +20,16 @@ function* navigate(action) {
 }
 
 function* navigateToPatientScreen(action) {
+  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const { uid } = action.payload;
     const location = `/patient/${uid}`;
-    yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.PATIENT_FETCH_REQUESTED, payload: { uid } });
     yield put(push(location));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
-    LocalStore.write(LocalStore.keys.location, location);
+    LocalStore.write(LocalStore.keys.lastScreen, 'patient');
+    LocalStore.write(LocalStore.keys.lastScreenState, action.payload);
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED, message: e.message });
@@ -38,17 +38,35 @@ function* navigateToPatientScreen(action) {
 }
 
 function* navigateToPatientSearchScreen() {
+  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const location = '/patient/search';
-    yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
     yield put(push(location));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
-    LocalStore.write(LocalStore.keys.location, location);
+    LocalStore.write(LocalStore.keys.lastScreen, 'patient/search');
+    LocalStore.write(LocalStore.keys.lastScreenState, null);
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED });
+    yield put({ type: actions.STOP_LOADING_ANIMATION });
+  }
+}
+
+function* navigateToLastKnownState() {
+  try {
+    const screen = LocalStore.read(LocalStore.keys.lastScreen);
+    const state = LocalStore.read(LocalStore.keys.lastScreenState);
+    switch (screen) {
+      case 'patient':
+        yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED, payload: state });
+        break;
+      default:
+        yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
+        break;
+    }
+  } catch (e) {
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
@@ -65,10 +83,15 @@ function* watchNavigateToPatientSearchScreen() {
   yield takeLatest(actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED, navigateToPatientSearchScreen);
 }
 
+function* watchNavigateToLastKnownState() {
+  yield takeLatest(actions.USER_SESSION_RESTORE_LAST_KNOWN_STATE, navigateToLastKnownState);
+}
+
 export default function* watchedRouterSagas() {
   yield all([
     watchNavigate(),
     watchNavigateToPatientScreen(),
     watchNavigateToPatientSearchScreen(),
+    watchNavigateToLastKnownState(),
   ]);
 }

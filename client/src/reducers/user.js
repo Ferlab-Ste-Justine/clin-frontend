@@ -19,13 +19,9 @@ export const userShape = {
 
 const userReducer = (state = initialUserState, action) => produce(state, (draft) => {
   switch (action.type) {
-    case actions.USER_LOGIN_FAILED:
     case actions.USER_LOGOUT_SUCCEEDED:
-    case actions.USER_LOGOUT_FAILED:
     case actions.USER_SESSION_HAS_EXPIRED:
-      draft.username = initialUserState.username;
-      draft.firstName = initialUserState.firstName;
-      draft.lastName = initialUserState.lastName;
+      draft = Object.assign({}, initialUserState);
       break;
 
     case actions.USER_LOGIN_SUCCEEDED:

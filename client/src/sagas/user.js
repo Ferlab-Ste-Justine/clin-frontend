@@ -13,11 +13,12 @@ function* login(action) {
     if (response.error) {
       throw new ApiError(response.error);
     }
+    const previousId = LocalStore.read(LocalStore.keys.lastId);
+    const currentId = window.btoa(response.payload.data.data.user.username);
+    LocalStore.write(LocalStore.keys.lastId, currentId);
     yield put({ type: actions.USER_LOGIN_SUCCEEDED, payload: response.payload });
-    const redirect = LocalStore.read(LocalStore.keys.location);
-    if (redirect) {
-      LocalStore.remove(LocalStore.keys.location);
-      yield put({ type: actions.ROUTER_NAVIGATION_REQUESTED, payload: { location: redirect } });
+    if (currentId === previousId) {
+      yield put({ type: actions.USER_SESSION_RESTORE_LAST_KNOWN_STATE });
     } else {
       yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
     }
@@ -31,11 +32,13 @@ function* login(action) {
 function* logout() {
   try {
     yield put({ type: actions.START_LOADING_ANIMATION });
+    LocalStore.remove(LocalStore.keys.lastId);
+    LocalStore.remove(LocalStore.keys.lastScreen);
+    LocalStore.remove(LocalStore.keys.lastScreenState);
     const response = yield Api.logout();
     if (response.error) {
       throw new ApiError(response.error);
     }
-    LocalStore.remove(LocalStore.keys.location);
     yield put({ type: actions.USER_LOGOUT_SUCCEEDED });
     yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {

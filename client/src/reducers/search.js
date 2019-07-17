@@ -9,6 +9,7 @@ import {
   normalizePatientStudy,
 } from '../helpers/struct';
 
+
 export const initialSearchState = {
   lastSearchType: null,
   autocomplete: {
@@ -39,6 +40,11 @@ export const searchShape = {
 
 const searchReducer = (state = initialSearchState, action) => produce(state, (draft) => {
   switch (action.type) {
+    case actions.USER_LOGOUT_SUCCEEDED:
+    case actions.USER_SESSION_HAS_EXPIRED:
+      draft = Object.assign({}, initialSearchState);
+      break;
+
     case actions.PATIENT_SEARCH_SUCCEEDED:
       draft.patient.total = action.payload.data.data.total;
       draft.patient.results = action.payload.data.data.hits.map((hit) => {
