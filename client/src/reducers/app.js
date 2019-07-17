@@ -7,7 +7,6 @@ import 'moment/locale/fr';
 import 'moment/locale/en-ca';
 import * as frFr from 'antd/lib/locale-provider/fr_FR'; // eslint-ignore-line camelcase
 import * as enUS from 'antd/lib/locale-provider/en_US'; // eslint-ignore-line camelcase
-
 import * as actions from '../actions/type';
 
 
@@ -27,7 +26,7 @@ export const appShape = {
   }).isRequired,
 };
 
-const appReducer = (state = initialAppState, action) => produce(state, (draft) => {
+const appReducer = (state = Object.assign({}, initialAppState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.SHOW_NOTIFICATION:
       message[action.payload.type](action.payload.message);

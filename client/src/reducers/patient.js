@@ -60,8 +60,13 @@ export const patientShape = {
   indications: PropTypes.array,
 };
 
-const patientReducer = (state = initialPatientState, action) => produce(state, (draft) => {
+const patientReducer = (state = Object.assign({}, initialPatientState), action) => produce(state, (draft) => {
   switch (action.type) {
+    case actions.USER_LOGOUT_SUCCEEDED:
+    case actions.USER_SESSION_HAS_EXPIRED:
+      draft = Object.assign({}, initialPatientState);
+      break;
+
     case actions.PATIENT_FETCH_SUCCEEDED:
       draft.details = normalizePatientDetails(action.payload.data);
       draft.family = normalizePatientFamily(action.payload.data);
