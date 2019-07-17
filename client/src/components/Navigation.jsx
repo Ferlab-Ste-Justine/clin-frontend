@@ -8,14 +8,15 @@ import {
 } from 'antd';
 
 import { userShape } from '../reducers/user';
-import { navigateToPatientSearchScreen, navigate } from '../actions/router';
+import { navigateToPatientSearchScreen, navigateToPatientVariantScreen, navigate } from '../actions/router';
 
 
-// onClick={navigateToPatientSearchScreen}
 const navigationMenu = (intl, router, actions) => {
   const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
   let tabForRoute = router.location.pathname;
-  if (tabForRoute.indexOf('/patient/') !== -1) {
+  if (tabForRoute.indexOf('variant') !== -1) {
+    tabForRoute = '/patient/variant';
+  } else {
     tabForRoute = '/patient/search';
   }
   return (
@@ -25,13 +26,15 @@ const navigationMenu = (intl, router, actions) => {
       onChange={(activeKey) => {
         if (activeKey === '/patient/search') {
           actions.navigateToPatientSearchScreen();
+        } else if (activeKey === '/patient/variant') {
+          actions.navigateToPatientVariantScreen('PA00069');
         } else {
           actions.navigate(activeKey);
         }
       }}
     >
       <Tabs.TabPane tab={patientSearch} key="/patient/search" />
-      { /* <Tabs.TabPane tab="Recherche de Variants" key="/variant/search" /> */ }
+      <Tabs.TabPane tab="Variant Interpreter Demo" key="/patient/variant" />
     </Tabs>
   );
 };
@@ -58,6 +61,7 @@ Navigation.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientSearchScreen,
+    navigateToPatientVariantScreen,
     navigate,
   }, dispatch),
 });

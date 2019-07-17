@@ -60,11 +60,17 @@ export const normalizePatientPractitioner = (fhirPatient) => {
     struct.id = fhirPatient.practitioners[0].id;
     struct.rid = fhirPatient.practitioners[0].role_id;
     struct.mln = fhirPatient.practitioners[0].identifier.MD;
-    struct.name = [
-      fhirPatient.practitioners[0].name[0].prefix[0],
+    const nameParts = [
       fhirPatient.practitioners[0].name[0].given[0],
       fhirPatient.practitioners[0].name[0].family,
-    ].join(' ');
+    ];
+    if (fhirPatient.practitioners[0].name[0].prefix) {
+      nameParts.unshift(fhirPatient.practitioners[0].name[0].prefix[0]);
+    }
+    if (fhirPatient.practitioners[0].name[0].suffix) {
+      nameParts.push(fhirPatient.practitioners[0].name[0].suffix[0]);
+    }
+    struct.name = nameParts.join(' ');
   }
 
   return struct;
@@ -140,7 +146,7 @@ export const normalizePatientIndications = fhirPatient => (fhirPatient.observati
 
 export const normalizePatientOntology = fhirPatient => (fhirPatient.observations
   ? fhirPatient.observations.reduce((result, current) => {
-    if (current.code.text.toLowerCase().indexOf('phenotype') !== -1 && current.phenotype) {
+    if (current.code.text.toLowerCase().indexOf('phenotype') !== -1) {
       result.push({
         ontologie: 'HPO',
         code: (current.phenotype[0] ? current.phenotype[0].code : ''),

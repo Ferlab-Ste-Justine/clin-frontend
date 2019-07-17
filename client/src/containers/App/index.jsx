@@ -15,6 +15,7 @@ import PrivateRoute from '../PrivateRoute';
 import HomeScreen from '../../components/screens/Home';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
 import PatientScreen from '../../components/screens/Patient';
+import PatientVariantScreen from '../../components/screens/PatientVariant';
 import NoMatchScreen from '../../components/screens/NoMatch';
 
 import { loadApp } from '../../actions/app';
@@ -39,6 +40,7 @@ export class App extends React.Component {
               <ConnectedRouter key="connected-router" history={history}>
                 <Switch key="switch">
                   <PrivateRoute exact path="/patient/search" Component={PatientSearchScreen} key="route-patient-search" />
+                  <PrivateRoute path="/patient/:uid/variant" Component={PatientVariantScreen} key="route-patient-variant" />
                   <PrivateRoute path="/patient/:uid" Component={PatientScreen} key="route-patient" />
                   <Route exact path="/" component={HomeScreen} key="route-home" />
                   <Route component={NoMatchScreen} key="route-nomatch" />
