@@ -216,7 +216,8 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   columns={[
                     { title: id, dataIndex: 'id', key: 'id' },
-                    { title: practitioner, dataIndex: 'practitioner', key: 'practitioner' },
+                    { title: practitioner, dataIndex: 'assessor', key: 'assessor' },
+                    { title: organization, dataIndex: 'organization', key: 'organization' },
                     { title: date, dataIndex: 'date', key: 'date' },
                     { title: ageAtConsultation, dataIndex: 'age', key: 'age' },
                   ]}
@@ -237,7 +238,8 @@ class PatientScreen extends React.Component {
                     { title: id, dataIndex: 'id', key: 'id' },
                     { title: date, dataIndex: 'date', key: 'date' },
                     { title: type, dataIndex: 'type', key: 'type' },
-                    { title: author, dataIndex: 'author', key: 'author' },
+                    { title: author, dataIndex: 'requester', key: 'requester' },
+                    { title: organization, dataIndex: 'organization', key: 'organization' },
                     { title: specimen, dataIndex: 'specimen', key: 'specimen' },
                     { title: consultation, dataIndex: 'consulation', key: 'consulation' },
                     { title: status, dataIndex: 'status', key: 'status' },
