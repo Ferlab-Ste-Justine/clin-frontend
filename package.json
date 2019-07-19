@@ -65,6 +65,7 @@
     "prop-types": "^15.7.2",
     "react": "^16.8.2",
     "react-app-polyfill": "^0.2.1",
+    "react-beautiful-dnd": "^11.0.4",
     "react-dev-utils": "^7.0.3",
     "react-dom": "^16.8.3",
     "react-hot-loader": "^4.6.5",

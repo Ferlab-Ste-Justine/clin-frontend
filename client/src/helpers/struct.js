@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import _ from 'lodash';
+import { find } from 'lodash';
 import { initialPatientState } from '../reducers/patient';
 
 
@@ -21,8 +21,8 @@ export const normalizePatientDetails = (fhirPatient) => {
 
 export const normalizePatientFamily = (fhirPatient) => {
   const struct = Object.assign({}, initialPatientState.family);
-  const mother = _.find(fhirPatient.link, { relationship: 'MTH' });
-  const father = _.find(fhirPatient.link, { relationship: 'FTH' });
+  const mother = find(fhirPatient.link, { relationship: 'MTH' });
+  const father = find(fhirPatient.link, { relationship: 'FTH' });
 
   struct.id = fhirPatient.familyId;
   struct.composition = fhirPatient.familyComposition;
