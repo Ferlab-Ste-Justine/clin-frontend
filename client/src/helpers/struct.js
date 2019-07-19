@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import _ from 'lodash';
+import { find } from 'lodash';
 import { initialPatientState } from '../reducers/patient';
 
 
@@ -21,8 +21,8 @@ export const normalizePatientDetails = (fhirPatient) => {
 
 export const normalizePatientFamily = (fhirPatient) => {
   const struct = Object.assign({}, initialPatientState.family);
-  const mother = _.find(fhirPatient.link, { relationship: 'MTH' });
-  const father = _.find(fhirPatient.link, { relationship: 'FTH' });
+  const mother = find(fhirPatient.link, { relationship: 'MTH' });
+  const father = find(fhirPatient.link, { relationship: 'FTH' });
 
   struct.id = fhirPatient.familyId;
   struct.composition = fhirPatient.familyComposition;
@@ -60,11 +60,17 @@ export const normalizePatientPractitioner = (fhirPatient) => {
     struct.id = fhirPatient.practitioners[0].id;
     struct.rid = fhirPatient.practitioners[0].role_id;
     struct.mln = fhirPatient.practitioners[0].identifier.MD;
-    struct.name = [
-      fhirPatient.practitioners[0].name[0].prefix[0],
+    const nameParts = [
       fhirPatient.practitioners[0].name[0].given[0],
       fhirPatient.practitioners[0].name[0].family,
-    ].join(' ');
+    ];
+    if (fhirPatient.practitioners[0].name[0].prefix) {
+      nameParts.unshift(fhirPatient.practitioners[0].name[0].prefix[0]);
+    }
+    if (fhirPatient.practitioners[0].name[0].suffix) {
+      nameParts.push(fhirPatient.practitioners[0].name[0].suffix[0]);
+    }
+    struct.name = nameParts.join(' ');
   }
 
   return struct;
@@ -83,11 +89,22 @@ export const normalizePatientOrganization = (fhirPatient) => {
 
 export const normalizePatientConsultations = fhirPatient => (fhirPatient.clinicalImpressions
   ? fhirPatient.clinicalImpressions.reduce((result, current) => {
+    const nameParts = [
+      current.assessor_name[0].given[0],
+      current.assessor_name[0].family,
+    ];
+    if (current.assessor_name[0].prefix) {
+      nameParts.unshift(current.assessor_name[0].prefix[0]);
+    }
+    if (current.assessor_name[0].suffix) {
+      nameParts.push(current.assessor_name[0].suffix[0]);
+    }
     result.push({
       id: current.id,
       age: current.runtimePatientAge,
-      date: (current.effective ? current.effective.dateTime : ''),
-      practitioner: 'N/A',
+      date: (current.ci_consultation_date ? current.ci_consultation_date.dateTime : ''),
+      assessor: nameParts.join(' '),
+      organization: current.assessor_org_name || '',
     });
 
     return result;
@@ -95,18 +112,26 @@ export const normalizePatientConsultations = fhirPatient => (fhirPatient.clinica
 
 export const normalizePatientRequests = fhirPatient => (fhirPatient.serviceRequests
   ? fhirPatient.serviceRequests.reduce((result, current) => {
+    const nameParts = [
+      current.requester_name[0].given[0],
+      current.requester_name[0].family,
+    ];
+    if (current.requester_name[0].prefix) {
+      nameParts.unshift(current.requester_name[0].prefix[0]);
+    }
+    if (current.requester_name[0].suffix) {
+      nameParts.push(current.requester_name[0].suffix[0]);
+    }
     result.push({
       id: current.id,
       date: current.authoredOn,
       type: (current.code ? current.code.text : ''),
-      author: [
-        current.name[0].prefix[0],
-        current.name[0].given[0],
-        current.name[0].family,
-      ].join(' '),
-      specimen: (current.specimen ? current.specimen[0].id : ''),
-      consulation: current.ci_ref || '',
       status: current.status,
+      intent: (current.intent ? current.intent : ''),
+      specimen: (current.specimen ? current.specimen[0].id : ''),
+      requester: nameParts.join(' '),
+      organization: current.requester_org_name || '',
+      consulation: current.ci_ref || '',
     });
 
     return result;
