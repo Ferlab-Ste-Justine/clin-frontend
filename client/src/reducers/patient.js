@@ -6,7 +6,7 @@ import * as actions from '../actions/type';
 import {
   normalizePatientConsultations,
   normalizePatientDetails,
-  normalizePatientFamily, normalizePatientIndications, normalizePatientObservations, normalizePatientOntology,
+  normalizePatientFamily, normalizePatientImpressions,
   normalizePatientOrganization,
   normalizePatientPractitioner, normalizePatientRequests, normalizePatientSamples,
   normalizePatientStudy,
@@ -33,11 +33,11 @@ export const initialPatientState = {
       mother: null,
       father: null,
     },
-    history: [],
   },
   practitioner: {},
   organization: {},
   study: {},
+  familyHistory: [],
   consultations: [],
   requests: [],
   samples: [],
@@ -52,6 +52,7 @@ export const patientShape = {
   organization: PropTypes.shape({}),
   practitioner: PropTypes.shape({}),
   study: PropTypes.shape({}),
+  familyHistory: PropTypes.array,
   consultations: PropTypes.array,
   requests: PropTypes.array,
   samples: PropTypes.array,
@@ -76,9 +77,11 @@ const patientReducer = (state = Object.assign({}, initialPatientState), action) 
       draft.consultations = normalizePatientConsultations(action.payload.data);
       draft.requests = normalizePatientRequests(action.payload.data);
       draft.samples = normalizePatientSamples(action.payload.data);
-      draft.observations = normalizePatientObservations(action.payload.data);
-      draft.ontology = normalizePatientOntology(action.payload.data);
-      draft.indications = normalizePatientIndications(action.payload.data);
+      const impressions = normalizePatientImpressions(action.payload.data); // eslint-disable-line no-case-declarations
+      draft.observations = impressions.observations;
+      draft.ontology = impressions.ontology;
+      draft.indications = impressions.indications;
+      draft.familyHistory = impressions.history;
       break;
 
     default:

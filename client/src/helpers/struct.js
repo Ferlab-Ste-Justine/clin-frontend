@@ -1,4 +1,4 @@
-/* eslint-disable import/no-cycle */
+/* eslint-disable import/no-cycle, no-param-reassign */
 import { find } from 'lodash';
 import { initialPatientState } from '../reducers/patient';
 
@@ -29,14 +29,6 @@ export const normalizePatientFamily = (fhirPatient) => {
   struct.members.proband = fhirPatient.id;
   struct.members.mother = mother ? mother.id : '';
   struct.members.father = father ? father.id : '';
-  struct.history = fhirPatient.familyMemberHistory ? fhirPatient.familyMemberHistory.reduce((result, current) => {
-    result.push({
-      id: current.id,
-      date: current.date,
-      note: current.note[0].text,
-    });
-    return result;
-  }, []) : [];
 
   return struct;
 };
@@ -137,57 +129,80 @@ export const normalizePatientRequests = fhirPatient => (fhirPatient.serviceReque
     return result;
   }, []) : []);
 
-export const normalizePatientObservations = fhirPatient => (fhirPatient.observations
-  ? fhirPatient.observations.reduce((result, current) => {
-    if (current.code.text.toLowerCase().indexOf('medical') !== -1) {
-      result.push({
-        id: current.id,
-        date: (current.effective ? current.effective.dateTime : ''),
-        note: (current.note[0] ? current.note[0].text : ''),
+export const normalizePatientSamples = fhirPatient => fhirPatient.specimens.reduce((result, current) => {
+  result.push({
+    type: 'DNA',
+    id: current.id,
+    barcode: (current.container ? current.container[0] : ''),
+    request: (current.request ? current.request[0] : ''),
+  });
+
+  return result;
+}, []);
+
+const emptyImpressions = {
+  observations: [],
+  indications: [],
+  ontology: [],
+  history: [],
+};
+export const normalizePatientImpressions = fhirPatient => (fhirPatient.clinicalImpressions
+  ? fhirPatient.clinicalImpressions.reduce((result, current) => {
+    if (current.familyMemberHistory) {
+      current.familyMemberHistory.forEach((history) => {
+        result.history.push({
+          date: history.date || '',
+          note: (history.note[0] ? history.note[0].text : ''),
+        });
       });
     }
-
-    return result;
-  }, []) : []);
-
-export const normalizePatientIndications = fhirPatient => (fhirPatient.observations
-  ? fhirPatient.observations.reduce((result, current) => {
-    if (current.code.text.toLowerCase().indexOf('indication') !== -1) {
-      result.push({
-        id: current.id,
-        date: (current.effective ? current.effective.dateTime : ''),
-        note: (current.note[0] ? current.note[0].text : ''),
+    if (current.observations) {
+      current.observations.forEach((observation) => {
+        if (observation.code && observation.code.text) {
+          const code = observation.code.text.toLowerCase();
+          const nameParts = [
+            observation.performer_name[0].given[0],
+            observation.performer_name[0].family,
+          ];
+          if (observation.performer_name[0].prefix) {
+            nameParts.unshift(observation.performer_name[0].prefix[0]);
+          }
+          if (observation.performer_name[0].suffix) {
+            nameParts.push(observation.performer_name[0].suffix[0]);
+          }
+          if (code.indexOf('medical') !== -1) {
+            result.observations.push({
+              consultation_id: current.id,
+              consultation_date: (current.ci_consultation_date ? current.ci_consultation_date.dateTime : ''),
+              apparition_date: (observation.effective ? observation.effective.dateTime : ''),
+              note: (observation.note[0] ? observation.note[0].text : ''),
+              status: observation.status || '',
+              performer: nameParts.join(' '),
+              organization: observation.performer_org_name || '',
+            });
+          } else if (code.indexOf('indication') !== -1) {
+            result.indications.push({
+              consultation_id: current.id,
+              consultation_date: (current.ci_consultation_date ? current.ci_consultation_date.dateTime : ''),
+              apparition_date: (observation.effective ? observation.effective.dateTime : ''),
+              note: (observation.note[0] ? observation.note[0].text : ''),
+              status: observation.status || '',
+              performer: nameParts.join(' '),
+              organization: observation.performer_org_name || '',
+            });
+          } else if (code.indexOf('phenotype') !== -1 && observation.phenotype) {
+            result.ontology.push({
+              consultation_id: current.id,
+              consultation_date: (current.ci_consultation_date ? current.ci_consultation_date.dateTime : ''),
+              apparition_date: (observation.effective ? observation.effective.dateTime : ''),
+              ontology: 'HPO',
+              observed: observation.observed || '',
+              code: (observation.phenotype[0] ? observation.phenotype[0].code : ''),
+              term: (observation.phenotype[0] ? observation.phenotype[0].display : ''),
+            });
+          }
+        }
       });
     }
-
     return result;
-  }, []) : []);
-
-export const normalizePatientOntology = fhirPatient => (fhirPatient.observations
-  ? fhirPatient.observations.reduce((result, current) => {
-    if (current.code.text.toLowerCase().indexOf('phenotype') !== -1 && current.phenotype) {
-      result.push({
-        ontologie: 'HPO',
-        code: (current.phenotype[0] ? current.phenotype[0].code : ''),
-        term: (current.phenotype[0] ? current.phenotype[0].display : ''),
-        note: (current.note ? current.note[0].text : ''),
-        observed: current.observed || '',
-        consultation: 'N/A',
-        date: (current.effective ? current.effective.dateTime : ''),
-      });
-    }
-
-    return result;
-  }, []) : []);
-
-export const normalizePatientSamples = fhirPatient => (fhirPatient.specimens
-  ? fhirPatient.specimens.reduce((result, current) => {
-    result.push({
-      type: 'DNA',
-      id: current.id,
-      barcode: (current.container ? current.container[0] : ''),
-      request: (current.request ? current.request[0] : ''),
-    });
-
-    return result;
-  }, []) : []);
+  }, Object.assign({}, emptyImpressions)) : Object.assign({}, emptyImpressions));
