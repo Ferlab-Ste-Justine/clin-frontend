@@ -205,4 +205,4 @@ export const normalizePatientImpressions = fhirPatient => (fhirPatient.clinicalI
       });
     }
     return result;
-  }, Object.assign({}, emptyImpressions)) : Object.assign({}, emptyImpressions));
+  }, JSON.parse(JSON.stringify(emptyImpressions))) : emptyImpressions);
