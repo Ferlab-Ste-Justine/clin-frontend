@@ -65,6 +65,7 @@ dependencies:
   react-dev-utils: 7.0.5
   react-dom: 16.8.6
   react-hot-loader: 4.12.7
+  react-icons-kit: 1.3.1
   react-intl: 2.9.0
   react-intl-redux: 2.1.1
   react-redux: 6.0.1
@@ -9640,6 +9641,15 @@ packages:
       react-dom: ^15.0.0 || ^16.0.0
     resolution:
       integrity: sha512-ejnGcNttqIsgaLEpCl3KHLzFfKiEKHz/VTLYv57/xKQoryDMXQ/w31+jicrOAiCStYsY+KvrulVqkOqqkRaifg==
+  /react-icons-kit/1.3.1:
+    dependencies:
+      camel-case: 3.0.0
+      prop-types: 15.7.2
+    dev: false
+    peerDependencies:
+      react: '>=15'
+    resolution:
+      integrity: sha512-9Xy81M+Vgt5DO9qAL0jIazNmjelcKWn+uNvChDAMYvawm4yaIecr5I8i/jDEEHgQcEqHpB848AitvRKKNAoljA==
   /react-intl-redux/2.1.1:
     dependencies:
       prop-types: 15.7.2
@@ -12143,6 +12153,7 @@ specifiers:
   react-dev-utils: ^7.0.3
   react-dom: ^16.8.3
   react-hot-loader: ^4.6.5
+  react-icons-kit: ^1.3.1
   react-intl: ^2.8.0
   react-intl-redux: ^2.1.0
   react-redux: ^6.0.0
