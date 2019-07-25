@@ -21,6 +21,15 @@ services:
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
         index index.html;
+
+        # define error page
+        error_page 404 = @notfound;
+
+        # error page location redirect 301
+        location @notfound {
+            return 301 /;
+        }
+
         server_name clin.cr-ste-justine.xyz;
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
