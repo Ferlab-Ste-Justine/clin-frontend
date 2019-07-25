@@ -7,7 +7,7 @@ import {
   Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button,
 } from 'antd';
 import {
-  Column, Table, Utils, Cell, RenderMode, TableLoadingOption,
+  Column, Table, Utils, Cell, RenderMode,
 } from '@blueprintjs/table';
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
@@ -42,7 +42,6 @@ class PatientSearchScreen extends React.Component {
       autoCompleteIsOpen: false,
       columns: [],
       data: [],
-      loading: TableLoadingOption.CELLS,
       size: 25,
       page: 1,
     };
@@ -54,7 +53,6 @@ class PatientSearchScreen extends React.Component {
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
-    this.handleTableCellsRendered = this.handleTableCellsRendered.bind(this);
     this.exportToTsv = this.exportToTsv.bind(this);
   }
 
@@ -228,14 +226,18 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleAutoCompleteChange(query) {
+    const { actions } = this.props;
+    const { size } = this.state;
     if (query && query.length > 0) {
-      const { actions } = this.props;
-      const { size } = this.state;
-
       actions.autoCompletePatients('partial', query, 1, size);
       this.setState({
         page: 1,
         autoCompleteIsOpen: true,
+      });
+    } else {
+      actions.searchPatientsByQuery(null, 1, size);
+      this.setState({
+        page: 1,
       });
     }
   }
@@ -253,7 +255,6 @@ class PatientSearchScreen extends React.Component {
     this.setState({
       autoCompleteIsOpen: false,
       page: 1,
-      loading: TableLoadingOption.CELLS,
     });
     const { actions } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
@@ -293,21 +294,12 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange(page, size);
   }
 
-  handleTableCellsRendered() {
-    const { loading } = this.state;
-    if (loading) {
-      this.setState({
-        loading: null,
-      });
-    }
-  }
-
   render() {
     const { intl, search } = this.props;
     const { patient } = search;
     const { total } = patient;
     const {
-      columns, autoCompleteIsOpen, size, page, loading,
+      columns, autoCompleteIsOpen, size, page,
     } = this.state;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
     const downloadText = intl.formatMessage({ id: 'screen.patientsearch.download' });
@@ -366,8 +358,7 @@ class PatientSearchScreen extends React.Component {
                 enableColumnResizing
                 onColumnsReordered={this.handleColumnsReordered}
                 bodyContextMenuRenderer={renderBodyContextMenu}
-                renderMode={RenderMode.BATCH}
-                loadingOptions={[loading]}
+                renderMode={RenderMode.NONE}
                 enableGhostCells
                 onCompleteRender={this.handleTableCellsRendered}
               >
