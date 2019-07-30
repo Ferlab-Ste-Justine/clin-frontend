@@ -37,11 +37,13 @@ function* navigateToPatientScreen(action) {
   }
 }
 
-function* navigateToPatientSearchScreen() {
+function* navigateToPatientSearchScreen(action) {
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const location = '/patient/search';
-    yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
+    if (action.payload.reload === true) {
+      yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
+    }
     yield put(push(location));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
@@ -63,7 +65,7 @@ function* navigateToLastKnownState() {
         yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED, payload: state });
         break;
       default:
-        yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
+        yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED, payload: { reload: true } });
         break;
     }
   } catch (e) {

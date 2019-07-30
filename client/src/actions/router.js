@@ -22,6 +22,9 @@ export const navigateToPatientScreen = uid => ({
   },
 });
 
-export const navigateToPatientSearchScreen = () => ({
+export const navigateToPatientSearchScreen = (reload = false) => ({
   type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED,
+  payload: {
+    reload,
+  },
 });
