@@ -288,13 +288,12 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   columns={
                     [
-                      { title: ontology, dataIndex: 'ontologie', key: 'ontologie' },
+                      { title: ontology, dataIndex: 'ontology', key: 'ontology' },
                       { title: code, dataIndex: 'code', key: 'code' },
                       { title: term, dataIndex: 'term', key: 'term' },
-                      { title: notes, dataIndex: 'note', key: 'note' },
                       { title: observed, dataIndex: 'observed', key: 'observed' },
-                      { title: consultation, dataIndex: 'consultation', key: 'consultation' },
-                      { title: apparition, dataIndex: 'date', key: 'date' },
+                      { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
+                      { title: apparition, dataIndex: 'apparition_date', key: 'apparition_date' },
                     ]
                   }
                   dataSource={patient.ontology}
@@ -312,7 +311,7 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   columns={[
                     { title: notes, dataIndex: 'note', key: 'note' },
-                    { title: consultation, dataIndex: 'date', key: 'date' },
+                    { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
                   ]}
                   dataSource={patient.indications}
                   size="small"
@@ -329,7 +328,7 @@ class PatientScreen extends React.Component {
                   pagination={false}
                   columns={[
                     { title: notes, dataIndex: 'note', key: 'note' },
-                    { title: consultation, dataIndex: 'date', key: 'date' },
+                    { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
                   ]}
                   dataSource={patient.observations}
                   size="small"
@@ -376,7 +375,7 @@ class PatientScreen extends React.Component {
                     { title: notes, dataIndex: 'note', key: 'note' },
                     { title: dateAndTime, dataIndex: 'date', key: 'date' },
                   ]}
-                  dataSource={patient.family.history}
+                  dataSource={patient.familyHistory}
                   size="small"
                   rowKey="date"
                 />
