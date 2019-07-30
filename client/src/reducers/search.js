@@ -14,11 +14,15 @@ export const initialSearchState = {
   lastSearchType: null,
   autocomplete: {
     query: null,
+    page: 1,
+    pageSize: 25,
     results: [],
     total: 0,
   },
   patient: {
     query: null,
+    page: 1,
+    pageSize: 25,
     results: [],
     total: 0,
   },
@@ -28,11 +32,15 @@ export const searchShape = {
   lastSearchType: PropTypes.string,
   autocomplete: PropTypes.shape({
     query: PropTypes.string,
+    page: PropTypes.number,
+    pageSize: PropTypes.number,
     results: PropTypes.array,
     total: PropTypes.number,
   }),
   patient: PropTypes.shape({
     query: PropTypes.string,
+    page: PropTypes.number,
+    pageSize: PropTypes.number,
     results: PropTypes.array,
     total: PropTypes.number,
   }),
@@ -62,11 +70,15 @@ const searchReducer = (state = Object.assign({}, initialSearchState), action) =>
 
     case actions.PATIENT_SEARCH_REQUESTED:
       draft.lastSearchType = 'patient';
+      draft.patient.page = action.payload.page || initialSearchState.patient.page;
+      draft.patient.pageSize = action.payload.size || initialSearchState.patient.pageSize;
       draft.patient.query = action.payload.query || null;
       break;
 
     case actions.PATIENT_AUTOCOMPLETE_REQUESTED:
       draft.lastSearchType = action.payload.type === 'partial' ? 'autocomplete' : 'patient';
+      draft.autocomplete.page = action.payload.page || initialSearchState.autocomplete.page;
+      draft.autocomplete.pageSize = action.payload.size || initialSearchState.autocomplete.pageSize;
       draft.autocomplete.query = action.payload.query || null;
       break;
 
