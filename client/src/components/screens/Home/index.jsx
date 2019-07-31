@@ -11,7 +11,7 @@ import Content from '../../Content';
 import Footer from '../../Footer';
 import LoginForm from '../../forms/Login';
 
-import Query from '../../Query';
+import Query from '../../Query/index';
 
 
 import { loginUser, recoverUser } from '../../../actions/user';
@@ -61,6 +61,8 @@ const queryA = [
   },
 ];
 
+const queryB = queryA;
+
 const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
   window.CLIN.translate = intl.formatMessage;
@@ -73,6 +75,10 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
         <br />
         <div style={{ display: 'inline-grid', width: '100%' }}>
           <Query data={queryA} />
+        </div>
+        <br />
+        <div style={{ display: 'inline-grid', width: '100%' }}>
+          <Query data={queryB} />
         </div>
         <br />
         <br />
@@ -107,7 +113,6 @@ const mapStateToProps = state => ({
   app: state.app,
   intl: state.intl,
 });
-
 
 export default connect(
   mapStateToProps,
