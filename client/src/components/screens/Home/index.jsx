@@ -112,13 +112,9 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
       <Card className="centered">
 
         <br />
-        <div style={{ display: 'inline-grid', width: '100%' }}>
-          <Query key="query1" data={queryA} />
-        </div>
+        <Query key="query1" data={queryA} />
         <br />
-        <div style={{ display: 'inline-grid', width: '100%' }}>
-          <Query key="query2" data={queryB} />
-        </div>
+        <Query key="query2" data={queryB} />
         <br />
         <br />
         <br />

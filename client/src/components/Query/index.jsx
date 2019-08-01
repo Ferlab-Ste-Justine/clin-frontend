@@ -88,13 +88,9 @@ class Query extends React.Component {
   render() {
     const initial = this.props.data;
     const current = this.state.data;
-
-    console.log(initial)
-    console.log(current)
-
     const isDirty = !isEqual(initial, current);
 
-    return (
+    return current.length > 0 ? (
       <div
         className="query"
         style={{
@@ -131,7 +127,7 @@ class Query extends React.Component {
           }
         })}
       </div>
-    );
+    ) : null;
   }
 }
 
