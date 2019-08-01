@@ -1,4 +1,3 @@
-/* eslint-disable */
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -21,8 +20,12 @@ class Operator extends React.Component {
       },
       visible: null,
     };
+    this.isEditable = this.isEditable.bind(this);
+    this.isVisible = this.isVisible.bind(this);
+    this.serialize = this.serialize.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
-    this.handleSelection = this.handleSelection.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
 
   componentWillMount() {
@@ -34,32 +37,46 @@ class Operator extends React.Component {
     });
   }
 
-  handleSelection({ key }) {
+  isEditable() {
+    const { options } = this.state;
+    const { editable } = options;
+    return editable === true;
+  }
+
+  isVisible() {
+    const { visible } = this.state;
+    return visible === true;
+  }
+
+  serialize() {
+    return Object.assign({}, this.props, this.state);
+  }
+
+  handleChange({ key }) {
     const { data } = this.state;
-    if (data.type !== key) {
-        data.type = key;
-        this.setState({
-            data
-        })
+    if (this.isEditable() && data.type !== key) {
+      const { onChangeCallback } = this.props;
+      data.type = key;
+      this.setState({
+        data,
+      });
+      onChangeCallback(this.serialize());
     }
   }
 
-    handleOperatorClose() {
-        const { editable } = this.state.options;
-        const { removalCallback } = this.props;
-        if (editable) {
-            this.setState({
-                visible: false,
-            })
-            const operator = Object.assign({}, this.props, this.state);
-            removalCallback(operator);
-        }
+  handleClose() {
+    const { onRemovalCallback } = this.props;
+    if (this.isEditable()) {
+      this.setState({
+        visible: false,
+      });
+      onRemovalCallback(this.serialize());
     }
+  }
 
-
-    createMenuComponent() {
+  createMenuComponent() {
     return (
-      <Menu onClick={this.handleSelection}>
+      <Menu onClick={this.handleChange}>
         <Menu.Item key={OPERATOR_TYPE_AND}>AND</Menu.Item>
         <Menu.Item key={OPERATOR_TYPE_OR}>OR</Menu.Item>
       </Menu>
@@ -67,19 +84,19 @@ class Operator extends React.Component {
   }
 
   render() {
-    const { data, options, visible } = this.state;
-    const { editable } = options;
+    const { data } = this.state;
+    const { type } = data;
 
     return (
       <Tag
         className="operator"
-        visible={visible}
+        visible={this.isVisible()}
       >
-        { data.type }
-        { editable && (
-            <Dropdown overlay={this.createMenuComponent} trigger={['click']} placement="bottomRight">
-              { <Icon type="caret-down" /> }
-            </Dropdown>
+        { type }
+        { this.isEditable() && (
+        <Dropdown overlay={this.createMenuComponent} trigger={['click']} placement="bottomRight">
+          { <Icon type="caret-down" /> }
+        </Dropdown>
         ) }
       </Tag>
     );
@@ -89,14 +106,16 @@ class Operator extends React.Component {
 Operator.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
-  removalCallback: PropTypes.func,
+  onRemovalCallback: PropTypes.func,
+  onChangeCallback: PropTypes.func,
 };
 
 Operator.defaultProps = {
   options: {
     editable: false,
   },
-  removalCallback: () => {},
+  onRemovalCallback: () => {},
+  onChangeCallback: () => {},
 };
 
 export default Operator;

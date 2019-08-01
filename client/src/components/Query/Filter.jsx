@@ -8,11 +8,8 @@ import {
 
 import IconKit from 'react-icons-kit';
 import { empty, one, full, info } from 'react-icons-kit/entypo';
-import Operator from "./Operator";
 
 // import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
-
 
 
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -68,73 +65,6 @@ const createPopoverByFilterType = ({ options, data }) => {
     )
 }
 
-const createMenuByFilterType = ({ options, data }) => {
-    const operator = data.operator;
-    const type = data.type;
-
-    switch(type) {
-        case 'generic':
-
-            const handleFilterSelection = (e) => {
-                const { editable } = this.props;
-                if (editable) {
-                    this.setState({filters: e.target.value})
-                }
-            }
-
-            const handleOperatorSelection = (e) => {
-                const { editable } = this.props;
-                if (editable) {
-                    this.setState({operand: e.target.value})
-                }
-            }
-
-            const handleFilterSearch = (value) => {
-                console.log('handleFilterSearch ' + value)
-            }
-
-
-            return (<>
-                <Row>
-                    <Col span={24}>
-                        <Radio.Group size="small" type="primary" value={operator} onChange={handleOperatorSelection}>
-                            <Radio.Button style={{ width: 150, textAlign: 'center' }} value="all">All Of</Radio.Button>
-                            <Radio.Button style={{ width: 150, textAlign: 'center' }} value="one">At Least One</Radio.Button>
-                            <Radio.Button style={{ width: 150, textAlign: 'center' }} value="not">Not Any Of</Radio.Button>
-                        </Radio.Group>
-                    </Col>
-                </Row>
-                <br />
-                <Row>
-                    <Input.Search
-                        placeholder="Recherche"
-                        size="small"
-                        onSearch={handleFilterSearch}
-                    />
-                </Row>
-                <br />
-                <Row>
-                    Effacer | Tout Selectionner
-                </Row>
-                <br />
-                <Row>
-                    <Col span={24}>
-                        <Checkbox.Group style={{ display: 'flex', flexDirection: 'column' }}
-                            options={['Apple', 'Pear', 'Orange']}
-                            value={['Apple']}
-                            onChange={handleFilterSelection}
-                        />
-                    </Col>
-                 </Row>
-            </>);
-
-        case 'specific':
-        default:
-            return null
-    }
-
-}
-
 class Filter extends React.Component {
   constructor() {
     super();
@@ -149,10 +79,17 @@ class Filter extends React.Component {
         selected: null,
         opened: null,
     }
+    this.isEditable = this.isEditable.bind(this);
+    this.isSelectable = this.isSelectable.bind(this);
+    this.isVisible = this.isVisible.bind(this);
+    this.isSelected = this.isSelected.bind(this);
+    this.isOpened = this.isOpened.bind(this);
+    this.serialize = this.serialize.bind(this);
     this.handleTagClose = this.handleTagClose.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.createPopoverComponent = this.createPopoverComponent.bind(this);
+    this.createSubMenuByFilterType = this.createSubMenuByFilterType.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleApply = this.handleApply.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
@@ -186,24 +123,50 @@ class Filter extends React.Component {
         });
     }
 
+    isEditable() {
+        const { options } = this.state;
+        const { editable } = options;
+        return editable === true;
+    }
+
+    isSelectable() {
+        const { options } = this.state;
+        const { selectable } = options;
+        return selectable === true;
+    }
+
+    isVisible() {
+        const { visible } = this.state;
+        return visible === true;
+    }
+
+    isSelected() {
+        const { selected } = this.state;
+        return selected === true;
+    }
+
+    isOpened() {
+        const { opened } = this.state;
+        return opened === true;
+    }
+
+    serialize() {
+        return Object.assign({}, this.props, this.state);
+    }
+
     handleTagClose() {
-        const { editable } = this.state.options;
-        const { removalCallback } = this.props;
-        if (editable) {
+        const { onRemovalCallback } = this.props;
+        if (this.isEditable()) {
             this.setState({
                 opened: false,
                 visible: false,
             })
-            const tag = Object.assign({}, this.props, this.state);
-            removalCallback(tag);
+            onRemovalCallback(this.serialize());
         }
     }
 
     handleApply() {
-        // @NOTE Should be hiding the menu
-        // this.toggleMenu()
-        const { opened } = this.state;
-        if (opened) {
+        if (this.isOpened()) {
             this.setState({
                 opened: false,
             })
@@ -211,11 +174,8 @@ class Filter extends React.Component {
     }
 
     handleSelect(e) {
-        const { selectable } = this.state.options;
-        const { opened, selected } = this.state;
-        if (selectable && !opened) {
-            const { selected } = this.state.options;
-            this.setState({selected: !selected})
+        if (this.isSelectable() && !this.isOpened()) {
+            this.setState({ selected: !this.isSelected() } )
         }
     }
 
@@ -223,24 +183,104 @@ class Filter extends React.Component {
         return createPopoverByFilterType(this.state)
     }
 
+    createSubMenuByFilterType() {
+        const { data } = this.state;
+        const operator = data.operator;
+        const type = data.type;
+
+        switch(type) {
+            case 'generic':
+
+                const handleFilterChange = (e) => {
+                    console.log('+++ handleFilterSelection')
+                    console.log(e)
+                    if (this.isEditable()) {
+                        this.setState({filters: e.target.value})
+                    }
+                }
+
+                const handleOperatorChange = (e) => {
+                    console.log('+++ handleOperatorChange')
+                    console.log(e)
+                    if (this.isEditable()) {
+                        console.log('HELLO');
+                        const { data } = this.state;
+                        data.operator = e.target.value
+                        this.setState({ data } )
+                    }
+                }
+
+                const handleFilterSearchByQuery = (value) => {
+                    console.log('+++ handleFilterSearchByQuery')
+                    console.log(value);
+                }
+
+                const handleFilterSelectAll = () => {
+                    console.log('+++ handleFilterSelectAll')
+                }
+
+                const handleFilterEraseAll = () => {
+                    console.log('+++ handleFilterSelectNone')
+                }
+
+                return (<>
+                    <Row>
+                        <Col span={24}>
+                            <Radio.Group size="small" type="primary" value={operator} onChange={handleOperatorChange}>
+                                <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERATOR_TYPE_ALL}>All Of</Radio.Button>
+                                <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERATOR_TYPE_ONE}>At Least One</Radio.Button>
+                                <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERATOR_TYPE_NONE}>Not Any Of</Radio.Button>
+                            </Radio.Group>
+                        </Col>
+                    </Row>
+                    <br />
+                    <Row>
+                        <Input.Search
+                            placeholder="Recherche"
+                            size="small"
+                            onSearch={handleFilterSearchByQuery}
+                        />
+                    </Row>
+                    <br />
+                    <Row>
+                        <a onClick={handleFilterEraseAll}>Aucun</a> | <a onClick={handleFilterSelectAll}>Tous</a>
+                    </Row>
+                    <br />
+                    <Row>
+                        <Col span={24}>
+                            <Checkbox.Group style={{ display: 'flex', flexDirection: 'column' }}
+                                options={['Apple', 'Pear', 'Orange']}
+                                value={['Apple']}
+                                onChange={handleFilterChange}
+                            />
+                        </Col>
+                     </Row>
+                </>);
+
+            case 'specific':
+            default:
+                return null
+        }
+    }
+
     createMenuComponent() {
-        const { opened, data } = this.state;
-        const menu = createMenuByFilterType(this.state);
+        const { data } = this.state;
+        const filterMenu = this.createSubMenuByFilterType();
+
         return (
             <Popover
                 key={`filter-${data.id}`}
-                visible={opened}>
+                visible={this.isOpened()}>
                 <Card>
                     <Typography.Title level={4}>{data.title}</Typography.Title>
-                    { menu }
+                    { filterMenu }
                     <Row type="flex" justify="end">
                         <Col span={6}>
-                            <Button onClick={this.hideMenu}>Annuler</Button>
+                            <Button onClick={this.toggleMenu}>Annuler</Button>
                         </Col>
                         <Col span={5}>
                             <Button type="primary" onClick={this.handleApply}>Appliquer</Button>
                         </Col>
-
                     </Row>
                 </Card>
             </Popover>
@@ -248,34 +288,31 @@ class Filter extends React.Component {
     }
 
     toggleMenu(e) {
-        const { opened } = this.state;
-        this.setState({ opened: !opened })
+        this.setState({ opened: !this.isOpened() })
     }
-
 
     handleMenuSelection(e) {
         e.preventDefault()
     }
 
     render() {
-        const { data, options, visible, selected, opened } = this.state;
+        const { data } = this.state;
         const popover = this.createPopoverComponent();
         const overlay = this.createMenuComponent();
-        const editable = options.editable;
 
         return (
             <Tag className='filter'
-                 visible={visible}
-                 closable={editable}
+                 visible={this.isVisible()}
+                 closable={this.isEditable()}
                  onClose={this.handleTagClose}
-                 color={ selected ? 'blue' : '' }
-                 >
+                 color={ this.isSelected() ? 'blue' : '' }
+            >
                 {popover}
-                <span onClick={this.handleSelection}>
+                <span onClick={this.handleSelect}>
                     { JSON.stringify(data.values) }
                 </span>
-                { editable && (
-                    <Dropdown overlay={overlay} visible={opened} placement="bottomCenter">
+                { this.isEditable() && (
+                    <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomCenter">
                         <Icon type="caret-down" onClick={this.toggleMenu} />
                     </Dropdown>
                 ) }
@@ -287,7 +324,7 @@ class Filter extends React.Component {
 Filter.propTypes = {
     data: PropTypes.shape({}).isRequired,
     options: PropTypes.shape({}),
-    removalCallback: PropTypes.func,
+    onRemovalCallback: PropTypes.func,
 };
 
 Filter.defaultProps = {
@@ -295,7 +332,7 @@ Filter.defaultProps = {
         selectable: false,
         editable: false,
     },
-    removalCallback: () => {},
+    onRemovalCallback: () => {},
 };
 
 export default Filter;

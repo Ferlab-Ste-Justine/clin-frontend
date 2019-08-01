@@ -61,7 +61,46 @@ const queryA = [
   },
 ];
 
-const queryB = queryA;
+const queryB = [
+  {
+    type: 'filter',
+    options: {
+      selectable: true,
+      editable: true,
+    },
+    data: {
+      id: 'study',
+      title: 'Study',
+      type: 'generic',
+      operator: 'none',
+      values: ['My Study'],
+    },
+  },
+  {
+    type: 'operator',
+    options: {
+      selectable: false,
+      editable: true,
+    },
+    data: {
+      type: 'or',
+    },
+  },
+  {
+    type: 'filter',
+    options: {
+      selectable: true,
+      editable: true,
+    },
+    data: {
+      id: 'proband',
+      title: 'Proband',
+      type: 'generic',
+      operator: 'all',
+      values: ['true'],
+    },
+  },
+];
 
 const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
@@ -74,11 +113,11 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
 
         <br />
         <div style={{ display: 'inline-grid', width: '100%' }}>
-          <Query data={queryA} />
+          <Query key="query1" data={queryA} />
         </div>
         <br />
         <div style={{ display: 'inline-grid', width: '100%' }}>
-          <Query data={queryB} />
+          <Query key="query2" data={queryB} />
         </div>
         <br />
         <br />
@@ -90,6 +129,7 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
           handleAuthentication={actions.loginUser}
           handlePasswordRecovery={actions.recoverUser}
         />
+
       </Card>
       <Footer />
     </Content>

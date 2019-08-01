@@ -1,13 +1,20 @@
-/* eslint-disable react/destructuring-assignment, react/no-array-index-key */
+/* eslint-disable  */ // react/destructuring-assignment, react/no-array-index-key
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isEqual } from 'lodash';
+import { differenceWith, isEqual } from 'lodash';
+import uuidv1 from 'uuid/v1';
 
 import Filter from './Filter';
 import Operator from './Operator';
+// import Subquery from './Subquery';
 
 
 // filter out loose first, loose last and double following operators
+
+const QUERY_ITEM_TYPE_FILTER = 'filter';
+const QUERY_ITEM_TYPE_OPERATOR = 'operator';
+const QUERY_ITEM_TYPE_SUBQUERY = 'subquery';
+
 
 class Query extends React.Component {
   constructor() {
@@ -15,13 +22,27 @@ class Query extends React.Component {
     this.state = {
       data: null,
     };
+    this.replaceItem = this.replaceItem.bind(this);
     this.removeItem = this.removeItem.bind(this);
     this.handleFilterRemoval = this.handleFilterRemoval.bind(this);
     this.handleOperatorRemoval = this.handleOperatorRemoval.bind(this);
+    this.handleFilterChange = this.handleFilterChange.bind(this);
+    this.handleOperatorChange = this.handleOperatorChange.bind(this);
   }
 
   componentWillMount() {
     const { data } = this.props;
+    this.setState({
+      data: JSON.parse(JSON.stringify(data)),
+    });
+  }
+
+  replaceItem(item, index = null) {
+    const { data } = this.state;
+    if (index === null) {
+      index = item.index
+    }
+    data[index] = item
     this.setState({
       data,
     });
@@ -29,27 +50,49 @@ class Query extends React.Component {
 
   removeItem(item) {
     const { data } = this.state;
-    const newData = data.slice();
-    newData.splice(item.index, 1);
+    data.splice(item.index, 1);
+    // Remove first item if it is an operator
+    if (data[0] && data[0].type === QUERY_ITEM_TYPE_OPERATOR) {
+      data.splice(0, 1);
+    }
+
     this.setState({
-      data: newData,
+      data,
     });
   }
 
   handleFilterRemoval(filter) {
     this.removeItem(filter);
-    // @TODO Remove dangling operators
   }
 
   handleOperatorRemoval(operator) {
     this.removeItem(operator);
-    // @TODO Remove dangling filters
+  }
+
+  handleFilterChange(filter) {
+    this.replaceItem({
+      type: QUERY_ITEM_TYPE_FILTER,
+      data: filter.data,
+      options: filter.options,
+    });
+  }
+
+  handleOperatorChange(operator) {
+    this.replaceItem({
+      type: QUERY_ITEM_TYPE_OPERATOR,
+      data: operator.data,
+      options: operator.options,
+    });
   }
 
   render() {
     const initial = this.props.data;
     const current = this.state.data;
-    const isDirty = !isEqual(current, initial);
+
+    console.log(initial)
+    console.log(current)
+
+    const isDirty = !isEqual(initial, current);
 
     return (
       <div
@@ -59,28 +102,33 @@ class Query extends React.Component {
         }}
       >
         { current.map((item, index) => {
-          if (item.type === 'operator') {
-            return (
-              <Operator
-                key={`operator-${index}`}
-                index={index}
-                options={item.options}
-                data={item.data}
-                removalCallback={this.handleFilterRemoval}
-              />
-            );
-          } if (item.type === 'filter') {
-            return (
-              <Filter
-                key={`filter-${index}`}
-                index={index}
-                options={item.options}
-                data={item.data}
-                removalCallback={this.handleOperatorRemoval}
-              />
-            );
+          switch (item.type) {
+            case QUERY_ITEM_TYPE_OPERATOR:
+              return (
+                  <Operator
+                      key={`operator-${uuidv1()}`}
+                      index={index}
+                      options={item.options}
+                      data={item.data}
+                      onChangeCallback={this.handleOperatorChange}
+                      onRemovalCallback={this.handleOperatorRemoval}
+                  />
+              );
+            case QUERY_ITEM_TYPE_FILTER:
+              return (
+                  <Filter
+                      key={`filter-${uuidv1()}`}
+                      index={index}
+                      options={item.options}
+                      data={item.data}
+                      onChangeCallback={this.handleFilterChange}
+                      onRemovalCallback={this.handleFilterRemoval}
+                  />
+              );
+            case QUERY_ITEM_TYPE_SUBQUERY:
+            default:
+              return null;
           }
-          return null;
         })}
       </div>
     );
