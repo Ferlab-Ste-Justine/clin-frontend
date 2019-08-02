@@ -54,7 +54,6 @@ function* navigateToPatientVariantScreen(action) {
   }
 }
 
-function* navigateToPatientSearchScreen() {
 function* navigateToPatientSearchScreen(action) {
   yield put({ type: actions.START_LOADING_ANIMATION });
   try {
