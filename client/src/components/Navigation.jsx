@@ -11,12 +11,11 @@ import { userShape } from '../reducers/user';
 import { navigateToPatientSearchScreen, navigateToPatientVariantScreen, navigate } from '../actions/router';
 
 
+// onClick={navigateToPatientSearchScreen}
 const navigationMenu = (intl, router, actions) => {
   const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
   let tabForRoute = router.location.pathname;
-  if (tabForRoute.indexOf('variant') !== -1) {
-    tabForRoute = '/patient/variant';
-  } else {
+  if (tabForRoute.indexOf('/patient/') !== -1) {
     tabForRoute = '/patient/search';
   }
   return (
@@ -25,7 +24,7 @@ const navigationMenu = (intl, router, actions) => {
       activeKey={tabForRoute}
       onChange={(activeKey) => {
         if (activeKey === '/patient/search') {
-          actions.navigateToPatientSearchScreen();
+          actions.navigateToPatientSearchScreen(true);
         } else if (activeKey === '/patient/variant') {
           actions.navigateToPatientVariantScreen('PA00069');
         } else {

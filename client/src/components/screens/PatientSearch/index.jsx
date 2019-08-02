@@ -121,8 +121,12 @@ class PatientSearchScreen extends React.Component {
     });
   }
 
-  static getDerivedStateFromProps(nextProps) {
-    const searchType = nextProps.search.lastSearchType;
+  static getDerivedStateFromProps(nextProps, state) {
+    const searchType = nextProps.search.lastSearchType || 'patient';
+    if (!nextProps.search[searchType].results) {
+      return null;
+    }
+
     if (searchType !== 'autocomplete') {
       const data = nextProps.search[searchType].results.map((result) => {
         const lastRequest = result.requests[result.requests.length - 1];
@@ -140,10 +144,15 @@ class PatientSearchScreen extends React.Component {
           request: (lastRequest ? lastRequest.id : ''),
         };
       });
-      return { data };
+
+      return {
+        data,
+        page: nextProps.search[searchType].page,
+        size: nextProps.search[searchType].pageSize,
+      };
     }
 
-    return null;
+    return state;
   }
 
   getCellRenderer(key, type) {
@@ -235,10 +244,10 @@ class PatientSearchScreen extends React.Component {
         autoCompleteIsOpen: true,
       });
     } else {
-      actions.searchPatientsByQuery(null, 1, size);
       this.setState({
         page: 1,
       });
+      actions.searchPatientsByQuery(null, 1, size);
     }
   }
 
@@ -252,12 +261,12 @@ class PatientSearchScreen extends React.Component {
 
   handleAutoCompletePressEnter(e) {
     const { size } = this.state;
+    const { actions } = this.props;
+    const query = e.currentTarget.attributes.value.nodeValue;
     this.setState({
       autoCompleteIsOpen: false,
       page: 1,
     });
-    const { actions } = this.props;
-    const query = e.currentTarget.attributes.value.nodeValue;
 
     if (!query || query.length < 1) {
       actions.searchPatientsByQuery(null, 1, size);

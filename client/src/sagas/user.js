@@ -20,7 +20,7 @@ function* login(action) {
     if (currentId === previousId) {
       yield put({ type: actions.USER_SESSION_RESTORE_LAST_KNOWN_STATE });
     } else {
-      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
+      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED, payload: { reload: true } });
     }
   } catch (e) {
     yield put({ type: actions.USER_LOGIN_FAILED, payload: e });

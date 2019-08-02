@@ -47,7 +47,7 @@ class PatientScreen extends React.Component {
 
   handleNavigationToPatientSearchScreen() {
     const { actions } = this.props;
-    actions.navigateToPatientSearchScreen();
+    actions.navigateToPatientSearchScreen(false);
   }
 
   render() {
