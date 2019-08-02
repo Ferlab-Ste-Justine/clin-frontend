@@ -30,11 +30,12 @@ const createPopoverBySubqueryType = (state) => {
 
   return (
     <Popover
+      className="legend"
       trigger="hover"
       placement="topLeft"
       content={content}
     >
-      {`${legend}&nbsp;`}
+      {legend}
     </Popover>
   );
 };

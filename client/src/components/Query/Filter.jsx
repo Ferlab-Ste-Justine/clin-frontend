@@ -58,12 +58,12 @@ const createPopoverByFilterType = (state) => {
 
   return (
     <Popover
+      className="legend"
       trigger="hover"
       placement="topLeft"
       content={content}
     >
       {legend}
-&nbsp;
     </Popover>
   );
 };
