@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -24,15 +23,15 @@ class Operator extends React.Component {
     this.isVisible = this.isVisible.bind(this);
     this.serialize = this.serialize.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handleApply = this.handleApply.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
 
   componentWillMount() {
     const { options, data } = this.props;
     this.setState({
-      data,
-      options,
+      data: { ...data },
+      options: { ...options },
       visible: true,
     });
   }
@@ -52,31 +51,29 @@ class Operator extends React.Component {
     return Object.assign({}, this.props, this.state);
   }
 
-  handleChange({ key }) {
+  handleApply({ key }) {
     const { data } = this.state;
     if (this.isEditable() && data.type !== key) {
       const { onChangeCallback } = this.props;
       data.type = key;
       this.setState({
         data,
-      });
-      onChangeCallback(this.serialize());
+      }, () => { onChangeCallback(this.serialize()); });
     }
   }
 
   handleClose() {
-    const { onRemovalCallback } = this.props;
     if (this.isEditable()) {
+      const { onRemovalCallback } = this.props;
       this.setState({
         visible: false,
-      });
-      onRemovalCallback(this.serialize());
+      }, () => { onRemovalCallback(this.serialize()); });
     }
   }
 
   createMenuComponent() {
     return (
-      <Menu onClick={this.handleChange}>
+      <Menu onClick={this.handleApply}>
         <Menu.Item key={OPERATOR_TYPE_AND}>AND</Menu.Item>
         <Menu.Item key={OPERATOR_TYPE_OR}>OR</Menu.Item>
       </Menu>

@@ -48,8 +48,8 @@ const queryA = [
   {
     type: 'filter',
     options: {
-      selectable: true,
-      editable: true,
+      selectable: false,
+      editable: false,
     },
     data: {
       id: 'proband',
@@ -57,6 +57,26 @@ const queryA = [
       type: 'generic',
       operator: 'one',
       values: ['true'],
+    },
+  },
+  {
+    type: 'operator',
+    options: {
+      selectable: false,
+      editable: true,
+    },
+    data: {
+      type: 'and',
+    },
+  },
+  {
+    type: 'subquery',
+    options: {
+      selectable: true,
+      editable: true,
+    },
+    data: {
+      type: 'generic',
     },
   },
 ];

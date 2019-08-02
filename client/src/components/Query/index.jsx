@@ -1,39 +1,41 @@
 /* eslint-disable  */ // react/destructuring-assignment, react/no-array-index-key
 import React from 'react';
 import PropTypes from 'prop-types';
-import { differenceWith, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 import uuidv1 from 'uuid/v1';
 
 import Filter from './Filter';
 import Operator from './Operator';
-// import Subquery from './Subquery';
-
-
-// filter out loose first, loose last and double following operators
+import Subquery from './Subquery';
+import './style.scss';
 
 const QUERY_ITEM_TYPE_FILTER = 'filter';
 const QUERY_ITEM_TYPE_OPERATOR = 'operator';
 const QUERY_ITEM_TYPE_SUBQUERY = 'subquery';
-
 
 class Query extends React.Component {
   constructor() {
     super();
     this.state = {
       data: null,
+      options: null,
     };
     this.replaceItem = this.replaceItem.bind(this);
     this.removeItem = this.removeItem.bind(this);
     this.handleFilterRemoval = this.handleFilterRemoval.bind(this);
     this.handleOperatorRemoval = this.handleOperatorRemoval.bind(this);
+    this.handleSubqueryRemoval = this.handleSubqueryRemoval.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleOperatorChange = this.handleOperatorChange.bind(this);
+    this.handleSubqueryChange = this.handleSubqueryChange.bind(this);
+    this.serialize = this.serialize.bind(this)
   }
 
   componentWillMount() {
-    const { data } = this.props;
+    const { data, options } = this.props;
     this.setState({
-      data: JSON.parse(JSON.stringify(data)),
+      data: [...data],
+      options: {...options}
     });
   }
 
@@ -69,9 +71,14 @@ class Query extends React.Component {
     this.removeItem(operator);
   }
 
+  handleSubqueryRemoval(subquery) {
+    this.removeItem(subquery);
+  }
+
   handleFilterChange(filter) {
     this.replaceItem({
       type: QUERY_ITEM_TYPE_FILTER,
+      index: filter.index,
       data: filter.data,
       options: filter.options,
     });
@@ -80,9 +87,23 @@ class Query extends React.Component {
   handleOperatorChange(operator) {
     this.replaceItem({
       type: QUERY_ITEM_TYPE_OPERATOR,
+      index: operator.index,
       data: operator.data,
       options: operator.options,
     });
+  }
+
+  handleSubqueryChange(subquery) {
+    this.replaceItem({
+      type: QUERY_ITEM_TYPE_SUBQUERY,
+      index: subquery.index,
+      data: subquery.data,
+      options: subquery.options,
+    });
+  }
+
+  serialize() {
+    return Object.assign({}, this.props, this.state);
   }
 
   render() {
@@ -122,6 +143,16 @@ class Query extends React.Component {
                   />
               );
             case QUERY_ITEM_TYPE_SUBQUERY:
+              return (
+                  <Subquery
+                    key={`subquery-${uuidv1()}`}
+                    index={index}
+                    options={item.options}
+                    data={item.data}
+                    onChangeCallback={this.handleSubqueryChange}
+                    onRemovalCallback={this.handleSubqueryRemoval}
+                  />
+              );
             default:
               return null;
           }
