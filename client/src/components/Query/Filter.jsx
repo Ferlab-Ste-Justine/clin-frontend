@@ -75,6 +75,7 @@ class Filter extends React.Component {
             selectable: null,
         },
         data: {},
+        draft: {},
         visible: null,
         selected: null,
         opened: null,
@@ -92,6 +93,7 @@ class Filter extends React.Component {
     this.createSubMenuByFilterType = this.createSubMenuByFilterType.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleApply = this.handleApply.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
   }
 
@@ -113,9 +115,10 @@ class Filter extends React.Component {
 
         this.setState({
             data,
+            draft: {...data},
             options: {
-                selectable: options.selectable,
-                editable: options.editable,
+                selectable: options.selectable || false,
+                editable: options.editable || false,
             },
             visible: true,
             selected: false,
@@ -166,11 +169,21 @@ class Filter extends React.Component {
     }
 
     handleApply() {
-        if (this.isOpened()) {
+        const { draft } = this.state;
+        if (this.isEditable()) {
             this.setState({
-                opened: false,
+              data: {...draft},
+              opened: false,
             })
         }
+    }
+
+    handleCancel() {
+      const { data } = this.state
+      this.setState({
+        draft: {...data},
+        opened: false,
+      })
     }
 
     handleSelect(e) {
@@ -184,9 +197,9 @@ class Filter extends React.Component {
     }
 
     createSubMenuByFilterType() {
-        const { data } = this.state;
-        const operator = data.operator;
-        const type = data.type;
+        const { draft } = this.state;
+        const operator = draft.operator;
+        const type = draft.type;
 
         switch(type) {
             case 'generic':
@@ -203,10 +216,9 @@ class Filter extends React.Component {
                     console.log('+++ handleOperatorChange')
                     console.log(e)
                     if (this.isEditable()) {
-                        console.log('HELLO');
-                        const { data } = this.state;
-                        data.operator = e.target.value
-                        this.setState({ data } )
+                        const { draft } = this.state;
+                        draft.operator = e.target.value
+                        this.setState({ draft } )
                     }
                 }
 
@@ -276,7 +288,7 @@ class Filter extends React.Component {
                     { filterMenu }
                     <Row type="flex" justify="end">
                         <Col span={6}>
-                            <Button onClick={this.toggleMenu}>Annuler</Button>
+                            <Button onClick={this.handleCancel}>Annuler</Button>
                         </Col>
                         <Col span={5}>
                             <Button type="primary" onClick={this.handleApply}>Appliquer</Button>
