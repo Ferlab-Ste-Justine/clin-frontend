@@ -1,42 +1,53 @@
 div.query {
-  width: 100%;
-  display: inline-flex;
-  padding: 5px 10px;
-  marginBottom: 5px;
-  border: 1px;
 
-  div.filter, div.subquery {
-    padding: inherit;
-    padding-bottom: 6px;
-    font-size: inherit;
-    text-transform: none;
-    top: unset;
-    width: unset;
+  display: flex;
 
-    i.legend {
-      cursor: pointer;
-      margin-right: 5px;
+  div.items {
+    width: 100%;
+    display: inline-flex;
+    padding: 5px 10px;
+    marginBottom: 5px;
+    border: 1px;
+
+    div.filter, div.subquery {
+      padding: inherit;
+      padding-bottom: 6px;
+      font-size: inherit;
+      text-transform: none;
+      top: unset;
+      width: unset;
+
+      i.legend {
+        cursor: pointer;
+        margin-right: 5px;
+      }
+
+      i.anticon-caret-down {
+        cursor: pointer;
+        margin-left: 5px;
+      }
     }
 
-    i.anticon-caret-down {
-      cursor: pointer;
-      margin-left: 5px;
+    div.operator {
+      padding: inherit;
+      width: unset;
+      mix-blend-mode: difference;
+      padding-top: 3px;
+      max-height: 20px;
+      margin-top: 5px;
+      width: 48px;
+
+      i.anticon-caret-down {
+        cursor: pointer;
+        margin-left: 3px;
+      }
     }
+
   }
 
-  div.operator {
-    padding: inherit;
-    width: unset;
-    mix-blend-mode: difference;
-    padding-top: 3px;
-    max-height: 20px;
-    margin-top: 5px;
-    width: 48px;
-
-    i.anticon-caret-down {
-      cursor: pointer;
-      margin-left: 3px;
-    }
+  div.actions {
+    margin-left: 10px;
+    margin-top: 8px;
   }
 
 }

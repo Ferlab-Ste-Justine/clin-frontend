@@ -3,6 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import uuidv1 from 'uuid/v1';
+import {
+  Dropdown, Button, Icon, Menu,
+} from 'antd';
 
 import Filter from './Filter';
 import Operator from './Operator';
@@ -13,6 +16,9 @@ const QUERY_ITEM_TYPE_FILTER = 'filter';
 const QUERY_ITEM_TYPE_OPERATOR = 'operator';
 const QUERY_ITEM_TYPE_SUBQUERY = 'subquery';
 
+const QUERY_ACTION_UNDO = 'undo'
+const QUERY_ACTION_DELETE = 'delete'
+
 class Query extends React.Component {
   constructor() {
     super();
@@ -20,15 +26,17 @@ class Query extends React.Component {
       data: null,
       options: null,
     };
-    this.replaceItem = this.replaceItem.bind(this);
-    this.removeItem = this.removeItem.bind(this);
-    this.handleFilterRemoval = this.handleFilterRemoval.bind(this);
-    this.handleOperatorRemoval = this.handleOperatorRemoval.bind(this);
-    this.handleSubqueryRemoval = this.handleSubqueryRemoval.bind(this);
-    this.handleFilterChange = this.handleFilterChange.bind(this);
-    this.handleOperatorChange = this.handleOperatorChange.bind(this);
-    this.handleSubqueryChange = this.handleSubqueryChange.bind(this);
+    this.replaceItem = this.replaceItem.bind(this)
+    this.removeItem = this.removeItem.bind(this)
+    this.handleFilterRemoval = this.handleFilterRemoval.bind(this)
+    this.handleOperatorRemoval = this.handleOperatorRemoval.bind(this)
+    this.handleSubqueryRemoval = this.handleSubqueryRemoval.bind(this)
+    this.handleFilterChange = this.handleFilterChange.bind(this)
+    this.handleOperatorChange = this.handleOperatorChange.bind(this)
+    this.handleSubqueryChange = this.handleSubqueryChange.bind(this)
     this.serialize = this.serialize.bind(this)
+    this.createMenuComponent = this.createMenuComponent.bind(this)
+    this.handleMenuSelection = this.handleMenuSelection.bind(this)
   }
 
   componentWillMount() {
@@ -106,14 +114,45 @@ class Query extends React.Component {
     return Object.assign({}, this.props, this.state);
   }
 
+  handleMenuSelection({ key }) {
+    switch(key) {
+      case QUERY_ACTION_UNDO:
+        this.setState({
+          data: [...this.props.data],
+        })
+        break;
+      case QUERY_ACTION_DELETE:
+        break;
+      default:
+        break;
+    }
+  }
+
+  createMenuComponent() {
+    return(
+        <Menu onClick={this.handleMenuSelection}>
+          <Menu.Item key={QUERY_ACTION_UNDO}>
+            <Icon type="undo" />
+            Undo Changes
+          </Menu.Item>
+          <Menu.Item key={QUERY_ACTION_DELETE}>
+            <Icon type="delete" />
+            Delete Query
+          </Menu.Item>
+        </Menu>
+    );
+
+  }
+
   render() {
     const initial = this.props.data;
     const current = this.state.data;
     const isDirty = !isEqual(initial, current);
 
     return current.length > 0 ? (
+      <div className="query">
       <div
-        className="query"
+        className="items"
         style={{
           border: `1px ${isDirty ? 'dashed #085798' : 'solid #CCCCCC'}`, display: 'inline-flex', padding: '5px 8px 4px 8px', marginBottom: 5,
         }}
@@ -158,6 +197,12 @@ class Query extends React.Component {
           }
         })}
       </div>
+      <div className="actions">
+        <Dropdown overlay={this.createMenuComponent}>
+          <Button icon="more" size="small" />
+        </Dropdown>
+      </div>
+      </div>
     ) : null;
   }
 }
@@ -168,7 +213,10 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
-  options: {},
+  options: {
+    undoable: true,
+    deletable: true,
+  },
 };
 
 export default Query;
