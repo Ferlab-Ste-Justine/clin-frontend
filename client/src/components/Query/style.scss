@@ -1,7 +1,8 @@
 div.statement {
 
-  div {
+  div.query-container {
     display: flex;
+    width: 100%;
 
     div.actions {
       margin-right: 10px;
@@ -9,6 +10,30 @@ div.statement {
     }
   }
 
+  div.draggable {
+    cursor: grab;
+  }
+
+  div.dragged {
+    cursor: grabbing;
+    filter: invert(50);
+    div.query {
+
+      div.items {
+        border: none !important;
+      }
+      div.actions {
+        i {
+          display: none;
+        }
+      }
+    }
+
+  }
+
+  div.placeholder {
+    opacity: 0.5;
+  }
 }
 
 div.query {
@@ -20,7 +45,6 @@ div.query {
     width: 100%;
     display: inline-flex;
     padding: 5px 10px;
-    marginBottom: 5px;
     border: 1px;
 
     div.filter, div.subquery {
@@ -65,8 +89,12 @@ div.query {
   }
 
   div.actions {
-    margin-left: 10px;
-    margin-top: 8px;
+    i {
+      cursor: pointer;
+      font-size: 20px;
+      margin-left: 5px;
+      margin-top: 2px;
+    }
   }
 
 }

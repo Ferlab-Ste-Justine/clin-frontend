@@ -2,10 +2,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
-import uuidv1 from 'uuid/v1';
 import {
   Dropdown, Button, Icon, Menu,
 } from 'antd';
+import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
 
 import Filter from './Filter/index';
@@ -22,6 +22,24 @@ const QUERY_ACTION_UNDO = 'undo'
 const QUERY_ACTION_DELETE = 'delete'
 const QUERY_ACTION_DUPLICATE = 'duplicate'
 
+
+
+/*
+    // Remove first item if it is an operator
+    if (newData[0] && newData[0].type === QUERY_ITEM_TYPE_OPERATOR) {
+      newData.splice(0, 1);
+    }
+
+ */
+
+const sanitizeOperators = (data) => {
+  while (data[0] && data[0].type === QUERY_ITEM_TYPE_OPERATOR) {
+    data.splice(0, 1);
+  }
+  return data
+}
+
+
 class Query extends React.Component {
   constructor() {
     super();
@@ -37,14 +55,20 @@ class Query extends React.Component {
     this.handleOperatorChange = this.handleOperatorChange.bind(this)
     this.handleSubqueryChange = this.handleSubqueryChange.bind(this)
     this.serialize = this.serialize.bind(this)
+    this.sqon = this.sqon.bind(this)
     this.createMenuComponent = this.createMenuComponent.bind(this)
     this.handleMenuSelection = this.handleMenuSelection.bind(this)
   }
 
   componentWillMount() {
     const { data } = this.props;
+    const newData = [...data];
+    newData.map((newDatum) => {
+      newDatum.key = uuidv1();
+      return newDatum;
+    });
     this.setState({
-      data: [...data],
+      data: newData,
     });
   }
 
@@ -60,52 +84,45 @@ class Query extends React.Component {
       data: newData,
     }, () => {
       if (onEditCallback) {
-        onEditCallback(data[index], item);
+        onEditCallback(this.serialize());
       }
     });
   }
 
   removeItem(item) {
     const { data } = this.state;
-    const { onEditCallback } = this.props;
-    const newData = [ ...data ]
+    const { onEditCallback, onRemoveCallback } = this.props;
+    let newData = [ ...data ]
     const index = item.index;
-    newData.splice(index, 1);
-    // Remove first item if it is an operator
-    if (newData[0] && newData[0].type === QUERY_ITEM_TYPE_OPERATOR) {
-      newData.splice(0, 1);
-    }
-    this.setState({
-      data: newData,
-    }, () => {
-      if (onEditCallback) {
-        onEditCallback(data[index], item);
+    sanitizeOperators(newData)
+    if (newData.length > 0) {
+      this.setState({
+        data: newData,
+      }, () => {
+        if (onEditCallback) {
+          onEditCallback(this.serialize());
+        }
+      })
+    } else {
+      if (onRemoveCallback) {
+        onRemoveCallback(item);
       }
-    } );
+    }
   }
 
   handleFilterRemoval(filter) {
     const { onEditCallback } = this.props;
     this.removeItem(filter);
-    if (onEditCallback) {
-      onEditCallback(filter, null);
-    }
   }
 
   handleOperatorRemoval(operator) {
     const { onEditCallback } = this.props;
     this.removeItem(operator);
-    if (onEditCallback) {
-      onEditCallback(operator, null);
-    }
   }
 
   handleSubqueryRemoval(subquery) {
     const { onEditCallback } = this.props;
     this.removeItem(subquery);
-    if (onEditCallback) {
-      onEditCallback(subquery, null);
-    }
   }
 
   handleFilterChange(filter) {
@@ -135,11 +152,26 @@ class Query extends React.Component {
     });
   }
 
-  serialize() {
+  sqon() {
+    const { data } = this.state;
+    const sqon = data.map((datum) => {
+      delete datum.key;
+      return datum;
+    })
+
+    console.log(sqon)
+
     return {
-      data: [...this.state.data],
-      index: this.props.index,
-      options: {...this.props.options},
+      sqon,
+    }
+  }
+
+  serialize() {
+    const { data } = this.state;
+    const { index } = this.props;
+    return {
+      data,
+      index,
     }
   }
 
@@ -148,7 +180,7 @@ class Query extends React.Component {
       case QUERY_ACTION_COPY:
         copy(JSON.stringify(this.state.data));
         if (this.props.onCopyCallback) {
-          this.props.onCopyCallback(this.serialize());
+          this.props.onCopyCallback(this.sqon());
         }
         break;
       case QUERY_ACTION_DELETE:
@@ -226,7 +258,7 @@ class Query extends React.Component {
               case QUERY_ITEM_TYPE_OPERATOR:
                 return (
                     <Operator
-                        key={`operator-${uuidv1()}`}
+                        key={item.key}
                         index={index}
                         options={options}
                         data={item.data}
@@ -238,7 +270,7 @@ class Query extends React.Component {
               case QUERY_ITEM_TYPE_FILTER:
                 return (
                     <Filter
-                        key={`filter-${uuidv1()}`}
+                        key={item.key}
                         index={index}
                         options={options}
                         data={item.data}
@@ -250,7 +282,7 @@ class Query extends React.Component {
               case QUERY_ITEM_TYPE_SUBQUERY:
                 return (
                     <Subquery
-                      key={`subquery-${uuidv1()}`}
+                      key={item.key}
                       index={index}
                       options={options}
                       data={item.data}
@@ -267,7 +299,7 @@ class Query extends React.Component {
         { hasMenu && (
         <div className="actions">
           <Dropdown overlay={this.createMenuComponent}>
-            <Button icon="more" size="small" />
+            <Icon type="more" />
           </Dropdown>
         </div>
         ) }
@@ -277,6 +309,7 @@ class Query extends React.Component {
 }
 
 Query.propTypes = {
+  key: PropTypes.string,
   data: PropTypes.shape([]).isRequired,
   options: PropTypes.shape({}),
   onCopyCallback: PropTypes.func,
@@ -288,6 +321,7 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
+  key: 'query',
   options: {
     copyable: true,
     duplicatable: true,

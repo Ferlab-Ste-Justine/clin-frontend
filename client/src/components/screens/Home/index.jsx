@@ -11,7 +11,6 @@ import Content from '../../Content';
 import Footer from '../../Footer';
 import LoginForm from '../../forms/Login';
 
-// import Query from '../../Query/index';
 import Statement from '../../Query/Statement';
 
 import { loginUser, recoverUser } from '../../../actions/user';
@@ -25,7 +24,6 @@ const queryA = [
     type: 'filter',
     data: {
       id: 'study',
-      title: 'Study',
       type: 'generic',
       operator: 'all',
       values: ['My Study', 'Your Study'],
@@ -41,7 +39,6 @@ const queryA = [
     type: 'filter',
     data: {
       id: 'proband',
-      title: 'Proband',
       type: 'generic',
       operator: 'one',
       values: ['true'],
@@ -66,7 +63,6 @@ const queryB = [
     type: 'filter',
     data: {
       id: 'study',
-      title: 'Study',
       type: 'generic',
       operator: 'none',
       values: ['My Study'],
@@ -82,7 +78,6 @@ const queryB = [
     type: 'filter',
     data: {
       id: 'proband',
-      title: 'Proband',
       type: 'generic',
       operator: 'all',
       values: ['true'],
@@ -95,7 +90,7 @@ const optionsA = {
   duplicatable: true,
   editable: false,
   removable: true,
-  reorderable: false,
+  reorderable: true,
   selectable: false,
   undoable: true,
 };
@@ -114,7 +109,6 @@ const statementA = [
         <br />
         */
 
-
 const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
   window.CLIN.translate = intl.formatMessage;
@@ -125,7 +119,8 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
       <Card className="centered">
 
         <br />
-        <Statement data={statementA} options={optionsA} />
+        <Statement key="test-statement" data={statementA} options={optionsA} />
+        <br />
 
         <LoginForm
           appIsLoading={showLoadingAnimation}

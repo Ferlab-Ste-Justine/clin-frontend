@@ -104,8 +104,9 @@ class Filter extends React.Component {
   }
 
   componentWillMount() {
-    const { options, data } = this.props;
+    const { data, options, visible } = this.props;
     switch (data.type) {
+      default:
       case FILTER_TYPE_GENERIC:
         if (!data.operator) {
           data.operator = FILTER_OPERATOR_TYPE_ALL;
@@ -115,7 +116,6 @@ class Filter extends React.Component {
         }
         break;
       case FILTER_TYPE_SPECIFIC:
-      default:
         break;
     }
 
@@ -127,9 +127,9 @@ class Filter extends React.Component {
         selectable: options.selectable || false,
         removable: options.removable || true,
       },
-      visible: true,
-      selected: false,
       opened: false,
+      selected: false,
+      visible,
     });
   }
 
@@ -300,11 +300,10 @@ class Filter extends React.Component {
 
     return (
       <Popover
-        key={`filter-${data.id}`}
         visible={this.isOpened()}
       >
         <Card>
-          <Typography.Title level={4}>{data.title}</Typography.Title>
+          <Typography.Title level={4}>{data.id}</Typography.Title>
           { filterMenu }
           <Row type="flex" justify="end">
             <Col span={6}>

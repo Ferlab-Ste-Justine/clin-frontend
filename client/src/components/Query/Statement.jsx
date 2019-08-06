@@ -6,12 +6,9 @@ import {
   Menu, Dropdown, Button, Icon,
 } from 'antd';
 import uuidv1 from 'uuid/v1';
+import DragSortableList from 'react-drag-sortable';
 
 import Query from './index'
-
-
-
-const STATEMENT_ACTION_UNDO = 'undo';
 
 
 class Statement extends React.Component {
@@ -50,10 +47,19 @@ class Statement extends React.Component {
 
   componentWillMount() {
     const { options, data } = this.props;
-    data.map((item) => { item.key = uuidv1(); return item; })
+
+    console.log(data)
+
+    data.map((newDatum) => {
+      newDatum.key = uuidv1();
+      return newDatum;
+    });
+
+    console.log(data)
+
     this.setState({
-      data: [ ...data ],
-      options: { ...options },
+      data,
+      options,
     });
   }
 
@@ -105,9 +111,14 @@ class Statement extends React.Component {
     }
   }
 
-  handleEdit(oldItem, newItem) {
+  handleEdit(data) {
+
+    console.log(data)
+
     if (this.isEditable()) {
-      return true;
+      this.setState({
+        data
+      })
     }
   }
 
@@ -115,7 +126,6 @@ class Statement extends React.Component {
     if (this.isDuplicatable()) {
       const {data} = this.state;
       const index = item.index + 1;
-      item.key = uuidv1();
       data.splice(index, 0, item.data);
       this.setState({
         data,
@@ -133,9 +143,16 @@ class Statement extends React.Component {
     }
   }
 
-  handleReorder() {
+  handleReorder(sorted) {
     if (this.isReorderable()) {
-      return true;
+      const { data } = this.state;
+      const sortedIndices = sorted.map(clip => clip.index);
+      const sortedData = sortedIndices.map((sortedIndice) => {
+        return data[sortedIndice];
+      })
+      this.setState({
+        data: sortedData
+      })
     }
   }
 
@@ -176,18 +193,13 @@ class Statement extends React.Component {
 
   render() {
     const { data, options } = this.state;
-    return (
-    <div className="statement">
-        { data.map((item, index) => {
-          return (
-          <div>
-            <div className="actions">
-              {/* <Dropdown overlay={this.createMenuComponent}>
-                <Button icon="swap" size="small" index={index} onClick={this.handleMenuSelection} />
-              </Dropdown> */}
-            </div>
+    const { reorderable } = options;
+    const queries = data.reduce((accumulator, item, index) => {
+      return [...accumulator, (
+          <div className='query-container'>
+            {/*<div className="actions"></div>*/}
             <Query
-              key={`query-${item.key}`}
+              key={item.key}
               index={index}
               data={item}
               options={options}
@@ -199,8 +211,14 @@ class Statement extends React.Component {
               onUndoCallback={this.handleUndo}
             />
           </div>
-        )})}
-    </div>
+        ) ]
+    }, []);
+    return (
+        <div className="statement">
+          {reorderable ?
+              <DragSortableList key="sortable" items={queries.map((query, index) => { return {content: query, index} })} onSort={this.handleReorder} type="vertical"/> : queries
+          }
+        </div>
     );
   }
 }
