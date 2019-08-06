@@ -56,20 +56,20 @@ class Operator extends React.Component {
   handleApply({ key }) {
     const { data } = this.state;
     if (this.isEditable() && data.type !== key) {
-      const { onChangeCallback } = this.props;
+      const { onEditCallback } = this.props;
       data.type = key;
       this.setState({
         data,
-      }, () => { onChangeCallback(this.serialize()); });
+      }, () => { onEditCallback(this.serialize()); });
     }
   }
 
   handleClose() {
     if (this.isEditable()) {
-      const { onRemovalCallback } = this.props;
+      const { onRemoveCallback } = this.props;
       this.setState({
         visible: false,
-      }, () => { onRemovalCallback(this.serialize()); });
+      }, () => { onRemoveCallback(this.serialize()); });
     }
   }
 
@@ -105,8 +105,8 @@ class Operator extends React.Component {
 Operator.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
-  onRemovalCallback: PropTypes.func,
-  onChangeCallback: PropTypes.func,
+  onEditCallback: PropTypes.func,
+  onRemoveCallback: PropTypes.func,
   visible: PropTypes.bool,
 };
 
@@ -114,8 +114,8 @@ Operator.defaultProps = {
   options: {
     editable: false,
   },
-  onRemovalCallback: () => {},
-  onChangeCallback: () => {},
+  onEditCallback: () => {},
+  onRemoveCallback: () => {},
   visible: true,
 };
 

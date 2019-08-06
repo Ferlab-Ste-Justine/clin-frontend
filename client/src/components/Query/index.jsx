@@ -43,9 +43,6 @@ class Query extends React.Component {
 
   componentWillMount() {
     const { data } = this.props;
-
-    console.log(this.props.options)
-
     this.setState({
       data: [...data],
     });

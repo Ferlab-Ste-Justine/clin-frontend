@@ -47,10 +47,6 @@ class Subquery extends React.Component {
     this.state = {
       data: null,
       draft: null,
-      options: {
-        editable: null,
-        selectable: null,
-      },
       visible: null,
       opened: null,
     };
@@ -71,24 +67,23 @@ class Subquery extends React.Component {
   }
 
   componentWillMount() {
-    const { options, data } = this.props;
+    const { data } = this.props;
     this.setState({
       data,
       draft: { ...data },
-      options,
       visible: true,
       opened: false,
     });
   }
 
   isEditable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { editable } = options;
     return editable === true;
   }
 
   isSelectable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { selectable } = options;
     return selectable === true;
   }
@@ -129,11 +124,11 @@ class Subquery extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { onChangeCallback } = this.props;
+      const { onEditCallback } = this.props;
       this.setState({
         data: { ...draft },
         opened: false,
-      }, () => { onChangeCallback(this.serialize()); });
+      }, () => { onEditCallback(this.serialize()); });
     }
   }
 
@@ -147,11 +142,11 @@ class Subquery extends React.Component {
 
   handleClose() {
     if (this.isEditable()) {
-      const { onRemovalCallback } = this.props;
+      const { onRemoveCallback } = this.props;
       this.setState({
         opened: false,
         visible: false,
-      }, () => { onRemovalCallback(this.serialize()); });
+      }, () => { onRemoveCallback(this.serialize()); });
     }
   }
 
@@ -229,8 +224,8 @@ class Subquery extends React.Component {
 Subquery.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
-  onRemovalCallback: PropTypes.func,
-  onChangeCallback: PropTypes.func,
+  onEditCallback: PropTypes.func,
+  onRemoveCallback: PropTypes.func,
 };
 
 Subquery.defaultProps = {
@@ -238,8 +233,8 @@ Subquery.defaultProps = {
     editable: false,
     selectable: false,
   },
-  onRemovalCallback: () => {},
-  onChangeCallback: () => {},
+  onEditCallback: () => {},
+  onRemoveCallback: () => {},
 };
 
 export default Subquery;
