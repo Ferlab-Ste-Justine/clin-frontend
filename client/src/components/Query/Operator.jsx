@@ -28,11 +28,13 @@ class Operator extends React.Component {
   }
 
   componentWillMount() {
-    const { options, data } = this.props;
+    const { options, data, visible } = this.props;
     this.setState({
       data: { ...data },
-      options: { ...options },
-      visible: true,
+      options: {
+        editable: options.editable || true,
+      },
+      visible,
     });
   }
 
@@ -91,7 +93,7 @@ class Operator extends React.Component {
       >
         { type }
         { this.isEditable() && (
-        <Dropdown overlay={this.createMenuComponent} trigger={['click']} placement="bottomRight">
+        <Dropdown overlay={this.createMenuComponent} trigger={['click']} placement="bottomCenter">
           { <Icon type="caret-down" /> }
         </Dropdown>
         ) }
@@ -105,6 +107,7 @@ Operator.propTypes = {
   options: PropTypes.shape({}),
   onRemovalCallback: PropTypes.func,
   onChangeCallback: PropTypes.func,
+  visible: PropTypes.bool,
 };
 
 Operator.defaultProps = {
@@ -113,6 +116,7 @@ Operator.defaultProps = {
   },
   onRemovalCallback: () => {},
   onChangeCallback: () => {},
+  visible: true,
 };
 
 export default Operator;

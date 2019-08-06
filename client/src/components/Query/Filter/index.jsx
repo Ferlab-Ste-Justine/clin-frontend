@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, no-case-declarations */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -75,6 +77,7 @@ class Filter extends React.Component {
       type: null,
       options: {
         editable: null,
+        removable: null,
         selectable: null,
       },
       data: {},
@@ -84,10 +87,11 @@ class Filter extends React.Component {
       opened: null,
     };
     this.isEditable = this.isEditable.bind(this);
+    this.isRemovable = this.isRemovable.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
-    this.isVisible = this.isVisible.bind(this);
     this.isSelected = this.isSelected.bind(this);
     this.isOpened = this.isOpened.bind(this);
+    this.isVisible = this.isVisible.bind(this);
     this.serialize = this.serialize.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
@@ -119,8 +123,9 @@ class Filter extends React.Component {
       data,
       draft: { ...data },
       options: {
+        editable: options.editable || true,
         selectable: options.selectable || false,
-        editable: options.editable || false,
+        removable: options.removable || true,
       },
       visible: true,
       selected: false,
@@ -138,6 +143,12 @@ class Filter extends React.Component {
     const { options } = this.state;
     const { selectable } = options;
     return selectable === true;
+  }
+
+  isRemovable() {
+    const { options } = this.state;
+    const { removable } = options;
+    return removable === true;
   }
 
   isVisible() {
@@ -160,23 +171,23 @@ class Filter extends React.Component {
   }
 
   handleClose() {
-    if (this.isEditable()) {
-      const { onRemovalCallback } = this.props;
+    if (this.isRemovable()) {
+      const { onRemoveCallback } = this.props;
       this.setState({
         opened: false,
         visible: false,
-      }, () => { onRemovalCallback(this.serialize()); });
+      }, () => { onRemoveCallback(this.serialize()); });
     }
   }
 
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { onChangeCallback } = this.props;
+      const { onEditCallback } = this.props;
       this.setState({
         data: { ...draft },
         opened: false,
-      }, () => { onChangeCallback(this.serialize()); });
+      }, () => { onEditCallback(this.serialize()); });
     }
   }
 
@@ -190,7 +201,10 @@ class Filter extends React.Component {
 
   handleSelect() {
     if (this.isSelectable() && !this.isOpened()) {
-      this.setState({ selected: !this.isSelected() });
+      const { onSelectCallback } = this.props;
+      this.setState({
+        selected: !this.isSelected()
+      }, () => { onSelectCallback(this.serialize()); });
     }
   }
 
@@ -318,7 +332,7 @@ class Filter extends React.Component {
       <Tag
         className="filter"
         visible={this.isVisible()}
-        closable={this.isEditable()}
+        closable={this.isRemovable()}
         onClose={this.handleClose}
         color={this.isSelected() ? 'blue' : ''}
       >
@@ -339,17 +353,22 @@ class Filter extends React.Component {
 Filter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
-  onChangeCallback: PropTypes.func,
-  onRemovalCallback: PropTypes.func,
+  onEditCallback: PropTypes.func,
+  onRemoveCallback: PropTypes.func,
+  onSelectCallback: PropTypes.func,
+  visible: PropTypes.bool,
 };
 
 Filter.defaultProps = {
   options: {
-    selectable: false,
     editable: false,
+    selectable: false,
+    removable: false,
   },
-  onChangeCallback: () => {},
-  onRemovalCallback: () => {},
+  onEditCallback: () => {},
+  onRemoveCallback: () => {},
+  onSelectCallback: () => {},
+  visible: true,
 };
 
 export default Filter;

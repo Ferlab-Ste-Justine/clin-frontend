@@ -18,6 +18,7 @@ dependencies:
   case-sensitive-paths-webpack-plugin: 2.2.0
   clippyjs: 0.0.3
   connected-react-router: 6.5.2
+  copy-to-clipboard: 3.2.0
   css-loader: 1.0.0
   dotenv: 6.0.0
   dotenv-expand: 4.2.0
@@ -12107,6 +12108,7 @@ specifiers:
   case-sensitive-paths-webpack-plugin: 2.2.0
   clippyjs: ^0.0.3
   connected-react-router: ^6.3.1
+  copy-to-clipboard: ^3.2.0
   css-loader: 1.0.0
   dotenv: 6.0.0
   dotenv-expand: 4.2.0

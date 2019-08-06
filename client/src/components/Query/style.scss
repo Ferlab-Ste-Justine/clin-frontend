@@ -1,6 +1,20 @@
+div.statement {
+
+  div {
+    display: flex;
+
+    div.actions {
+      margin-right: 10px;
+      margin-top: 8px;
+    }
+  }
+
+}
+
 div.query {
 
   display: flex;
+  width: 100%;
 
   div.items {
     width: 100%;
@@ -24,7 +38,12 @@ div.query {
 
       i.anticon-caret-down {
         cursor: pointer;
+        margin-top: 2px;
         margin-left: 5px;
+      }
+
+      i.anticon-close {
+        margin-top: 3px;
       }
     }
 
@@ -35,10 +54,10 @@ div.query {
       padding-top: 3px;
       max-height: 20px;
       margin-top: 5px;
-      width: 48px;
 
       i.anticon-caret-down {
         cursor: pointer;
+        margin-top: 1px;
         margin-left: 3px;
       }
     }

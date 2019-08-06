@@ -11,8 +11,8 @@ import Content from '../../Content';
 import Footer from '../../Footer';
 import LoginForm from '../../forms/Login';
 
-import Query from '../../Query/index';
-
+// import Query from '../../Query/index';
+import Statement from '../../Query/Statement';
 
 import { loginUser, recoverUser } from '../../../actions/user';
 import { appShape } from '../../../reducers/app';
@@ -23,10 +23,6 @@ import './style.scss';
 const queryA = [
   {
     type: 'filter',
-    options: {
-      selectable: true,
-      editable: true,
-    },
     data: {
       id: 'study',
       title: 'Study',
@@ -37,20 +33,12 @@ const queryA = [
   },
   {
     type: 'operator',
-    options: {
-      selectable: false,
-      editable: true,
-    },
     data: {
       type: 'and',
     },
   },
   {
     type: 'filter',
-    options: {
-      selectable: false,
-      editable: false,
-    },
     data: {
       id: 'proband',
       title: 'Proband',
@@ -61,20 +49,12 @@ const queryA = [
   },
   {
     type: 'operator',
-    options: {
-      selectable: false,
-      editable: true,
-    },
     data: {
       type: 'and',
     },
   },
   {
     type: 'subquery',
-    options: {
-      selectable: true,
-      editable: true,
-    },
     data: {
       type: 'generic',
     },
@@ -84,10 +64,6 @@ const queryA = [
 const queryB = [
   {
     type: 'filter',
-    options: {
-      selectable: true,
-      editable: true,
-    },
     data: {
       id: 'study',
       title: 'Study',
@@ -98,20 +74,12 @@ const queryB = [
   },
   {
     type: 'operator',
-    options: {
-      selectable: false,
-      editable: true,
-    },
     data: {
       type: 'or',
     },
   },
   {
     type: 'filter',
-    options: {
-      selectable: true,
-      editable: true,
-    },
     data: {
       id: 'proband',
       title: 'Proband',
@@ -121,6 +89,31 @@ const queryB = [
     },
   },
 ];
+
+const optionsA = {
+  copyable: true,
+  duplicatable: true,
+  editable: false,
+  removable: true,
+  reorderable: false,
+  selectable: false,
+  undoable: true,
+};
+const statementA = [
+  queryA,
+  queryB,
+];
+
+/* <Query key="query1" data={queryA} />
+        <br />
+        <Query key="query2" data={queryB} />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        */
+
 
 const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
@@ -132,13 +125,7 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
       <Card className="centered">
 
         <br />
-        <Query key="query1" data={queryA} />
-        <br />
-        <Query key="query2" data={queryB} />
-        <br />
-        <br />
-        <br />
-        <br />
+        <Statement data={statementA} options={optionsA} />
 
         <LoginForm
           appIsLoading={showLoadingAnimation}
