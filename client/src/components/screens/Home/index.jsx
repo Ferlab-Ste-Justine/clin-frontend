@@ -19,95 +19,141 @@ import { appShape } from '../../../reducers/app';
 import './style.scss';
 
 /* eslint-disable max-len */
-const queryA = [
-  {
-    type: 'filter',
-    data: {
-      id: 'study',
-      type: 'generic',
-      operator: 'all',
-      values: ['My Study', 'Your Study'],
+const queryA = {
+  title: 'Query 1',
+  instructions: [
+    {
+      type: 'filter',
+      data: {
+        id: 'study',
+        type: 'generic',
+        operator: 'all',
+        values: ['My Study', 'Your Study'],
+      },
     },
-  },
-  {
-    type: 'operator',
-    data: {
-      type: 'and',
+    {
+      type: 'operator',
+      data: {
+        type: 'and',
+      },
     },
-  },
-  {
-    type: 'filter',
-    data: {
-      id: 'proband',
-      type: 'generic',
-      operator: 'one',
-      values: ['true'],
+    {
+      type: 'filter',
+      data: {
+        id: 'proband',
+        type: 'generic',
+        operator: 'one',
+        values: ['true'],
+      },
     },
-  },
-  {
-    type: 'operator',
-    data: {
-      type: 'and',
+    {
+      type: 'operator',
+      data: {
+        type: 'and',
+      },
     },
-  },
-  {
-    type: 'subquery',
-    data: {
-      type: 'generic',
+    {
+      type: 'subquery',
+      data: {
+        type: 'generic',
+      },
     },
-  },
-];
+    {
+      type: 'filter',
+      data: {
+        id: 'study',
+        type: 'generic',
+        operator: 'all',
+        values: ['My Study', 'Your Study'],
+      },
+    },
+    {
+      type: 'operator',
+      data: {
+        type: 'and',
+      },
+    },
+    {
+      type: 'filter',
+      data: {
+        id: 'proband',
+        type: 'generic',
+        operator: 'one',
+        values: ['true'],
+      },
+    },
+    {
+      type: 'operator',
+      data: {
+        type: 'and',
+      },
+    },
+    {
+      type: 'subquery',
+      data: {
+        type: 'generic',
+      },
+    },
+  ],
+};
 
-const queryB = [
-  {
-    type: 'filter',
-    data: {
-      id: 'study',
-      type: 'generic',
-      operator: 'none',
-      values: ['My Study'],
+const queryB = {
+  title: 'Query B',
+  instructions: [
+    {
+      type: 'filter',
+      data: {
+        id: 'study',
+        type: 'generic',
+        operator: 'none',
+        values: ['My Study'],
+      },
     },
-  },
-  {
-    type: 'operator',
-    data: {
-      type: 'or',
+    {
+      type: 'operator',
+      data: {
+        type: 'or',
+      },
     },
-  },
-  {
-    type: 'filter',
-    data: {
-      id: 'proband',
-      type: 'generic',
-      operator: 'all',
-      values: ['true'],
+    {
+      type: 'filter',
+      data: {
+        id: 'proband',
+        type: 'generic',
+        operator: 'all',
+        values: ['true'],
+      },
     },
-  },
-];
+  ],
+};
 
 const optionsA = {
   copyable: true,
   duplicatable: true,
-  editable: false,
+  editable: true,
   removable: true,
   reorderable: true,
-  selectable: false,
+  selectable: true,
   undoable: true,
 };
 const statementA = [
   queryA,
   queryB,
 ];
+const displayA = {
+  compoundOperators: true,
+};
 
-/* <Query key="query1" data={queryA} />
-        <br />
-        <Query key="query2" data={queryB} />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        */
+/*
+  <Query key="query1" data={queryA} />
+  <br />
+  <Query key="query2" data={queryB} />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+*/
 
 const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
@@ -119,7 +165,7 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
       <Card className="centered">
 
         <br />
-        <Statement key="test-statement" data={statementA} options={optionsA} />
+        <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
         <br />
 
         <LoginForm

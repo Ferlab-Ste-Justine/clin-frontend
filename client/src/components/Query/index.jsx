@@ -1,10 +1,11 @@
 /* eslint-disable  */ // react/destructuring-assignment, react/no-array-index-key
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isEqual } from 'lodash';
+import { isEqual, find, filter, difference } from 'lodash';
 import {
-  Dropdown, Button, Icon, Menu,
+  Dropdown, Button, Icon, Menu, Input, Tooltip,
 } from 'antd';
+import { cloneDeep } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
 
@@ -58,17 +59,18 @@ class Query extends React.Component {
     this.sqon = this.sqon.bind(this)
     this.createMenuComponent = this.createMenuComponent.bind(this)
     this.handleMenuSelection = this.handleMenuSelection.bind(this)
+    this.handleTitleChange = this.handleTitleChange.bind(this)
   }
 
   componentWillMount() {
-    const { data } = this.props;
-    const newData = [...data];
-    newData.map((newDatum) => {
-      newDatum.key = uuidv1();
-      return newDatum;
+    const { draft } = this.props;
+    draft.instructions.map((datum) => {
+      datum.key = uuidv1();
+      return datum;
     });
+    const clone = cloneDeep(draft);
     this.setState({
-      data: newData,
+      data: clone,
     });
   }
 
@@ -78,10 +80,9 @@ class Query extends React.Component {
     if (index === null) {
       index = item.index
     }
-    const newData = [ ...data ]
-    newData[index] = item
+    data.instructions[index] = item
     this.setState({
-      data: newData,
+      data,
     }, () => {
       if (onEditCallback) {
         onEditCallback(this.serialize());
@@ -89,15 +90,15 @@ class Query extends React.Component {
     });
   }
 
-  removeItem(item) {
+  removeItem(instruction) {
     const { data } = this.state;
     const { onEditCallback, onRemoveCallback } = this.props;
-    let newData = [ ...data ]
-    const index = item.index;
-    sanitizeOperators(newData)
-    if (newData.length > 0) {
+    const index = instruction.index;
+    data.instructions.splice(index, 1);
+    sanitizeOperators(data.instructions);
+    if (data.instructions.length > 0) {
       this.setState({
-        data: newData,
+        data,
       }, () => {
         if (onEditCallback) {
           onEditCallback(this.serialize());
@@ -105,23 +106,20 @@ class Query extends React.Component {
       })
     } else {
       if (onRemoveCallback) {
-        onRemoveCallback(item);
+        onRemoveCallback(this.serialize());
       }
     }
   }
 
   handleFilterRemoval(filter) {
-    const { onEditCallback } = this.props;
     this.removeItem(filter);
   }
 
   handleOperatorRemoval(operator) {
-    const { onEditCallback } = this.props;
     this.removeItem(operator);
   }
 
   handleSubqueryRemoval(subquery) {
-    const { onEditCallback } = this.props;
     this.removeItem(subquery);
   }
 
@@ -134,13 +132,23 @@ class Query extends React.Component {
     });
   }
 
+  // @NOTE All operators within a query must have the same type
   handleOperatorChange(operator) {
-    this.replaceItem({
-      type: QUERY_ITEM_TYPE_OPERATOR,
-      index: operator.index,
-      data: operator.data,
-      options: operator.options,
+    const { data } = this.state;
+    const { onEditCallback } = this.props;
+    data.instructions.map((datum, index) => {
+      if (datum.type === QUERY_ITEM_TYPE_OPERATOR) {
+        datum.data.type = operator.data.type
+      }
+      return datum;
     });
+    this.setState({
+      data
+    }, () => {
+      if (onEditCallback) {
+        onEditCallback(this.serialize());
+      }
+    })
   }
 
   handleSubqueryChange(subquery) {
@@ -152,18 +160,22 @@ class Query extends React.Component {
     });
   }
 
+  handleTitleChange(e) {
+    const title = e.target.value;
+    const { data } = this.state;
+    data.title = title;
+    this.setState({
+      data,
+    })
+  }
+
   sqon() {
     const { data } = this.state;
-    const sqon = data.map((datum) => {
+    const sqon = data.instructions.map((datum) => {
       delete datum.key;
       return datum;
     })
-
-    console.log(sqon)
-
-    return {
-      sqon,
-    }
+    return sqon;
   }
 
   serialize() {
@@ -178,9 +190,10 @@ class Query extends React.Component {
   handleMenuSelection({ key }) {
     switch(key) {
       case QUERY_ACTION_COPY:
-        copy(JSON.stringify(this.state.data));
+        const sqon = JSON.stringify(this.sqon());
+        copy(sqon);
         if (this.props.onCopyCallback) {
-          this.props.onCopyCallback(this.sqon());
+          this.props.onCopyCallback(sqon);
         }
         break;
       case QUERY_ACTION_DELETE:
@@ -194,12 +207,15 @@ class Query extends React.Component {
         }
         break;
       case QUERY_ACTION_UNDO:
+        const { draft } = this.props;
+        const clone = cloneDeep(draft);
         this.setState({
-          data: [...this.props.data],
+          data: clone,
+        }, () => {
+          if (this.props.onEditCallback) {
+            this.props.onEditCallback(this.serialize());
+          }
         })
-        if (this.props.onUndoCallback) {
-          this.props.onUndoCallback(this.serialize());
-        }
         break;
       default:
         break;
@@ -238,24 +254,47 @@ class Query extends React.Component {
   }
 
   render() {
-    const { options, onSelectCallback } = this.props;
+    const { display, options, original, onSelectCallback } = this.props;
     const { copyable, duplicatable, removable, undoable } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
-    const initial = this.props.data;
-    const current = this.state.data;
-    const isDirty = !isEqual(initial, current);
-
-    return current.length > 0 ? (
-      <div className="query">
-        <div
-          className="items"
-          style={{
-            border: `1px ${isDirty ? 'dashed #085798' : 'solid #CCCCCC'}`, display: 'inline-flex', padding: '5px 8px 4px 8px', marginBottom: 5,
-          }}
-        >
-          { current.map((item, index) => {
+    const { compoundOperators } = display;
+    const draft = this.state.data;
+    const isDirty = !isEqual(original, draft);
+    let operatorsHandler = null;
+    if (compoundOperators) {
+      const operator = find(draft.instructions, ['type', QUERY_ITEM_TYPE_OPERATOR]);
+      if (operator) {
+        operatorsHandler = (
+          <Operator
+            key={operator.key}
+            options={options}
+            data={operator.data}
+            onEditCallback={this.handleOperatorChange}
+          />
+        )
+      }
+    }
+    return draft.instructions ? (
+      <div className="query" style={{ border: `1px ${isDirty ? 'dashed #085798' : 'solid #CCCCCC'}` }}>
+        <Input
+            addonBefore="Title"
+            className="title"
+            size="small"
+            defaultValue={draft.title || ''}
+            suffix={
+              <Tooltip title="Identify this query using a title.">
+                <Icon type="info-circle" />
+              </Tooltip>
+            }
+            onBlur={this.handleTitleChange}
+        />
+        <span className="instructions">
+          { draft.instructions.map((item, index) => {
             switch (item.type) {
               case QUERY_ITEM_TYPE_OPERATOR:
+                if (compoundOperators) {
+                  return null;
+                }
                 return (
                     <Operator
                         key={item.key}
@@ -264,7 +303,6 @@ class Query extends React.Component {
                         data={item.data}
                         onEditCallback={this.handleOperatorChange}
                         onRemoveCallback={this.handleOperatorRemoval}
-
                     />
                 );
               case QUERY_ITEM_TYPE_FILTER:
@@ -295,13 +333,18 @@ class Query extends React.Component {
                 return null;
             }
           })}
-        </div>
+        </span>
         { hasMenu && (
-        <div className="actions">
+        <span className="actions">
           <Dropdown overlay={this.createMenuComponent}>
             <Icon type="more" />
           </Dropdown>
-        </div>
+        </span>
+        ) }
+        { compoundOperators && operatorsHandler && (
+            <span className="actions">
+              {operatorsHandler}
+            </span>
         ) }
       </div>
     ) : null;
@@ -310,7 +353,9 @@ class Query extends React.Component {
 
 Query.propTypes = {
   key: PropTypes.string,
-  data: PropTypes.shape([]).isRequired,
+  draft: PropTypes.shape([]).isRequired,
+  original: PropTypes.shape([]).isRequired,
+  display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   onCopyCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -322,6 +367,9 @@ Query.propTypes = {
 
 Query.defaultProps = {
   key: 'query',
+  display: {
+    compoundOperators: false,
+  },
   options: {
     copyable: true,
     duplicatable: true,

@@ -3,6 +3,7 @@ div.statement {
   div.query-container {
     display: flex;
     width: 100%;
+    margin-bottom: 5px;
 
     div.actions {
       margin-right: 10px;
@@ -38,18 +39,21 @@ div.statement {
 
 div.query {
 
-  display: flex;
   width: 100%;
+  padding: 5px 10px;
 
-  div.items {
-    width: 100%;
+  span.title {
+  }
+
+  span.instructions {
     display: inline-flex;
-    padding: 5px 10px;
     border: 1px;
+    float: left;
+    margin-top: 5px;
 
     div.filter, div.subquery {
       padding: inherit;
-      padding-bottom: 6px;
+      padding: 6px 10px 6px 10px;
       font-size: inherit;
       text-transform: none;
       top: unset;
@@ -75,9 +79,9 @@ div.query {
       padding: inherit;
       width: unset;
       mix-blend-mode: difference;
-      padding-top: 3px;
+      padding: 3px 6px 6px 6px;
       max-height: 20px;
-      margin-top: 5px;
+      margin-top: 6px;
 
       i.anticon-caret-down {
         cursor: pointer;
@@ -88,13 +92,32 @@ div.query {
 
   }
 
-  div.actions {
+  span.actions {
+    margin-top: 8px;
+    float: right;
     i {
       cursor: pointer;
       font-size: 20px;
       margin-left: 5px;
-      margin-top: 2px;
+      margin-top: 3px;
     }
+
+    div.operator {
+      width: unset;
+      mix-blend-mode: difference;
+      padding: 3px 6px 6px 6px;
+      max-height: 20px;
+      margin-top: 4px;
+
+      i.anticon-caret-down {
+        font-size: 10px;
+        cursor: pointer;
+        height: 20px;
+        margin-top: 1px;
+        margin-left: 3px;
+      }
+    }
+
   }
 
 }

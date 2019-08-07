@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import {
   Row, Col, Typography, Card, Tag, Input, Popover, Dropdown, Button, Radio, Icon, Checkbox,
 } from 'antd';
-
+import { cloneDeep } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
   empty, one, full, info,
@@ -75,13 +75,8 @@ class Filter extends React.Component {
     super();
     this.state = {
       type: null,
-      options: {
-        editable: null,
-        removable: null,
-        selectable: null,
-      },
-      data: {},
-      draft: {},
+      data: null,
+      draft: null,
       visible: null,
       selected: null,
       opened: null,
@@ -104,7 +99,7 @@ class Filter extends React.Component {
   }
 
   componentWillMount() {
-    const { data, options, visible } = this.props;
+    const { data, visible } = this.props;
     switch (data.type) {
       default:
       case FILTER_TYPE_GENERIC:
@@ -121,12 +116,7 @@ class Filter extends React.Component {
 
     this.setState({
       data,
-      draft: { ...data },
-      options: {
-        editable: options.editable || true,
-        selectable: options.selectable || false,
-        removable: options.removable || true,
-      },
+      draft: cloneDeep(data),
       opened: false,
       selected: false,
       visible,
@@ -134,19 +124,19 @@ class Filter extends React.Component {
   }
 
   isEditable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { editable } = options;
     return editable === true;
   }
 
   isSelectable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { selectable } = options;
     return selectable === true;
   }
 
   isRemovable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { removable } = options;
     return removable === true;
   }

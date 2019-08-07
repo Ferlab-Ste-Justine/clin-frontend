@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {
   Menu, Dropdown, Button, Icon,
 } from 'antd';
+import { cloneDeep, pullAllBy } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
 
@@ -15,7 +16,12 @@ class Statement extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: null,
+      draft: null,
+      original: null,
+      versions: null,
+      display: {
+        compoundOperators: null,
+      },
       options: {
         copyable: null,
         duplicatable: null,
@@ -40,67 +46,61 @@ class Statement extends React.Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.handleReorder = this.handleReorder.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
-
     this.createMenuComponent = this.createMenuComponent.bind(this);
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
   }
 
   componentWillMount() {
-    const { options, data } = this.props;
-
-    console.log(data)
-
+    const { data } = this.props;
     data.map((newDatum) => {
       newDatum.key = uuidv1();
       return newDatum;
     });
-
-    console.log(data)
-
     this.setState({
-      data,
-      options,
+      original: data,
+      draft: [...data],
+      versions: [],
     });
   }
 
   isCopyable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { copyable } = options;
     return copyable === true;
   }
 
   isDuplicatable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { duplicatable } = options;
     return duplicatable === true;
   }
 
   isEditable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { editable } = options;
     return editable === true;
   }
 
   isRemovable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { removable } = options;
     return removable === true;
   }
 
   isReorderable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { reorderable } = options;
     return reorderable === true;
   }
 
   isSelectable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { selectable } = options;
     return selectable === true;
   }
 
   isUndoable() {
-    const { options } = this.state;
+    const { options } = this.props;
     const { undoable } = options;
     return undoable === true;
   }
@@ -111,47 +111,49 @@ class Statement extends React.Component {
     }
   }
 
-  handleEdit(data) {
-
-    console.log(data)
-
+  handleEdit(query) {
     if (this.isEditable()) {
+      const { draft } = this.state;
+      draft[query.index] = query.data
       this.setState({
-        data
-      })
+        draft
+      } )
     }
   }
 
-  handleDuplicate(item) {
+  handleDuplicate(query) {
     if (this.isDuplicatable()) {
-      const {data} = this.state;
-      const index = item.index + 1;
-      data.splice(index, 0, item.data);
+      const { draft } = this.state;
+      const index = query.index + 1;
+      const clone = cloneDeep(item);
+      clone.draft.key = uuidv1();
+      clone.draft.index = index;
+      draft.splice(index, 0, clone.draft);
       this.setState({
-        data,
+        draft,
       });
     }
   }
 
-  handleRemove(item) {
+  handleRemove(query) {
     if (this.isRemovable()) {
-      const {data} = this.state;
-      data.splice(item.index, 1);
+      const { draft } = this.state;
+      const newDraft = pullAllBy(draft, [{ key: query.key }]);
       this.setState({
-        data,
+        draft: newDraft
       });
     }
   }
 
   handleReorder(sorted) {
     if (this.isReorderable()) {
-      const { data } = this.state;
+      const { draft } = this.state;
       const sortedIndices = sorted.map(clip => clip.index);
       const sortedData = sortedIndices.map((sortedIndice) => {
-        return data[sortedIndice];
+        return draft[sortedIndice];
       })
       this.setState({
-        data: sortedData
+        draft: sortedData
       })
     }
   }
@@ -162,12 +164,11 @@ class Statement extends React.Component {
     }
   }
 
-  handleUndo(item) {
+  handleUndo() {
     if (this.isUndoable()) {
       return true;
     }
   }
-
 
   /*
   handleMenuSelection({ key }) {
@@ -192,23 +193,26 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { data, options } = this.state;
+    const { draft, original } = this.state;
+    const { display, options } = this.props;
     const { reorderable } = options;
-    const queries = data.reduce((accumulator, item, index) => {
+    const queries = draft.reduce((accumulator, query, index) => {
       return [...accumulator, (
           <div className='query-container'>
             {/*<div className="actions"></div>*/}
             <Query
-              key={item.key}
+              draft={query}
+              original={original[index]}
+              display={display}
               index={index}
-              data={item}
-              options={options}
+              key={query.key}
               onCopyCallback={this.handleCopy}
               onEditCallback={this.handleEdit}
               onDuplicateCallback={this.handleDuplicate}
               onRemoveCallback={this.handleRemove}
               onSelectCallback={this.handleSelect}
               onUndoCallback={this.handleUndo}
+              options={options}
             />
           </div>
         ) ]
@@ -216,7 +220,12 @@ class Statement extends React.Component {
     return (
         <div className="statement">
           {reorderable ?
-              <DragSortableList key="sortable" items={queries.map((query, index) => { return {content: query, index} })} onSort={this.handleReorder} type="vertical"/> : queries
+              <DragSortableList
+                key="sortable"
+                type="vertical"
+                items={queries.map((query, index) => { return {content: query, index} })}
+                onSort={this.handleReorder}
+              /> : queries
           }
         </div>
     );
@@ -225,18 +234,22 @@ class Statement extends React.Component {
 
 Statement.propTypes = {
   data: PropTypes.shape([]).isRequired,
+  display: PropTypes.shape({}),
   options: PropTypes.shape({}),
 };
 
 Statement.defaultProps = {
+  display: {
+    compoundOperators: true,
+  },
   options: {
-    copyable: false,
-    duplicatable: false,
+    copyable: true,
+    duplicatable: true,
     editable: true,
-    removable: false,
-    reorderable: false,
-    selectable: false,
-    undoable: false,
+    removable: true,
+    reorderable: true,
+    selectable: true,
+    undoable: true,
   },
 };
 
