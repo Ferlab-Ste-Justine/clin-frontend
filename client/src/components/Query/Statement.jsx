@@ -52,6 +52,7 @@ class Statement extends React.Component {
     this.handleCheckQuery = this.handleCheckQuery.bind(this);
     this.handleCheckAllQueries = this.handleCheckAllQueries.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
+    this.handleRemoveChecked = this.handleRemoveChecked.bind(this);
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
   }
 
@@ -180,7 +181,6 @@ class Statement extends React.Component {
     }
   }
 
-
   handleCheckQuery(e) {
     const { checkedQueries, draft } = this.state;
     const { target } = e;
@@ -225,6 +225,22 @@ class Statement extends React.Component {
     }
   };
 
+  handleRemoveChecked() {
+    if (this.isRemovable()) {
+      const { checkedQueries, draft } = this.state;
+      const keysToRemove = checkedQueries.reduce((accumulator, key) => {
+        return [...accumulator, { key }];
+      }, [])
+      const newDraft = pullAllBy(draft, keysToRemove, 'key')
+      this.setState({
+        draft: newDraft,
+        checkedQueries: [],
+        queriesChecksAreIndeterminate: false,
+        queriesAreAllChecked: false,
+      });
+    }
+  }
+
   /*
   handleMenuSelection({ key }) {
     switch (key) {
@@ -250,7 +266,8 @@ class Statement extends React.Component {
   render() {
     const { draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const { display, options } = this.props;
-    const { reorderable } = options;
+    const { reorderable, removable } = options;
+    const checkedQueriesCount = checkedQueries.length;
     const queries = draft.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1
       const initial = find(original, { key: query.key }) || null;
@@ -285,10 +302,16 @@ class Statement extends React.Component {
           <div className="action-container">
             <Checkbox
               key="check-all"
+              className="selector"
               indeterminate={queriesChecksAreIndeterminate}
               onChange={this.handleCheckAllQueries}
               checked={queriesAreAllChecked}
             />
+            <span className="actions">
+              { removable && (
+                  <Button icon="delete" size="small" disabled={(checkedQueriesCount < 1) ? true : false} onClick={this.handleRemoveChecked}>Delete</Button>
+              ) }
+            </span>
           </div>
           <Divider />
           {reorderable ?
