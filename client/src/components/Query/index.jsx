@@ -19,11 +19,11 @@ const QUERY_ITEM_TYPE_OPERATOR = 'operator';
 const QUERY_ITEM_TYPE_SUBQUERY = 'subquery';
 
 const QUERY_ACTION_COPY = 'copy'
-const QUERY_ACTION_UNDO = 'undo'
+const QUERY_ACTION_UNDO_ALL = 'undo-all'
 const QUERY_ACTION_DELETE = 'delete'
 const QUERY_ACTION_DUPLICATE = 'duplicate'
-
-
+const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators'
+const QUERY_ACTION_VIEW_SQON = 'view-sqon'
 
 /*
     // Remove first item if it is an operator
@@ -46,6 +46,7 @@ class Query extends React.Component {
     super();
     this.state = {
       data: null,
+      display: null,
     };
     this.replaceItem = this.replaceItem.bind(this)
     this.removeItem = this.removeItem.bind(this)
@@ -63,7 +64,7 @@ class Query extends React.Component {
   }
 
   componentWillMount() {
-    const { draft } = this.props;
+    const { display, draft } = this.props;
     draft.instructions.map((datum) => {
       datum.key = uuidv1();
       return datum;
@@ -71,6 +72,7 @@ class Query extends React.Component {
     const clone = cloneDeep(draft);
     this.setState({
       data: clone,
+      display: {...display},
     });
   }
 
@@ -188,6 +190,7 @@ class Query extends React.Component {
   }
 
   handleMenuSelection({ key }) {
+    const { display } = this.state;
     switch(key) {
       case QUERY_ACTION_COPY:
         const sqon = JSON.stringify(this.sqon());
@@ -195,6 +198,18 @@ class Query extends React.Component {
         if (this.props.onCopyCallback) {
           this.props.onCopyCallback(sqon);
         }
+        break;
+      case QUERY_ACTION_VIEW_SQON:
+        display.viewableSqon = !display.viewableSqon
+        this.setState({
+          display,
+        })
+        break;
+      case QUERY_ACTION_COMPOUND_OPERATORS:
+        display.compoundOperators = !display.compoundOperators
+        this.setState({
+          display,
+        })
         break;
       case QUERY_ACTION_DELETE:
         if (this.props.onRemoveCallback) {
@@ -206,7 +221,7 @@ class Query extends React.Component {
           this.props.onDuplicateCallback(this.serialize());
         }
         break;
-      case QUERY_ACTION_UNDO:
+      case QUERY_ACTION_UNDO_ALL:
         const { draft } = this.props;
         const clone = cloneDeep(draft);
         this.setState({
@@ -224,40 +239,53 @@ class Query extends React.Component {
 
   createMenuComponent() {
     const { options } = this.props
-    const { copyable, duplicatable, removable, undoable } = options;
+    const { display } = this.state
+    const { copyable, duplicatable, editable, removable, undoable } = options;
+    const { compoundOperators, viewableSqon } = display;
     return (<Menu onClick={this.handleMenuSelection}>
-              {copyable && (
-                <Menu.Item key={QUERY_ACTION_COPY}>
-                  <Icon type="font-size" />
-                  Copy to Clipboard
-                </Menu.Item>)
-              }
-              {removable && (
-                <Menu.Item key={QUERY_ACTION_DELETE}>
-                  <Icon type="delete"/>
-                  Delete Query
-                </Menu.Item>)
-              }
-              {duplicatable && (
-                <Menu.Item key={QUERY_ACTION_DUPLICATE}>
-                  <Icon type="copy"/>
-                  Duplicate Query
-                </Menu.Item>)
-              }
-              {undoable && (
-                <Menu.Item key={QUERY_ACTION_UNDO}>
-                  <Icon type="undo" />
-                  Undo Changes
-                </Menu.Item>)
-              }
-        </Menu>)
+      {editable && (
+          <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
+            <Icon type={`eye${(viewableSqon ? '-invisible' : '')}` } />
+            {(viewableSqon ? 'Hide' : 'Show')} SQON
+          </Menu.Item>)
+      }
+      {copyable && (
+          <Menu.Item key={QUERY_ACTION_COPY}>
+            <Icon type="font-size" />
+            Copy SQON
+          </Menu.Item>)
+      }
+      {duplicatable && (
+        <Menu.Item key={QUERY_ACTION_DUPLICATE}>
+          <Icon type="file-add"/>
+          Duplicate
+        </Menu.Item>)
+      }
+      {undoable && (
+        <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
+          <Icon type="undo" />
+          Undo All
+        </Menu.Item>)
+      }
+      {removable && (
+          <Menu.Item key={QUERY_ACTION_DELETE}>
+            <Icon type="delete"/>
+            Delete
+          </Menu.Item>)
+      }
+        <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
+          <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle` } />
+          {(compoundOperators ? 'Maximize' : 'Minimize')} View
+        </Menu.Item>
+      </Menu>)
   }
 
   render() {
-    const { display, options, original, onSelectCallback } = this.props;
+    const { options, original, onSelectCallback } = this.props;
     const { copyable, duplicatable, removable, undoable } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
-    const { compoundOperators } = display;
+    const { display } = this.state;
+    const { compoundOperators, viewableSqon } = display;
     const draft = this.state.data;
     const isDirty = !isEqual(original, draft);
     let operatorsHandler = null;
@@ -279,7 +307,6 @@ class Query extends React.Component {
         <Input
             addonBefore="Title"
             className="title"
-            size="small"
             defaultValue={draft.title || ''}
             suffix={
               <Tooltip title="Identify this query using a title.">
@@ -369,6 +396,7 @@ Query.defaultProps = {
   key: 'query',
   display: {
     compoundOperators: false,
+    viewableSqon: false,
   },
   options: {
     copyable: true,

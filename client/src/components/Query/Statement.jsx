@@ -241,6 +241,7 @@ Statement.propTypes = {
 Statement.defaultProps = {
   display: {
     compoundOperators: true,
+    viewableSqon: false,
   },
   options: {
     copyable: true,
