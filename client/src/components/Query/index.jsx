@@ -24,6 +24,7 @@ const QUERY_ACTION_DELETE = 'delete'
 const QUERY_ACTION_DUPLICATE = 'duplicate'
 const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators'
 const QUERY_ACTION_VIEW_SQON = 'view-sqon'
+const QUERY_ACTION_TITLE = 'title'
 
 /*
     // Remove first item if it is an operator
@@ -65,14 +66,14 @@ class Query extends React.Component {
 
   componentWillMount() {
     const { display, draft } = this.props;
-    draft.instructions.map((datum) => {
-      datum.key = uuidv1();
-      return datum;
-    });
+    //draft.instructions.map((datum) => {
+    //  datum.key = uuidv1();
+    //  return datum;
+    //});
     const clone = cloneDeep(draft);
     this.setState({
       data: clone,
-      display: {...display},
+      display,
     });
   }
 
@@ -168,6 +169,10 @@ class Query extends React.Component {
     data.title = title;
     this.setState({
       data,
+    }, () => {
+      if (this.props.onEditCallback) {
+        this.props.onEditCallback(this.serialize());
+      }
     })
   }
 
@@ -191,6 +196,7 @@ class Query extends React.Component {
 
   handleMenuSelection({ key }) {
     const { display } = this.state;
+    const { data } = this.state;
     switch(key) {
       case QUERY_ACTION_COPY:
         const sqon = JSON.stringify(this.sqon());
@@ -211,6 +217,20 @@ class Query extends React.Component {
           display,
         })
         break;
+      case QUERY_ACTION_TITLE:;
+        if (!data.title) {
+          data.title = 'Untitled';
+        } else {
+          delete data.title
+        }
+        this.setState({
+          data,
+        }, () => {
+          if (this.props.onEditCallback) {
+            this.props.onEditCallback(this.serialize());
+          }
+        })
+        break;
       case QUERY_ACTION_DELETE:
         if (this.props.onRemoveCallback) {
           this.props.onRemoveCallback(this.serialize());
@@ -222,8 +242,8 @@ class Query extends React.Component {
         }
         break;
       case QUERY_ACTION_UNDO_ALL:
-        const { draft } = this.props;
-        const clone = cloneDeep(draft);
+        const { original } = this.props;
+        const clone = cloneDeep(original);
         this.setState({
           data: clone,
         }, () => {
@@ -238,11 +258,37 @@ class Query extends React.Component {
   }
 
   createMenuComponent() {
-    const { options } = this.props
-    const { display } = this.state
+    const { options, original } = this.props
+    const { display, data } = this.state
     const { copyable, duplicatable, editable, removable, undoable } = options;
     const { compoundOperators, viewableSqon } = display;
+    const hasTitle = !!data.title;
+
     return (<Menu onClick={this.handleMenuSelection}>
+      {editable && (
+          <Menu.Item key={QUERY_ACTION_TITLE}>
+            <Icon type={`file${(hasTitle ? '' : '-text')}` } />
+            {(hasTitle ? 'Remove' : 'Add')} Title
+          </Menu.Item>)
+      }
+      {duplicatable && (
+          <Menu.Item key={QUERY_ACTION_DUPLICATE}>
+            <Icon type="file-add"/>
+            Duplicate
+          </Menu.Item>)
+      }
+      {undoable && original && (
+        <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
+          <Icon type="undo" />
+          Undo All
+        </Menu.Item>)
+      }
+      {removable && (
+          <Menu.Item key={QUERY_ACTION_DELETE}>
+            <Icon type="delete"/>
+            Delete
+          </Menu.Item>)
+      }
       {editable && (
           <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
             <Icon type={`eye${(viewableSqon ? '-invisible' : '')}` } />
@@ -255,28 +301,10 @@ class Query extends React.Component {
             Copy SQON
           </Menu.Item>)
       }
-      {duplicatable && (
-        <Menu.Item key={QUERY_ACTION_DUPLICATE}>
-          <Icon type="file-add"/>
-          Duplicate
-        </Menu.Item>)
-      }
-      {undoable && (
-        <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
-          <Icon type="undo" />
-          Undo All
-        </Menu.Item>)
-      }
-      {removable && (
-          <Menu.Item key={QUERY_ACTION_DELETE}>
-            <Icon type="delete"/>
-            Delete
-          </Menu.Item>)
-      }
-        <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
-          <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle` } />
-          {(compoundOperators ? 'Maximize' : 'Minimize')} View
-        </Menu.Item>
+      <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
+        <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle` } />
+        {(compoundOperators ? 'Maximize' : 'Minimize')} View
+      </Menu.Item>
       </Menu>)
   }
 
@@ -284,14 +312,13 @@ class Query extends React.Component {
     const { options, original, onSelectCallback } = this.props;
     const { copyable, duplicatable, removable, undoable } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
-    const { display } = this.state;
+    const { display, data } = this.state;
     const { compoundOperators, viewableSqon } = display;
-    const draft = this.state.data;
-    const title = draft.title;
-    const isDirty = !isEqual(original, draft);
+    const title = !!data.title;
+    const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
     if (compoundOperators) {
-      const operator = find(draft.instructions, ['type', QUERY_ITEM_TYPE_OPERATOR]);
+      const operator = find(data.instructions, ['type', QUERY_ITEM_TYPE_OPERATOR]);
       if (operator) {
         operatorsHandler = (
           <Operator
@@ -303,13 +330,13 @@ class Query extends React.Component {
         )
       }
     }
-    return draft.instructions ? (
+    return data.instructions ? (
       <div className="query" style={{ border: `1px ${isDirty ? 'dashed #CCCCCC' : 'solid #EEEEEE'}` }}>
         {title &&
           <Input
               size={"small"}
               className="title"
-              defaultValue={draft.title || ''}
+              defaultValue={data.title || ''}
               suffix={
                 <Tooltip title="Identify this query using a title.">
                   <Icon type="info-circle"/>
@@ -319,7 +346,7 @@ class Query extends React.Component {
           />
         }
         <span className="instructions">
-          { draft.instructions.map((item, index) => {
+          { data.instructions.map((item, index) => {
             switch (item.type) {
               case QUERY_ITEM_TYPE_OPERATOR:
                 if (compoundOperators) {

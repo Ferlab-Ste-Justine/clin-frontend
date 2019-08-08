@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import {
   Menu, Dropdown, Button, Icon, Checkbox, Divider,
 } from 'antd';
-import { cloneDeep, pullAllBy, pull } from 'lodash';
+import { cloneDeep, find, pull, pullAllBy, } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
 
@@ -133,10 +133,12 @@ class Statement extends React.Component {
     if (this.isDuplicatable()) {
       const { draft } = this.state;
       const index = query.index + 1;
-      const clone = cloneDeep(item);
-      clone.draft.key = uuidv1();
-      clone.draft.index = index;
-      draft.splice(index, 0, clone.draft);
+      const clone = cloneDeep(query);
+      clone.data.key = uuidv1();
+      if (clone.data.title) {
+        clone.data.title += ' Copy';
+      }
+      draft.splice(index, 0, clone.data);
       this.setState({
         draft,
       });
@@ -251,6 +253,7 @@ class Statement extends React.Component {
     const { reorderable } = options;
     const queries = draft.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1
+      const initial = find(original, { key: query.key }) || null;
       return [...accumulator, (
           <div className='query-container'>
             <div className="selector">
@@ -262,7 +265,7 @@ class Statement extends React.Component {
             </div>
             <Query
               draft={query}
-              original={original[index]}
+              original={initial}
               display={display}
               index={index}
               key={query.key}
