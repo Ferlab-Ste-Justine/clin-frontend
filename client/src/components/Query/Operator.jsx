@@ -93,7 +93,7 @@ class Operator extends React.Component {
       >
         { type }
         { this.isEditable() && (
-        <Dropdown overlay={this.createMenuComponent} trigger={['click']} placement="bottomCenter">
+        <Dropdown overlay={this.createMenuComponent} trigger={['click']}>
           { <Icon type="caret-down" /> }
         </Dropdown>
         ) }

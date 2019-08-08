@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { isEqual, find, filter, difference } from 'lodash';
 import {
-  Dropdown, Button, Icon, Menu, Input, Tooltip,
+  Dropdown, Button, Icon, Menu, Input, Tooltip, Divider,
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import uuidv1 from 'uuid/v1';
@@ -246,7 +246,7 @@ class Query extends React.Component {
       {editable && (
           <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
             <Icon type={`eye${(viewableSqon ? '-invisible' : '')}` } />
-            {(viewableSqon ? 'Hide' : 'Show')} SQON
+            {(viewableSqon ? 'Hide' : 'Show')} Query
           </Menu.Item>)
       }
       {copyable && (
@@ -287,6 +287,7 @@ class Query extends React.Component {
     const { display } = this.state;
     const { compoundOperators, viewableSqon } = display;
     const draft = this.state.data;
+    const title = draft.title;
     const isDirty = !isEqual(original, draft);
     let operatorsHandler = null;
     if (compoundOperators) {
@@ -303,18 +304,20 @@ class Query extends React.Component {
       }
     }
     return draft.instructions ? (
-      <div className="query" style={{ border: `1px ${isDirty ? 'dashed #085798' : 'solid #CCCCCC'}` }}>
-        <Input
-            addonBefore="Title"
-            className="title"
-            defaultValue={draft.title || ''}
-            suffix={
-              <Tooltip title="Identify this query using a title.">
-                <Icon type="info-circle" />
-              </Tooltip>
-            }
-            onBlur={this.handleTitleChange}
-        />
+      <div className="query" style={{ border: `1px ${isDirty ? 'dashed #CCCCCC' : 'solid #EEEEEE'}` }}>
+        {title &&
+          <Input
+              size={"small"}
+              className="title"
+              defaultValue={draft.title || ''}
+              suffix={
+                <Tooltip title="Identify this query using a title.">
+                  <Icon type="info-circle"/>
+                </Tooltip>
+              }
+              onBlur={this.handleTitleChange}
+          />
+        }
         <span className="instructions">
           { draft.instructions.map((item, index) => {
             switch (item.type) {
@@ -361,18 +364,17 @@ class Query extends React.Component {
             }
           })}
         </span>
-        { hasMenu && (
         <span className="actions">
-          <Dropdown overlay={this.createMenuComponent}>
-            <Icon type="more" />
-          </Dropdown>
+          <Divider type="vertical"/>
+          { compoundOperators && (
+              operatorsHandler
+          ) }
+          { hasMenu && (
+              <Dropdown overlay={this.createMenuComponent}>
+                <Icon type="more" />
+              </Dropdown>
+          ) }
         </span>
-        ) }
-        { compoundOperators && operatorsHandler && (
-            <span className="actions">
-              {operatorsHandler}
-            </span>
-        ) }
       </div>
     ) : null;
   }

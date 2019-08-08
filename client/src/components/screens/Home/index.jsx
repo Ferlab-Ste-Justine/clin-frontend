@@ -98,7 +98,6 @@ const queryA = {
 };
 
 const queryB = {
-  title: 'Query B',
   instructions: [
     {
       type: 'filter',
