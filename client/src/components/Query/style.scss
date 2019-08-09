@@ -1,8 +1,8 @@
 div.statement {
+  width: 100%;
 
   div.action-container {
     display: flex;
-    width: 100%;
     justify-content: space-between;
     align-items: center;
 
@@ -17,9 +17,6 @@ div.statement {
       }
     }
 
-
-
-
   }
 
   div.ant-divider {
@@ -28,7 +25,6 @@ div.statement {
 
   div.query-container {
     display: flex;
-    width: 100%;
     margin-bottom: 10px;
 
     div.selector {
@@ -55,7 +51,8 @@ div.statement {
         }
       }
     }
-
+    width: 100%;
+    padding-right: 4em;
   }
 
   div.placeholder {
@@ -64,7 +61,6 @@ div.statement {
 }
 
 div.query {
-
   width: 100%;
   padding: 5px;
   display: flex;
@@ -76,7 +72,7 @@ div.query {
   }
 
   span.instructions {
-    max-width: 87%;
+    width: 87%;
     margin-top: -2px;
     > * {
       margin-top: 2px;

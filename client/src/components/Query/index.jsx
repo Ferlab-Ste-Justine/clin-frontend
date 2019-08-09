@@ -6,7 +6,6 @@ import {
   Dropdown, Button, Icon, Menu, Input, Tooltip, Divider,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
 
 import Filter from './Filter/index';
@@ -62,6 +61,7 @@ class Query extends React.Component {
     this.createMenuComponent = this.createMenuComponent.bind(this)
     this.handleMenuSelection = this.handleMenuSelection.bind(this)
     this.handleTitleChange = this.handleTitleChange.bind(this)
+    this.handleAdvancedChange = this.handleAdvancedChange.bind(this)
   }
 
   componentWillMount() {
@@ -76,6 +76,8 @@ class Query extends React.Component {
       display,
     });
   }
+
+
 
   replaceItem(item, index = null) {
     const { data } = this.state;
@@ -176,6 +178,21 @@ class Query extends React.Component {
     })
   }
 
+  handleAdvancedChange(e) {
+
+
+
+    console.log(e)
+
+
+
+    //this.setState({
+    //  data: editor.updated_src,
+    //})
+
+
+  }
+
   sqon() {
     const { data } = this.state;
     const sqon = data.instructions.map((datum) => {
@@ -258,7 +275,7 @@ class Query extends React.Component {
   }
 
   createMenuComponent() {
-    const { options, original } = this.props
+    const { options, original, key } = this.props
     const { display, data } = this.state
     const { copyable, duplicatable, editable, removable, undoable } = options;
     const { compoundOperators, viewableSqon } = display;
@@ -271,30 +288,6 @@ class Query extends React.Component {
             {(hasTitle ? 'Remove' : 'Add')} Title
           </Menu.Item>)
       }
-      {duplicatable && (
-          <Menu.Item key={QUERY_ACTION_DUPLICATE}>
-            <Icon type="file-add"/>
-            Duplicate
-          </Menu.Item>)
-      }
-      {undoable && original && (
-        <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
-          <Icon type="undo" />
-          Undo All
-        </Menu.Item>)
-      }
-      {removable && (
-          <Menu.Item key={QUERY_ACTION_DELETE}>
-            <Icon type="delete"/>
-            Delete
-          </Menu.Item>)
-      }
-      {editable && (
-          <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
-            <Icon type={`eye${(viewableSqon ? '-invisible' : '')}` } />
-            {(viewableSqon ? 'Hide' : 'Show')} Query
-          </Menu.Item>)
-      }
       {copyable && (
           <Menu.Item key={QUERY_ACTION_COPY}>
             <Icon type="font-size" />
@@ -305,11 +298,35 @@ class Query extends React.Component {
         <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle` } />
         {(compoundOperators ? 'Maximize' : 'Minimize')} View
       </Menu.Item>
+      {duplicatable && (
+          <Menu.Item key={QUERY_ACTION_DUPLICATE}>
+            <Icon type="file-add"/>
+            Duplicate
+          </Menu.Item>)
+      }
+      {undoable && original && (
+          <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
+            <Icon type="undo" />
+            Revert Changes
+          </Menu.Item>)
+      }
+      {editable && (
+          <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
+            <Icon type={`eye${(viewableSqon ? '-invisible' : '')}` } />
+            Advanced Editor
+          </Menu.Item>)
+      }
+      {removable && (
+          <Menu.Item key={QUERY_ACTION_DELETE}>
+            <Icon type="delete"/>
+            Delete
+          </Menu.Item>)
+      }
       </Menu>)
   }
 
   render() {
-    const { options, original, onSelectCallback } = this.props;
+    const { options, original, key, onSelectCallback } = this.props;
     const { copyable, duplicatable, removable, undoable } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { display, data } = this.state;
@@ -346,53 +363,62 @@ class Query extends React.Component {
           />
         }
         <span className="instructions">
-          { data.instructions.map((item, index) => {
-            switch (item.type) {
-              case QUERY_ITEM_TYPE_OPERATOR:
-                if (compoundOperators) {
-                  return null;
-                }
-                return (
-                    <Operator
+            { !viewableSqon && data.instructions.map((item, index) => {
+              switch (item.type) {
+                case QUERY_ITEM_TYPE_OPERATOR:
+                  if (compoundOperators) {
+                    return null;
+                  }
+                  return (
+                      <Operator
+                          key={item.key}
+                          index={index}
+                          options={options}
+                          data={item.data}
+                          onEditCallback={this.handleOperatorChange}
+                          onRemoveCallback={this.handleOperatorRemoval}
+                      />
+                  );
+                case QUERY_ITEM_TYPE_FILTER:
+                  return (
+                      <Filter
+                          key={item.key}
+                          index={index}
+                          options={options}
+                          data={item.data}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                      />
+                  );
+                case QUERY_ITEM_TYPE_SUBQUERY:
+                  return (
+                      <Subquery
                         key={item.key}
                         index={index}
                         options={options}
                         data={item.data}
-                        onEditCallback={this.handleOperatorChange}
-                        onRemoveCallback={this.handleOperatorRemoval}
-                    />
-                );
-              case QUERY_ITEM_TYPE_FILTER:
-                return (
-                    <Filter
-                        key={item.key}
-                        index={index}
-                        options={options}
-                        data={item.data}
-                        onEditCallback={this.handleFilterChange}
-                        onRemoveCallback={this.handleFilterRemoval}
+                        onEditCallback={this.handleSubqueryChange}
+                        onRemoveCallback={this.handleSubqueryRemoval}
                         onSelectCallback={onSelectCallback}
-                    />
-                );
-              case QUERY_ITEM_TYPE_SUBQUERY:
-                return (
-                    <Subquery
-                      key={item.key}
-                      index={index}
-                      options={options}
-                      data={item.data}
-                      onEditCallback={this.handleSubqueryChange}
-                      onRemoveCallback={this.handleSubqueryRemoval}
-                      onSelectCallback={onSelectCallback}
-                    />
-                );
-              default:
-                return null;
-            }
-          })}
+                      />
+                  );
+                default:
+                  return null;
+              }
+            })}
+          { viewableSqon && (
+              <Input.TextArea
+                  value={JSON.stringify(this.sqon())}
+                  className="no-drag"
+                  rows={4}
+                  onChange={this.handleAdvancedChange}
+              />
+          ) }
+          &nbsp;
         </span>
         <span className="actions">
-          <Divider type="vertical"/>
+          { hasMenu && (<Divider type="vertical"/>) }
           { compoundOperators && (
               operatorsHandler
           ) }

@@ -12,6 +12,15 @@ import DragSortableList from 'react-drag-sortable';
 import Query from './index'
 
 
+const DEFAULT_QUERY = {
+  instructions: [{
+    type: 'operator',
+    data: {
+      type: 'and',
+    },
+  }]
+};
+
 class Statement extends React.Component {
   constructor() {
     super();
@@ -136,9 +145,6 @@ class Statement extends React.Component {
       const index = query.index + 1;
       const clone = cloneDeep(query);
       clone.data.key = uuidv1();
-      if (clone.data.title) {
-        clone.data.title += ' Copy';
-      }
       draft.splice(index, 0, clone.data);
       this.setState({
         draft,
@@ -322,6 +328,28 @@ class Statement extends React.Component {
               onSort={this.handleReorder}
             /> : queries
           }
+          <div className='query-container'>
+            <div className="selector">
+              <Checkbox disabled />
+            </div>
+            <Query
+                draft={cloneDeep(DEFAULT_QUERY)}
+                original={null}
+                display={display}
+                key = {uuidv1()}
+                index={queries.length}
+                options={{
+                  copyable: true,
+                  duplicatable: false,
+                  editable: true,
+                  removable: false,
+                  reorderable: false,
+                  selectable: false,
+                  undoable: false,
+                }}
+                onEditCallback={this.handleEdit}
+            />
+          </div>
         </div>
     );
   }

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
@@ -167,11 +169,13 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
         <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
         <br />
 
+        {/*
         <LoginForm
           appIsLoading={showLoadingAnimation}
           handleAuthentication={actions.loginUser}
           handlePasswordRecovery={actions.recoverUser}
         />
+        */}
 
       </Card>
       <Footer />
