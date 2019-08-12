@@ -1,7 +1,7 @@
 /* eslint-disable  */ // react/destructuring-assignment, react/no-array-index-key
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isEqual, pullAllBy } from 'lodash';
+import { isEqual, filter } from 'lodash';
 import {
   Dropdown, Button, Icon, Menu, Input, Tooltip, Divider,
 } from 'antd';
@@ -25,12 +25,13 @@ const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators'
 const QUERY_ACTION_VIEW_SQON = 'view-sqon'
 const QUERY_ACTION_TITLE = 'title'
 
-const sanitizeOperators = (data) => {
-  // There musn't be any subsequent operators
+const sanitizeOperators = (instructions) => {
+  // @NOTE No subsequent operators
   let lastOperatorIndex = null;
-  const sanitizedData = data.filter((datum, index) => {
-    if (datum.type === QUERY_ITEM_TYPE_OPERATOR) {
-      if ( lastOperatorIndex !== null && lastOperatorIndex === (index - 1) ) {
+  const sanitizedInstructions = instructions.filter((instruction, index) => {
+    if (instruction.type === QUERY_ITEM_TYPE_OPERATOR) {
+      if ( lastOperatorIndex !== null && ((lastOperatorIndex+1) === index) ) {
+        console.log(instruction)
         lastOperatorIndex = index;
         return false;
       }
@@ -39,20 +40,17 @@ const sanitizeOperators = (data) => {
     return true;
   });
 
-  // No dangling operator as a query prefix
-  if (sanitizedData[0] && sanitizedData[0].type === QUERY_ITEM_TYPE_OPERATOR) {
-    sanitizedData.splice(0, 1);
+  // @NOTE No prefixing operator but at least one operator
+  if (sanitizedInstructions.length > 1 && sanitizedInstructions[0].type === QUERY_ITEM_TYPE_OPERATOR) {
+    const prefix = sanitizedInstructions.shift();
+    const operators = filter(sanitizedInstructions, { 'type': QUERY_ITEM_TYPE_OPERATOR })
+    const operatorsCount = operators.length;
+    if (operatorsCount < 1) {
+      sanitizedInstructions.push(prefix);
+    }
   }
 
-  // There must be at least one operator in the query
-  const operators = pullAllBy(sanitizedData, [{ 'type': QUERY_ITEM_TYPE_OPERATOR }], 'type')
-  const operatorsCount = operators.length;
-  if (operatorsCount < 1) {
-    console.log(' there was not at least one operator')
-    data.push(DEFAULT_EMPTY_OPERATOR)
-  }
-
-  return sanitizedData
+  return sanitizedInstructions
 }
 
 
@@ -115,11 +113,7 @@ class Query extends React.Component {
     const { onEditCallback, onRemoveCallback } = this.props;
     const index = instruction.index;
     data.instructions.splice(index, 1);
-    sanitizeOperators(data.instructions);
-
-    console.log(' ___ AFTER SANITIZE ___');
-    console.log(data.instructions)
-
+    data.instructions = sanitizeOperators(data.instructions);
     if (data.instructions.length > 0) {
       this.setState({
         data,
