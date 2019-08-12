@@ -1,6 +1,6 @@
 div.statement {
-  width: 100%;
 
+  width: 100%;
   div.action-container {
     display: flex;
     justify-content: space-between;
@@ -42,7 +42,6 @@ div.statement {
   }
 
   div.draggable {
-    width: 100%;
     cursor: grab;
   }
 

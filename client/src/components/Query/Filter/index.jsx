@@ -17,13 +17,13 @@ import {
 
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_SPECIFIC = 'specific';
-export const FILTER_OPERATOR_TYPE_ALL = 'all';
-export const FILTER_OPERATOR_TYPE_ONE = 'one';
-export const FILTER_OPERATOR_TYPE_NONE = 'none';
+export const FILTER_OPERAND_TYPE_ALL = 'all';
+export const FILTER_OPERAND_TYPE_ONE = 'one';
+export const FILTER_OPERAND_TYPE_NONE = 'none';
 
 const createPopoverByFilterType = (state) => {
   const { data } = state;
-  const { type, operator } = data;
+  const { type, operand } = data;
   let content = null;
   let legend = null;
 
@@ -31,22 +31,22 @@ const createPopoverByFilterType = (state) => {
     case FILTER_TYPE_GENERIC:
       content = (
         <div>
-          <Typography.Text>FILTER is OPERATOR</Typography.Text>
+          <Typography.Text>{operand}</Typography.Text>
           <ul>
             <li>VALUE 1</li>
             <li>VALUE 3</li>
           </ul>
         </div>
       );
-      switch (operator) {
+      switch (operand) {
         default:
-        case FILTER_OPERATOR_TYPE_ALL:
+        case FILTER_OPERAND_TYPE_ALL:
           legend = (<IconKit size={16} icon={full} />);
           break;
-        case FILTER_OPERATOR_TYPE_ONE:
+        case FILTER_OPERAND_TYPE_ONE:
           legend = (<IconKit size={16} icon={one} />);
           break;
-        case FILTER_OPERATOR_TYPE_NONE:
+        case FILTER_OPERAND_TYPE_NONE:
           legend = (<IconKit size={16} icon={empty} />);
           break;
       }
@@ -103,8 +103,8 @@ class Filter extends React.Component {
     switch (data.type) {
       default:
       case FILTER_TYPE_GENERIC:
-        if (!data.operator) {
-          data.operator = FILTER_OPERATOR_TYPE_ALL;
+        if (!data.operand) {
+          data.operand = FILTER_OPERAND_TYPE_ALL;
         }
         if (!data.values) {
           data.values = [];
@@ -204,7 +204,7 @@ class Filter extends React.Component {
 
   createSubMenuByFilterType() {
     const { draft } = this.state;
-    const { operator, type } = draft;
+    const { operand, type } = draft;
 
     switch (type) {
       case 'generic':
@@ -217,11 +217,11 @@ class Filter extends React.Component {
           }
         };
 
-        const handleOperatorChange = (e) => {
-          console.log('+++ handleOperatorChange');
+        const handleOperandChange = (e) => {
+          console.log('+++ handleOperandChange');
           console.log(e);
           if (this.isEditable()) {
-            draft.operator = e.target.value;
+            draft.operand = e.target.value;
             this.setState({ draft });
           }
         };
@@ -243,10 +243,10 @@ class Filter extends React.Component {
           <>
             <Row>
               <Col span={24}>
-                <Radio.Group size="small" type="primary" value={operator} onChange={handleOperatorChange}>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERATOR_TYPE_ALL}>All Of</Radio.Button>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERATOR_TYPE_ONE}>At Least One</Radio.Button>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERATOR_TYPE_NONE}>Not Any Of</Radio.Button>
+                <Radio.Group size="small" type="primary" value={operand} onChange={handleOperandChange}>
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ALL}>All Of</Radio.Button>
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ONE}>At Least One</Radio.Button>
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_NONE}>Not Any Of</Radio.Button>
                 </Radio.Group>
               </Col>
             </Row>

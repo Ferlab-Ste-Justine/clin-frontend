@@ -1,7 +1,7 @@
 /* eslint-disable  */ // react/destructuring-assignment, react/no-array-index-key
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isEqual, find, filter, difference } from 'lodash';
+import { isEqual, pullAllBy } from 'lodash';
 import {
   Dropdown, Button, Icon, Menu, Input, Tooltip, Divider,
 } from 'antd';
@@ -9,12 +9,12 @@ import { cloneDeep } from 'lodash';
 import copy from 'copy-to-clipboard';
 
 import Filter from './Filter/index';
-import Operator from './Operator';
+import Operator, { DEFAULT_EMPTY_OPERATOR } from './Operator';
 import Subquery from './Subquery';
 import './style.scss';
 
 const QUERY_ITEM_TYPE_FILTER = 'filter';
-const QUERY_ITEM_TYPE_OPERATOR = 'operator';
+export const QUERY_ITEM_TYPE_OPERATOR = 'operator';
 const QUERY_ITEM_TYPE_SUBQUERY = 'subquery';
 
 const QUERY_ACTION_COPY = 'copy'
@@ -25,19 +25,34 @@ const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators'
 const QUERY_ACTION_VIEW_SQON = 'view-sqon'
 const QUERY_ACTION_TITLE = 'title'
 
-/*
-    // Remove first item if it is an operator
-    if (newData[0] && newData[0].type === QUERY_ITEM_TYPE_OPERATOR) {
-      newData.splice(0, 1);
-    }
-
- */
-
 const sanitizeOperators = (data) => {
-  while (data[0] && data[0].type === QUERY_ITEM_TYPE_OPERATOR) {
-    data.splice(0, 1);
+  // There musn't be any subsequent operators
+  let lastOperatorIndex = null;
+  const sanitizedData = data.filter((datum, index) => {
+    if (datum.type === QUERY_ITEM_TYPE_OPERATOR) {
+      if ( lastOperatorIndex !== null && lastOperatorIndex === (index - 1) ) {
+        lastOperatorIndex = index;
+        return false;
+      }
+      lastOperatorIndex = index;
+    }
+    return true;
+  });
+
+  // No dangling operator as a query prefix
+  if (sanitizedData[0] && sanitizedData[0].type === QUERY_ITEM_TYPE_OPERATOR) {
+    sanitizedData.splice(0, 1);
   }
-  return data
+
+  // There must be at least one operator in the query
+  const operators = pullAllBy(sanitizedData, [{ 'type': QUERY_ITEM_TYPE_OPERATOR }], 'type')
+  const operatorsCount = operators.length;
+  if (operatorsCount < 1) {
+    console.log(' there was not at least one operator')
+    data.push(DEFAULT_EMPTY_OPERATOR)
+  }
+
+  return sanitizedData
 }
 
 
@@ -101,6 +116,10 @@ class Query extends React.Component {
     const index = instruction.index;
     data.instructions.splice(index, 1);
     sanitizeOperators(data.instructions);
+
+    console.log(' ___ AFTER SANITIZE ___');
+    console.log(data.instructions)
+
     if (data.instructions.length > 0) {
       this.setState({
         data,
@@ -275,7 +294,7 @@ class Query extends React.Component {
   }
 
   createMenuComponent() {
-    const { options, original, key } = this.props
+    const { options, original } = this.props
     const { display, data } = this.state
     const { copyable, duplicatable, editable, removable, undoable } = options;
     const { compoundOperators, viewableSqon } = display;

@@ -1,12 +1,22 @@
+/* eslint-disable import/no-cycle */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Tag, Menu, Dropdown, Icon,
 } from 'antd';
 
+import { QUERY_ITEM_TYPE_OPERATOR } from './index';
+
 
 export const OPERATOR_TYPE_AND = 'and';
 export const OPERATOR_TYPE_OR = 'or';
+
+export const DEFAULT_EMPTY_OPERATOR = {
+  type: QUERY_ITEM_TYPE_OPERATOR,
+  data: {
+    type: OPERATOR_TYPE_AND,
+  },
+};
 
 
 class Operator extends React.Component {

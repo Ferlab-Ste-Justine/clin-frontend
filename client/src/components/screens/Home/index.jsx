@@ -29,7 +29,7 @@ const queryA = {
       data: {
         id: 'study',
         type: 'generic',
-        operator: 'all',
+        operand: 'all',
         values: ['My Study', 'Your Study'],
       },
     },
@@ -44,7 +44,7 @@ const queryA = {
       data: {
         id: 'proband',
         type: 'generic',
-        operator: 'one',
+        operand: 'one',
         values: ['true'],
       },
     },
@@ -80,7 +80,7 @@ const queryA = {
       data: {
         id: 'proband',
         type: 'generic',
-        operator: 'one',
+        operand: 'one',
         values: ['true'],
       },
     },
@@ -106,7 +106,7 @@ const queryB = {
       data: {
         id: 'study',
         type: 'generic',
-        operator: 'none',
+        operand: 'none',
         values: ['My Study'],
       },
     },
@@ -121,7 +121,7 @@ const queryB = {
       data: {
         id: 'proband',
         type: 'generic',
-        operator: 'all',
+        operand: 'all',
         values: ['true'],
       },
     },
