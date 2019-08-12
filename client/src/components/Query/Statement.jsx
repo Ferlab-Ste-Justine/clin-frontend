@@ -278,7 +278,7 @@ class Statement extends React.Component {
       const isChecked = checkedQueries.indexOf(query.key) !== -1
       const initial = find(original, { key: query.key }) || null;
       return [...accumulator, (
-          <div className='query-container'>
+          <div className={`query-container${(isChecked ? ' selected' : '')}`}>
             <div className="selector">
               <Checkbox
                 value={query.key}

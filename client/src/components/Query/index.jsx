@@ -348,10 +348,11 @@ class Query extends React.Component {
       }
     }
     return data.instructions ? (
-      <div className="query" style={{ border: `1px ${isDirty ? 'dashed #CCCCCC' : 'solid #EEEEEE'}` }}>
+      <div className={`query${(isDirty ? ' dirty' : '')}`}>
+
         {title &&
           <Input
-              size={"small"}
+              size={'small'}
               className="title"
               defaultValue={data.title || ''}
               suffix={

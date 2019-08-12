@@ -12,6 +12,7 @@ div.statement {
 
     span.actions {
       padding: 0;
+
       button.ant-btn {
         margin-left: 10px;
       }
@@ -31,28 +32,39 @@ div.statement {
       margin-right: 10px;
       margin-top: -1px;
     }
+
+    &.selected {
+      div.query {
+        background-color: #FAFAFA;
+      }
+    }
+
   }
 
   div.draggable {
+    width: 100%;
     cursor: grab;
   }
 
   div.dragged {
     cursor: grabbing;
-    filter: invert(50);
+
     div.query {
 
+      filter: invert(0.1);
       div.items {
         border: none !important;
       }
+
       div.actions {
         i {
           display: none;
         }
       }
     }
-    width: 100%;
+
     padding-right: 4em;
+    max-width: 85%
   }
 
   div.placeholder {
@@ -67,6 +79,12 @@ div.query {
   flex-wrap: wrap;
   justify-content: space-between;
 
+  border: 1px solid #CCCCCC;
+
+  &.dirty {
+    border: 1px dashed #CCCCCC
+  }
+
   span.title {
     margin-bottom: 5px;
   }
@@ -74,6 +92,7 @@ div.query {
   span.instructions {
     width: 87%;
     margin-top: -2px;
+
     > * {
       margin-top: 2px;
     }
