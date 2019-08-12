@@ -1,23 +1,19 @@
-/* eslint-disable import/no-cycle */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Tag, Menu, Dropdown, Icon,
 } from 'antd';
 
-import { QUERY_ITEM_TYPE_OPERATOR } from './index';
 
-
+export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
 export const OPERATOR_TYPE_OR = 'or';
-
 export const DEFAULT_EMPTY_OPERATOR = {
-  type: QUERY_ITEM_TYPE_OPERATOR,
+  type: INSTRUCTION_TYPE_OPERATOR,
   data: {
     type: OPERATOR_TYPE_AND,
   },
 };
-
 
 class Operator extends React.Component {
   constructor() {
@@ -34,7 +30,6 @@ class Operator extends React.Component {
     this.serialize = this.serialize.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleApply = this.handleApply.bind(this);
-    this.handleClose = this.handleClose.bind(this);
   }
 
   componentWillMount() {
@@ -74,15 +69,6 @@ class Operator extends React.Component {
     }
   }
 
-  handleClose() {
-    if (this.isEditable()) {
-      const { onRemoveCallback } = this.props;
-      this.setState({
-        visible: false,
-      }, () => { onRemoveCallback(this.serialize()); });
-    }
-  }
-
   createMenuComponent() {
     return (
       <Menu onClick={this.handleApply}>
@@ -116,7 +102,6 @@ Operator.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onEditCallback: PropTypes.func,
-  onRemoveCallback: PropTypes.func,
   visible: PropTypes.bool,
 };
 
@@ -125,7 +110,6 @@ Operator.defaultProps = {
     editable: false,
   },
   onEditCallback: () => {},
-  onRemoveCallback: () => {},
   visible: true,
 };
 

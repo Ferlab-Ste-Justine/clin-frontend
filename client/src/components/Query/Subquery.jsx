@@ -10,6 +10,8 @@ import { chart } from 'react-icons-kit/entypo';
 export const SUBQUERY_TYPE_GENERIC = 'generic';
 
 
+export const INSTRUCTION_TYPE_SUBQUERY = 'subquery';
+
 const createPopoverBySubqueryType = (state) => {
   const { data } = state;
   const { type } = data;

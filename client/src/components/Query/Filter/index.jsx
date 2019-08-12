@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, no-case-declarations */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -12,9 +10,8 @@ import {
   empty, one, full, info,
 } from 'react-icons-kit/entypo';
 
-// import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-
+export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_SPECIFIC = 'specific';
 export const FILTER_OPERAND_TYPE_ALL = 'all';
@@ -193,7 +190,7 @@ class Filter extends React.Component {
     if (this.isSelectable() && !this.isOpened()) {
       const { onSelectCallback } = this.props;
       this.setState({
-        selected: !this.isSelected()
+        selected: !this.isSelected(),
       }, () => { onSelectCallback(this.serialize()); });
     }
   }

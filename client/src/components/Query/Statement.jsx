@@ -3,22 +3,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Dropdown, Button, Icon, Checkbox, Divider,
+  Menu, Button, Checkbox, Divider, Tooltip,
 } from 'antd';
-import { cloneDeep, find, pull, pullAllBy, } from 'lodash';
+import {
+  cloneDeep, find, pull, pullAllBy,
+} from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
 
-import Query from './index'
+import Query, { DEFAULT_EMPTY_QUERY } from './index';
 
 
-const DEFAULT_QUERY = {
-  instructions: [{
-    type: 'operator',
-    data: {
-      type: 'and',
-    },
-  }]
+const DEFAULT_INSTRUCTIONS = {
+  instructions: DEFAULT_EMPTY_QUERY,
 };
 
 class Statement extends React.Component {
@@ -31,9 +28,7 @@ class Statement extends React.Component {
       checkedQueries: null,
       queriesChecksAreIndeterminate: null,
       queriesAreAllChecked: null,
-      display: {
-        compoundOperators: null,
-      },
+      display: null,
       options: {
         copyable: null,
         duplicatable: null,
@@ -53,6 +48,7 @@ class Statement extends React.Component {
     this.isUndoable = this.isUndoable.bind(this);
     this.handleCopy = this.handleCopy.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
+    this.handleDisplay = this.handleDisplay.bind(this);
     this.handleDuplicate = this.handleDuplicate.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
@@ -66,14 +62,17 @@ class Statement extends React.Component {
   }
 
   componentWillMount() {
-    const { data } = this.props;
+    const { data, display } = this.props;
+    const displays = [];
     data.map((newDatum) => {
+      displays.push({ ...display });
       newDatum.key = uuidv1();
       return newDatum;
     });
     this.setState({
       original: data,
-      draft: [...data],
+      draft: cloneDeep(data),
+      display: cloneDeep(displays),
       versions: [],
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
@@ -132,11 +131,19 @@ class Statement extends React.Component {
   handleEdit(query) {
     if (this.isEditable()) {
       const { draft } = this.state;
-      draft[query.index] = query.data
+      draft[query.index] = query.data;
       this.setState({
-        draft
-      } )
+        draft,
+      });
     }
+  }
+
+  handleDisplay(config) {
+    const { display } = this.state;
+    display[config.index] = config.display;
+    this.setState({
+      display,
+    });
   }
 
   handleDuplicate(query) {
@@ -155,23 +162,23 @@ class Statement extends React.Component {
   handleRemove(query) {
     if (this.isRemovable()) {
       const { draft } = this.state;
-      const newDraft = pullAllBy(draft, [{ key: query.key }]);
+      pullAllBy(draft, [{ key: query.data.key }], 'key');
       this.setState({
-        draft: newDraft
+        draft,
       });
     }
   }
 
   handleReorder(sorted) {
     if (this.isReorderable()) {
-      const { draft } = this.state;
+      const { draft, display } = this.state;
       const sortedIndices = sorted.map(clip => clip.index);
-      const sortedData = sortedIndices.map((sortedIndice) => {
-        return draft[sortedIndice];
-      })
+      const sortedData = sortedIndices.map(sortedIndice => draft[sortedIndice]);
+      const sortedDisplay = sortedIndices.map(sortedIndice => display[sortedIndice]);
       this.setState({
-        draft: sortedData
-      })
+        display: sortedDisplay,
+        draft: sortedData,
+      });
     }
   }
 
@@ -192,7 +199,7 @@ class Statement extends React.Component {
     const { target } = e;
     const { value, checked } = target;
     if (!checked) {
-      pull(checkedQueries, value)
+      pull(checkedQueries, value);
     } else {
       if (checkedQueries.indexOf(value) !== -1) {
         return;
@@ -207,7 +214,7 @@ class Statement extends React.Component {
       queriesAreAllChecked,
       queriesChecksAreIndeterminate: (!queriesAreAllChecked && checkedQueriesCount > 0),
     });
-  };
+  }
 
   handleCheckAllQueries(e) {
     const { target } = e;
@@ -220,26 +227,22 @@ class Statement extends React.Component {
       });
     } else {
       const { draft } = this.state;
-      const checkedQueries = draft.reduce((accumulator, query) => {
-        return [...accumulator, query.key];
-      }, []);
+      const checkedQueries = draft.reduce((accumulator, query) => [...accumulator, query.key], []);
       this.setState({
         checkedQueries,
         queriesChecksAreIndeterminate: false,
         queriesAreAllChecked: true,
       });
     }
-  };
+  }
 
   handleRemoveChecked() {
     if (this.isRemovable()) {
       const { checkedQueries, draft } = this.state;
-      const keysToRemove = checkedQueries.reduce((accumulator, key) => {
-        return [...accumulator, { key }];
-      }, [])
-      const newDraft = pullAllBy(draft, keysToRemove, 'key')
+      const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
+      pullAllBy(draft, keysToRemove, 'key');
       this.setState({
-        draft: newDraft,
+        draft,
         checkedQueries: [],
         queriesChecksAreIndeterminate: false,
         queriesAreAllChecked: false,
@@ -264,48 +267,53 @@ class Statement extends React.Component {
   createMenuComponent() {
     return (
       <Menu onClick={this.handleMenuSelection}>
-        <Menu.Item key={"A"}>A</Menu.Item>
+        <Menu.Item key="A">A</Menu.Item>
       </Menu>
     );
   }
 
   render() {
-    const { draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
-    const { display, options } = this.props;
-    const { reorderable, removable } = options;
+    const {
+      display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
+    } = this.state;
+    const { options } = this.props;
+    const { reorderable, removable, undoable } = options;
     const checkedQueriesCount = checkedQueries.length;
     const queries = draft.reduce((accumulator, query, index) => {
-      const isChecked = checkedQueries.indexOf(query.key) !== -1
+      const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const initial = find(original, { key: query.key }) || null;
       return [...accumulator, (
-          <div className={`query-container${(isChecked ? ' selected' : '')}`}>
-            <div className="selector">
-              <Checkbox
-                value={query.key}
-                checked={isChecked}
-                onChange={this.handleCheckQuery}
-              />
-            </div>
-            <Query
-              draft={query}
-              original={initial}
-              display={display}
-              index={index}
-              key={query.key}
-              onCopyCallback={this.handleCopy}
-              onEditCallback={this.handleEdit}
-              onDuplicateCallback={this.handleDuplicate}
-              onRemoveCallback={this.handleRemove}
-              onSelectCallback={this.handleSelect}
-              onUndoCallback={this.handleUndo}
-              options={options}
+        <div className={`query-container${(isChecked ? ' selected' : '')}`}>
+          <div className="selector">
+            <Checkbox
+              key={`selector-${query.key}`}
+              value={query.key}
+              checked={isChecked}
+              onChange={this.handleCheckQuery}
             />
           </div>
-        ) ]
+          <Query
+            draft={query}
+            original={initial}
+            display={display[index]}
+            index={index}
+            key={query.key}
+            onCopyCallback={this.handleCopy}
+            onEditCallback={this.handleEdit}
+            onDisplayCallback={this.handleDisplay}
+            onDuplicateCallback={this.handleDuplicate}
+            onRemoveCallback={this.handleRemove}
+            onSelectCallback={this.handleSelect}
+            onUndoCallback={this.handleUndo}
+            options={options}
+          />
+        </div>
+      )];
     }, []);
     return (
-        <div className="statement">
-          <div className="action-container">
+      <div className="statement">
+        <div className="action-container">
+          <Tooltip title={`${!queriesAreAllChecked ? 'Check' : 'Uncheck'} All`}>
             <Checkbox
               key="check-all"
               className="selector"
@@ -313,44 +321,54 @@ class Statement extends React.Component {
               onChange={this.handleCheckAllQueries}
               checked={queriesAreAllChecked}
             />
-            <span className="actions">
-              { removable && (
-                  <Button icon="delete" size="small" disabled={(checkedQueriesCount < 1) ? true : false} onClick={this.handleRemoveChecked}>Delete</Button>
-              ) }
-            </span>
-          </div>
-          <Divider />
-          {reorderable ?
+          </Tooltip>
+          <span className="actions">
+            { removable && (
+                <Tooltip title="Delete Checked Queries">
+                  <Button icon="delete" type="danger" size="small" disabled={(checkedQueriesCount < 1)} onClick={this.handleRemoveChecked}>Delete</Button>
+                </Tooltip>
+            ) }
+            { undoable && (
+                <Tooltip title="Undo Last Modification">
+                  <Button icon="undo" size="small" shape="circle" onClick={this.handleUndo}/>
+                </Tooltip>
+            ) }
+          </span>
+        </div>
+        <Divider />
+        {reorderable
+          ? (
             <DragSortableList
               key="sortable"
               type="vertical"
-              items={queries.map((query, index) => { return {content: query, index} })}
+              items={queries.map((query, index) => ({ content: query, index }))}
               onSort={this.handleReorder}
-            /> : queries
-          }
-          <div className='query-container'>
-            <div className="selector">
-              <Checkbox disabled />
-            </div>
-            <Query
-                draft={cloneDeep(DEFAULT_QUERY)}
-                original={null}
-                display={display}
-                key = {uuidv1()}
-                index={queries.length}
-                options={{
-                  copyable: true,
-                  duplicatable: false,
-                  editable: true,
-                  removable: false,
-                  reorderable: false,
-                  selectable: false,
-                  undoable: false,
-                }}
-                onEditCallback={this.handleEdit}
             />
+          ) : queries
+          }
+        <div className="query-container">
+          <div className="selector">
+            <Checkbox disabled />
           </div>
+          <Query
+            draft={cloneDeep(DEFAULT_INSTRUCTIONS)}
+            original={null}
+            display={cloneDeep(display[queries.length])}
+            key={uuidv1()}
+            index={queries.length}
+            options={{
+              copyable: true,
+              duplicatable: false,
+              editable: true,
+              removable: false,
+              reorderable: false,
+              selectable: false,
+              undoable: false,
+            }}
+            onEditCallback={this.handleEdit}
+          />
         </div>
+      </div>
     );
   }
 }

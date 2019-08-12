@@ -1,37 +1,34 @@
-/* eslint-disable  */ // react/destructuring-assignment, react/no-array-index-key
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { isEqual, filter } from 'lodash';
+import { cloneDeep, isEqual, filter } from 'lodash';
 import {
-  Dropdown, Button, Icon, Menu, Input, Tooltip, Divider,
+  Dropdown, Icon, Menu, Input, Tooltip, Divider,
 } from 'antd';
-import { cloneDeep } from 'lodash';
 import copy from 'copy-to-clipboard';
 
-import Filter from './Filter/index';
-import Operator, { DEFAULT_EMPTY_OPERATOR } from './Operator';
-import Subquery from './Subquery';
+import Filter, { INSTRUCTION_TYPE_FILTER } from './Filter/index';
+import Operator, { DEFAULT_EMPTY_OPERATOR, INSTRUCTION_TYPE_OPERATOR } from './Operator';
+import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
 import './style.scss';
 
-const QUERY_ITEM_TYPE_FILTER = 'filter';
-export const QUERY_ITEM_TYPE_OPERATOR = 'operator';
-const QUERY_ITEM_TYPE_SUBQUERY = 'subquery';
 
-const QUERY_ACTION_COPY = 'copy'
-const QUERY_ACTION_UNDO_ALL = 'undo-all'
-const QUERY_ACTION_DELETE = 'delete'
-const QUERY_ACTION_DUPLICATE = 'duplicate'
-const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators'
-const QUERY_ACTION_VIEW_SQON = 'view-sqon'
-const QUERY_ACTION_TITLE = 'title'
+export const DEFAULT_EMPTY_QUERY = [DEFAULT_EMPTY_OPERATOR];
+
+const QUERY_ACTION_COPY = 'copy';
+const QUERY_ACTION_UNDO_ALL = 'undo-all';
+const QUERY_ACTION_DELETE = 'delete';
+const QUERY_ACTION_DUPLICATE = 'duplicate';
+const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
+const QUERY_ACTION_VIEW_SQON = 'view-sqon';
+const QUERY_ACTION_TITLE = 'title';
 
 const sanitizeOperators = (instructions) => {
   // @NOTE No subsequent operators
   let lastOperatorIndex = null;
   const sanitizedInstructions = instructions.filter((instruction, index) => {
-    if (instruction.type === QUERY_ITEM_TYPE_OPERATOR) {
-      if ( lastOperatorIndex !== null && ((lastOperatorIndex+1) === index) ) {
-        console.log(instruction)
+    if (instruction.type === INSTRUCTION_TYPE_OPERATOR) {
+      if (lastOperatorIndex !== null && ((lastOperatorIndex + 1) === index)) {
         lastOperatorIndex = index;
         return false;
       }
@@ -41,17 +38,20 @@ const sanitizeOperators = (instructions) => {
   });
 
   // @NOTE No prefixing operator but at least one operator
-  if (sanitizedInstructions.length > 1 && sanitizedInstructions[0].type === QUERY_ITEM_TYPE_OPERATOR) {
+  if (sanitizedInstructions.length > 1 && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
     const prefix = sanitizedInstructions.shift();
-    const operators = filter(sanitizedInstructions, { 'type': QUERY_ITEM_TYPE_OPERATOR })
+    const operators = filter(sanitizedInstructions, { type: INSTRUCTION_TYPE_OPERATOR });
     const operatorsCount = operators.length;
     if (operatorsCount < 1) {
       sanitizedInstructions.push(prefix);
     }
   }
 
-  return sanitizedInstructions
-}
+  return sanitizedInstructions;
+};
+
+// @NOTE No subsequent filters
+const sanitizeFilters = instructions => instructions;
 
 
 class Query extends React.Component {
@@ -61,44 +61,37 @@ class Query extends React.Component {
       data: null,
       display: null,
     };
-    this.replaceItem = this.replaceItem.bind(this)
-    this.removeItem = this.removeItem.bind(this)
-    this.handleFilterRemoval = this.handleFilterRemoval.bind(this)
-    this.handleOperatorRemoval = this.handleOperatorRemoval.bind(this)
-    this.handleSubqueryRemoval = this.handleSubqueryRemoval.bind(this)
-    this.handleFilterChange = this.handleFilterChange.bind(this)
-    this.handleOperatorChange = this.handleOperatorChange.bind(this)
-    this.handleSubqueryChange = this.handleSubqueryChange.bind(this)
-    this.serialize = this.serialize.bind(this)
-    this.sqon = this.sqon.bind(this)
-    this.createMenuComponent = this.createMenuComponent.bind(this)
-    this.handleMenuSelection = this.handleMenuSelection.bind(this)
-    this.handleTitleChange = this.handleTitleChange.bind(this)
-    this.handleAdvancedChange = this.handleAdvancedChange.bind(this)
+    this.replaceItem = this.replaceItem.bind(this);
+    this.removeItem = this.removeItem.bind(this);
+    this.handleFilterRemoval = this.handleFilterRemoval.bind(this);
+    this.handleOperatorRemoval = this.handleOperatorRemoval.bind(this);
+    this.handleSubqueryRemoval = this.handleSubqueryRemoval.bind(this);
+    this.handleFilterChange = this.handleFilterChange.bind(this);
+    this.handleOperatorChange = this.handleOperatorChange.bind(this);
+    this.handleSubqueryChange = this.handleSubqueryChange.bind(this);
+    this.serialize = this.serialize.bind(this);
+    this.sqon = this.sqon.bind(this);
+    this.createMenuComponent = this.createMenuComponent.bind(this);
+    this.handleMenuSelection = this.handleMenuSelection.bind(this);
+    this.handleTitleChange = this.handleTitleChange.bind(this);
+    this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
   }
 
   componentWillMount() {
     const { display, draft } = this.props;
-    //draft.instructions.map((datum) => {
-    //  datum.key = uuidv1();
-    //  return datum;
-    //});
-    const clone = cloneDeep(draft);
     this.setState({
-      data: clone,
+      data: draft,
       display,
     });
   }
-
-
 
   replaceItem(item, index = null) {
     const { data } = this.state;
     const { onEditCallback } = this.props;
     if (index === null) {
-      index = item.index
+      index = item.index;
     }
-    data.instructions[index] = item
+    data.instructions[index] = item;
     this.setState({
       data,
     }, () => {
@@ -121,11 +114,9 @@ class Query extends React.Component {
         if (onEditCallback) {
           onEditCallback(this.serialize());
         }
-      })
-    } else {
-      if (onRemoveCallback) {
-        onRemoveCallback(this.serialize());
-      }
+      });
+    } else if (onRemoveCallback) {
+      onRemoveCallback(this.serialize());
     }
   }
 
@@ -143,7 +134,7 @@ class Query extends React.Component {
 
   handleFilterChange(filter) {
     this.replaceItem({
-      type: QUERY_ITEM_TYPE_FILTER,
+      type: INSTRUCTION_TYPE_FILTER,
       index: filter.index,
       data: filter.data,
       options: filter.options,
@@ -155,23 +146,23 @@ class Query extends React.Component {
     const { data } = this.state;
     const { onEditCallback } = this.props;
     data.instructions.map((datum, index) => {
-      if (datum.type === QUERY_ITEM_TYPE_OPERATOR) {
-        datum.data.type = operator.data.type
+      if (datum.type === INSTRUCTION_TYPE_OPERATOR) {
+        datum.data.type = operator.data.type;
       }
       return datum;
     });
     this.setState({
-      data
+      data,
     }, () => {
       if (onEditCallback) {
         onEditCallback(this.serialize());
       }
-    })
+    });
   }
 
   handleSubqueryChange(subquery) {
     this.replaceItem({
-      type: QUERY_ITEM_TYPE_SUBQUERY,
+      type: INSTRUCTION_TYPE_SUBQUERY,
       index: subquery.index,
       data: subquery.data,
       options: subquery.options,
@@ -188,46 +179,42 @@ class Query extends React.Component {
       if (this.props.onEditCallback) {
         this.props.onEditCallback(this.serialize());
       }
-    })
+    });
   }
 
   handleAdvancedChange(e) {
+    console.log(e);
 
 
-
-    console.log(e)
-
-
-
-    //this.setState({
+    // this.setState({
     //  data: editor.updated_src,
-    //})
-
-
+    // })
   }
 
   sqon() {
     const { data } = this.state;
     const sqon = data.instructions.map((datum) => {
       delete datum.key;
+      delete datum.display;
       return datum;
-    })
+    });
     return sqon;
   }
 
   serialize() {
-    const { data } = this.state;
+    const { data, display } = this.state;
     const { index } = this.props;
     return {
       data,
+      display,
       index,
-    }
+    };
   }
 
   handleMenuSelection({ key }) {
     const { display } = this.state;
     const { data } = this.state;
-    switch(key) {
+    switch (key) {
       case QUERY_ACTION_COPY:
         const sqon = JSON.stringify(this.sqon());
         copy(sqon);
@@ -236,22 +223,30 @@ class Query extends React.Component {
         }
         break;
       case QUERY_ACTION_VIEW_SQON:
-        display.viewableSqon = !display.viewableSqon
+        display.viewableSqon = !display.viewableSqon;
         this.setState({
           display,
-        })
+        }, () => {
+          if (this.props.onDisplayCallback) {
+            this.props.onDisplayCallback(this.serialize());
+          }
+        });
         break;
       case QUERY_ACTION_COMPOUND_OPERATORS:
-        display.compoundOperators = !display.compoundOperators
+        display.compoundOperators = !display.compoundOperators;
         this.setState({
           display,
-        })
+        }, () => {
+          if (this.props.onDisplayCallback) {
+            this.props.onDisplayCallback(this.serialize());
+          }
+        });
         break;
-      case QUERY_ACTION_TITLE:;
+      case QUERY_ACTION_TITLE:
         if (!data.title) {
           data.title = 'Untitled';
         } else {
-          delete data.title
+          delete data.title;
         }
         this.setState({
           data,
@@ -259,7 +254,7 @@ class Query extends React.Component {
           if (this.props.onEditCallback) {
             this.props.onEditCallback(this.serialize());
           }
-        })
+        });
         break;
       case QUERY_ACTION_DELETE:
         if (this.props.onRemoveCallback) {
@@ -280,7 +275,7 @@ class Query extends React.Component {
           if (this.props.onEditCallback) {
             this.props.onEditCallback(this.serialize());
           }
-        })
+        });
         break;
       default:
         break;
@@ -288,59 +283,75 @@ class Query extends React.Component {
   }
 
   createMenuComponent() {
-    const { options, original } = this.props
-    const { display, data } = this.state
-    const { copyable, duplicatable, editable, removable, undoable } = options;
+    const { options, original } = this.props;
+    const { display, data } = this.state;
+    const {
+      copyable, duplicatable, editable, removable, undoable,
+    } = options;
     const { compoundOperators, viewableSqon } = display;
     const hasTitle = !!data.title;
 
-    return (<Menu onClick={this.handleMenuSelection}>
-      {editable && (
-          <Menu.Item key={QUERY_ACTION_TITLE}>
-            <Icon type={`file${(hasTitle ? '' : '-text')}` } />
-            {(hasTitle ? 'Remove' : 'Add')} Title
-          </Menu.Item>)
+    return (
+      <Menu onClick={this.handleMenuSelection}>
+        {editable && (
+        <Menu.Item key={QUERY_ACTION_TITLE}>
+          <Icon type={`file${(hasTitle ? '' : '-text')}`} />
+          {(hasTitle ? 'Remove' : 'Add')}
+          {' '}
+Title
+        </Menu.Item>
+        )
       }
-      {copyable && (
-          <Menu.Item key={QUERY_ACTION_COPY}>
-            <Icon type="font-size" />
+        {copyable && (
+        <Menu.Item key={QUERY_ACTION_COPY}>
+          <Icon type="font-size" />
             Copy SQON
-          </Menu.Item>)
+        </Menu.Item>
+        )
       }
-      <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
-        <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle` } />
-        {(compoundOperators ? 'Maximize' : 'Minimize')} View
-      </Menu.Item>
-      {duplicatable && (
-          <Menu.Item key={QUERY_ACTION_DUPLICATE}>
-            <Icon type="file-add"/>
+        <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
+          <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle`} />
+          {(compoundOperators ? 'Maximize' : 'Minimize')}
+          {' '}
+View
+        </Menu.Item>
+        {duplicatable && (
+        <Menu.Item key={QUERY_ACTION_DUPLICATE}>
+          <Icon type="file-add" />
             Duplicate
-          </Menu.Item>)
+        </Menu.Item>
+        )
       }
-      {undoable && original && (
-          <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
-            <Icon type="undo" />
+        {undoable && original && (
+        <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
+          <Icon type="undo" />
             Revert Changes
-          </Menu.Item>)
+        </Menu.Item>
+        )
       }
-      {editable && (
-          <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
-            <Icon type={`eye${(viewableSqon ? '-invisible' : '')}` } />
+        {editable && (
+        <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
+          <Icon type={`eye${(viewableSqon ? '-invisible' : '')}`} />
             Advanced Editor
-          </Menu.Item>)
+        </Menu.Item>
+        )
       }
-      {removable && (
-          <Menu.Item key={QUERY_ACTION_DELETE}>
-            <Icon type="delete"/>
+        {removable && (
+        <Menu.Item key={QUERY_ACTION_DELETE}>
+          <Icon type="delete" />
             Delete
-          </Menu.Item>)
+        </Menu.Item>
+        )
       }
-      </Menu>)
+      </Menu>
+    );
   }
 
   render() {
-    const { options, original, key, onSelectCallback } = this.props;
-    const { copyable, duplicatable, removable, undoable } = options;
+    const { options, original, onSelectCallback } = this.props;
+    const {
+      copyable, duplicatable, removable, undoable,
+    } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { display, data } = this.state;
     const { compoundOperators, viewableSqon } = display;
@@ -348,7 +359,7 @@ class Query extends React.Component {
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
     if (compoundOperators) {
-      const operator = find(data.instructions, ['type', QUERY_ITEM_TYPE_OPERATOR]);
+      const operator = find(data.instructions, ['type', INSTRUCTION_TYPE_OPERATOR]);
       if (operator) {
         operatorsHandler = (
           <Operator
@@ -357,89 +368,87 @@ class Query extends React.Component {
             data={operator.data}
             onEditCallback={this.handleOperatorChange}
           />
-        )
+        );
       }
     }
     return data.instructions ? (
       <div className={`query${(isDirty ? ' dirty' : '')}`}>
 
-        {title &&
+        {title
+          && (
           <Input
-              size={'small'}
-              className="title"
-              defaultValue={data.title || ''}
-              suffix={
-                <Tooltip title="Identify this query using a title.">
-                  <Icon type="info-circle"/>
-                </Tooltip>
-              }
-              onBlur={this.handleTitleChange}
+            size="small"
+            className="title"
+            defaultValue={data.title || ''}
+            suffix={(
+              <Tooltip title="Identify this query using a title.">
+                <Icon type="info-circle" />
+              </Tooltip>
+)}
+            onBlur={this.handleTitleChange}
           />
+          )
         }
         <span className="instructions">
-            { !viewableSqon && data.instructions.map((item, index) => {
-              switch (item.type) {
-                case QUERY_ITEM_TYPE_OPERATOR:
-                  if (compoundOperators) {
-                    return null;
-                  }
-                  return (
-                      <Operator
-                          key={item.key}
-                          index={index}
-                          options={options}
-                          data={item.data}
-                          onEditCallback={this.handleOperatorChange}
-                          onRemoveCallback={this.handleOperatorRemoval}
-                      />
-                  );
-                case QUERY_ITEM_TYPE_FILTER:
-                  return (
-                      <Filter
-                          key={item.key}
-                          index={index}
-                          options={options}
-                          data={item.data}
-                          onEditCallback={this.handleFilterChange}
-                          onRemoveCallback={this.handleFilterRemoval}
-                          onSelectCallback={onSelectCallback}
-                      />
-                  );
-                case QUERY_ITEM_TYPE_SUBQUERY:
-                  return (
-                      <Subquery
-                        key={item.key}
-                        index={index}
-                        options={options}
-                        data={item.data}
-                        onEditCallback={this.handleSubqueryChange}
-                        onRemoveCallback={this.handleSubqueryRemoval}
-                        onSelectCallback={onSelectCallback}
-                      />
-                  );
-                default:
+          { !viewableSqon && data.instructions.map((item, index) => {
+            switch (item.type) {
+              case INSTRUCTION_TYPE_OPERATOR:
+                if (compoundOperators) {
                   return null;
-              }
-            })}
+                }
+                return (
+                  <Operator
+                    index={index}
+                    options={options}
+                    data={item.data}
+                    onEditCallback={this.handleOperatorChange}
+                  />
+                );
+              case INSTRUCTION_TYPE_FILTER:
+                return (
+                  <Filter
+                    index={index}
+                    options={options}
+                    data={item.data}
+                    onEditCallback={this.handleFilterChange}
+                    onRemoveCallback={this.handleFilterRemoval}
+                    onSelectCallback={onSelectCallback}
+                  />
+                );
+              case INSTRUCTION_TYPE_SUBQUERY:
+                return (
+                  <Subquery
+                    index={index}
+                    options={options}
+                    data={item.data}
+                    onEditCallback={this.handleSubqueryChange}
+                    onRemoveCallback={this.handleSubqueryRemoval}
+                    onSelectCallback={onSelectCallback}
+                  />
+                );
+              default:
+                return null;
+            }
+          })}
           { viewableSqon && (
-              <Input.TextArea
-                  value={JSON.stringify(this.sqon())}
-                  className="no-drag"
-                  rows={4}
-                  onChange={this.handleAdvancedChange}
-              />
+          <Input.TextArea
+            value={JSON.stringify(this.sqon())}
+            className="no-drag"
+            rows={4}
+            onChange={this.handleAdvancedChange}
+          />
           ) }
           &nbsp;
         </span>
         <span className="actions">
-          { hasMenu && (<Divider type="vertical"/>) }
+          { hasMenu && (<Divider type="vertical" />) }
           { compoundOperators && (
-              operatorsHandler
+            operatorsHandler
           ) }
           { hasMenu && (
-              <Dropdown overlay={this.createMenuComponent}>
-                <Icon type="more" />
-              </Dropdown>
+          <Dropdown overlay={this.createMenuComponent}>
+            <Icon type="more" />
+          </Dropdown>
           ) }
         </span>
       </div>
@@ -454,6 +463,7 @@ Query.propTypes = {
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   onCopyCallback: PropTypes.func,
+  onDisplayCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
@@ -476,6 +486,7 @@ Query.defaultProps = {
     undoable: true,
   },
   onCopyCallback: null,
+  onDisplayCallback: null,
   onEditCallback: null,
   onDuplicateCallback: null,
   onRemoveCallback: null,
