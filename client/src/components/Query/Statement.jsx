@@ -14,6 +14,7 @@ import DragSortableList from 'react-drag-sortable';
 import Query, { DEFAULT_EMPTY_QUERY } from './index';
 
 
+const MAX_REVISIONS = 10;
 const DEFAULT_INSTRUCTIONS = {
   instructions: DEFAULT_EMPTY_QUERY,
 };
@@ -21,10 +22,10 @@ const DEFAULT_INSTRUCTIONS = {
 class Statement extends React.Component {
   constructor() {
     super();
+    this.versions = null;
     this.state = {
       draft: null,
       original: null,
-      versions: null,
       checkedQueries: null,
       queriesChecksAreIndeterminate: null,
       queriesAreAllChecked: null,
@@ -58,10 +59,12 @@ class Statement extends React.Component {
     this.handleCheckAllQueries = this.handleCheckAllQueries.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleRemoveChecked = this.handleRemoveChecked.bind(this);
+    this.commit = this.commit.bind(this);
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
   }
 
   componentWillMount() {
+    this.versions = [];
     const { data, display } = this.props;
     const displays = [];
     data.map((newDatum) => {
@@ -73,7 +76,6 @@ class Statement extends React.Component {
       original: data,
       draft: cloneDeep(data),
       display: cloneDeep(displays),
-      versions: [],
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
@@ -131,6 +133,7 @@ class Statement extends React.Component {
   handleEdit(query) {
     if (this.isEditable()) {
       const { draft } = this.state;
+      this.commit(draft);
       draft[query.index] = query.data;
       this.setState({
         draft,
@@ -149,6 +152,7 @@ class Statement extends React.Component {
   handleDuplicate(query) {
     if (this.isDuplicatable()) {
       const { draft } = this.state;
+      this.commit(draft);
       const index = query.index + 1;
       const clone = cloneDeep(query);
       clone.data.key = uuidv1();
@@ -162,6 +166,7 @@ class Statement extends React.Component {
   handleRemove(query) {
     if (this.isRemovable()) {
       const { draft } = this.state;
+      this.commit(draft);
       pullAllBy(draft, [{ key: query.data.key }], 'key');
       this.setState({
         draft,
@@ -172,6 +177,7 @@ class Statement extends React.Component {
   handleReorder(sorted) {
     if (this.isReorderable()) {
       const { draft, display } = this.state;
+      this.commit(draft);
       const sortedIndices = sorted.map(clip => clip.index);
       const sortedData = sortedIndices.map(sortedIndice => draft[sortedIndice]);
       const sortedDisplay = sortedIndices.map(sortedIndice => display[sortedIndice]);
@@ -190,8 +196,18 @@ class Statement extends React.Component {
 
   handleUndo() {
     if (this.isUndoable()) {
-      return true;
+      const last = this.versions.pop()
+      if (last) {
+        this.setState({
+          draft: last,
+        })
+      }
     }
+  }
+
+  commit(version) {
+    this.versions.push(cloneDeep(version))
+    this.versions.splice(0, (this.versions - MAX_REVISIONS));
   }
 
   handleCheckQuery(e) {
@@ -239,6 +255,7 @@ class Statement extends React.Component {
   handleRemoveChecked() {
     if (this.isRemovable()) {
       const { checkedQueries, draft } = this.state;
+      this.commit(draft);
       const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
       pullAllBy(draft, keysToRemove, 'key');
       this.setState({
@@ -330,7 +347,7 @@ class Statement extends React.Component {
             ) }
             { undoable && (
                 <Tooltip title="Undo Last Modification">
-                  <Button icon="undo" size="small" shape="circle" onClick={this.handleUndo}/>
+                  <Button icon="undo" size="small" shape="circle" disabled={(this.versions.length < 1)} onClick={this.handleUndo}/>
                 </Tooltip>
             ) }
           </span>
