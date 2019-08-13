@@ -7,6 +7,7 @@
     "@blueprintjs/core": "^3.16.2",
     "@blueprintjs/table": "^3.6.0",
     "@clarketm/saga-monitor": "^2.0.1",
+    "@hapi/joi": "^15.1.0",
     "@hot-loader/react-dom": "^16.8.3",
     "@svgr/webpack": "4.1.0",
     "animate-sass": "^0.8.2",
