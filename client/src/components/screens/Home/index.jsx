@@ -166,7 +166,9 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
       <Card className="centered">
 
         <br />
-        <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
+        <div style={{ width: 850 }}>
+          <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
+        </div>
         <br />
 
         {/*

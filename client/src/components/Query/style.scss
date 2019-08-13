@@ -3,15 +3,21 @@ div.statement {
   width: 100%;
   div.action-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
     label.selector {
       margin-right: 10px;
     }
 
-    span.actions {
+    div.actions {
       padding: 0;
+
+      &.left {
+        margin-left: -10px;
+      }
+      &.right {
+        margin-left: auto;
+      }
 
       button.ant-btn {
         margin-left: 10px;
@@ -36,6 +42,11 @@ div.statement {
     &.selected {
       div.query {
         background-color: #FAFAFA;
+      }
+    }
+    &.active {
+      div.query {
+        background-color: aliceblue;
       }
     }
 

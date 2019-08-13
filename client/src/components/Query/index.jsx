@@ -6,14 +6,14 @@ import {
   Dropdown, Icon, Menu, Input, Tooltip, Divider,
 } from 'antd';
 import copy from 'copy-to-clipboard';
+const Joi = require('@hapi/joi');
 
 import Filter, { INSTRUCTION_TYPE_FILTER } from './Filter/index';
-import Operator, { DEFAULT_EMPTY_OPERATOR, INSTRUCTION_TYPE_OPERATOR } from './Operator';
+import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
 import './style.scss';
 
-
-export const DEFAULT_EMPTY_QUERY = [DEFAULT_EMPTY_OPERATOR];
+export const DEFAULT_EMPTY_QUERY = [];
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
@@ -37,14 +37,15 @@ const sanitizeOperators = (instructions) => {
     return true;
   });
 
-  // @NOTE No prefixing operator but at least one operator
-  if (sanitizedInstructions.length > 1 && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
-    const prefix = sanitizedInstructions.shift();
-    const operators = filter(sanitizedInstructions, { type: INSTRUCTION_TYPE_OPERATOR });
-    const operatorsCount = operators.length;
-    if (operatorsCount < 1) {
-      sanitizedInstructions.push(prefix);
-    }
+  // @NOTE No prefix operator
+  if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
+    sanitizedInstructions.shift();
+  }
+
+  // @NOTE No suffix operator
+  const instructionsLength = sanitizedInstructions.length - 1;
+  if (sanitizedInstructions[instructionsLength] && sanitizedInstructions[instructionsLength].type === INSTRUCTION_TYPE_OPERATOR) {
+    sanitizedInstructions.pop();
   }
 
   return sanitizedInstructions;
@@ -71,10 +72,12 @@ class Query extends React.Component {
     this.handleSubqueryChange = this.handleSubqueryChange.bind(this);
     this.serialize = this.serialize.bind(this);
     this.sqon = this.sqon.bind(this);
+    this.json = this.json.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   componentWillMount() {
@@ -183,12 +186,81 @@ class Query extends React.Component {
   }
 
   handleAdvancedChange(e) {
-    console.log(e);
+    const { options } = this.props;
+    const { editable } = options;
+    if (editable) {
+      const {value} = e.target;
+      try {
+        const rawQuery = JSON.parse(value);
+        const QuerySchema = Joi.object().keys({
+          title: Joi.string(),
+          instructions: Joi.array().items(Joi.object().keys({
+            type: Joi.string().valid(INSTRUCTION_TYPE_FILTER, INSTRUCTION_TYPE_OPERATOR, INSTRUCTION_TYPE_SUBQUERY).required(),
 
+            /*
+            filter: Joi.string().when(
+              'type', {
+                is: INSTRUCTION_TYPE_FILTER,
+                then: Joi.object().keys({
+                  data: Joi.object().keys({
+                    id: Joi.string().required(),
+                    type: Joi.string().valid('generic', 'specific').required(),
+                    operand: Joi.string().valid('all', 'one', 'none').required(),
+                    values: Joi.array().items(Joi.string()).required(),
+                  }).required()
+                })
+              }),
+              */
 
-    // this.setState({
-    //  data: editor.updated_src,
-    // })
+            operator: Joi.string().when(
+              'type', {
+                is: INSTRUCTION_TYPE_OPERATOR,
+                then: Joi.object({
+                  data: Joi.object({
+                    //type: Joi.string().valid('and', 'or').required()
+                  })
+              })
+            }),
+            /*
+            subquery: Joi.string().when(
+              'type', {
+                is: INSTRUCTION_TYPE_SUBQUERY,
+                then: Joi.object().keys({
+                  data: Joi.object().keys({
+                    type: Joi.string().valid('generic', 'specific').required(),
+                  }).required()
+                })
+              }),
+              */
+        }))});
+
+        const validation = Joi.validate(rawQuery, QuerySchema);
+        console.log(' valid schema? ')
+        console.log( validation )
+        if (!validation.error) {
+
+          console.log(rawQuery)
+
+          this.setState({
+            data: cloneDeep(rawQuery),
+          }, () => {
+            if (this.props.onEditCallback) {
+              this.props.onEditCallback(this.serialize());
+            }
+          });
+        }
+      } catch (e) { console.log(e) }
+    }
+  }
+
+  json() {
+    const { data } = this.state;
+    const instructions = data.instructions.map((datum) => {
+      delete datum.key;
+      delete datum.display;
+      return datum;
+    });
+    return { ...data, instructions };
   }
 
   sqon() {
@@ -209,6 +281,13 @@ class Query extends React.Component {
       display,
       index,
     };
+  }
+
+  handleClick(e) {
+    const { onClickCallback } = this.props;
+    if (onClickCallback) {
+      onClickCallback(this.serialize())
+    }
   }
 
   handleMenuSelection({ key }) {
@@ -372,8 +451,7 @@ View
       }
     }
     return data.instructions ? (
-      <div className={`query${(isDirty ? ' dirty' : '')}`}>
-
+      <div className={`query${(isDirty ? ' dirty' : '')}`} onClick={this.handleClick}>
         {title
           && (
           <Input
@@ -384,7 +462,7 @@ View
               <Tooltip title="Identify this query using a title.">
                 <Icon type="info-circle" />
               </Tooltip>
-)}
+            )}
             onBlur={this.handleTitleChange}
           />
           )
@@ -432,7 +510,7 @@ View
           })}
           { viewableSqon && (
           <Input.TextArea
-            value={JSON.stringify(this.sqon())}
+            value={JSON.stringify(this.json())}
             className="no-drag"
             rows={4}
             onChange={this.handleAdvancedChange}
@@ -442,9 +520,7 @@ View
         </span>
         <span className="actions">
           { hasMenu && (<Divider type="vertical" />) }
-          { compoundOperators && (
-            operatorsHandler
-          ) }
+          { compoundOperators && ( operatorsHandler ) }
           { hasMenu && (
           <Dropdown overlay={this.createMenuComponent}>
             <Icon type="more" />
@@ -462,6 +538,7 @@ Query.propTypes = {
   original: PropTypes.shape([]).isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
   onDisplayCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -485,6 +562,7 @@ Query.defaultProps = {
     selectable: false,
     undoable: true,
   },
+  onClickCallback: null,
   onCopyCallback: null,
   onDisplayCallback: null,
   onEditCallback: null,
