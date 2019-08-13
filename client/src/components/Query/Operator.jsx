@@ -8,12 +8,15 @@ import {
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
 export const OPERATOR_TYPE_OR = 'or';
-export const DEFAULT_EMPTY_OPERATOR = {
+export const OPERATOR_TYPE_AND_NOT = 'and not';
+const OPERATOR_TYPES = [OPERATOR_TYPE_AND, OPERATOR_TYPE_OR, OPERATOR_TYPE_AND_NOT];
+
+export const createOperator = operand => ({
   type: INSTRUCTION_TYPE_OPERATOR,
   data: {
-    type: OPERATOR_TYPE_AND,
+    type: (OPERATOR_TYPES.indexOf(operand) !== -1 ? operand : OPERATOR_TYPE_AND),
   },
-};
+});
 
 class Operator extends React.Component {
   constructor() {
@@ -74,6 +77,7 @@ class Operator extends React.Component {
       <Menu onClick={this.handleApply}>
         <Menu.Item key={OPERATOR_TYPE_AND}>AND</Menu.Item>
         <Menu.Item key={OPERATOR_TYPE_OR}>OR</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_AND_NOT}>AND NOT</Menu.Item>
       </Menu>
     );
   }

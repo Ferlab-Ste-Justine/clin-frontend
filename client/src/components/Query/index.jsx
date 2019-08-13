@@ -1,12 +1,13 @@
 /* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { cloneDeep, isEqual, filter } from 'lodash';
+import { cloneDeep, isEqual, filter, find } from 'lodash';
 import {
-  Dropdown, Icon, Menu, Input, Tooltip, Divider,
+  Dropdown, Icon, Menu, Input, Tooltip, Divider, Badge,
 } from 'antd';
 import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
+
 
 import Filter, { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
@@ -427,7 +428,7 @@ View
   }
 
   render() {
-    const { options, original, onSelectCallback } = this.props;
+    const { options, original, onSelectCallback, findQueryIndexForKey, results } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -438,7 +439,7 @@ View
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
     if (compoundOperators) {
-      const operator = find(data.instructions, ['type', INSTRUCTION_TYPE_OPERATOR]);
+      const operator = find(data.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
       if (operator) {
         operatorsHandler = (
           <Operator
@@ -450,7 +451,7 @@ View
         );
       }
     }
-    return data.instructions ? (
+    const query = data.instructions ? (
       <div className={`query${(isDirty ? ' dirty' : '')}`} onClick={this.handleClick}>
         {title
           && (
@@ -497,6 +498,7 @@ View
                 return (
                   <Subquery
                     index={index}
+                    queryIndex={(findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null)}
                     options={options}
                     data={item.data}
                     onEditCallback={this.handleSubqueryChange}
@@ -519,8 +521,8 @@ View
           &nbsp;
         </span>
         <span className="actions">
-          { hasMenu && (<Divider type="vertical" />) }
           { compoundOperators && ( operatorsHandler ) }
+          { hasMenu && (<Divider type="vertical" />) }
           { hasMenu && (
           <Dropdown overlay={this.createMenuComponent}>
             <Icon type="more" />
@@ -529,6 +531,7 @@ View
         </span>
       </div>
     ) : null;
+    return !!results ? <Badge count={results} overflowCount={999999}>{query}</Badge> : query
   }
 }
 
@@ -538,6 +541,7 @@ Query.propTypes = {
   original: PropTypes.shape([]).isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  results: PropTypes.string,
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
   onDisplayCallback: PropTypes.func,
@@ -546,6 +550,7 @@ Query.propTypes = {
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   onUndoCallback: PropTypes.func,
+  findQueryIndexForKey: PropTypes.func,
 };
 
 Query.defaultProps = {
@@ -562,6 +567,7 @@ Query.defaultProps = {
     selectable: false,
     undoable: true,
   },
+  results: null,
   onClickCallback: null,
   onCopyCallback: null,
   onDisplayCallback: null,
@@ -570,6 +576,7 @@ Query.defaultProps = {
   onRemoveCallback: null,
   onSelectCallback: null,
   onUndoCallback: null,
+  findQueryIndexForKey: null,
 };
 
 export default Query;

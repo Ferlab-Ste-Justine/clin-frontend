@@ -6,12 +6,18 @@ import {
   Menu, Button, Checkbox, Divider, Tooltip, Badge, Dropdown, Icon,
 } from 'antd';
 import {
-  cloneDeep, find, pull, pullAllBy,
+  cloneDeep, find, findIndex, pull, pullAllBy,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
+import IconKit from 'react-icons-kit';
+import {
+  software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
+} from 'react-icons-kit/linea';
 
 import Query, { DEFAULT_EMPTY_QUERY } from './index';
+import { SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery } from './Subquery';
+import {createOperator} from "./Operator";
 
 
 const MAX_REVISIONS = 10;
@@ -61,6 +67,8 @@ class Statement extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleRemoveChecked = this.handleRemoveChecked.bind(this);
+    this.handleCombine = this.handleCombine.bind(this)
+    this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.commit = this.commit.bind(this);
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
   }
@@ -212,15 +220,18 @@ class Statement extends React.Component {
       const last = this.versions.pop()
       if (last) {
         this.setState({
-          draft: last,
+          draft: cloneDeep(last),
         })
       }
     }
   }
 
   commit(version) {
-    this.versions.push(cloneDeep(version))
-    this.versions.splice(0, (this.versions - MAX_REVISIONS));
+    this.versions.push(cloneDeep(version));
+    const revisions = this.versions.length;
+    if (revisions > MAX_REVISIONS) {
+      this.versions.splice(0, MAX_REVISIONS);
+    }
   }
 
   handleCheckQuery(e) {
@@ -243,6 +254,30 @@ class Statement extends React.Component {
       queriesAreAllChecked,
       queriesChecksAreIndeterminate: (!queriesAreAllChecked && checkedQueriesCount > 0),
     });
+  }
+
+  handleCombine({ key }) {
+    const { checkedQueries, draft } = this.state;
+    if (checkedQueries.length > 1) {
+      const sortedCheckedQueries = cloneDeep(checkedQueries);
+      sortedCheckedQueries.sort((a, b) => {
+        return this.findQueryIndexForKey(a) - this.findQueryIndexForKey(b)
+      });
+      const instructions = sortedCheckedQueries.reduce(( accumulator, query ) => {
+        const subquery = createSubquery(key, query);
+        const operator = createOperator(key)
+        return [...accumulator, subquery, operator]
+      }, [])
+
+      instructions.pop();
+      draft.push({
+        key: uuidv1(),
+        instructions,
+      })
+      this.setState({
+        draft,
+      });
+    }
   }
 
   handleCheckAllQueries(e) {
@@ -280,6 +315,11 @@ class Statement extends React.Component {
     }
   }
 
+  findQueryIndexForKey(key) {
+    const { draft } = this.state;
+    return findIndex(draft, { key })
+  }
+
   /*
   handleMenuSelection({ key }) {
     switch (key) {
@@ -315,13 +355,14 @@ class Statement extends React.Component {
       const initial = find(original, { key: query.key }) || null;
       return [...accumulator, (
         <div className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
-          <div className="selector">
+          <div className="selector" style={{ backgroundColor: '#FAFAFA' }}>
             <Checkbox
               key={`selector-${query.key}`}
               value={query.key}
               checked={isChecked}
               onChange={this.handleCheckQuery}
             />
+            <div className="index">#{(index+1)}</div>
           </div>
           <Query
             draft={query}
@@ -329,6 +370,7 @@ class Statement extends React.Component {
             display={display[index]}
             index={index}
             key={query.key}
+            results={1000}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
             onDisplayCallback={this.handleDisplay}
@@ -337,6 +379,7 @@ class Statement extends React.Component {
             onSelectCallback={this.handleSelect}
             onUndoCallback={this.handleUndo}
             onClickCallback={this.handleClick}
+            findQueryIndexForKey={this.findQueryIndexForKey}
             options={options}
           />
         </div>
@@ -358,22 +401,19 @@ class Statement extends React.Component {
             { editable && (
                 <Tooltip title="Combine Selection">
                   <Dropdown disabled={(checkedQueriesCount < 2)} overlay={(
-                      <Menu>
-                        <Menu.Item key="and">
-                          <Icon type="user" />
-                          And
+                      <Menu onClick={this.handleCombine}>
+                        <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
+                          <IconKit size={24} icon={software_pathfinder_intersect} />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;And
                         </Menu.Item>
-                        <Menu.Item key="and-not">
-                          <Icon type="user" />
-                          And Not
+                        <Menu.Item key={SUBQUERY_TYPE_SUBTRACT}>
+                          <IconKit size={24} icon={software_pathfinder_subtract} />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;And Not
                         </Menu.Item>
-                        <Menu.Item key="or">
-                          <Icon type="user" />
-                          Or
+                        <Menu.Item key={SUBQUERY_TYPE_UNITE}>
+                          <IconKit size={24} icon={software_pathfinder_unite} />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Or
                         </Menu.Item>
                       </Menu>
                   )}>
-                    <Button icon="block" size="large">
+                    <Button icon="block">
                       Combine <Icon type="caret-down" />
                     </Button>
                   </Dropdown>
@@ -381,7 +421,7 @@ class Statement extends React.Component {
             ) }
             { removable && (
                 <Tooltip title="Delete Selection">
-                  <Button icon="delete" size="large" type="danger" disabled={(checkedQueriesCount < 1)} onClick={this.handleRemoveChecked}>Delete</Button>
+                  <Button icon="delete" type="danger" disabled={(checkedQueriesCount < 1)} onClick={this.handleRemoveChecked}>Delete</Button>
                 </Tooltip>
             ) }
           </div>
@@ -389,7 +429,7 @@ class Statement extends React.Component {
             { undoable && (
                 <Tooltip title="Undo">
                   <Badge count={this.versions.length}>
-                    <Button icon="undo" size="large" shape="circle" disabled={(this.versions.length < 1)} onClick={this.handleUndo}/>
+                    <Button icon="undo" shape="circle" disabled={(this.versions.length < 1)} onClick={this.handleUndo}/>
                   </Badge>
                 </Tooltip>
             ) }
@@ -407,9 +447,7 @@ class Statement extends React.Component {
           ) : queries
           }
         <div className={`query-container${((!draft.length || activeQuery === draft.length ) ? ' active' : '')}`}>
-          <div className="selector">
-            <Checkbox disabled />
-          </div>
+          <div className="selector"/>
           <Query
             draft={cloneDeep(DEFAULT_INSTRUCTIONS)}
             original={null}

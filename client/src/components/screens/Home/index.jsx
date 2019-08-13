@@ -55,12 +55,6 @@ const queryA = {
       },
     },
     {
-      type: 'subquery',
-      data: {
-        type: 'generic',
-      },
-    },
-    {
       type: 'filter',
       data: {
         id: 'study',
@@ -82,18 +76,6 @@ const queryA = {
         type: 'generic',
         operand: 'one',
         values: ['true'],
-      },
-    },
-    {
-      type: 'operator',
-      data: {
-        type: 'and',
-      },
-    },
-    {
-      type: 'subquery',
-      data: {
-        type: 'generic',
       },
     },
   ],

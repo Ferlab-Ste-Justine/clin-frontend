@@ -17,6 +17,15 @@ export const FILTER_TYPE_SPECIFIC = 'specific';
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
 export const FILTER_OPERAND_TYPE_NONE = 'none';
+const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_SPECIFIC];
+// const FILTER_OPERANDS = [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE];
+
+export const createFilter = type => ({
+  type: INSTRUCTION_TYPE_FILTER,
+  data: {
+    type: (FILTER_TYPES.indexOf(type) !== -1 ? type : FILTER_TYPE_GENERIC),
+  },
+});
 
 const createPopoverByFilterType = (state) => {
   const { data } = state;

@@ -1,32 +1,51 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+/* eslint-disable camelcase, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Card, Row, Col, Tag, Dropdown, Button, Icon, Popover, Typography,
+  Tag, Popover, Typography, Icon,
 } from 'antd';
-import IconKit from 'react-icons-kit';
-import { chart } from 'react-icons-kit/entypo';
-
-export const SUBQUERY_TYPE_GENERIC = 'generic';
 
 
 export const INSTRUCTION_TYPE_SUBQUERY = 'subquery';
+export const SUBQUERY_TYPE_INTERSECT = 'and';
+export const SUBQUERY_TYPE_UNITE = 'or';
+export const SUBQUERY_TYPE_SUBTRACT = 'and not';
+// const SUBQUERY_TYPES = [SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT];
+
+export const createSubquery = (operand, query) => ({
+  type: INSTRUCTION_TYPE_SUBQUERY,
+  data: {
+    query,
+  },
+});
 
 const createPopoverBySubqueryType = (state) => {
   const { data } = state;
   const { type } = data;
   let content = null;
-  let legend = null;
 
   switch (type) {
-    case SUBQUERY_TYPE_GENERIC:
+    case SUBQUERY_TYPE_UNITE:
+      content = (
+        <div>
+          <Typography.Text>Subquery is an union [OR]</Typography.Text>
+        </div>
+      );
+      break;
+    case SUBQUERY_TYPE_SUBTRACT:
+      content = (
+        <div>
+          <Typography.Text>Subquery is a subtraction [AND NOT]</Typography.Text>
+        </div>
+      );
+      break;
+    case SUBQUERY_TYPE_INTERSECT:
     default:
       content = (
         <div>
-          <Typography.Text>SUBQUERY is GENERIC</Typography.Text>
+          <Typography.Text>Subquery is an intersection [AND]</Typography.Text>
         </div>
       );
-      legend = (<IconKit size={16} icon={chart} />);
       break;
   }
 
@@ -37,7 +56,7 @@ const createPopoverBySubqueryType = (state) => {
       placement="topLeft"
       content={content}
     >
-      {legend}
+      <Icon type="block" />
     </Popover>
   );
 };
@@ -50,10 +69,8 @@ class Subquery extends React.Component {
       data: null,
       draft: null,
       visible: null,
-      opened: null,
     };
     this.isEditable = this.isEditable.bind(this);
-    this.isOpened = this.isOpened.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
     this.isVisible = this.isVisible.bind(this);
     this.isSelected = this.isSelected.bind(this);
@@ -61,11 +78,6 @@ class Subquery extends React.Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.createPopoverComponent = this.createPopoverComponent.bind(this);
-    this.createMenuComponent = this.createMenuComponent.bind(this);
-    this.createSubMenuBySubqueryType = this.createSubMenuBySubqueryType.bind(this);
-    this.toggleMenu = this.toggleMenu.bind(this);
-    this.handleApply = this.handleApply.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
   }
 
   componentWillMount() {
@@ -74,7 +86,6 @@ class Subquery extends React.Component {
       data,
       draft: { ...data },
       visible: true,
-      opened: false,
     });
   }
 
@@ -100,11 +111,6 @@ class Subquery extends React.Component {
     return selected === true;
   }
 
-  isOpened() {
-    const { opened } = this.state;
-    return opened === true;
-  }
-
   serialize() {
     return Object.assign({}, this.props, this.state);
   }
@@ -115,91 +121,28 @@ class Subquery extends React.Component {
     }
   }
 
-  toggleMenu() {
-    this.setState({ opened: !this.isOpened() });
-  }
-
   createPopoverComponent() {
     return createPopoverBySubqueryType(this.state);
-  }
-
-  handleApply() {
-    if (this.isEditable()) {
-      const { draft } = this.state;
-      const { onEditCallback } = this.props;
-      this.setState({
-        data: { ...draft },
-        opened: false,
-      }, () => { onEditCallback(this.serialize()); });
-    }
-  }
-
-  handleCancel() {
-    const { data } = this.state;
-    this.setState({
-      draft: { ...data },
-      opened: false,
-    });
   }
 
   handleClose() {
     if (this.isEditable()) {
       const { onRemoveCallback } = this.props;
       this.setState({
-        opened: false,
         visible: false,
       }, () => { onRemoveCallback(this.serialize()); });
     }
   }
 
-  createSubMenuBySubqueryType() {
-    const { draft } = this.state;
-    const { type } = draft;
-
-    switch (type) {
-      case SUBQUERY_TYPE_GENERIC:
-        return (
-          <>
-            <Row>
-              <Col>
-              [ TO DO ]
-              </Col>
-            </Row>
-          </>
-        );
-      default:
-        return null;
-    }
-  }
-
-  createMenuComponent() {
-    const { data } = this.state;
-    const filterMenu = this.createSubMenuBySubqueryType();
-
-    return (
-      <Popover
-        key={`filter-${data.id}`}
-        visible={this.isOpened()}
-      >
-        <Card>
-          <Typography.Title level={4}>{data.title}</Typography.Title>
-          { filterMenu }
-          <Row type="flex" justify="end">
-            <Col span={6}>
-              <Button onClick={this.handleCancel}>Annuler</Button>
-            </Col>
-            <Col span={5}>
-              <Button type="primary" onClick={this.handleApply}>Appliquer</Button>
-            </Col>
-          </Row>
-        </Card>
-      </Popover>
-    );
-  }
-
   render() {
+    const { queryIndex } = this.props;
+    const { data } = this.state;
+    const { query } = data;
     const popover = this.createPopoverComponent();
-    const overlay = this.createMenuComponent();
+    if (queryIndex === -1) {
+      this.handleClose();
+      return null;
+    }
 
     return (
       <Tag
@@ -211,31 +154,26 @@ class Subquery extends React.Component {
       >
         {popover}
         <span onClick={this.handleSelect}>
-          { JSON.stringify(['Subquery']) }
+          {(`Query #${(queryIndex !== null ? (queryIndex + 1) : query)}`)}
         </span>
-        { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomCenter">
-            <Icon type="caret-down" onClick={this.toggleMenu} />
-          </Dropdown>
-        ) }
       </Tag>
     );
   }
 }
 
 Subquery.propTypes = {
+  queryIndex: PropTypes.number,
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
-  onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
 };
 
 Subquery.defaultProps = {
+  queryIndex: null,
   options: {
     editable: false,
     selectable: false,
   },
-  onEditCallback: () => {},
   onRemoveCallback: () => {},
 };
 
