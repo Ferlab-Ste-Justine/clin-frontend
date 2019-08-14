@@ -11,29 +11,42 @@ import { Spin, Layout, LocaleProvider } from 'antd';
 import 'antd/dist/antd.less';
 import './style.scss';
 
-import PrivateRoute from '../PrivateRoute';
 import HomeScreen from '../../components/screens/Home';
-import PatientSearchScreen from '../../components/screens/PatientSearch';
-import PatientScreen from '../../components/screens/Patient';
-import PatientVariantScreen from '../../components/screens/PatientVariant';
+import MaintenanceScreen from '../../components/screens/Maintenance';
 import NoMatchScreen from '../../components/screens/NoMatch';
+import PatientScreen from '../../components/screens/Patient';
+import PatientSearchScreen from '../../components/screens/PatientSearch';
+import PatientVariantScreen from '../../components/screens/PatientVariant';
+import PrivateRoute from '../PrivateRoute';
 
-import { loadApp } from '../../actions/app';
+import { loadApp, error, warning } from '../../actions/app';
 import { appShape } from '../../reducers/app';
 
 export class App extends React.Component {
   constructor() {
     super();
+    this.state = { caughtError: false };
+    loadApp();
+  }
 
-    const { actions } = this.props;
-    actions.loadApp();
+  static getDerivedStateFromError() {
+    return { caughtError: true };
+  }
+
+  componentDidCatch(e, info) {
+    error(e.toString());
+    warning(info);
   }
 
   render() {
-    const {
-      app, history,
-    } = this.props;
+    const { caughtError } = this.state;
+    if (caughtError) {
+      return (
+        <MaintenanceScreen />
+      );
+    }
 
+    const { app, history } = this.props;
     return (
       <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
         <IntlProvider key="locale-intl">
@@ -68,7 +81,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
-    loadApp,
+    error,
+    warning,
   }, dispatch),
 });
 
