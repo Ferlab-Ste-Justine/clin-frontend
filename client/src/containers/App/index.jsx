@@ -16,7 +16,6 @@ import MaintenanceScreen from '../../components/screens/Maintenance';
 import NoMatchScreen from '../../components/screens/NoMatch';
 import PatientScreen from '../../components/screens/Patient';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
-import PatientVariantScreen from '../../components/screens/PatientVariant';
 import PrivateRoute from '../PrivateRoute';
 
 import { loadApp, error, warning } from '../../actions/app';
@@ -26,7 +25,11 @@ export class App extends React.Component {
   constructor() {
     super();
     this.state = { caughtError: false };
-    loadApp();
+  }
+
+  componentDidMount() {
+    const { actions } = this.props;
+    actions.loadApp();
   }
 
   static getDerivedStateFromError() {
@@ -81,8 +84,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
-    error,
-    warning,
+    loadApp,
   }, dispatch),
 });
 

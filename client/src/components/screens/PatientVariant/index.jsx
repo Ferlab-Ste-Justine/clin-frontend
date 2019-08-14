@@ -165,14 +165,10 @@ class PatientVariantScreen extends React.Component {
             <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
           </Descriptions>
 
-
-
           <br />
         <div style={{ width: 900 }}>
             <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
         </div>
-
-
 
         </Card>
         <Footer />
