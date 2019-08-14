@@ -11,7 +11,7 @@ import * as actions from '../actions/type';
 
 
 export const initialAppState = {
-  showLoadingAnimation: false,
+  showLoadingAnimation: true,
   locale: {
     lang: null,
     antd: null,

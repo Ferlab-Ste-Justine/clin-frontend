@@ -26,7 +26,11 @@ export class App extends React.Component {
   constructor() {
     super();
     this.state = { caughtError: false };
-    loadApp();
+  }
+
+  componentDidMount() {
+    const { actions } = this.props;
+    actions.loadApp();
   }
 
   static getDerivedStateFromError() {
@@ -81,8 +85,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
-    error,
-    warning,
+    loadApp,
   }, dispatch),
 });
 
