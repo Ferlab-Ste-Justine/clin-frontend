@@ -458,12 +458,8 @@ View
           <Input
             size="small"
             className="title"
+            allowClear
             defaultValue={data.title || ''}
-            suffix={(
-              <Tooltip title="Identify this query using a title.">
-                <Icon type="info-circle" />
-              </Tooltip>
-            )}
             onBlur={this.handleTitleChange}
           />
           )

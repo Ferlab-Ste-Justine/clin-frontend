@@ -25,7 +25,7 @@ const DEFAULT_INSTRUCTIONS = {
   instructions: DEFAULT_EMPTY_QUERY,
 };
 
-const convertIndexToLetter = (index) => {
+export const convertIndexToLetter = (index) => {
     return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 };
 

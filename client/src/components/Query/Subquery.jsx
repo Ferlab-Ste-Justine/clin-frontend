@@ -1,9 +1,11 @@
-/* eslint-disable camelcase, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+/* eslint-disable camelcase, import/no-cycle, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Tag, Popover, Typography, Icon,
 } from 'antd';
+
+import { convertIndexToLetter } from './Statement';
 
 
 export const INSTRUCTION_TYPE_SUBQUERY = 'subquery';
@@ -154,7 +156,7 @@ class Subquery extends React.Component {
       >
         {popover}
         <span onClick={this.handleSelect}>
-          {(`Query #${(queryIndex !== null ? (queryIndex + 1) : query)}`)}
+          {(`Query #${(queryIndex !== null ? convertIndexToLetter(queryIndex) : query)}`)}
         </span>
       </Tag>
     );

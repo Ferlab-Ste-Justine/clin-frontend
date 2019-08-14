@@ -125,17 +125,6 @@ const statementA = [
   queryB,
   cloneDeep(queryA),
   cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-  cloneDeep(queryA),
-
 ];
 const displayA = {
   compoundOperators: true,
