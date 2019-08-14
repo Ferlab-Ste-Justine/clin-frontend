@@ -16,6 +16,7 @@ import MaintenanceScreen from '../../components/screens/Maintenance';
 import NoMatchScreen from '../../components/screens/NoMatch';
 import PatientScreen from '../../components/screens/Patient';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
+import PatientVariantScreen from '../../components/screens/PatientVariant';
 import PrivateRoute from '../PrivateRoute';
 
 import { loadApp, error, warning } from '../../actions/app';
