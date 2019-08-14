@@ -40,18 +40,14 @@ div.statement {
     div.selector {
       width: 30px;
       padding-top: 4px;
-      padding-bottom: 4px;
-      // background-color: black;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
+      background-color: #FAFAFA;
 
       div.index {
-        writing-mode: vertical-lr;
-        margin-top: 3px;
-        margin-left: 2px;
-        font-size: 9px;
+        font-size: 14px;
         font-weight: bold;
       }
     }

@@ -6,6 +6,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Card } from 'antd';
+import { cloneDeep } from 'lodash';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -122,6 +123,19 @@ const optionsA = {
 const statementA = [
   queryA,
   queryB,
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+  cloneDeep(queryA),
+
 ];
 const displayA = {
   compoundOperators: true,

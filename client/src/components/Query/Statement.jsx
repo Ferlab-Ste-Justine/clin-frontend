@@ -6,7 +6,7 @@ import {
   Menu, Button, Checkbox, Divider, Tooltip, Badge, Dropdown, Icon,
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy,
+  cloneDeep, find, findIndex, pull, pullAllBy, filter,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -16,13 +16,24 @@ import {
 } from 'react-icons-kit/linea';
 
 import Query, { DEFAULT_EMPTY_QUERY } from './index';
-import { SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery } from './Subquery';
+import { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery } from './Subquery';
 import {createOperator} from "./Operator";
 
-
+const MAX_QUERIES = 15;
 const MAX_REVISIONS = 10;
 const DEFAULT_INSTRUCTIONS = {
   instructions: DEFAULT_EMPTY_QUERY,
+};
+
+const convertIndexToLetter = (index) => {
+    return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
+};
+
+const convertIndexToColor = (index) => {
+    return '#' + [
+        '21ABCD', 'FF8C00', 'D4236E', '20D32F', 'FFF000', 'FF756B', 'C67D57', 'F4C2C2',
+        '88D8C1', 'FFBF00', 'EE959E', 'FF1818', 'CD5E77', 'A25A3D', 'DEA77F',
+    ][index];
 };
 
 class Statement extends React.Component {
@@ -349,20 +360,33 @@ class Statement extends React.Component {
     const { options } = this.props;
     const { editable, reorderable, removable, undoable } = options;
     const checkedQueriesCount = checkedQueries.length;
-    const queries = draft.reduce((accumulator, query, index) => {
+
+    const query = cloneDeep(draft[activeQuery]);
+    const subqueries = query ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
+    const highlightedQueries = subqueries.reduce((accumulator, subquery) => {
+        console.log(subquery)
+        return [...accumulator, subquery.data.query ]
+    }, []);
+
+
+      const queries = draft.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === index;
       const initial = find(original, { key: query.key }) || null;
+
+
       return [...accumulator, (
         <div className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
-          <div className="selector" style={{ backgroundColor: '#FAFAFA' }}>
+          <div className="selector" style={{ backgroundColor:
+                ( highlightedQueries.indexOf(query.key) !== -1 ? convertIndexToColor(highlightedQueries.indexOf(query.key)) : '' )
+          }}>
             <Checkbox
               key={`selector-${query.key}`}
               value={query.key}
               checked={isChecked}
               onChange={this.handleCheckQuery}
             />
-            <div className="index">#{(index+1)}</div>
+            <div className="index">{convertIndexToLetter(index)}</div>
           </div>
           <Query
             draft={query}
@@ -445,7 +469,8 @@ class Statement extends React.Component {
               onSort={this.handleReorder}
             />
           ) : queries
-          }
+        }
+        { editable && queries.length < MAX_QUERIES && (
         <div className={`query-container${((!draft.length || activeQuery === draft.length ) ? ' active' : '')}`}>
           <div className="selector"/>
           <Query
@@ -466,7 +491,7 @@ class Statement extends React.Component {
             onEditCallback={this.handleEdit}
             onClickCallback={this.handleClick}
           />
-        </div>
+        </div>) }
       </div>
     );
   }

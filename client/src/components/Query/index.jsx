@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { cloneDeep, isEqual, filter, find } from 'lodash';
+import { cloneDeep, isEqual, find } from 'lodash';
 import {
   Dropdown, Icon, Menu, Input, Tooltip, Divider, Badge,
 } from 'antd';
