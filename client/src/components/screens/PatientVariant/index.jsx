@@ -170,8 +170,6 @@ class PatientVariantScreen extends React.Component {
             <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
         </div>
 
-
-
         </Card>
         <Footer />
       </Content>
