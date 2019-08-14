@@ -17,8 +17,122 @@ import Footer from '../../Footer';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
+
 // import { navigateToPatientScreen, navigateToPatientSearchScreen } from '../../../actions/router';
 // import { searchPatientVariants } from '../../../actions/patient';
+import { cloneDeep } from 'lodash';
+import Statement from '../../Query/Statement';
+
+
+
+/* eslint-disable max-len */
+const queryA = {
+    title: 'Query 1',
+    instructions: [
+        {
+            type: 'filter',
+            data: {
+                id: 'study',
+                type: 'generic',
+                operand: 'all',
+                values: ['My Study', 'Your Study'],
+            },
+        },
+        {
+            type: 'operator',
+            data: {
+                type: 'and',
+            },
+        },
+        {
+            type: 'filter',
+            data: {
+                id: 'proband',
+                type: 'generic',
+                operand: 'one',
+                values: ['true'],
+            },
+        },
+        {
+            type: 'operator',
+            data: {
+                type: 'and',
+            },
+        },
+        {
+            type: 'filter',
+            data: {
+                id: 'study',
+                type: 'generic',
+                operator: 'all',
+                values: ['My Study', 'Your Study'],
+            },
+        },
+        {
+            type: 'operator',
+            data: {
+                type: 'and',
+            },
+        },
+        {
+            type: 'filter',
+            data: {
+                id: 'proband',
+                type: 'generic',
+                operand: 'one',
+                values: ['true'],
+            },
+        },
+    ],
+};
+
+const queryB = {
+    instructions: [
+        {
+            type: 'filter',
+            data: {
+                id: 'study',
+                type: 'generic',
+                operand: 'none',
+                values: ['My Study'],
+            },
+        },
+        {
+            type: 'operator',
+            data: {
+                type: 'or',
+            },
+        },
+        {
+            type: 'filter',
+            data: {
+                id: 'proband',
+                type: 'generic',
+                operand: 'all',
+                values: ['true'],
+            },
+        },
+    ],
+};
+
+const optionsA = {
+    copyable: true,
+    duplicatable: true,
+    editable: true,
+    removable: true,
+    reorderable: true,
+    selectable: true,
+    undoable: true,
+};
+const statementA = [
+    queryA,
+    queryB,
+    cloneDeep(queryA),
+    cloneDeep(queryA),
+];
+const displayA = {
+    compoundOperators: true,
+};
 
 
 class PatientVariantScreen extends React.Component {
@@ -51,6 +165,12 @@ class PatientVariantScreen extends React.Component {
             <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
           </Descriptions>
 
+
+
+          <br />
+        <div style={{ width: 900 }}>
+            <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
+        </div>
 
 
 
