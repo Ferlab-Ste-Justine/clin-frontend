@@ -6,23 +6,23 @@ const errorCallback = error => ({ error });
 axios.defaults.withCredentials = true;
 axios.defaults.crossdomain = true;
 
-const login = (username, password) => axios.post(`${window.CLIN.authApiBaseUrl}`, {
+const login = (username, password) => axios.post(`${window.CLIN.authServiceApiUrl}`, {
   username,
   password,
 })
   .then(successCallback)
   .catch(errorCallback);
 
-const logout = () => axios.delete(`${window.CLIN.authApiBaseUrl}`)
+const logout = () => axios.delete(`${window.CLIN.authServiceApiUrl}`)
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientById = uid => axios.get(`${window.CLIN.patientApiBaseUrl}/${uid}`)
+const getPatientById = uid => axios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
   .then(successCallback)
   .catch(errorCallback);
 
 const getPatientsByAutoComplete = (type, query, page, size) => axios.get(
-  `${window.CLIN.patientApiBaseUrl}/autocomplete`, {
+  `${window.CLIN.patientServiceApiUrl}/autocomplete`, {
     params: {
       type,
       query,
@@ -34,7 +34,7 @@ const getPatientsByAutoComplete = (type, query, page, size) => axios.get(
   .then(successCallback)
   .catch(errorCallback);
 
-const getAllPatients = (page, size) => axios.get(`${window.CLIN.patientApiBaseUrl}/search`, {
+const getAllPatients = (page, size) => axios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
   params: {
     page,
     size,
@@ -43,7 +43,7 @@ const getAllPatients = (page, size) => axios.get(`${window.CLIN.patientApiBaseUr
   .then(successCallback)
   .catch(errorCallback);
 
-const searchPatients = (query, page, size) => axios.post(`${window.CLIN.patientApiBaseUrl}/search`, {
+const searchPatients = (query, page, size) => axios.post(`${window.CLIN.patientServiceApiUrl}/search`, {
   query,
   page,
   size,

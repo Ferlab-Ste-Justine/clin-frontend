@@ -1,4 +1,4 @@
-/* eslint-disable import/no-cycle, no-param-reassign */
+/* eslint-disable import/no-cycle */
 import { find } from 'lodash';
 import { initialPatientState } from '../reducers/patient';
 

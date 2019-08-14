@@ -1,0 +1,206 @@
+div.statement {
+
+  width: 100%;
+  div.action-container {
+    display: flex;
+    align-items: center;
+
+    label.selector {
+      margin-left: 5px;
+      margin-right: 10px;
+    }
+
+    div.actions {
+      padding: 0;
+
+      &.left {
+        margin-left: -12px;
+      }
+      &.right {
+        margin-left: auto;
+      }
+
+      button.ant-btn {
+        margin-left: 10px;
+      }
+    }
+
+  }
+
+  div.ant-divider {
+    margin: 10px 0;
+  }
+
+  div.query-container {
+    display: flex;
+    margin-bottom: 13px;
+    margin-top: 12px;
+    margin-right: 2em;
+
+    div.selector {
+      width: 30px;
+      padding-top: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #FAFAFA;
+
+      div.index {
+        font-size: 14px;
+        font-weight: bold;
+      }
+    }
+
+    span.ant-badge {
+      width: 100%;
+    }
+
+    &.selected {
+      div.query {
+        background-color: #FAFAFA;
+      }
+    }
+    &.active {
+      div.query {
+        background-color: aliceblue;
+      }
+    }
+
+  }
+
+  div.draggable {
+    cursor: grab;
+  }
+
+  div.dragged {
+    cursor: grabbing;
+
+    width: 85%;
+    max-width: 85%;
+
+    div.query {
+
+      filter: invert(0.1);
+      div.items {
+        border: none !important;
+      }
+
+      div.actions {
+        i {
+          display: none;
+        }
+      }
+    }
+
+    padding-right: 6em;
+  }
+
+  div.placeholder {
+    opacity: 0.5;
+  }
+}
+
+div.query {
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  border: 1px solid #CCCCCC;
+
+  &.dirty {
+    border: 1px dashed #CCCCCC
+  }
+
+  span.title {
+    margin-bottom: 5px;
+  }
+
+  span.instructions {
+    max-width: 85%;
+    margin-top: -2px;
+
+    > * {
+      margin-top: 2px;
+    }
+
+    div.filter, div.subquery {
+      padding: inherit;
+      padding: 6px 10px 6px 10px;
+      font-size: inherit;
+      text-transform: none;
+      top: unset;
+      width: unset;
+
+      i.legend {
+        cursor: pointer;
+        margin-right: 5px;
+      }
+
+      i.anticon-caret-down {
+        cursor: pointer;
+        margin-top: 2px;
+        margin-left: 5px;
+      }
+
+      i.anticon-close {
+        margin-top: 3px;
+      }
+    }
+
+    div.operator {
+      padding: inherit;
+      width: unset;
+      mix-blend-mode: difference;
+      padding: 3px 6px 6px 6px;
+      max-height: 20px;
+      margin-top: 6px;
+
+      i.anticon-caret-down {
+        cursor: pointer;
+        margin-top: 1px;
+        margin-left: 3px;
+      }
+    }
+
+  }
+
+  span.actions {
+    align-self: flex-start;
+    margin-top: 6px;
+
+    i.anticon {
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    div.ant-divider-vertical {
+      height: 20px;
+      top: -5px;
+      margin: 0;
+      margin-right: 5px;
+      margin-left: 10px;
+    }
+
+    div.operator {
+      width: unset;
+      mix-blend-mode: difference;
+      padding: 3px 5px;
+      max-height: 20px;
+      top: -5px;
+      width: 67px;
+      margin-right: 4px;
+
+      i.anticon-caret-down, i.ant-dropdown-trigger {
+        font-size: 10px;
+        cursor: pointer;
+        height: 20px;
+        margin-left: 3px;
+      }
+    }
+
+  }
+
+}

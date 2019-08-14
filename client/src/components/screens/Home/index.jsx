@@ -10,11 +10,11 @@ import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import LoginForm from '../../forms/Login';
-
 import { loginUser, recoverUser } from '../../../actions/user';
 import { appShape } from '../../../reducers/app';
 
 import './style.scss';
+
 
 const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
   const { showLoadingAnimation } = app;
@@ -52,7 +52,6 @@ const mapStateToProps = state => ({
   app: state.app,
   intl: state.intl,
 });
-
 
 export default connect(
   mapStateToProps,

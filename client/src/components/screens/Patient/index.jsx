@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Col, Row, Tabs, PageHeader, Typography, Icon,
+  Card, Col, Row, Tabs, PageHeader, Typography, Icon, Button,
 } from 'antd';
 import ResizableAntdTable from 'resizable-antd-table';
 
@@ -21,7 +21,10 @@ import './style.scss';
 import { patientShape } from '../../../reducers/patient';
 import { searchShape } from '../../../reducers/search';
 
-import { navigateToPatientScreen, navigateToPatientSearchScreen } from '../../../actions/router';
+import {
+  navigateToPatientScreen, navigateToPatientVariantScreen,
+  navigateToPatientSearchScreen,
+} from '../../../actions/router';
 
 
 class PatientScreen extends React.Component {
@@ -29,11 +32,17 @@ class PatientScreen extends React.Component {
     super();
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
+    this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
   }
 
   handleNavigationToPatientScreen(e) {
     const { actions } = this.props;
     actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
+  }
+
+  handleNavigationToPatientVariantScreen(e) {
+    const { actions } = this.props;
+    actions.navigateToPatientVariantScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
   handleNavigationToPatientSearchScreen() {
@@ -139,6 +148,13 @@ class PatientScreen extends React.Component {
                   {`, ${patient.details.birthDate}`}
                 </Typography.Title>
               </div>
+            )}
+            extra={(
+              <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientVariantScreen}>
+                <Button type="primary">
+                    Variant Interpreter
+                </Button>
+              </a>
             )}
           />
           <br />
@@ -383,6 +399,7 @@ PatientScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
+    navigateToPatientVariantScreen,
     navigateToPatientSearchScreen,
   }, dispatch),
 });
