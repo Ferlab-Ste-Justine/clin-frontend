@@ -22,7 +22,9 @@ import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
 
 export class App extends React.Component {
-  componentWillMount() {
+  constructor() {
+    super();
+
     const { actions } = this.props;
     actions.loadApp();
   }

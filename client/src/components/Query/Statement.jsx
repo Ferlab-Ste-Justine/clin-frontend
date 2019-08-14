@@ -28,25 +28,35 @@ const DEFAULT_INSTRUCTIONS = {
 class Statement extends React.Component {
   constructor() {
     super();
-    this.versions = null;
+
+    this.versions = [];
+    const { data, display, options } = this.props;
+    const {  copyable, duplicatable, editable, removable, reorderable, selectable, undoable } = options;
+    const displays = [];
+    data.map((datum) => {
+      displays.push(cloneDeep(display));
+      datum.key = uuidv1();
+      return datum;
+    });
     this.state = {
-      draft: null,
-      original: null,
-      checkedQueries: null,
-      activeQuery: null,
-      queriesChecksAreIndeterminate: null,
-      queriesAreAllChecked: null,
-      display: null,
+      draft: cloneDeep(data),
+      original: data,
+      display: cloneDeep(displays),
+      checkedQueries: [],
+      activeQuery: (data.length - 1) || null,
+      queriesChecksAreIndeterminate: false,
+      queriesAreAllChecked: false,
       options: {
-        copyable: null,
-        duplicatable: null,
-        editable: null,
-        removable: null,
-        reorderable: null,
-        selectable: null,
-        undoable: null,
+        copyable,
+        duplicatable,
+        editable,
+        removable,
+        reorderable,
+        selectable,
+        undoable,
       },
     };
+
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
     this.isDuplicatable = this.isDuplicatable.bind(this);
@@ -71,26 +81,6 @@ class Statement extends React.Component {
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.commit = this.commit.bind(this);
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
-  }
-
-  componentWillMount() {
-    this.versions = [];
-    const { data, display } = this.props;
-    const displays = [];
-    data.map((newDatum) => {
-      displays.push({ ...display });
-      newDatum.key = uuidv1();
-      return newDatum;
-    });
-    this.setState({
-      original: data,
-      draft: cloneDeep(data),
-      display: cloneDeep(displays),
-      checkedQueries: [],
-      activeQuery: (data.length - 1) || null,
-      queriesChecksAreIndeterminate: false,
-      queriesAreAllChecked: false,
-    });
   }
 
   isCopyable() {

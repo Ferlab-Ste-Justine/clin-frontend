@@ -21,29 +21,20 @@ export const createOperator = operand => ({
 class Operator extends React.Component {
   constructor() {
     super();
+
+    const { options, data, visible } = this.props;
     this.state = {
-      data: null,
+      data,
       options: {
-        editable: null,
+        editable: options.editable || true,
       },
-      visible: null,
+      visible,
     };
     this.isEditable = this.isEditable.bind(this);
     this.isVisible = this.isVisible.bind(this);
     this.serialize = this.serialize.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleApply = this.handleApply.bind(this);
-  }
-
-  componentWillMount() {
-    const { options, data, visible } = this.props;
-    this.setState({
-      data: { ...data },
-      options: {
-        editable: options.editable || true,
-      },
-      visible,
-    });
   }
 
   isEditable() {

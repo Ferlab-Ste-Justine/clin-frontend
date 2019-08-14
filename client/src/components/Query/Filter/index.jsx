@@ -79,13 +79,30 @@ const createPopoverByFilterType = (state) => {
 class Filter extends React.Component {
   constructor() {
     super();
+
+    const { data, visible } = this.props;
+    const { type } = data;
+    switch (data.type) {
+      default:
+      case FILTER_TYPE_GENERIC:
+        if (!data.operand) {
+          data.operand = FILTER_OPERAND_TYPE_ALL;
+        }
+        if (!data.values) {
+          data.values = [];
+        }
+        break;
+      case FILTER_TYPE_SPECIFIC:
+        break;
+    }
+
     this.state = {
-      type: null,
-      data: null,
-      draft: null,
-      visible: null,
-      selected: null,
-      opened: null,
+      data: cloneDeep(data),
+      draft: cloneDeep(data),
+      selected: false,
+      opened: false,
+      type,
+      visible,
     };
     this.isEditable = this.isEditable.bind(this);
     this.isRemovable = this.isRemovable.bind(this);
@@ -102,31 +119,6 @@ class Filter extends React.Component {
     this.handleApply = this.handleApply.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
-  }
-
-  componentWillMount() {
-    const { data, visible } = this.props;
-    switch (data.type) {
-      default:
-      case FILTER_TYPE_GENERIC:
-        if (!data.operand) {
-          data.operand = FILTER_OPERAND_TYPE_ALL;
-        }
-        if (!data.values) {
-          data.values = [];
-        }
-        break;
-      case FILTER_TYPE_SPECIFIC:
-        break;
-    }
-
-    this.setState({
-      data,
-      draft: cloneDeep(data),
-      opened: false,
-      selected: false,
-      visible,
-    });
   }
 
   isEditable() {
