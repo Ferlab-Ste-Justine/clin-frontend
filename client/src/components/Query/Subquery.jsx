@@ -137,7 +137,7 @@ class Subquery extends React.Component {
   }
 
   render() {
-    const { queryIndex } = this.props;
+    const { queryIndex, queryColor } = this.props;
     const { data } = this.state;
     const { query } = data;
     const popover = this.createPopoverComponent();
@@ -145,14 +145,14 @@ class Subquery extends React.Component {
       this.handleClose();
       return null;
     }
-
+    const selectedColor = this.isSelected() ? 'blue' : '';
     return (
       <Tag
         className="subquery"
         visible={this.isVisible()}
         closable={this.isEditable()}
         onClose={this.handleClose}
-        color={this.isSelected() ? 'blue' : ''}
+        color={(queryColor || selectedColor)}
       >
         {popover}
         <span onClick={this.handleSelect}>
@@ -165,6 +165,7 @@ class Subquery extends React.Component {
 
 Subquery.propTypes = {
   queryIndex: PropTypes.number,
+  queryColor: PropTypes.string,
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onRemoveCallback: PropTypes.func,
@@ -172,6 +173,7 @@ Subquery.propTypes = {
 
 Subquery.defaultProps = {
   queryIndex: null,
+  queryColor: null,
   options: {
     editable: false,
     selectable: false,

@@ -10,7 +10,6 @@ import {
   empty, one, full, info,
 } from 'react-icons-kit/entypo';
 
-
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_SPECIFIC = 'specific';
