@@ -29,7 +29,7 @@ const DEFAULT_INSTRUCTIONS = {
 
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
-const convertIndexToColor = index => `#${[
+export const convertIndexToColor = index => `#${[
   '21ABCD', 'FF8C00', 'D4236E', '20D32F', 'FFF000', 'FF756B', 'C67D57', 'F4C2C2',
   '88D8C1', 'FFBF00', 'EE959E', 'FF1818', 'CD5E77', 'A25A3D', 'DEA77F',
 ][index]}`;
@@ -367,8 +367,6 @@ class Statement extends React.Component {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === index;
       const initial = find(original, { key: query.key }) || null;
-
-
       return [...accumulator, (
         <div className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
           <div
@@ -376,7 +374,7 @@ class Statement extends React.Component {
             style={{
               backgroundColor:
                 (highlightedQueries.indexOf(query.key) !== -1 ? convertIndexToColor(highlightedQueries.indexOf(query.key)) : ''),
-            }}
+              }}
           >
             <Checkbox
               key={`selector-${query.key}`}
@@ -391,6 +389,7 @@ class Statement extends React.Component {
             original={initial}
             display={display[index]}
             index={index}
+            active={isActive}
             key={query.key}
             results={1000}
             onCopyCallback={this.handleCopy}
@@ -485,6 +484,7 @@ class Statement extends React.Component {
             display={cloneDeep(display[queries.length])}
             key={uuidv1()}
             index={queries.length}
+            active={false}
             options={{
               copyable: true,
               duplicatable: false,

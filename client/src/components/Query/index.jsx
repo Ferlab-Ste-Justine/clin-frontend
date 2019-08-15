@@ -8,11 +8,12 @@ import {
 import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
 
-
+import './style.scss';
 import Filter, { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
-import './style.scss';
+import { convertIndexToColor } from './Statement';
+
 
 export const DEFAULT_EMPTY_QUERY = [];
 
@@ -428,7 +429,7 @@ View
   }
 
   render() {
-    const { options, original, onSelectCallback, findQueryIndexForKey, results } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -495,6 +496,7 @@ View
                   <Subquery
                     index={index}
                     queryIndex={(findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null)}
+                    queryColor={ active && findQueryIndexForKey ? convertIndexToColor(findQueryIndexForKey(item.data.query)) : null }
                     options={options}
                     data={item.data}
                     onEditCallback={this.handleSubqueryChange}
@@ -537,6 +539,7 @@ Query.propTypes = {
   original: PropTypes.shape([]).isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  active: PropTypes.bool,
   results: PropTypes.string,
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
@@ -563,6 +566,7 @@ Query.defaultProps = {
     selectable: false,
     undoable: true,
   },
+  active: false,
   results: null,
   onClickCallback: null,
   onCopyCallback: null,
