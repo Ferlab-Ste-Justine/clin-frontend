@@ -1,7 +1,7 @@
 div.statement {
-
   width: 100%;
-  div.action-container {
+
+  .action-container {
     display: flex;
     align-items: center;
 
@@ -10,34 +10,35 @@ div.statement {
       margin-right: 10px;
     }
 
-    div.actions {
+    .actions {
       padding: 0;
 
       &.left {
         margin-left: -12px;
       }
+
       &.right {
         margin-left: auto;
       }
 
-      button.ant-btn {
+      button {
         margin-left: 10px;
       }
     }
 
   }
 
-  div.ant-divider {
+  .ant-divider {
     margin: 10px 0;
   }
 
-  div.query-container {
+  .query-container {
     display: flex;
     margin-bottom: 13px;
     margin-top: 12px;
     margin-right: 2em;
 
-    div.selector {
+    .selector {
       width: 30px;
       padding-top: 4px;
       display: flex;
@@ -61,6 +62,7 @@ div.statement {
         background-color: #FAFAFA;
       }
     }
+
     &.active {
       div.query {
         background-color: aliceblue;
@@ -69,24 +71,25 @@ div.statement {
 
   }
 
-  div.draggable {
+  .draggable {
     cursor: grab;
   }
 
-  div.dragged {
+  .dragged {
     cursor: grabbing;
 
     width: 85%;
     max-width: 85%;
 
-    div.query {
+    .query {
 
       filter: invert(0.1);
-      div.items {
+
+      .items {
         border: none !important;
       }
 
-      div.actions {
+      .actions {
         i {
           display: none;
         }
@@ -99,6 +102,7 @@ div.statement {
   div.placeholder {
     opacity: 0.5;
   }
+
 }
 
 div.query {
@@ -107,18 +111,17 @@ div.query {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-
   border: 1px solid #CCCCCC;
 
   &.dirty {
     border: 1px dashed #CCCCCC
   }
 
-  span.title {
+  .title {
     margin-bottom: 5px;
   }
 
-  span.instructions {
+  .instructions {
     max-width: 85%;
     margin-top: -2px;
 
@@ -126,7 +129,7 @@ div.query {
       margin-top: 2px;
     }
 
-    div.filter, div.subquery {
+    .filter, .subquery {
       padding: inherit;
       padding: 6px 10px 6px 10px;
       font-size: inherit;
@@ -150,7 +153,7 @@ div.query {
       }
     }
 
-    div.operator {
+    .operator {
       padding: inherit;
       width: unset;
       mix-blend-mode: difference;
@@ -167,7 +170,7 @@ div.query {
 
   }
 
-  span.actions {
+  .actions {
     align-self: flex-start;
     margin-top: 6px;
 
@@ -176,7 +179,7 @@ div.query {
       font-size: 20px;
     }
 
-    div.ant-divider-vertical {
+    .ant-divider-vertical {
       height: 20px;
       top: -5px;
       margin: 0;
@@ -184,7 +187,7 @@ div.query {
       margin-left: 10px;
     }
 
-    div.operator {
+    .operator {
       width: unset;
       mix-blend-mode: difference;
       padding: 3px 5px;
