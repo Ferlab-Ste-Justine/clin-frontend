@@ -1,75 +1,6 @@
 div.statement {
-  width: 100%;
-
-  .action-container {
-    display: flex;
-    align-items: center;
-
-    label.selector {
-      margin-left: 5px;
-      margin-right: 10px;
-    }
-
-    .actions {
-      padding: 0;
-
-      &.left {
-        margin-left: -12px;
-      }
-
-      &.right {
-        margin-left: auto;
-      }
-
-      button {
-        margin-left: 10px;
-      }
-    }
-
-  }
-
-  .ant-divider {
-    margin: 10px 0;
-  }
-
-  .query-container {
-    display: flex;
-    margin-bottom: 13px;
-    margin-top: 12px;
-    margin-right: 2em;
-
-    .selector {
-      width: 30px;
-      padding-top: 4px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #FAFAFA;
-
-      div.index {
-        font-size: 14px;
-        font-weight: bold;
-      }
-    }
-
-    span.ant-badge {
-      width: 100%;
-    }
-
-    &.selected {
-      div.query {
-        background-color: #FAFAFA;
-      }
-    }
-
-    &.active {
-      div.query {
-        background-color: aliceblue;
-      }
-    }
-
-  }
+  display: flex;
+  flex-direction: column;
 
   .draggable {
     cursor: grab;
@@ -77,39 +8,117 @@ div.statement {
 
   .dragged {
     cursor: grabbing;
-
     width: 85%;
-    max-width: 85%;
-
     .query {
-
       filter: invert(0.1);
+    }
+  }
+}
 
-      .items {
-        border: none !important;
-      }
+.selector {
+  min-width: 30px;
+}
 
-      .actions {
-        i {
-          display: none;
-        }
-      }
+div.action-container {
+  display: flex;
+  align-items: center;
+
+  .actions {
+    &.left {
+      margin-left: -10px;
     }
 
-    padding-right: 6em;
-  }
+    &.right {
+      margin-left: auto;
+    }
 
-  div.placeholder {
-    opacity: 0.5;
+    button {
+      margin-left: 10px;
+    }
   }
 
 }
 
+div.query-container {
+  display: flex;
+
+  > * {
+    margin-top: 10px;
+  }
+
+  .selector {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+    background-color: #FAFAFA;
+    .index {
+      font-size: 14px;
+      font-weight: bold;
+    }
+  }
+
+  &.selected {
+    .query {
+      background-color: #FAFAFA;
+    }
+  }
+
+  &.active {
+    .query {
+      background-color: aliceblue;
+    }
+  }
+
+  // @TODO REMOVE after putting it next to title
+  .ant-badge {
+    width: 100%;
+  }
+
+}
+
+.operator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  mix-blend-mode: difference;
+  min-width: 75px;
+  height: 21px;
+
+  .anticon-caret-down {
+    cursor: pointer;
+    margin-left: 4px;
+  }
+}
+
+.ant-tag.filter, .ant-tag.subquery {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  font-size: inherit;
+
+  .legend {
+    cursor: pointer;
+    padding-right: 6px;
+  }
+
+  .anticon-caret-down {
+    cursor: pointer;
+    padding-left: 4px;
+  }
+}
+
+.ant-tag-has-color.subquery span {
+   color: #000000;
+}
+
 div.query {
-  width: 100%;
-  padding: 5px;
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
+  padding: 5px;
   justify-content: space-between;
   border: 1px solid #CCCCCC;
 
@@ -122,88 +131,32 @@ div.query {
   }
 
   .instructions {
-    max-width: 85%;
-    margin-top: -2px;
-
+    display: flex;
+    align-items: center;
+    max-width: 75%;
+    flex-wrap: wrap;
     > * {
       margin-top: 2px;
+      margin-right: 10px;
     }
-
-    .filter, .subquery {
-      padding: inherit;
-      padding: 6px 10px 6px 10px;
-      font-size: inherit;
-      text-transform: none;
-      top: unset;
-      width: unset;
-
-      i.legend {
-        cursor: pointer;
-        margin-right: 5px;
-      }
-
-      i.anticon-caret-down {
-        cursor: pointer;
-        margin-top: 2px;
-        margin-left: 5px;
-      }
-
-      i.anticon-close {
-        margin-top: 3px;
-      }
-    }
-
-    .operator {
-      padding: inherit;
-      width: unset;
-      mix-blend-mode: difference;
-      padding: 3px 6px 6px 6px;
-      max-height: 20px;
-      margin-top: 6px;
-
-      i.anticon-caret-down {
-        cursor: pointer;
-        margin-top: 1px;
-        margin-left: 3px;
-      }
-    }
-
   }
 
   .actions {
-    align-self: flex-start;
-    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    align-items: flex-start;
 
-    i.anticon {
+    .anticon-more {
       cursor: pointer;
       font-size: 20px;
     }
 
     .ant-divider-vertical {
       height: 20px;
-      top: -5px;
-      margin: 0;
-      margin-right: 5px;
-      margin-left: 10px;
-    }
-
-    .operator {
-      width: unset;
-      mix-blend-mode: difference;
-      padding: 3px 5px;
-      max-height: 20px;
-      top: -5px;
-      width: 67px;
-      margin-right: 4px;
-
-      i.anticon-caret-down, i.ant-dropdown-trigger {
-        font-size: 10px;
-        cursor: pointer;
-        height: 20px;
-        margin-left: 3px;
-      }
+      margin: 0 5px 0 10px;
     }
 
   }
 
 }
+

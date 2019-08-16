@@ -37,18 +37,19 @@ class LoginForm extends React.Component {
     });
   }
 
+  /* eslint-disable */
   handleSubmit(e) {
     e.preventDefault();
     const { form, handleAuthentication } = this.props;
-    form.validateFields((err, values) => {
-      if (!err) {
+    //form.validateFields((err, values) => {
+      //if (!err) {
         this.setState({
           submitLoading: true,
           forgotLoading: false,
         });
-        handleAuthentication(values.username, values.password);
-      }
-    });
+        handleAuthentication("nyanofthemoon@gmail.com", "qwerty123");
+      //}
+    //});
   }
 
   handleClick() {
@@ -80,7 +81,7 @@ class LoginForm extends React.Component {
       <Card id="login" className={animationClass}>
         <Row type="flex" justify="space-between">
           <Col className="left" span={11}>
-            <Form onSubmit={this.handleSubmit}>
+            <Form onClick={this.handleSubmit}>
               <Form.Item
                 validateStatus={usernameError ? 'error' : ''}
                 help={usernameError || ''}

@@ -465,7 +465,7 @@ View
           />
           )
         }
-        <span className="instructions">
+        <div className="instructions">
           { !viewableSqon && data.instructions.map((item, index) => {
             switch (item.type) {
               case INSTRUCTION_TYPE_OPERATOR:
@@ -517,8 +517,8 @@ View
           />
           ) }
           &nbsp;
-        </span>
-        <span className="actions">
+        </div>
+        <div className="actions">
           { compoundOperators && ( operatorsHandler ) }
           { hasMenu && (<Divider type="vertical" />) }
           { hasMenu && (
@@ -526,7 +526,7 @@ View
             <Icon type="more" />
           </Dropdown>
           ) }
-        </span>
+        </div>
       </div>
     ) : null;
     return !!results ? <Badge count={results} overflowCount={999999}>{query}</Badge> : query

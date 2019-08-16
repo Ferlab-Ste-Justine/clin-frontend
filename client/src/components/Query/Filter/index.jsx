@@ -323,23 +323,25 @@ class Filter extends React.Component {
     const overlay = this.createMenuComponent();
 
     return (
-      <Tag
-        className="filter"
-        visible={this.isVisible()}
-        closable={this.isRemovable()}
-        onClose={this.handleClose}
-        color={this.isSelected() ? 'blue' : ''}
-      >
-        {popover}
-        <span onClick={this.handleSelect}>
-          { JSON.stringify(data.values) }
-        </span>
-        { this.isEditable() && (
-        <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomCenter">
-          <Icon type="caret-down" onClick={this.toggleMenu} />
-        </Dropdown>
-        ) }
-      </Tag>
+      <span>
+        <Tag
+          className="filter"
+          visible={this.isVisible()}
+          closable={this.isRemovable()}
+          onClose={this.handleClose}
+          color={this.isSelected() ? 'blue' : ''}
+        >
+          {popover}
+          <span onClick={this.handleSelect}>
+            { JSON.stringify(data.values) }
+          </span>
+          { this.isEditable() && (
+          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomCenter">
+            <Icon type="caret-down" onClick={this.toggleMenu} />
+          </Dropdown>
+          ) }
+        </Tag>
+      </span>
     );
   }
 }
