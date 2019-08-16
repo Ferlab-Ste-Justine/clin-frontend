@@ -53,6 +53,14 @@ const sanitizeOperators = (instructions) => {
   return sanitizedInstructions;
 };
 
+const sanitizeSubqueries = (instructions) => {
+  if (instructions.length === 1 && instructions[0].type === INSTRUCTION_TYPE_SUBQUERY) {
+    instructions.shift();
+  }
+
+  return instructions;
+};
+
 // @NOTE No subsequent filters
 const sanitizeFilters = instructions => instructions;
 
@@ -112,6 +120,7 @@ class Query extends React.Component {
     const index = instruction.index;
     data.instructions.splice(index, 1);
     data.instructions = sanitizeOperators(data.instructions);
+    data.instructions = sanitizeSubqueries(data.instructions);
     if (data.instructions.length > 0) {
       this.setState({
         data,
@@ -465,7 +474,7 @@ View
           />
           )
         }
-        <span className="instructions">
+        <div className="instructions">
           { !viewableSqon && data.instructions.map((item, index) => {
             switch (item.type) {
               case INSTRUCTION_TYPE_OPERATOR:
@@ -517,8 +526,8 @@ View
           />
           ) }
           &nbsp;
-        </span>
-        <span className="actions">
+        </div>
+        <div className="actions">
           { compoundOperators && ( operatorsHandler ) }
           { hasMenu && (<Divider type="vertical" />) }
           { hasMenu && (
@@ -526,10 +535,10 @@ View
             <Icon type="more" />
           </Dropdown>
           ) }
-        </span>
+        </div>
       </div>
     ) : null;
-    return !!results ? <Badge count={results} overflowCount={999999}>{query}</Badge> : query
+    return !!results ? <Badge className={( active ? 'active' : 'inactive' )} count={results} overflowCount={9999}>{query}</Badge> : query
   }
 }
 

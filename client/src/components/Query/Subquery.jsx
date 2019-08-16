@@ -147,18 +147,20 @@ class Subquery extends React.Component {
     }
     const selectedColor = this.isSelected() ? 'blue' : '';
     return (
-      <Tag
-        className="subquery"
-        visible={this.isVisible()}
-        closable={this.isEditable()}
-        onClose={this.handleClose}
-        color={(queryColor || selectedColor)}
-      >
-        {popover}
-        <span onClick={this.handleSelect}>
-          {(`Query #${(queryIndex !== null ? convertIndexToLetter(queryIndex) : query)}`)}
-        </span>
-      </Tag>
+      <span>
+        <Tag
+          className="subquery"
+          visible={this.isVisible()}
+          closable={this.isEditable()}
+          onClose={this.handleClose}
+          color={(queryColor || selectedColor)}
+        >
+          {popover}
+          <span onClick={this.handleSelect}>
+            {(`Query #${(queryIndex !== null ? convertIndexToLetter(queryIndex) : query)}`)}
+          </span>
+        </Tag>
+      </span>
     );
   }
 }

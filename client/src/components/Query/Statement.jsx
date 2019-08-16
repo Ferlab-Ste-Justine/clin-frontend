@@ -373,7 +373,7 @@ class Statement extends React.Component {
             className="selector"
             style={{
               backgroundColor:
-                (highlightedQueries.indexOf(query.key) !== -1 ? convertIndexToColor(highlightedQueries.indexOf(query.key)) : ''),
+                (highlightedQueries.indexOf(query.key) !== -1 ? convertIndexToColor(this.findQueryIndexForKey(query.key)) : ''),
               }}
           >
             <Checkbox
