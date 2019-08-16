@@ -60,7 +60,9 @@ div.query-container {
     justify-content: space-between;
     align-items: center;
     padding-top: 4px;
-    background-color: #FAFAFA;
+    background-color: #EEEEEE;
+    border: 1px solid #BBBBBB;
+    border-right-color: #DDDDDD;
     .index {
       font-size: 14px;
       font-weight: bold;
@@ -73,7 +75,7 @@ div.query-container {
 
   &.selected {
     .query {
-      background-color: #FAFAFA;
+      background-color: #EEEEEE;
     }
   }
 
@@ -83,6 +85,9 @@ div.query-container {
 
   &.active {
     .query {
+      background-color: aliceblue;
+    }
+    .selector {
       background-color: aliceblue;
     }
     .ant-badge-count {
@@ -134,10 +139,12 @@ div.query {
   width: 100%;
   padding: 5px;
   justify-content: space-between;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #AAAAAA;
+  border-left: none;
 
   &.dirty {
-    border: 1px dashed #CCCCCC
+    border: 1px dashed #AAAAAA;
+    border-left: none;
   }
 
   .title {
