@@ -97,7 +97,8 @@ div.query-container {
   align-items: center;
   mix-blend-mode: difference;
   min-width: 60px;
-  height: 21px;
+  height: 20px;
+  text-transform: uppercase;
 
   .anticon-caret-down {
     cursor: pointer;
