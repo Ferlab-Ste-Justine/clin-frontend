@@ -12,7 +12,7 @@ import './style.scss';
 import Filter, { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
-import { convertIndexToColor } from './Statement';
+import {convertIndexToColor, convertIndexToLetter} from './Statement';
 
 
 export const DEFAULT_EMPTY_QUERY = [];
@@ -501,13 +501,15 @@ View
                   />
                 );
               case INSTRUCTION_TYPE_SUBQUERY:
+                const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
                 return (
                   <Subquery
                     index={index}
-                    queryIndex={(findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null)}
-                    queryColor={ active && findQueryIndexForKey ? convertIndexToColor(findQueryIndexForKey(item.data.query)) : null }
                     options={options}
                     data={item.data}
+                    queryIndex={queryIndex}
+                    queryColor={active && queryIndex !== null ? convertIndexToColor(queryIndex) : null}
+                    queryTitle={queryIndex !== null ? convertIndexToLetter(queryIndex) : index }
                     onEditCallback={this.handleSubqueryChange}
                     onRemoveCallback={this.handleSubqueryRemoval}
                     onSelectCallback={onSelectCallback}
