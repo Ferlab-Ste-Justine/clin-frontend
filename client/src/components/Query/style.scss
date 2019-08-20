@@ -6,11 +6,17 @@ div.statement {
     cursor: grab;
   }
 
+  .placeholder {
+    opacity: 0.5;
+  }
+
   .dragged {
     cursor: grabbing;
-    width: 85%;
-    .query {
-      filter: invert(0.1);
+    width: 75%;
+    margin-left: -10%;
+    filter: invert(0.2);
+    > * {
+      transform: scale(0.66);
     }
   }
 

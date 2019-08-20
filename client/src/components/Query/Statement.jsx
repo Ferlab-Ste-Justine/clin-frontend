@@ -206,12 +206,14 @@ class Statement extends React.Component {
 
   handleReorder(sorted) {
     if (this.isReorderable()) {
-      const { draft, display } = this.state;
+      const { activeQuery, draft, display } = this.state;
       this.commit(draft);
       const sortedIndices = sorted.map(clip => clip.index);
       const sortedData = sortedIndices.map(sortedIndice => draft[sortedIndice]);
       const sortedDisplay = sortedIndices.map(sortedIndice => display[sortedIndice]);
+      const newActiveQuery = findIndex(sortedData, { key: draft[activeQuery].key })
       this.setState({
+        activeQuery: newActiveQuery,
         display: sortedDisplay,
         draft: sortedData,
       });
