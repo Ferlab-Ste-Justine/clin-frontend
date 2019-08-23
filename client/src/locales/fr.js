@@ -98,6 +98,17 @@ const fr = {
   'screen.patientsearch.table.status': 'Statut',
   'screen.patientsearch.download': 'Téléchargez la page en TSV',
   'screen.patientsearch.pagination': '%d-%d sur %d résulats',
+  'screen.variantsearch.category_variant': 'Variants',
+  'screen.variantsearch.filter_variant_type': 'Type de variant',
+  'screen.variantsearch.filter_consequence': 'Conséquence',
+  'screen.variantsearch.filter_external': 'BD externe',
+  'screen.variantsearch.filter_impact': 'Impact clinique (clinvar)',
+  'screen.variantsearch.filter_chromosome': 'Chromosome',
+  'screen.variantsearch.category_genomic': 'Génomique',
+  'screen.variantsearch.category_prediction': 'Prédictions in-silico',
+  'screen.variantsearch.category_cohort': 'Cohortes',
+  'screen.variantsearch.category_zygosity': 'Zygosité et Famille',
+  'screen.variantsearch.category_metric': 'Métriques',
 };
 
 export default fr;

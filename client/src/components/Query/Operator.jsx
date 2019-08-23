@@ -9,7 +9,7 @@ export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
 export const OPERATOR_TYPE_OR = 'or';
 export const OPERATOR_TYPE_AND_NOT = 'and not';
-const OPERATOR_TYPES = [OPERATOR_TYPE_AND, OPERATOR_TYPE_OR, OPERATOR_TYPE_AND_NOT];
+export const OPERATOR_TYPES = [OPERATOR_TYPE_AND, OPERATOR_TYPE_OR, OPERATOR_TYPE_AND_NOT];
 
 export const createOperator = operand => ({
   type: INSTRUCTION_TYPE_OPERATOR,

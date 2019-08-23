@@ -58,6 +58,11 @@ export class ApiError extends Error {
   }
 }
 
+const getVariantSchema = () => axios.get(`${window.CLIN.variantServiceApiUrl}/schema`)
+  .then(successCallback)
+  .catch(errorCallback);
+
+
 export default {
   login,
   logout,
@@ -65,4 +70,5 @@ export default {
   getPatientsByAutoComplete,
   getAllPatients,
   searchPatients,
+  getVariantSchema,
 };

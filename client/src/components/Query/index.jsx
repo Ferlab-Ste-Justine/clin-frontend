@@ -3,15 +3,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep, isEqual, find } from 'lodash';
 import {
-  Dropdown, Icon, Menu, Input, Tooltip, Divider, Badge,
+  Dropdown, Icon, Menu, Input, Divider, Badge,
 } from 'antd';
 import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
 
 import './style.scss';
-import Filter, { INSTRUCTION_TYPE_FILTER } from './Filter/index';
-import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
-import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
+import Filter, { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
+import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
+import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
 
 
@@ -24,6 +24,13 @@ const QUERY_ACTION_DUPLICATE = 'duplicate';
 const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
 const QUERY_ACTION_VIEW_SQON = 'view-sqon';
 const QUERY_ACTION_TITLE = 'title';
+
+const sanitizeInstructions = (instructions) => {
+    instructions = sanitizeSubqueries(instructions);
+    instructions = sanitizeFilters(instructions);
+    instructions = sanitizeOperators(instructions);
+    return instructions;
+}
 
 const sanitizeOperators = (instructions) => {
   // @NOTE No subsequent operators
@@ -41,7 +48,7 @@ const sanitizeOperators = (instructions) => {
 
   // @NOTE No prefix operator
   if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
-    sanitizedInstructions.shift();
+      sanitizedInstructions.shift();
   }
 
   // @NOTE No suffix operator
@@ -49,6 +56,9 @@ const sanitizeOperators = (instructions) => {
   if (sanitizedInstructions[instructionsLength] && sanitizedInstructions[instructionsLength].type === INSTRUCTION_TYPE_OPERATOR) {
     sanitizedInstructions.pop();
   }
+
+  // @No subsequent filters or subqueries without an operator
+  // @TODO
 
   return sanitizedInstructions;
 };
@@ -72,8 +82,9 @@ class Query extends React.Component {
       data: null,
       display: null,
     };
-    this.replaceItem = this.replaceItem.bind(this);
-    this.removeItem = this.removeItem.bind(this);
+    this.addInstruction = this.addInstruction.bind(this);
+    this.replaceInstruction = this.replaceInstruction.bind(this);
+    this.removeInstruction = this.removeInstruction.bind(this);
     this.handleFilterRemoval = this.handleFilterRemoval.bind(this);
     this.handleOperatorRemoval = this.handleOperatorRemoval.bind(this);
     this.handleSubqueryRemoval = this.handleSubqueryRemoval.bind(this);
@@ -98,7 +109,21 @@ class Query extends React.Component {
     });
   }
 
-  replaceItem(item, index = null) {
+  addInstruction(item) {
+      const { data } = this.state;
+      const { onEditCallback } = this.props;
+      data.instructions.push(item);
+      data.instructions = sanitizeInstructions(data.instructions);
+      this.setState({
+          data,
+      }, () => {
+          if (onEditCallback) {
+              onEditCallback(this.serialize());
+          }
+      });
+  }
+
+  replaceInstruction(item, index = null) {
     const { data } = this.state;
     const { onEditCallback } = this.props;
     if (index === null) {
@@ -114,13 +139,12 @@ class Query extends React.Component {
     });
   }
 
-  removeItem(instruction) {
+  removeInstruction(instruction) {
     const { data } = this.state;
     const { onEditCallback, onRemoveCallback } = this.props;
     const index = instruction.index;
     data.instructions.splice(index, 1);
-    data.instructions = sanitizeOperators(data.instructions);
-    data.instructions = sanitizeSubqueries(data.instructions);
+    data.instructions = sanitizeInstructions(data.instructions);
     if (data.instructions.length > 0) {
       this.setState({
         data,
@@ -135,19 +159,19 @@ class Query extends React.Component {
   }
 
   handleFilterRemoval(filter) {
-    this.removeItem(filter);
+    this.removeInstruction(filter);
   }
 
   handleOperatorRemoval(operator) {
-    this.removeItem(operator);
+    this.removeInstruction(operator);
   }
 
   handleSubqueryRemoval(subquery) {
-    this.removeItem(subquery);
+    this.removeInstruction(subquery);
   }
 
   handleFilterChange(filter) {
-    this.replaceItem({
+    this.replaceInstruction({
       type: INSTRUCTION_TYPE_FILTER,
       index: filter.index,
       data: filter.data,
@@ -175,7 +199,7 @@ class Query extends React.Component {
   }
 
   handleSubqueryChange(subquery) {
-    this.replaceItem({
+    this.replaceInstruction({
       type: INSTRUCTION_TYPE_SUBQUERY,
       index: subquery.index,
       data: subquery.data,
@@ -197,16 +221,20 @@ class Query extends React.Component {
   }
 
   handleAdvancedChange(e) {
-    const { options } = this.props;
+    const { data } = this.state;
+    const { options, display } = this.props;
     const { editable } = options;
     if (editable) {
       const {value} = e.target;
+      let rawQuery = data;
       try {
-        const rawQuery = JSON.parse(value);
+        rawQuery = JSON.parse(value);
         const QuerySchema = Joi.object().keys({
           title: Joi.string(),
           instructions: Joi.array().items(Joi.object().keys({
             type: Joi.string().valid(INSTRUCTION_TYPE_FILTER, INSTRUCTION_TYPE_OPERATOR, INSTRUCTION_TYPE_SUBQUERY).required(),
+            //data: Joi.object()
+
 
             /*
             filter: Joi.string().when(
@@ -223,15 +251,17 @@ class Query extends React.Component {
               }),
               */
 
-            operator: Joi.string().when(
-              'type', {
-                is: INSTRUCTION_TYPE_OPERATOR,
-                then: Joi.object({
-                  data: Joi.object({
-                    //type: Joi.string().valid('and', 'or').required()
-                  })
-              })
-            }),
+            /*
+                        operator: Joi.string().when(
+                          'type', {
+                            is: INSTRUCTION_TYPE_OPERATOR,
+                            then: Joi.object().keys({
+                              data: Joi.object().keys({
+                                type: Joi.string().valid(OPERATOR_TYPES).required()
+                              })
+                            })
+                        }),
+            */
             /*
             subquery: Joi.string().when(
               'type', {
@@ -243,24 +273,31 @@ class Query extends React.Component {
                 })
               }),
               */
-        }))});
+          }))
+        });
 
-        const validation = Joi.validate(rawQuery, QuerySchema);
-        console.log(' valid schema? ')
-        console.log( validation )
-        if (!validation.error) {
+      const validation = Joi.validate(rawQuery, QuerySchema);
+      console.log(' === valid schema? ')
+      console.log((!validation.error))
+      display.viewableSqonIsValid = !validation.error;
 
-          console.log(rawQuery)
 
-          this.setState({
-            data: cloneDeep(rawQuery),
-          }, () => {
-            if (this.props.onEditCallback) {
-              this.props.onEditCallback(this.serialize());
-            }
-          });
+
+      } catch (e) {
+        display.viewableSqonIsValid = false;
+        console.log(e)
+      }
+
+
+
+      this.setState({
+        data: rawQuery,
+        display,
+      }, () => {
+        if (this.props.onEditCallback) {
+          this.props.onEditCallback(this.serialize());
         }
-      } catch (e) { console.log(e) }
+      });
     }
   }
 
@@ -444,7 +481,11 @@ View
     } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { display, data } = this.state;
-    const { compoundOperators, viewableSqon } = display;
+    const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
+
+
+
+
     const title = !!data.title;
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
@@ -522,12 +563,11 @@ View
           { viewableSqon && (
           <Input.TextArea
             value={JSON.stringify(this.json())}
-            className="no-drag"
-            rows={4}
+            className={`no-drag${viewableSqonIsValid ? '' : ' invalid'}`}
+            rows={2}
             onChange={this.handleAdvancedChange}
           />
           ) }
-          &nbsp;
         </div>
         <div className="actions">
           { compoundOperators && ( operatorsHandler ) }
@@ -568,6 +608,7 @@ Query.defaultProps = {
   display: {
     compoundOperators: false,
     viewableSqon: false,
+    viewableSqonIsValid: true,
   },
   options: {
     copyable: true,

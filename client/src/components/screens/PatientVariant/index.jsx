@@ -14,6 +14,7 @@ import Header from '../../Header';
 import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
+import VariantNavigation from './components';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
@@ -141,7 +142,11 @@ class PatientVariantScreen extends React.Component {
     this.state = {};
   }
 
-  render() {
+  componentDidMount() {
+
+  }
+
+    render() {
     const { intl, patient } = this.props;
 
     return (
@@ -159,16 +164,17 @@ class PatientVariantScreen extends React.Component {
               )}
           />
 
-          <Descriptions title="Patient [PT93993], Masculin, Proband, Affecté" layout="horizontal" column={1}>
-            <Descriptions.Item label="Famille">[FA09383], Mère: [PT3983883] (Non affecté), Père: [PT4736] (Non affecté)</Descriptions.Item>
-            <Descriptions.Item label="Signes">Epilepsie ([HP93993]), Schizophrénie ([HP2772])</Descriptions.Item>
-            <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
-          </Descriptions>
+            <Descriptions title="Patient [PT93993], Masculin, Proband, Affecté" layout="horizontal" column={1}>
+                <Descriptions.Item label="Famille">[FA09383], Mère: [PT3983883] (Non affecté), Père: [PT4736] (Non affecté)</Descriptions.Item>
+                <Descriptions.Item label="Signes">Epilepsie ([HP93993]), Schizophrénie ([HP2772])</Descriptions.Item>
+                <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
+            </Descriptions>
 
-          <br />
-        <div style={{ width: 900 }}>
-            <Statement key="test-statement" data={statementA} options={optionsA} display={displayA} />
-        </div>
+            <VariantNavigation className="variant-navigation" />
+            <br />
+            <br />
+            <Statement key="variant-statement" data={statementA} options={optionsA} display={displayA} />
+
 
         </Card>
         <Footer />
@@ -181,6 +187,7 @@ PatientVariantScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
+  query: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({

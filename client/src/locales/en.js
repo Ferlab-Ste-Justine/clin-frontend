@@ -98,6 +98,17 @@ const en = {
   'screen.patientsearch.table.status': 'Status',
   'screen.patientsearch.download': 'Download Page to TSV',
   'screen.patientsearch.pagination': '%d-%d of %d results',
+  'screen.variantsearch.category_variant': 'Variants',
+  'screen.variantsearch.filter_variant_type': 'Variant Type',
+  'screen.variantsearch.filter_consequence': 'Consequence',
+  'screen.variantsearch.filter_external': 'External DB',
+  'screen.variantsearch.filter_impact': 'Clinical Impact',
+  'screen.variantsearch.filter_chromosome': 'Chromosome',
+  'screen.variantsearch.category_genomic': 'Genomics',
+  'screen.variantsearch.category_prediction': 'Predictions',
+  'screen.variantsearch.category_cohort': 'Cohorts',
+  'screen.variantsearch.category_zygosity': 'Zygosity and Family',
+  'screen.variantsearch.category_metric': 'Metrics',
 };
 
 export default en;
