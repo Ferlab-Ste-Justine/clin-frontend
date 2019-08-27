@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Divider, Tooltip, Badge, Dropdown, Icon,
+  Menu, Button, Checkbox,  Tooltip, Badge, Dropdown, Icon,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter,
@@ -466,7 +466,6 @@ class Statement extends React.Component {
             ) }
           </div>
         </div>
-        <Divider />
         {reorderable
           ? (
             <DragSortableList
