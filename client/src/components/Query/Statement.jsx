@@ -466,7 +466,6 @@ class Statement extends React.Component {
             ) }
           </div>
         </div>
-        <Divider />
         {reorderable
           ? (
             <DragSortableList
