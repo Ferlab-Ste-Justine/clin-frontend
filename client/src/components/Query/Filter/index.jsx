@@ -189,10 +189,11 @@ class Filter extends React.Component {
 
   handleCancel() {
     const { data } = this.state;
+    const { onCancelCallback } = this.props;
     this.setState({
       draft: { ...data },
       opened: false,
-    });
+    }, () => { onCancelCallback(this.serialize()); });
   }
 
   handleSelect() {
@@ -351,6 +352,7 @@ Filter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onEditCallback: PropTypes.func,
+  onCancelCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   autoopen: PropTypes.bool,
@@ -364,6 +366,7 @@ Filter.defaultProps = {
     removable: false,
   },
   onEditCallback: () => {},
+  onCancelCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
   autoopen: false,

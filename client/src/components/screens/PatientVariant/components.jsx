@@ -22,18 +22,17 @@ import {
 import { variantShape } from '../../../reducers/variant';
 
 
-
-
-
 class VariantNavigation extends React.Component {
 
     constructor() {
         super();
         this.state = {
-            filter: null,
+            activeCategoryId: null,
+            activeFilterId: null,
         }
+        this.handleFilterSearch = this.handleFilterSearch.bind(this);
         this.handleFilterSelection = this.handleFilterSelection.bind(this);
-        this.handleFilterOpenChange = this.handleFilterOpenChange.bind(this);
+        this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
     }
 
     componentDidMount() {
@@ -45,63 +44,70 @@ class VariantNavigation extends React.Component {
         }
     }
 
+    handleFilterSearch(query) {
+        console.log('handleFilterSelection query ' + query);
+    }
+
     handleFilterSelection(key) {
+        console.log('handleFilterSelection key ' + JSON.stringify(key));
         this.setState({
-            filter: key
+            activeFilterId: key
         })
     }
 
-    handleFilterOpenChange(keys) {
-        console.log(keys);
+    handleCategoryOpenChange(keys) {
+        console.log('handleFilterOpenChange keys ' + JSON.stringify(keys))
+        this.setState({
+            activeCategoryId: keys[0] || null,
+            activeFilterId: null,
+        })
     }
-
-    // mode="inline"
 
     render() {
         const { intl, variant } = this.props;
-        const { filter } = this.state;
+        const { activeCategoryId, activeFilterId } = this.state;
         const { schema } = variant;
 
         return (<div className="variant-navigation">
-            <Menu mode="horizontal">
-            <Menu.SubMenu title={(<Input placeholder="Recherche de filtres"/>)}/>
-            {schema.categories && schema.categories.map((category) => {
-                if (category.filters && category.filters.length > 0) {
-                    const id = category.id;
-                    const label = intl.formatMessage({id: `screen.variantsearch.${category.label}`});
-                    if (!filter) {
+            <Menu mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
+                <Menu.SubMenu key="search" title={(<Input.Search
+                    placeholder="Recherche de filtres"
+                    onSearch={this.handleFilterSearch}
+                />)}/>
+                {schema.categories && schema.categories.map((category) => {
+                    if (category.filters && category.filters.length > 0) {
+                        const id = category.id;
+                        const label = intl.formatMessage({id: `screen.variantsearch.${category.label}`});
                         return (<Menu.SubMenu key={id} title={<span>{label}</span>}>
-                            {category.filters.map((filter) => {
-                                return (<Menu key={filter.id}
-                                                      title={intl.formatMessage({id: `screen.variantsearch.${filter.label}`})}
-                                                      onTitleClick={this.handleFilterSelection}
-                                                      // onOpenChange={this.handleFilterOpenChange}
-                                >
-                                </Menu>);
+                            { activeFilterId === null && category.filters.map((filter) => {
+                                return (<Menu.SubMenu key={filter.id}
+                                      title={intl.formatMessage({id: `screen.variantsearch.${filter.label}`})}
+                                      onTitleClick={this.handleFilterSelection}
+                                />);
                             })}
-                        </Menu.SubMenu>)
-                    }
+                            { activeFilterId !== null && (<Filter
+                                visible={true}
+                                autoopen={true}
+                                options={{
+                                    editable: true,
+                                    selectable: false,
+                                    removable: false,
+                                }}
+                                data={{
+                                    type: 'filter',
+                                    data: {
+                                        type: 'generic',
+                                    }
+                                }}
+                                onEditCallback={this.handleCategoryOpenChange}
+                                onCancelCallback={this.handleCategoryOpenChange}
+                            />)}
 
-                    return (<Menu.SubMenu key={id} title={<span>{label}</span>}>
-                        <Filter
-                            visible={true}
-                            autoopen={true}
-                            options={{
-                                editable: true,
-                                selectable: false,
-                                removable: false,
-                            }}
-                            data={{
-                                type: 'filter',
-                                data: {
-                                    type: 'generic',
-                                }
-                            }}
-                        />
-                    </Menu.SubMenu>)
+                        </Menu.SubMenu>);
                 }
             })}
-            </Menu></div>);
+            </Menu>
+        </div>);
     }
 }
 
