@@ -321,7 +321,6 @@ class Filter extends React.Component {
     const { data } = this.state;
     const popover = this.createPopoverComponent();
     const overlay = this.createMenuComponent();
-
     return (
       <span>
         <Tag
@@ -330,9 +329,10 @@ class Filter extends React.Component {
           closable={this.isRemovable()}
           onClose={this.handleClose}
           color={this.isSelected() ? 'blue' : ''}
+          onClick={this.handleSelect}
         >
           {popover}
-          <span onClick={this.handleSelect}>
+          <span onClick={this.toggleMenu}>
             { JSON.stringify(data.values) }
           </span>
           { this.isEditable() && (
