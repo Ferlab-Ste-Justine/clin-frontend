@@ -573,7 +573,7 @@ View
           { compoundOperators && ( operatorsHandler ) }
           { hasMenu && (<Divider type="vertical" />) }
           { hasMenu && (
-          <Dropdown overlay={this.createMenuComponent}>
+          <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
             <Icon type="more" />
           </Dropdown>
           ) }

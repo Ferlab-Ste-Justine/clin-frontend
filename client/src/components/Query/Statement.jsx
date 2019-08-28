@@ -425,6 +425,7 @@ class Statement extends React.Component {
             <Tooltip title="Combine Selection">
               <Dropdown
                 disabled={(checkedQueriesCount < 2)}
+                trigger = {['click']}
                 overlay={(
                   <Menu onClick={this.handleCombine}>
                     <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
