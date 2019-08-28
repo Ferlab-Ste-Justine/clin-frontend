@@ -45,18 +45,16 @@ class VariantNavigation extends React.Component {
     }
 
     handleFilterSearch(query) {
-        console.log('handleFilterSelection query ' + query);
+        console.log('handleFilterSelection query');
     }
 
     handleFilterSelection(key) {
-        console.log('handleFilterSelection key ' + JSON.stringify(key));
         this.setState({
             activeFilterId: key
         })
     }
 
     handleCategoryOpenChange(keys) {
-        console.log('handleFilterOpenChange keys ' + JSON.stringify(keys))
         this.setState({
             activeCategoryId: keys[0] || null,
             activeFilterId: null,
@@ -65,11 +63,12 @@ class VariantNavigation extends React.Component {
 
     render() {
         const { intl, variant } = this.props;
-        const { activeCategoryId, activeFilterId } = this.state;
+        const { activeFilterId } = this.state;
         const { schema } = variant;
 
+
         return (<div className="variant-navigation">
-            <Menu mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
+            <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
                 <Menu.SubMenu key="search" title={(<Input.Search
                     placeholder="Recherche de filtres"
                     onSearch={this.handleFilterSearch}
@@ -86,23 +85,22 @@ class VariantNavigation extends React.Component {
                                 />);
                             })}
                             { activeFilterId !== null && (<Filter
-                                visible={true}
-                                autoopen={true}
+                                overlayOnly={true}
+                                autoOpen={true}
                                 options={{
                                     editable: true,
                                     selectable: false,
                                     removable: false,
                                 }}
                                 data={{
-                                    type: 'filter',
-                                    data: {
-                                        type: 'generic',
-                                    }
+                                    id: 'study',
+                                    type: 'generic',
+                                    operand: 'all',
+                                    values: ['My Study', 'Your Study'],
                                 }}
                                 onEditCallback={this.handleCategoryOpenChange}
                                 onCancelCallback={this.handleCategoryOpenChange}
                             />)}
-
                         </Menu.SubMenu>);
                 }
             })}

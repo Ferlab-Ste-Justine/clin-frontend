@@ -1,3 +1,6 @@
+/* eslint-disable */
+
+
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, no-case-declarations */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -26,8 +29,10 @@ export const createFilter = type => ({
   },
 });
 
-const createPopoverByFilterType = (state) => {
-  const { data } = state;
+
+
+
+const createPopoverByFilterType = (data) => {
   const { type, operand } = data;
   let content = null;
   let legend = null;
@@ -103,8 +108,11 @@ class Filter extends React.Component {
     this.toggleMenu = this.toggleMenu.bind(this);
   }
 
-  componentWillMount() {
-    const { data, visible } = this.props;
+  /* eslint-disable */
+  componentDidMount() {
+    const {
+      data, autoOpen, visible,
+    } = this.props;
     switch (data.type) {
       default:
       case FILTER_TYPE_GENERIC:
@@ -122,7 +130,7 @@ class Filter extends React.Component {
     this.setState({
       data,
       draft: cloneDeep(data),
-      opened: false,
+      opened: autoOpen,
       selected: false,
       visible,
     });
@@ -157,9 +165,8 @@ class Filter extends React.Component {
   }
 
   isOpened() {
-    const { autoopen } = this.props;
     const { opened } = this.state;
-    return (autoopen === true || opened === true);
+    return opened === true;
   }
 
   serialize() {
@@ -206,7 +213,8 @@ class Filter extends React.Component {
   }
 
   createPopoverComponent() {
-    return createPopoverByFilterType(this.state);
+    const { data } = this.state;
+    return createPopoverByFilterType(data);
   }
 
   createSubMenuByFilterType() {
@@ -217,16 +225,12 @@ class Filter extends React.Component {
       case 'generic':
 
         const handleFilterChange = (e) => {
-          console.log('+++ handleFilterSelection');
-          console.log(e);
           if (this.isEditable()) {
             this.setState({ filters: e.target.value });
           }
         };
 
         const handleOperandChange = (e) => {
-          console.log('+++ handleOperandChange');
-          console.log(e);
           if (this.isEditable()) {
             draft.operand = e.target.value;
             this.setState({ draft });
@@ -320,10 +324,19 @@ class Filter extends React.Component {
   }
 
   render() {
-    const { data } = this.state;
-    const popover = this.createPopoverComponent();
+    const { draft } = this.state;
+    if (draft === null) { return null }
+
+    const { overlayOnly } = this.props;
     const overlay = this.createMenuComponent();
 
+    if (overlayOnly === true) {
+      return (<Dropdown
+        onVisibleChange={this.toggleMenu} overlay={overlay} visible={this.isOpened()} placement="bottomLeft"><span/>
+      </Dropdown>);
+    }
+
+    const popover = this.createPopoverComponent();
     return (
       <span>
         <Tag
@@ -335,10 +348,10 @@ class Filter extends React.Component {
         >
           {popover}
           <span onClick={this.handleSelect}>
-            { JSON.stringify(data.values) }
+            { JSON.stringify(draft.values) }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomCenter">
+          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }
@@ -355,7 +368,8 @@ Filter.propTypes = {
   onCancelCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
-  autoopen: PropTypes.bool,
+  autoOpen: PropTypes.bool,
+  overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
 };
 
@@ -369,7 +383,8 @@ Filter.defaultProps = {
   onCancelCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
-  autoopen: false,
+  autoOpen: false,
+  overlayOnly: false,
   visible: true,
 };
 
