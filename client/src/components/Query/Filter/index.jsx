@@ -157,8 +157,9 @@ class Filter extends React.Component {
   }
 
   isOpened() {
+    const { autoopen } = this.props;
     const { opened } = this.state;
-    return opened === true;
+    return (autoopen === true || opened === true);
   }
 
   serialize() {
@@ -352,6 +353,7 @@ Filter.propTypes = {
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
+  autoopen: PropTypes.bool,
   visible: PropTypes.bool,
 };
 
@@ -364,6 +366,7 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
+  autoopen: false,
   visible: true,
 };
 

@@ -5,11 +5,16 @@ import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
+import {
+    pull
+} from 'lodash';
+
 import {
   Col, Row, Layout, Menu, Icon, Input,
 } from 'antd';
 
-import Filter, { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from '../../Query/Filter/index';
+import Filter, {INSTRUCTION_TYPE_FILTER, FILTER_TYPES, FILTER_TYPE_GENERIC} from '../../Query/Filter/index';
 
 import {
     fetchSchema,
@@ -25,9 +30,10 @@ class VariantNavigation extends React.Component {
     constructor() {
         super();
         this.state = {
-
+            filter: null,
         }
-        this.handleFilterChange = this.handleFilterChange.bind(this);
+        this.handleFilterSelection = this.handleFilterSelection.bind(this);
+        this.handleFilterOpenChange = this.handleFilterOpenChange.bind(this);
     }
 
     componentDidMount() {
@@ -39,37 +45,61 @@ class VariantNavigation extends React.Component {
         }
     }
 
-    handleFilterChange(e) {
-        console.log('===-- handleFilterChange --===');
-        console.log(e);
+    handleFilterSelection(key) {
+        this.setState({
+            filter: key
+        })
     }
+
+    handleFilterOpenChange(keys) {
+        console.log(keys);
+    }
+
+    // mode="inline"
 
     render() {
         const { intl, variant } = this.props;
+        const { filter } = this.state;
         const { schema } = variant;
 
         return (<div className="variant-navigation">
             <Menu mode="horizontal">
-            <Menu.SubMenu title={(<Input placeholder="Recherche de filtres"/>)}></Menu.SubMenu>
+            <Menu.SubMenu title={(<Input placeholder="Recherche de filtres"/>)}/>
             {schema.categories && schema.categories.map((category) => {
+                if (category.filters && category.filters.length > 0) {
+                    const id = category.id;
+                    const label = intl.formatMessage({id: `screen.variantsearch.${category.label}`});
+                    if (!filter) {
+                        return (<Menu.SubMenu key={id} title={<span>{label}</span>}>
+                            {category.filters.map((filter) => {
+                                return (<Menu key={filter.id}
+                                                      title={intl.formatMessage({id: `screen.variantsearch.${filter.label}`})}
+                                                      onTitleClick={this.handleFilterSelection}
+                                                      // onOpenChange={this.handleFilterOpenChange}
+                                >
+                                </Menu>);
+                            })}
+                        </Menu.SubMenu>)
+                    }
 
-                const id = category.id;
-                const label = intl.formatMessage({ id: `screen.variantsearch.${category.label}` });
-
-                const filters = category.filters.map((filter) => {
-                    return (<Menu.SubMenu
-                        key={filter.id}
-                        title={intl.formatMessage({ id: `screen.variantsearch.${filter.label}`})}
-                    />);
-                })
-
-
-
-                return (<Menu.SubMenu key={id} title={<span>{label}</span>}>
-                        {[...filters]}
-                </Menu.SubMenu>)
-
-
+                    return (<Menu.SubMenu key={id} title={<span>{label}</span>}>
+                        <Filter
+                            visible={true}
+                            autoopen={true}
+                            options={{
+                                editable: true,
+                                selectable: false,
+                                removable: false,
+                            }}
+                            data={{
+                                type: 'filter',
+                                data: {
+                                    type: 'generic',
+                                }
+                            }}
+                        />
+                    </Menu.SubMenu>)
+                }
             })}
             </Menu></div>);
     }
