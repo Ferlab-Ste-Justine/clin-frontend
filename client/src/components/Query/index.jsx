@@ -76,8 +76,8 @@ const sanitizeFilters = instructions => instructions;
 
 
 class Query extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       data: null,
       display: null,
@@ -99,14 +99,11 @@ class Query extends React.Component {
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
-  }
 
-  componentWillMount() {
-    const { display, draft } = this.props;
-    this.setState({
-      data: draft,
-      display,
-    });
+    // @NOTE Initialize Component State
+    const { display, draft } = props;
+    this.state.data = draft;
+    this.state.display = display;
   }
 
   addInstruction(item) {

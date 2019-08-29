@@ -35,16 +35,16 @@ export const convertIndexToColor = index => `#${[
 ][index]}`;
 
 class Statement extends React.Component {
-  constructor() {
-    super();
-    this.versions = null;
+  constructor(props) {
+    super(props);
+    this.versions = [];
     this.state = {
       draft: null,
       original: null,
-      checkedQueries: null,
+      checkedQueries: [],
       activeQuery: null,
-      queriesChecksAreIndeterminate: null,
-      queriesAreAllChecked: null,
+      queriesChecksAreIndeterminate: false,
+      queriesAreAllChecked: false,
       display: null,
       options: {
         copyable: null,
@@ -80,26 +80,19 @@ class Statement extends React.Component {
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.commit = this.commit.bind(this);
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
-  }
 
-  componentWillMount() {
-    this.versions = [];
-    const { data, display } = this.props;
+    // @NOTE Initialize Component State
+    const { data, display } = props;
     const displays = [];
     data.map((newDatum) => {
       displays.push({ ...display });
       newDatum.key = uuidv1();
       return newDatum;
     });
-    this.setState({
-      original: data,
-      draft: cloneDeep(data),
-      display: cloneDeep(displays),
-      checkedQueries: [],
-      activeQuery: (data.length - 1) || null,
-      queriesChecksAreIndeterminate: false,
-      queriesAreAllChecked: false,
-    });
+    this.state.original = data;
+    this.state.draft = cloneDeep(data);
+    this.state.display = cloneDeep(displays);
+    this.state.activeQuery = (data.length - 1) || null;
   }
 
   isCopyable() {
@@ -355,6 +348,7 @@ class Statement extends React.Component {
     const {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
     } = this.state;
+    if (draft === null) { return null }
     const { options } = this.props;
     const {
       editable, reorderable, removable, undoable,

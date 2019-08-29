@@ -1,3 +1,6 @@
+/* eslint-disable */
+
+
 /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, no-case-declarations */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -26,8 +29,10 @@ export const createFilter = type => ({
   },
 });
 
-const createPopoverByFilterType = (state) => {
-  const { data } = state;
+
+
+
+const createPopoverByFilterType = (data) => {
   const { type, operand } = data;
   let content = null;
   let legend = null;
@@ -76,14 +81,14 @@ const createPopoverByFilterType = (state) => {
 };
 
 class Filter extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       type: null,
       data: null,
       draft: null,
       visible: null,
-      selected: null,
+      selected: false,
       opened: null,
     };
     this.isEditable = this.isEditable.bind(this);
@@ -101,10 +106,11 @@ class Filter extends React.Component {
     this.handleApply = this.handleApply.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
-  }
 
-  componentWillMount() {
-    const { data, visible } = this.props;
+    // @NOTE Initialize Component State
+    const {
+      data, autoOpen, visible,
+    } = props;
     switch (data.type) {
       default:
       case FILTER_TYPE_GENERIC:
@@ -118,14 +124,10 @@ class Filter extends React.Component {
       case FILTER_TYPE_SPECIFIC:
         break;
     }
-
-    this.setState({
-      data,
-      draft: cloneDeep(data),
-      opened: false,
-      selected: false,
-      visible,
-    });
+    this.state.data = data;
+    this.state.draft = cloneDeep(data);
+    this.state.opened = autoOpen;
+    this.state.visible = visible;
   }
 
   isEditable() {
@@ -188,10 +190,11 @@ class Filter extends React.Component {
 
   handleCancel() {
     const { data } = this.state;
+    const { onCancelCallback } = this.props;
     this.setState({
       draft: { ...data },
       opened: false,
-    });
+    }, () => { onCancelCallback(this.serialize()); });
   }
 
   handleSelect() {
@@ -204,7 +207,8 @@ class Filter extends React.Component {
   }
 
   createPopoverComponent() {
-    return createPopoverByFilterType(this.state);
+    const { data } = this.state;
+    return createPopoverByFilterType(data);
   }
 
   createSubMenuByFilterType() {
@@ -215,16 +219,12 @@ class Filter extends React.Component {
       case 'generic':
 
         const handleFilterChange = (e) => {
-          console.log('+++ handleFilterSelection');
-          console.log(e);
           if (this.isEditable()) {
             this.setState({ filters: e.target.value });
           }
         };
 
         const handleOperandChange = (e) => {
-          console.log('+++ handleOperandChange');
-          console.log(e);
           if (this.isEditable()) {
             draft.operand = e.target.value;
             this.setState({ draft });
@@ -318,9 +318,19 @@ class Filter extends React.Component {
   }
 
   render() {
-    const { data } = this.state;
-    const popover = this.createPopoverComponent();
+    const { draft } = this.state;
+    if (draft === null) { return null }
+
+    const { overlayOnly } = this.props;
     const overlay = this.createMenuComponent();
+
+    if (overlayOnly === true) {
+      return (<Dropdown
+        onVisibleChange={this.toggleMenu} overlay={overlay} visible={this.isOpened()} placement="bottomLeft"><span/>
+      </Dropdown>);
+    }
+
+    const popover = this.createPopoverComponent();
     return (
       <span>
         <Tag
@@ -333,10 +343,10 @@ class Filter extends React.Component {
         >
           {popover}
           <span onClick={this.toggleMenu}>
-            { JSON.stringify(data.values) }
+            { JSON.stringify(draft.values) }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomCenter">
+          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }
@@ -350,8 +360,11 @@ Filter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onEditCallback: PropTypes.func,
+  onCancelCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
+  autoOpen: PropTypes.bool,
+  overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
 };
 
@@ -362,8 +375,11 @@ Filter.defaultProps = {
     removable: false,
   },
   onEditCallback: () => {},
+  onCancelCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
+  autoOpen: false,
+  overlayOnly: false,
   visible: true,
 };
 

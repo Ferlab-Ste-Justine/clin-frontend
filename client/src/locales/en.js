@@ -105,9 +105,17 @@ const en = {
   'screen.variantsearch.filter_impact': 'Clinical Impact',
   'screen.variantsearch.filter_chromosome': 'Chromosome',
   'screen.variantsearch.category_genomic': 'Genomics',
+  'screen.variantsearch.filter_gene_type': 'Gene Type',
   'screen.variantsearch.category_prediction': 'Predictions',
+  'screen.variantsearch.filter_vep': 'VEP',
+  'screen.variantsearch.filter_sift': 'SIFT',
+  'screen.variantsearch.filter_polyphen': 'Polyphen',
+  'screen.variantsearch.filter_lrt': 'LRT',
+  'screen.variantsearch.filter_mutation_assessor': 'Mutation Assessor',
+  'screen.variantsearch.filter_fathmm': 'FATHMM',
   'screen.variantsearch.category_cohort': 'Cohorts',
   'screen.variantsearch.category_zygosity': 'Zygosity and Family',
+  'screen.variantsearch.filter_transmission': 'Transmission',
   'screen.variantsearch.category_metric': 'Metrics',
 };
 

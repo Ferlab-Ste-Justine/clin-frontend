@@ -19,8 +19,8 @@ export const createOperator = operand => ({
 });
 
 class Operator extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       data: null,
       options: {
@@ -33,17 +33,14 @@ class Operator extends React.Component {
     this.serialize = this.serialize.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleApply = this.handleApply.bind(this);
-  }
 
-  componentWillMount() {
-    const { options, data, visible } = this.props;
-    this.setState({
-      data: { ...data },
-      options: {
-        editable: options.editable || true,
-      },
-      visible,
-    });
+    // @NOTE Initialize Component State
+    const { options, data, visible } = props;
+    this.state.data = { ...data };
+    this.state.options = {
+      editable: options.editable || true,
+    };
+    this.state.visible = visible;
   }
 
   isEditable() {

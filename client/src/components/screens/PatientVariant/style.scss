@@ -13,6 +13,9 @@
         .ant-input {
           width: 300px;
         }
+        .ant-input-affix-wrapper .ant-input-suffix {
+          right: 0;
+        }
       }
     }
   }
