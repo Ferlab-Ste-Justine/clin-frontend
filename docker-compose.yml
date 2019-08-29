@@ -52,6 +52,15 @@ services:
             proxy_set_header X-Real-IP $$remote_addr;
             proxy_cache_bypass $$http_upgrade;
         }
+        location /api/variant {  ### this service is defined in clin-proxy-api
+            proxy_pass https://variant:5000/variant;
+            proxy_http_version 1.1;
+            proxy_set_header Connection keep-alive;
+            proxy_set_header Upgrade $$http_upgrade;
+            proxy_set_header Host $$host;
+            proxy_set_header X-Real-IP $$remote_addr;
+            proxy_cache_bypass $$http_upgrade;
+        }
       }' | tee /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
