@@ -63,8 +63,8 @@ const createPopoverBySubqueryType = (state) => {
 
 
 class Subquery extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       data: null,
       draft: null,
@@ -80,7 +80,7 @@ class Subquery extends React.Component {
     this.createPopoverComponent = this.createPopoverComponent.bind(this);
 
     // @NOTE Initialize Component State
-    const { data } = this.props;
+    const { data } = props;
     this.state.data = data;
     this.state.draft = { ...data };
   }
