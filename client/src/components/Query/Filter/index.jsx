@@ -1,14 +1,11 @@
 /* eslint-disable */
 
-
-/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, no-case-declarations */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Row, Col, Typography, Card, Tag, Input, Popover, Dropdown, Button, Radio, Icon, Checkbox,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-import IconKit from 'react-icons-kit';
 import {
   empty, one, full, info,
 } from 'react-icons-kit/entypo';
@@ -20,7 +17,7 @@ export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
 export const FILTER_OPERAND_TYPE_NONE = 'none';
 export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_SPECIFIC];
-// const FILTER_OPERANDS = [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE];
+export const FILTER_OPERANDS = [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,
@@ -28,57 +25,6 @@ export const createFilter = type => ({
     type: (FILTER_TYPES.indexOf(type) !== -1 ? type : FILTER_TYPE_GENERIC),
   },
 });
-
-
-
-
-const createPopoverByFilterType = (data) => {
-  const { type, operand } = data;
-  let content = null;
-  let legend = null;
-
-  switch (type) {
-    case FILTER_TYPE_GENERIC:
-      content = (
-        <div>
-          <Typography.Text>{operand}</Typography.Text>
-          <ul>
-            <li>VALUE 1</li>
-            <li>VALUE 3</li>
-          </ul>
-        </div>
-      );
-      switch (operand) {
-        default:
-        case FILTER_OPERAND_TYPE_ALL:
-          legend = (<IconKit size={16} icon={full} />);
-          break;
-        case FILTER_OPERAND_TYPE_ONE:
-          legend = (<IconKit size={16} icon={one} />);
-          break;
-        case FILTER_OPERAND_TYPE_NONE:
-          legend = (<IconKit size={16} icon={empty} />);
-          break;
-      }
-      break;
-
-    case FILTER_TYPE_SPECIFIC:
-    default:
-      legend = (<IconKit size={16} icon={info} />);
-      break;
-  }
-
-  return (
-    <Popover
-      className="legend"
-      trigger="hover"
-      placement="topLeft"
-      content={content}
-    >
-      {legend}
-    </Popover>
-  );
-};
 
 class Filter extends React.Component {
   constructor(props) {
@@ -100,9 +46,6 @@ class Filter extends React.Component {
     this.serialize = this.serialize.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
-    this.createMenuComponent = this.createMenuComponent.bind(this);
-    this.createPopoverComponent = this.createPopoverComponent.bind(this);
-    this.createSubMenuByFilterType = this.createSubMenuByFilterType.bind(this);
     this.handleApply = this.handleApply.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
@@ -111,19 +54,6 @@ class Filter extends React.Component {
     const {
       data, autoOpen, visible,
     } = props;
-    switch (data.type) {
-      default:
-      case FILTER_TYPE_GENERIC:
-        if (!data.operand) {
-          data.operand = FILTER_OPERAND_TYPE_ALL;
-        }
-        if (!data.values) {
-          data.values = [];
-        }
-        break;
-      case FILTER_TYPE_SPECIFIC:
-        break;
-    }
     this.state.data = data;
     this.state.draft = cloneDeep(data);
     this.state.opened = autoOpen;
@@ -184,7 +114,11 @@ class Filter extends React.Component {
       this.setState({
         data: { ...draft },
         opened: false,
-      }, () => { onEditCallback(this.serialize()); });
+      }, () => {
+        if (onEditCallback) {
+          onEditCallback(this.serialize());
+        }
+      });
     }
   }
 
@@ -194,7 +128,11 @@ class Filter extends React.Component {
     this.setState({
       draft: { ...data },
       opened: false,
-    }, () => { onCancelCallback(this.serialize()); });
+    }, () => {
+      if (onCancelCallback) {
+        onCancelCallback(this.serialize());
+      }
+    });
   }
 
   handleSelect() {
@@ -202,115 +140,12 @@ class Filter extends React.Component {
       const { onSelectCallback } = this.props;
       this.setState({
         selected: !this.isSelected(),
-      }, () => { onSelectCallback(this.serialize()); });
+      }, () => {
+        if (onSelectCallback) {
+          onSelectCallback(this.serialize());
+        }
+      });
     }
-  }
-
-  createPopoverComponent() {
-    const { data } = this.state;
-    return createPopoverByFilterType(data);
-  }
-
-  createSubMenuByFilterType() {
-    const { draft } = this.state;
-    const { operand, type } = draft;
-
-    switch (type) {
-      case 'generic':
-
-        const handleFilterChange = (e) => {
-          if (this.isEditable()) {
-            this.setState({ filters: e.target.value });
-          }
-        };
-
-        const handleOperandChange = (e) => {
-          if (this.isEditable()) {
-            draft.operand = e.target.value;
-            this.setState({ draft });
-          }
-        };
-
-        const handleFilterSearchByQuery = (value) => {
-          console.log('+++ handleFilterSearchByQuery');
-          console.log(value);
-        };
-
-        const handleFilterSelectAll = () => {
-          console.log('+++ handleFilterSelectAll');
-        };
-
-        const handleFilterEraseAll = () => {
-          console.log('+++ handleFilterSelectNone');
-        };
-
-        return (
-          <>
-            <Row>
-              <Col span={24}>
-                <Radio.Group size="small" type="primary" value={operand} onChange={handleOperandChange}>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ALL}>All Of</Radio.Button>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ONE}>At Least One</Radio.Button>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_NONE}>Not Any Of</Radio.Button>
-                </Radio.Group>
-              </Col>
-            </Row>
-            <br />
-            <Row>
-              <Input.Search
-                placeholder="Recherche"
-                size="small"
-                onSearch={handleFilterSearchByQuery}
-              />
-            </Row>
-            <br />
-            <Row>
-              <span onClick={handleFilterEraseAll}>Aucun</span>
-              {' '}
-              <span onClick={handleFilterSelectAll}>Tous</span>
-            </Row>
-            <br />
-            <Row>
-              <Col span={24}>
-                <Checkbox.Group
-                  style={{ display: 'flex', flexDirection: 'column' }}
-                  options={['Apple', 'Pear', 'Orange']}
-                  value={['Apple']}
-                  onChange={handleFilterChange}
-                />
-              </Col>
-            </Row>
-          </>
-        );
-
-      case 'specific':
-      default:
-        return null;
-    }
-  }
-
-  createMenuComponent() {
-    const { data } = this.state;
-    const filterMenu = this.createSubMenuByFilterType();
-
-    return (
-      <Popover
-        visible={this.isOpened()}
-      >
-        <Card>
-          <Typography.Title level={4}>{data.id}</Typography.Title>
-          { filterMenu }
-          <Row type="flex" justify="end">
-            <Col span={6}>
-              <Button onClick={this.handleCancel}>Annuler</Button>
-            </Col>
-            <Col span={5}>
-              <Button type="primary" onClick={this.handleApply}>Appliquer</Button>
-            </Col>
-          </Row>
-        </Card>
-      </Popover>
-    );
   }
 
   toggleMenu() {
@@ -318,11 +153,27 @@ class Filter extends React.Component {
   }
 
   render() {
-    const { draft } = this.state;
-    if (draft === null) { return null }
-
+    const { data, draft } = this.state;
     const { overlayOnly } = this.props;
-    const overlay = this.createMenuComponent();
+
+    const overlay = (
+        <Popover
+            visible={this.isOpened()}
+        >
+          <Card>
+            <Typography.Title level={4}>{data.id}</Typography.Title>
+            { this.getEditor() }
+            <Row type="flex" justify="end">
+              <Col span={6}>
+                <Button onClick={this.handleCancel}>Annuler</Button>
+              </Col>
+              <Col span={5}>
+                <Button type="primary" onClick={this.handleApply}>Appliquer</Button>
+              </Col>
+            </Row>
+          </Card>
+        </Popover>
+    );
 
     if (overlayOnly === true) {
       return (<Dropdown
@@ -330,7 +181,6 @@ class Filter extends React.Component {
       </Dropdown>);
     }
 
-    const popover = this.createPopoverComponent();
     return (
       <span>
         <Tag
@@ -341,9 +191,16 @@ class Filter extends React.Component {
           color={this.isSelected() ? 'blue' : ''}
           onClick={this.handleSelect}
         >
-          {popover}
+          <Popover
+            className="legend"
+            trigger="hover"
+            placement="topLeft"
+            content={this.getPopoverContent()}
+          >
+            {this.getPopoverLegend()}
+          </Popover>
           <span onClick={this.toggleMenu}>
-            { JSON.stringify(draft.values) }
+            {this.getLabel()}
           </span>
           { this.isEditable() && (
           <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
@@ -359,8 +216,8 @@ class Filter extends React.Component {
 Filter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
-  onEditCallback: PropTypes.func,
   onCancelCallback: PropTypes.func,
+  onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   autoOpen: PropTypes.bool,
@@ -374,8 +231,8 @@ Filter.defaultProps = {
     selectable: false,
     removable: false,
   },
-  onEditCallback: () => {},
   onCancelCallback: () => {},
+  onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
   autoOpen: false,

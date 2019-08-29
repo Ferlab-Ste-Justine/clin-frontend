@@ -33,10 +33,10 @@ const queryA = {
         {
             type: 'filter',
             data: {
-                id: 'study',
+                id: 'variant_type',
                 type: 'generic',
                 operand: 'all',
-                values: ['My Study', 'Your Study'],
+                values: ['A', 'B'],
             },
         },
         {
@@ -48,7 +48,7 @@ const queryA = {
         {
             type: 'filter',
             data: {
-                id: 'proband',
+                id: 'gene_type',
                 type: 'generic',
                 operand: 'one',
                 values: ['true'],
@@ -58,59 +58,6 @@ const queryA = {
             type: 'operator',
             data: {
                 type: 'and',
-            },
-        },
-        {
-            type: 'filter',
-            data: {
-                id: 'study',
-                type: 'generic',
-                operator: 'all',
-                values: ['My Study', 'Your Study'],
-            },
-        },
-        {
-            type: 'operator',
-            data: {
-                type: 'and',
-            },
-        },
-        {
-            type: 'filter',
-            data: {
-                id: 'proband',
-                type: 'generic',
-                operand: 'one',
-                values: ['true'],
-            },
-        },
-    ],
-};
-
-const queryB = {
-    instructions: [
-        {
-            type: 'filter',
-            data: {
-                id: 'study',
-                type: 'generic',
-                operand: 'none',
-                values: ['My Study'],
-            },
-        },
-        {
-            type: 'operator',
-            data: {
-                type: 'or',
-            },
-        },
-        {
-            type: 'filter',
-            data: {
-                id: 'proband',
-                type: 'generic',
-                operand: 'all',
-                values: ['true'],
             },
         },
     ],
@@ -127,7 +74,7 @@ const optionsA = {
 };
 const statementA = [
     queryA,
-    queryB,
+    cloneDeep(queryA),
     cloneDeep(queryA),
     cloneDeep(queryA),
 ];

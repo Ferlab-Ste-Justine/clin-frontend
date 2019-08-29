@@ -9,7 +9,9 @@ import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
 
 import './style.scss';
-import Filter, { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
+import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
+import GenericFilter from './Filter/Generic';
+import SpecificFilter from './Filter/Specific';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
@@ -529,7 +531,7 @@ View
                 );
               case INSTRUCTION_TYPE_FILTER:
                 return (
-                  <Filter
+                  <GenericFilter
                     index={index}
                     options={options}
                     data={item.data}

@@ -14,7 +14,8 @@ import {
   Col, Row, Layout, Menu, Icon, Input,
 } from 'antd';
 
-import Filter, {INSTRUCTION_TYPE_FILTER, FILTER_TYPES, FILTER_TYPE_GENERIC} from '../../Query/Filter/index';
+import {INSTRUCTION_TYPE_FILTER, FILTER_TYPES, FILTER_TYPE_GENERIC} from '../../Query/Filter/index';
+import GenericFilter from '../../Query/Filter/Generic';
 
 import {
     fetchSchema,
@@ -83,7 +84,7 @@ class VariantNavigation extends React.Component {
                                       onTitleClick={this.handleFilterSelection}
                                 />);
                             })}
-                            { activeFilterId !== null && (<Filter
+                            { activeFilterId !== null && (<GenericFilter
                                 overlayOnly={true}
                                 autoOpen={true}
                                 options={{
