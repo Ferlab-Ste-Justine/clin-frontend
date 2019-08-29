@@ -36,13 +36,11 @@ class Operator extends React.Component {
 
     // @NOTE Initialize Component State
     const { options, data, visible } = props;
-    this.setState({
-      data: { ...data },
-      options: {
-        editable: options.editable || true,
-      },
-      visible,
-    });
+    this.state.data = { ...data };
+    this.state.options = {
+      editable: options.editable || true,
+    };
+    this.state.visible = visible;
   }
 
   isEditable() {

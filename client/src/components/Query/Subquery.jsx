@@ -81,10 +81,8 @@ class Subquery extends React.Component {
 
     // @NOTE Initialize Component State
     const { data } = this.props;
-    this.setState({
-      data,
-      draft: { ...data },
-    });
+    this.state.data = data;
+    this.state.draft = { ...data };
   }
 
   isEditable() {

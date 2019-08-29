@@ -41,10 +41,10 @@ class Statement extends React.Component {
     this.state = {
       draft: null,
       original: null,
-      checkedQueries: null,
+      checkedQueries: [],
       activeQuery: null,
-      queriesChecksAreIndeterminate: null,
-      queriesAreAllChecked: null,
+      queriesChecksAreIndeterminate: false,
+      queriesAreAllChecked: false,
       display: null,
       options: {
         copyable: null,
@@ -89,38 +89,11 @@ class Statement extends React.Component {
       newDatum.key = uuidv1();
       return newDatum;
     });
-    this.setState({
-      original: data,
-      draft: cloneDeep(data),
-      display: cloneDeep(displays),
-      checkedQueries: [],
-      activeQuery: (data.length - 1) || null,
-      queriesChecksAreIndeterminate: false,
-      queriesAreAllChecked: false,
-    });
+    this.state.original = data;
+    this.state.draft = cloneDeep(data);
+    this.state.display = cloneDeep(displays);
+    this.state.activeQuery = (data.length - 1) || null;
   }
-
-  /*
-  componentDidMount() {
-    this.versions = [];
-    const { data, display } = this.props;
-    const displays = [];
-    data.map((newDatum) => {
-      displays.push({ ...display });
-      newDatum.key = uuidv1();
-      return newDatum;
-    });
-    this.setState({
-      original: data,
-      draft: cloneDeep(data),
-      display: cloneDeep(displays),
-      checkedQueries: [],
-      activeQuery: (data.length - 1) || null,
-      queriesChecksAreIndeterminate: false,
-      queriesAreAllChecked: false,
-    });
-  }
-*/
 
   isCopyable() {
     const { options } = this.props;

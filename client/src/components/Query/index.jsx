@@ -102,10 +102,8 @@ class Query extends React.Component {
 
     // @NOTE Initialize Component State
     const { display, draft } = props;
-    this.setState({
-      data: draft,
-      display,
-    });
+    this.state.data = draft;
+    this.state.display = display;
   }
 
   addInstruction(item) {

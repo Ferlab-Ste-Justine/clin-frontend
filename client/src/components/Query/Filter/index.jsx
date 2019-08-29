@@ -124,13 +124,10 @@ class Filter extends React.Component {
       case FILTER_TYPE_SPECIFIC:
         break;
     }
-
-    this.setState({
-      data,
-      draft: cloneDeep(data),
-      opened: autoOpen,
-      visible,
-    });
+    this.state.data = data;
+    this.state.draft = cloneDeep(data);
+    this.state.opened = autoOpen;
+    this.state.visible = visible;
   }
 
   isEditable() {
