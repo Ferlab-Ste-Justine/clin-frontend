@@ -180,15 +180,25 @@ class Statement extends React.Component {
   }
 
   handleDuplicate(query) {
+
     if (this.isDuplicatable()) {
-      const { draft } = this.state;
+      const { draft , display } = this.state;
+
       this.commit(draft);
       const index = query.index + 1;
       const clone = cloneDeep(query);
       clone.data.key = uuidv1();
+
       draft.splice(index, 0, clone.data);
+
+      const displayClone = cloneDeep(display);
+      const howDisplayed=this.state.display[query.index]
+      displayClone.splice(index, 0, howDisplayed);
+
       this.setState({
         draft,
+        display: displayClone,
+        activeQuery:index,
       });
     }
   }
