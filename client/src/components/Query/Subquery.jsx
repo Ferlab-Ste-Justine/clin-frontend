@@ -68,7 +68,7 @@ class Subquery extends React.Component {
     this.state = {
       data: null,
       draft: null,
-      visible: null,
+      visible: true,
     };
     this.isEditable = this.isEditable.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
@@ -78,14 +78,12 @@ class Subquery extends React.Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.createPopoverComponent = this.createPopoverComponent.bind(this);
-  }
 
-  componentWillMount() {
+    // @NOTE Initialize Component State
     const { data } = this.props;
     this.setState({
       data,
       draft: { ...data },
-      visible: true,
     });
   }
 

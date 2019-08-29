@@ -81,14 +81,14 @@ const createPopoverByFilterType = (data) => {
 };
 
 class Filter extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       type: null,
       data: null,
       draft: null,
       visible: null,
-      selected: null,
+      selected: false,
       opened: null,
     };
     this.isEditable = this.isEditable.bind(this);
@@ -106,13 +106,11 @@ class Filter extends React.Component {
     this.handleApply = this.handleApply.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
-  }
 
-  /* eslint-disable */
-  componentDidMount() {
+    // @NOTE Initialize Component State
     const {
       data, autoOpen, visible,
-    } = this.props;
+    } = props;
     switch (data.type) {
       default:
       case FILTER_TYPE_GENERIC:
@@ -131,7 +129,6 @@ class Filter extends React.Component {
       data,
       draft: cloneDeep(data),
       opened: autoOpen,
-      selected: false,
       visible,
     });
   }
@@ -345,9 +342,10 @@ class Filter extends React.Component {
           closable={this.isRemovable()}
           onClose={this.handleClose}
           color={this.isSelected() ? 'blue' : ''}
+          onClick={this.handleSelect}
         >
           {popover}
-          <span onClick={this.handleSelect}>
+          <span onClick={this.toggleMenu}>
             { JSON.stringify(draft.values) }
           </span>
           { this.isEditable() && (

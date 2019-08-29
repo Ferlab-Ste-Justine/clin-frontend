@@ -76,8 +76,8 @@ const sanitizeFilters = instructions => instructions;
 
 
 class Query extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       data: null,
       display: null,
@@ -99,10 +99,9 @@ class Query extends React.Component {
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
-  }
 
-  componentWillMount() {
-    const { display, draft } = this.props;
+    // @NOTE Initialize Component State
+    const { display, draft } = props;
     this.setState({
       data: draft,
       display,
@@ -573,7 +572,7 @@ View
           { compoundOperators && ( operatorsHandler ) }
           { hasMenu && (<Divider type="vertical" />) }
           { hasMenu && (
-          <Dropdown overlay={this.createMenuComponent}>
+          <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
             <Icon type="more" />
           </Dropdown>
           ) }

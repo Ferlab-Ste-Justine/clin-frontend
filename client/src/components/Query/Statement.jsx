@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Divider, Tooltip, Badge, Dropdown, Icon,
+  Menu, Button, Checkbox,  Tooltip, Badge, Dropdown, Icon,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter,
@@ -35,9 +35,9 @@ export const convertIndexToColor = index => `#${[
 ][index]}`;
 
 class Statement extends React.Component {
-  constructor() {
-    super();
-    this.versions = null;
+  constructor(props) {
+    super(props);
+    this.versions = [];
     this.state = {
       draft: null,
       original: null,
@@ -80,9 +80,28 @@ class Statement extends React.Component {
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.commit = this.commit.bind(this);
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
+
+    // @NOTE Initialize Component State
+    const { data, display } = props;
+    const displays = [];
+    data.map((newDatum) => {
+      displays.push({ ...display });
+      newDatum.key = uuidv1();
+      return newDatum;
+    });
+    this.setState({
+      original: data,
+      draft: cloneDeep(data),
+      display: cloneDeep(displays),
+      checkedQueries: [],
+      activeQuery: (data.length - 1) || null,
+      queriesChecksAreIndeterminate: false,
+      queriesAreAllChecked: false,
+    });
   }
 
-  componentWillMount() {
+  /*
+  componentDidMount() {
     this.versions = [];
     const { data, display } = this.props;
     const displays = [];
@@ -101,6 +120,7 @@ class Statement extends React.Component {
       queriesAreAllChecked: false,
     });
   }
+*/
 
   isCopyable() {
     const { options } = this.props;
@@ -355,6 +375,7 @@ class Statement extends React.Component {
     const {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
     } = this.state;
+    if (draft === null) { return null }
     const { options } = this.props;
     const {
       editable, reorderable, removable, undoable,
@@ -425,6 +446,7 @@ class Statement extends React.Component {
             <Tooltip title="Combine Selection">
               <Dropdown
                 disabled={(checkedQueriesCount < 2)}
+                trigger = {['click']}
                 overlay={(
                   <Menu onClick={this.handleCombine}>
                     <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
@@ -466,7 +488,6 @@ class Statement extends React.Component {
             ) }
           </div>
         </div>
-        <Divider />
         {reorderable
           ? (
             <DragSortableList

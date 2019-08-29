@@ -24,8 +24,8 @@ import { variantShape } from '../../../reducers/variant';
 
 class VariantNavigation extends React.Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             activeCategoryId: null,
             activeFilterId: null,
@@ -33,10 +33,9 @@ class VariantNavigation extends React.Component {
         this.handleFilterSearch = this.handleFilterSearch.bind(this);
         this.handleFilterSelection = this.handleFilterSelection.bind(this);
         this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
-    }
 
-    componentDidMount() {
-        const { actions, variant } = this.props;
+        // @NOTE Initialize Component State
+        const { actions, variant } = props;
         const { schema } = variant;
         // @NOTE Make sure we have a schema defined in redux
         if (!schema.version) {
