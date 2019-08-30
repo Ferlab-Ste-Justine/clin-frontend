@@ -117,6 +117,20 @@ const fr = {
   'screen.variantsearch.category_zygosity': 'Zygosité et Famille',
   'screen.variantsearch.filter_transmission': 'Transmission',
   'screen.variantsearch.category_metric': 'Métriques',
+  'screen.patientVariant.statement.combine': 'Combiner',
+  'screen.patientVariant.statement.delete': 'Supprimer',
+  'screen.patientVariant.statement.tooltip.check': 'Cocher',
+  'screen.patientVariant.statement.tooltip.uncheck': 'Décocher',
+  'screen.patientVariant.statement.tooltip.all': 'Tout',
+  'screen.patientVariant.statement.tooltip.combineSelection': 'Combiner la sélection',
+  'screen.patientVariant.statement.tooltip.deleteSelection': 'Supprimer la selection',
+  'screen.patientVariant.statement.tooltip.undo': 'Annuler',
+  'screen.patientVariant.query.menu.add': 'Ajouter le titre',
+  'screen.patientVariant.query.menu.remove': 'Supprimer le titre',
+  'screen.patientVariant.query.menu.duplicate': 'Dupliquer',
+  'screen.patientVariant.query.menu.revert': 'Rétablir les changements',
+  'screen.patientVariant.query.menu.advancedEditor': 'Éditeur avancé',
+  'screen.patientVariant.query.menu.delete': 'Supprimer',
 };
 
 export default fr;

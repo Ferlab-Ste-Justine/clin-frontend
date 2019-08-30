@@ -143,7 +143,6 @@ class PatientVariantScreen extends React.Component {
   }
 
   componentDidMount() {
-
   }
 
     render() {
@@ -173,7 +172,7 @@ class PatientVariantScreen extends React.Component {
             <VariantNavigation className="variant-navigation" />
             <br />
             <br />
-            <Statement key="variant-statement" data={statementA} options={optionsA} display={displayA} />
+            <Statement key="variant-statement" data={statementA} options={optionsA} display={displayA} intl={intl} />
 
 
         </Card>
