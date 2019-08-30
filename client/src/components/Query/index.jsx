@@ -417,6 +417,9 @@ class Query extends React.Component {
 
     const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
     const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
+    const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
+    const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
+    const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
     const menuTitleTexte = intl.formatMessage({ id: 'screen.patientVariant.query.menu.titleText' });
     const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
     const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
@@ -436,15 +439,13 @@ class Query extends React.Component {
         {copyable && (
         <Menu.Item key={QUERY_ACTION_COPY}>
           <Icon type="font-size" />
-            Copy SQON
+            {menuCopy}
         </Menu.Item>
         )
       }
         <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
           <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle`} />
-          {(compoundOperators ? 'Maximize' : 'Minimize')}
-          {' '}
-View
+          {(compoundOperators ? menuMaximize : menuMinimize)}
         </Menu.Item>
         {duplicatable && (
         <Menu.Item key={QUERY_ACTION_DUPLICATE}>
