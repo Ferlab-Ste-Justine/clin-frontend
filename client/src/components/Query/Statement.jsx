@@ -361,6 +361,9 @@ class Statement extends React.Component {
 
     const combineTexte = intl.formatMessage({ id: 'screen.patientVariant.statement.combine' });
     const deleteText = intl.formatMessage({ id: 'screen.patientVariant.statement.delete' });
+    const combineAnd = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
+    const combineOr = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
+    const combineAndNot = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
     const checkToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.check' });
     const unCheckToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.uncheck' });
     const allText = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.all' });
@@ -434,15 +437,15 @@ class Statement extends React.Component {
                   <Menu onClick={this.handleCombine}>
                     <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
                       <IconKit size={24} icon={software_pathfinder_intersect} />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;And
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {combineAnd}
                     </Menu.Item>
                     <Menu.Item key={SUBQUERY_TYPE_SUBTRACT}>
                       <IconKit size={24} icon={software_pathfinder_subtract} />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;And Not
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{combineAndNot}
                     </Menu.Item>
                     <Menu.Item key={SUBQUERY_TYPE_UNITE}>
                       <IconKit size={24} icon={software_pathfinder_unite} />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Or
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{combineOr}
                     </Menu.Item>
                   </Menu>
                   )}

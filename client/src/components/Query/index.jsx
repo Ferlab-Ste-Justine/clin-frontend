@@ -480,7 +480,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results ,intl } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -502,6 +502,7 @@ class Query extends React.Component {
             key={operator.key}
             options={options}
             data={operator.data}
+            intl={intl}
             onEditCallback={this.handleOperatorChange}
           />
         );
@@ -532,6 +533,7 @@ class Query extends React.Component {
                     index={index}
                     options={options}
                     data={item.data}
+                    intl={intl}
                     onEditCallback={this.handleOperatorChange}
                   />
                 );
