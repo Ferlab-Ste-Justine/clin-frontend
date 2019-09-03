@@ -137,6 +137,9 @@ const en = {
   'screen.patientVariant.query.menu.revert': 'Revert Changes',
   'screen.patientVariant.query.menu.advancedEditor': 'Advanced Editor',
   'screen.patientVariant.query.menu.delete': 'Delete',
+  'screen.patientVariant.filter.all': 'All Of',
+  'screen.patientVariant.filter.one': 'At Least One',
+  'screen.patientVariant.filter.none': 'Not Any Of',
 
 };
 

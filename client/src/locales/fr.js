@@ -137,6 +137,9 @@ const fr = {
   'screen.patientVariant.query.menu.revert': 'Rétablir les changements',
   'screen.patientVariant.query.menu.advancedEditor': 'Éditeur avancé',
   'screen.patientVariant.query.menu.delete': 'Supprimer',
+  'screen.patientVariant.filter.all': 'Toutes les valeurs parmi',
+  'screen.patientVariant.filter.one': 'Au moins une valeur parmi',
+  'screen.patientVariant.filter.none': 'Aucune des valeurs parmi',
 };
 
 export default fr;
