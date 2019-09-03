@@ -85,17 +85,20 @@ class Operator extends React.Component {
 
     return (
       <span>
-        <Tag
-          className="operator"
-          visible={this.isVisible()}
-        >
-          { type }
-          { this.isEditable() && (
-          <Dropdown overlay={this.createMenuComponent} trigger={['click']}>
+        { this.isEditable() && (
+        <Dropdown overlay={this.createMenuComponent} trigger={['click']}>
+          <Tag
+            className="operator"
+            visible={this.isVisible()}
+            onClick={this.createMenuComponent}
+          >
+            { type }
+
             { <Icon type="caret-down" /> }
-          </Dropdown>
-          ) }
-        </Tag>
+
+          </Tag>
+        </Dropdown>
+        ) }
       </span>
     );
   }
