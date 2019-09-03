@@ -117,6 +117,31 @@ const en = {
   'screen.variantsearch.category_zygosity': 'Zygosity and Family',
   'screen.variantsearch.filter_transmission': 'Transmission',
   'screen.variantsearch.category_metric': 'Metrics',
+  'screen.patientVariant.statement.combine': 'Combine',
+  'screen.patientVariant.statement.delete': 'Delete',
+  'screen.patientVariant.statement.tooltip.check': 'Check',
+  'screen.patientVariant.statement.tooltip.uncheck': 'Uncheck',
+  'screen.patientVariant.statement.tooltip.all': 'All',
+  'screen.patientVariant.statement.tooltip.combineSelection': 'Combine Selection',
+  'screen.patientVariant.statement.tooltip.deleteSelection': 'Delete Selection',
+  'screen.patientVariant.statement.tooltip.undo': 'Undo',
+  'screen.patientVariant.statement.and': 'And',
+  'screen.patientVariant.statement.or': 'Or',
+  'screen.patientVariant.statement.andnot': 'And Not',
+  'screen.patientVariant.query.menu.add': 'Add Title',
+  'screen.patientVariant.query.menu.remove': 'Remove Title',
+  'screen.patientVariant.query.menu.copy': 'Copy SQON',
+  'screen.patientVariant.query.menu.maximize': 'Maximize View',
+  'screen.patientVariant.query.menu.minimize': 'Minimize View',
+  'screen.patientVariant.query.menu.duplicate': 'Duplicate',
+  'screen.patientVariant.query.menu.revert': 'Revert Changes',
+  'screen.patientVariant.query.menu.advancedEditor': 'Advanced Editor',
+  'screen.patientVariant.query.menu.delete': 'Delete',
+  'screen.patientVariant.filter.all': 'All Of',
+  'screen.patientVariant.filter.one': 'At Least One',
+  'screen.patientVariant.filter.none': 'Not Any Of',
+
 };
+
 
 export default en;

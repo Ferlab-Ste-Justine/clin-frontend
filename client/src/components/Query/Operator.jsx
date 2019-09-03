@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import {
   Tag, Menu, Dropdown, Icon,
 } from 'antd';
-
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
@@ -70,11 +71,15 @@ class Operator extends React.Component {
   }
 
   createMenuComponent() {
+    const { intl } = this.props;
+    const andText = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
+    const orText = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
+    const andNotText = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
     return (
       <Menu onClick={this.handleApply}>
-        <Menu.Item key={OPERATOR_TYPE_AND}>AND</Menu.Item>
-        <Menu.Item key={OPERATOR_TYPE_OR}>OR</Menu.Item>
-        <Menu.Item key={OPERATOR_TYPE_AND_NOT}>AND NOT</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_AND}>{andText}</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_OR}>{orText}</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_AND_NOT}>{andNotText}</Menu.Item>
       </Menu>
     );
   }
@@ -109,6 +114,7 @@ Operator.propTypes = {
   options: PropTypes.shape({}),
   onEditCallback: PropTypes.func,
   visible: PropTypes.bool,
+  intl: PropTypes.shape({}).isRequired,
 };
 
 Operator.defaultProps = {
@@ -119,4 +125,5 @@ Operator.defaultProps = {
   visible: true,
 };
 
-export default Operator;
+export default connect(
+)(injectIntl(Operator));

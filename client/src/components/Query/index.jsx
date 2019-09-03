@@ -407,7 +407,7 @@ class Query extends React.Component {
   }
 
   createMenuComponent() {
-    const { options, original } = this.props;
+    const { options, original, intl } = this.props;
     const { display, data } = this.state;
     const {
       copyable, duplicatable, editable, removable, undoable,
@@ -415,55 +415,63 @@ class Query extends React.Component {
     const { compoundOperators, viewableSqon } = display;
     const hasTitle = !!data.title;
 
+    const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
+    const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
+    const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
+    const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
+    const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
+    const menuTitleText = intl.formatMessage({ id: 'screen.patientVariant.query.menu.titleText' });
+    const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
+    const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
+    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
+    const menuDelete = intl.formatMessage({ id: 'screen.patientVariant.query.menu.delete' });
+
+
     return (
       <Menu onClick={this.handleMenuSelection}>
         {editable && (
         <Menu.Item key={QUERY_ACTION_TITLE}>
           <Icon type={`file${(hasTitle ? '' : '-text')}`} />
-          {(hasTitle ? 'Remove' : 'Add')}
-          {' '}
-Title
+          {(hasTitle ? menuRemove : menuAdd)}
         </Menu.Item>
         )
       }
         {copyable && (
         <Menu.Item key={QUERY_ACTION_COPY}>
           <Icon type="font-size" />
-            Copy SQON
+            {menuCopy}
         </Menu.Item>
         )
       }
         <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
           <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle`} />
-          {(compoundOperators ? 'Maximize' : 'Minimize')}
-          {' '}
-View
+          {(compoundOperators ? menuMaximize : menuMinimize)}
         </Menu.Item>
         {duplicatable && (
         <Menu.Item key={QUERY_ACTION_DUPLICATE}>
           <Icon type="file-add" />
-            Duplicate
+            {menuDuplicate}
         </Menu.Item>
         )
       }
         {undoable && original && (
         <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
           <Icon type="undo" />
-            Revert Changes
+            {menuRevert}
         </Menu.Item>
         )
       }
         {editable && (
         <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
           <Icon type={`eye${(viewableSqon ? '-invisible' : '')}`} />
-            Advanced Editor
+            {menuAdvancedEditor}
         </Menu.Item>
         )
       }
         {removable && (
         <Menu.Item key={QUERY_ACTION_DELETE}>
           <Icon type="delete" />
-            Delete
+            {menuDelete}
         </Menu.Item>
         )
       }
@@ -472,7 +480,7 @@ View
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results ,intl } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;

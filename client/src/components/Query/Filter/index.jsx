@@ -12,6 +12,8 @@ import IconKit from 'react-icons-kit';
 import {
   empty, one, full, info,
 } from 'react-icons-kit/entypo';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -244,14 +246,19 @@ class Filter extends React.Component {
           console.log('+++ handleFilterSelectNone');
         };
 
+        const { intl } = this.props;
+        const typeAll = intl.formatMessage({ id: 'screen.patientVariant.filter.all' });
+        const typeOne = intl.formatMessage({ id: 'screen.patientVariant.filter.all' });
+        const typeNone = intl.formatMessage({ id: 'screen.patientVariant.filter.all' });
+
         return (
           <>
             <Row>
               <Col span={24}>
                 <Radio.Group size="small" type="primary" value={operand} onChange={handleOperandChange}>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ALL}>All Of</Radio.Button>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ONE}>At Least One</Radio.Button>
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_NONE}>Not Any Of</Radio.Button>
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ALL}>{typeAll}</Radio.Button>
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ONE}>{typeOne}</Radio.Button>
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_NONE}>{typeNone}</Radio.Button>
                 </Radio.Group>
               </Col>
             </Row>
@@ -383,4 +390,5 @@ Filter.defaultProps = {
   visible: true,
 };
 
-export default Filter;
+export default connect(
+)(injectIntl(Filter));
