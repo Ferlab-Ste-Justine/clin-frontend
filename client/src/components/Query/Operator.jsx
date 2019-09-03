@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import {
   Tag, Menu, Dropdown, Icon,
 } from 'antd';
-
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
@@ -78,7 +79,7 @@ class Operator extends React.Component {
       <Menu onClick={this.handleApply}>
         <Menu.Item key={OPERATOR_TYPE_AND}>{andText}</Menu.Item>
         <Menu.Item key={OPERATOR_TYPE_OR}>{orText}</Menu.Item>
-        <Menu.Item key={OPERATOR_TYPE_AND_NOT}>{AndNotText}</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_AND_NOT}>{andNotText}</Menu.Item>
       </Menu>
     );
   }
@@ -121,4 +122,5 @@ Operator.defaultProps = {
   visible: true,
 };
 
-export default Operator;
+export default connect(
+)(injectIntl(Operator));

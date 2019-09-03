@@ -451,7 +451,7 @@ class Statement extends React.Component {
                   )}
               >
                 <Button icon="block">
-                      {combineTexte}
+                      {combineText}
                   {' '}
                   <Icon type="caret-down" />
                 </Button>

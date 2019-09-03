@@ -123,7 +123,7 @@ const fr = {
   'screen.patientVariant.statement.tooltip.uncheck': 'Décocher',
   'screen.patientVariant.statement.tooltip.all': 'Tout',
   'screen.patientVariant.statement.tooltip.combineSelection': 'Combiner la sélection',
-  'screen.patientVariant.statement.tooltip.deleteSelection': 'Supprimer la selection',
+  'screen.patientVariant.statement.tooltip.deleteSelection': 'Supprimer la sélection',
   'screen.patientVariant.statement.tooltip.undo': 'Annuler',
   'screen.patientVariant.statement.and': 'Et',
   'screen.patientVariant.statement.or': 'Ou',

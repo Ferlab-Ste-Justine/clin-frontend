@@ -420,7 +420,7 @@ class Query extends React.Component {
     const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
     const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
     const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
-    const menuTitleTexte = intl.formatMessage({ id: 'screen.patientVariant.query.menu.titleText' });
+    const menuTitleText = intl.formatMessage({ id: 'screen.patientVariant.query.menu.titleText' });
     const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
     const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
     const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
@@ -502,7 +502,6 @@ class Query extends React.Component {
             key={operator.key}
             options={options}
             data={operator.data}
-            intl={intl}
             onEditCallback={this.handleOperatorChange}
           />
         );
