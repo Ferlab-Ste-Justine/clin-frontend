@@ -82,7 +82,9 @@ class Statement extends React.Component {
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
 
     // @NOTE Initialize Component State
-    const { data, display } = props;
+    const { data, display, onSelectCallback } = props;
+    const activeQuery = (data.length - 1) || null;
+    const activeQueryData = (data[activeQuery] ? data[activeQuery] : null );
     const displays = [];
     data.map((newDatum) => {
       displays.push({ ...display });
@@ -92,7 +94,10 @@ class Statement extends React.Component {
     this.state.original = data;
     this.state.draft = cloneDeep(data);
     this.state.display = cloneDeep(displays);
-    this.state.activeQuery = (data.length - 1) || null;
+    if (activeQueryData) {
+      this.state.activeQuery = activeQuery;
+      onSelectCallback(activeQueryData);
+    }
   }
 
   isCopyable() {
@@ -147,20 +152,22 @@ class Statement extends React.Component {
     const { activeQuery } = this.state;
     const { index } = query;
     if (activeQuery !== index) {
+      const { onSelectCallback } = this.props;
       this.setState({
         activeQuery: index,
-      });
+      }, () => { onSelectCallback(query.data); } );
     }
   }
 
   handleEdit(query) {
     if (this.isEditable()) {
+      const { onSelectCallback } = this.props;
       const { draft } = this.state;
       this.commit(draft);
       draft[query.index] = query.data;
       this.setState({
         draft,
-      });
+      }, () => { onSelectCallback(query.data); });
     }
   }
 
@@ -504,6 +511,7 @@ Statement.propTypes = {
   data: PropTypes.shape([]).isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  onSelectCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -520,6 +528,7 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
+  onSelectCallback: () => {}
 };
 
 export default Statement;

@@ -23,7 +23,7 @@ import { patientShape } from '../../../reducers/patient';
 // import { searchPatientVariants } from '../../../actions/patient';
 import { cloneDeep } from 'lodash';
 import Statement from '../../Query/Statement';
-
+import { selectQuery } from '../../../actions/variant';
 
 
 /* eslint-disable max-len */
@@ -87,10 +87,16 @@ class PatientVariantScreen extends React.Component {
   constructor() {
     super();
     this.state = {};
+    this.handleQuerySelection = this.handleQuerySelection.bind(this);
   }
 
-  componentDidMount() {
-
+  handleQuerySelection(query) {
+    if (query) {
+      const { actions, patient } = this.props;
+      const { id } = patient;
+      const { instructions } = query;
+      actions.selectQuery(id, instructions);
+    }
   }
 
     render() {
@@ -120,9 +126,13 @@ class PatientVariantScreen extends React.Component {
             <VariantNavigation className="variant-navigation" />
             <br />
             <br />
-            <Statement key="variant-statement" data={statementA} options={optionsA} display={displayA} />
-
-
+            <Statement
+              key="variant-statement"
+              data={statementA}
+              options={optionsA}
+              display={displayA}
+              onSelectCallback={this.handleQuerySelection}
+            />
         </Card>
         <Footer />
       </Content>
@@ -134,13 +144,11 @@ PatientVariantScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
-  query: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
-    // navigateToPatientScreen,
-    // navigateToPatientSearchScreen,
+    selectQuery,
   }, dispatch),
 });
 

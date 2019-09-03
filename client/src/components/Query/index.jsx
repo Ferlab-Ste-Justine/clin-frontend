@@ -17,7 +17,7 @@ import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery'
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
 
 
-export const DEFAULT_EMPTY_QUERY = [];
+export const DEFAULT_EMPTY_QUERY = {};
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
@@ -481,10 +481,6 @@ View
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { display, data } = this.state;
     const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
-
-
-
-
     const title = !!data.title;
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
