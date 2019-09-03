@@ -359,7 +359,7 @@ class Statement extends React.Component {
     const subqueries = query ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
     const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
 
-    const combineTexte = intl.formatMessage({ id: 'screen.patientVariant.statement.combine' });
+    const combineText = intl.formatMessage({ id: 'screen.patientVariant.statement.combine' });
     const deleteText = intl.formatMessage({ id: 'screen.patientVariant.statement.delete' });
     const combineAnd = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
     const combineOr = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
@@ -437,7 +437,7 @@ class Statement extends React.Component {
                   <Menu onClick={this.handleCombine}>
                     <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
                       <IconKit size={24} icon={software_pathfinder_intersect} />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {combineAnd}
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{combineAnd}
                     </Menu.Item>
                     <Menu.Item key={SUBQUERY_TYPE_SUBTRACT}>
                       <IconKit size={24} icon={software_pathfinder_subtract} />

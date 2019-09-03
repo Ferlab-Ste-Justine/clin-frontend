@@ -107,11 +107,11 @@ div.query-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  mix-blend-mode: difference;
+  background-color: #095797;
+  color:white;
   min-width: 60px;
   height: 20px;
   text-transform: uppercase;
-
   .anticon-caret-down {
     cursor: pointer;
     margin-left: 4px;
@@ -119,6 +119,7 @@ div.query-container {
 }
 
 .ant-tag.filter, .ant-tag.subquery {
+
   display: flex;
   align-items: center;
   justify-content: space-between;

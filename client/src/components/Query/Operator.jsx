@@ -73,7 +73,7 @@ class Operator extends React.Component {
     const { intl } = this.props;
     const andText = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
     const orText = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
-    const AndNotText = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
+    const andNotText = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
     return (
       <Menu onClick={this.handleApply}>
         <Menu.Item key={OPERATOR_TYPE_AND}>{andText}</Menu.Item>
