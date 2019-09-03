@@ -532,7 +532,6 @@ class Query extends React.Component {
                     index={index}
                     options={options}
                     data={item.data}
-                    intl={intl}
                     onEditCallback={this.handleOperatorChange}
                   />
                 );
