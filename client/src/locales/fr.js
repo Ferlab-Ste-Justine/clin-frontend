@@ -119,6 +119,7 @@ const fr = {
   'screen.variantsearch.category_metric': 'Métriques',
   'screen.patientVariant.statement.combine': 'Combiner',
   'screen.patientVariant.statement.delete': 'Supprimer',
+  'screen.patientVariant.statement.newQuery': 'Nouvelle reqête',
   'screen.patientVariant.statement.tooltip.check': 'Cocher',
   'screen.patientVariant.statement.tooltip.uncheck': 'Décocher',
   'screen.patientVariant.statement.tooltip.all': 'Tout',

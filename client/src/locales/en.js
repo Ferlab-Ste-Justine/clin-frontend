@@ -119,6 +119,7 @@ const en = {
   'screen.variantsearch.category_metric': 'Metrics',
   'screen.patientVariant.statement.combine': 'Combine',
   'screen.patientVariant.statement.delete': 'Delete',
+  'screen.patientVariant.statement.newQuery': 'New Query',
   'screen.patientVariant.statement.tooltip.check': 'Check',
   'screen.patientVariant.statement.tooltip.uncheck': 'Uncheck',
   'screen.patientVariant.statement.tooltip.all': 'All',
