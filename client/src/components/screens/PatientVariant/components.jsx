@@ -51,10 +51,12 @@ class VariantNavigation extends React.Component {
         console.log('handleFilterSelection query');
     }
 
-    handleFilterSelection({key}) {
+    handleFilterSelection({ key, domEvent }) {
+        const ul = domEvent.currentTarget.parentNode.parentNode;
+        ul.classList.add('ant-menu-hidden');
         this.setState({
             activeFilterId: key
-        })
+        });
     }
 
     handleCategoryOpenChange(keys) {
@@ -83,6 +85,9 @@ class VariantNavigation extends React.Component {
 
                         return (<Menu.SubMenu key={id} title={<span>{label}</span>}>
                             { activeFilterId === null && category.filters.map((filter) => {
+
+
+
                                 return (<Menu.SubMenu key={filter.id}
                                       title={intl.formatMessage({id: `screen.variantsearch.${filter.label}`})}
                                       onTitleClick={this.handleFilterSelection}
