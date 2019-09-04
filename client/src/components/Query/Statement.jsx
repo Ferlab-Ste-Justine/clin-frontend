@@ -337,7 +337,8 @@ class Statement extends React.Component {
                             "key": key}
      draft.push(draftQuery)
 
-     display.push(this.props.display)
+     const newDisplay = cloneDeep(this.props.display)
+     display.push(newDisplay)
 
      this.setState({
          draft,
