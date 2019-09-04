@@ -330,15 +330,14 @@ class Statement extends React.Component {
 
    handleNewQuery() {
      const { draft , display } = this.state;
-
      const key = uuidv1();
-     const instructions = cloneDeep(DEFAULT_INSTRUCTIONS)[0]
-     const draftQuery = {   "instructions" : [] ,
+     const instructions = cloneDeep(DEFAULT_INSTRUCTIONS).instructions
+
+     const draftQuery = {   instructions ,
                             "key": key}
      draft.push(draftQuery)
 
-     const displayQuery = {"compoundOperators" : true}
-     display.push(displayQuery)
+     display.push(this.props.display)
 
      this.setState({
          draft,
