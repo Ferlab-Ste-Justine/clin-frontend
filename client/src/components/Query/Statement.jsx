@@ -76,6 +76,7 @@ class Statement extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleRemoveChecked = this.handleRemoveChecked.bind(this);
+    this.handleNewQuery = this.handleNewQuery.bind(this)
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.commit = this.commit.bind(this);
@@ -327,6 +328,25 @@ class Statement extends React.Component {
     }
   }
 
+   handleNewQuery() {
+     const { draft , display } = this.state;
+     const key = uuidv1();
+     const instructions = cloneDeep(DEFAULT_INSTRUCTIONS).instructions
+
+     const draftQuery = {   instructions ,
+                            "key": key}
+     draft.push(draftQuery)
+
+     const newDisplay = cloneDeep(this.props.display)
+     display.push(newDisplay)
+
+     this.setState({
+         draft,
+         display,
+         activeQuery : draft.length-1
+       });
+   }
+
   findQueryIndexForKey(key) {
     const { draft } = this.state;
     return findIndex(draft, { key });
@@ -371,6 +391,7 @@ class Statement extends React.Component {
 
     const combineText = intl.formatMessage({ id: 'screen.patientVariant.statement.combine' });
     const deleteText = intl.formatMessage({ id: 'screen.patientVariant.statement.delete' });
+    const newQueryText = intl.formatMessage({ id: 'screen.patientVariant.statement.newQuery' });
     const combineAnd = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
     const combineOr = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
     const combineAndNot = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
@@ -475,6 +496,9 @@ class Statement extends React.Component {
             ) }
           </div>
           <div className="actions right">
+            <Tooltip title={newQueryText}>
+                <Button type="primary" onClick={this.handleNewQuery}>{newQueryText}</Button>
+            </Tooltip>
             { undoable && (
             <Tooltip title={undoToolTip}>
               <Badge count={this.versions.length}>
@@ -494,31 +518,6 @@ class Statement extends React.Component {
             />
           ) : queries
         }
-        { editable && queries.length < MAX_QUERIES && (
-        <div className={`query-container${((!draft.length || activeQuery === draft.length) ? ' active' : '')}`}>
-          <div className="selector" />
-          <Query
-            draft={cloneDeep(DEFAULT_INSTRUCTIONS)}
-            original={null}
-            display={cloneDeep(display[queries.length])}
-            key={uuidv1()}
-            index={queries.length}
-            active={false}
-            intl={intl}
-            options={{
-              copyable: true,
-              duplicatable: false,
-              editable: true,
-              removable: false,
-              reorderable: false,
-              selectable: false,
-              undoable: false,
-            }}
-            onEditCallback={this.handleEdit}
-            onClickCallback={this.handleClick}
-          />
-        </div>
-        ) }
       </div>
     );
   }
