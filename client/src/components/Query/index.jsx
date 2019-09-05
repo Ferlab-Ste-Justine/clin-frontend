@@ -367,8 +367,12 @@ class Query extends React.Component {
         });
         break;
       case QUERY_ACTION_TITLE:
-        if (!data.title) {
-          data.title = 'Untitled';
+        const hasTitle = data.title === "" || data.title != undefined ? true : false ;
+
+        if (!hasTitle) {
+          data.title = '';
+
+
         } else {
           delete data.title;
         }
@@ -413,14 +417,12 @@ class Query extends React.Component {
       copyable, duplicatable, editable, removable, undoable,
     } = options;
     const { compoundOperators, viewableSqon } = display;
-    const hasTitle = !!data.title;
-
+    const hasTitle = data.title === "" || data.title != undefined ? true : false;
     const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
     const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
     const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
     const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
     const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
-    const menuTitleText = intl.formatMessage({ id: 'screen.patientVariant.query.menu.titleText' });
     const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
     const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
     const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
@@ -487,11 +489,7 @@ class Query extends React.Component {
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { display, data } = this.state;
     const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
-
-
-
-
-    const title = !!data.title;
+    const title = data.title != undefined ? true : false
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
     if (compoundOperators) {
@@ -515,8 +513,10 @@ class Query extends React.Component {
             size="small"
             className="title"
             allowClear
+            placeholder="Add Title"
             defaultValue={data.title || ''}
             onBlur={this.handleTitleChange}
+            onPressEnter={this.handleTitleChange}
           />
           )
         }
