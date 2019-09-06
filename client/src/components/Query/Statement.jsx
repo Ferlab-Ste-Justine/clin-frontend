@@ -281,7 +281,12 @@ class Statement extends React.Component {
   }
 
   handleCombine({ key }) {
-    const { checkedQueries, draft } = this.state;
+    const { checkedQueries, draft , display } = this.state;
+    const index = draft.length
+
+    const defaultDisplay = cloneDeep(this.props.display)
+    display.push(defaultDisplay)
+
     if (checkedQueries.length > 1) {
       const sortedCheckedQueries = cloneDeep(checkedQueries);
       sortedCheckedQueries.sort((a, b) => this.findQueryIndexForKey(a) - this.findQueryIndexForKey(b));
@@ -298,6 +303,9 @@ class Statement extends React.Component {
       });
       this.setState({
         draft,
+        activeQuery : index,
+        checkedQueries: [],
+        display
       });
     }
   }
