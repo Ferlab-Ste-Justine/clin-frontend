@@ -9,13 +9,14 @@ import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
 
 import './style.scss';
-import Filter, { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
+import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
+import GenericFilter from './Filter/Generic';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
 
 
-export const DEFAULT_EMPTY_QUERY = [];
+export const DEFAULT_EMPTY_QUERY = {};
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
@@ -367,8 +368,12 @@ class Query extends React.Component {
         });
         break;
       case QUERY_ACTION_TITLE:
-        if (!data.title) {
-          data.title = 'Untitled';
+        const hasTitle = data.title === "" || data.title != undefined ? true : false ;
+
+        if (!hasTitle) {
+          data.title = '';
+
+
         } else {
           delete data.title;
         }
@@ -413,14 +418,12 @@ class Query extends React.Component {
       copyable, duplicatable, editable, removable, undoable,
     } = options;
     const { compoundOperators, viewableSqon } = display;
-    const hasTitle = !!data.title;
-
+    const hasTitle = data.title === "" || data.title != undefined ? true : false;
     const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
     const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
     const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
     const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
     const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
-    const menuTitleText = intl.formatMessage({ id: 'screen.patientVariant.query.menu.titleText' });
     const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
     const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
     const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
@@ -480,18 +483,14 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results ,intl } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { display, data } = this.state;
     const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
-
-
-
-
-    const title = !!data.title;
+    const title = data.title != undefined ? true : false
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
     if (compoundOperators) {
@@ -502,6 +501,7 @@ class Query extends React.Component {
             key={operator.key}
             options={options}
             data={operator.data}
+            intl={intl}
             onEditCallback={this.handleOperatorChange}
           />
         );
@@ -515,8 +515,10 @@ class Query extends React.Component {
             size="small"
             className="title"
             allowClear
+            placeholder="Add Title"
             defaultValue={data.title || ''}
             onBlur={this.handleTitleChange}
+            onPressEnter={this.handleTitleChange}
           />
           )
         }
@@ -532,15 +534,17 @@ class Query extends React.Component {
                     index={index}
                     options={options}
                     data={item.data}
+                    intl={intl}
                     onEditCallback={this.handleOperatorChange}
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
                 return (
-                  <Filter
+                  <GenericFilter
                     index={index}
                     options={options}
                     data={item.data}
+                    intl={intl}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
@@ -553,6 +557,7 @@ class Query extends React.Component {
                     index={index}
                     options={options}
                     data={item.data}
+                    intl={intl}
                     queryIndex={queryIndex}
                     queryColor={active && queryIndex !== null ? convertIndexToColor(queryIndex) : null}
                     queryTitle={queryIndex !== null ? convertIndexToLetter(queryIndex) : index }
@@ -590,13 +595,13 @@ class Query extends React.Component {
 }
 
 Query.propTypes = {
-  key: PropTypes.string,
+  intl: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape([]).isRequired,
   original: PropTypes.shape([]).isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   active: PropTypes.bool,
-  results: PropTypes.string,
+  results: PropTypes.number,
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
   onDisplayCallback: PropTypes.func,
@@ -609,7 +614,6 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
-  key: 'query',
   display: {
     compoundOperators: false,
     viewableSqon: false,

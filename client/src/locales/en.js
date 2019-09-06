@@ -138,11 +138,12 @@ const en = {
   'screen.patientVariant.query.menu.revert': 'Revert Changes',
   'screen.patientVariant.query.menu.advancedEditor': 'Advanced Editor',
   'screen.patientVariant.query.menu.delete': 'Delete',
-  'screen.patientVariant.filter.all': 'All Of',
-  'screen.patientVariant.filter.one': 'At Least One',
-  'screen.patientVariant.filter.none': 'Not Any Of',
-
+  'screen.patientVariant.filter.search': 'Search',
+  'screen.patientVariant.filter.operand.all': 'All Of',
+  'screen.patientVariant.filter.operand.one': 'At Least One',
+  'screen.patientVariant.filter.operand.none': 'Not Any Of',
+  'screen.patientVariant.filter.selection.all': 'All',
+  'screen.patientVariant.filter.selection.none': 'None',
 };
-
 
 export default en;

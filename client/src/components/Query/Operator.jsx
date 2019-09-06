@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import {
   Tag, Menu, Dropdown, Icon,
 } from 'antd';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
@@ -98,9 +96,7 @@ class Operator extends React.Component {
             onClick={this.createMenuComponent}
           >
             { type }
-
             { <Icon type="caret-down" /> }
-
           </Tag>
         </Dropdown>
         ) }
@@ -125,5 +121,4 @@ Operator.defaultProps = {
   visible: true,
 };
 
-export default connect(
-)(injectIntl(Operator));
+export default Operator;
