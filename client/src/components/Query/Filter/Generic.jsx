@@ -117,7 +117,7 @@ class GenericFilter extends React.Component {
       const typeOne = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.one' });
       const typeNone = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.none' });
       const selectAll = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.all' });
-      const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.all' });
+      const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.none' });
       const filterSearch = intl.formatMessage({ id: 'screen.patientVariant.filter.search' });
 
       return (
