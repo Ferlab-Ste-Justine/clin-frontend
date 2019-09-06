@@ -138,9 +138,12 @@ const fr = {
   'screen.patientVariant.query.menu.revert': 'Rétablir les changements',
   'screen.patientVariant.query.menu.advancedEditor': 'Éditeur avancé',
   'screen.patientVariant.query.menu.delete': 'Supprimer',
-  'screen.patientVariant.filter.all': 'Toutes les valeurs parmi',
-  'screen.patientVariant.filter.one': 'Au moins une valeur parmi',
-  'screen.patientVariant.filter.none': 'Aucune des valeurs parmi',
+  'screen.patientVariant.filter.search': 'Recherche',
+  'screen.patientVariant.filter.operand.all': 'Toutes les valeurs parmi',
+  'screen.patientVariant.filter.operand.one': 'Au moins une valeur parmi',
+  'screen.patientVariant.filter.operand.none': 'Aucune des valeurs parmi',
+  'screen.patientVariant.filter.selection.all': 'Tous',
+  'screen.patientVariant.filter.selection.none': 'Aucun',
 };
 
 export default fr;

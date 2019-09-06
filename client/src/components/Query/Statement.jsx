@@ -83,17 +83,25 @@ class Statement extends React.Component {
     // this.handleMenuSelection = this.handleMenuSelection.bind(this);
 
     // @NOTE Initialize Component State
-    const { data, display } = props;
+    const { data, display, onSelectCallback } = props;
+    const activeQuery = data.length - 1;
+    const activeQueryData = (data[activeQuery] ? data[activeQuery] : null );
     const displays = [];
     data.map((newDatum) => {
       displays.push({ ...display });
       newDatum.key = uuidv1();
       return newDatum;
     });
+
     this.state.original = data;
     this.state.draft = cloneDeep(data);
     this.state.display = cloneDeep(displays);
-    this.state.activeQuery = (data.length - 1) || null;
+    if (activeQueryData) {
+      this.state.activeQuery = activeQuery;
+      if (onSelectCallback) {
+        onSelectCallback(activeQueryData);
+      }
+    }
   }
 
   isCopyable() {
@@ -148,9 +156,10 @@ class Statement extends React.Component {
     const { activeQuery } = this.state;
     const { index } = query;
     if (activeQuery !== index) {
+      const { onSelectCallback } = this.props;
       this.setState({
         activeQuery: index,
-      });
+      }, () => { onSelectCallback(query.data); } );
     }
   }
 
@@ -424,12 +433,12 @@ class Statement extends React.Component {
             <div className="index">{convertIndexToLetter(index)}</div>
           </div>
           <Query
+            key={query.key}
             draft={query}
             original={initial}
             display={display[index]}
             index={index}
             active={isActive}
-            key={query.key}
             results={1000}
             intl={intl}
             onCopyCallback={this.handleCopy}
@@ -524,9 +533,11 @@ class Statement extends React.Component {
 }
 
 Statement.propTypes = {
-  data: PropTypes.shape([]).isRequired,
+  intl: PropTypes.shape({}).isRequired,
+  data: PropTypes.array.isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  onSelectCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -543,6 +554,7 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
+  onSelectCallback: () => {}
 };
 
 export default Statement;

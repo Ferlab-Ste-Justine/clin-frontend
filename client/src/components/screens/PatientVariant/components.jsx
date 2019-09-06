@@ -7,18 +7,19 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import {
-    pull
+    find, findAll,
 } from 'lodash';
 
 import {
-  Col, Row, Layout, Menu, Icon, Input,
+  Menu, Input,
 } from 'antd';
 
-import Filter, {INSTRUCTION_TYPE_FILTER, FILTER_TYPES, FILTER_TYPE_GENERIC} from '../../Query/Filter/index';
+import GenericFilter from '../../Query/Filter/Generic';
 
 import {
     fetchSchema,
 } from '../../../actions/variant';
+import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 
@@ -47,10 +48,12 @@ class VariantNavigation extends React.Component {
         console.log('handleFilterSelection query');
     }
 
-    handleFilterSelection(key) {
+    handleFilterSelection({ key, domEvent }) {
         this.setState({
             activeFilterId: key
-        })
+        });
+        // const ul = domEvent.currentTarget.parentNode.parentNode;
+        // ul.classList.add('ant-menu-hidden');
     }
 
     handleCategoryOpenChange(keys) {
@@ -63,8 +66,9 @@ class VariantNavigation extends React.Component {
     render() {
         const { intl, variant } = this.props;
         const { activeFilterId } = this.state;
-        const { schema } = variant;
-
+        const { activeQuery, schema, queries } = variant;
+        const activeQueryData = find(queries, {'key': activeQuery});
+        const queryFilter = activeQueryData ? find(activeQueryData.instructions, (q) => { return q.data.id === activeFilterId; }) : null;
 
         return (<div className="variant-navigation">
             <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
@@ -83,7 +87,7 @@ class VariantNavigation extends React.Component {
                                       onTitleClick={this.handleFilterSelection}
                                 />);
                             })}
-                            { activeFilterId !== null && (<Filter
+                            { activeFilterId !== null && (<GenericFilter
                                 overlayOnly={true}
                                 autoOpen={true}
                                 options={{
@@ -91,15 +95,12 @@ class VariantNavigation extends React.Component {
                                     selectable: false,
                                     removable: false,
                                 }}
-                                data={{
-                                    id: 'study',
-                                    type: 'generic',
-                                    operand: 'all',
-                                    values: ['My Study', 'Your Study'],
-                                }}
+                                intl={intl}
+                                data={(queryFilter ? queryFilter.data : {})}
                                 onEditCallback={this.handleCategoryOpenChange}
                                 onCancelCallback={this.handleCategoryOpenChange}
                             />)}
+
                         </Menu.SubMenu>);
                 }
             })}
@@ -110,6 +111,7 @@ class VariantNavigation extends React.Component {
 
 VariantNavigation.propTypes = {
   intl: PropTypes.shape({}).isRequired,
+  patient: PropTypes.shape(patientShape).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
@@ -121,12 +123,13 @@ VariantNavigation.defaultProps = {
 
 const mapStateToProps = state => ({
   intl: state.intl,
+  patient: state.patient,
   variant: state.variant,
 });
 
 const mapDispatchToProps = dispatch => ({
     actions: bindActionCreators({
-        fetchSchema
+        fetchSchema,
     }, dispatch),
 });
 
