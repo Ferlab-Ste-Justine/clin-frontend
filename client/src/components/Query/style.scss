@@ -90,9 +90,18 @@ div.query-container {
     background-color: #BBBBBB;
   }
 
+  .ant-input{
+    border:none;
+  }
+
   &.active {
     .query {
       background-color: aliceblue;
+
+        .ant-input{
+          border:1px solid #d9d9d9;
+        }
+
     }
     .selector {
       background-color: aliceblue;
