@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Row, Col, Input, Icon, Tag, Pagination, Button, Descriptions, Typography, PageHeader,
+  Card, Descriptions, Typography, PageHeader,
 } from 'antd';
 import { format } from 'util';
 
@@ -18,6 +18,7 @@ import VariantNavigation from './components';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
+import { variantShape } from '../../../reducers/variant';
 
 // import { navigateToPatientScreen, navigateToPatientSearchScreen } from '../../../actions/router';
 // import { searchPatientVariants } from '../../../actions/patient';
@@ -25,62 +26,6 @@ import { cloneDeep } from 'lodash';
 import Statement from '../../Query/Statement';
 import { selectQuery } from '../../../actions/variant';
 
-
-/* eslint-disable max-len */
-const queryA = {
-    title: 'Query 1',
-    instructions: [
-        {
-            type: 'filter',
-            data: {
-                id: 'variant_type',
-                type: 'generic',
-                operand: 'all',
-                values: ['A', 'B'],
-            },
-        },
-        {
-            type: 'operator',
-            data: {
-                type: 'and',
-            },
-        },
-        {
-            type: 'filter',
-            data: {
-                id: 'gene_type',
-                type: 'generic',
-                operand: 'one',
-                values: ['true'],
-            },
-        },
-        {
-            type: 'operator',
-            data: {
-                type: 'and',
-            },
-        },
-    ],
-};
-
-const optionsA = {
-    copyable: true,
-    duplicatable: true,
-    editable: true,
-    removable: true,
-    reorderable: true,
-    selectable: true,
-    undoable: true,
-};
-const statementA = [
-    queryA,
-    cloneDeep(queryA),
-    cloneDeep(queryA),
-    cloneDeep(queryA),
-];
-const displayA = {
-    compoundOperators: true,
-};
 
 
 class PatientVariantScreen extends React.Component {
@@ -91,16 +36,18 @@ class PatientVariantScreen extends React.Component {
   }
 
   handleQuerySelection(query) {
-    if (query) {
-      const { actions, patient } = this.props;
-      const { id } = patient;
-      const { instructions } = query;
-      actions.selectQuery(id, instructions);
-    }
+    const { actions, patient } = this.props;
+    const { id } = patient;
+
+    console.log('handleQuerySelection' )
+      console.log(query);
+
+    actions.selectQuery(id, query);
   }
 
     render() {
-    const { intl, patient } = this.props;
+    const { intl, variant } = this.props;
+    const { queries } = variant;
 
     return (
       <Content>
@@ -128,9 +75,20 @@ class PatientVariantScreen extends React.Component {
             <br />
             <Statement
               key="variant-statement"
-              data={statementA}
-              options={optionsA}
-              display={displayA}
+              data={queries}
+              options={{
+                  copyable: true,
+                  duplicatable: true,
+                  editable: true,
+                  removable: true,
+                  reorderable: true,
+                  selectable: true,
+                  undoable: true,
+              }}
+              display={{
+                  compoundOperators: true,
+              }}
+              intl={intl}
               onSelectCallback={this.handleQuerySelection}
             />
         </Card>
@@ -143,6 +101,7 @@ class PatientVariantScreen extends React.Component {
 PatientVariantScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
+  variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
 
@@ -155,6 +114,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   intl: state.intl,
   patient: state.patient,
+  variant: state.variant,
 });
 
 export default connect(

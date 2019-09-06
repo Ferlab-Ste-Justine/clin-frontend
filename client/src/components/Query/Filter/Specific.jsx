@@ -38,6 +38,10 @@ class SpecificFilter extends Filter {
   getEditor() {
     return (<div />);
   }
+
+  render() {
+      return this._render();
+  }
 }
 
 SpecificFilter.propTypes = {};

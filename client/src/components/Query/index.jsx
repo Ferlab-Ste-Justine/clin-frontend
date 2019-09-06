@@ -11,7 +11,6 @@ const Joi = require('@hapi/joi');
 import './style.scss';
 import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
 import GenericFilter from './Filter/Generic';
-import SpecificFilter from './Filter/Specific';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
@@ -409,7 +408,7 @@ class Query extends React.Component {
   }
 
   createMenuComponent() {
-    const { options, original } = this.props;
+    const { options, original, intl } = this.props;
     const { display, data } = this.state;
     const {
       copyable, duplicatable, editable, removable, undoable,
@@ -417,55 +416,62 @@ class Query extends React.Component {
     const { compoundOperators, viewableSqon } = display;
     const hasTitle = !!data.title;
 
+    const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
+    const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
+    const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
+    const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
+    const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
+    const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
+    const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
+    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
+    const menuDelete = intl.formatMessage({ id: 'screen.patientVariant.query.menu.delete' });
+
+
     return (
       <Menu onClick={this.handleMenuSelection}>
         {editable && (
         <Menu.Item key={QUERY_ACTION_TITLE}>
           <Icon type={`file${(hasTitle ? '' : '-text')}`} />
-          {(hasTitle ? 'Remove' : 'Add')}
-          {' '}
-Title
+          {(hasTitle ? menuRemove : menuAdd)}
         </Menu.Item>
         )
       }
         {copyable && (
         <Menu.Item key={QUERY_ACTION_COPY}>
           <Icon type="font-size" />
-            Copy SQON
+            {menuCopy}
         </Menu.Item>
         )
       }
         <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
           <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle`} />
-          {(compoundOperators ? 'Maximize' : 'Minimize')}
-          {' '}
-View
+          {(compoundOperators ? menuMaximize : menuMinimize)}
         </Menu.Item>
         {duplicatable && (
         <Menu.Item key={QUERY_ACTION_DUPLICATE}>
           <Icon type="file-add" />
-            Duplicate
+            {menuDuplicate}
         </Menu.Item>
         )
       }
         {undoable && original && (
         <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
           <Icon type="undo" />
-            Revert Changes
+            {menuRevert}
         </Menu.Item>
         )
       }
         {editable && (
         <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
           <Icon type={`eye${(viewableSqon ? '-invisible' : '')}`} />
-            Advanced Editor
+            {menuAdvancedEditor}
         </Menu.Item>
         )
       }
         {removable && (
         <Menu.Item key={QUERY_ACTION_DELETE}>
           <Icon type="delete" />
-            Delete
+            {menuDelete}
         </Menu.Item>
         )
       }
@@ -474,7 +480,7 @@ View
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -492,6 +498,7 @@ View
             key={operator.key}
             options={options}
             data={operator.data}
+            intl={intl}
             onEditCallback={this.handleOperatorChange}
           />
         );
@@ -522,6 +529,7 @@ View
                     index={index}
                     options={options}
                     data={item.data}
+                    intl={intl}
                     onEditCallback={this.handleOperatorChange}
                   />
                 );
@@ -531,6 +539,7 @@ View
                     index={index}
                     options={options}
                     data={item.data}
+                    intl={intl}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
@@ -543,6 +552,7 @@ View
                     index={index}
                     options={options}
                     data={item.data}
+                    intl={intl}
                     queryIndex={queryIndex}
                     queryColor={active && queryIndex !== null ? convertIndexToColor(queryIndex) : null}
                     queryTitle={queryIndex !== null ? convertIndexToLetter(queryIndex) : index }
@@ -580,13 +590,13 @@ View
 }
 
 Query.propTypes = {
-  key: PropTypes.string,
+  intl: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape([]).isRequired,
   original: PropTypes.shape([]).isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   active: PropTypes.bool,
-  results: PropTypes.string,
+  results: PropTypes.number,
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
   onDisplayCallback: PropTypes.func,
@@ -599,7 +609,6 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
-  key: 'query',
   display: {
     compoundOperators: false,
     viewableSqon: false,

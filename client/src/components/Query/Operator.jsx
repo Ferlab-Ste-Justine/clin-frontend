@@ -4,7 +4,6 @@ import {
   Tag, Menu, Dropdown, Icon,
 } from 'antd';
 
-
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
 export const OPERATOR_TYPE_OR = 'or';
@@ -70,11 +69,15 @@ class Operator extends React.Component {
   }
 
   createMenuComponent() {
+    const { intl } = this.props;
+    const andText = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
+    const orText = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
+    const andNotText = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
     return (
       <Menu onClick={this.handleApply}>
-        <Menu.Item key={OPERATOR_TYPE_AND}>AND</Menu.Item>
-        <Menu.Item key={OPERATOR_TYPE_OR}>OR</Menu.Item>
-        <Menu.Item key={OPERATOR_TYPE_AND_NOT}>AND NOT</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_AND}>{andText}</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_OR}>{orText}</Menu.Item>
+        <Menu.Item key={OPERATOR_TYPE_AND_NOT}>{andNotText}</Menu.Item>
       </Menu>
     );
   }
@@ -85,17 +88,18 @@ class Operator extends React.Component {
 
     return (
       <span>
-        <Tag
-          className="operator"
-          visible={this.isVisible()}
-        >
-          { type }
-          { this.isEditable() && (
-          <Dropdown overlay={this.createMenuComponent} trigger={['click']}>
+        { this.isEditable() && (
+        <Dropdown overlay={this.createMenuComponent} trigger={['click']}>
+          <Tag
+            className="operator"
+            visible={this.isVisible()}
+            onClick={this.createMenuComponent}
+          >
+            { type }
             { <Icon type="caret-down" /> }
-          </Dropdown>
-          ) }
-        </Tag>
+          </Tag>
+        </Dropdown>
+        ) }
       </span>
     );
   }
@@ -106,6 +110,7 @@ Operator.propTypes = {
   options: PropTypes.shape({}),
   onEditCallback: PropTypes.func,
   visible: PropTypes.bool,
+  intl: PropTypes.shape({}).isRequired,
 };
 
 Operator.defaultProps = {

@@ -9,6 +9,8 @@ import { cloneDeep } from 'lodash';
 import {
   empty, one, full, info,
 } from 'react-icons-kit/entypo';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -17,7 +19,6 @@ export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
 export const FILTER_OPERAND_TYPE_NONE = 'none';
 export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_SPECIFIC];
-export const FILTER_OPERANDS = [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,
@@ -37,6 +38,7 @@ class Filter extends React.Component {
       selected: false,
       opened: null,
     };
+
     this.isEditable = this.isEditable.bind(this);
     this.isRemovable = this.isRemovable.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
@@ -153,8 +155,8 @@ class Filter extends React.Component {
   }
 
   render() {
-    const { data, draft } = this.state;
-    const { overlayOnly } = this.props;
+    const { data } = this.state;
+    const { overlayOnly, getEditor, getLabel, getLegend, getContent } = this.props;
 
     const overlay = (
         <Popover
@@ -162,7 +164,7 @@ class Filter extends React.Component {
         >
           <Card>
             <Typography.Title level={4}>{data.id}</Typography.Title>
-            { this.getEditor() }
+            { getEditor() }
             <Row type="flex" justify="end">
               <Col span={6}>
                 <Button onClick={this.handleCancel}>Annuler</Button>
@@ -195,12 +197,12 @@ class Filter extends React.Component {
             className="legend"
             trigger="hover"
             placement="topLeft"
-            content={this.getPopoverContent()}
+            content={getContent()}
           >
-            {this.getPopoverLegend()}
+            { getLegend() }
           </Popover>
           <span onClick={this.toggleMenu}>
-            {this.getLabel()}
+            { getLabel() }
           </span>
           { this.isEditable() && (
           <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
@@ -211,15 +213,21 @@ class Filter extends React.Component {
       </span>
     );
   }
+
 }
 
 Filter.propTypes = {
+  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
+  getEditor: PropTypes.func,
+  getLabel: PropTypes.func,
+  getLegend: PropTypes.func,
+  getContent: PropTypes.func,
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
@@ -235,9 +243,14 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
+  getEditor: () => {},
+  getLabel: () => {},
+  getLegend: () => {},
+  getContent: () => {},
   autoOpen: false,
   overlayOnly: false,
   visible: true,
 };
 
-export default Filter;
+export default connect(
+)(injectIntl(Filter));

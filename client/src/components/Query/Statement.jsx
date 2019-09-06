@@ -76,6 +76,7 @@ class Statement extends React.Component {
     this.handleClick = this.handleClick.bind(this);
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleRemoveChecked = this.handleRemoveChecked.bind(this);
+    this.handleNewQuery = this.handleNewQuery.bind(this)
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.commit = this.commit.bind(this);
@@ -83,7 +84,7 @@ class Statement extends React.Component {
 
     // @NOTE Initialize Component State
     const { data, display, onSelectCallback } = props;
-    const activeQuery = (data.length - 1) || null;
+    const activeQuery = data.length - 1;
     const activeQueryData = (data[activeQuery] ? data[activeQuery] : null );
     const displays = [];
     data.map((newDatum) => {
@@ -91,12 +92,15 @@ class Statement extends React.Component {
       newDatum.key = uuidv1();
       return newDatum;
     });
+
     this.state.original = data;
     this.state.draft = cloneDeep(data);
     this.state.display = cloneDeep(displays);
     if (activeQueryData) {
       this.state.activeQuery = activeQuery;
-      onSelectCallback(activeQueryData);
+      if (onSelectCallback) {
+        onSelectCallback(activeQueryData);
+      }
     }
   }
 
@@ -161,13 +165,12 @@ class Statement extends React.Component {
 
   handleEdit(query) {
     if (this.isEditable()) {
-      const { onSelectCallback } = this.props;
       const { draft } = this.state;
       this.commit(draft);
       draft[query.index] = query.data;
       this.setState({
         draft,
-      }, () => { onSelectCallback(query.data); });
+      });
     }
   }
 
@@ -180,15 +183,25 @@ class Statement extends React.Component {
   }
 
   handleDuplicate(query) {
+
     if (this.isDuplicatable()) {
-      const { draft } = this.state;
+      const { draft , display } = this.state;
+
       this.commit(draft);
       const index = query.index + 1;
       const clone = cloneDeep(query);
       clone.data.key = uuidv1();
+
       draft.splice(index, 0, clone.data);
+
+      const displayClone = cloneDeep(display);
+      const howDisplayed=this.state.display[query.index]
+      displayClone.splice(index, 0, howDisplayed);
+
       this.setState({
         draft,
+        display: displayClone,
+        activeQuery:index,
       });
     }
   }
@@ -324,6 +337,25 @@ class Statement extends React.Component {
     }
   }
 
+   handleNewQuery() {
+     const { draft , display } = this.state;
+     const key = uuidv1();
+     const instructions = cloneDeep(DEFAULT_INSTRUCTIONS).instructions
+
+     const draftQuery = {   instructions ,
+                            "key": key}
+     draft.push(draftQuery)
+
+     const newDisplay = cloneDeep(this.props.display)
+     display.push(newDisplay)
+
+     this.setState({
+         draft,
+         display,
+         activeQuery : draft.length-1
+       });
+   }
+
   findQueryIndexForKey(key) {
     const { draft } = this.state;
     return findIndex(draft, { key });
@@ -356,7 +388,7 @@ class Statement extends React.Component {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
     } = this.state;
     if (draft === null) { return null }
-    const { options } = this.props;
+    const { options, intl } = this.props;
     const {
       editable, reorderable, removable, undoable,
     } = options;
@@ -365,6 +397,19 @@ class Statement extends React.Component {
     const query = cloneDeep(draft[activeQuery]);
     const subqueries = query ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
     const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
+
+    const combineText = intl.formatMessage({ id: 'screen.patientVariant.statement.combine' });
+    const deleteText = intl.formatMessage({ id: 'screen.patientVariant.statement.delete' });
+    const newQueryText = intl.formatMessage({ id: 'screen.patientVariant.statement.newQuery' });
+    const combineAnd = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
+    const combineOr = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
+    const combineAndNot = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
+    const checkToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.check' });
+    const unCheckToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.uncheck' });
+    const allText = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.all' });
+    const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.combineSelection' });
+    const deleteSelectionToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.deleteSelection' });
+    const undoToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.undo' });
 
     const queries = draft.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
@@ -388,13 +433,14 @@ class Statement extends React.Component {
             <div className="index">{convertIndexToLetter(index)}</div>
           </div>
           <Query
+            key={query.key}
             draft={query}
             original={initial}
             display={display[index]}
             index={index}
             active={isActive}
-            key={query.key}
             results={1000}
+            intl={intl}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
             onDisplayCallback={this.handleDisplay}
@@ -412,7 +458,7 @@ class Statement extends React.Component {
     return (
       <div className="statement">
         <div className="action-container">
-          <Tooltip title={`${!queriesAreAllChecked ? 'Check' : 'Uncheck'} All`}>
+          <Tooltip title={`${!queriesAreAllChecked ? checkToolTip : unCheckToolTip} ${allText}`}>
             <Checkbox
               key="check-all"
               className="selector"
@@ -423,7 +469,7 @@ class Statement extends React.Component {
           </Tooltip>
           <div className="actions left">
             { editable && (
-            <Tooltip title="Combine Selection">
+            <Tooltip title={combineSelectionToolTip}>
               <Dropdown
                 disabled={(checkedQueriesCount < 2)}
                 trigger = {['click']}
@@ -431,21 +477,21 @@ class Statement extends React.Component {
                   <Menu onClick={this.handleCombine}>
                     <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
                       <IconKit size={24} icon={software_pathfinder_intersect} />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;And
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{combineAnd}
                     </Menu.Item>
                     <Menu.Item key={SUBQUERY_TYPE_SUBTRACT}>
                       <IconKit size={24} icon={software_pathfinder_subtract} />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;And Not
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{combineAndNot}
                     </Menu.Item>
                     <Menu.Item key={SUBQUERY_TYPE_UNITE}>
                       <IconKit size={24} icon={software_pathfinder_unite} />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Or
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{combineOr}
                     </Menu.Item>
                   </Menu>
                   )}
               >
                 <Button icon="block">
-                      Combine
+                      {combineText}
                   {' '}
                   <Icon type="caret-down" />
                 </Button>
@@ -453,14 +499,17 @@ class Statement extends React.Component {
             </Tooltip>
             ) }
             { removable && (
-            <Tooltip title="Delete Selection">
-              <Button icon="delete" type="danger" disabled={(checkedQueriesCount < 1)} onClick={this.handleRemoveChecked}>Delete</Button>
+            <Tooltip title={deleteSelectionToolTip}>
+              <Button icon="delete" type="danger" disabled={(checkedQueriesCount < 1)} onClick={this.handleRemoveChecked}>{deleteText}</Button>
             </Tooltip>
             ) }
           </div>
           <div className="actions right">
+            <Tooltip title={newQueryText}>
+                <Button type="primary" onClick={this.handleNewQuery}>{newQueryText}</Button>
+            </Tooltip>
             { undoable && (
-            <Tooltip title="Undo">
+            <Tooltip title={undoToolTip}>
               <Badge count={this.versions.length}>
                 <Button icon="undo" shape="circle" disabled={(this.versions.length < 1)} onClick={this.handleUndo} />
               </Badge>
@@ -478,37 +527,14 @@ class Statement extends React.Component {
             />
           ) : queries
         }
-        { editable && queries.length < MAX_QUERIES && (
-        <div className={`query-container${((!draft.length || activeQuery === draft.length) ? ' active' : '')}`}>
-          <div className="selector" />
-          <Query
-            draft={cloneDeep(DEFAULT_INSTRUCTIONS)}
-            original={null}
-            display={cloneDeep(display[queries.length])}
-            key={uuidv1()}
-            index={queries.length}
-            active={false}
-            options={{
-              copyable: true,
-              duplicatable: false,
-              editable: true,
-              removable: false,
-              reorderable: false,
-              selectable: false,
-              undoable: false,
-            }}
-            onEditCallback={this.handleEdit}
-            onClickCallback={this.handleClick}
-          />
-        </div>
-        ) }
       </div>
     );
   }
 }
 
 Statement.propTypes = {
-  data: PropTypes.shape([]).isRequired,
+  intl: PropTypes.shape({}).isRequired,
+  data: PropTypes.array.isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   onSelectCallback: PropTypes.func,

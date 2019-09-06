@@ -11,10 +11,9 @@ import {
 } from 'lodash';
 
 import {
-  Col, Row, Layout, Menu, Icon, Input,
+  Menu, Input,
 } from 'antd';
 
-import {INSTRUCTION_TYPE_FILTER, FILTER_TYPES, FILTER_TYPE_GENERIC} from '../../Query/Filter/index';
 import GenericFilter from '../../Query/Filter/Generic';
 
 import {
@@ -43,8 +42,6 @@ class VariantNavigation extends React.Component {
         if (!schema.version) {
             actions.fetchSchema();
         }
-
-
     }
 
     handleFilterSearch(query) {
@@ -52,11 +49,11 @@ class VariantNavigation extends React.Component {
     }
 
     handleFilterSelection({ key, domEvent }) {
-        const ul = domEvent.currentTarget.parentNode.parentNode;
-        ul.classList.add('ant-menu-hidden');
         this.setState({
             activeFilterId: key
         });
+        // const ul = domEvent.currentTarget.parentNode.parentNode;
+        // ul.classList.add('ant-menu-hidden');
     }
 
     handleCategoryOpenChange(keys) {
@@ -69,8 +66,9 @@ class VariantNavigation extends React.Component {
     render() {
         const { intl, variant } = this.props;
         const { activeFilterId } = this.state;
-        const { activeQuery, schema } = variant;
-        const queryFilter =  find(activeQuery, (q) => { return q.data.id === activeFilterId; });
+        const { activeQuery, schema, queries } = variant;
+        const activeQueryData = find(queries, {'key': activeQuery});
+        const queryFilter = activeQueryData ? find(activeQueryData.instructions, (q) => { return q.data.id === activeFilterId; }) : null;
 
         return (<div className="variant-navigation">
             <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
@@ -82,12 +80,8 @@ class VariantNavigation extends React.Component {
                     if (category.filters && category.filters.length > 0) {
                         const id = category.id;
                         const label = intl.formatMessage({id: `screen.variantsearch.${category.label}`});
-
                         return (<Menu.SubMenu key={id} title={<span>{label}</span>}>
                             { activeFilterId === null && category.filters.map((filter) => {
-
-
-
                                 return (<Menu.SubMenu key={filter.id}
                                       title={intl.formatMessage({id: `screen.variantsearch.${filter.label}`})}
                                       onTitleClick={this.handleFilterSelection}
@@ -101,10 +95,12 @@ class VariantNavigation extends React.Component {
                                     selectable: false,
                                     removable: false,
                                 }}
-                                data={queryFilter.data || {}}
+                                intl={intl}
+                                data={(queryFilter ? queryFilter.data : {})}
                                 onEditCallback={this.handleCategoryOpenChange}
                                 onCancelCallback={this.handleCategoryOpenChange}
                             />)}
+
                         </Menu.SubMenu>);
                 }
             })}
