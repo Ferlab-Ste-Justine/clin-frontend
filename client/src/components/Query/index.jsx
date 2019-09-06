@@ -100,6 +100,7 @@ class Query extends React.Component {
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.hasTitle = this.hasTitle.bind(this);
 
     // @NOTE Initialize Component State
     const { display, draft } = props;
@@ -368,12 +369,8 @@ class Query extends React.Component {
         });
         break;
       case QUERY_ACTION_TITLE:
-        const hasTitle = data.title === "" || data.title != undefined ? true : false ;
-
-        if (!hasTitle) {
+        if (!this.hasTitle()) {
           data.title = '';
-
-
         } else {
           delete data.title;
         }
@@ -411,14 +408,18 @@ class Query extends React.Component {
     }
   }
 
+  hasTitle() {
+    const { data } = this.state;
+    return data.title !== undefined
+  }
+
   createMenuComponent() {
     const { options, original, intl } = this.props;
-    const { display, data } = this.state;
+    const { display } = this.state;
     const {
       copyable, duplicatable, editable, removable, undoable,
     } = options;
     const { compoundOperators, viewableSqon } = display;
-    const hasTitle = data.title === "" || data.title != undefined ? true : false;
     const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
     const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
     const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
@@ -428,14 +429,14 @@ class Query extends React.Component {
     const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
     const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
     const menuDelete = intl.formatMessage({ id: 'screen.patientVariant.query.menu.delete' });
-
+    const titleMetaIsPresent = this.hasTitle();
 
     return (
       <Menu onClick={this.handleMenuSelection}>
         {editable && (
         <Menu.Item key={QUERY_ACTION_TITLE}>
-          <Icon type={`file${(hasTitle ? '' : '-text')}`} />
-          {(hasTitle ? menuRemove : menuAdd)}
+          <Icon type={`file${(titleMetaIsPresent ? '' : '-text')}`} />
+          {(titleMetaIsPresent ? menuRemove : menuAdd)}
         </Menu.Item>
         )
       }
@@ -490,7 +491,6 @@ class Query extends React.Component {
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { display, data } = this.state;
     const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
-    const title = data.title != undefined ? true : false
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
     if (compoundOperators) {
@@ -509,14 +509,14 @@ class Query extends React.Component {
     }
     const query = data.instructions ? (
       <div className={`query${(isDirty ? ' dirty' : '')}`} onClick={this.handleClick}>
-        {title
+        {this.hasTitle()
           && (
           <Input
             size="small"
             className="title"
             allowClear
             placeholder="Add Title"
-            defaultValue={data.title || ''}
+            defaultValue={data.title}
             onBlur={this.handleTitleChange}
             onPressEnter={this.handleTitleChange}
           />
