@@ -156,7 +156,7 @@ class Filter extends React.Component {
 
   render() {
     const { data } = this.state;
-    const { overlayOnly, getEditor, getLabel, getLegend, getContent } = this.props;
+    const { overlayOnly, editor, label, legend, content } = this.props;
 
     const overlay = (
         <Popover
@@ -164,7 +164,7 @@ class Filter extends React.Component {
         >
           <Card>
             <Typography.Title level={4}>{data.id}</Typography.Title>
-            { getEditor() }
+            { editor }
             <Row type="flex" justify="end">
               <Col span={6}>
                 <Button onClick={this.handleCancel}>Annuler</Button>
@@ -197,12 +197,12 @@ class Filter extends React.Component {
             className="legend"
             trigger="hover"
             placement="topLeft"
-            content={getContent()}
+            content={content}
           >
-            { getLegend() }
+            { legend }
           </Popover>
           <span onClick={this.toggleMenu}>
-            { getLabel() }
+            { label }
           </span>
           { this.isEditable() && (
           <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
@@ -224,10 +224,10 @@ Filter.propTypes = {
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
-  getEditor: PropTypes.func,
-  getLabel: PropTypes.func,
-  getLegend: PropTypes.func,
-  getContent: PropTypes.func,
+  editor: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  legend: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired,
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
@@ -243,10 +243,6 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
-  getEditor: () => {},
-  getLabel: () => {},
-  getLegend: () => {},
-  getContent: () => {},
   autoOpen: false,
   overlayOnly: false,
   visible: true,

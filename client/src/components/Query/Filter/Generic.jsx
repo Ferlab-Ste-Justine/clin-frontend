@@ -40,24 +40,17 @@ class GenericFilter extends React.Component {
 
     // @TODO Get possible values
     this.state.options = cloneDeep(data.values);
-
-    console.log('GenericFilter state is');
-    console.log(cloneDeep(this.state));
   }
 
   getLabel() {
-      console.log('GenericFilter getLabel')
-    const { data } = this.props;
-    const { values } = data;
+    const { draft } = this.state;
+    const { values } = draft;
     return JSON.stringify(values);
   }
 
   getPopoverLegend() {
-      console.log('GenericFilter getPopoverLegend')
-
-      const { data } = this.props;
-      const { operand } = data;
-
+      const { draft } = this.state;
+      const { operand } = draft;
       switch (operand) {
           default:
           case FILTER_OPERAND_TYPE_ALL:
@@ -70,9 +63,8 @@ class GenericFilter extends React.Component {
   }
 
   getPopoverContent() {
-      console.log('GenericFilter getPopoverContent')
-      const { data } = this.props;
-      const { operand } = data;
+      const { draft } = this.state;
+      const { operand } = draft;
       return (
           <div>
               <Typography.Text>{operand}</Typography.Text>
@@ -100,8 +92,7 @@ class GenericFilter extends React.Component {
 
   handleCheckAllSelections(e) {
     const { target } = e;
-    const { checked } = target;
-    if (!checked) {
+    if (!target.checked) {
       this.setState({
         selection: [],
         indeterminate: false
@@ -118,10 +109,9 @@ class GenericFilter extends React.Component {
   }
 
   getEditor() {
-      console.log('GenericFilter getEditor')
-      const { intl, data } = this.props;
-      const { indeterminate, options, selection } = this.state;
-      const { operand } = data;
+      const { intl } = this.props;
+      const { draft, indeterminate, options, selection } = this.state;
+      const { operand } = draft;
       const allSelected = selection.length === options.length;
       const typeAll = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.all' });
       const typeOne = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.one' });
@@ -178,10 +168,10 @@ class GenericFilter extends React.Component {
   render() {
       return <Filter
           {...this.props}
-          getEditor={this.getEditor}
-          getLabel={this.getLabel}
-          getLegend={this.getPopoverLegend}
-          getContent={this.getPopoverContent}
+          editor={this.getEditor()}
+          label={this.getLabel()}
+          legend={this.getPopoverLegend()}
+          content={this.getPopoverContent()}
       />;
   }
 
