@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox,  Tooltip, Badge, Dropdown, Icon,
+  Menu, Button, Checkbox,  Tooltip, Badge, Dropdown, Icon, Modal
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter,
@@ -46,6 +46,7 @@ class Statement extends React.Component {
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
       display: null,
+      visible: false,
       options: {
         copyable: null,
         duplicatable: null,
@@ -68,6 +69,7 @@ class Statement extends React.Component {
     this.handleDisplay = this.handleDisplay.bind(this);
     this.handleDuplicate = this.handleDuplicate.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
+    this.showDeleteConfirm = this.showDeleteConfirm.bind(this)
     this.handleSelect = this.handleSelect.bind(this);
     this.handleReorder = this.handleReorder.bind(this);
     this.handleUndo = this.handleUndo.bind(this);
@@ -314,11 +316,26 @@ class Statement extends React.Component {
   }
 
   handleRemoveChecked() {
+    this.showDeleteConfirm()
+
     if (this.isRemovable()) {
       const { checkedQueries, draft } = this.state;
+      let hasquery =false;
+      for(const q in draft){
+        console.log("For q" , draft[q].instructions)
+        let subquery = find(draft[q].instructions , ['type' , "subquery"])
+        console.log("Subquery" , subquery)
+      }
+
+      let test = find(draft , function(q){return find(q.instructions , ['type' ,'subquery'])})
+        console.log("test" , test)
+      console.log("draft" , ...draft)
       this.commit(draft);
+
+
       const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
       pullAllBy(draft, keysToRemove, 'key');
+
       this.setState({
         draft,
         checkedQueries: [],
@@ -326,6 +343,23 @@ class Statement extends React.Component {
         queriesAreAllChecked: false,
       });
     }
+  }
+
+  showDeleteConfirm() {
+  const { confirm } = Modal;
+    confirm({
+      title: 'Are you sure you want to delete this query?',
+      content: 'This query is used in a subquery.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        console.log('OK');
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
   }
 
    handleNewQuery() {
