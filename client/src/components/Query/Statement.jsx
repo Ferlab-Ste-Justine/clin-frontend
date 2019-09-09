@@ -338,29 +338,19 @@ class Statement extends React.Component {
     if (this.isRemovable()) {
       const { checkedQueries, draft } = this.state;
 
-      let subqueryKeys =[]
-      let subquery = []
-
-      draft.map(q => subquery = filter(q.instructions , ['type',"subquery"]))
-
-      console.log("draft" ,draft)
-      subquery.length !=0 ? subquery.map(sq => subqueryKeys.push(sq.data.query)) : null
-
+      let keys = []
       for(let d of draft){
-        let keys = []
-        //d.instructions.map(i => i.type === "subquery" ? keys.push(d.key): null)
-        //d.instructions.map(i => console.log(i))
-        for(const i of d.instructions){
-            console.log("///////" ,i)
-        }
+           d.instructions.map(i => {if(i.type === "subquery"){
+                                        checkedQueries.map(c => c === i.data.query ? keys.push({"key" :d.key}) : null)
+                                   }})
       }
+      keys.length != 0 ? this.showDeleteConfirm(keys) : this.confirmRemove()
 
-      subqueryKeys.some(k=> checkedQueries.indexOf(k) !== -1) ? this.showDeleteConfirm() : this.confirmRemove()
     }
   }
 
 
-  showDeleteConfirm() {
+  showDeleteConfirm(delSubQuery) {
       const { confirm } = Modal;
       const that =this
         confirm({
@@ -371,21 +361,19 @@ class Statement extends React.Component {
           cancelText: 'No',
 
           onOk() {
-            that.confirmRemove()
+            that.confirmRemove(delSubQuery)
           },
         });
   }
 
-  confirmRemove(){
+  confirmRemove(delSubQuery =[]){
     const { checkedQueries, draft } = this.state;
 
 
     this.commit(draft);
 
     const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
-
-    checkedQueries.reduce((accumulator, key) => console.log("-------------------"))
-    console.log("checkedQueries",checkedQueries)
+    keysToRemove.push(...delSubQuery)
     pullAllBy(draft, keysToRemove, 'key');
 
     this.setState({
