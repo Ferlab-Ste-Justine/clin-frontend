@@ -398,7 +398,7 @@ class Statement extends React.Component {
    handleNewQuery() {
      const { draft , display } = this.state;
      const key = uuidv1();
-     const instructions = cloneDeep(DEFAULT_INSTRUCTIONS).instructions
+     const instructions = []
 
      const draftQuery = {   instructions ,
                             "key": key}

@@ -83,9 +83,10 @@ class Operator extends React.Component {
   }
 
   render() {
+    const { intl } = this.props;
     const { data } = this.state;
     const { type } = data;
-
+    const typeText = intl.formatMessage({ id: `screen.patientVariant.statement.${type.replace(' ', '')}` });
     return (
       <span>
         { this.isEditable() && (
@@ -95,7 +96,7 @@ class Operator extends React.Component {
             visible={this.isVisible()}
             onClick={this.createMenuComponent}
           >
-            { type }
+            { typeText }
             { <Icon type="caret-down" /> }
           </Tag>
         </Dropdown>

@@ -92,16 +92,16 @@ div.query-container {
 
   .ant-input{
     border:none;
+    margin-bottom: -4px;
   }
 
   &.active {
     .query {
       background-color: aliceblue;
-
         .ant-input{
           border:1px solid #d9d9d9;
+          padding-left: 6px;
         }
-
     }
     .selector {
       background-color: aliceblue;
@@ -114,16 +114,15 @@ div.query-container {
 
 .operator {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   background-color: #095797;
   color:white;
-  min-width: 60px;
+  min-width: 75px;
   height: 20px;
   text-transform: uppercase;
   .anticon-caret-down {
     cursor: pointer;
-    margin-left: 4px;
   }
 }
 
@@ -185,7 +184,6 @@ div.query {
 
     > * {
       margin-top: 2px;
-      margin-right: 10px;
     }
   }
 
