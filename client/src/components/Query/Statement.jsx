@@ -69,7 +69,8 @@ class Statement extends React.Component {
     this.handleDisplay = this.handleDisplay.bind(this);
     this.handleDuplicate = this.handleDuplicate.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
-    this.confirmRemove = this.confirmRemove.bind(this)
+    this.confirmRemoveChecked = this.confirmRemoveChecked.bind(this)
+    this.confirmRemove =this.confirmRemove.bind(this)
     this.showDeleteConfirm = this.showDeleteConfirm.bind(this)
     this.handleSelect = this.handleSelect.bind(this);
     this.handleReorder = this.handleReorder.bind(this);
@@ -212,12 +213,25 @@ class Statement extends React.Component {
   handleRemove(query) {
     if (this.isRemovable()) {
       const { draft } = this.state;
-      this.commit(draft);
-      pullAllBy(draft, [{ key: query.data.key }], 'key');
-      this.setState({
-        draft,
-      });
+      let key = null
+      for(let d of draft){
+           const hasSubQuery = filter(d.instructions , ["type", "subquery"])
+           const test =find(hasSubQuery , function(q){ q.data.query === query.data.key ? key =d.key : null})
+      }
+
+      key != null ? this.showDeleteConfirm(key, query) : this.confirmRemove(query, key)
     }
+  }
+
+  confirmRemove(query =null , key=null){
+    const { draft } = this.state;
+
+    this.commit(draft);
+    pullAllBy(draft, [{ key: query.data.key }], 'key');
+    key!= null ? pullAllBy(draft, [{ key: key }], 'key') : null;
+    this.setState({
+      draft,
+    });
   }
 
   handleReorder(sorted) {
@@ -334,7 +348,6 @@ class Statement extends React.Component {
   }
 
   handleRemoveChecked() {
-
     if (this.isRemovable()) {
       const { checkedQueries, draft } = this.state;
 
@@ -344,29 +357,35 @@ class Statement extends React.Component {
                                         checkedQueries.map(c => c === i.data.query ? keys.push({"key" :d.key}) : null)
                                    }})
       }
-      keys.length != 0 ? this.showDeleteConfirm(keys) : this.confirmRemove()
+      keys.length != 0 ? this.showDeleteConfirm(keys) : this.confirmRemoveChecked()
 
     }
   }
 
 
-  showDeleteConfirm(delSubQuery) {
+  showDeleteConfirm(delSubQuery, query = null) {
       const { confirm } = Modal;
+      const {  intl } = this.props;
+      const modalTitle = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.title' });
+      const modalContent = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.content' });
+      const modalOk = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.ok' });
+      const modalCancel = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.cancel' });
       const that =this
         confirm({
-          title: 'Are you sure you want to delete this query?',
-          content: 'This query is used in a subquery.',
-          okText: 'Yes',
+          title: modalTitle,
+          content: modalContent,
+          okText: modalOk,
           okType: 'danger',
-          cancelText: 'No',
+          cancelText: modalCancel,
 
           onOk() {
-            that.confirmRemove(delSubQuery)
+           Array.isArray(delSubQuery) ? that.confirmRemoveChecked(delSubQuery) : that.confirmRemove(query ,delSubQuery)
+
           },
         });
   }
 
-  confirmRemove(delSubQuery =[]){
+  confirmRemoveChecked(delSubQuery =[]){
     const { checkedQueries, draft } = this.state;
 
 
