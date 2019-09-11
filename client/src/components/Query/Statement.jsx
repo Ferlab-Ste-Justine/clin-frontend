@@ -71,6 +71,7 @@ class Statement extends React.Component {
     this.handleRemove = this.handleRemove.bind(this);
     this.confirmRemoveChecked = this.confirmRemoveChecked.bind(this)
     this.confirmRemove =this.confirmRemove.bind(this)
+    this.getSubquery = this.getSubquery.bind(this)
     this.showDeleteConfirm = this.showDeleteConfirm.bind(this)
     this.handleSelect = this.handleSelect.bind(this);
     this.handleReorder = this.handleReorder.bind(this);
@@ -347,19 +348,33 @@ class Statement extends React.Component {
     }
   }
 
+  getSubquery(){
+     const { checkedQueries, draft } = this.state;
+
+     const subquery=[]
+     for(let d of draft){
+       d.instructions.map(i => {if(i.type === INSTRUCTION_TYPE_SUBQUERY){
+                                    if(checkedQueries.indexOf(i.data.query)!= -1 ){
+                                        return subquery.push(d)
+                                    }
+                               }})
+     }
+    return subquery
+
+  }
+
   handleRemoveChecked() {
     if (this.isRemovable()) {
       const { checkedQueries, draft } = this.state;
 
       let keys = []
-      for(let d of draft){
-           d.instructions.map(i => {if(i.type === "subquery"){
-                                        checkedQueries.map(c => c === i.data.query ? keys.push({"key" :d.key}) : null)
-                                   }})
-      }
+      let subquery = this.getSubquery()
+      subquery.map(s => keys.push({"key":s.key}))
+
       keys.length != 0 ? this.showDeleteConfirm(keys) : this.confirmRemoveChecked()
 
     }
+
   }
 
 
@@ -387,9 +402,8 @@ class Statement extends React.Component {
 
   confirmRemoveChecked(delSubQuery =[]){
     const { checkedQueries, draft } = this.state;
-
-
     this.commit(draft);
+
 
     const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
     keysToRemove.push(...delSubQuery)
