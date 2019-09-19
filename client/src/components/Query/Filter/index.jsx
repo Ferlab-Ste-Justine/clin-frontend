@@ -112,7 +112,8 @@ class Filter extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { onEditCallback } = this.props;
+      const { editor , onEditCallback } = this.props
+      draft.values  = editor.props.children[6].props.children.props.children.props.value;
       this.setState({
         data: { ...draft },
         opened: false,
@@ -157,7 +158,6 @@ class Filter extends React.Component {
   render() {
     const { data } = this.state;
     const { overlayOnly, editor, label, legend, content } = this.props;
-
     const overlay = (
         <Popover
             visible={this.isOpened()}
@@ -182,7 +182,6 @@ class Filter extends React.Component {
         onVisibleChange={this.toggleMenu} overlay={overlay} visible={this.isOpened()} placement="bottomLeft"><span/>
       </Dropdown>);
     }
-
     return (
       <span>
         <Tag

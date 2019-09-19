@@ -14,7 +14,8 @@ import IconKit from 'react-icons-kit';
 import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
-
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import Query, { DEFAULT_EMPTY_QUERY } from './index';
 import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
@@ -401,7 +402,6 @@ class Statement extends React.Component {
       editable, reorderable, removable, undoable,
     } = options;
     const checkedQueriesCount = checkedQueries.length;
-
     const query = cloneDeep(draft[activeQuery]);
     const subqueries = query ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
     const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
@@ -418,7 +418,6 @@ class Statement extends React.Component {
     const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.combineSelection' });
     const deleteSelectionToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.deleteSelection' });
     const undoToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.undo' });
-
     const queries = draft.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === index;
@@ -565,4 +564,13 @@ Statement.defaultProps = {
   onSelectCallback: () => {}
 };
 
-export default Statement;
+const mapStateToProps = state => ({
+  intl: state.intl,
+  patient: state.patient,
+  variant: state.variant,
+});
+
+export default connect(
+  mapStateToProps,
+)(injectIntl(Statement));
+

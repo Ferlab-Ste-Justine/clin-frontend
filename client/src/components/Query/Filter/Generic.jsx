@@ -31,7 +31,6 @@ class GenericFilter extends React.Component {
     this.handleOperandChange = this.handleOperandChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
     this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
-
     // @NOTE Initialize Component State
     const { data } = props;
     this.state.draft = cloneDeep(data);
@@ -119,7 +118,6 @@ class GenericFilter extends React.Component {
       const selectAll = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.all' });
       const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.none' });
       const filterSearch = intl.formatMessage({ id: 'screen.patientVariant.filter.search' });
-
       return (
           <>
               <Row>
