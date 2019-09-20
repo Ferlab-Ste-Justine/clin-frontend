@@ -39,16 +39,12 @@ class PatientVariantScreen extends React.Component {
     const { actions, patient } = this.props;
     const { id } = patient;
 
-    console.log('handleQuerySelection' )
-      console.log(query);
-
     actions.selectQuery(id, query);
   }
 
     render() {
     const { intl, variant } = this.props;
     const { queries } = variant;
-
     return (
       <Content>
         <Header />
