@@ -113,7 +113,10 @@ class Filter extends React.Component {
     if (this.isEditable()) {
       const { draft } = this.state;
       const { editor , onEditCallback } = this.props
-      draft.values  = editor.props.children[6].props.children.props.children.props.value;
+      const value = editor.props.children[6].props.children.props.children.props.value;
+      const operand = editor.props.children[0].props.children.props.children.props.value;
+      draft.operand=operand;
+      draft.values  = value;
       this.setState({
         data: { ...draft },
         opened: false,
@@ -126,14 +129,17 @@ class Filter extends React.Component {
   }
 
   handleCancel() {
-    const { data } = this.state;
-    const { onCancelCallback } = this.props;
+    const { data ,draft } = this.state;
+    const { onCancelCallback,onEditCallback } = this.props;
     this.setState({
-      draft: { ...data },
+      data: { ...draft },
       opened: false,
     }, () => {
       if (onCancelCallback) {
         onCancelCallback(this.serialize());
+      }
+      if (onEditCallback) {
+        onEditCallback(this.serialize());
       }
     });
   }
