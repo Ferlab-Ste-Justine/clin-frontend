@@ -24,7 +24,7 @@ import { variantShape } from '../../../reducers/variant';
 // import { searchPatientVariants } from '../../../actions/patient';
 import { cloneDeep } from 'lodash';
 import Statement from '../../Query/Statement';
-import { selectQuery } from '../../../actions/variant';
+import { selectQuery, updateQuery } from '../../../actions/variant';
 
 
 
@@ -33,6 +33,7 @@ class PatientVariantScreen extends React.Component {
     super();
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
+    this.handleFilterChange = this.handleFilterChange.bind(this);
   }
 
   handleQuerySelection(query) {
@@ -40,6 +41,12 @@ class PatientVariantScreen extends React.Component {
     const { id } = patient;
 
     actions.selectQuery(id, query);
+  }
+
+  handleFilterChange(filter) {
+    const { actions ,patient, variant} = this.props
+    const{data} = filter
+    actions.updateQuery(patient.details.id ,  data.id, data.values );
   }
 
     render() {
@@ -66,11 +73,12 @@ class PatientVariantScreen extends React.Component {
                 <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
             </Descriptions>
 
-            <VariantNavigation className="variant-navigation" />
+            <VariantNavigation
+                className="variant-navigation"
+                onEditCallback={this.handleFilterChange}/>
             <br />
             <br />
             <Statement
-              key="variant-statement"
               data={queries}
               options={{
                   copyable: true,
@@ -104,6 +112,7 @@ PatientVariantScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     selectQuery,
+    updateQuery,
   }, dispatch),
 });
 
