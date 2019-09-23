@@ -116,15 +116,20 @@ class Filter extends React.Component {
       const value = editor.props.children[6].props.children.props.children.props.value;
       const operand = editor.props.children[0].props.children.props.children.props.value;
       draft.operand=operand;
-      draft.values  = value;
-      this.setState({
-        data: { ...draft },
-        opened: false,
-      }, () => {
-        if (onEditCallback) {
-          onEditCallback(this.serialize());
-        }
-      });
+      if(value.length != 0){
+        draft.values  = value;
+        this.setState({
+          data: { ...draft },
+          opened: false,
+        }, () => {
+          if (onEditCallback) {
+            onEditCallback(this.serialize());
+          }
+        });
+      }
+      else{
+        this.handleClose()
+      }
     }
   }
 

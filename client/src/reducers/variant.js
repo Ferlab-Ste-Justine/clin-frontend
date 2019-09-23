@@ -82,9 +82,9 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       indexInstruction = findIndex(draft.queries[indexQuery].instructions, ((x) => {
         return (x.data.id === action.payload.type)
       }));
-      const tempo = cloneDeep(draft.queries)
-      tempo[indexQuery].instructions[indexInstruction].data.values = action.payload.value
-      draft.queries= tempo;
+      const query = cloneDeep(draft.queries)
+      query[indexQuery].instructions[indexInstruction].data.values = action.payload.value
+      draft.queries= query;
 
       break;
 
