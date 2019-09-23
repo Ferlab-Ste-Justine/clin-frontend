@@ -36,6 +36,40 @@ const exampleQuery = {
   ],
 };
 
+/*
+[
+  {
+    title: 'Query 1',
+    instructions: [
+      {
+        type: 'filter',
+        data: {
+          id: 'variant_type',
+          type: 'generic',
+          operand: 'all',
+          values: ['SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL'],
+        }
+      },
+      {
+        type: 'operator',
+        data: {
+          type: 'and',
+        }
+      },
+      {
+        type: 'filter',
+        data: {
+          id: 'gene_type',
+          type: 'generic',
+          operand: 'all',
+          values: ['complementary', 'duplicate', 'polymeric', 'modifying', 'lethal', 'moveable'],
+        }
+      }
+    ]
+  }
+]
+*/
+
 export const initialVariantState = {
   schema: {},
   activePatient: null,

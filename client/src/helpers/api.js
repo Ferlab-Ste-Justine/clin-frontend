@@ -62,9 +62,12 @@ const getVariantSchema = () => axios.get(`${window.CLIN.variantServiceApiUrl}/sc
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientVariantsForQuery = (patient, sqon) => axios.post(`${window.CLIN.variantServiceApiUrl}/${sqon}`, {
+const getPatientVariantsForQuery = (patient, statement, query, page, size) => axios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
   patient,
-  sqon,
+  statement,
+  query,
+  page,
+  size,
 })
   .then(successCallback)
   .catch(errorCallback);
