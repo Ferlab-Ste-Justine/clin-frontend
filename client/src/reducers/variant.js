@@ -86,6 +86,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       query[indexQuery].instructions[indexInstruction].data.values = action.payload.value
       draft.queries= query;
 
+
       break;
 
 
