@@ -34,19 +34,12 @@ const getPatientsByAutoComplete = (type, query, page, size) => axios.get(
   .then(successCallback)
   .catch(errorCallback);
 
-const getAllPatients = (page, size) => axios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
+const searchPatients = (query, page, size) => axios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
   params: {
+    query,
     page,
     size,
   },
-})
-  .then(successCallback)
-  .catch(errorCallback);
-
-const searchPatients = (query, page, size) => axios.post(`${window.CLIN.patientServiceApiUrl}/search`, {
-  query,
-  page,
-  size,
 })
   .then(successCallback)
   .catch(errorCallback);
@@ -75,7 +68,6 @@ export default {
   logout,
   getPatientById,
   getPatientsByAutoComplete,
-  getAllPatients,
   searchPatients,
   getVariantSchema,
   getPatientVariantsForQuery,
