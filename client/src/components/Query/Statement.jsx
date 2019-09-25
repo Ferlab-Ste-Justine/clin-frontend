@@ -288,7 +288,8 @@ class Statement extends React.Component {
         this.setState({
           draft: cloneDeep(last),
         }, () => {
-          onEditCallback(cloneDeep(last))
+          //@FIXME
+          onEditCallback(last)
         });
       }
     }
