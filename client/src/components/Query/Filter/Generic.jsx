@@ -42,14 +42,14 @@ class GenericFilter extends React.Component {
   }
 
   getLabel() {
-    const { draft } = this.state;
-    const { values } = draft;
+    const { data } = this.props;
+    const { values } = data;
     return JSON.stringify(values);
   }
 
   getPopoverLegend() {
-      const { draft } = this.state;
-      const { operand } = draft;
+      const { data } = this.props;
+      const { operand } = data;
       switch (operand) {
           default:
           case FILTER_OPERAND_TYPE_ALL:
@@ -62,8 +62,8 @@ class GenericFilter extends React.Component {
   }
 
   getPopoverContent() {
-      const { draft } = this.state;
-      const { operand } = draft;
+      const { data } = this.props;
+      const { operand } = data;
       return (
           <div>
               <Typography.Text>{operand}</Typography.Text>
