@@ -32,6 +32,8 @@ class VariantNavigation extends React.Component {
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
     this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
+    this.handleFilterRemove = this.handleFilterRemove.bind(this);
+
     // @NOTE Initialize Component State
     const { actions, variant } = props;
     const { schema } = variant;
@@ -51,6 +53,11 @@ class VariantNavigation extends React.Component {
     });
   }
 
+  handleFilterRemove(filter) {
+    filter.remove = true
+    this.handleFilterChange(filter)
+  }
+
   handleFilterChange(filter) {
     const { onEditCallback } = this.props;
     if (onEditCallback) {
@@ -59,12 +66,22 @@ class VariantNavigation extends React.Component {
       const query = find(queries, { key: activeQuery })
       if (query) {
           const updatedQuery = cloneDeep(query);
-          const updatedInstructions = updatedQuery.instructions.map((instruction) => {
+          let updatedInstructions = []
+          if (!filter.remove) {
+            updatedInstructions = updatedQuery.instructions.map((instruction) => {
               if (instruction.data.id === filter.data.id) {
                   return { type: 'filter', data: filter.data };
               }
               return instruction;
-          })
+            })
+          } else {
+            updatedInstructions = updatedQuery.instructions.filter((instruction) => {
+              if (instruction.data.id === filter.data.id) {
+                return false;
+              }
+              return true;
+            })
+          }
           updatedQuery.instructions = updatedInstructions;
           onEditCallback(updatedQuery);
       }
@@ -121,6 +138,7 @@ class VariantNavigation extends React.Component {
                     intl={intl}
                     data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {})}
                     onEditCallback={this.handleFilterChange}
+                    onRemoveCallback={this.handleFilterRemove}
                     onCancelCallback={this.handleCategoryOpenChange}
                   />
                   )}

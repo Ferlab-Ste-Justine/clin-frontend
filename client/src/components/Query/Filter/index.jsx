@@ -94,8 +94,8 @@ class Filter extends React.Component {
     return Object.assign({}, this.props, this.state);
   }
 
-  handleClose() {
-    if (this.isRemovable()) {
+  handleClose(force = false) {
+    if (force === true || this.isRemovable()) {
       const { onRemoveCallback } = this.props;
       this.setState({
         opened: false,
@@ -110,37 +110,29 @@ class Filter extends React.Component {
       const { editor, onEditCallback } = this.props
       const value = editor.props.children[6].props.children.props.children.props.value;
       const operand = editor.props.children[0].props.children.props.children.props.value;
-
-      draft.operand=operand;
       if (value.length > 0) {
+        draft.operand = operand;
         draft.values  = value;
         this.setState({
           data: { ...draft },
           opened: false,
         }, () => {
-          if (onEditCallback) {
             onEditCallback(this.serialize());
-          }
         });
       } else{
-        this.handleClose()
+        this.handleClose(true)
       }
     }
   }
 
   handleCancel() {
     const { data ,draft } = this.state;
-    const { onCancelCallback,onEditCallback } = this.props;
+    const { onCancelCallback } = this.props;
     this.setState({
       data: { ...draft },
       opened: false,
     }, () => {
-      if (onCancelCallback) {
         onCancelCallback(this.serialize());
-      }
-      if (onEditCallback) {
-        onEditCallback(this.serialize());
-      }
     });
   }
 
@@ -150,9 +142,7 @@ class Filter extends React.Component {
       this.setState({
         selected: !this.isSelected(),
       }, () => {
-        if (onSelectCallback) {
           onSelectCallback(this.serialize());
-        }
       });
     }
   }
