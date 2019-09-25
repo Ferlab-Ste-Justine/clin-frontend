@@ -34,3 +34,11 @@ export const duplicateQuery = (query, index) => ({
     index,
   },
 });
+
+export const sortStatement = (statement, activeQuery) => ({
+  type: actions.PATIENT_VARIANT_STATEMENT_SORT,
+  payload: {
+    statement,
+    activeQuery,
+  },
+});

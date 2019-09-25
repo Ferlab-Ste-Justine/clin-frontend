@@ -258,6 +258,7 @@ class Statement extends React.Component {
   handleReorder(sorted) {
     if (this.isReorderable()) {
       const { activeQuery, draft, display } = this.state;
+      const { onSortCallback } = this.props;
       this.commit(draft);
       const sortedIndices = sorted.map(clip => clip.index);
       const sortedData = sortedIndices.map(sortedIndice => draft[sortedIndice]);
@@ -267,6 +268,8 @@ class Statement extends React.Component {
         activeQuery: newActiveQuery,
         display: sortedDisplay,
         draft: sortedData,
+      }, () => {
+        onSortCallback(sortedData, newActiveQuery)
       });
     }
   }
@@ -279,10 +282,13 @@ class Statement extends React.Component {
 
   handleUndo() {
     if (this.isUndoable()) {
+      const { onEditCallback } = this.props;
       const last = this.versions.pop();
       if (last) {
         this.setState({
           draft: cloneDeep(last),
+        }, () => {
+          onEditCallback(cloneDeep(last))
         });
       }
     }
@@ -637,6 +643,7 @@ Statement.propTypes = {
   options: PropTypes.shape({}),
   onSelectCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
+  onSortCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
 };
@@ -657,6 +664,7 @@ Statement.defaultProps = {
   },
   onSelectCallback: () => {},
   onEditCallback: () => {},
+  onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},
 };

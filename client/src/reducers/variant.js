@@ -143,10 +143,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.queries = queries
       break;
 
-
-
-
-
+    case actions.PATIENT_VARIANT_STATEMENT_SORT:
+      const { statement, activeQuery } = action.payload;
+      draft.queries = statement
+      draft.activeQuery = activeQuery
+      break;
 
     default:
       break;
