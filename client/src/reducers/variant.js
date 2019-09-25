@@ -1,7 +1,7 @@
-/* eslint-disable no-param-reassign, import/no-cycle, no-case-declarations */
+/* eslint-disable  */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, findIndex, pull } from 'lodash';
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
@@ -109,6 +109,20 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
       draft.activeQuery = action.payload.query.key;
       break;
+
+    case actions.PATIENT_VARIANT_QUERY_UPDATE:
+      const indexQuery = findIndex(draft.queries, ['key', draft.activeQuery]);
+      let indexInstruction = null;
+      indexInstruction = findIndex(draft.queries[indexQuery].instructions, ((x) => {
+        return (x.data.id === action.payload.type)
+      }));
+      const query = cloneDeep(draft.queries)
+      query[indexQuery].instructions[indexInstruction].data.values = action.payload.value
+      draft.queries= query;
+
+
+      break;
+
 
     default:
       break;

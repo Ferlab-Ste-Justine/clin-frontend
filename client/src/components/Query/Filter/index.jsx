@@ -112,27 +112,39 @@ class Filter extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { onEditCallback } = this.props;
-      this.setState({
-        data: { ...draft },
-        opened: false,
-      }, () => {
-        if (onEditCallback) {
-          onEditCallback(this.serialize());
-        }
-      });
+      const { editor , onEditCallback } = this.props
+      const value = editor.props.children[6].props.children.props.children.props.value;
+      const operand = editor.props.children[0].props.children.props.children.props.value;
+      draft.operand=operand;
+      if(value.length != 0){
+        draft.values  = value;
+        this.setState({
+          data: { ...draft },
+          opened: false,
+        }, () => {
+          if (onEditCallback) {
+            onEditCallback(this.serialize());
+          }
+        });
+      }
+      else{
+        this.handleClose()
+      }
     }
   }
 
   handleCancel() {
-    const { data } = this.state;
-    const { onCancelCallback } = this.props;
+    const { data ,draft } = this.state;
+    const { onCancelCallback,onEditCallback } = this.props;
     this.setState({
-      draft: { ...data },
+      data: { ...draft },
       opened: false,
     }, () => {
       if (onCancelCallback) {
         onCancelCallback(this.serialize());
+      }
+      if (onEditCallback) {
+        onEditCallback(this.serialize());
       }
     });
   }
@@ -157,7 +169,6 @@ class Filter extends React.Component {
   render() {
     const { data } = this.state;
     const { overlayOnly, editor, label, legend, content } = this.props;
-
     const overlay = (
         <Popover
             visible={this.isOpened()}
@@ -182,7 +193,6 @@ class Filter extends React.Component {
         onVisibleChange={this.toggleMenu} overlay={overlay} visible={this.isOpened()} placement="bottomLeft"><span/>
       </Dropdown>);
     }
-
     return (
       <span>
         <Tag

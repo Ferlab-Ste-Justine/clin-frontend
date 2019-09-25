@@ -30,11 +30,12 @@ class VariantNavigation extends React.Component {
         this.state = {
             activeCategoryId: null,
             activeFilterId: null,
+            data: null,
         }
         this.handleFilterSearch = this.handleFilterSearch.bind(this);
         this.handleFilterSelection = this.handleFilterSelection.bind(this);
         this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
-
+        this.handleFilterChange = this.handleFilterChange.bind(this)
         // @NOTE Initialize Component State
         const { actions, variant } = props;
         const { schema } = variant;
@@ -54,6 +55,13 @@ class VariantNavigation extends React.Component {
         });
         // const ul = domEvent.currentTarget.parentNode.parentNode;
         // ul.classList.add('ant-menu-hidden');
+    }
+
+    handleFilterChange(filter) {
+        const {onEditCallback} = this.props
+        if(onEditCallback){
+            onEditCallback(filter)
+        }
     }
 
     handleCategoryOpenChange(keys) {
@@ -97,7 +105,7 @@ class VariantNavigation extends React.Component {
                                 }}
                                 intl={intl}
                                 data={(queryFilter ? queryFilter.data : {})}
-                                onEditCallback={this.handleCategoryOpenChange}
+                                onEditCallback={this.handleFilterChange}
                                 onCancelCallback={this.handleCategoryOpenChange}
                             />)}
 
