@@ -6,11 +6,6 @@ import {
   Row, Col, Typography, Card, Tag, Input, Popover, Dropdown, Button, Radio, Icon, Checkbox,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-import {
-  empty, one, full, info,
-} from 'react-icons-kit/entypo';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -112,11 +107,12 @@ class Filter extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { editor , onEditCallback } = this.props
+      const { editor, onEditCallback } = this.props
       const value = editor.props.children[6].props.children.props.children.props.value;
       const operand = editor.props.children[0].props.children.props.children.props.value;
+
       draft.operand=operand;
-      if(value.length != 0){
+      if (value.length > 0) {
         draft.values  = value;
         this.setState({
           data: { ...draft },
@@ -126,8 +122,7 @@ class Filter extends React.Component {
             onEditCallback(this.serialize());
           }
         });
-      }
-      else{
+      } else{
         this.handleClose()
       }
     }
@@ -258,5 +253,4 @@ Filter.defaultProps = {
   visible: true,
 };
 
-export default connect(
-)(injectIntl(Filter));
+export default Filter;

@@ -8,7 +8,6 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader,
 } from 'antd';
-import { format } from 'util';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -20,12 +19,8 @@ import './style.scss';
 import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
-// import { navigateToPatientScreen, navigateToPatientSearchScreen } from '../../../actions/router';
-// import { searchPatientVariants } from '../../../actions/patient';
-import { cloneDeep } from 'lodash';
 import Statement from '../../Query/Statement';
-import { selectQuery, updateQuery } from '../../../actions/variant';
-
+import { selectQuery, replaceQuery } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -33,7 +28,7 @@ class PatientVariantScreen extends React.Component {
     super();
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
-    this.handleFilterChange = this.handleFilterChange.bind(this);
+    this.handleQueryChange = this.handleQueryChange.bind(this);
   }
 
   handleQuerySelection(query) {
@@ -43,10 +38,9 @@ class PatientVariantScreen extends React.Component {
     actions.selectQuery(id, query);
   }
 
-  handleFilterChange(filter) {
-    const { actions ,patient, variant} = this.props
-    const{data} = filter
-    actions.updateQuery(patient.details.id ,  data.id, data.values );
+  handleQueryChange(query) {
+    const { actions } = this.props;
+    actions.replaceQuery(query.data || query)
   }
 
     render() {
@@ -74,12 +68,16 @@ class PatientVariantScreen extends React.Component {
             </Descriptions>
 
             <VariantNavigation
+                key="variant-navigation"
                 className="variant-navigation"
-                onEditCallback={this.handleFilterChange}/>
+                onEditCallback={this.handleQueryChange}
+            />
             <br />
             <br />
             <Statement
+              key="variant-statement"
               data={queries}
+              intl={intl}
               options={{
                   copyable: true,
                   duplicatable: true,
@@ -92,8 +90,8 @@ class PatientVariantScreen extends React.Component {
               display={{
                   compoundOperators: true,
               }}
-              intl={intl}
               onSelectCallback={this.handleQuerySelection}
+              onEditCallback={this.handleQueryChange}
             />
         </Card>
         <Footer />
@@ -112,7 +110,7 @@ PatientVariantScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     selectQuery,
-    updateQuery,
+    replaceQuery,
   }, dispatch),
 });
 

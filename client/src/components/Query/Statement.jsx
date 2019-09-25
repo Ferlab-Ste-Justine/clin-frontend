@@ -14,8 +14,6 @@ import IconKit from 'react-icons-kit';
 import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 import Query, { DEFAULT_EMPTY_QUERY } from './index';
 import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
@@ -95,7 +93,9 @@ class Statement extends React.Component {
     const displays = [];
     data.map((newDatum) => {
       displays.push({ ...display });
-      newDatum.key = uuidv1();
+      if (!newDatum.key) {
+        newDatum.key = uuidv1();
+      }
       return newDatum;
     });
 
@@ -107,6 +107,14 @@ class Statement extends React.Component {
       if (onSelectCallback) {
         onSelectCallback(activeQueryData);
       }
+    }
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    const { data } = props;
+    return {
+      original: data,
+      draft: cloneDeep(data),
     }
   }
 
@@ -171,12 +179,18 @@ class Statement extends React.Component {
 
   handleEdit(query) {
     if (this.isEditable()) {
+      const { onEditCallback } = this.props;
       const { draft } = this.state;
       this.commit(draft);
+
       draft[query.index] = query.data;
       this.setState({
         draft,
-      });
+      }, () => {
+        if (onEditCallback) {
+          onEditCallback(query)
+        }
+      })
     }
   }
 
@@ -189,7 +203,6 @@ class Statement extends React.Component {
   }
 
   handleDuplicate(query) {
-
     if (this.isDuplicatable()) {
       const { draft , display } = this.state;
 
@@ -512,9 +525,10 @@ class Statement extends React.Component {
           </div>
           <Query
             key={query.key}
-            draft={query}
             original={initial}
+            draft={query}
             display={display[index]}
+            options={options}
             index={index}
             active={isActive}
             results={1000}
@@ -528,7 +542,6 @@ class Statement extends React.Component {
             onUndoCallback={this.handleUndo}
             onClickCallback={this.handleClick}
             findQueryIndexForKey={this.findQueryIndexForKey}
-            options={options}
           />
         </div>
       )];
@@ -616,6 +629,7 @@ Statement.propTypes = {
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   onSelectCallback: PropTypes.func,
+  onEditCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -632,16 +646,9 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
-  onSelectCallback: () => {}
+  onSelectCallback: () => {},
+  onEditCallback: () => {}
 };
 
-const mapStateToProps = state => ({
-  intl: state.intl,
-  patient: state.patient,
-  variant: state.variant,
-});
-
-export default connect(
-  mapStateToProps,
-)(injectIntl(Statement));
+export default Statement;
 

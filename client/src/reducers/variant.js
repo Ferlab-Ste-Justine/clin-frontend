@@ -6,7 +6,8 @@ import { cloneDeep, findIndex, pull } from 'lodash';
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 
-const exampleQuery = {
+const exampleQueryA = {
+  key: 'bdcb83a1-dfa5-11e9-96aa-c957343d6d71',
   title: 'Query 1',
   instructions: [
     {
@@ -35,6 +36,8 @@ const exampleQuery = {
     },
   ],
 };
+const exampleQueryB = cloneDeep(exampleQueryA)
+exampleQueryB.key = 'zdcb83a1-dfa5-11e9-96aa-c957343d6d72'
 
 /*
 [
@@ -70,13 +73,15 @@ const exampleQuery = {
 ]
 */
 
+
+
 export const initialVariantState = {
   schema: {},
   activePatient: null,
   activeQuery: null,
   queries: [
-    cloneDeep(exampleQuery),
-    cloneDeep(exampleQuery),
+    cloneDeep(exampleQueryA),
+    cloneDeep(exampleQueryB),
   ],
   results: [],
 };
@@ -110,19 +115,15 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.activeQuery = action.payload.query.key;
       break;
 
-    case actions.PATIENT_VARIANT_QUERY_UPDATE:
-      const indexQuery = findIndex(draft.queries, ['key', draft.activeQuery]);
-      let indexInstruction = null;
-      indexInstruction = findIndex(draft.queries[indexQuery].instructions, ((x) => {
-        return (x.data.id === action.payload.type)
-      }));
-      const query = cloneDeep(draft.queries)
-      query[indexQuery].instructions[indexInstruction].data.values = action.payload.value
-      draft.queries= query;
-
-
+    case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
+      const { queries } = draft;
+      const { query } = action.payload;
+      const index = findIndex(queries, { key: query.key })
+      if (index > -1) {
+        queries[index] = query
+      }
+      draft.queries = queries
       break;
-
 
     default:
       break;
