@@ -95,6 +95,8 @@ export const variantShape = {
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
+  const { queries } = draft;
+
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
@@ -115,8 +117,14 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.activeQuery = action.payload.query.key;
       break;
 
+    case actions.PATIENT_VARIANT_QUERY_REMOVAL:
+      const keyToRemove = action.payload.query.key;
+      draft.queries = queries.filter((query) => {
+        return query.key !== keyToRemove;
+      })
+      break;
+
     case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
-      const { queries } = draft;
       const { query } = action.payload;
       const index = findIndex(queries, { key: query.key })
       if (index > -1) {
@@ -124,6 +132,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       }
       draft.queries = queries
       break;
+
+
+
+
+
 
     default:
       break;

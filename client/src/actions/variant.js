@@ -19,3 +19,10 @@ export const replaceQuery = query => ({
     query,
   },
 });
+
+export const removeQuery = query => ({
+  type: actions.PATIENT_VARIANT_QUERY_REMOVAL,
+  payload: {
+    query,
+  },
+});

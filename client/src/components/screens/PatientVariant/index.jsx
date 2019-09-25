@@ -20,7 +20,7 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { selectQuery, replaceQuery } from '../../../actions/variant';
+import { selectQuery, replaceQuery, removeQuery } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -29,6 +29,7 @@ class PatientVariantScreen extends React.Component {
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
+    this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
   }
 
   handleQuerySelection(query) {
@@ -41,6 +42,11 @@ class PatientVariantScreen extends React.Component {
   handleQueryChange(query) {
     const { actions } = this.props;
     actions.replaceQuery(query.data || query)
+  }
+
+  handleQueryRemoval(query) {
+    const { actions } = this.props;
+    actions.removeQuery(query.data)
   }
 
     render() {
@@ -92,6 +98,7 @@ class PatientVariantScreen extends React.Component {
               }}
               onSelectCallback={this.handleQuerySelection}
               onEditCallback={this.handleQueryChange}
+              onRemoveCallback={this.handleQueryRemoval}
             />
         </Card>
         <Footer />
@@ -111,6 +118,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     selectQuery,
     replaceQuery,
+    removeQuery,
   }, dispatch),
 });
 
