@@ -21,6 +21,7 @@ import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
 } from './Subquery';
 import { createOperator } from './Operator';
+import VariantTable from './VariantTable'
 
 const MAX_QUERIES = 15;
 const MAX_REVISIONS = 10;
@@ -605,6 +606,9 @@ class Statement extends React.Component {
             />
           ) : queries
         }
+        <br/>
+        <br/>
+        <VariantTable/>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React from 'react';
-import { Tabs , Pagination , Row , Col , Dropdown , Menu , Button , Icon , Checkbox , Popover, Card , Typography} from 'antd';
+import { Tabs , Pagination , Row , Col , Dropdown , Menu , Button , Icon , Checkbox , Popover, Card , Typography } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode,
 } from '@blueprintjs/table';
@@ -19,19 +19,21 @@ class VariantTable extends React.Component {
       data:[]
 
     };
-    this.state.data = [ "ID",
-                        "Variant",
-                        "Type",
-                        "dbSnp",
-                        "Conséquence(s)",
-                        "Impact clinique (CLINVAR)",
-                        "Impact fonctionnel (VEP)",
-                        "SIFT" , "Polyphe",
-                        "# patients dans la cohorte interne",
-                        "Fréquence dans la cohorte interne",
-                        "Zygosité",
-                        "Pubmed"]
-    this.state.visibleColumn=[0,1,2,3,4,5,6,7,8,9,10,11]
+    this.state.data = [ {Name : "ID" , Format : "ID" },
+                        {Name : "Variant" , Format : "Default" },
+                        {Name : "Type" , Format : "Default" },
+                        {Name : "dbSnp" , Format : "Default" },
+                        {Name : "Conséquence(s)" , Format : "Consequence" },
+                        {Name : "Impact clinique (CLINVAR)" , Format : "Default" },
+                        {Name : "Impact fonctionnel (VEP)" , Format : "Default" },
+                        {Name : "SIFT" , Format : "Default" },
+                        {Name : "Polyphe" , Format : "Default" },
+                        {Name : "# patients dans la cohorte interne" , Format : "Default" },
+                        {Name : "Fréquence dans la cohorte interne" , Format : "Default" },
+                        {Name : "Zygosité" , Format : "Default" },
+                        {Name : "Pubmed" , Format : "Pubmed" }]
+
+    this.state.visibleColumn=[0,1,2,3,4,5,6,7,8,9,10,11,12]
     this.handlePageChange = this.handlePageChange.bind(this)
     this.getCellRenderer = this.getCellRenderer.bind(this)
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this)
@@ -48,8 +50,8 @@ class VariantTable extends React.Component {
 
     renderColumn(){
         const{data, columns , visibleColumn} = this.state
-        data.map((nom,index) =>
-            visibleColumn.includes(index) ? columns.push( <Column key={index} name={nom} cellRenderer={this.getCellRenderer('normal', 'status-tag')}/>) : null)
+        data.map((info,index) =>
+            visibleColumn.includes(index) ? columns.push( <Column key={index} name={info.Name} cellRenderer={this.getCellRenderer('normal', info.Format)}/>) : null)
 
         this.setState({
             columns
@@ -57,8 +59,9 @@ class VariantTable extends React.Component {
     }
 
     getCellRenderer(key, type) {
+    const { Text } = Typography;
       switch (type) {
-        case 'patient-link':
+        case 'Default':
           return (row) => {
             return (
               <Cell>
@@ -66,15 +69,25 @@ class VariantTable extends React.Component {
             );
           };
 
-        case 'bold-string':
+        case 'ID':
           return (row) => {
             return (
               <Cell>
+                <a>Lien vers variant</a>
               </Cell>
             );
           };
 
-        case 'status-tag':
+        case 'Consequence':
+          return (row) => {
+            return (
+              <Cell>
+                missense: <span className="consequence">[KRAS] </span>
+              </Cell>
+            );
+          };
+
+        case 'Pubmed':
           return (row) => {
             return (
               <Cell>
@@ -131,16 +144,15 @@ class VariantTable extends React.Component {
   render() {
     const { TabPane } = Tabs;
     const {columns, data, size , page , visible , visibleColumn} = this.state;
-
     const overlay = (
-        <Popover visible={this.state.visible}>
+        <Popover visible={visible}>
           <Card>
             <Row>
               <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={visibleColumn} onChange={this.onChange}>
-                {data.map((name,index) =>
+                {data.map((info,index) =>
                     <Row>
                       <Col>
-                        <Checkbox value={index}>{name}</Checkbox>
+                        <Checkbox value={index}>{info.Name}</Checkbox>
                       </Col>
                     </Row>
                 )}
@@ -155,7 +167,7 @@ class VariantTable extends React.Component {
             <Row>
               <Col align="end">
                   <Dropdown overlay={overlay} trigger={['click']} visible={visible}>
-                      <Button type="primary" onClick={this.toggleMenu}>Column <Icon type="down" /></Button>
+                      <Button type="primary" onClick={this.toggleMenu}>Column <Icon type="caret-down"/></Button>
                   </Dropdown>
               </Col>
             </Row>
