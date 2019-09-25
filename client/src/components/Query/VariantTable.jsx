@@ -15,11 +15,11 @@ class VariantTable extends React.Component {
       size: 10,
       page: 1,
       visible:false,
-      visibleColumn:[],
-      data:[]
+      variantVisibleColumn:[],
+      variantColumnData:[]
 
     };
-    this.state.data = [ {Name : "ID" , Format : "ID" },
+    this.state.variantColumnData = [ {Name : "ID" , Format : "ID" },
                         {Name : "Variant" , Format : "Default" },
                         {Name : "Type" , Format : "Default" },
                         {Name : "dbSnp" , Format : "Default" },
@@ -33,7 +33,15 @@ class VariantTable extends React.Component {
                         {Name : "Zygosité" , Format : "Default" },
                         {Name : "Pubmed" , Format : "Pubmed" }]
 
-    this.state.visibleColumn=[0,1,2,3,4,5,6,7,8,9,10,11,12]
+    this.state.geneColumnData = [ {Name : "Gene" , Format : "ID" },
+                        {Name : "Type" , Format : "Default" },
+                        {Name : "Localisation" , Format : "Default" },
+                        {Name : "# de Variants" , Format : "Default" },
+                        {Name : "ID OMIM" , Format : "Default" },
+                        {Name : "Orphanet ID" , Format : "Default" },
+                        {Name : "ID Ensembl" , Format : "Default" },]
+
+    this.state.variantVisibleColumn=Array.from(Array(this.state.variantColumnData.length).keys())
     this.handlePageChange = this.handlePageChange.bind(this)
     this.getCellRenderer = this.getCellRenderer.bind(this)
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this)
@@ -49,9 +57,10 @@ class VariantTable extends React.Component {
   }
 
     renderColumn(){
-        const{data, columns , visibleColumn} = this.state
-        data.map((info,index) =>
-            visibleColumn.includes(index) ? columns.push( <Column key={index} name={info.Name} cellRenderer={this.getCellRenderer('normal', info.Format)}/>) : null)
+        console.log("test", this.state.variantVisibleColumn)
+        const{variantColumnData, columns , variantVisibleColumn} = this.state
+        variantColumnData.map((info,index) =>
+            variantVisibleColumn.includes(index) ? columns.push( <Column key={index} name={info.Name} cellRenderer={this.getCellRenderer('normal', info.Format)}/>) : null)
 
         this.setState({
             columns
@@ -122,9 +131,9 @@ class VariantTable extends React.Component {
   }
 
   onChange(checkedValues) {
-    const {visibleColumn} = this.state
+    const {variantVisibleColumn} = this.state
     this.setState({
-        visibleColumn:checkedValues,
+        variantVisibleColumn:checkedValues,
         columns:[]
     }, ()=> this.renderColumn())
   }
@@ -133,23 +142,23 @@ class VariantTable extends React.Component {
     if (oldIndex === newIndex) {
       return;
     }
-    const { columns, data } = this.state;
-    const element = data[oldIndex];
-    data.splice(oldIndex, 1);
-    data.splice(newIndex, 0, element);
+    const { columns, variantColumnData } = this.state;
+    const element = variantColumnData[oldIndex];
+    variantColumnData.splice(oldIndex, 1);
+    variantColumnData.splice(newIndex, 0, element);
     const nextChildren = Utils.reorderArray(columns, oldIndex, newIndex, length);
     this.setState({ columns: nextChildren });
   }
 
   render() {
     const { TabPane } = Tabs;
-    const {columns, data, size , page , visible , visibleColumn} = this.state;
+    const {columns, variantColumnData, size , page , visible , variantVisibleColumn} = this.state;
     const overlay = (
         <Popover visible={visible}>
           <Card>
             <Row>
-              <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={visibleColumn} onChange={this.onChange}>
-                {data.map((info,index) =>
+              <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={variantVisibleColumn} onChange={this.onChange}>
+                {variantColumnData.map((info,index) =>
                     <Row>
                       <Col>
                         <Checkbox value={index}>{info.Name}</Checkbox>
@@ -202,7 +211,42 @@ class VariantTable extends React.Component {
             </Row>
         </TabPane>
         <TabPane tab="Gene" key="2">
-          Content of Tab Pane 2
+          <Row>
+            <Col align="end">
+                <Dropdown overlay={overlay} trigger={['click']} visible={visible}>
+                    <Button type="primary" onClick={this.toggleMenu}>Column <Icon type="caret-down"/></Button>
+                </Dropdown>
+            </Col>
+          </Row>
+          <br />
+          <Row>
+            <Col span={24}>
+                <Table
+                  numRows={size}
+                  enableColumnReordering
+                  enableColumnResizing
+                  onColumnsReordered={this.handleColumnsReordered}
+                  renderMode={RenderMode.NONE}
+                  enableGhostCells
+                  onCompleteRender={this.handleTableCellsRendered}
+                >
+                  { columns.map(column => (column)) }
+                </Table>
+            </Col>
+          </Row>
+          <br />
+          <Row>
+            <Col align="end" span={24}>
+              <Pagination
+                total={40}
+                pageSize={size}
+                current={page}
+                showSizeChanger
+                onChange={this.handlePageChange}
+                onShowSizeChange={this.handlePageSizeChange}
+              />
+            </Col>
+          </Row>
         </TabPane>
       </Tabs>
     );
