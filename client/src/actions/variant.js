@@ -26,3 +26,11 @@ export const removeQuery = query => ({
     query,
   },
 });
+
+export const duplicateQuery = (query, index) => ({
+  type: actions.PATIENT_VARIANT_QUERY_DUPLICATION,
+  payload: {
+    query,
+    index,
+  },
+});

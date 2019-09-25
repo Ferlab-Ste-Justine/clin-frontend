@@ -124,6 +124,16 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       })
       break;
 
+    case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
+      const keyToDuplicate = action.payload.query.key;
+      const indexToInsertAt = action.payload.index || draft.queries.length;
+      const indexToDuplicate = findIndex(queries, { key: keyToDuplicate })
+      if (indexToDuplicate) {
+        draft.queries.splice(indexToInsertAt, 0, action.payload.query);
+        draft.activeQuery = action.payload.query.key
+      }
+      break;
+
     case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
       const { query } = action.payload;
       const index = findIndex(queries, { key: query.key })

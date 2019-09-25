@@ -204,7 +204,7 @@ class Statement extends React.Component {
 
   handleDuplicate(query) {
     if (this.isDuplicatable()) {
-      const { onEditCallback } = this.props;
+      const { onEditCallback, onDuplicateCallback } = this.props;
       const { draft, display } = this.state;
 
       this.commit(draft);
@@ -223,7 +223,7 @@ class Statement extends React.Component {
         display: displayClone,
         activeQuery: index,
       }, () => {
-        onEditCallback(clone);
+        onDuplicateCallback(clone, index);
       });
     }
   }
@@ -638,6 +638,7 @@ Statement.propTypes = {
   onSelectCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
+  onDuplicateCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -657,6 +658,7 @@ Statement.defaultProps = {
   onSelectCallback: () => {},
   onEditCallback: () => {},
   onRemoveCallback: () => {},
+  onDuplicateCallback: () => {},
 };
 
 export default Statement;

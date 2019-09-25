@@ -20,7 +20,7 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { selectQuery, replaceQuery, removeQuery } from '../../../actions/variant';
+import { selectQuery, replaceQuery, removeQuery, duplicateQuery } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -30,6 +30,7 @@ class PatientVariantScreen extends React.Component {
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
+    this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
   }
 
   handleQuerySelection(query) {
@@ -47,6 +48,11 @@ class PatientVariantScreen extends React.Component {
   handleQueryRemoval(query) {
     const { actions } = this.props;
     actions.removeQuery(query.data)
+  }
+
+  handleQueryDuplication(query, index) {
+    const { actions } = this.props;
+    actions.duplicateQuery(query.data, index)
   }
 
     render() {
@@ -99,6 +105,7 @@ class PatientVariantScreen extends React.Component {
               onSelectCallback={this.handleQuerySelection}
               onEditCallback={this.handleQueryChange}
               onRemoveCallback={this.handleQueryRemoval}
+              onDuplicateCallback={this.handleQueryDuplication}
             />
         </Card>
         <Footer />
@@ -119,6 +126,7 @@ const mapDispatchToProps = dispatch => ({
     selectQuery,
     replaceQuery,
     removeQuery,
+    duplicateQuery,
   }, dispatch),
 });
 
