@@ -510,7 +510,7 @@ class Statement extends React.Component {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
     } = this.state;
     if (draft === null) { return null; }
-    const { options, intl } = this.props;
+    const { options, intl, facets } = this.props;
     const {
       editable, reorderable, removable, undoable,
     } = options;
@@ -562,6 +562,7 @@ class Statement extends React.Component {
             active={isActive}
             results={1000}
             intl={intl}
+            facets={facets}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
             onDisplayCallback={this.handleDisplay}

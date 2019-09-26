@@ -483,7 +483,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -538,14 +538,12 @@ class Query extends React.Component {
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
-                return null
-                /*
                 return (
                   <GenericFilter
                     index={index}
                     options={options}
                     data={item.data}
-                    dataSet={}
+                    dataSet={facets[item.data.id] || []}
                     intl={intl}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
@@ -557,7 +555,6 @@ class Query extends React.Component {
                     }}
                   />
                 );
-                 */
               case INSTRUCTION_TYPE_SUBQUERY:
                 const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
                 return (

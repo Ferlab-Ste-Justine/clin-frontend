@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-    Typography, Row, Col, Checkbox, Radio, Tooltip, Input,
+    Typography, Row, Col, Checkbox, Radio, Tooltip, Input, Tag,
 } from 'antd';
 import { cloneDeep, pull } from 'lodash';
 import IconKit from 'react-icons-kit';
@@ -34,7 +34,7 @@ class GenericFilter extends React.Component {
     // @NOTE Initialize Component State
     const { data } = props;
     this.state.draft = cloneDeep(data);
-    this.state.selection = cloneDeep(data.values);
+    this.state.selection = data.values ? cloneDeep(data.values) : [];
   }
 
   getLabel() {
@@ -113,7 +113,7 @@ class GenericFilter extends React.Component {
       const { intl, dataSet } = this.props;
       const { draft, selection } = this.state;
       const { operand } = draft;
-      const allSelected = selection.length === dataSet.length;
+      const allSelected = dataSet ? selection.length === dataSet.length : false;
       const typeAll = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.all' });
       const typeOne = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.one' });
       const typeNone = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.none' });
@@ -121,7 +121,12 @@ class GenericFilter extends React.Component {
       const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.none' });
       const filterSearch = intl.formatMessage({ id: 'screen.patientVariant.filter.search' });
       const options = dataSet.map((option) => {
-        return {label: (<span>{option.value} {option.count} </span>), value: option.value}
+        return {label: (
+            <span>
+                {option.value}
+                <Tag style={{ float: 'right' }}>{option.count}</Tag>
+            </span>
+         ), value: option.value}
       })
 
       return (
@@ -148,7 +153,7 @@ class GenericFilter extends React.Component {
                   <Checkbox
                       key="check-all"
                       className="selector"
-                      indeterminate={!allSelected}
+                      indeterminate={(!allSelected && selection.length > 0)}
                       onChange={this.handleCheckAllSelections}
                       checked={allSelected}
                   />

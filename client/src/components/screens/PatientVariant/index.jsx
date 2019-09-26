@@ -111,6 +111,7 @@ class PatientVariantScreen extends React.Component {
               key="variant-statement"
               data={queries}
               intl={intl}
+              facets={facets}
               options={{
                   copyable: true,
                   duplicatable: true,
