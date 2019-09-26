@@ -333,6 +333,7 @@ class Statement extends React.Component {
     display.push(defaultDisplay);
 
     if (checkedQueries.length > 1) {
+      const { onEditCallback } = this.props;
       const sortedCheckedQueries = cloneDeep(checkedQueries);
       sortedCheckedQueries.sort((a, b) => this.findQueryIndexForKey(a) - this.findQueryIndexForKey(b));
       const instructions = sortedCheckedQueries.reduce((accumulator, query) => {
@@ -342,15 +343,18 @@ class Statement extends React.Component {
       }, []);
 
       instructions.pop();
-      draft.push({
+      const newSubquery = {
         key: uuidv1(),
         instructions,
-      });
+      };
+      draft.push(newSubquery);
       this.setState({
         draft,
         activeQuery: index,
         checkedQueries: [],
         display,
+      }, () => {
+        onEditCallback(newSubquery)
       });
     }
   }
@@ -380,13 +384,15 @@ class Statement extends React.Component {
 
     const subquery = [];
     for (const d of draft) {
-      d.instructions.map((i) => {
-        if (i.type === INSTRUCTION_TYPE_SUBQUERY) {
-          if (checkedQueries.indexOf(i.data.query) != -1) {
-            return subquery.push(d);
+      if (d.instructions) {
+        d.instructions.map((i) => {
+          if (i.type === INSTRUCTION_TYPE_SUBQUERY) {
+            if (checkedQueries.indexOf(i.data.query) != -1) {
+              return subquery.push(d);
+            }
           }
-        }
-      });
+        });
+      }
     }
     return subquery;
   }
@@ -427,31 +433,38 @@ class Statement extends React.Component {
 
   confirmRemoveChecked(delSubQuery = []) {
     const { checkedQueries, draft } = this.state;
-    this.commit(draft);
+    const { onRemoveCallback } = this.props;
 
+    this.commit(draft);
 
     const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
     keysToRemove.push(...delSubQuery);
-    pullAllBy(draft, keysToRemove, 'key');
+
+    const newDraft = cloneDeep(draft)
+    pullAllBy(newDraft, keysToRemove, 'key');
 
     this.setState({
-      draft,
+      draft: newDraft,
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
-    });
+    }, () => {
+      keysToRemove.forEach((query) => {
+        console.log('keysToRemove ', query)
+        onRemoveCallback(query);
+      })
+    } );
   }
 
   handleNewQuery() {
+    const { onEditCallback } = this.props;
     const { draft, display } = this.state;
-    const key = uuidv1();
-    const instructions = [];
 
-    const draftQuery = {
-      instructions,
-      key,
+    const newQuery = {
+      key: uuidv1(),
+      instructions: []
     };
-    draft.push(draftQuery);
+    draft.push(newQuery);
 
     const newDisplay = cloneDeep(this.props.display);
     display.push(newDisplay);
@@ -460,6 +473,8 @@ class Statement extends React.Component {
       draft,
       display,
       activeQuery: draft.length - 1,
+    }, () => {
+      onEditCallback(newQuery)
     });
   }
 

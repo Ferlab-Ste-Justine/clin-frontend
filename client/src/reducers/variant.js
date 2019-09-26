@@ -139,6 +139,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       const index = findIndex(queries, { key: query.key })
       if (index > -1) {
         queries[index] = query
+      } else {
+        queries.push(query)
       }
       draft.queries = queries
       break;
