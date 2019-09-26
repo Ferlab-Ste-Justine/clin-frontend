@@ -6,6 +6,7 @@ import {
 } from '@blueprintjs/table';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import {cloneDeep} from 'lodash';
 
 class VariantTable extends React.Component {
   constructor(props) {
@@ -16,7 +17,9 @@ class VariantTable extends React.Component {
       page: 1,
       visible:false,
       variantVisibleColumn:[],
-      variantColumnData:[]
+      variantColumnData:[],
+      geneColumnData:[],
+      geneVisibleColumn:[],
 
     };
     this.state.variantColumnData = [ {Name : "ID" , Format : "ID" },
@@ -39,9 +42,11 @@ class VariantTable extends React.Component {
                         {Name : "# de Variants" , Format : "Default" },
                         {Name : "ID OMIM" , Format : "Default" },
                         {Name : "Orphanet ID" , Format : "Default" },
-                        {Name : "ID Ensembl" , Format : "Default" },]
+                        {Name : "ID Ensemble" , Format : "Default" },]
 
     this.state.variantVisibleColumn=Array.from(Array(this.state.variantColumnData.length).keys())
+    this.state.geneVisibleColumn=Array.from(Array(this.state.geneColumnData.length).keys())
+
     this.handlePageChange = this.handlePageChange.bind(this)
     this.getCellRenderer = this.getCellRenderer.bind(this)
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this)
@@ -49,18 +54,22 @@ class VariantTable extends React.Component {
     this.onChange = this.onChange.bind(this)
     this.renderColumn=this.renderColumn.bind(this)
     this.handleColumnsReordered=this.handleColumnsReordered.bind(this)
+    this.handleTabChange = this.handleTabChange.bind(this)
 
   }
 
   componentDidMount() {
-     this.renderColumn()
+     this.renderColumn("1")
   }
 
-    renderColumn(){
-        console.log("test", this.state.variantVisibleColumn)
-        const{variantColumnData, columns , variantVisibleColumn} = this.state
-        variantColumnData.map((info,index) =>
-            variantVisibleColumn.includes(index) ? columns.push( <Column key={index} name={info.Name} cellRenderer={this.getCellRenderer('normal', info.Format)}/>) : null)
+    renderColumn(column){
+        const{variantColumnData, geneColumnData,columns , variantVisibleColumn , geneVisibleColumn} = this.state
+
+        const visibleColumn = column === "1" ? variantVisibleColumn : geneVisibleColumn
+        const columnData = column === "1" ? variantColumnData : geneColumnData
+
+        columnData.map((info,index) =>
+            visibleColumn.includes(index) ? columns.push( <Column key={index} name={info.Name} cellRenderer={this.getCellRenderer('normal', info.Format)}/>) : null)
 
         this.setState({
             columns
@@ -82,7 +91,6 @@ class VariantTable extends React.Component {
           return (row) => {
             return (
               <Cell>
-                <a>Lien vers variant</a>
               </Cell>
             );
           };
@@ -91,7 +99,6 @@ class VariantTable extends React.Component {
           return (row) => {
             return (
               <Cell>
-                missense: <span className="consequence">[KRAS] </span>
               </Cell>
             );
           };
@@ -125,9 +132,10 @@ class VariantTable extends React.Component {
     this.handlePageChange(page, size);
   }
 
-  toggleMenu() {
+  toggleMenu(test) {
+    const value = test.target.children[0].innerHTML
     const {visible} = this.state
-    this.setState({ visible: !visible });
+    this.setState({ visible: !visible })
   }
 
   onChange(checkedValues) {
@@ -150,6 +158,12 @@ class VariantTable extends React.Component {
     this.setState({ columns: nextChildren });
   }
 
+  handleTabChange(key, tab){
+    this.setState({
+        columns:[]
+    }, ()=> this.renderColumn(key))
+  }
+
   render() {
     const { TabPane } = Tabs;
     const {columns, variantColumnData, size , page , visible , variantVisibleColumn} = this.state;
@@ -170,12 +184,13 @@ class VariantTable extends React.Component {
           </Card>
         </Popover>
     );
+
     return(
-      <Tabs type="card">
+      <Tabs type="card" onChange={this.handleTabChange}>
         <TabPane tab="Variant" key="1">
             <Row>
               <Col align="end">
-                  <Dropdown overlay={overlay} trigger={['click']} visible={visible}>
+                  <Dropdown overlay={overlay} trigger={['click']} >
                       <Button type="primary" onClick={this.toggleMenu}>Column <Icon type="caret-down"/></Button>
                   </Dropdown>
               </Col>
@@ -213,7 +228,7 @@ class VariantTable extends React.Component {
         <TabPane tab="Gene" key="2">
           <Row>
             <Col align="end">
-                <Dropdown overlay={overlay} trigger={['click']} visible={visible}>
+                <Dropdown overlay={overlay} trigger={['click']} >
                     <Button type="primary" onClick={this.toggleMenu}>Column <Icon type="caret-down"/></Button>
                 </Dropdown>
             </Col>

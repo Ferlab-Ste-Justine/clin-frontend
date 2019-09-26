@@ -607,7 +607,6 @@ class Statement extends React.Component {
           ) : queries
         }
         <br/>
-        <br/>
         <VariantTable/>
       </div>
     );
