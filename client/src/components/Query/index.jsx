@@ -125,7 +125,7 @@ class Query extends React.Component {
     const { data } = this.state;
     const { onEditCallback } = this.props;
     if (index === null) {
-      index = item.index;
+      index = item.index || data.instructions.length;
     }
     data.instructions[index] = item;
     this.setState({

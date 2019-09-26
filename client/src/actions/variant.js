@@ -5,10 +5,9 @@ export const fetchSchema = () => ({
   type: actions.VARIANT_SCHEMA_REQUESTED,
 });
 
-export const selectQuery = (patient, query) => ({
+export const selectQuery = query => ({
   type: actions.PATIENT_VARIANT_QUERY_SELECTION,
   payload: {
-    patient,
     query,
   },
 });
@@ -40,5 +39,17 @@ export const sortStatement = (statement, activeQuery) => ({
   payload: {
     statement,
     activeQuery,
+  },
+});
+
+export const searchVariants = (patient, statement, query, group = null, index = 0, limit = 25) => ({
+  type: actions.PATIENT_VARIANT_SEARCH_REQUESTED,
+  payload: {
+    patient,
+    statement,
+    query,
+    group,
+    index,
+    limit,
   },
 });

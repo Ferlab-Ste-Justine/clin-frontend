@@ -20,7 +20,7 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement } from '../../../actions/variant';
+import { selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -35,10 +35,11 @@ class PatientVariantScreen extends React.Component {
   }
 
   handleQuerySelection(query) {
-    const { actions, patient } = this.props;
-    const { id } = patient;
+    const { actions, variant } = this.props;
+    const { activePatient, queries } = variant;
 
-    actions.selectQuery(id, query);
+    actions.selectQuery(query);
+    actions.searchVariants('PA00002', queries, query.key, 'impact', 0, 25)
   }
 
   handleQueryChange(query) {
@@ -135,6 +136,7 @@ const mapDispatchToProps = dispatch => ({
     removeQuery,
     duplicateQuery,
     sortStatement,
+    searchVariants,
   }, dispatch),
 });
 

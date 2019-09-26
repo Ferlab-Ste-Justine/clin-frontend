@@ -15,8 +15,8 @@ const exampleQueryA = {
       data: {
         id: 'variant_type',
         type: 'generic',
-        operand: 'all',
-        values: ['SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL'],
+        operand: 'one',
+        values: ['SNV', 'insertion'],
       },
     },
     {
@@ -31,48 +31,13 @@ const exampleQueryA = {
         id: 'gene_type',
         type: 'generic',
         operand: 'all',
-        values: ['complementary', 'duplicate', 'polymeric', 'modifying', 'lethal', 'moveable'],
+        values: ['protein_coding'],
       },
     },
   ],
 };
 const exampleQueryB = cloneDeep(exampleQueryA)
 exampleQueryB.key = 'zdcb83a1-dfa5-11e9-96aa-c957343d6d72'
-
-/*
-[
-  {
-    title: 'Query 1',
-    instructions: [
-      {
-        type: 'filter',
-        data: {
-          id: 'variant_type',
-          type: 'generic',
-          operand: 'all',
-          values: ['SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL'],
-        }
-      },
-      {
-        type: 'operator',
-        data: {
-          type: 'and',
-        }
-      },
-      {
-        type: 'filter',
-        data: {
-          id: 'gene_type',
-          type: 'generic',
-          operand: 'all',
-          values: ['complementary', 'duplicate', 'polymeric', 'modifying', 'lethal', 'moveable'],
-        }
-      }
-    ]
-  }
-]
-*/
-
 
 
 export const initialVariantState = {
@@ -84,6 +49,7 @@ export const initialVariantState = {
     cloneDeep(exampleQueryB),
   ],
   results: [],
+  facets: [],
 };
 
 export const variantShape = {
@@ -92,6 +58,7 @@ export const variantShape = {
   activeQuery: PropTypes.String,
   queries: PropTypes.array,
   results: PropTypes.array,
+  facets: PropTypes.array,
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
@@ -115,6 +82,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
       draft.activeQuery = action.payload.query.key;
+      break;
+
+    case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
+      console.log('--- PATIENT_VARIANT_SEARCH_SUCCEEDED ---')
+      console.log(action)
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
