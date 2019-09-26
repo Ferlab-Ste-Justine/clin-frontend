@@ -14,10 +14,6 @@ import GenericFilter from './Filter/Generic';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
-import { bindActionCreators } from 'redux';
-import { updateQuery } from '../../actions/variant';
 
 export const DEFAULT_EMPTY_QUERY = {};
 
@@ -129,7 +125,7 @@ class Query extends React.Component {
     const { data } = this.state;
     const { onEditCallback } = this.props;
     if (index === null) {
-      index = item.index;
+      index = item.index || data.instructions.length;
     }
     data.instructions[index] = item;
     this.setState({
@@ -173,9 +169,6 @@ class Query extends React.Component {
   }
 
   handleFilterChange(filter) {
-    const { actions ,patient, } = this.props
-    const{draft} = filter
-    actions.updateQuery(patient.details.id ,  draft.id, draft.values );
     this.replaceInstruction({
       type: INSTRUCTION_TYPE_FILTER,
       index: filter.index,
@@ -646,19 +639,4 @@ Query.defaultProps = {
   findQueryIndexForKey: null,
 };
 
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({
-    updateQuery,
-  }, dispatch),
-});
-
-const mapStateToProps = state => ({
-  intl: state.intl,
-  patient: state.patient,
-  variant: state.variant,
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(injectIntl(Query));
+export default Query;

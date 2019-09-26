@@ -6,7 +6,8 @@ import { cloneDeep, findIndex, pull } from 'lodash';
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 
-const exampleQuery = {
+const exampleQueryA = {
+  key: 'bdcb83a1-dfa5-11e9-96aa-c957343d6d71',
   title: 'Query 1',
   instructions: [
     {
@@ -14,8 +15,8 @@ const exampleQuery = {
       data: {
         id: 'variant_type',
         type: 'generic',
-        operand: 'all',
-        values: ['SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL'],
+        operand: 'one',
+        values: ['SNV', 'insertion'],
       },
     },
     {
@@ -30,21 +31,25 @@ const exampleQuery = {
         id: 'gene_type',
         type: 'generic',
         operand: 'all',
-        values: ['complementary', 'duplicate', 'polymeric', 'modifying', 'lethal', 'moveable'],
+        values: ['protein_coding'],
       },
     },
   ],
 };
+const exampleQueryB = cloneDeep(exampleQueryA)
+exampleQueryB.key = 'zdcb83a1-dfa5-11e9-96aa-c957343d6d72'
+
 
 export const initialVariantState = {
   schema: {},
   activePatient: null,
   activeQuery: null,
   queries: [
-    cloneDeep(exampleQuery),
-    cloneDeep(exampleQuery),
+    cloneDeep(exampleQueryA),
+    cloneDeep(exampleQueryB),
   ],
   results: [],
+  facets: [],
 };
 
 export const variantShape = {
@@ -53,9 +58,12 @@ export const variantShape = {
   activeQuery: PropTypes.String,
   queries: PropTypes.array,
   results: PropTypes.array,
+  facets: PropTypes.array,
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
+  const { queries } = draft;
+
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
@@ -76,18 +84,44 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.activeQuery = action.payload.query.key;
       break;
 
-    case actions.PATIENT_VARIANT_QUERY_UPDATE:
-      const indexQuery = findIndex(draft.queries, ['key', draft.activeQuery]);
-      let indexInstruction = null;
-      indexInstruction = findIndex(draft.queries[indexQuery].instructions, ((x) => {
-        return (x.data.id === action.payload.type)
-      }));
-      const tempo = cloneDeep(draft.queries)
-      tempo[indexQuery].instructions[indexInstruction].data.values = action.payload.value
-      draft.queries= tempo;
-
+    case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
+      console.log('--- PATIENT_VARIANT_SEARCH_SUCCEEDED ---')
+      console.log(action)
       break;
 
+    case actions.PATIENT_VARIANT_QUERY_REMOVAL:
+      const keyToRemove = action.payload.query.key;
+      draft.queries = queries.filter((query) => {
+        return query.key !== keyToRemove;
+      })
+      break;
+
+    case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
+      const keyToDuplicate = action.payload.query.key;
+      const indexToInsertAt = action.payload.index || draft.queries.length;
+      const indexToDuplicate = findIndex(queries, { key: keyToDuplicate })
+      if (indexToDuplicate) {
+        draft.queries.splice(indexToInsertAt, 0, action.payload.query);
+        draft.activeQuery = action.payload.query.key
+      }
+      break;
+
+    case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
+      const { query } = action.payload;
+      const index = findIndex(queries, { key: query.key })
+      if (index > -1) {
+        queries[index] = query
+      } else {
+        queries.push(query)
+      }
+      draft.queries = queries
+      break;
+
+    case actions.PATIENT_VARIANT_STATEMENT_SORT:
+      const { statement, activeQuery } = action.payload;
+      draft.queries = statement
+      draft.activeQuery = activeQuery
+      break;
 
     default:
       break;

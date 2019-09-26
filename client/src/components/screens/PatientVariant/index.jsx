@@ -8,7 +8,6 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader,
 } from 'antd';
-import { format } from 'util';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -20,12 +19,8 @@ import './style.scss';
 import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
-// import { navigateToPatientScreen, navigateToPatientSearchScreen } from '../../../actions/router';
-// import { searchPatientVariants } from '../../../actions/patient';
-import { cloneDeep } from 'lodash';
 import Statement from '../../Query/Statement';
-import { selectQuery } from '../../../actions/variant';
-
+import { selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -33,13 +28,38 @@ class PatientVariantScreen extends React.Component {
     super();
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
+    this.handleQueryChange = this.handleQueryChange.bind(this);
+    this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
+    this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
+    this.handleStatementSort = this.handleStatementSort.bind(this);
   }
 
   handleQuerySelection(query) {
-    const { actions, patient } = this.props;
-    const { id } = patient;
+    const { actions, variant } = this.props;
+    const { activePatient, queries } = variant;
 
-    actions.selectQuery(id, query);
+    actions.selectQuery(query);
+    actions.searchVariants('PA00002', queries, query.key, 'impact', 0, 25)
+  }
+
+  handleQueryChange(query) {
+    const { actions } = this.props;
+    actions.replaceQuery(query.data || query)
+  }
+
+  handleQueryRemoval(query) {
+    const { actions } = this.props;
+    actions.removeQuery(query.data || query)
+  }
+
+  handleQueryDuplication(query, index) {
+    const { actions } = this.props;
+    actions.duplicateQuery(query.data, index)
+  }
+
+  handleStatementSort(sortedQueries, sortedActiveQuery) {
+    const { actions } = this.props;
+    actions.sortStatement(sortedQueries, sortedActiveQuery)
   }
 
     render() {
@@ -66,12 +86,17 @@ class PatientVariantScreen extends React.Component {
                 <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
             </Descriptions>
 
-            <VariantNavigation className="variant-navigation" />
+            <VariantNavigation
+                key="variant-navigation"
+                className="variant-navigation"
+                onEditCallback={this.handleQueryChange}
+            />
             <br />
             <br />
             <Statement
               key="variant-statement"
               data={queries}
+              intl={intl}
               options={{
                   copyable: true,
                   duplicatable: true,
@@ -84,8 +109,11 @@ class PatientVariantScreen extends React.Component {
               display={{
                   compoundOperators: true,
               }}
-              intl={intl}
               onSelectCallback={this.handleQuerySelection}
+              onSortCallback={this.handleStatementSort}
+              onEditCallback={this.handleQueryChange}
+              onRemoveCallback={this.handleQueryRemoval}
+              onDuplicateCallback={this.handleQueryDuplication}
             />
         </Card>
         <Footer />
@@ -104,6 +132,11 @@ PatientVariantScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     selectQuery,
+    replaceQuery,
+    removeQuery,
+    duplicateQuery,
+    sortStatement,
+    searchVariants,
   }, dispatch),
 });
 

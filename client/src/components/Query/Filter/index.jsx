@@ -6,11 +6,6 @@ import {
   Row, Col, Typography, Card, Tag, Input, Popover, Dropdown, Button, Radio, Icon, Checkbox,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-import {
-  empty, one, full, info,
-} from 'react-icons-kit/entypo';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -99,8 +94,8 @@ class Filter extends React.Component {
     return Object.assign({}, this.props, this.state);
   }
 
-  handleClose() {
-    if (this.isRemovable()) {
+  handleClose(force = false) {
+    if (force === true || this.isRemovable()) {
       const { onRemoveCallback } = this.props;
       this.setState({
         opened: false,
@@ -112,29 +107,32 @@ class Filter extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { editor , onEditCallback } = this.props
-      draft.values  = editor.props.children[6].props.children.props.children.props.value;
-      this.setState({
-        data: { ...draft },
-        opened: false,
-      }, () => {
-        if (onEditCallback) {
-          onEditCallback(this.serialize());
-        }
-      });
+      const { editor, onEditCallback } = this.props
+      const value = editor.props.children[6].props.children.props.children.props.value;
+      const operand = editor.props.children[0].props.children.props.children.props.value;
+      if (value.length > 0) {
+        draft.operand = operand;
+        draft.values  = value;
+        this.setState({
+          data: { ...draft },
+          opened: false,
+        }, () => {
+            onEditCallback(this.serialize());
+        });
+      } else{
+        this.handleClose(true)
+      }
     }
   }
 
   handleCancel() {
-    const { data } = this.state;
+    const { data ,draft } = this.state;
     const { onCancelCallback } = this.props;
     this.setState({
-      draft: { ...data },
+      data: { ...draft },
       opened: false,
     }, () => {
-      if (onCancelCallback) {
         onCancelCallback(this.serialize());
-      }
     });
   }
 
@@ -144,9 +142,7 @@ class Filter extends React.Component {
       this.setState({
         selected: !this.isSelected(),
       }, () => {
-        if (onSelectCallback) {
           onSelectCallback(this.serialize());
-        }
       });
     }
   }
@@ -247,5 +243,4 @@ Filter.defaultProps = {
   visible: true,
 };
 
-export default connect(
-)(injectIntl(Filter));
+export default Filter;
