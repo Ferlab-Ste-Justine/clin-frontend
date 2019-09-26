@@ -15,7 +15,9 @@ class VariantTable extends React.Component {
       columns: [],
       size: 10,
       page: 1,
-      visible:false,
+      visibleVariant:false,
+      visibleGene:false,
+      currentTab:"Variant",
       variantVisibleColumn:[],
       variantColumnData:[],
       geneColumnData:[],
@@ -51,7 +53,7 @@ class VariantTable extends React.Component {
     this.getCellRenderer = this.getCellRenderer.bind(this)
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this)
     this.toggleMenu = this.toggleMenu.bind(this)
-    this.onChange = this.onChange.bind(this)
+    this.handleColumnsVisible = this.handleColumnsVisible.bind(this)
     this.renderColumn=this.renderColumn.bind(this)
     this.handleColumnsReordered=this.handleColumnsReordered.bind(this)
     this.handleTabChange = this.handleTabChange.bind(this)
@@ -59,24 +61,24 @@ class VariantTable extends React.Component {
   }
 
   componentDidMount() {
-     this.renderColumn("1")
+     this.renderColumn()
   }
 
-    renderColumn(column){
-        const{variantColumnData, geneColumnData,columns , variantVisibleColumn , geneVisibleColumn} = this.state
+  renderColumn(){
+     const{variantColumnData, geneColumnData,columns , variantVisibleColumn , geneVisibleColumn , currentTab} = this.state
 
-        const visibleColumn = column === "1" ? variantVisibleColumn : geneVisibleColumn
-        const columnData = column === "1" ? variantColumnData : geneColumnData
+     const visibleColumn = currentTab === "Variant" ? variantVisibleColumn : geneVisibleColumn
+     const columnData = currentTab === "Variant" ? variantColumnData : geneColumnData
 
-        columnData.map((info,index) =>
+     columnData.map((info,index) =>
             visibleColumn.includes(index) ? columns.push( <Column key={index} name={info.Name} cellRenderer={this.getCellRenderer('normal', info.Format)}/>) : null)
 
-        this.setState({
-            columns
-        })
+     this.setState({
+         columns
+     })
     }
 
-    getCellRenderer(key, type) {
+  getCellRenderer(key, type) {
     const { Text } = Typography;
       switch (type) {
         case 'Default':
@@ -134,45 +136,70 @@ class VariantTable extends React.Component {
 
   toggleMenu(test) {
     const value = test.target.children[0].innerHTML
-    const {visible} = this.state
-    this.setState({ visible: !visible })
+    const {visibleVariant , visibleGene , currentTab} = this.state
+    currentTab === "Variant" ? this.setState({ visibleVariant: !visibleVariant }) : this.setState({ visibleGene: !visibleGene})
   }
 
-  onChange(checkedValues) {
-    const {variantVisibleColumn} = this.state
-    this.setState({
-        variantVisibleColumn:checkedValues,
-        columns:[]
-    }, ()=> this.renderColumn())
+  handleColumnsVisible(checkedValues) {
+    const {variantVisibleColumn , geneVisibleColumn , currentTab} = this.state
+    if(currentTab === "Variant"){
+        this.setState({
+            variantVisibleColumn:checkedValues,
+            columns:[]
+        }, ()=> this.renderColumn())
+    }
+    else{
+        this.setState({
+            geneVisibleColumn:checkedValues,
+            columns:[]
+        }, ()=> this.renderColumn())
+    }
+
   }
 
   handleColumnsReordered(oldIndex, newIndex, length) {
     if (oldIndex === newIndex) {
       return;
     }
-    const { columns, variantColumnData } = this.state;
-    const element = variantColumnData[oldIndex];
-    variantColumnData.splice(oldIndex, 1);
-    variantColumnData.splice(newIndex, 0, element);
+    const { columns, variantColumnData , geneColumnData , currentTab } = this.state;
+    if(currentTab === "Variant"){
+        const element = variantColumnData[oldIndex];
+        variantColumnData.splice(oldIndex, 1);
+        variantColumnData.splice(newIndex, 0, element);
+    }
+    else{
+        const element = geneColumnData[oldIndex];
+        geneColumnData.splice(oldIndex, 1);
+        geneColumnData.splice(newIndex, 0, element);
+    }
+
     const nextChildren = Utils.reorderArray(columns, oldIndex, newIndex, length);
     this.setState({ columns: nextChildren });
   }
 
   handleTabChange(key, tab){
     this.setState({
-        columns:[]
-    }, ()=> this.renderColumn(key))
+        columns:[],
+        currentTab:key,
+        visibleVariant:false,
+        visibleGene:false,
+
+    }, ()=> this.renderColumn())
   }
 
   render() {
     const { TabPane } = Tabs;
-    const {columns, variantColumnData, size , page , visible , variantVisibleColumn} = this.state;
+    const {columns, variantColumnData, geneColumnData , size , page , visibleVariant , visibleGene , variantVisibleColumn , geneVisibleColumn , currentTab} = this.state;
+
+    const columnData = currentTab === "Variant" ? variantColumnData : geneColumnData
+    const isvisible =currentTab === "Variant" ? visibleVariant : visibleGene
+    const defaultValue =  currentTab === "Variant" ? variantVisibleColumn : geneVisibleColumn
     const overlay = (
-        <Popover visible={visible}>
+        <Popover visible={isvisible}>
           <Card>
             <Row>
-              <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={variantVisibleColumn} onChange={this.onChange}>
-                {variantColumnData.map((info,index) =>
+              <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={defaultValue} onChange={this.handleColumnsVisible}>
+                {columnData.map((info,index) =>
                     <Row>
                       <Col>
                         <Checkbox value={index}>{info.Name}</Checkbox>
@@ -187,10 +214,10 @@ class VariantTable extends React.Component {
 
     return(
       <Tabs type="card" onChange={this.handleTabChange}>
-        <TabPane tab="Variant" key="1">
+        <TabPane tab="Variant" key="Variant">
             <Row>
               <Col align="end">
-                  <Dropdown overlay={overlay} trigger={['click']} >
+                  <Dropdown overlay={overlay} trigger={['click']} visible={visibleVariant} >
                       <Button type="primary" onClick={this.toggleMenu}>Column <Icon type="caret-down"/></Button>
                   </Dropdown>
               </Col>
@@ -225,10 +252,10 @@ class VariantTable extends React.Component {
               </Col>
             </Row>
         </TabPane>
-        <TabPane tab="Gene" key="2">
+        <TabPane tab="Gene" key="Gene">
           <Row>
             <Col align="end">
-                <Dropdown overlay={overlay} trigger={['click']} >
+                <Dropdown overlay={overlay} trigger={['click']} visible={visibleGene} >
                     <Button type="primary" onClick={this.toggleMenu}>Column <Icon type="caret-down"/></Button>
                 </Dropdown>
             </Col>
