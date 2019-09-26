@@ -39,6 +39,7 @@ class PatientVariantScreen extends React.Component {
     const { activePatient, queries } = variant;
 
     actions.selectQuery(query);
+    //@NOTE PA00002 currently is the only patient with indexed data.
     actions.searchVariants('PA00002', queries, query.key, 'impact', 0, 25)
   }
 

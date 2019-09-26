@@ -28,18 +28,7 @@ function* searchVariantsForPatient(action) {
       patient, statement, query, group, index, limit,
     } = action.payload;
     yield put({ type: actions.START_LOADING_ANIMATION });
-
-
-    console.log('--- variantResponse');
-    console.log(action);
-
-
     const variantResponse = yield Api.searchVariantsForPatient(patient, statement, query, group, index, limit);
-
-
-    console.log(variantResponse);
-
-
     if (variantResponse.error) {
       throw new ApiError(variantResponse.error);
     }
