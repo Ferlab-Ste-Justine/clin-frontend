@@ -20,18 +20,26 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
+import { fetchSchema, selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
     this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
     this.handleStatementSort = this.handleStatementSort.bind(this);
+
+    // @NOTE Initialize Component State
+    const { actions, variant } = props;
+    const { schema } = variant;
+    // @NOTE Make sure we have a schema defined in redux
+    if (!schema.version) {
+      actions.fetchSchema();
+    }
   }
 
   handleQuerySelection(query) {
@@ -65,7 +73,7 @@ class PatientVariantScreen extends React.Component {
 
     render() {
     const { intl, variant } = this.props;
-    const { queries } = variant;
+    const { queries, facets, schema, activeQuery } = variant;
     return (
       <Content>
         <Header />
@@ -90,6 +98,11 @@ class PatientVariantScreen extends React.Component {
             <VariantNavigation
                 key="variant-navigation"
                 className="variant-navigation"
+                intl={intl}
+                schema={schema}
+                queries={queries}
+                activeQuery={activeQuery}
+                data={facets}
                 onEditCallback={this.handleQueryChange}
             />
             <br />
@@ -132,6 +145,7 @@ PatientVariantScreen.propTypes = {
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
+    fetchSchema,
     selectQuery,
     replaceQuery,
     removeQuery,

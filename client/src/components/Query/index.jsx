@@ -538,17 +538,26 @@ class Query extends React.Component {
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
+                return null
+                /*
                 return (
                   <GenericFilter
                     index={index}
                     options={options}
                     data={item.data}
+                    dataSet={}
                     intl={intl}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
+                    options={{
+                      editable: true,
+                      selectable: false,
+                      removable: false,
+                    }}
                   />
                 );
+                 */
               case INSTRUCTION_TYPE_SUBQUERY:
                 const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
                 return (

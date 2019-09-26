@@ -2,9 +2,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 import {
   find, cloneDeep,
@@ -16,10 +13,6 @@ import {
 
 import GenericFilter from '../../Query/Filter/Generic';
 
-import {
-  fetchSchema,
-} from '../../../actions/variant';
-import { variantShape } from '../../../reducers/variant';
 
 
 class VariantNavigation extends React.Component {
@@ -33,14 +26,6 @@ class VariantNavigation extends React.Component {
     this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
-
-    // @NOTE Initialize Component State
-    const { actions, variant } = props;
-    const { schema } = variant;
-    // @NOTE Make sure we have a schema defined in redux
-    if (!schema.version) {
-      actions.fetchSchema();
-    }
   }
 
   handleFilterSearch(query) {
@@ -61,8 +46,7 @@ class VariantNavigation extends React.Component {
   handleFilterChange(filter) {
     const { onEditCallback } = this.props;
     if (onEditCallback) {
-      const { variant } = this.props;
-      const { activeQuery, queries } = variant;
+      const { activeQuery, queries } = this.props;
       const query = find(queries, { key: activeQuery })
       if (query) {
           const updatedQuery = cloneDeep(query);
@@ -95,9 +79,8 @@ class VariantNavigation extends React.Component {
   }
 
   render() {
-    const { intl, variant } = this.props;
+    const { intl, activeQuery, schema, queries, data } = this.props;
     const { activeFilterId } = this.state;
-    const { activeQuery, schema, queries } = variant;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
 
@@ -137,6 +120,7 @@ class VariantNavigation extends React.Component {
                     }}
                     intl={intl}
                     data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {})}
+                    dataSet={data[activeFilterId] ? data[activeFilterId] : []}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemove}
                     onCancelCallback={this.handleCategoryOpenChange}
@@ -156,27 +140,18 @@ class VariantNavigation extends React.Component {
 
 VariantNavigation.propTypes = {
   intl: PropTypes.shape({}).isRequired,
-  variant: PropTypes.shape(variantShape).isRequired,
-  actions: PropTypes.shape({}).isRequired,
+  schema: PropTypes.shape({}).isRequired,
+  data: PropTypes.shape({}),
+  queries: PropTypes.array,
+  activeQuery: PropTypes.string,
   onEditCallback: PropTypes.func,
 };
 
 VariantNavigation.defaultProps = {
   onEditCallback: () => {},
+  data: [],
+  queries: [],
+  activeQuery: '',
 };
 
-const mapStateToProps = state => ({
-  intl: state.intl,
-  variant: state.variant,
-});
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({
-    fetchSchema,
-  }, dispatch),
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(injectIntl(VariantNavigation));
+export default VariantNavigation;

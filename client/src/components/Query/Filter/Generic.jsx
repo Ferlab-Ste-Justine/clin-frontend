@@ -20,7 +20,6 @@ class GenericFilter extends React.Component {
     this.state = {
         draft: null,
         selection: [],
-        options: [],
         indeterminate: false,
     };
     this.getEditor = this.getEditor.bind(this);
@@ -31,14 +30,11 @@ class GenericFilter extends React.Component {
     this.handleOperandChange = this.handleOperandChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
     this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
+
     // @NOTE Initialize Component State
     const { data } = props;
     this.state.draft = cloneDeep(data);
     this.state.selection = cloneDeep(data.values);
-    this.state.indeterminate = this.state.selection.length !== this.state.options.length;
-
-    // @TODO Get possible values
-    this.state.options = cloneDeep(data.values);
   }
 
   getLabel() {
@@ -82,10 +78,10 @@ class GenericFilter extends React.Component {
   }
 
   handleSelectionChange(values) {
-      const { options } = this.state;
+      const { dataSet } = this.props;
       this.setState({
           selection: values,
-          indeterminate: (!(values.length === options.length) && values.length > 0),
+          indeterminate: (!(values.length === dataSet.length) && values.length > 0),
       });
   }
 
@@ -97,10 +93,16 @@ class GenericFilter extends React.Component {
         indeterminate: false
       });
     } else {
+
+      const { dataSet } = this.props;
+      // @TODO
+      /*
      this.setState({
-       selection: cloneDeep(this.state.options),
+       selection: cloneDeep(this.props.options),
        indeterminate: false
      });
+
+       */
     }
   }
 
@@ -108,16 +110,20 @@ class GenericFilter extends React.Component {
   }
 
   getEditor() {
-      const { intl } = this.props;
-      const { draft, indeterminate, options, selection } = this.state;
+      const { intl, dataSet } = this.props;
+      const { draft, selection } = this.state;
       const { operand } = draft;
-      const allSelected = selection.length === options.length;
+      const allSelected = selection.length === dataSet.length;
       const typeAll = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.all' });
       const typeOne = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.one' });
       const typeNone = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.none' });
       const selectAll = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.all' });
       const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.none' });
       const filterSearch = intl.formatMessage({ id: 'screen.patientVariant.filter.search' });
+      const options = dataSet.map((option) => {
+        return {label: (<span>{option.value} {option.count} </span>), value: option.value}
+      })
+
       return (
           <>
               <Row>
@@ -142,7 +148,7 @@ class GenericFilter extends React.Component {
                   <Checkbox
                       key="check-all"
                       className="selector"
-                      indeterminate={indeterminate}
+                      indeterminate={!allSelected}
                       onChange={this.handleCheckAllSelections}
                       checked={allSelected}
                   />

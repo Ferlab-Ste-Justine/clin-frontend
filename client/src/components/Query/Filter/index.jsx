@@ -28,6 +28,7 @@ class Filter extends React.Component {
     this.state = {
       type: null,
       data: null,
+      dataSet: null,
       draft: null,
       visible: null,
       selected: false,
@@ -49,9 +50,10 @@ class Filter extends React.Component {
 
     // @NOTE Initialize Component State
     const {
-      data, autoOpen, visible,
+      data, dataSet, autoOpen, visible,
     } = props;
     this.state.data = data;
+    this.state.dataSet = dataSet || []
     this.state.draft = cloneDeep(data);
     this.state.opened = autoOpen;
     this.state.visible = visible;
