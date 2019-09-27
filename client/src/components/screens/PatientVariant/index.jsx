@@ -45,16 +45,21 @@ class PatientVariantScreen extends React.Component {
 
   handleQuerySelection(query) {
     const { actions, variant } = this.props;
-    const { activePatient, queries } = variant;
+    const { activePatient, draftQueries } = variant;
 
     actions.selectQuery(query);
     //@NOTE PA00002 currently is the only patient with indexed data.
-    actions.searchVariants('PA00002', queries, query.key, 'impact', 0, 25)
+    actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25)
   }
 
   handleQueryChange(query) {
     const { actions } = this.props;
     actions.replaceQuery(query.data || query)
+
+    const that = this
+    setTimeout(() => {
+        that.handleQuerySelection(query.data || query)
+    }, 100)
   }
 
   handleQueryRemoval(query) {
@@ -74,7 +79,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const { intl, variant } = this.props;
-    const { queries, facets, schema, activeQuery } = variant;
+    const { draftQueries, originalQueries, facets, results, matches, schema, activeQuery } = variant;
     return (
       <Content>
         <Header />
@@ -101,17 +106,19 @@ class PatientVariantScreen extends React.Component {
                 className="variant-navigation"
                 intl={intl}
                 schema={schema}
-                queries={queries}
+                queries={draftQueries}
                 activeQuery={activeQuery}
-                data={facets}
+                data={facets[activeQuery] || {}}
                 onEditCallback={this.handleQueryChange}
             />
             <br />
             <br />
             <Statement
               key="variant-statement"
-              data={queries}
+              data={draftQueries}
+              original={originalQueries}
               intl={intl}
+              matches={matches}
               facets={facets}
               options={{
                   copyable: true,
@@ -136,6 +143,7 @@ class PatientVariantScreen extends React.Component {
             <VariantResultsTable
                 key="variant-results"
                 intl={intl}
+                results={results[activeQuery] || []}
             />
         </Card>
         <Footer />

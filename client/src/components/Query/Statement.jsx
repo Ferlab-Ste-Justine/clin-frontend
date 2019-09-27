@@ -110,9 +110,9 @@ class Statement extends React.Component {
   }
 
   static getDerivedStateFromProps(props) {
-    const { data } = props;
+    const { data, original } = props;
     return {
-      original: data,
+      original: cloneDeep(original),
       draft: cloneDeep(data),
     };
   }
@@ -286,8 +286,9 @@ class Statement extends React.Component {
         this.setState({
           draft: cloneDeep(last),
         }, () => {
-          //@FIXME
-          onEditCallback(last)
+          last.forEach((query) => {
+            onEditCallback(query)
+          })
         });
       }
     }
@@ -486,7 +487,7 @@ class Statement extends React.Component {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
     } = this.state;
     if (draft === null) { return null; }
-    const { options, intl, facets } = this.props;
+    const { options, intl, facets, matches } = this.props;
     const {
       editable, reorderable, removable, undoable,
     } = options;
@@ -536,9 +537,9 @@ class Statement extends React.Component {
             options={options}
             index={index}
             active={isActive}
-            results={1000}
+            results={(matches[query.key] ? matches[query.key] : 0)}
             intl={intl}
-            facets={facets}
+            facets={(facets[query.key] ? facets[query.key] : {})}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
             onDisplayCallback={this.handleDisplay}

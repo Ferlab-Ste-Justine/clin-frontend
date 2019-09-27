@@ -124,7 +124,7 @@ class VariantNavigation extends React.Component {
                       removable: false,
                     }}
                     intl={intl}
-                    data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId })}
+                    data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: 'all' })}
                     dataSet={data[activeFilterId] ? data[activeFilterId] : []}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemove}
