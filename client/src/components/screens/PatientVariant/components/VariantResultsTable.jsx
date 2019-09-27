@@ -1,14 +1,14 @@
 /* eslint-disable */
 import React from 'react';
-import { Tabs , Pagination , Row , Col , Dropdown , Menu , Button , Icon , Checkbox , Popover, Card , Typography } from 'antd';
+import PropTypes from 'prop-types';
+import { Tabs , Pagination , Row , Col , Dropdown, Button , Icon , Checkbox , Popover, Card , Typography } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode,
 } from '@blueprintjs/table';
-import { injectIntl } from 'react-intl';
-import { connect } from 'react-redux';
 import {cloneDeep} from 'lodash';
 
-class VariantTable extends React.Component {
+
+class VariantResultsTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -296,12 +296,12 @@ class VariantTable extends React.Component {
 
 }
 
-const mapStateToProps = state => ({
-  intl: state.intl,
-  patient: state.patient,
-  variant: state.variant,
-});
 
-export default connect(
-  mapStateToProps,
-)(injectIntl(VariantTable));
+VariantResultsTable.propTypes = {
+    intl: PropTypes.shape({}).isRequired,
+};
+
+VariantResultsTable.defaultProps = {
+};
+
+export default VariantResultsTable;

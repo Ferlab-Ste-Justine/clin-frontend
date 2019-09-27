@@ -11,7 +11,7 @@ import {
   Menu, Input,
 } from 'antd';
 
-import GenericFilter from '../../Query/Filter/Generic';
+import GenericFilter from '../../../Query/Filter/Generic';
 
 
 
