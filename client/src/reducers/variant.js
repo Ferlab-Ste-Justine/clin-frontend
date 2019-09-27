@@ -46,6 +46,7 @@ export const initialVariantState = {
   activeQuery: null,
   originalQueries: [],
   draftQueries: [],
+  matches: {},
   results: {},
   facets: {},
 };
@@ -56,6 +57,7 @@ export const variantShape = {
   activeQuery: PropTypes.String,
   originalQueries: PropTypes.array,
   draftQueries: PropTypes.array,
+  matches: PropTypes.shape({}),
   results: PropTypes.shape({}),
   facets: PropTypes.shape({}),
 };
@@ -92,6 +94,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
+      draft.matches[action.payload.data.query] = action.payload.data.total;
       draft.facets[action.payload.data.query] = action.payload.data.facets;
       draft.results[action.payload.data.query] = action.payload.data.hits;
       break;

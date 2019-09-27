@@ -55,6 +55,11 @@ class PatientVariantScreen extends React.Component {
   handleQueryChange(query) {
     const { actions } = this.props;
     actions.replaceQuery(query.data || query)
+
+    const that = this
+    setTimeout(() => {
+        that.handleQuerySelection(query.data || query)
+    }, 100)
   }
 
   handleQueryRemoval(query) {
@@ -74,7 +79,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const { intl, variant } = this.props;
-    const { draftQueries, originalQueries, facets, results, schema, activeQuery } = variant;
+    const { draftQueries, originalQueries, facets, results, matches, schema, activeQuery } = variant;
     return (
       <Content>
         <Header />
@@ -113,7 +118,7 @@ class PatientVariantScreen extends React.Component {
               data={draftQueries}
               original={originalQueries}
               intl={intl}
-              results={results}
+              matches={matches}
               facets={facets}
               options={{
                   copyable: true,

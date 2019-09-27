@@ -487,7 +487,7 @@ class Statement extends React.Component {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
     } = this.state;
     if (draft === null) { return null; }
-    const { options, intl, facets, results } = this.props;
+    const { options, intl, facets, matches } = this.props;
     const {
       editable, reorderable, removable, undoable,
     } = options;
@@ -537,7 +537,7 @@ class Statement extends React.Component {
             options={options}
             index={index}
             active={isActive}
-            results={(results[query.key] ? results[query.key].length : 0)}
+            results={(matches[query.key] ? matches[query.key] : 0)}
             intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
             onCopyCallback={this.handleCopy}
