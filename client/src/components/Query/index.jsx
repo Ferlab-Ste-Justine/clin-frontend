@@ -66,16 +66,13 @@ const sanitizeOperators = (instructions) => {
                               type:INSTRUCTION_TYPE_OPERATOR }
       const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator
       for(let i in sanitizedInstructions){
-        console.log("---------------", sanitizedInstructions[i].type)
-        if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
-            const next = Number(i + 1)
-            if(next <= sanitizedInstructions.length){
+        const next = Number(i)+1
+        if(next < sanitizedInstructions.length){
+            if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
                 if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
                     sanitizedInstructions.splice(next, 0, operator);
-                    console.log("sanitizedInstructions",sanitizedInstructions)
                 }
             }
-
         }
       }
   }
