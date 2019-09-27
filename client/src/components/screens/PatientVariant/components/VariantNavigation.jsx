@@ -12,7 +12,7 @@ import {
 } from 'antd';
 
 import GenericFilter from '../../../Query/Filter/Generic';
-
+import { sanitizeInstructions } from '../../../Query/index';
 
 
 class VariantNavigation extends React.Component {
@@ -52,12 +52,17 @@ class VariantNavigation extends React.Component {
           const updatedQuery = cloneDeep(query);
           let updatedInstructions = []
           if (!filter.remove) {
+            let updated = false
             updatedInstructions = updatedQuery.instructions.map((instruction) => {
               if (instruction.data.id === filter.data.id) {
+                  updated = true
                   return { type: 'filter', data: filter.data };
               }
               return instruction;
             })
+            if (!updated) {
+              updatedInstructions.push({ type: 'filter', data: filter.data })
+            }
           } else {
             updatedInstructions = updatedQuery.instructions.filter((instruction) => {
               if (instruction.data.id === filter.data.id) {
@@ -66,7 +71,7 @@ class VariantNavigation extends React.Component {
               return true;
             })
           }
-          updatedQuery.instructions = updatedInstructions;
+          updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
           onEditCallback(updatedQuery);
       }
     }
@@ -119,7 +124,7 @@ class VariantNavigation extends React.Component {
                       removable: false,
                     }}
                     intl={intl}
-                    data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {})}
+                    data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId })}
                     dataSet={data[activeFilterId] ? data[activeFilterId] : []}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemove}

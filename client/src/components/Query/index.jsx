@@ -25,7 +25,7 @@ const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
 const QUERY_ACTION_VIEW_SQON = 'view-sqon';
 const QUERY_ACTION_TITLE = 'title';
 
-const sanitizeInstructions = (instructions) => {
+export const sanitizeInstructions = (instructions) => {
     instructions = sanitizeSubqueries(instructions);
     instructions = sanitizeFilters(instructions);
     instructions = sanitizeOperators(instructions);
@@ -121,13 +121,10 @@ class Query extends React.Component {
       });
   }
 
-  replaceInstruction(item, index = null) {
+  replaceInstruction(item) {
     const { data } = this.state;
     const { onEditCallback } = this.props;
-    if (index === null) {
-      index = item.index || data.instructions.length;
-    }
-    data.instructions[index] = item;
+    data.instructions[item.index] = item;
     this.setState({
       data,
     }, () => {
@@ -169,12 +166,18 @@ class Query extends React.Component {
   }
 
   handleFilterChange(filter) {
-    this.replaceInstruction({
+    const instruction = {
       type: INSTRUCTION_TYPE_FILTER,
-      index: filter.index,
       data: filter.data,
       options: filter.options,
-    });
+    };
+
+    if (filter.index !== undefined) {
+      instruction.index = filter.index
+      this.replaceInstruction(instruction);
+    } else {
+      this.addInstruction(instruction)
+    }
   }
 
   // @NOTE All operators within a query must have the same type
@@ -548,11 +551,6 @@ class Query extends React.Component {
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
-                    options={{
-                      editable: true,
-                      selectable: false,
-                      removable: false,
-                    }}
                   />
                 );
               case INSTRUCTION_TYPE_SUBQUERY:
