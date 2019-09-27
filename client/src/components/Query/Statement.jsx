@@ -19,7 +19,7 @@ import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
 } from './Subquery';
 import { createOperator } from './Operator';
-import VariantTable from './VariantTable'
+
 
 const MAX_QUERIES = 15;
 const MAX_REVISIONS = 10;
@@ -79,13 +79,11 @@ class Statement extends React.Component {
     this.handleCheckQuery = this.handleCheckQuery.bind(this);
     this.handleCheckAllQueries = this.handleCheckAllQueries.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleRemoveChecked = this.handleRemoveChecked.bind(this);
     this.handleNewQuery = this.handleNewQuery.bind(this);
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.commit = this.commit.bind(this);
-    // this.handleMenuSelection = this.handleMenuSelection.bind(this);
 
     // @NOTE Initialize Component State
     const { data, display, onSelectCallback } = props;
@@ -111,7 +109,7 @@ class Statement extends React.Component {
     }
   }
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props) {
     const { data } = props;
     return {
       original: data,
@@ -183,7 +181,6 @@ class Statement extends React.Component {
       const { onEditCallback } = this.props;
       const { draft } = this.state;
       this.commit(draft);
-
       draft[query.index] = query.data;
       this.setState({
         draft,
@@ -205,7 +202,7 @@ class Statement extends React.Component {
 
   handleDuplicate(query) {
     if (this.isDuplicatable()) {
-      const { onEditCallback, onDuplicateCallback } = this.props;
+      const { onDuplicateCallback } = this.props;
       const { draft, display } = this.state;
 
       this.commit(draft);
@@ -484,28 +481,6 @@ class Statement extends React.Component {
     return findIndex(draft, { key });
   }
 
-  /*
-  handleMenuSelection({ key }) {
-    switch (key) {
-      case STATEMENT_ACTION_UNDO:
-        this.setState({
-          data: [...this.props.data],
-        });
-        break;
-      default:
-        break;
-    }
-  }
-  */
-
-  createMenuComponent() {
-    return (
-      <Menu onClick={this.handleMenuSelection}>
-        <Menu.Item key="A">A</Menu.Item>
-      </Menu>
-    );
-  }
-
   render() {
     const {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
@@ -649,8 +624,6 @@ class Statement extends React.Component {
             />
           ) : queries
         }
-        <br/>
-        <VariantTable/>
       </div>
     );
   }

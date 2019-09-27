@@ -13,7 +13,8 @@ import Header from '../../Header';
 import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import VariantNavigation from './components';
+import VariantNavigation from './components/VariantNavigation';
+import VariantResultsTable from './components/VariantResultsTable';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
@@ -71,7 +72,7 @@ class PatientVariantScreen extends React.Component {
     actions.sortStatement(sortedQueries, sortedActiveQuery)
   }
 
-    render() {
+  render() {
     const { intl, variant } = this.props;
     const { queries, facets, schema, activeQuery } = variant;
     return (
@@ -129,6 +130,12 @@ class PatientVariantScreen extends React.Component {
               onEditCallback={this.handleQueryChange}
               onRemoveCallback={this.handleQueryRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
+            />
+            <br/>
+            <br />
+            <VariantResultsTable
+                key="variant-results"
+                intl={intl}
             />
         </Card>
         <Footer />
