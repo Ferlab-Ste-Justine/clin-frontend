@@ -48,7 +48,7 @@ export const initialVariantState = {
     cloneDeep(exampleQueryA),
     cloneDeep(exampleQueryB),
   ],
-  results: [],
+  results: {},
   facets: {},
 };
 
@@ -57,7 +57,7 @@ export const variantShape = {
   activePatient: PropTypes.String,
   activeQuery: PropTypes.String,
   queries: PropTypes.array,
-  results: PropTypes.array,
+  results: PropTypes.shape({}),
   facets: PropTypes.shape({}),
 };
 
@@ -85,8 +85,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
-      draft.facets = action.payload.data.facets;
-      draft.results = action.payload.data.hits;
+      draft.facets[action.payload.data.query] = action.payload.data.facets;
+      draft.results[action.payload.data.query] = action.payload.data.hits;
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
