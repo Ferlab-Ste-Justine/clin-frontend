@@ -126,7 +126,6 @@ class VariantNavigation extends React.Component {
                     onCancelCallback={this.handleCategoryOpenChange}
                   />
                   )}
-
                 </Menu.SubMenu>
               );
             }

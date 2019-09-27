@@ -299,9 +299,11 @@ class VariantResultsTable extends React.Component {
 
 VariantResultsTable.propTypes = {
     intl: PropTypes.shape({}).isRequired,
+    data: PropTypes.array,
 };
 
 VariantResultsTable.defaultProps = {
+    data: []
 };
 
 export default VariantResultsTable;

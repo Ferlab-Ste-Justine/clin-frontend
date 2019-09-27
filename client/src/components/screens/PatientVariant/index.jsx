@@ -72,7 +72,7 @@ class PatientVariantScreen extends React.Component {
     actions.sortStatement(sortedQueries, sortedActiveQuery)
   }
 
-    render() {
+  render() {
     const { intl, variant } = this.props;
     const { queries, facets, schema, activeQuery } = variant;
     return (

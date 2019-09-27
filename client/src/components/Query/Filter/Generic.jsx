@@ -93,16 +93,12 @@ class GenericFilter extends React.Component {
         indeterminate: false
       });
     } else {
-
       const { dataSet } = this.props;
-      // @TODO
-      /*
-     this.setState({
-       selection: cloneDeep(this.props.options),
-       indeterminate: false
-     });
-
-       */
+      const options = dataSet.map(option => option.value)
+      this.setState({
+        selection: options,
+        indeterminate: false
+      });
     }
   }
 
