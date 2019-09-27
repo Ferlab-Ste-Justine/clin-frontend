@@ -74,7 +74,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const { intl, variant } = this.props;
-    const { queries, facets, results, schema, activeQuery } = variant;
+    const { draftQueries, originalQueries, facets, results, schema, activeQuery } = variant;
     return (
       <Content>
         <Header />
@@ -101,7 +101,7 @@ class PatientVariantScreen extends React.Component {
                 className="variant-navigation"
                 intl={intl}
                 schema={schema}
-                queries={queries}
+                queries={draftQueries}
                 activeQuery={activeQuery}
                 data={facets[activeQuery] || {}}
                 onEditCallback={this.handleQueryChange}
@@ -110,7 +110,8 @@ class PatientVariantScreen extends React.Component {
             <br />
             <Statement
               key="variant-statement"
-              data={queries}
+              data={draftQueries}
+              original={originalQueries}
               intl={intl}
               results={results}
               facets={facets}

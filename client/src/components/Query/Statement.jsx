@@ -110,9 +110,9 @@ class Statement extends React.Component {
   }
 
   static getDerivedStateFromProps(props) {
-    const { data } = props;
+    const { data, original } = props;
     return {
-      original: data,
+      original: cloneDeep(original),
       draft: cloneDeep(data),
     };
   }
@@ -286,8 +286,9 @@ class Statement extends React.Component {
         this.setState({
           draft: cloneDeep(last),
         }, () => {
-          //@FIXME
-          onEditCallback(last)
+          last.forEach((query) => {
+            onEditCallback(query)
+          })
         });
       }
     }
