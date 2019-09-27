@@ -137,8 +137,7 @@ class PatientVariantScreen extends React.Component {
             <VariantResultsTable
                 key="variant-results"
                 intl={intl}
-                activeQuery={activeQuery}
-                results={results}
+                results={results[activeQuery] || []}
             />
         </Card>
         <Footer />
