@@ -155,12 +155,12 @@ class Filter extends React.Component {
 
   render() {
     const { data } = this.state;
-    const { overlayOnly, editor, label, legend, content } = this.props;
+    const { overlayOnly, editor, label, legend, content , dataSet} = this.props;
     const overlay = (
         <Popover
             visible={this.isOpened()}
         >
-          <Card>
+          <Card style={dataSet.length>10 ? {minHeight: "47em"} : null}>
             <Typography.Title level={4}>{data.id}</Typography.Title>
             { editor }
             <Row type="flex" justify="end">
@@ -202,7 +202,7 @@ class Filter extends React.Component {
             { label }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
+          <Dropdown overlay={overlay}  visible={this.isOpened()} placement="bottomLeft">
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }

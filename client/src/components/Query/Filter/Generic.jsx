@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-    Typography, Row, Col, Checkbox, Radio, Tooltip, Input, Tag,
+    Typography, Row, Col, Checkbox, Radio, Tooltip, Input, Tag, Pagination
 } from 'antd';
 import { cloneDeep, pull } from 'lodash';
 import IconKit from 'react-icons-kit';
@@ -21,6 +21,8 @@ class GenericFilter extends React.Component {
         draft: null,
         selection: [],
         indeterminate: false,
+        size:10,
+        page:1
     };
     this.getEditor = this.getEditor.bind(this);
     this.getLabel = this.getLabel.bind(this);
@@ -30,6 +32,7 @@ class GenericFilter extends React.Component {
     this.handleOperandChange = this.handleOperandChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
     this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
 
     // @NOTE Initialize Component State
     const { data } = props;
@@ -102,12 +105,21 @@ class GenericFilter extends React.Component {
     }
   }
 
+  handlePageChange(page, size) {
+    const { actions } = this.props;
+    const { search } = this.props;
+    this.setState({
+      page,
+      size,
+    });
+  }
+
   handleSearchByQuery() {
   }
 
   getEditor() {
       const { intl, dataSet } = this.props;
-      const { draft, selection } = this.state;
+      const { draft, selection , size, page } = this.state;
       const { operand } = draft;
       const allSelected = dataSet ? selection.length === dataSet.length : false;
       const typeAll = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.all' });
@@ -116,7 +128,9 @@ class GenericFilter extends React.Component {
       const selectAll = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.all' });
       const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.none' });
       const filterSearch = intl.formatMessage({ id: 'screen.patientVariant.filter.search' });
-      const options = dataSet.map((option) => {
+      const minValue = size*(page-1)
+      const maxValue =  size * page
+      const options = dataSet.slice(minValue,maxValue).map((option) => {
         return {label: (
             <span>
                 {option.value}
@@ -166,6 +180,19 @@ class GenericFilter extends React.Component {
                       />
                   </Col>
               </Row>
+              <br />
+              <Row >
+                <Col align="end" span={24} >
+                    <Pagination
+                    total={dataSet.length}
+                    pageSize={size}
+                    current={page}
+                    pageSizeOptions={['10', '25', '50', '100']}
+                    onChange={this.handlePageChange}
+                  />
+                </Col>
+            </Row>
+            <br />
           </>
       );
   }
