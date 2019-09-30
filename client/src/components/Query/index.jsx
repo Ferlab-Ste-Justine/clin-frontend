@@ -46,6 +46,9 @@ const sanitizeOperators = (instructions) => {
     return true;
   });
 
+
+
+
   // @NOTE No prefix operator
   if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
       sanitizedInstructions.shift();
@@ -58,7 +61,19 @@ const sanitizeOperators = (instructions) => {
   }
 
   // @No subsequent filters or subqueries without an operator
-  // @TODO
+  for(let i in sanitizedInstructions){
+    const defaultOperator = {data:{type:"and"} ,
+                             type:INSTRUCTION_TYPE_OPERATOR }
+    const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator
+    const next = Number(i)+1
+    if(next < sanitizedInstructions.length){
+        if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
+            if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
+                sanitizedInstructions.splice(next, 0, operator);
+            }
+        }
+    }
+  }
 
   return sanitizedInstructions;
 };
