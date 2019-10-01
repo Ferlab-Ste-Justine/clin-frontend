@@ -133,12 +133,12 @@ class GenericFilter extends React.Component {
       const { draft, selection , size, page } = this.state;
       const { operand } = draft;
       const allSelected = dataSet ? selection.length === dataSet.length : false;
-      const typeAll = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.all' });
-      const typeOne = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.one' });
-      const typeNone = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.none' });
-      const selectAll = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.all' });
-      const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.none' });
-      const filterSearch = intl.formatMessage({ id: 'screen.patientVariant.filter.search' });
+      const typeAll = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.all' });
+      const typeOne = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.one' });
+      const typeNone = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.none' });
+      const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
+      const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
+      const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
       const minValue = size*(page-1)
       const maxValue =  size * page
       const options = dataSet.slice(minValue,maxValue).map((option) => {

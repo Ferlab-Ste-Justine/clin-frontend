@@ -437,15 +437,15 @@ class Query extends React.Component {
       copyable, duplicatable, editable, removable, undoable,
     } = options;
     const { compoundOperators, viewableSqon } = display;
-    const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
-    const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
-    const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
-    const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
-    const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
-    const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
-    const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
-    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
-    const menuDelete = intl.formatMessage({ id: 'screen.patientVariant.query.menu.delete' });
+    const menuAdd = intl.formatMessage({ id: 'screen.patientvariant.query.menu.add' });
+    const menuRemove = intl.formatMessage({ id: 'screen.patientvariant.query.menu.remove' });
+    const menuCopy = intl.formatMessage({ id: 'screen.patientvariant.query.menu.copy' });
+    const menuMaximize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.maximize' });
+    const menuMinimize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.minimize' });
+    const menuDuplicate = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
+    const menuRevert = intl.formatMessage({ id: 'screen.patientvariant.query.menu.revert' });
+    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientvariant.query.menu.advancedEditor' });
+    const menuDelete = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
     const titleMetaIsPresent = this.hasTitle();
 
     return (
