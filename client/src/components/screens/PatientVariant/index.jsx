@@ -96,11 +96,11 @@ class PatientVariantScreen extends React.Component {
             searchData.push({
                 id: category.id,
                 type: 'category',
-                label: intl.formatMessage({ id: `screen.variantsearch.${category.label}` }),
+                label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
                 data: category.filters.map((filter) => {
                     return {
                         id: filter.id,
-                        value: intl.formatMessage({ id: `screen.variantsearch.${filter.label}` }),
+                        value: intl.formatMessage({ id: `screen.patientvariant.${filter.label}` }),
                     }
                 })
             })
@@ -111,7 +111,7 @@ class PatientVariantScreen extends React.Component {
             searchData.push({
                 id: key,
                 type: 'filter',
-                label: intl.formatMessage({id: `screen.variantsearch.filter_${key}`}),
+                label: intl.formatMessage({id: `screen.patientvariant.filter_${key}`}),
                 data: facets.aggs[key].map((value) => {
                     return {
                         id: value.value,

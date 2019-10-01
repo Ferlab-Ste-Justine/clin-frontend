@@ -29,7 +29,23 @@ export const appShape = {
 const appReducer = (state = Object.assign({}, initialAppState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.SHOW_NOTIFICATION:
-      message[action.payload.type](action.payload.message);
+      if (!window.agent) {
+        message[action.payload.type](action.payload.message);
+      } else {
+        switch (action.payload.type) {
+          default:
+          case 'success':
+            window.agent.play('Wave');
+            break;
+          case 'error':
+            window.agent.play('Hearing_1');
+            break;
+          case 'warn':
+          case 'warning':
+            window.agent.play('GetAttention');
+            break;
+        }
+      }
       break;
 
     case actions.START_LOADING_ANIMATION:
@@ -38,6 +54,10 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
 
     case actions.STOP_LOADING_ANIMATION:
       draft.showLoadingAnimation = false;
+      if (window.agent) {
+        const agentIdle = ['IdleScratch', 'IdleStretch', 'IdleTailWagA', 'IdleTailWagB', 'IdleTailWagC', 'IdleTailWagD', 'IdleTwitch', 'IdleYawn', 'IdleButterFly', 'IdleCleaning', 'IdleLegLick', 'GetArtsy'];
+        window.agent.play(agentIdle[Math.floor((Math.random() * agentIdle.length))]);
+      }
       break;
 
     case actions.APP_CHANGE_LANGUAGE_REQUESTED:

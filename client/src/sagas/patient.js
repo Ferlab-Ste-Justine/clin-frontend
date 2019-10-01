@@ -24,34 +24,6 @@ function* fetch(action) {
 
 function* autoComplete(action) {
   try {
-    const test = yield Api.getPatientVariantsForQuery(
-      'PA00002',
-      [
-        {
-          key: 'A',
-          instructions: [
-            {
-              type: 'filter',
-              data: {
-                id: 'variant_type',
-                type: 'generic',
-                operand: 'all',
-                values: ['SNP'],
-              },
-            },
-            {
-              type: 'operator',
-              data: {
-                type: 'and',
-              },
-            },
-          ],
-        },
-      ],
-      'A',
-    );
-    console.log(test);
-
     const response = yield Api.getPatientsByAutoComplete(
       action.payload.type,
       action.payload.query,
