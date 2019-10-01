@@ -6,40 +6,6 @@ import { cloneDeep, findIndex, pull } from 'lodash';
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 
-const exampleQueryA = {
-  key: 'bdcb83a1-dfa5-11e9-96aa-c957343d6d71',
-  title: 'Query 1',
-  instructions: [
-    {
-      type: 'filter',
-      data: {
-        id: 'variant_type',
-        type: 'generic',
-        operand: 'one',
-        values: ['SNV', 'insertion'],
-      },
-    },
-    {
-      type: 'operator',
-      data: {
-        type: 'and',
-      },
-    },
-    {
-      type: 'filter',
-      data: {
-        id: 'gene_type',
-        type: 'generic',
-        operand: 'all',
-        values: ['protein_coding'],
-      },
-    },
-  ],
-};
-const exampleQueryB = cloneDeep(exampleQueryA)
-exampleQueryB.key = 'zdcb83a1-dfa5-11e9-96aa-c957343d6d72'
-
-
 export const initialVariantState = {
   schema: {},
   activePatient: null,
@@ -78,19 +44,17 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_FETCH_SUCCEEDED:
       const details = normalizePatientDetails(action.payload.data);
       draft.activePatient = details.id;
-      draft.originalQueries = [
-        cloneDeep(exampleQueryA),
-        cloneDeep(exampleQueryB),
-      ];
-      draft.draftQueries = [
-        cloneDeep(exampleQueryA),
-        cloneDeep(exampleQueryB),
-      ];
+      draft.originalQueries = [];
+      draft.draftQueries = [];
       draft.activeQuery = null;
       break;
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
-      draft.activeQuery = action.payload.query.key;
+      if (action.payload.query) {
+        draft.activeQuery = action.payload.query.key;
+      } else {
+        draft.activeQuery = null;
+      }
       break;
 
     case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
@@ -99,11 +63,19 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.results[action.payload.data.query] = action.payload.data.hits;
       break;
 
+    case actions.PATIENT_VARIANT_SEARCH_FAILED:
+      draft.facets[action.payload.data.query] = {}
+      draft.matches[action.payload.data.query] = {}
+      draft.results[action.payload.data.query] = {}
+      break;
+
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
       const keyToRemove = action.payload.query.key;
-      draft.draftQueries = draftQueries.filter((query) => {
-        return query.key !== keyToRemove;
-      })
+      if (keyToRemove) {
+        draft.draftQueries = draftQueries.filter((query) => {
+          return query.key !== keyToRemove;
+        })
+      }
       break;
 
     case actions.PATIENT_VARIANT_QUERY_DUPLICATION:

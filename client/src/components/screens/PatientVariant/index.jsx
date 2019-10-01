@@ -36,10 +36,16 @@ class PatientVariantScreen extends React.Component {
 
     // @NOTE Initialize Component State
     const { actions, variant } = props;
-    const { schema } = variant;
+    const { schema, draftQueries, activeQuery } = variant;
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
       actions.fetchSchema();
+    }
+
+    if (draftQueries[activeQuery]) {
+        this.handleQuerySelection(draftQueries[activeQuery])
+    } else {
+        this.handleQuerySelection(null)
     }
   }
 
@@ -47,24 +53,28 @@ class PatientVariantScreen extends React.Component {
     const { actions, variant } = this.props;
     const { activePatient, draftQueries } = variant;
 
-    actions.selectQuery(query);
     //@NOTE PA00002 currently is the only patient with indexed data.
-    actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25)
+    actions.selectQuery(query);
+    if (!query) {
+        actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+    } else {
+        actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25)
+    }
   }
 
   handleQueryChange(query) {
     const { actions } = this.props;
     actions.replaceQuery(query.data || query)
 
-    const that = this
     setTimeout(() => {
-        that.handleQuerySelection(query.data || query)
+        this.handleQuerySelection(query.data || query)
     }, 100)
   }
 
   handleQueryRemoval(query) {
     const { actions } = this.props;
     actions.removeQuery(query.data || query)
+    this.handleQuerySelection(null)
   }
 
   handleQueryDuplication(query, index) {
@@ -80,6 +90,39 @@ class PatientVariantScreen extends React.Component {
   render() {
     const { intl, variant } = this.props;
     const { draftQueries, originalQueries, facets, results, matches, schema, activeQuery } = variant;
+    const searchData = [];
+    if (schema.categories) {
+        schema.categories.forEach((category) => {
+            searchData.push({
+                id: category.id,
+                type: 'category',
+                label: intl.formatMessage({ id: `screen.variantsearch.${category.label}` }),
+                data: category.filters.map((filter) => {
+                    return {
+                        id: filter.id,
+                        value: intl.formatMessage({ id: `screen.variantsearch.${filter.label}` }),
+                    }
+                })
+            })
+        })
+    }
+    if (facets.aggs) {
+        Object.keys(facets.aggs).forEach((key) => {
+            searchData.push({
+                id: key,
+                type: 'filter',
+                label: intl.formatMessage({id: `screen.variantsearch.filter_${key}`}),
+                data: facets.aggs[key].map((value) => {
+                    return {
+                        id: value.value,
+                        value: value.value,
+                        count: value.count,
+                    }
+                })
+            })
+        })
+    }
+
     return (
       <Content>
         <Header />
@@ -110,6 +153,7 @@ class PatientVariantScreen extends React.Component {
                 activeQuery={activeQuery}
                 data={facets[activeQuery] || {}}
                 onEditCallback={this.handleQueryChange}
+                searchData={searchData}
             />
             <br />
             <br />

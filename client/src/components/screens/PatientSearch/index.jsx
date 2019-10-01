@@ -36,8 +36,8 @@ const renderBodyContextMenu = context => (
 );
 
 class PatientSearchScreen extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       autoCompleteIsOpen: false,
       columns: [],
@@ -54,71 +54,66 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.exportToTsv = this.exportToTsv.bind(this);
-  }
 
-  componentDidMount() {
-    const { intl } = this.props;
-
-    this.setState({
-      columns: [
-        <Column
-          key="1"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
-          cellRenderer={this.getCellRenderer('status', 'status-tag')}
-          // columnHeaderCellRenderer={getColumnHeaderCellRenderer(columnStatus).bind(this)}
-        />,
-        <Column
-          key="2"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
-          cellRenderer={this.getCellRenderer('id', 'patient-link')}
-        />,
-        <Column
-          key="3"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.mrn' })}
-          cellRenderer={this.getCellRenderer('mrn')}
-        />,
-        <Column
-          key="4"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.organization' })}
-          cellRenderer={this.getCellRenderer('organization')}
-        />,
-        <Column
-          key="5"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
-          cellRenderer={this.getCellRenderer('firstName', 'bold-string')}
-        />,
-        <Column
-          key="6"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
-          cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
-        />,
-        <Column
-          key="7"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
-          cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
-        />,
-        <Column
-          key="8"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.familyId' })}
-          cellRenderer={this.getCellRenderer('familyId')}
-        />,
-        <Column
-          key="9"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.position' })}
-          cellRenderer={this.getCellRenderer('proband')}
-        />,
-        <Column
-          key="10"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' })}
-          cellRenderer={this.getCellRenderer('practitioner')}
-        />,
-        <Column
-          key="11"
-          name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
-          cellRenderer={this.getCellRenderer('request')}
-        />,
-      ],
-    });
+    // @NOTE Initialize Component State
+    const { intl } = props;
+    this.state.columns = [
+      <Column
+        key="1"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
+        cellRenderer={this.getCellRenderer('status', 'status-tag')}
+      />,
+      <Column
+        key="2"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
+        cellRenderer={this.getCellRenderer('id', 'patient-link')}
+      />,
+      <Column
+        key="3"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.mrn' })}
+        cellRenderer={this.getCellRenderer('mrn')}
+      />,
+      <Column
+        key="4"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.organization' })}
+        cellRenderer={this.getCellRenderer('organization')}
+      />,
+      <Column
+        key="5"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
+        cellRenderer={this.getCellRenderer('firstName', 'bold-string')}
+      />,
+      <Column
+        key="6"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
+        cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
+      />,
+      <Column
+        key="7"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
+        cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
+      />,
+      <Column
+        key="8"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.familyId' })}
+        cellRenderer={this.getCellRenderer('familyId')}
+      />,
+      <Column
+        key="9"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.position' })}
+        cellRenderer={this.getCellRenderer('proband')}
+      />,
+      <Column
+        key="10"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' })}
+        cellRenderer={this.getCellRenderer('practitioner')}
+      />,
+      <Column
+        key="11"
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
+        cellRenderer={this.getCellRenderer('request')}
+      />,
+    ];
   }
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -331,7 +326,6 @@ class PatientSearchScreen extends React.Component {
                 allowClear
                 autoFocus
                 defaultActiveFirstOption={false}
-                enableGhostCells
                 dataSource={search.autocomplete.results}
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
@@ -369,7 +363,6 @@ class PatientSearchScreen extends React.Component {
                 bodyContextMenuRenderer={renderBodyContextMenu}
                 renderMode={RenderMode.NONE}
                 enableGhostCells
-                onCompleteRender={this.handleTableCellsRendered}
               >
                 { columns.map(column => (column)) }
               </Table>

@@ -148,6 +148,22 @@ const fr = {
   'screen.patientVariant.filter.operand.none': 'Aucune des valeurs parmi',
   'screen.patientVariant.filter.selection.all': 'Tous',
   'screen.patientVariant.filter.selection.none': 'Aucun',
+  'screen.patientvariant.results.table.variant': 'Variant',
+  'screen.patientvariant.results.table.type': 'Type',
+  'screen.patientvariant.results.table.dbsnp': 'dbSnp',
+  'screen.patientvariant.results.table.consequence': 'Conséquence(s)',
+  'screen.patientvariant.results.table.clinvar': 'ClinVar',
+  'screen.patientvariant.results.table.vep': 'VEP',
+  'screen.patientvariant.results.table.sift': 'SIFT',
+  'screen.patientvariant.results.table.polyph': 'Polyphe',
+  'screen.patientvariant.results.table.zygosity': 'Zygosité',
+  'screen.patientvariant.results.table.pubmed': 'pubMed',
+  'screen.patientvariant.results.table.gene': 'Gène',
+  'screen.patientvariant.results.table.localisation': 'Localization',
+  'screen.patientvariant.results.table.variants': 'Variants',
+  'screen.patientvariant.results.table.omin': 'Omin',
+  'screen.patientvariant.results.table.orphanet': 'Orphanet',
+  'screen.patientvariant.results.table.ensemble': 'Ensemble',
 };
 
 export default fr;
