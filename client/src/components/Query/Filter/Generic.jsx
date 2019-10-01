@@ -4,7 +4,7 @@ import React from 'react';
 import {
     Typography, Row, Col, Checkbox, Radio, Tooltip, Input, Tag, Pagination
 } from 'antd';
-import { cloneDeep, pull } from 'lodash';
+import { cloneDeep, pull , orderBy , pullAllBy , filter} from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
     empty, one, full,
@@ -38,6 +38,17 @@ class GenericFilter extends React.Component {
     const { data } = props;
     this.state.draft = cloneDeep(data);
     this.state.selection = data.values ? cloneDeep(data.values) : [];
+  }
+
+  componentDidMount(){
+    const {  dataSet } = this.props;
+    const {  selection } = this.state;
+    if(selection.length>0){
+          const valeur = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
+          const sorted = orderBy(valeur, ['count'] ,  ['desc']);
+          pullAllBy(dataSet, cloneDeep(sorted), 'value')
+          dataSet.unshift(...sorted)
+    }
   }
 
   getLabel() {
