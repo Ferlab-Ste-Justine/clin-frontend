@@ -160,15 +160,15 @@ class Filter extends React.Component {
         <Popover
             visible={this.isOpened()}
         >
-          <Card style={dataSet.length>10 ? {minHeight: "47em"} : null}>
+          <Card className="filterCard" >
             <Typography.Title level={4}>{data.id}</Typography.Title>
             { editor }
-            <Row type="flex" justify="end">
-              <Col span={6}>
+            <Row type="flex" justify="end" style={dataSet.length<10 ? { marginTop: 'auto' } : null}>
+              <Col>
                 <Button onClick={this.handleCancel}>Annuler</Button>
               </Col>
-              <Col span={5}>
-                <Button type="primary" onClick={this.handleApply}>Appliquer</Button>
+              <Col >
+                <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>Appliquer</Button>
               </Col>
             </Row>
           </Card>
