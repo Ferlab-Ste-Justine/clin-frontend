@@ -206,7 +206,31 @@ div.query {
   }
 
 }
+.filterCard{
 
+    .ant-card-body{
+        min-height:46em;
+        display:flex;
+        flex-direction:column;
+    }
+
+    .ant-checkbox-group-item{
+      margin-top:5px
+    }
+
+    .ant-tag{
+        width:auto;
+        padding:2px;
+        font-size:11px;
+        width:55px
+    }
+
+    .ant-checkbox-group-item {
+        margin-right: 0;
+    }
+}
+
+.ant-checkbox-group-item
 .consequence{
     color:#E88367;
 }

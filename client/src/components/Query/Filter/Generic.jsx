@@ -142,10 +142,12 @@ class GenericFilter extends React.Component {
       const minValue = size*(page-1)
       const maxValue =  size * page
       const options = dataSet.slice(minValue,maxValue).map((option) => {
+
+        const count = option.count >99999 ? '99999+' : option.count
         return {label: (
             <span>
                 {option.value}
-                <Tag style={{ float: 'right' }}>{option.count}</Tag>
+                <Tag style={{ float: 'right' }}>{count}</Tag>
             </span>
          ), value: option.value}
       })
@@ -163,7 +165,8 @@ class GenericFilter extends React.Component {
               </Row>
               <br />
               <Row>
-                  <Input.Search
+                  <Input
+                      allowClear
                       placeholder={filterSearch}
                       size="small"
                       onSearch={this.handleSearchByQuery}
@@ -192,18 +195,22 @@ class GenericFilter extends React.Component {
                   </Col>
               </Row>
               <br />
-              <Row >
-                <Col align="end" span={24} >
-                    <Pagination
-                    total={dataSet.length}
-                    pageSize={size}
-                    current={page}
-                    pageSizeOptions={['10', '25', '50', '100']}
-                    onChange={this.handlePageChange}
-                  />
-                </Col>
-            </Row>
-            <br />
+              {
+                dataSet.length >=size ?
+                  <Row style={{ marginTop: 'auto' }}>
+                    <Col align="end" span={24} >
+
+                        <Pagination
+                        total={dataSet.length}
+                        pageSize={size}
+                        current={page}
+                        pageSizeOptions={['10', '25', '50', '100']}
+                        onChange={this.handlePageChange}
+                      />
+                    </Col>
+                  </Row> : null
+              }
+              <br/>
           </>
       );
   }
