@@ -59,6 +59,9 @@ class VariantNavigation extends React.Component {
 
   handleNavigationSelection(value, option) {
     console.log('handleNavigationSelection', value, option);
+
+
+
   }
 
   handleFilterSelection({ key }) {
@@ -122,7 +125,7 @@ class VariantNavigation extends React.Component {
       return (
           <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
             { group.matches.map((match) => (
-              <AutoComplete.Option key={match.id} group={group} value={match.value}>
+              <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
                 {match.value} {match.count && (<Tag>{match.count}</Tag>)}
               </AutoComplete.Option>
             ))}
@@ -153,13 +156,13 @@ class VariantNavigation extends React.Component {
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
-              const label = intl.formatMessage({ id: `screen.variantsearch.${category.label}` });
+              const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.facet && (
                   <Menu.SubMenu
                     key={filter.id}
-                    title={intl.formatMessage({ id: `screen.variantsearch.${filter.label}` })}
+                    title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
                     onTitleClick={this.handleFilterSelection}
                   />
                   ))}

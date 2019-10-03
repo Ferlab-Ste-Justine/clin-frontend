@@ -412,10 +412,10 @@ class Statement extends React.Component {
   showDeleteConfirm(delSubQuery, query = null) {
     const { confirm } = Modal;
     const { intl } = this.props;
-    const modalTitle = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.title' });
-    const modalContent = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.content' });
-    const modalOk = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.ok' });
-    const modalCancel = intl.formatMessage({ id: 'screen.patientVariant.statement.modal.cancel' });
+    const modalTitle = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.title' });
+    const modalContent = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.content' });
+    const modalOk = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.ok' });
+    const modalCancel = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.cancel' });
     const that = this;
     confirm({
       title: modalTitle,
@@ -496,18 +496,18 @@ class Statement extends React.Component {
     const subqueries = query ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
     const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
 
-    const combineText = intl.formatMessage({ id: 'screen.patientVariant.statement.combine' });
-    const deleteText = intl.formatMessage({ id: 'screen.patientVariant.statement.delete' });
-    const newQueryText = intl.formatMessage({ id: 'screen.patientVariant.statement.newQuery' });
-    const combineAnd = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
-    const combineOr = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
-    const combineAndNot = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
-    const checkToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.check' });
-    const unCheckToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.uncheck' });
-    const allText = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.all' });
-    const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.combineSelection' });
-    const deleteSelectionToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.deleteSelection' });
-    const undoToolTip = intl.formatMessage({ id: 'screen.patientVariant.statement.tooltip.undo' });
+    const combineText = intl.formatMessage({ id: 'screen.patientvariant.statement.combine' });
+    const deleteText = intl.formatMessage({ id: 'screen.patientvariant.statement.delete' });
+    const newQueryText = intl.formatMessage({ id: 'screen.patientvariant.statement.newQuery' });
+    const combineAnd = intl.formatMessage({ id: 'screen.patientvariant.statement.and' });
+    const combineOr = intl.formatMessage({ id: 'screen.patientvariant.statement.or' });
+    const combineAndNot = intl.formatMessage({ id: 'screen.patientvariant.statement.andnot' });
+    const checkToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.check' });
+    const unCheckToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.uncheck' });
+    const allText = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.all' });
+    const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });
+    const deleteSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.deleteSelection' });
+    const undoToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.undo' });
     const queries = draft.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === index;

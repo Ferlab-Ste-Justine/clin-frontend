@@ -70,9 +70,9 @@ class Operator extends React.Component {
 
   createMenuComponent() {
     const { intl } = this.props;
-    const andText = intl.formatMessage({ id: 'screen.patientVariant.statement.and' });
-    const orText = intl.formatMessage({ id: 'screen.patientVariant.statement.or' });
-    const andNotText = intl.formatMessage({ id: 'screen.patientVariant.statement.andnot' });
+    const andText = intl.formatMessage({ id: 'screen.patientvariant.statement.and' });
+    const orText = intl.formatMessage({ id: 'screen.patientvariant.statement.or' });
+    const andNotText = intl.formatMessage({ id: 'screen.patientvariant.statement.andnot' });
     return (
       <Menu onClick={this.handleApply}>
         <Menu.Item key={OPERATOR_TYPE_AND}>{andText}</Menu.Item>
@@ -86,7 +86,7 @@ class Operator extends React.Component {
     const { intl } = this.props;
     const { data } = this.state;
     const { type } = data;
-    const typeText = intl.formatMessage({ id: `screen.patientVariant.statement.${type.replace(' ', '')}` });
+    const typeText = intl.formatMessage({ id: `screen.patientvariant.statement.${type.replace(' ', '')}` });
     return (
       <span>
         { this.isEditable() && (
