@@ -22,7 +22,8 @@ class GenericFilter extends React.Component {
         selection: [],
         indeterminate: false,
         size:10,
-        page:1
+        page:1,
+        allOptions:null
     };
     this.getEditor = this.getEditor.bind(this);
     this.getLabel = this.getLabel.bind(this);
@@ -35,9 +36,10 @@ class GenericFilter extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
 
     // @NOTE Initialize Component State
-    const { data } = props;
+    const { data , dataSet } = props;
     this.state.draft = cloneDeep(data);
     this.state.selection = data.values ? cloneDeep(data.values) : [];
+    this.state.allOptions = cloneDeep(dataSet)
   }
 
   componentDidMount(){
@@ -125,14 +127,32 @@ class GenericFilter extends React.Component {
     });
   }
 
-  handleSearchByQuery() {
+  handleSearchByQuery(values) {
+    let {allOptions} = this.state
+    const {  dataSet } = this.props;
+
+    allOptions = cloneDeep(dataSet)
+
+    const search = (values.target.value).toLowerCase()
+    const toRemove=[]
+
+    allOptions.map( (x, index) => {
+          const value = x.value.toLowerCase()
+          const test = value.startsWith(search)
+          !test ? toRemove.push(x) : null
+     })
+    pullAllBy(allOptions, cloneDeep(toRemove), 'value')
+
+    this.setState({
+        allOptions
+    })
   }
 
   getEditor() {
-      const { intl, dataSet } = this.props;
-      const { draft, selection , size, page } = this.state;
+      const { intl } = this.props;
+      const { draft, selection , size, page , allOptions } = this.state;
       const { operand } = draft;
-      const allSelected = dataSet ? selection.length === dataSet.length : false;
+      const allSelected = allOptions ? selection.length === allOptions.length : false;
       const typeAll = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.all' });
       const typeOne = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.one' });
       const typeNone = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.none' });
@@ -141,7 +161,7 @@ class GenericFilter extends React.Component {
       const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
       const minValue = size*(page-1)
       const maxValue =  size * page
-      const options = dataSet.slice(minValue,maxValue).map((option) => {
+      const options = allOptions.slice(minValue,maxValue).map((option) => {
 
         const count = option.count >99999 ? '99999+' : option.count
         return {label: (
@@ -169,7 +189,7 @@ class GenericFilter extends React.Component {
                       allowClear
                       placeholder={filterSearch}
                       size="small"
-                      onSearch={this.handleSearchByQuery}
+                      onChange={this.handleSearchByQuery}
                   />
               </Row>
               <br />
@@ -196,12 +216,12 @@ class GenericFilter extends React.Component {
               </Row>
               <br />
               {
-                dataSet.length >=size ?
+                allOptions.length >=size ?
                   <Row style={{ marginTop: 'auto' }}>
                     <Col align="end" span={24} >
 
                         <Pagination
-                        total={dataSet.length}
+                        total={allOptions.length}
                         pageSize={size}
                         current={page}
                         pageSizeOptions={['10', '25', '50', '100']}
