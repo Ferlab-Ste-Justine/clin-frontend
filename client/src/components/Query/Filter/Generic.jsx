@@ -46,10 +46,18 @@ class GenericFilter extends React.Component {
     const {  dataSet } = this.props;
     const {  selection } = this.state;
     if(selection.length>0){
-          const valeur = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
-          const sorted = orderBy(valeur, ['count'] ,  ['desc']);
-          pullAllBy(dataSet, cloneDeep(sorted), 'value')
-          dataSet.unshift(...sorted)
+          const value = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
+          console.log(dataSet)
+          if(value.length ===0){
+            let selectedValue = []
+            selection.map( x => selectedValue.push({value:x , count:0}))
+            dataSet.unshift(...selectedValue)
+          }
+          else{
+            const sorted = orderBy(value, ['count'] ,  ['desc']);
+            pullAllBy(dataSet, cloneDeep(sorted), 'value')
+            dataSet.unshift(...sorted)
+          }
     }
   }
 
@@ -149,7 +157,7 @@ class GenericFilter extends React.Component {
   }
 
   getEditor() {
-      const { intl } = this.props;
+      const { intl , dataSet } = this.props;
       const { draft, selection , size, page , allOptions } = this.state;
       const { operand } = draft;
       const allSelected = allOptions ? selection.length === allOptions.length : false;
