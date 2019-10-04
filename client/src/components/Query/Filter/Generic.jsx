@@ -186,9 +186,12 @@ class GenericFilter extends React.Component {
       const options = allOptions.slice(minValue,maxValue).map((option) => {
 
         const count = option.count >99999 ? '99999+' : option.count
+        const value = option.value.length < 60 ? option.value : option.value.substring(0,55)+ " ..."
         return {label: (
             <span>
-                {option.value}
+                <Tooltip style={{maxWidth:"10px"}} title={option.value}>
+                  {value}
+                </Tooltip>
                 <Tag style={{ float: 'right' }}>{count}</Tag>
             </span>
          ), value: option.value}
