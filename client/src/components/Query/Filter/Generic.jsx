@@ -47,7 +47,7 @@ class GenericFilter extends React.Component {
     const {  selection } = this.state;
     if(selection.length>0){
           const value = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
-          console.log(dataSet)
+
           if(value.length ===0){
             let selectedValue = []
             selection.map( x => selectedValue.push({value:x , count:0}))
@@ -103,8 +103,22 @@ class GenericFilter extends React.Component {
 
   handleSelectionChange(values) {
       const { dataSet } = this.props;
-      this.setState({
-          selection: values,
+      const { selection, allOptions , page , size } = this.state;
+
+      const minValue = size*(page-1)
+      const maxValue =  size * page
+      const options = allOptions.slice(minValue,maxValue)
+
+      options.map( (x , index) =>{
+        if(selection.includes(x.value)){
+            !values.includes(x.value) ? pull(selection, x.value) : null
+        }
+        else{
+            values.includes(x.value) ? selection.push(x.value) : null
+        }
+      })
+       this.setState({
+          selection,
           indeterminate: (!(values.length === dataSet.length) && values.length > 0),
       });
   }
