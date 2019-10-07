@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-    Typography, Row, Col, Checkbox, Radio, Input, Tag, Pagination
+    Typography, Row, Col, Checkbox, Radio, Input,
 } from 'antd';
 import { cloneDeep, pull , orderBy , pullAllBy , filter} from 'lodash';
 import IconKit from 'react-icons-kit';
@@ -13,11 +13,12 @@ import {
 import Filter from './index';
 
 
-export const FILTER_OPERAND_TYPE_ALL = 'all';
-export const FILTER_OPERAND_TYPE_ONE = 'one';
-export const FILTER_OPERAND_TYPE_NONE = 'none';
+export const FILTER_OPERAND_TYPE_GREATER_THAN = '>';
+export const FILTER_OPERAND_TYPE_GREATER_THAN_OR_EQUAL = '>=';
+export const FILTER_OPERAND_TYPE_LOWER_THAN = '<';
+export const FILTER_OPERAND_TYPE_LOWER_THAN_OR_EQUAL = '<=';
 
-class GenericFilter extends React.Component {
+class NumericalComparisonFilter extends React.Component {
 
   constructor(props) {
     super(props);
@@ -50,10 +51,10 @@ class GenericFilter extends React.Component {
     const { dataSet } = this.props;
     const { selection } = this.state;
     if (selection.length > 0) {
-        const value = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
-        const sorted = orderBy(value, ['count'] ,  ['desc']);
-        pullAllBy(dataSet, cloneDeep(sorted), 'value')
-        dataSet.unshift(...sorted)
+      const value = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
+      const sorted = orderBy(value, ['count'] ,  ['desc']);
+      pullAllBy(dataSet, cloneDeep(sorted), 'value')
+      dataSet.unshift(...sorted)
     }
   }
 
@@ -66,15 +67,8 @@ class GenericFilter extends React.Component {
   getPopoverLegend() {
       const { data } = this.props;
       const { operand } = data;
-      switch (operand) {
-          default:
-          case FILTER_OPERAND_TYPE_ALL:
-              return (<IconKit size={16} icon={full} />);
-          case FILTER_OPERAND_TYPE_ONE:
-              return (<IconKit size={16} icon={one} />);
-          case FILTER_OPERAND_TYPE_NONE:
-              return (<IconKit size={16} icon={empty} />);
-      }
+
+      return (<span>{operand}</span>)
   }
 
   getPopoverContent() {
@@ -122,48 +116,38 @@ class GenericFilter extends React.Component {
     }
   }
 
-  handlePageChange(page, size) {
-    this.setState({
-      page,
-      size,
-    });
+  handleSearchByQuery() {
   }
 
-  handleSearchByQuery() {
+  handlePageChange(page, size) {
+    this.setState({
+        page,
+        size,
+    });
   }
 
   getEditor() {
       const { intl, dataSet } = this.props;
-      const { draft, selection , size, page } = this.state;
+      const { draft, selection } = this.state;
       const { operand } = draft;
       const allSelected = dataSet ? selection.length === dataSet.length : false;
-      const typeAll = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.all' });
-      const typeOne = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.one' });
-      const typeNone = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.none' });
+      const typeGt = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.gt' });
+      const typeGte = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.gte' });
+      const typeLt = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.lt' });
+      const typeLte = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.lte' });
       const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
       const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
       const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
-      const minValue = size*(page-1)
-      const maxValue =  size * page
-      const options = dataSet.slice(minValue,maxValue).map((option) => {
-
-        const count = option.count >99999 ? '99999+' : option.count
-        return {label: (
-            <span>
-                {option.value}
-                <Tag style={{ float: 'right' }}>{count}</Tag>
-            </span>
-         ), value: option.value}
-      })
 
       return (
           <>
               <Row>
                   <Col span={24}>
                       <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
-                          <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ALL}>{typeAll}</Radio.Button>
-                          <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ONE}>{typeOne}</Radio.Button>
-                          <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_NONE}>{typeNone}</Radio.Button>
+                          <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_GREATER_THAN}>{typeGt}</Radio.Button>
+                          <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Radio.Button>
+                          <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_LOWER_THAN}>{typeLt}</Radio.Button>
+                          <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_LOWER_THAN_OR_EQUAL}>{typeLte}</Radio.Button>
                       </Radio.Group>
                   </Col>
               </Row>
@@ -198,23 +182,6 @@ class GenericFilter extends React.Component {
                       />
                   </Col>
               </Row>
-              <br />
-              {
-                dataSet.length >=size ?
-                  <Row style={{ marginTop: 'auto' }}>
-                    <Col align="end" span={24} >
-
-                        <Pagination
-                        total={dataSet.length}
-                        pageSize={size}
-                        current={page}
-                        pageSizeOptions={['10', '25', '50', '100']}
-                        onChange={this.handlePageChange}
-                      />
-                    </Col>
-                  </Row> : null
-              }
-              <br/>
           </>
       );
   }
@@ -231,8 +198,8 @@ class GenericFilter extends React.Component {
 
 }
 
-// GenericFilter.propTypes = {};
+// NumericalComparisonFilter.propTypes = {};
 
-// GenericFilter.defaultProps = {};
+// NumericalComparisonFilter.defaultProps = {};
 
-export default GenericFilter;
+export default NumericalComparisonFilter;
