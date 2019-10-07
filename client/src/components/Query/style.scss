@@ -214,8 +214,13 @@ div.query {
         flex-direction:column;
     }
 
+    .ant-checkbox-group{
+        display:flex;
+        flex-direction:column
+    }
+
     .ant-checkbox-group-item{
-      margin-top:5px
+      margin-top:5px;
     }
 
     .ant-tag{
@@ -224,6 +229,7 @@ div.query {
         font-size:11px;
         width:55px;
         text-align:right;
+        float: right
 
     }
 

@@ -156,13 +156,8 @@ class GenericFilter extends React.Component {
     allOptions = cloneDeep(dataSet)
 
     const search = (values.target.value).toLowerCase()
-    const toRemove=[]
 
-    allOptions.map( (x, index) => {
-          const value = x.value.toLowerCase()
-          const test = value.startsWith(search)
-          !test ? toRemove.push(x) : null
-     })
+    const toRemove = filter(cloneDeep(allOptions), function(o) { return search!='' ? !o.value.toLowerCase().startsWith(search) : null });
     pullAllBy(allOptions, cloneDeep(toRemove), 'value')
 
     this.setState({
@@ -183,18 +178,19 @@ class GenericFilter extends React.Component {
       const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
       const minValue = size*(page-1)
       const maxValue =  size * page
-      const options = allOptions.slice(minValue,maxValue).map((option) => {
 
-        const count = option.count >99999 ? '99999+' : option.count
-        const value = option.value.length < 60 ? option.value : option.value.substring(0,55)+ " ..."
-        return {label: (
-            <span>
-                <Tooltip style={{maxWidth:"10px"}} title={option.value}>
-                  {value}
-                </Tooltip>
-                <Tag style={{ float: 'right' }}>{count}</Tag>
-            </span>
-         ), value: option.value}
+      pullAllBy(allOptions, [{ value: "" }], 'value');
+
+      const options = allOptions.slice(minValue,maxValue).map((option) => {
+          const value = option.value.length < 60 ? option.value : option.value.substring(0,55)+ " ..."
+            return {label: (
+                <span>
+                    <Tooltip title={option.value}>
+                      {value}
+                    </Tooltip>
+                    <Tag>{option.count}</Tag>
+                </span>
+             ), value: option.value}
       })
 
       return (
@@ -232,7 +228,6 @@ class GenericFilter extends React.Component {
               <Row>
                   <Col span={24}>
                       <Checkbox.Group
-                          style={{ display: 'flex', flexDirection: 'column' }}
                           options={options}
                           value={selection}
                           onChange={this.handleSelectionChange}
