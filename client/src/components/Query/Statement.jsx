@@ -30,8 +30,8 @@ const DEFAULT_INSTRUCTIONS = {
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
 export const convertIndexToColor = index => `#${[
-  '21ABCD', 'FF8C00', 'D4236E', '20D32F', 'FFF000', 'FF756B', 'C67D57', 'F4C2C2',
-  '88D8C1', 'FFBF00', 'EE959E', 'FF1818', 'CD5E77', 'A25A3D', 'DEA77F',
+  '8ed6ff', 'f8a978', 'eda1c1', 'c0ffb3', 'fff3b1', 'b9c0d5', 'c19191', 'F4C2C2',
+  '88D8C1', 'ffce76', 'f3d3d3', 'f15c5c', 'ddb6c6', 'eaceb4', 'a6e3e9',
 ][index]}`;
 
 class Statement extends React.Component {
