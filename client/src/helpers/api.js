@@ -55,9 +55,13 @@ const getVariantSchema = () => axios.get(`${window.CLIN.variantServiceApiUrl}/sc
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientVariantsForQuery = (patient, sqon) => axios.post(`${window.CLIN.variantServiceApiUrl}/${sqon}`, {
+const searchVariantsForPatient = (patient, statement, query, group, page, size) => axios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
   patient,
-  sqon,
+  statement,
+  query,
+  group,
+  page,
+  size,
 })
   .then(successCallback)
   .catch(errorCallback);
@@ -70,5 +74,5 @@ export default {
   getPatientsByAutoComplete,
   searchPatients,
   getVariantSchema,
-  getPatientVariantsForQuery,
+  searchVariantsForPatient,
 };

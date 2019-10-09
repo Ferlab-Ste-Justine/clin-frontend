@@ -6,56 +6,31 @@ import { cloneDeep, findIndex, pull } from 'lodash';
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 
-const exampleQuery = {
-  title: 'Query 1',
-  instructions: [
-    {
-      type: 'filter',
-      data: {
-        id: 'variant_type',
-        type: 'generic',
-        operand: 'all',
-        values: ['SNP', 'DNP', 'TNP', 'ONP', 'INS', 'DEL'],
-      },
-    },
-    {
-      type: 'operator',
-      data: {
-        type: 'and',
-      },
-    },
-    {
-      type: 'filter',
-      data: {
-        id: 'gene_type',
-        type: 'generic',
-        operand: 'all',
-        values: ['complementary', 'duplicate', 'polymeric', 'modifying', 'lethal', 'moveable'],
-      },
-    },
-  ],
-};
-
 export const initialVariantState = {
   schema: {},
   activePatient: null,
   activeQuery: null,
-  queries: [
-    cloneDeep(exampleQuery),
-    cloneDeep(exampleQuery),
-  ],
-  results: [],
+  originalQueries: [],
+  draftQueries: [],
+  matches: {},
+  results: {},
+  facets: {},
 };
 
 export const variantShape = {
   schema: PropTypes.shape({}),
   activePatient: PropTypes.String,
   activeQuery: PropTypes.String,
-  queries: PropTypes.array,
-  results: PropTypes.array,
+  originalQueries: PropTypes.array,
+  draftQueries: PropTypes.array,
+  matches: PropTypes.shape({}),
+  results: PropTypes.shape({}),
+  facets: PropTypes.shape({}),
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
+  const { draftQueries } = draft;
+
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
@@ -69,25 +44,66 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_FETCH_SUCCEEDED:
       const details = normalizePatientDetails(action.payload.data);
       draft.activePatient = details.id;
+      draft.originalQueries = [];
+      draft.draftQueries = [];
       draft.activeQuery = null;
       break;
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
-      draft.activeQuery = action.payload.query.key;
+      if (action.payload.query) {
+        draft.activeQuery = action.payload.query.key;
+      } else {
+        draft.activeQuery = null;
+      }
       break;
 
-    case actions.PATIENT_VARIANT_QUERY_UPDATE:
-      const indexQuery = findIndex(draft.queries, ['key', draft.activeQuery]);
-      let indexInstruction = null;
-      indexInstruction = findIndex(draft.queries[indexQuery].instructions, ((x) => {
-        return (x.data.id === action.payload.type)
-      }));
-      const tempo = cloneDeep(draft.queries)
-      tempo[indexQuery].instructions[indexInstruction].data.values = action.payload.value
-      draft.queries= tempo;
-
+    case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
+      draft.matches[action.payload.data.query] = action.payload.data.total;
+      draft.facets[action.payload.data.query] = action.payload.data.facets;
+      draft.results[action.payload.data.query] = action.payload.data.hits;
       break;
 
+    case actions.PATIENT_VARIANT_SEARCH_FAILED:
+      draft.facets[action.payload.data.query] = {}
+      draft.matches[action.payload.data.query] = {}
+      draft.results[action.payload.data.query] = {}
+      break;
+
+    case actions.PATIENT_VARIANT_QUERY_REMOVAL:
+      const keyToRemove = action.payload.query.key;
+      if (keyToRemove) {
+        draft.draftQueries = draftQueries.filter((query) => {
+          return query.key !== keyToRemove;
+        })
+      }
+      break;
+
+    case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
+      const keyToDuplicate = action.payload.query.key;
+      const indexToInsertAt = action.payload.index || draft.draftQueries.length;
+      const indexToDuplicate = findIndex(draftQueries, { key: keyToDuplicate })
+      if (indexToDuplicate) {
+        draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
+        draft.activeQuery = action.payload.query.key
+      }
+      break;
+
+    case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
+      const { query } = action.payload;
+      const index = findIndex(draftQueries, { key: query.key })
+      if (index > -1) {
+        draftQueries[index] = query
+      } else {
+        draftQueries.push(query)
+      }
+      draft.draftQueries = draftQueries
+      break;
+
+    case actions.PATIENT_VARIANT_STATEMENT_SORT:
+      const { statement, activeQuery } = action.payload;
+      draft.draftQueries = statement
+      draft.activeQuery = activeQuery
+      break;
 
     default:
       break;

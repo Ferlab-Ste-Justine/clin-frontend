@@ -1,25 +1,55 @@
-/* eslint-disable no-param-reassign, import/no-cycle */
 import * as actions from './type';
-import { DEFAULT_EMPTY_QUERY } from '../components/Query/index';
 
 
 export const fetchSchema = () => ({
   type: actions.VARIANT_SCHEMA_REQUESTED,
 });
 
-export const selectQuery = (patient, query = DEFAULT_EMPTY_QUERY) => ({
+export const selectQuery = query => ({
   type: actions.PATIENT_VARIANT_QUERY_SELECTION,
   payload: {
-    patient,
     query,
   },
 });
 
-export const updateQuery = (patient, type, value = DEFAULT_EMPTY_QUERY) => ({
-  type: actions.PATIENT_VARIANT_QUERY_UPDATE,
+export const replaceQuery = query => ({
+  type: actions.PATIENT_VARIANT_QUERY_REPLACEMENT,
+  payload: {
+    query,
+  },
+});
+
+export const removeQuery = query => ({
+  type: actions.PATIENT_VARIANT_QUERY_REMOVAL,
+  payload: {
+    query,
+  },
+});
+
+export const duplicateQuery = (query, index) => ({
+  type: actions.PATIENT_VARIANT_QUERY_DUPLICATION,
+  payload: {
+    query,
+    index,
+  },
+});
+
+export const sortStatement = (statement, activeQuery) => ({
+  type: actions.PATIENT_VARIANT_STATEMENT_SORT,
+  payload: {
+    statement,
+    activeQuery,
+  },
+});
+
+export const searchVariants = (patient, statement, query, group = null, index = 0, limit = 25) => ({
+  type: actions.PATIENT_VARIANT_SEARCH_REQUESTED,
   payload: {
     patient,
-    value,
-    type,
+    statement,
+    query,
+    group,
+    index,
+    limit,
   },
 });

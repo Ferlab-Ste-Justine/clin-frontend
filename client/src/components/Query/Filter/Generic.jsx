@@ -2,16 +2,20 @@
 
 import React from 'react';
 import {
-    Typography, Row, Col, Checkbox, Radio, Tooltip, Input,
+    Typography, Row, Col, Checkbox, Radio, Input, Tag, Pagination
 } from 'antd';
-import { cloneDeep, pull } from 'lodash';
+import { cloneDeep, pull , orderBy , pullAllBy , filter} from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
     empty, one, full,
 } from 'react-icons-kit/entypo';
 
-import Filter, { FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE } from './index';
+import Filter from './index';
 
+
+export const FILTER_OPERAND_TYPE_ALL = 'all';
+export const FILTER_OPERAND_TYPE_ONE = 'one';
+export const FILTER_OPERAND_TYPE_NONE = 'none';
 
 class GenericFilter extends React.Component {
 
@@ -20,8 +24,10 @@ class GenericFilter extends React.Component {
     this.state = {
         draft: null,
         selection: [],
-        options: [],
         indeterminate: false,
+        size: null,
+        page: null,
+        allOptions: null,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getLabel = this.getLabel.bind(this);
@@ -31,25 +37,40 @@ class GenericFilter extends React.Component {
     this.handleOperandChange = this.handleOperandChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
     this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
-    // @NOTE Initialize Component State
-    const { data } = props;
-    this.state.draft = cloneDeep(data);
-    this.state.selection = cloneDeep(data.values);
-    this.state.indeterminate = this.state.selection.length !== this.state.options.length;
+    this.handlePageChange = this.handlePageChange.bind(this);
 
-    // @TODO Get possible values
-    this.state.options = cloneDeep(data.values);
+    // @NOTE Initialize Component State
+    const { data, dataSet } = props;
+    this.state.draft = cloneDeep(data);
+    this.state.selection = data.values ? cloneDeep(data.values) : [];
+    this.state.page = 1;
+    this.state.size = 10;
+    this.state.allOptions = cloneDeep(dataSet)
+
+    if(selection.length > 0) {
+      const value = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
+
+      if(value.length === 0){
+        let selectedValue = []
+        selection.map( x => selectedValue.push({value:x , count:0}))
+        allOptions.unshift(...selectedValue)
+      } else {
+        const sorted = orderBy(value, ['count'] ,  ['desc']);
+        pullAllBy(dataSet, cloneDeep(sorted), 'value')
+        allOptions.unshift(...sorted)
+      }
+    }
   }
 
   getLabel() {
-    const { draft } = this.state;
-    const { values } = draft;
+    const { data } = this.props;
+    const { values } = data;
     return JSON.stringify(values);
   }
 
   getPopoverLegend() {
-      const { draft } = this.state;
-      const { operand } = draft;
+      const { data } = this.props;
+      const { operand } = data;
       switch (operand) {
           default:
           case FILTER_OPERAND_TYPE_ALL:
@@ -62,15 +83,51 @@ class GenericFilter extends React.Component {
   }
 
   getPopoverContent() {
-      const { draft } = this.state;
-      const { operand } = draft;
+      const { intl , data , category} = this.props;
+      const { Text } = Typography;
+
+      const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
+      const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
+      const operandText = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.'+data.operand });
+      const categoryText = intl.formatMessage({ id: 'screen.patientvariant.category_'+category });
+      const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter_value'});
+
+      const valueList = data.values ? data.values.map(x => {return <li>{x}</li>}) : null
+
       return (
           <div>
-              <Typography.Text>{operand}</Typography.Text>
-              <ul>
-                  <li>VALUE 1</li>
-                  <li>VALUE 3</li>
-              </ul>
+              <Row type="flex" justify="space-between" gutter={32}>
+                  <Col>
+                    <Text strong>{titleText}</Text>
+                  </Col>
+                  <Col>
+                    <Text >{categoryText}</Text>
+                  </Col>
+              </Row>
+              <Row>
+                  <Col>
+                    <Text>{descriptionText}</Text>
+                  </Col>
+              </Row>
+              <br/>
+              <Row>
+                  <Col>
+                    <Text>{operandText}</Text>
+                  </Col>
+              </Row>
+              <br/>
+              <Row>
+                  <Col>
+                    {valueText} :
+                  </Col>
+              </Row>
+              <Row>
+                  <Col>
+                    <ul>
+                        {valueList}
+                    </ul>
+                  </Col>
+              </Row>
           </div>
       );
   }
@@ -82,10 +139,24 @@ class GenericFilter extends React.Component {
   }
 
   handleSelectionChange(values) {
-      const { options } = this.state;
-      this.setState({
-          selection: values,
-          indeterminate: (!(values.length === options.length) && values.length > 0),
+      const { dataSet } = this.props;
+      const { selection, allOptions , page , size } = this.state;
+
+      const minValue = size*(page-1)
+      const maxValue =  size * page
+      const options = allOptions.slice(minValue,maxValue)
+
+      options.map( (x , index) =>{
+        if(selection.includes(x.value)){
+            !values.includes(x.value) ? pull(selection, x.value) : null
+        }
+        else{
+            values.includes(x.value) ? selection.push(x.value) : null
+        }
+      })
+       this.setState({
+          selection,
+          indeterminate: (!(values.length === dataSet.length) && values.length > 0),
       });
   }
 
@@ -97,27 +168,64 @@ class GenericFilter extends React.Component {
         indeterminate: false
       });
     } else {
-     this.setState({
-       selection: cloneDeep(this.state.options),
-       indeterminate: false
-     });
+      const { dataSet } = this.props;
+      const options = dataSet.map(option => option.value)
+      this.setState({
+        selection: options,
+        indeterminate: false
+      });
     }
   }
 
-  handleSearchByQuery() {
+  handlePageChange(page, size) {
+    this.setState({
+      page,
+      size,
+    });
+  }
+
+  handleSearchByQuery(values) {
+    const { dataSet } = this.props;
+    const allOptions = cloneDeep(dataSet)
+    const search = (values.target.value).toLowerCase()
+    const toRemove = filter(cloneDeep(allOptions), (o) => {
+      return search!='' ? !o.value.toLowerCase().startsWith(search) : null
+    });
+
+    pullAllBy(allOptions, cloneDeep(toRemove), 'value')
+    this.setState({
+      allOptions
+    })
   }
 
   getEditor() {
       const { intl } = this.props;
-      const { draft, indeterminate, options, selection } = this.state;
+      const { draft, selection , size, page, allOptions } = this.state;
       const { operand } = draft;
-      const allSelected = selection.length === options.length;
-      const typeAll = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.all' });
-      const typeOne = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.one' });
-      const typeNone = intl.formatMessage({ id: 'screen.patientVariant.filter.operand.none' });
-      const selectAll = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.all' });
-      const selectNone = intl.formatMessage({ id: 'screen.patientVariant.filter.selection.none' });
-      const filterSearch = intl.formatMessage({ id: 'screen.patientVariant.filter.search' });
+      const allSelected = allOptions ? selection.length === allOptions.length : false;
+      const typeAll = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.all' });
+      const typeOne = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.one' });
+      const typeNone = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.none' });
+      const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
+      const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
+      const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
+      const minValue = size*(page-1)
+      const maxValue =  size * page
+
+      pullAllBy(allOptions, [{ value: "" }], 'value');
+
+      const options = allOptions.slice(minValue,maxValue).map((option) => {
+          const value = option.value.length < 60 ? option.value : option.value.substring(0,55)+ " ..."
+            return {label: (
+                <span>
+                    <Tooltip title={option.value}>
+                      {value}
+                    </Tooltip>
+                    <Tag>{option.count}</Tag>
+                </span>
+             ), value: option.value}
+      })
+
       return (
           <>
               <Row>
@@ -131,10 +239,11 @@ class GenericFilter extends React.Component {
               </Row>
               <br />
               <Row>
-                  <Input.Search
+                  <Input
+                      allowClear
                       placeholder={filterSearch}
                       size="small"
-                      onSearch={this.handleSearchByQuery}
+                      onChange={this.handleSearchByQuery}
                   />
               </Row>
               <br />
@@ -142,7 +251,7 @@ class GenericFilter extends React.Component {
                   <Checkbox
                       key="check-all"
                       className="selector"
-                      indeterminate={indeterminate}
+                      indeterminate={(!allSelected && selection.length > 0)}
                       onChange={this.handleCheckAllSelections}
                       checked={allSelected}
                   />
@@ -152,13 +261,29 @@ class GenericFilter extends React.Component {
               <Row>
                   <Col span={24}>
                       <Checkbox.Group
-                          style={{ display: 'flex', flexDirection: 'column' }}
                           options={options}
                           value={selection}
                           onChange={this.handleSelectionChange}
                       />
                   </Col>
               </Row>
+              <br />
+              {
+                allOptions.length >=size ?
+                  <Row style={{ marginTop: 'auto' }}>
+                    <Col align="end" span={24} >
+
+                        <Pagination
+                        total={allOptions.length}
+                        pageSize={size}
+                        current={page}
+                        pageSizeOptions={['10', '25', '50', '100']}
+                        onChange={this.handlePageChange}
+                      />
+                    </Col>
+                  </Row> : null
+              }
+              <br/>
           </>
       );
   }

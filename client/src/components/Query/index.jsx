@@ -14,10 +14,6 @@ import GenericFilter from './Filter/Generic';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
-import { bindActionCreators } from 'redux';
-import { updateQuery } from '../../actions/variant';
 
 export const DEFAULT_EMPTY_QUERY = {};
 
@@ -29,7 +25,7 @@ const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
 const QUERY_ACTION_VIEW_SQON = 'view-sqon';
 const QUERY_ACTION_TITLE = 'title';
 
-const sanitizeInstructions = (instructions) => {
+export const sanitizeInstructions = (instructions) => {
     instructions = sanitizeSubqueries(instructions);
     instructions = sanitizeFilters(instructions);
     instructions = sanitizeOperators(instructions);
@@ -62,7 +58,19 @@ const sanitizeOperators = (instructions) => {
   }
 
   // @No subsequent filters or subqueries without an operator
-  // @TODO
+  for(let i in sanitizedInstructions){
+    const defaultOperator = {data:{type:"and"} ,
+                             type:INSTRUCTION_TYPE_OPERATOR }
+    const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator
+    const next = Number(i)+1
+    if(next < sanitizedInstructions.length){
+        if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
+            if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
+                sanitizedInstructions.splice(next, 0, operator);
+            }
+        }
+    }
+  }
 
   return sanitizedInstructions;
 };
@@ -125,13 +133,10 @@ class Query extends React.Component {
       });
   }
 
-  replaceInstruction(item, index = null) {
+  replaceInstruction(item) {
     const { data } = this.state;
     const { onEditCallback } = this.props;
-    if (index === null) {
-      index = item.index;
-    }
-    data.instructions[index] = item;
+    data.instructions[item.index] = item;
     this.setState({
       data,
     }, () => {
@@ -173,15 +178,18 @@ class Query extends React.Component {
   }
 
   handleFilterChange(filter) {
-    const { actions ,patient, } = this.props
-    const{draft} = filter
-    actions.updateQuery(patient.details.id ,  draft.id, draft.values );
-    this.replaceInstruction({
+    const instruction = {
       type: INSTRUCTION_TYPE_FILTER,
-      index: filter.index,
       data: filter.data,
       options: filter.options,
-    });
+    };
+
+    if (filter.index !== undefined) {
+      instruction.index = filter.index
+      this.replaceInstruction(instruction);
+    } else {
+      this.addInstruction(instruction)
+    }
   }
 
   // @NOTE All operators within a query must have the same type
@@ -426,15 +434,15 @@ class Query extends React.Component {
       copyable, duplicatable, editable, removable, undoable,
     } = options;
     const { compoundOperators, viewableSqon } = display;
-    const menuAdd = intl.formatMessage({ id: 'screen.patientVariant.query.menu.add' });
-    const menuRemove = intl.formatMessage({ id: 'screen.patientVariant.query.menu.remove' });
-    const menuCopy = intl.formatMessage({ id: 'screen.patientVariant.query.menu.copy' });
-    const menuMaximize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.maximize' });
-    const menuMinimize = intl.formatMessage({ id: 'screen.patientVariant.query.menu.minimize' });
-    const menuDuplicate = intl.formatMessage({ id: 'screen.patientVariant.query.menu.duplicate' });
-    const menuRevert = intl.formatMessage({ id: 'screen.patientVariant.query.menu.revert' });
-    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientVariant.query.menu.advancedEditor' });
-    const menuDelete = intl.formatMessage({ id: 'screen.patientVariant.query.menu.delete' });
+    const menuAdd = intl.formatMessage({ id: 'screen.patientvariant.query.menu.add' });
+    const menuRemove = intl.formatMessage({ id: 'screen.patientvariant.query.menu.remove' });
+    const menuCopy = intl.formatMessage({ id: 'screen.patientvariant.query.menu.copy' });
+    const menuMaximize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.maximize' });
+    const menuMinimize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.minimize' });
+    const menuDuplicate = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
+    const menuRevert = intl.formatMessage({ id: 'screen.patientvariant.query.menu.revert' });
+    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientvariant.query.menu.advancedEditor' });
+    const menuDelete = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
     const titleMetaIsPresent = this.hasTitle();
 
     return (
@@ -490,7 +498,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets  ,categories} = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -545,12 +553,19 @@ class Query extends React.Component {
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
+                let category = null
+                categories.map((x, index) => {
+                    const value = find(x.filters, ['id', item.data.id]  );
+                    value ? category = x.id : null
+                })
                 return (
                   <GenericFilter
                     index={index}
                     options={options}
                     data={item.data}
+                    dataSet={facets[item.data.id] || []}
                     intl={intl}
+                    category={category}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
@@ -646,19 +661,4 @@ Query.defaultProps = {
   findQueryIndexForKey: null,
 };
 
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators({
-    updateQuery,
-  }, dispatch),
-});
-
-const mapStateToProps = state => ({
-  intl: state.intl,
-  patient: state.patient,
-  variant: state.variant,
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(injectIntl(Query));
+export default Query;

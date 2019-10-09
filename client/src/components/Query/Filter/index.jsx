@@ -6,19 +6,12 @@ import {
   Row, Col, Typography, Card, Tag, Input, Popover, Dropdown, Button, Radio, Icon, Checkbox,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-import {
-  empty, one, full, info,
-} from 'react-icons-kit/entypo';
-import { connect } from 'react-redux';
-import { injectIntl } from 'react-intl';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
+export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
 export const FILTER_TYPE_SPECIFIC = 'specific';
-export const FILTER_OPERAND_TYPE_ALL = 'all';
-export const FILTER_OPERAND_TYPE_ONE = 'one';
-export const FILTER_OPERAND_TYPE_NONE = 'none';
-export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_SPECIFIC];
+export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_SPECIFIC];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,
@@ -33,6 +26,7 @@ class Filter extends React.Component {
     this.state = {
       type: null,
       data: null,
+      dataSet: null,
       draft: null,
       visible: null,
       selected: false,
@@ -54,9 +48,10 @@ class Filter extends React.Component {
 
     // @NOTE Initialize Component State
     const {
-      data, autoOpen, visible,
+      data, dataSet, autoOpen, visible,
     } = props;
     this.state.data = data;
+    this.state.dataSet = dataSet || []
     this.state.draft = cloneDeep(data);
     this.state.opened = autoOpen;
     this.state.visible = visible;
@@ -99,8 +94,8 @@ class Filter extends React.Component {
     return Object.assign({}, this.props, this.state);
   }
 
-  handleClose() {
-    if (this.isRemovable()) {
+  handleClose(force = false) {
+    if (force === true || this.isRemovable()) {
       const { onRemoveCallback } = this.props;
       this.setState({
         opened: false,
@@ -112,29 +107,32 @@ class Filter extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { editor , onEditCallback } = this.props
-      draft.values  = editor.props.children[6].props.children.props.children.props.value;
-      this.setState({
-        data: { ...draft },
-        opened: false,
-      }, () => {
-        if (onEditCallback) {
-          onEditCallback(this.serialize());
-        }
-      });
+      const { editor, onEditCallback } = this.props
+      const value = editor.props.children[6].props.children.props.children.props.value;
+      const operand = editor.props.children[0].props.children.props.children.props.value;
+      if (value.length > 0) {
+        draft.operand = operand;
+        draft.values  = value;
+        this.setState({
+          data: { ...draft },
+          opened: false,
+        }, () => {
+            onEditCallback(this.serialize());
+        });
+      } else{
+        this.handleClose(true)
+      }
     }
   }
 
   handleCancel() {
-    const { data } = this.state;
+    const { data ,draft } = this.state;
     const { onCancelCallback } = this.props;
     this.setState({
-      draft: { ...data },
+      data: { ...draft },
       opened: false,
     }, () => {
-      if (onCancelCallback) {
         onCancelCallback(this.serialize());
-      }
     });
   }
 
@@ -144,9 +142,7 @@ class Filter extends React.Component {
       this.setState({
         selected: !this.isSelected(),
       }, () => {
-        if (onSelectCallback) {
           onSelectCallback(this.serialize());
-        }
       });
     }
   }
@@ -157,20 +153,20 @@ class Filter extends React.Component {
 
   render() {
     const { data } = this.state;
-    const { overlayOnly, editor, label, legend, content } = this.props;
+    const { overlayOnly, editor, label, legend, content , dataSet} = this.props;
     const overlay = (
         <Popover
             visible={this.isOpened()}
         >
-          <Card>
+          <Card className="filterCard" >
             <Typography.Title level={4}>{data.id}</Typography.Title>
             { editor }
-            <Row type="flex" justify="end">
-              <Col span={6}>
+            <Row type="flex" justify="end" style={dataSet.length<10 ? { marginTop: 'auto' } : null}>
+              <Col>
                 <Button onClick={this.handleCancel}>Annuler</Button>
               </Col>
-              <Col span={5}>
-                <Button type="primary" onClick={this.handleApply}>Appliquer</Button>
+              <Col >
+                <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>Appliquer</Button>
               </Col>
             </Row>
           </Card>
@@ -204,7 +200,7 @@ class Filter extends React.Component {
             { label }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
+          <Dropdown overlay={overlay}  visible={this.isOpened()} placement="bottomLeft">
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }
@@ -247,5 +243,4 @@ Filter.defaultProps = {
   visible: true,
 };
 
-export default connect(
-)(injectIntl(Filter));
+export default Filter;

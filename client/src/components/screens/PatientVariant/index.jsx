@@ -8,43 +8,121 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader,
 } from 'antd';
-import { format } from 'util';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import VariantNavigation from './components';
+import VariantNavigation from './components/VariantNavigation';
+import VariantResultsTable from './components/VariantResultsTable';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
-// import { navigateToPatientScreen, navigateToPatientSearchScreen } from '../../../actions/router';
-// import { searchPatientVariants } from '../../../actions/patient';
-import { cloneDeep } from 'lodash';
 import Statement from '../../Query/Statement';
-import { selectQuery } from '../../../actions/variant';
-
+import { fetchSchema, selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
+    this.handleQueryChange = this.handleQueryChange.bind(this);
+    this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
+    this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
+    this.handleStatementSort = this.handleStatementSort.bind(this);
+
+    // @NOTE Initialize Component State
+    const { actions, variant } = props;
+    const { schema, draftQueries, activeQuery } = variant;
+    // @NOTE Make sure we have a schema defined in redux
+    if (!schema.version) {
+      actions.fetchSchema();
+    }
+
+    if (draftQueries[activeQuery]) {
+        this.handleQuerySelection(draftQueries[activeQuery])
+    } else {
+        this.handleQuerySelection(null)
+    }
   }
 
   handleQuerySelection(query) {
-    const { actions, patient } = this.props;
-    const { id } = patient;
+    const { actions, variant } = this.props;
+    const { activePatient, draftQueries } = variant;
 
-    actions.selectQuery(id, query);
+    //@NOTE PA00002 currently is the only patient with indexed data.
+    actions.selectQuery(query);
+    if (!query) {
+        actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+    } else {
+        actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25)
+    }
   }
 
-    render() {
+  handleQueryChange(query) {
+    const { actions } = this.props;
+    actions.replaceQuery(query.data || query)
+
+    setTimeout(() => {
+        this.handleQuerySelection(query.data || query)
+    }, 100)
+  }
+
+  handleQueryRemoval(query) {
+    const { actions } = this.props;
+    actions.removeQuery(query.data || query)
+    this.handleQuerySelection(null)
+  }
+
+  handleQueryDuplication(query, index) {
+    const { actions } = this.props;
+    actions.duplicateQuery(query.data, index)
+  }
+
+  handleStatementSort(sortedQueries, sortedActiveQuery) {
+    const { actions } = this.props;
+    actions.sortStatement(sortedQueries, sortedActiveQuery)
+  }
+
+  render() {
     const { intl, variant } = this.props;
-    const { queries } = variant;
+    const { draftQueries, originalQueries, facets, results, matches, schema, activeQuery } = variant;
+    const searchData = [];
+    if (schema.categories) {
+        schema.categories.forEach((category) => {
+            searchData.push({
+                id: category.id,
+                type: 'category',
+                label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
+                data: category.filters.map((filter) => {
+                    return {
+                        id: filter.id,
+                        value: intl.formatMessage({ id: `screen.patientvariant.${filter.label}` }),
+                    }
+                })
+            })
+        })
+    }
+    if (facets.aggs) {
+        Object.keys(facets.aggs).forEach((key) => {
+            searchData.push({
+                id: key,
+                type: 'filter',
+                label: intl.formatMessage({id: `screen.patientvariant.filter_${key}`}),
+                data: facets.aggs[key].map((value) => {
+                    return {
+                        id: value.value,
+                        value: value.value,
+                        count: value.count,
+                    }
+                })
+            })
+        })
+    }
+
     return (
       <Content>
         <Header />
@@ -66,12 +144,27 @@ class PatientVariantScreen extends React.Component {
                 <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
             </Descriptions>
 
-            <VariantNavigation className="variant-navigation" />
+            <VariantNavigation
+                key="variant-navigation"
+                className="variant-navigation"
+                intl={intl}
+                schema={schema}
+                queries={draftQueries}
+                activeQuery={activeQuery}
+                data={facets[activeQuery] || {}}
+                onEditCallback={this.handleQueryChange}
+                searchData={searchData}
+            />
             <br />
             <br />
             <Statement
               key="variant-statement"
-              data={queries}
+              data={draftQueries}
+              original={originalQueries}
+              intl={intl}
+              matches={matches}
+              facets={facets}
+              categories={schema.categories}
               options={{
                   copyable: true,
                   duplicatable: true,
@@ -84,8 +177,18 @@ class PatientVariantScreen extends React.Component {
               display={{
                   compoundOperators: true,
               }}
-              intl={intl}
               onSelectCallback={this.handleQuerySelection}
+              onSortCallback={this.handleStatementSort}
+              onEditCallback={this.handleQueryChange}
+              onRemoveCallback={this.handleQueryRemoval}
+              onDuplicateCallback={this.handleQueryDuplication}
+            />
+            <br/>
+            <br />
+            <VariantResultsTable
+                key="variant-results"
+                intl={intl}
+                results={results[activeQuery] || []}
             />
         </Card>
         <Footer />
@@ -103,7 +206,13 @@ PatientVariantScreen.propTypes = {
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
+    fetchSchema,
     selectQuery,
+    replaceQuery,
+    removeQuery,
+    duplicateQuery,
+    sortStatement,
+    searchVariants,
   }, dispatch),
 });
 
