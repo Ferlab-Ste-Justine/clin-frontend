@@ -90,9 +90,10 @@ const sanitizeFilters = instructions => instructions;
 class Query extends React.Component {
   constructor(props) {
     super(props);
+    const { display = null, draft = null } = props;
     this.state = {
-      data: null,
-      display: null,
+      data: cloneDeep(draft),
+      display: cloneDeep(display),
     };
     this.addInstruction = this.addInstruction.bind(this);
     this.replaceInstruction = this.replaceInstruction.bind(this);
@@ -112,11 +113,6 @@ class Query extends React.Component {
     this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.hasTitle = this.hasTitle.bind(this);
-
-    // @NOTE Initialize Component State
-    const { display, draft } = props;
-    this.state.data = cloneDeep(draft);
-    this.state.display = display;
   }
 
   addInstruction(item) {
