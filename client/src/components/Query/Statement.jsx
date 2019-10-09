@@ -109,14 +109,6 @@ class Statement extends React.Component {
     }
   }
 
-  static getDerivedStateFromProps(props) {
-    const { data, original } = props;
-    return {
-      original: cloneDeep(original),
-      draft: cloneDeep(data),
-    };
-  }
-
   isCopyable() {
     const { options } = this.props;
     const { copyable } = options;
