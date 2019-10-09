@@ -46,9 +46,6 @@ const sanitizeOperators = (instructions) => {
     return true;
   });
 
-
-
-
   // @NOTE No prefix operator
   if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
       sanitizedInstructions.shift();
