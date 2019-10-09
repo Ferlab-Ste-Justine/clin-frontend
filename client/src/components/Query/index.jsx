@@ -118,7 +118,7 @@ class Query extends React.Component {
 
     // @NOTE Initialize Component State
     const { display, draft } = props;
-    this.state.data = draft;
+    this.state.data = cloneDeep(draft);
     this.state.display = display;
   }
 

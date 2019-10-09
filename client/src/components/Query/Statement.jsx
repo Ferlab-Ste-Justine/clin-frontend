@@ -6,7 +6,7 @@ import {
   Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal,
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter,
+  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEqual
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -109,14 +109,6 @@ class Statement extends React.Component {
     }
   }
 
-  static getDerivedStateFromProps(props) {
-    const { data, original } = props;
-    return {
-      original: cloneDeep(original),
-      draft: cloneDeep(data),
-    };
-  }
-
   isCopyable() {
     const { options } = this.props;
     const { copyable } = options;
@@ -141,10 +133,10 @@ class Statement extends React.Component {
     return removable === true;
   }
 
-  isReorderable() {
+  isReorderable(sorted) {
     const { options } = this.props;
     const { reorderable } = options;
-    return reorderable === true;
+    return reorderable === true && !isEmpty(sorted);
   }
 
   isSelectable() {
@@ -181,9 +173,12 @@ class Statement extends React.Component {
       const { onEditCallback } = this.props;
       const { draft } = this.state;
       this.commit(draft);
-      draft[query.index] = query.data;
+      const newDraft = [
+        ...draft,
+      ];
+      newDraft[query.index] = query.data;
       this.setState({
-        draft,
+        draft: newDraft,
       }, () => {
         if (onEditCallback) {
           onEditCallback(query);
@@ -254,7 +249,7 @@ class Statement extends React.Component {
   }
 
   handleReorder(sorted) {
-    if (this.isReorderable()) {
+    if (this.isReorderable(sorted)) {
       const { activeQuery, draft, display } = this.state;
       const { onSortCallback } = this.props;
       this.commit(draft);
@@ -295,6 +290,8 @@ class Statement extends React.Component {
   }
 
   commit(version) {
+    const lastVersion = this.versions[this.versions.length - 1];
+    if (isEqual(lastVersion, version)) return;
     this.versions.push(cloneDeep(version));
     const revisions = this.versions.length;
     if (revisions > MAX_REVISIONS) {
