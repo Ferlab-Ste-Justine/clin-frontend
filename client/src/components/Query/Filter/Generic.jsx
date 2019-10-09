@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-    Typography, Row, Col, Checkbox, Radio, Input, Tag, Pagination
+    Typography, Row, Col, Checkbox, Radio, Input, Tag, Pagination, Tooltip
 } from 'antd';
 import { cloneDeep, pull , orderBy , pullAllBy , filter} from 'lodash';
 import IconKit from 'react-icons-kit';
@@ -47,17 +47,17 @@ class GenericFilter extends React.Component {
     this.state.size = 10;
     this.state.allOptions = cloneDeep(dataSet)
 
-    if(selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
-
+    if(this.state.selection.length > 0) {
+      const that = this
+      const value = filter(cloneDeep(dataSet), function(o) { return that.state.selection.includes(o.value) });
       if(value.length === 0){
         let selectedValue = []
-        selection.map( x => selectedValue.push({value:x , count:0}))
-        allOptions.unshift(...selectedValue)
+        this.state.selection.map( x => selectedValue.push({value:x , count:0}))
+        this.state.allOptions.unshift(...selectedValue)
       } else {
         const sorted = orderBy(value, ['count'] ,  ['desc']);
         pullAllBy(dataSet, cloneDeep(sorted), 'value')
-        allOptions.unshift(...sorted)
+        this.state.allOptions.unshift(...sorted)
       }
     }
   }
