@@ -6,7 +6,7 @@ import {
   Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal,
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEqual
+  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEqual, isEmpty,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -455,7 +455,9 @@ class Statement extends React.Component {
   handleNewQuery() {
     const { onEditCallback } = this.props;
     const { draft, display } = this.state;
-
+    if (isEmpty(draft)) {
+      this.commit(draft);
+    }
     const newQuery = {
       key: uuidv1(),
       instructions: []
