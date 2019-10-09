@@ -133,7 +133,7 @@ div.query-container {
   justify-content: space-between;
   padding: 6px 8px;
   font-size: inherit;
-
+  color: #000000;
   .legend {
     cursor: pointer;
     padding-right: 6px;
@@ -143,10 +143,10 @@ div.query-container {
     cursor: pointer;
     padding-left: 4px;
   }
-}
 
-.ant-tag-has-color.subquery span {
-   color: #000000;
+  .anticon-close{
+    color:black;
+  }
 }
 
 div.query {

@@ -159,7 +159,7 @@ class VariantNavigation extends React.Component {
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
-                  { activeFilterId === null && category.filters.map(filter => filter.facet && (
+                  { activeFilterId === null && category.filters.map(filter => filter.search && (
                   <Menu.SubMenu
                     key={filter.id}
                     title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}

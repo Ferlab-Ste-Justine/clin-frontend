@@ -46,9 +46,6 @@ const sanitizeOperators = (instructions) => {
     return true;
   });
 
-
-
-
   // @NOTE No prefix operator
   if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
       sanitizedInstructions.shift();
@@ -501,7 +498,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets  ,categories} = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -556,6 +553,11 @@ class Query extends React.Component {
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
+                let category = null
+                categories.map((x, index) => {
+                    const value = find(x.filters, ['id', item.data.id]  );
+                    value ? category = x.id : null
+                })
                 return (
                   <GenericFilter
                     index={index}
@@ -563,6 +565,7 @@ class Query extends React.Component {
                     data={item.data}
                     dataSet={facets[item.data.id] || []}
                     intl={intl}
+                    category={category}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
