@@ -141,10 +141,10 @@ class Statement extends React.Component {
     return removable === true;
   }
 
-  isReorderable(sorted) {
+  isReorderable() {
     const { options } = this.props;
     const { reorderable } = options;
-    return reorderable === true && !isEmpty(sorted);
+    return reorderable === true;
   }
 
   isSelectable() {
@@ -257,7 +257,7 @@ class Statement extends React.Component {
   }
 
   handleReorder(sorted) {
-    if (this.isReorderable(sorted)) {
+    if (this.isReorderable() && !isEmpty(sorted)) {
       const { activeQuery, draft, display } = this.state;
       const { onSortCallback } = this.props;
       this.commit(draft);
