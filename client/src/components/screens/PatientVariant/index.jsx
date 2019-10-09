@@ -164,6 +164,7 @@ class PatientVariantScreen extends React.Component {
               intl={intl}
               matches={matches}
               facets={facets}
+              categories={schema.categories}
               options={{
                   copyable: true,
                   duplicatable: true,

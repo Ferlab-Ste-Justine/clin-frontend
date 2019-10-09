@@ -9,11 +9,9 @@ import { cloneDeep } from 'lodash';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
+export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
 export const FILTER_TYPE_SPECIFIC = 'specific';
-export const FILTER_OPERAND_TYPE_ALL = 'all';
-export const FILTER_OPERAND_TYPE_ONE = 'one';
-export const FILTER_OPERAND_TYPE_NONE = 'none';
-export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_SPECIFIC];
+export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_SPECIFIC];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,

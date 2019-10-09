@@ -30,8 +30,8 @@ const DEFAULT_INSTRUCTIONS = {
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
 export const convertIndexToColor = index => `#${[
-  '21ABCD', 'FF8C00', 'D4236E', '20D32F', 'FFF000', 'FF756B', 'C67D57', 'F4C2C2',
-  '88D8C1', 'FFBF00', 'EE959E', 'FF1818', 'CD5E77', 'A25A3D', 'DEA77F',
+  'bbeaff', 'ffbe9d', 'f3c0d4', 'c8ffc7', 'fff3b1', 'd3d9e7', 'dcb1b2', 'fcd2d3',
+  'c3f3e7', 'ffd694', 'fbe9e9', 'ff9fa2', 'e0c1cd', 'eaceb4', 'b4e6ea',
 ][index]}`;
 
 class Statement extends React.Component {
@@ -107,6 +107,14 @@ class Statement extends React.Component {
         onSelectCallback(activeQueryData);
       }
     }
+  }
+
+  static getDerivedStateFromProps(props) {
+    const { data, original } = props;
+    return {
+      original: cloneDeep(original),
+      draft: cloneDeep(data),
+    };
   }
 
   isCopyable() {
@@ -484,7 +492,7 @@ class Statement extends React.Component {
       display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
     } = this.state;
     if (draft === null) { return null; }
-    const { options, intl, facets, matches } = this.props;
+    const { options, intl, facets, matches ,categories } = this.props;
     const {
       editable, reorderable, removable, undoable,
     } = options;
@@ -537,6 +545,7 @@ class Statement extends React.Component {
             results={(matches[query.key] ? matches[query.key] : 0)}
             intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
+            categories= {categories}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
             onDisplayCallback={this.handleDisplay}

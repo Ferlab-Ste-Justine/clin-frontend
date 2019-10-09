@@ -49,7 +49,7 @@ function* search(action) {
     let response = null;
 
     if (!action.payload.query) {
-      response = yield Api.getAllPatients(action.payload.page, action.payload.size);
+      response = yield Api.searchPatients(null, action.payload.page, action.payload.size);
     } else {
       response = yield Api.searchPatients(action.payload.query, action.payload.page, action.payload.size);
     }

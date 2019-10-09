@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-    Typography, Row, Col, Checkbox, Radio, Tooltip, Input, Tag, Pagination
+    Typography, Row, Col, Checkbox, Radio, Input, Tag, Pagination, Tooltip
 } from 'antd';
 import { cloneDeep, pull , orderBy , pullAllBy , filter} from 'lodash';
 import IconKit from 'react-icons-kit';
@@ -10,8 +10,12 @@ import {
     empty, one, full,
 } from 'react-icons-kit/entypo';
 
-import Filter, { FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE } from './index';
+import Filter from './index';
 
+
+export const FILTER_OPERAND_TYPE_ALL = 'all';
+export const FILTER_OPERAND_TYPE_ONE = 'one';
+export const FILTER_OPERAND_TYPE_NONE = 'none';
 
 class GenericFilter extends React.Component {
 
@@ -21,8 +25,9 @@ class GenericFilter extends React.Component {
         draft: null,
         selection: [],
         indeterminate: false,
-        size:10,
-        page:1
+        size: null,
+        page: null,
+        allOptions: null,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getLabel = this.getLabel.bind(this);
@@ -35,19 +40,25 @@ class GenericFilter extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
 
     // @NOTE Initialize Component State
-    const { data } = props;
+    const { data, dataSet } = props;
     this.state.draft = cloneDeep(data);
     this.state.selection = data.values ? cloneDeep(data.values) : [];
-  }
+    this.state.page = 1;
+    this.state.size = 10;
+    this.state.allOptions = cloneDeep(dataSet)
 
-  componentDidMount(){
-    const {  dataSet } = this.props;
-    const {  selection } = this.state;
-    if(selection.length>0){
-          const valeur = filter(cloneDeep(dataSet), function(o) { return selection.includes(o.value) });
-          const sorted = orderBy(valeur, ['count'] ,  ['desc']);
-          pullAllBy(dataSet, cloneDeep(sorted), 'value')
-          dataSet.unshift(...sorted)
+    if(this.state.selection.length > 0) {
+      const that = this
+      const value = filter(cloneDeep(dataSet), function(o) { return that.state.selection.includes(o.value) });
+      if(value.length === 0){
+        let selectedValue = []
+        this.state.selection.map( x => selectedValue.push({value:x , count:0}))
+        this.state.allOptions.unshift(...selectedValue)
+      } else {
+        const sorted = orderBy(value, ['count'] ,  ['desc']);
+        pullAllBy(dataSet, cloneDeep(sorted), 'value')
+        this.state.allOptions.unshift(...sorted)
+      }
     }
   }
 
@@ -72,15 +83,51 @@ class GenericFilter extends React.Component {
   }
 
   getPopoverContent() {
-      const { data } = this.props;
-      const { operand } = data;
+      const { intl , data , category} = this.props;
+      const { Text } = Typography;
+
+      const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
+      const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
+      const operandText = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.'+data.operand });
+      const categoryText = intl.formatMessage({ id: 'screen.patientvariant.category_'+category });
+      const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter_value'});
+
+      const valueList = data.values ? data.values.map(x => {return <li>{x}</li>}) : null
+
       return (
           <div>
-              <Typography.Text>{operand}</Typography.Text>
-              <ul>
-                  <li>VALUE 1</li>
-                  <li>VALUE 3</li>
-              </ul>
+              <Row type="flex" justify="space-between" gutter={32}>
+                  <Col>
+                    <Text strong>{titleText}</Text>
+                  </Col>
+                  <Col>
+                    <Text >{categoryText}</Text>
+                  </Col>
+              </Row>
+              <Row>
+                  <Col>
+                    <Text>{descriptionText}</Text>
+                  </Col>
+              </Row>
+              <br/>
+              <Row>
+                  <Col>
+                    <Text>{operandText}</Text>
+                  </Col>
+              </Row>
+              <br/>
+              <Row>
+                  <Col>
+                    {valueText} :
+                  </Col>
+              </Row>
+              <Row>
+                  <Col>
+                    <ul>
+                        {valueList}
+                    </ul>
+                  </Col>
+              </Row>
           </div>
       );
   }
@@ -93,8 +140,22 @@ class GenericFilter extends React.Component {
 
   handleSelectionChange(values) {
       const { dataSet } = this.props;
-      this.setState({
-          selection: values,
+      const { selection, allOptions , page , size } = this.state;
+
+      const minValue = size*(page-1)
+      const maxValue =  size * page
+      const options = allOptions.slice(minValue,maxValue)
+
+      options.map( (x , index) =>{
+        if(selection.includes(x.value)){
+            !values.includes(x.value) ? pull(selection, x.value) : null
+        }
+        else{
+            values.includes(x.value) ? selection.push(x.value) : null
+        }
+      })
+       this.setState({
+          selection,
           indeterminate: (!(values.length === dataSet.length) && values.length > 0),
       });
   }
@@ -117,22 +178,31 @@ class GenericFilter extends React.Component {
   }
 
   handlePageChange(page, size) {
-    const { actions } = this.props;
-    const { search } = this.props;
     this.setState({
       page,
       size,
     });
   }
 
-  handleSearchByQuery() {
+  handleSearchByQuery(values) {
+    const { dataSet } = this.props;
+    const allOptions = cloneDeep(dataSet)
+    const search = (values.target.value).toLowerCase()
+    const toRemove = filter(cloneDeep(allOptions), (o) => {
+      return search!='' ? !o.value.toLowerCase().startsWith(search) : null
+    });
+
+    pullAllBy(allOptions, cloneDeep(toRemove), 'value')
+    this.setState({
+      allOptions
+    })
   }
 
   getEditor() {
-      const { intl, dataSet } = this.props;
-      const { draft, selection , size, page } = this.state;
+      const { intl } = this.props;
+      const { draft, selection , size, page, allOptions } = this.state;
       const { operand } = draft;
-      const allSelected = dataSet ? selection.length === dataSet.length : false;
+      const allSelected = allOptions ? selection.length === allOptions.length : false;
       const typeAll = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.all' });
       const typeOne = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.one' });
       const typeNone = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.none' });
@@ -141,15 +211,19 @@ class GenericFilter extends React.Component {
       const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
       const minValue = size*(page-1)
       const maxValue =  size * page
-      const options = dataSet.slice(minValue,maxValue).map((option) => {
 
-        const count = option.count >99999 ? '99999+' : option.count
-        return {label: (
-            <span>
-                {option.value}
-                <Tag style={{ float: 'right' }}>{count}</Tag>
-            </span>
-         ), value: option.value}
+      pullAllBy(allOptions, [{ value: "" }], 'value');
+
+      const options = allOptions.slice(minValue,maxValue).map((option) => {
+          const value = option.value.length < 60 ? option.value : option.value.substring(0,55)+ " ..."
+            return {label: (
+                <span>
+                    <Tooltip title={option.value}>
+                      {value}
+                    </Tooltip>
+                    <Tag>{option.count}</Tag>
+                </span>
+             ), value: option.value}
       })
 
       return (
@@ -169,7 +243,7 @@ class GenericFilter extends React.Component {
                       allowClear
                       placeholder={filterSearch}
                       size="small"
-                      onSearch={this.handleSearchByQuery}
+                      onChange={this.handleSearchByQuery}
                   />
               </Row>
               <br />
@@ -187,7 +261,6 @@ class GenericFilter extends React.Component {
               <Row>
                   <Col span={24}>
                       <Checkbox.Group
-                          style={{ display: 'flex', flexDirection: 'column' }}
                           options={options}
                           value={selection}
                           onChange={this.handleSelectionChange}
@@ -196,12 +269,12 @@ class GenericFilter extends React.Component {
               </Row>
               <br />
               {
-                dataSet.length >=size ?
+                allOptions.length >=size ?
                   <Row style={{ marginTop: 'auto' }}>
                     <Col align="end" span={24} >
 
                         <Pagination
-                        total={dataSet.length}
+                        total={allOptions.length}
                         pageSize={size}
                         current={page}
                         pageSizeOptions={['10', '25', '50', '100']}

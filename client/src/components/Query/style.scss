@@ -133,7 +133,7 @@ div.query-container {
   justify-content: space-between;
   padding: 6px 8px;
   font-size: inherit;
-
+  color: #000000;
   .legend {
     cursor: pointer;
     padding-right: 6px;
@@ -143,10 +143,10 @@ div.query-container {
     cursor: pointer;
     padding-left: 4px;
   }
-}
 
-.ant-tag-has-color.subquery span {
-   color: #000000;
+  .anticon-close{
+    color:black;
+  }
 }
 
 div.query {
@@ -214,15 +214,23 @@ div.query {
         flex-direction:column;
     }
 
+    .ant-checkbox-group{
+        display:flex;
+        flex-direction:column
+    }
+
     .ant-checkbox-group-item{
-      margin-top:5px
+      margin-top:5px;
     }
 
     .ant-tag{
         width:auto;
-        padding:2px;
+        padding:2px 5px;
         font-size:11px;
-        width:55px
+        width:55px;
+        text-align:right;
+        float: right
+
     }
 
     .ant-checkbox-group-item {
@@ -233,4 +241,8 @@ div.query {
 .ant-checkbox-group-item
 .consequence{
     color:#E88367;
+}
+
+.ant-tooltip{
+    max-width:350px
 }
