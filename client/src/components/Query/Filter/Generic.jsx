@@ -78,15 +78,52 @@ class GenericFilter extends React.Component {
   }
 
   getPopoverContent() {
-      const { data } = this.props;
+      const { intl , data , category} = this.props;
       const { operand } = data;
+      const { Text } = Typography;
+
+      const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
+      const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
+      const operandText = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.'+data.operand });
+      const categoryText = intl.formatMessage({ id: 'screen.patientvariant.category_'+category });
+      const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter_value'});
+
+      const valueList = data.values ? data.values.map(x => {return <li>{x}</li>}) : null
+
       return (
           <div>
-              <Typography.Text>{operand}</Typography.Text>
-              <ul>
-                  <li>VALUE 1</li>
-                  <li>VALUE 3</li>
-              </ul>
+              <Row type="flex" justify="space-between" gutter={32}>
+                  <Col>
+                    <Text strong>{titleText}</Text>
+                  </Col>
+                  <Col>
+                    <Text >{categoryText}</Text>
+                  </Col>
+              </Row>
+              <Row>
+                  <Col>
+                    <Text>{descriptionText}</Text>
+                  </Col>
+              </Row>
+              <br/>
+              <Row>
+                  <Col>
+                    <Text>{operandText}</Text>
+                  </Col>
+              </Row>
+              <br/>
+              <Row>
+                  <Col>
+                    {valueText} :
+                  </Col>
+              </Row>
+              <Row>
+                  <Col>
+                    <ul>
+                        {valueList}
+                    </ul>
+                  </Col>
+              </Row>
           </div>
       );
   }
