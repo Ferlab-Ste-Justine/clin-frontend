@@ -70,12 +70,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
-      const keyToRemove = action.payload.query.key;
-      if (keyToRemove) {
-        draft.draftQueries = draftQueries.filter((query) => {
-          return query.key !== keyToRemove;
-        })
-      }
+      draft.draftQueries = draftQueries.filter((query) => query.key !== action.payload.key);
       break;
 
     case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
@@ -98,11 +93,15 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       }
       draft.draftQueries = draftQueries
       break;
+    
+    case actions.PATIENT_VARIANT_QUERIES_REPLACEMENT:
+      const { queries } = action.payload;
+      draft.draftQueries = queries
+      break;
 
     case actions.PATIENT_VARIANT_STATEMENT_SORT:
-      const { statement, activeQuery } = action.payload;
+      const { statement } = action.payload;
       draft.draftQueries = statement
-      draft.activeQuery = activeQuery
       break;
 
     default:

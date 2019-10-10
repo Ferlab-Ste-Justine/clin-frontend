@@ -19,10 +19,17 @@ export const replaceQuery = query => ({
   },
 });
 
-export const removeQuery = query => ({
+export const replaceQueries = queries => ({
+  type: actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
+  payload: {
+    queries,
+  },
+});
+
+export const removeQuery = key => ({
   type: actions.PATIENT_VARIANT_QUERY_REMOVAL,
   payload: {
-    query,
+    key,
   },
 });
 
@@ -34,11 +41,10 @@ export const duplicateQuery = (query, index) => ({
   },
 });
 
-export const sortStatement = (statement, activeQuery) => ({
+export const sortStatement = statement => ({
   type: actions.PATIENT_VARIANT_STATEMENT_SORT,
   payload: {
     statement,
-    activeQuery,
   },
 });
 

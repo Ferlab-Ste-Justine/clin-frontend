@@ -21,7 +21,7 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { fetchSchema, selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
+import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -30,35 +30,30 @@ class PatientVariantScreen extends React.Component {
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
+    this.handleQueriesChange = this.handleQueriesChange.bind(this);
     this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
     this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
     this.handleStatementSort = this.handleStatementSort.bind(this);
 
     // @NOTE Initialize Component State
     const { actions, variant } = props;
-    const { schema, draftQueries, activeQuery } = variant;
+    const { schema } = variant;
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
       actions.fetchSchema();
-    }
-
-    if (draftQueries[activeQuery]) {
-        this.handleQuerySelection(draftQueries[activeQuery])
-    } else {
-        this.handleQuerySelection(null)
     }
   }
 
   handleQuerySelection(query) {
     const { actions, variant } = this.props;
-    const { activePatient, draftQueries } = variant;
+    const { activeQuery, draftQueries } = variant;
 
     //@NOTE PA00002 currently is the only patient with indexed data.
-    actions.selectQuery(query);
     if (!query) {
-        actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
-    } else {
-        actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25)
+      actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+    } else if (activeQuery !== query.key) {
+      actions.selectQuery(query);
+      actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25)
     }
   }
 
@@ -71,9 +66,17 @@ class PatientVariantScreen extends React.Component {
     }, 100)
   }
 
-  handleQueryRemoval(query) {
+  handleQueriesChange(queries) {
     const { actions } = this.props;
-    actions.removeQuery(query.data || query)
+    actions.replaceQueries(queries)
+    if (queries.length === 1) {
+      this.handleQuerySelection(queries[0]);
+    }
+  }
+
+  handleQueryRemoval(key) {
+    const { actions } = this.props;
+    actions.removeQuery(key)
     this.handleQuerySelection(null)
   }
 
@@ -82,9 +85,9 @@ class PatientVariantScreen extends React.Component {
     actions.duplicateQuery(query.data, index)
   }
 
-  handleStatementSort(sortedQueries, sortedActiveQuery) {
+  handleStatementSort(sortedQueries) {
     const { actions } = this.props;
-    actions.sortStatement(sortedQueries, sortedActiveQuery)
+    actions.sortStatement(sortedQueries)
   }
 
   render() {
@@ -159,6 +162,7 @@ class PatientVariantScreen extends React.Component {
             <br />
             <Statement
               key="variant-statement"
+              activeQuery={activeQuery}
               data={draftQueries}
               original={originalQueries}
               intl={intl}
@@ -180,6 +184,7 @@ class PatientVariantScreen extends React.Component {
               onSelectCallback={this.handleQuerySelection}
               onSortCallback={this.handleStatementSort}
               onEditCallback={this.handleQueryChange}
+              onBatchEditCallback={this.handleQueriesChange}
               onRemoveCallback={this.handleQueryRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
             />
@@ -209,6 +214,7 @@ const mapDispatchToProps = dispatch => ({
     fetchSchema,
     selectQuery,
     replaceQuery,
+    replaceQueries,
     removeQuery,
     duplicateQuery,
     sortStatement,
