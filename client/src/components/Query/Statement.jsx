@@ -145,7 +145,11 @@ class Statement extends React.Component {
   }
 
   handleClick(query) {
-    this.props.onSelectCallback(query.data);
+    const { activeQuery } = this.props;
+    const isActive = activeQuery === query.data.key;
+    if (!isActive) {
+      this.props.onSelectCallback(query.data);
+    }
   }
 
   handleEdit(query) {
