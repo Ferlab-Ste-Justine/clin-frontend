@@ -238,7 +238,7 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
-  label: null,
+  label: '',
   autoOpen: false,
   overlayOnly: false,
   visible: true,

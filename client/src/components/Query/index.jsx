@@ -638,7 +638,7 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
-  original : null,
+  original : [],
   display: {
     compoundOperators: false,
     viewableSqon: false,
