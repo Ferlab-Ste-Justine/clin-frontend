@@ -273,6 +273,7 @@ class Statement extends React.Component {
 
   handleCombine({ key }) {
     const { data } = this.props;
+    this.commit(data);
     const { checkedQueries, display } = this.state;
     const defaultDisplay = cloneDeep(this.props.display);
     display.push(defaultDisplay);
@@ -300,7 +301,7 @@ class Statement extends React.Component {
         checkedQueries: [],
         display,
       }, () => {
-        onBatchEditCallback(newDraft);
+        onBatchEditCallback(newDraft, newSubquery);
       });
     }
   }
@@ -385,6 +386,7 @@ class Statement extends React.Component {
     const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
     keysToRemove.push(...delSubQuery);
 
+    const newDraft = cloneDeep(data);
     pullAllBy(newDraft, keysToRemove, 'key');
 
     this.setState({

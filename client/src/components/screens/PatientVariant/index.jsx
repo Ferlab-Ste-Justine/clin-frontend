@@ -47,7 +47,6 @@ class PatientVariantScreen extends React.Component {
   handleQuerySelection(query) {
     const { actions, variant } = this.props;
     const { activeQuery, draftQueries } = variant;
-
     //@NOTE PA00002 currently is the only patient with indexed data.
     if (!query) {
       actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
@@ -66,10 +65,12 @@ class PatientVariantScreen extends React.Component {
     }, 100)
   }
 
-  handleQueriesChange(queries) {
+  handleQueriesChange(queries, activeQuery) {
     const { actions } = this.props;
     actions.replaceQueries(queries)
-    if (queries.length === 1) {
+    if (activeQuery) {
+      this.handleQuerySelection(activeQuery);
+    } else if (queries.length === 1) {
       this.handleQuerySelection(queries[0]);
     }
   }
