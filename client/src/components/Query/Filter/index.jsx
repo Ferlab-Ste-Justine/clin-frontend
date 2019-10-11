@@ -3,9 +3,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Typography, Card, Tag, Input, Popover, Dropdown, Button, Radio, Icon, Checkbox,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,
 } from 'antd';
-import { cloneDeep } from 'lodash';
+import {
+  cloneDeep,
+} from 'lodash';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -31,6 +33,10 @@ class Filter extends React.Component {
       visible: null,
       selected: false,
       opened: null,
+      allOptions: null,
+      selection: [],
+      size: null,
+      page: null,
     };
 
     this.isEditable = this.isEditable.bind(this);
@@ -45,16 +51,21 @@ class Filter extends React.Component {
     this.handleApply = this.handleApply.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
 
     // @NOTE Initialize Component State
     const {
-      data, dataSet, autoOpen, visible,
+      data, dataSet, autoOpen, visible, sortData,
     } = props;
     this.state.data = data;
-    this.state.dataSet = dataSet || []
+    this.state.dataSet = dataSet || [];
     this.state.draft = cloneDeep(data);
+    this.state.selection = data.values ? cloneDeep(data.values) : [];
     this.state.opened = autoOpen;
     this.state.visible = visible;
+    this.state.allOptions = cloneDeep(sortData);
+    this.state.page = 1;
+    this.state.size = 10;
   }
 
   isEditable() {
@@ -107,32 +118,32 @@ class Filter extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const { draft } = this.state;
-      const { editor, onEditCallback } = this.props
+      const { editor, onEditCallback } = this.props;
       const value = editor.props.children[6].props.children.props.children.props.value;
       const operand = editor.props.children[0].props.children.props.children.props.value;
       if (value.length > 0) {
         draft.operand = operand;
-        draft.values  = value;
+        draft.values = value;
         this.setState({
           data: { ...draft },
           opened: false,
         }, () => {
-            onEditCallback(this.serialize());
+          onEditCallback(this.serialize());
         });
-      } else{
-        this.handleClose(true)
+      } else {
+        this.handleClose(true);
       }
     }
   }
 
   handleCancel() {
-    const { data ,draft } = this.state;
+    const { draft } = this.state;
     const { onCancelCallback } = this.props;
     this.setState({
       data: { ...draft },
       opened: false,
     }, () => {
-        onCancelCallback(this.serialize());
+      onCancelCallback(this.serialize());
     });
   }
 
@@ -142,7 +153,7 @@ class Filter extends React.Component {
       this.setState({
         selected: !this.isSelected(),
       }, () => {
-          onSelectCallback(this.serialize());
+        onSelectCallback(this.serialize());
       });
     }
   }
@@ -151,32 +162,73 @@ class Filter extends React.Component {
     this.setState({ opened: !this.isOpened() });
   }
 
+  handlePageChange(page, size) {
+    const { onPageChangeCallBack } = this.props;
+    this.setState({
+      page,
+      size,
+    }, () => {
+      onPageChangeCallBack(page, size);
+    });
+  }
+
   render() {
-    const { data } = this.state;
-    const { overlayOnly, editor, label, legend, content , dataSet} = this.props;
+    const {
+      data, allOptions, size, page,
+    } = this.state;
+    const {
+      overlayOnly, editor, label, legend, content, dataSet,
+    } = this.props;
+
+
     const overlay = (
-        <Popover
-            visible={this.isOpened()}
-        >
-          <Card className="filterCard" >
-            <Typography.Title level={4}>{data.id}</Typography.Title>
-            { editor }
-            <Row type="flex" justify="end" style={dataSet.length<10 ? { marginTop: 'auto' } : null}>
-              <Col>
-                <Button onClick={this.handleCancel}>Annuler</Button>
-              </Col>
-              <Col >
-                <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>Appliquer</Button>
-              </Col>
-            </Row>
-          </Card>
-        </Popover>
+      <Popover
+        visible={this.isOpened()}
+      >
+        <Card className="filterCard">
+          <Typography.Title level={4}>{data.id}</Typography.Title>
+          { editor }
+
+          {
+              allOptions.length >= size
+                ? (
+                  <Row style={{ marginTop: 'auto' }}>
+                    <Col align="end" span={24}>
+
+                      <Pagination
+                        total={allOptions.length}
+                        pageSize={size}
+                        current={page}
+                        pageSizeOptions={['10', '25', '50', '100']}
+                        onChange={this.handlePageChange}
+                      />
+                    </Col>
+                  </Row>
+                ) : null
+          }
+          <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
+            <Col>
+              <Button onClick={this.handleCancel}>Annuler</Button>
+            </Col>
+            <Col>
+              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>Appliquer</Button>
+            </Col>
+          </Row>
+        </Card>
+      </Popover>
     );
 
     if (overlayOnly === true) {
-      return (<Dropdown
-        onVisibleChange={this.toggleMenu} overlay={overlay} visible={this.isOpened()} placement="bottomLeft"><span/>
-      </Dropdown>);
+      return (
+        <Dropdown
+          onVisibleChange={this.toggleMenu}
+          overlay={overlay}
+          visible={this.isOpened()}
+          placement="bottomLeft"
+        >
+          <span />
+        </Dropdown>
+      );
     }
     return (
       <span>
@@ -200,7 +252,7 @@ class Filter extends React.Component {
             { label }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay}  visible={this.isOpened()} placement="bottomLeft">
+          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }
@@ -208,12 +260,12 @@ class Filter extends React.Component {
       </span>
     );
   }
-
 }
 
 Filter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
+  dataSet: PropTypes.array.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -226,6 +278,7 @@ Filter.propTypes = {
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
+  sortData: PropTypes.array.isRequired,
 };
 
 Filter.defaultProps = {
