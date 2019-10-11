@@ -44,18 +44,17 @@ class PatientVariantScreen extends React.Component {
     }
   }
 
+  componentDidMount() {
+    //@NOTE PA00002 currently is the only patient with indexed data.
+    this.props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+  }
+
   handleQuerySelection(query) {
     const { actions, variant } = this.props;
     const { activeQuery, draftQueries } = variant;
     //@NOTE PA00002 currently is the only patient with indexed data.
-    if (!query) {
-      actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
-    } else {
-      if (activeQuery !== query.key) actions.selectQuery(query);
-      console.log('draftQueries', draftQueries);
-      console.log('query', query);
-      actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
-    }
+    if (activeQuery !== query.key) actions.selectQuery(query);
+    actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
   }
 
   handleQueryChange(query) {
