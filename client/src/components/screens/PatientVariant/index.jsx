@@ -81,7 +81,6 @@ class PatientVariantScreen extends React.Component {
   handleQueryRemoval(key) {
     const { actions } = this.props;
     actions.removeQuery(key)
-    this.handleQuerySelection(null)
   }
 
   handleQueryDuplication(query, index) {
