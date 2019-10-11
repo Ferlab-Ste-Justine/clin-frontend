@@ -58,14 +58,12 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
-      console.log('PATIENT_VARIANT_SEARCH_SUCCEEDED action.payload', action.payload);
       draft.matches[action.payload.data.query] = action.payload.data.total;
       draft.facets[action.payload.data.query] = action.payload.data.facets;
       draft.results[action.payload.data.query] = action.payload.data.hits;
       break;
 
     case actions.PATIENT_VARIANT_SEARCH_FAILED:
-        console.log('PATIENT_VARIANT_SEARCH_FAILED action.payload', action.payload);
       draft.facets[action.payload.data.query] = {}
       draft.matches[action.payload.data.query] = {}
       draft.results[action.payload.data.query] = {}
