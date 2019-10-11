@@ -89,10 +89,9 @@ class GenericFilter extends React.Component {
       const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
       const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
       const operandText = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.'+data.operand });
-      const categoryText = intl.formatMessage({ id: 'screen.patientvariant.category_'+category });
+      const categoryText = category ?  intl.formatMessage({ id: 'screen.patientvariant.category_'+category }) : null;
       const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter_value'});
-
-      const valueList = data.values ? data.values.map(x => {return <li>{x}</li>}) : null
+      const valueList = data.values ? data.values.map((x,index) => {return <li key={index}>{x}</li>}) : null
 
       return (
           <div>

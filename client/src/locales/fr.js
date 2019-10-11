@@ -141,6 +141,8 @@ const fr = {
   'screen.patientvariant.filter_prediction_polyphen2_hdiv.description': 'Ceci est une description',
   'screen.patientvariant.filter_prediction_polyphen2_hvar': 'Polyphen2 HVAR',
   'screen.patientvariant.filter_prediction_polyphen2_hvar.description': 'Ceci est une description',
+  'screen.patientvariant.filter_prediction_gerp': 'Gerp',
+  'screen.patientvariant.filter_prediction_gerp.description': 'Ceci est une description',
   'screen.patientvariant.category_cohort': 'Cohortes',
   'screen.patientvariant.category_zygosity': 'Zygosité et Famille',
   'screen.patientvariant.filter_transmission': 'Transmission',

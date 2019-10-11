@@ -223,10 +223,10 @@ class VariantResultsTable extends React.Component {
         <Card>
           <Row>
             <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={defaultVisibleColumns} onChange={this.handleColumnsVisible}>
-              {columnData.map((column) => (
-                <Row>
+              {columnData.map((column , index) => (
+                <Row key={index}>
                   <Col>
-                    <Checkbox value={column.key}>{column.key}</Checkbox>
+                    <Checkbox  value={column.key}>{column.key}</Checkbox>
                   </Col>
                 </Row>
               ))}
