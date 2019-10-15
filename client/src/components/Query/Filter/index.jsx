@@ -153,13 +153,17 @@ class Filter extends React.Component {
 
   render() {
     const { data } = this.state;
-    const { overlayOnly, editor, label, legend, content , dataSet} = this.props;
+    const { intl, overlayOnly, editor, label, legend, content , dataSet} = this.props;
+    const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
+    const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const overlay = (
         <Popover
             visible={this.isOpened()}
         >
           <Card className="filterCard" >
-            <Typography.Title level={4}>{data.id}</Typography.Title>
+            <Typography.Title level={4}>{titleText}</Typography.Title>
+            <Typography>{descriptionText}</Typography>
+            <br/>
             { editor }
             <Row type="flex" justify="end" style={dataSet.length<10 ? { marginTop: 'auto' } : null}>
               <Col>

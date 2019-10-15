@@ -100,6 +100,7 @@ const en = {
   'screen.patientsearch.pagination': '%d-%d of %d results',
   'screen.patientvariant.category_variant': 'Variants',
   'screen.patientvariant.filter_variant_type': 'Variant Type',
+  'screen.patientvariant.filter_variant_type.description': 'This is a description',
   'screen.patientvariant.filter_consequence': 'Consequence',
   'screen.patientvariant.filter_consequence.description': 'This is a description',
   'screen.patientvariant.filter_extref_dbsnp': 'dbSNP',
