@@ -194,6 +194,7 @@ class Filter extends React.Component {
               allOptions.length >= size
                 ? (
                   <Row style={{ marginTop: 'auto' }}>
+                    <br />
                     <Col align="end" span={24}>
                       <Pagination
                         total={allOptions.length}
@@ -206,6 +207,7 @@ class Filter extends React.Component {
                   </Row>
                 ) : null
           }
+          <br />
           <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
             <Col>
               <Button onClick={this.handleCancel}>Annuler</Button>
