@@ -177,24 +177,24 @@ class Filter extends React.Component {
       data, allOptions, size, page,
     } = this.state;
     const {
-      overlayOnly, editor, label, legend, content, dataSet,
+      intl, overlayOnly, editor, label, legend, content, dataSet,
     } = this.props;
-
-
+    const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
+    const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const overlay = (
       <Popover
         visible={this.isOpened()}
       >
         <Card className="filterCard">
-          <Typography.Title level={4}>{data.id}</Typography.Title>
+          <Typography.Title level={4}>{titleText}</Typography.Title>
+          <Typography>{descriptionText}</Typography>
+          <br />
           { editor }
-
           {
               allOptions.length >= size
                 ? (
                   <Row style={{ marginTop: 'auto' }}>
                     <Col align="end" span={24}>
-
                       <Pagination
                         total={allOptions.length}
                         pageSize={size}
