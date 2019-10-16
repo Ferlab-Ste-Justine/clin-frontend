@@ -116,8 +116,7 @@ class VariantNavigation extends React.Component {
   }
 
   render() {
-    const { searchData } = this.props;
-    const { intl, activeQuery, schema, queries, data,  } = this.props;
+    const { intl, activeQuery, schema, queries, data } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
