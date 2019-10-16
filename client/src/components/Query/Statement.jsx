@@ -135,9 +135,7 @@ class Statement extends React.Component {
   handleEdit(query) {
     if (this.isEditable()) {
       const { onEditCallback } = this.props;
-      if (onEditCallback) {
-        onEditCallback(query);
-      }
+      onEditCallback(query);
     }
   }
 
@@ -342,8 +340,6 @@ class Statement extends React.Component {
     const { checkedQueries } = this.state;
     const { onBatchEditCallback, onRemoveCallback, data } = this.props;
     const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, key], []);
-    console.log('keysToRemove', keysToRemove)
-
     this.setState({
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
