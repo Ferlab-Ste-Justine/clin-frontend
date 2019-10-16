@@ -1,7 +1,8 @@
 /* eslint-disable  */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
-import { isEqual, findIndex, last } from 'lodash';
+import { cloneDeep, isEqual, findIndex, last } from 'lodash';
+import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
@@ -48,9 +49,13 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_FETCH_SUCCEEDED:
       const details = normalizePatientDetails(action.payload.data);
       draft.activePatient = details.id;
-      draft.originalQueries = [];
-      draft.draftQueries = [];
-      draft.activeQuery = null;
+      let queryKey = uuidv1();
+      draft.originalQueries = [{
+        key: queryKey,
+        instructions: [],
+      }];
+      draft.draftQueries = cloneDeep(draft.originalQueries);
+      draft.activeQuery = queryKey;
       break;
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:

@@ -546,6 +546,7 @@ class Query extends React.Component {
                     data={item.data}
                     intl={intl}
                     onEditCallback={this.handleOperatorChange}
+                    key={index}
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
@@ -565,6 +566,7 @@ class Query extends React.Component {
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
+                    key={index}
                   />
                 );
               case INSTRUCTION_TYPE_SUBQUERY:
@@ -581,6 +583,7 @@ class Query extends React.Component {
                     onEditCallback={this.handleSubqueryChange}
                     onRemoveCallback={this.handleSubqueryRemoval}
                     onSelectCallback={onSelectCallback}
+                    key={index}
                   />
                 );
               default:
@@ -614,7 +617,7 @@ class Query extends React.Component {
 Query.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape([]).isRequired,
-  original: PropTypes.shape([]).isRequired,
+  original: PropTypes.shape([]),
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   active: PropTypes.bool,
@@ -631,6 +634,7 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
+  original : [],
   display: {
     compoundOperators: false,
     viewableSqon: false,
