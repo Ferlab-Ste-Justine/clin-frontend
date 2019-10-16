@@ -217,7 +217,6 @@ class PatientVariantScreen extends React.Component {
               onBatchEditCallback={this.handleQueriesChange}
               onRemoveCallback={this.handleQueryRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
-              onCommitCallback={this.handleCommitHistory}
               onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
             />
             <br/>

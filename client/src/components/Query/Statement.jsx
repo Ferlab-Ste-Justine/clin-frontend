@@ -20,13 +20,6 @@ import {
 } from './Subquery';
 import { createOperator } from './Operator';
 
-
-// const MAX_QUERIES = 15;
-// const MAX_REVISIONS = 10;
-// const DEFAULT_INSTRUCTIONS = {
-//   instructions: DEFAULT_EMPTY_QUERY,
-// };
-
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
 export const convertIndexToColor = index => `#${[
@@ -215,10 +208,6 @@ class Statement extends React.Component {
     if (this.isUndoable()) {
       this.props.onDraftHistoryUndoCallback();
     }
-  }
-
-  commit(version) {
-    this.props.onCommitCallback(version);
   }
 
   handleCheckQuery(e) {
@@ -550,7 +539,6 @@ Statement.propTypes = {
   onSortCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
-  onCommitCallback: PropTypes.func,
   onDraftHistoryUndoCallback: PropTypes.func,
 };
 
@@ -574,7 +562,6 @@ Statement.defaultProps = {
   onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},
-  onCommitCallback: () => {},
   onDraftHistoryUndoCallback: () => {}
 };
 
