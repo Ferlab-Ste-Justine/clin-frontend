@@ -101,6 +101,7 @@ class PatientVariantScreen extends React.Component {
                     return {
                         id: filter.id,
                         value: intl.formatMessage({ id: `screen.patientvariant.${filter.label}` }),
+                        type:filter.type
                     }
                 })
             })

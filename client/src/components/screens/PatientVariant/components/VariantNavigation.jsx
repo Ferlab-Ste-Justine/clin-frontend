@@ -12,6 +12,7 @@ import {
 } from 'antd';
 
 import GenericFilter from '../../../Query/Filter/Generic';
+import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
 import { sanitizeInstructions } from '../../../Query/index';
 
 
@@ -28,6 +29,7 @@ class VariantNavigation extends React.Component {
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
     this.handleNavigationSearch = this.handleNavigationSearch.bind(this);
     this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
+    this.renderFilterType = this.renderFilterType.bind(this);
   }
 
   handleNavigationSearch(query) {
@@ -115,12 +117,55 @@ class VariantNavigation extends React.Component {
     });
   }
 
-  render() {
+  renderFilterType(type){
     const { intl, activeQuery, schema, queries, data } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
+    switch (type) {
+        case 'generic':
+            return (
+              <GenericFilter
+                overlayOnly
+                autoOpen
+                options={{
+                  editable: true,
+                  selectable: false,
+                  removable: false,
+                }}
+                intl={intl}
+                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: 'all' })}
+                dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+                onEditCallback={this.handleFilterChange}
+                onRemoveCallback={this.handleFilterRemove}
+                onCancelCallback={this.handleCategoryOpenChange}
+              />
+            );
+            case 'numcomparison':
+              return (
+                <NumericalComparisonFilter
+                  overlayOnly
+                  autoOpen
+                  options={{
+                    editable: true,
+                    selectable: false,
+                    removable: false,
+                  }}
+                  intl={intl}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0})}
+                  dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+                  onEditCallback={this.handleFilterChange}
+                  onRemoveCallback={this.handleFilterRemove}
+                  onCancelCallback={this.handleCategoryOpenChange}
+                />
+              );
+    }
 
+  }
+
+  render() {
+    const { intl, schema, data } = this.props;
+    const { activeFilterId, searchResults } = this.state;
     const autocompletes = searchResults.map((group) => {
       return (
           <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
@@ -156,7 +201,12 @@ class VariantNavigation extends React.Component {
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
+              const {searchData} = this.props
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
+
+              const categoryInfo =find(searchData, ['id', id]);
+              const categoryData = find(categoryInfo.data, ['id', activeFilterId]);
+              const type = categoryData ? this.renderFilterType(categoryData.type) : null
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (
@@ -167,21 +217,7 @@ class VariantNavigation extends React.Component {
                   />
                   ))}
                   { activeFilterId !== null && (
-                  <GenericFilter
-                    overlayOnly
-                    autoOpen
-                    options={{
-                      editable: true,
-                      selectable: false,
-                      removable: false,
-                    }}
-                    intl={intl}
-                    data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: 'all' })}
-                    dataSet={data[activeFilterId] ? data[activeFilterId] : []}
-                    onEditCallback={this.handleFilterChange}
-                    onRemoveCallback={this.handleFilterRemove}
-                    onCancelCallback={this.handleCategoryOpenChange}
-                  />
+                      type
                   )}
                 </Menu.SubMenu>
               );

@@ -555,9 +555,14 @@ class Query extends React.Component {
                 );
               case INSTRUCTION_TYPE_FILTER:
                 let category = null
+                let type = null
                 categories.map((x, index) => {
                     const value = find(x.filters, ['id', item.data.id]  );
-                    value ? category = x.id : null
+                    if(value){
+                        category = x.id
+                        type = value.type
+                        console.log("type" , type)
+                    }
                 })
                 return (
                   <GenericFilter

@@ -119,8 +119,9 @@ class Filter extends React.Component {
     if (this.isEditable()) {
       const { draft } = this.state;
       const { editor, onEditCallback } = this.props;
-      const value = editor.props.children[6].props.children.props.children.props.value;
-      const operand = editor.props.children[0].props.children.props.children.props.value;
+      console.log("draft ------" ,draft)
+      const value = 1
+      const operand ='<'
       if (value.length > 0) {
         draft.operand = operand;
         draft.values = value;
@@ -179,6 +180,7 @@ class Filter extends React.Component {
     const {
       intl, overlayOnly, editor, label, legend, content, dataSet,
     } = this.props;
+    console.log("allOption" , allOptions)
     const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const overlay = (
@@ -190,23 +192,26 @@ class Filter extends React.Component {
           <Typography>{descriptionText}</Typography>
           <br />
           { editor }
-          {
-              allOptions.length >= size
-                ? (
-                  <Row style={{ marginTop: 'auto' }}>
-                    <br />
-                    <Col align="end" span={24}>
-                      <Pagination
-                        total={allOptions.length}
-                        pageSize={size}
-                        current={page}
-                        pageSizeOptions={['10', '25', '50', '100']}
-                        onChange={this.handlePageChange}
-                      />
-                    </Col>
-                  </Row>
-                ) : null
+
+          { allOptions  && (
+                allOptions.length >= size
+                  ? (
+                    <Row style={{ marginTop: 'auto' }}>
+                      <br />
+                      <Col align="end" span={24}>
+                        <Pagination
+                          total={allOptions.length}
+                          pageSize={size}
+                          current={page}
+                          pageSizeOptions={['10', '25', '50', '100']}
+                          onChange={this.handlePageChange}
+                        />
+                      </Col>
+                    </Row>
+                  ) : null
+          )
           }
+
           <br />
           <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
             <Col>
