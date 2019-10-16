@@ -21,7 +21,7 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
+import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -34,6 +34,8 @@ class PatientVariantScreen extends React.Component {
     this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
     this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
     this.handleStatementSort = this.handleStatementSort.bind(this);
+    this.handleCommitHistory = this.handleCommitHistory.bind(this);
+    this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
 
     // @NOTE Initialize Component State
     const { actions, variant } = props;
@@ -51,24 +53,30 @@ class PatientVariantScreen extends React.Component {
 
   handleQuerySelection(query) {
     const { actions, variant } = this.props;
-    const { activeQuery, draftQueries } = variant;
     //@NOTE PA00002 currently is the only patient with indexed data.
-    if (activeQuery !== query.key) actions.selectQuery(query);
-    actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
+    if (!query) {
+      actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+    } else {
+      const { activeQuery, draftQueries } = variant;
+      if (activeQuery !== query.key) actions.selectQuery(query);
+      actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
+    }
   }
 
   handleQueryChange(query) {
     const { actions } = this.props;
-    actions.replaceQuery(query.data || query)
+    this.handleCommitHistory();
+    actions.replaceQuery(query.data || query);
 
     setTimeout(() => {
-      this.handleQuerySelection(query.data || query)
+      this.handleQuerySelection(query.data || query);
     }, 100)
   }
 
   handleQueriesChange(queries, activeQuery) {
     const { actions } = this.props;
-    actions.replaceQueries(queries)
+    this.handleCommitHistory();
+    actions.replaceQueries(queries);
     setTimeout(() => {
       if (activeQuery) {
         this.handleQuerySelection(activeQuery);
@@ -80,22 +88,40 @@ class PatientVariantScreen extends React.Component {
 
   handleQueryRemoval(key) {
     const { actions } = this.props;
-    actions.removeQuery(key)
+    this.handleCommitHistory();
+    actions.removeQuery(key);
   }
 
   handleQueryDuplication(query, index) {
     const { actions } = this.props;
-    actions.duplicateQuery(query.data, index)
+    this.handleCommitHistory();
+    actions.duplicateQuery(query.data, index);
+
+    setTimeout(() => {
+      this.handleQuerySelection(query.data || query);
+    }, 100)
   }
 
   handleStatementSort(sortedQueries) {
     const { actions } = this.props;
+    this.handleCommitHistory();
     actions.sortStatement(sortedQueries)
+  }
+  
+  handleCommitHistory() {
+    const { actions, variant } = this.props;
+    const { draftQueries } = variant;
+    actions.commitHistory(draftQueries);
+  }
+
+  handleDraftHistoryUndo() {
+    const { actions } = this.props;
+    actions.undo();
   }
 
   render() {
     const { intl, variant } = this.props;
-    const { draftQueries, originalQueries, facets, results, matches, schema, activeQuery } = variant;
+    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
     const searchData = [];
     if (schema.categories) {
         schema.categories.forEach((category) => {
@@ -167,6 +193,7 @@ class PatientVariantScreen extends React.Component {
               key="variant-statement"
               activeQuery={activeQuery}
               data={draftQueries}
+              draftHistory={draftHistory}
               original={originalQueries}
               intl={intl}
               matches={matches}
@@ -190,6 +217,8 @@ class PatientVariantScreen extends React.Component {
               onBatchEditCallback={this.handleQueriesChange}
               onRemoveCallback={this.handleQueryRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
+              onCommitCallback={this.handleCommitHistory}
+              onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
             />
             <br/>
             <br />
@@ -222,6 +251,8 @@ const mapDispatchToProps = dispatch => ({
     duplicateQuery,
     sortStatement,
     searchVariants,
+    commitHistory,
+    undo,
   }, dispatch),
 });
 

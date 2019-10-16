@@ -59,3 +59,14 @@ export const searchVariants = (patient, statement, query, group = null, index = 
     limit,
   },
 });
+
+export const commitHistory = version => ({
+  type: actions.PATIENT_VARIANT_COMMIT_HISTORY,
+  payload: {
+    version,
+  },
+});
+
+export const undo = () => ({
+  type: actions.PATIENT_VARIANT_UNDO,
+});

@@ -1,10 +1,12 @@
 /* eslint-disable  */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
-import { cloneDeep, findIndex, pull } from 'lodash';
+import { isEqual, findIndex, last } from 'lodash';
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
+
+const MAX_REVISIONS = 10;
 
 export const initialVariantState = {
   schema: {},
@@ -12,6 +14,7 @@ export const initialVariantState = {
   activeQuery: null,
   originalQueries: [],
   draftQueries: [],
+  draftHistory: [],
   matches: {},
   results: {},
   facets: {},
@@ -23,13 +26,14 @@ export const variantShape = {
   activeQuery: PropTypes.String,
   originalQueries: PropTypes.array,
   draftQueries: PropTypes.array,
+  draftHistory: PropTypes.array,
   matches: PropTypes.shape({}),
   results: PropTypes.shape({}),
   facets: PropTypes.shape({}),
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
-  const { draftQueries } = draft;
+  const { draftQueries, draftHistory } = draft;
 
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
@@ -103,6 +107,27 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       const { statement } = action.payload;
       draft.draftQueries = statement
       break;
+
+    case actions.PATIENT_VARIANT_COMMIT_HISTORY:
+      const { version } = action.payload;
+      const newCommit = {
+        activeQuery: draft.activeQuery,
+        draftQueries: version
+      };
+      const lastVersionInHistory = last(draftHistory)
+      if (!isEqual(newCommit, lastVersionInHistory)) {
+        draftHistory.push(newCommit);
+      }
+      const revisions = draftHistory.length;
+      if (revisions > MAX_REVISIONS) {
+        draftHistory.splice(0, MAX_REVISIONS);
+      }
+      break;
+
+    case actions.PATIENT_VARIANT_UNDO:
+      const lastVersion = draftHistory.pop();
+      draft.draftQueries = lastVersion.draftQueries;
+      draft.activeQuery = lastVersion.activeQuery;
 
     default:
       break;
