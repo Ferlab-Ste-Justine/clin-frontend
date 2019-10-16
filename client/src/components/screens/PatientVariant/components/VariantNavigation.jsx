@@ -36,7 +36,11 @@ class VariantNavigation extends React.Component {
       const normalizedQuery = query.toLowerCase()
       const searchResults = searchData.reduce((accumulator, group) => {
         const matches = group.data.filter((datum) => {
-          return datum.value.toLowerCase().indexOf(normalizedQuery) !== -1
+          if (datum.value.toLowerCase) {
+            return datum.value.toLowerCase()
+              .indexOf(normalizedQuery) !== -1
+          }
+          return false;
         })
 
         if (matches.length > 0) {
