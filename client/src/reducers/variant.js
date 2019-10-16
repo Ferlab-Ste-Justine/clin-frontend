@@ -74,7 +74,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
-      draft.draftQueries = draftQueries.filter((query) => query.key !== action.payload.key);
+      draft.draftQueries = draftQueries.filter((query) => !Boolean(action.payload.keys.find((key) => key === query.key)));
       break;
 
     case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
@@ -120,7 +120,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       }
       const revisions = draftHistory.length;
       if (revisions > MAX_REVISIONS) {
-        draftHistory.splice(0, MAX_REVISIONS);
+        draftHistory.shift();
       }
       break;
 

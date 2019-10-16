@@ -31,7 +31,7 @@ class PatientVariantScreen extends React.Component {
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueriesChange = this.handleQueriesChange.bind(this);
-    this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
+    this.handleQueriesRemoval = this.handleQueriesRemoval.bind(this);
     this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
     this.handleStatementSort = this.handleStatementSort.bind(this);
     this.handleCommitHistory = this.handleCommitHistory.bind(this);
@@ -86,10 +86,10 @@ class PatientVariantScreen extends React.Component {
     }, 100)
   }
 
-  handleQueryRemoval(key) {
+  handleQueriesRemoval(keys) {
     const { actions } = this.props;
     this.handleCommitHistory();
-    actions.removeQuery(key);
+    actions.removeQuery(keys);
   }
 
   handleQueryDuplication(query, index) {
@@ -215,7 +215,7 @@ class PatientVariantScreen extends React.Component {
               onSortCallback={this.handleStatementSort}
               onEditCallback={this.handleQueryChange}
               onBatchEditCallback={this.handleQueriesChange}
-              onRemoveCallback={this.handleQueryRemoval}
+              onRemoveCallback={this.handleQueriesRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
               onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
             />

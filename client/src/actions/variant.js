@@ -26,10 +26,10 @@ export const replaceQueries = queries => ({
   },
 });
 
-export const removeQuery = key => ({
+export const removeQuery = keys => ({
   type: actions.PATIENT_VARIANT_QUERY_REMOVAL,
   payload: {
-    key,
+    keys,
   },
 });
 

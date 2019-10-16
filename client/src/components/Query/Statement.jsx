@@ -62,7 +62,7 @@ class Statement extends React.Component {
     this.handleRemove = this.handleRemove.bind(this);
     this.confirmRemoveChecked = this.confirmRemoveChecked.bind(this);
     this.confirmRemove = this.confirmRemove.bind(this);
-    this.getSubquery = this.getSubquery.bind(this);
+    this.getSubqueryKeys = this.getSubqueryKeys.bind(this);
     this.showDeleteConfirm = this.showDeleteConfirm.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.handleReorder = this.handleReorder.bind(this);
@@ -169,18 +169,22 @@ class Statement extends React.Component {
 
   handleRemove(query) {
     if (this.isRemovable()) {
-      const hasSubQuery = find(query.data.instructions, ['type', 'subquery']);
-      if (hasSubQuery) {
-        this.showDeleteConfirm(query.data.key, query);
+      const subqueryKeys = this.getSubqueryKeys([query.data.key]);
+      if (!isEmpty(subqueryKeys)) {
+        const subqueryKeysToDelete = [
+          ...subqueryKeys,
+          query.data.key
+        ]
+        this.showDeleteConfirm(subqueryKeysToDelete);
       } else {
-        this.confirmRemove(query.data.key);
+        this.confirmRemove([query.data.key]);
       }
     }
   }
 
-  confirmRemove(key) {
+  confirmRemove(keys) {
     const { onRemoveCallback } = this.props;
-    onRemoveCallback(key);
+    onRemoveCallback(keys);
   }
 
   handleReorder(sorted) {
@@ -288,78 +292,65 @@ class Statement extends React.Component {
     }
   }
 
-  getSubquery() {
+  getSubqueryKeys(keysToSearchFor) {
     const { data } = this.props;
-    const { checkedQueries } = this.state;
-
-    const subquery = [];
-    for (const d of data) {
-      if (d.instructions) {
-        d.instructions.map((i) => {
-          if (i.type === INSTRUCTION_TYPE_SUBQUERY) {
-            if (checkedQueries.indexOf(i.data.query) != -1) {
-              return subquery.push(d);
-            }
-          }
-        });
-      }
-    }
-    return subquery;
+    const subqueryKeys = data.filter(({ instructions }) => {
+      return Boolean(instructions.find((i) => {
+        return i.type === INSTRUCTION_TYPE_SUBQUERY && keysToSearchFor.indexOf(i.data.query) !== -1;
+      }))
+    }).map(({ key }) => key);
+    return subqueryKeys;
   }
 
   handleRemoveChecked() {
     if (this.isRemovable()) {
-      const keys = [];
-      const subquery = this.getSubquery();
-      subquery.map(s => keys.push({ key: s.key }));
-
-      keys.length != 0 ? this.showDeleteConfirm(keys) : this.confirmRemoveChecked();
+      const { checkedQueries } = this.state;
+      const subqueryKeys = this.getSubqueryKeys(checkedQueries);
+      if (!isEmpty(subqueryKeys)) {
+        const subqueryKeysToDelete = [
+          ...subqueryKeys,
+          ...checkedQueries
+        ];
+        this.showDeleteConfirm(subqueryKeysToDelete);
+      } else {
+        this.confirmRemoveChecked();
+      }
     }
   }
 
 
-  showDeleteConfirm(delSubQuery, query = null) {
+  showDeleteConfirm(keys) {
     const { confirm } = Modal;
     const { intl } = this.props;
     const modalTitle = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.title' });
     const modalContent = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.content' });
     const modalOk = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.ok' });
     const modalCancel = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.cancel' });
-    const that = this;
     confirm({
       title: modalTitle,
       content: modalContent,
       okText: modalOk,
       okType: 'danger',
       cancelText: modalCancel,
-
-      onOk() {
-        Array.isArray(delSubQuery) ? that.confirmRemoveChecked(delSubQuery) : that.confirmRemove(delSubQuery);
+      onOk: () => {
+        this.confirmRemove(keys);
       },
     });
   }
 
-  confirmRemoveChecked(delSubQuery = []) {
+  confirmRemoveChecked() {
     const { checkedQueries } = this.state;
-    const { onRemoveCallback, data } = this.props;
-
-    
-
-    const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
-    keysToRemove.push(...delSubQuery);
-
-    const newDraft = cloneDeep(data);
-    pullAllBy(newDraft, keysToRemove, 'key');
+    const { onBatchEditCallback, onRemoveCallback, data } = this.props;
+    const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, key], []);
+    console.log('keysToRemove', keysToRemove)
 
     this.setState({
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
     }, () => {
-      keysToRemove.forEach((query) => {
-        onRemoveCallback(query.key);
-      })
-    } );
+      onRemoveCallback(keysToRemove);
+    });
   }
 
   handleNewQuery() {
