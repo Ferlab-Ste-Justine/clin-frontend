@@ -21,7 +21,7 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { fetchSchema, selectQuery, replaceQuery, removeQuery, duplicateQuery, sortStatement, searchVariants } from '../../../actions/variant';
+import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -30,66 +30,98 @@ class PatientVariantScreen extends React.Component {
     this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
-    this.handleQueryRemoval = this.handleQueryRemoval.bind(this);
+    this.handleQueriesChange = this.handleQueriesChange.bind(this);
+    this.handleQueriesRemoval = this.handleQueriesRemoval.bind(this);
     this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
     this.handleStatementSort = this.handleStatementSort.bind(this);
+    this.handleCommitHistory = this.handleCommitHistory.bind(this);
+    this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
 
     // @NOTE Initialize Component State
     const { actions, variant } = props;
-    const { schema, draftQueries, activeQuery } = variant;
+    const { schema } = variant;
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
       actions.fetchSchema();
     }
+  }
 
-    if (draftQueries[activeQuery]) {
-        this.handleQuerySelection(draftQueries[activeQuery])
-    } else {
-        this.handleQuerySelection(null)
-    }
+  componentDidMount() {
+    //@NOTE PA00002 currently is the only patient with indexed data.
+    this.props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
   }
 
   handleQuerySelection(query) {
     const { actions, variant } = this.props;
-    const { activePatient, draftQueries } = variant;
-
     //@NOTE PA00002 currently is the only patient with indexed data.
-    actions.selectQuery(query);
     if (!query) {
-        actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+      actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
     } else {
-        actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25)
+      const { activeQuery, draftQueries } = variant;
+      if (activeQuery !== query.key) actions.selectQuery(query);
+      actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
     }
   }
 
   handleQueryChange(query) {
     const { actions } = this.props;
-    actions.replaceQuery(query.data || query)
+    this.handleCommitHistory();
+    actions.replaceQuery(query.data || query);
 
     setTimeout(() => {
-        this.handleQuerySelection(query.data || query)
+      this.handleQuerySelection(query.data || query);
     }, 100)
   }
 
-  handleQueryRemoval(query) {
+  handleQueriesChange(queries, activeQuery) {
     const { actions } = this.props;
-    actions.removeQuery(query.data || query)
-    this.handleQuerySelection(null)
+    this.handleCommitHistory();
+    actions.replaceQueries(queries);
+    setTimeout(() => {
+      if (activeQuery) {
+        this.handleQuerySelection(activeQuery);
+      } else if (queries.length === 1) {
+        this.handleQuerySelection(queries[0]);
+      }
+    }, 100)
+  }
+
+  handleQueriesRemoval(keys) {
+    const { actions } = this.props;
+    this.handleCommitHistory();
+    actions.removeQuery(keys);
   }
 
   handleQueryDuplication(query, index) {
     const { actions } = this.props;
-    actions.duplicateQuery(query.data, index)
+    this.handleCommitHistory();
+    actions.duplicateQuery(query.data, index);
+
+    setTimeout(() => {
+      this.handleQuerySelection(query.data || query);
+    }, 100)
   }
 
-  handleStatementSort(sortedQueries, sortedActiveQuery) {
+  handleStatementSort(sortedQueries) {
     const { actions } = this.props;
-    actions.sortStatement(sortedQueries, sortedActiveQuery)
+    this.handleCommitHistory();
+    actions.sortStatement(sortedQueries)
+  }
+  
+  handleCommitHistory() {
+    const { actions, variant } = this.props;
+    const { draftQueries } = variant;
+    actions.commitHistory(draftQueries);
+  }
+
+  handleDraftHistoryUndo() {
+    const { actions } = this.props;
+    actions.undo();
   }
 
   render() {
     const { intl, variant } = this.props;
-    const { draftQueries, originalQueries, facets, results, matches, schema, activeQuery } = variant;
+    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
     const searchData = [];
 
     if (schema.categories) {
@@ -165,7 +197,9 @@ class PatientVariantScreen extends React.Component {
             <br />
             <Statement
               key="variant-statement"
+              activeQuery={activeQuery}
               data={draftQueries}
+              draftHistory={draftHistory}
               original={originalQueries}
               intl={intl}
               matches={matches}
@@ -186,8 +220,10 @@ class PatientVariantScreen extends React.Component {
               onSelectCallback={this.handleQuerySelection}
               onSortCallback={this.handleStatementSort}
               onEditCallback={this.handleQueryChange}
-              onRemoveCallback={this.handleQueryRemoval}
+              onBatchEditCallback={this.handleQueriesChange}
+              onRemoveCallback={this.handleQueriesRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
+              onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
             />
             <br/>
             <br />
@@ -215,10 +251,13 @@ const mapDispatchToProps = dispatch => ({
     fetchSchema,
     selectQuery,
     replaceQuery,
+    replaceQueries,
     removeQuery,
     duplicateQuery,
     sortStatement,
     searchVariants,
+    commitHistory,
+    undo,
   }, dispatch),
 });
 

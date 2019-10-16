@@ -124,7 +124,6 @@ class VariantNavigation extends React.Component {
     const { activeFilterId, searchResults } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
-
     const autocompletes = searchResults.map((group) => {
       return (
           <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
