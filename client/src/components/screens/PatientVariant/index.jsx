@@ -91,35 +91,41 @@ class PatientVariantScreen extends React.Component {
     const { intl, variant } = this.props;
     const { draftQueries, originalQueries, facets, results, matches, schema, activeQuery } = variant;
     const searchData = [];
+
     if (schema.categories) {
         schema.categories.forEach((category) => {
             searchData.push({
                 id: category.id,
                 type: 'category',
                 label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
-                data: category.filters.map((filter) => {
+                data: category.filters ? category.filters.reduce((accumulator, filter) => {
+                  const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
                     return {
-                        id: filter.id,
-                        value: intl.formatMessage({ id: `screen.patientvariant.${filter.label}` }),
+                      id: facet.id,
+                      value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
                     }
-                })
+                  }) : []
+
+                  return accumulator.concat(searcheableFacet)
+                }, []) : []
             })
         })
     }
-    if (facets.aggs) {
-        Object.keys(facets.aggs).forEach((key) => {
-            searchData.push({
-                id: key,
-                type: 'filter',
-                label: intl.formatMessage({id: `screen.patientvariant.filter_${key}`}),
-                data: facets.aggs[key].map((value) => {
-                    return {
-                        id: value.value,
-                        value: value.value,
-                        count: value.count,
-                    }
-                })
+    if (facets[activeQuery]) {
+      Object.keys(facets[activeQuery])
+        .forEach((key) => {
+          searchData.push({
+            id: key,
+            type: 'filter',
+            label: intl.formatMessage({ id: `screen.patientvariant.filter_${key}` }),
+            data: facets[activeQuery][key].map((value) => {
+              return {
+                id: value.value,
+                value: value.value,
+                count: value.count,
+              }
             })
+          })
         })
     }
 
