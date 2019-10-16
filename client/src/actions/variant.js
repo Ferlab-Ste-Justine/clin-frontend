@@ -26,10 +26,10 @@ export const replaceQueries = queries => ({
   },
 });
 
-export const removeQuery = key => ({
+export const removeQuery = keys => ({
   type: actions.PATIENT_VARIANT_QUERY_REMOVAL,
   payload: {
-    key,
+    keys,
   },
 });
 
@@ -58,4 +58,15 @@ export const searchVariants = (patient, statement, query, group = null, index = 
     index,
     limit,
   },
+});
+
+export const commitHistory = version => ({
+  type: actions.PATIENT_VARIANT_COMMIT_HISTORY,
+  payload: {
+    version,
+  },
+});
+
+export const undo = () => ({
+  type: actions.PATIENT_VARIANT_UNDO,
 });
