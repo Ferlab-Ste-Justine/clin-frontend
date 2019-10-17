@@ -211,9 +211,6 @@ class VariantResultsTable extends React.Component {
     const defaultVisibleColumns = visibleColumns[currentTab]
     const count = currentTab === VARIANT_TAB ? variantData.length : geneData.length;
 
-    console.log('columnData', columnData)
-    console.log('defaultVisibleColumns', defaultVisibleColumns)
-
     if (count === 0) {
         return null
     }

@@ -6,7 +6,7 @@ import {
   Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal,
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter,
+  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -20,13 +20,6 @@ import {
 } from './Subquery';
 import { createOperator } from './Operator';
 
-
-const MAX_QUERIES = 15;
-const MAX_REVISIONS = 10;
-const DEFAULT_INSTRUCTIONS = {
-  instructions: DEFAULT_EMPTY_QUERY,
-};
-
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
 export const convertIndexToColor = index => `#${[
@@ -37,15 +30,13 @@ export const convertIndexToColor = index => `#${[
 class Statement extends React.Component {
   constructor(props) {
     super(props);
-    this.versions = [];
+    const { data, display, original } = this.props;
     this.state = {
-      draft: null,
-      original: null,
+      original: cloneDeep(original),
       checkedQueries: [],
-      activeQuery: null,
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
-      display: null,
+      display: cloneDeep(data).map(() => ({ ...display })),
       visible: false,
       options: {
         copyable: null,
@@ -71,7 +62,7 @@ class Statement extends React.Component {
     this.handleRemove = this.handleRemove.bind(this);
     this.confirmRemoveChecked = this.confirmRemoveChecked.bind(this);
     this.confirmRemove = this.confirmRemove.bind(this);
-    this.getSubquery = this.getSubquery.bind(this);
+    this.getSubqueryKeys = this.getSubqueryKeys.bind(this);
     this.showDeleteConfirm = this.showDeleteConfirm.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.handleReorder = this.handleReorder.bind(this);
@@ -83,38 +74,6 @@ class Statement extends React.Component {
     this.handleNewQuery = this.handleNewQuery.bind(this);
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
-    this.commit = this.commit.bind(this);
-
-    // @NOTE Initialize Component State
-    const { data, display, onSelectCallback } = props;
-    const activeQuery = data.length - 1;
-    const activeQueryData = (data[activeQuery] ? data[activeQuery] : null);
-    const displays = [];
-    data.map((newDatum) => {
-      displays.push({ ...display });
-      if (!newDatum.key) {
-        newDatum.key = uuidv1();
-      }
-      return newDatum;
-    });
-
-    this.state.original = data;
-    this.state.draft = cloneDeep(data);
-    this.state.display = cloneDeep(displays);
-    if (activeQueryData) {
-      this.state.activeQuery = activeQuery;
-      if (onSelectCallback) {
-        onSelectCallback(activeQueryData);
-      }
-    }
-  }
-
-  static getDerivedStateFromProps(props) {
-    const { data, original } = props;
-    return {
-      original: cloneDeep(original),
-      draft: cloneDeep(data),
-    };
   }
 
   isCopyable() {
@@ -166,29 +125,17 @@ class Statement extends React.Component {
   }
 
   handleClick(query) {
-    const { activeQuery } = this.state;
-    const { index } = query;
-    if (activeQuery !== index) {
-      const { onSelectCallback } = this.props;
-      this.setState({
-        activeQuery: index,
-      }, () => { onSelectCallback(query.data); });
+    const { activeQuery } = this.props;
+    const isActive = activeQuery === query.data.key;
+    if (!isActive) {
+      this.props.onSelectCallback(query.data);
     }
   }
 
   handleEdit(query) {
     if (this.isEditable()) {
       const { onEditCallback } = this.props;
-      const { draft } = this.state;
-      this.commit(draft);
-      draft[query.index] = query.data;
-      this.setState({
-        draft,
-      }, () => {
-        if (onEditCallback) {
-          onEditCallback(query);
-        }
-      });
+      onEditCallback(query);
     }
   }
 
@@ -203,23 +150,15 @@ class Statement extends React.Component {
   handleDuplicate(query) {
     if (this.isDuplicatable()) {
       const { onDuplicateCallback } = this.props;
-      const { draft, display } = this.state;
-
-      this.commit(draft);
+      const { display } = this.state;
       const index = query.index + 1;
       const clone = cloneDeep(query);
       clone.data.key = uuidv1();
-
-      draft.splice(index, 0, clone.data);
-
       const displayClone = cloneDeep(display);
       const howDisplayed = this.state.display[query.index];
       displayClone.splice(index, 0, howDisplayed);
-
       this.setState({
-        draft,
         display: displayClone,
-        activeQuery: index,
       }, () => {
         onDuplicateCallback(clone, index);
       });
@@ -228,46 +167,35 @@ class Statement extends React.Component {
 
   handleRemove(query) {
     if (this.isRemovable()) {
-      const { draft } = this.state;
-      let key = null;
-      for (const d of draft) {
-        const hasSubQuery = filter(d.instructions, ['type', 'subquery']);
-        const test = find(hasSubQuery, (q) => { q.data.query === query.data.key ? key = d.key : null; });
+      const subqueryKeys = this.getSubqueryKeys([query.data.key]);
+      if (!isEmpty(subqueryKeys)) {
+        const subqueryKeysToDelete = [
+          ...subqueryKeys,
+          query.data.key
+        ]
+        this.showDeleteConfirm(subqueryKeysToDelete);
+      } else {
+        this.confirmRemove([query.data.key]);
       }
-
-      key != null ? this.showDeleteConfirm(key, query) : this.confirmRemove(query, key);
     }
   }
 
-  confirmRemove(query = null, key = null) {
-    const { draft } = this.state;
+  confirmRemove(keys) {
     const { onRemoveCallback } = this.props;
-
-    this.commit(draft);
-    pullAllBy(draft, [{ key: query.data.key }], 'key');
-    key != null ? pullAllBy(draft, [{ key }], 'key') : null;
-    this.setState({
-      draft,
-    }, () => {
-      onRemoveCallback(query);
-    });
+    onRemoveCallback(keys);
   }
 
   handleReorder(sorted) {
-    if (this.isReorderable()) {
-      const { activeQuery, draft, display } = this.state;
-      const { onSortCallback } = this.props;
-      this.commit(draft);
+    if (this.isReorderable() && !isEmpty(sorted)) {
+      const { display } = this.state;
+      const { onSortCallback, data } = this.props;
       const sortedIndices = sorted.map(clip => clip.index);
-      const sortedData = sortedIndices.map(sortedIndice => draft[sortedIndice]);
+      const sortedData = sortedIndices.map(sortedIndice => data[sortedIndice]);
       const sortedDisplay = sortedIndices.map(sortedIndice => display[sortedIndice]);
-      const newActiveQuery = findIndex(sortedData, { key: draft[activeQuery].key });
       this.setState({
-        activeQuery: newActiveQuery,
         display: sortedDisplay,
-        draft: sortedData,
       }, () => {
-        onSortCallback(sortedData, newActiveQuery)
+        onSortCallback(sortedData)
       });
     }
   }
@@ -280,30 +208,13 @@ class Statement extends React.Component {
 
   handleUndo() {
     if (this.isUndoable()) {
-      const { onEditCallback } = this.props;
-      const last = this.versions.pop();
-      if (last) {
-        this.setState({
-          draft: cloneDeep(last),
-        }, () => {
-          last.forEach((query) => {
-            onEditCallback(query)
-          })
-        });
-      }
-    }
-  }
-
-  commit(version) {
-    this.versions.push(cloneDeep(version));
-    const revisions = this.versions.length;
-    if (revisions > MAX_REVISIONS) {
-      this.versions.splice(0, MAX_REVISIONS);
+      this.props.onDraftHistoryUndoCallback();
     }
   }
 
   handleCheckQuery(e) {
-    const { checkedQueries, draft } = this.state;
+    const { data } = this.props;
+    const { checkedQueries } = this.state;
     const { target } = e;
     const { value, checked } = target;
     if (!checked) {
@@ -314,7 +225,7 @@ class Statement extends React.Component {
       }
       checkedQueries.push(value);
     }
-    const queriesCount = draft.length;
+    const queriesCount = data.length;
     const checkedQueriesCount = checkedQueries.length;
     const queriesAreAllChecked = (queriesCount === checkedQueriesCount);
     this.setState({
@@ -325,14 +236,14 @@ class Statement extends React.Component {
   }
 
   handleCombine({ key }) {
-    const { checkedQueries, draft, display } = this.state;
-    const index = draft.length;
-
+    const { data } = this.props;
+    
+    const { checkedQueries, display } = this.state;
     const defaultDisplay = cloneDeep(this.props.display);
     display.push(defaultDisplay);
 
     if (checkedQueries.length > 1) {
-      const { onEditCallback } = this.props;
+      const { onBatchEditCallback } = this.props;
       const sortedCheckedQueries = cloneDeep(checkedQueries);
       sortedCheckedQueries.sort((a, b) => this.findQueryIndexForKey(a) - this.findQueryIndexForKey(b));
       const instructions = sortedCheckedQueries.reduce((accumulator, query) => {
@@ -346,14 +257,15 @@ class Statement extends React.Component {
         key: uuidv1(),
         instructions,
       };
-      draft.push(newSubquery);
+      const newDraft = [
+        ...data,
+        newSubquery
+      ]
       this.setState({
-        draft,
-        activeQuery: index,
         checkedQueries: [],
         display,
       }, () => {
-        onEditCallback(newSubquery)
+        onBatchEditCallback(newDraft, newSubquery);
       });
     }
   }
@@ -368,8 +280,8 @@ class Statement extends React.Component {
         queriesAreAllChecked: false,
       });
     } else {
-      const { draft } = this.state;
-      const checkedQueries = draft.reduce((accumulator, query) => [...accumulator, query.key], []);
+      const { data } = this.props;
+      const checkedQueries = data.reduce((accumulator, query) => [...accumulator, query.key], []);
       this.setState({
         checkedQueries,
         queriesChecksAreIndeterminate: false,
@@ -378,124 +290,94 @@ class Statement extends React.Component {
     }
   }
 
-  getSubquery() {
-    const { checkedQueries, draft } = this.state;
-
-    const subquery = [];
-    for (const d of draft) {
-      if (d.instructions) {
-        d.instructions.map((i) => {
-          if (i.type === INSTRUCTION_TYPE_SUBQUERY) {
-            if (checkedQueries.indexOf(i.data.query) != -1) {
-              return subquery.push(d);
-            }
-          }
-        });
-      }
-    }
-    return subquery;
+  getSubqueryKeys(keysToSearchFor) {
+    const { data } = this.props;
+    const subqueryKeys = data.filter(({ instructions }) => {
+      return Boolean(instructions.find((i) => {
+        return i.type === INSTRUCTION_TYPE_SUBQUERY && keysToSearchFor.indexOf(i.data.query) !== -1;
+      }))
+    }).map(({ key }) => key);
+    return subqueryKeys;
   }
 
   handleRemoveChecked() {
     if (this.isRemovable()) {
-      const { checkedQueries, draft } = this.state;
-
-      const keys = [];
-      const subquery = this.getSubquery();
-      subquery.map(s => keys.push({ key: s.key }));
-
-      keys.length != 0 ? this.showDeleteConfirm(keys) : this.confirmRemoveChecked();
+      const { checkedQueries } = this.state;
+      const subqueryKeys = this.getSubqueryKeys(checkedQueries);
+      if (!isEmpty(subqueryKeys)) {
+        const subqueryKeysToDelete = [
+          ...subqueryKeys,
+          ...checkedQueries
+        ];
+        this.showDeleteConfirm(subqueryKeysToDelete);
+      } else {
+        this.confirmRemoveChecked();
+      }
     }
   }
 
 
-  showDeleteConfirm(delSubQuery, query = null) {
+  showDeleteConfirm(keys) {
     const { confirm } = Modal;
     const { intl } = this.props;
     const modalTitle = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.title' });
     const modalContent = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.content' });
     const modalOk = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.ok' });
     const modalCancel = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.cancel' });
-    const that = this;
     confirm({
       title: modalTitle,
       content: modalContent,
       okText: modalOk,
       okType: 'danger',
       cancelText: modalCancel,
-
-      onOk() {
-        Array.isArray(delSubQuery) ? that.confirmRemoveChecked(delSubQuery) : that.confirmRemove(query, delSubQuery);
+      onOk: () => {
+        this.confirmRemove(keys);
       },
     });
   }
 
-  confirmRemoveChecked(delSubQuery = []) {
-    const { checkedQueries, draft } = this.state;
-    const { onRemoveCallback } = this.props;
-
-    this.commit(draft);
-
-    const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, { key }], []);
-    keysToRemove.push(...delSubQuery);
-
-    const newDraft = cloneDeep(draft)
-    pullAllBy(newDraft, keysToRemove, 'key');
-
+  confirmRemoveChecked() {
+    const { checkedQueries } = this.state;
+    const { onBatchEditCallback, onRemoveCallback, data } = this.props;
+    const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, key], []);
     this.setState({
-      draft: newDraft,
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
     }, () => {
-      keysToRemove.forEach((query) => {
-        console.log('keysToRemove ', query)
-        onRemoveCallback(query);
-      })
-    } );
+      onRemoveCallback(keysToRemove);
+    });
   }
 
   handleNewQuery() {
     const { onEditCallback } = this.props;
-    const { draft, display } = this.state;
-
+    const { display } = this.state;
     const newQuery = {
       key: uuidv1(),
       instructions: []
     };
-    draft.push(newQuery);
-
     const newDisplay = cloneDeep(this.props.display);
     display.push(newDisplay);
-
     this.setState({
-      draft,
       display,
-      activeQuery: draft.length - 1,
     }, () => {
       onEditCallback(newQuery)
     });
   }
 
   findQueryIndexForKey(key) {
-    const { draft } = this.state;
-    return findIndex(draft, { key });
+    const { data } = this.props;
+    return findIndex(data, { key });
   }
 
   render() {
-    const {
-      display, draft, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked, activeQuery,
-    } = this.state;
-    if (draft === null) { return null; }
-    const { options, intl, facets, matches ,categories } = this.props;
+    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory } = this.props;
+    if (!data) return null;
+    const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
       editable, reorderable, removable, undoable,
     } = options;
     const checkedQueriesCount = checkedQueries.length;
-    const query = cloneDeep(draft[activeQuery]);
-    const subqueries = query ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
-    const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
-
     const combineText = intl.formatMessage({ id: 'screen.patientvariant.statement.combine' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.statement.delete' });
     const newQueryText = intl.formatMessage({ id: 'screen.patientvariant.statement.newQuery' });
@@ -508,10 +390,13 @@ class Statement extends React.Component {
     const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });
     const deleteSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.deleteSelection' });
     const undoToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.undo' });
-    const queries = draft.reduce((accumulator, query, index) => {
+    const queries = data.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
-      const isActive = activeQuery === index;
+      const isActive = activeQuery === query.key;
       const initial = find(original, { key: query.key }) || null;
+      const subqueries = isActive ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
+      const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
+
       return [...accumulator, (
         <div className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
           <div
@@ -609,8 +494,8 @@ class Statement extends React.Component {
             </Tooltip>
             { undoable && (
             <Tooltip title={undoToolTip}>
-              <Badge count={this.versions.length}>
-                <Button icon="undo" shape="circle" disabled={(this.versions.length < 1)} onClick={this.handleUndo} />
+              <Badge count={draftHistory.length}>
+                <Button icon="undo" shape="circle" disabled={(draftHistory.length < 1)} onClick={this.handleUndo} />
               </Badge>
             </Tooltip>
             ) }
@@ -641,6 +526,7 @@ Statement.propTypes = {
   onSortCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
+  onDraftHistoryUndoCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -659,9 +545,11 @@ Statement.defaultProps = {
   },
   onSelectCallback: () => {},
   onEditCallback: () => {},
+  onBatchEditCallback: () => {},
   onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},
+  onDraftHistoryUndoCallback: () => {}
 };
 
 export default Statement;
