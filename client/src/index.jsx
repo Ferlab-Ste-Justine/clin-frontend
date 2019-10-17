@@ -29,10 +29,3 @@ if (module.hot) {
     render();
   });
 }
-
-if (window.CLIN.defaultUsername === '%REACT_APP_DEFAULT_USERNAME%') {
-  window.CLIN.defaultUsername = '';
-}
-if (window.CLIN.defaultPassword === '%REACT_APP_DEFAULT_PASSWORD%') {
-  window.CLIN.defaultPassword = '';
-}
