@@ -125,11 +125,8 @@ class Statement extends React.Component {
   }
 
   handleClick(query) {
-    const { activeQuery } = this.props;
-    const isActive = activeQuery === query.data.key;
-    if (!isActive) {
-      this.props.onSelectCallback(query.data);
-    }
+    const { onSelectCallback } = this.props;
+    onSelectCallback(query.data.key);
   }
 
   handleEdit(query) {
@@ -350,19 +347,8 @@ class Statement extends React.Component {
   }
 
   handleNewQuery() {
-    const { onEditCallback } = this.props;
-    const { display } = this.state;
-    const newQuery = {
-      key: uuidv1(),
-      instructions: []
-    };
-    const newDisplay = cloneDeep(this.props.display);
-    display.push(newDisplay);
-    this.setState({
-      display,
-    }, () => {
-      onEditCallback(newQuery)
-    });
+    const { onCreateNewQueryCallback } = this.props;
+    onCreateNewQueryCallback();
   }
 
   findQueryIndexForKey(key) {
@@ -398,7 +384,7 @@ class Statement extends React.Component {
       const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
 
       return [...accumulator, (
-        <div className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
+        <div key={query.key} className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
           <div
             className="selector"
             style={{
@@ -521,6 +507,7 @@ Statement.propTypes = {
   data: PropTypes.array.isRequired,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  onCreateNewQueryCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onSortCallback: PropTypes.func,
@@ -543,6 +530,7 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
+  onCreateNewQueryCallback: () => {},
   onSelectCallback: () => {},
   onEditCallback: () => {},
   onBatchEditCallback: () => {},

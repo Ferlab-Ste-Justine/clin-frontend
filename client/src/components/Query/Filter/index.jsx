@@ -25,47 +25,31 @@ export const createFilter = type => ({
 class Filter extends React.Component {
   constructor(props) {
     super(props);
+    const { data, dataSet = [], autoOpen, visible, sortData } = props;
     this.state = {
       type: null,
-      data: null,
-      dataSet: null,
-      draft: null,
-      visible: null,
-      selected: false,
-      opened: null,
-      allOptions: null,
-      selection: [],
-      size: null,
-      page: null,
+      data,
+      dataSet,
+      draft: cloneDeep(data),
+      visible,
+      opened: autoOpen,
+      allOptions: cloneDeep(sortData),
+      selection: data.values || [],
+      size: 10,
+      page: 1,
     };
 
     this.isEditable = this.isEditable.bind(this);
     this.isRemovable = this.isRemovable.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
-    this.isSelected = this.isSelected.bind(this);
     this.isOpened = this.isOpened.bind(this);
     this.isVisible = this.isVisible.bind(this);
     this.serialize = this.serialize.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.handleSelect = this.handleSelect.bind(this);
     this.handleApply = this.handleApply.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-
-    // @NOTE Initialize Component State
-    const {
-      data, dataSet, autoOpen, visible, sortData,
-    } = props;
-    this.state.data = data;
-    this.state.dataSet = dataSet || [];
-    this.state.draft = cloneDeep(data);
-    this.state.selection = data.values ? cloneDeep(data.values) : [];
-    this.state.opened = autoOpen;
-    this.state.visible = visible;
-    this.state.allOptions = cloneDeep(sortData);
-    this.state.page = 1;
-    this.state.size = 10;
   }
 
   isEditable() {
@@ -89,11 +73,6 @@ class Filter extends React.Component {
   isVisible() {
     const { visible } = this.state;
     return visible === true;
-  }
-
-  isSelected() {
-    const { selected } = this.state;
-    return selected === true;
   }
 
   isOpened() {
@@ -147,17 +126,6 @@ class Filter extends React.Component {
     });
   }
 
-  handleSelect() {
-    if (this.isSelectable() && !this.isOpened()) {
-      const { onSelectCallback } = this.props;
-      this.setState({
-        selected: !this.isSelected(),
-      }, () => {
-        onSelectCallback(this.serialize());
-      });
-    }
-  }
-
   toggleMenu() {
     this.setState({ opened: !this.isOpened() });
   }
@@ -174,7 +142,7 @@ class Filter extends React.Component {
 
   render() {
     const {
-      data, allOptions, size, page,
+      data, allOptions, size, page, opened
     } = this.state;
     const {
       intl, overlayOnly, editor, label, legend, content, dataSet,
@@ -183,7 +151,7 @@ class Filter extends React.Component {
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const overlay = (
       <Popover
-        visible={this.isOpened()}
+        visible={opened}
       >
         <Card className="filterCard">
           <Typography.Title level={4}>{titleText}</Typography.Title>
@@ -225,7 +193,7 @@ class Filter extends React.Component {
         <Dropdown
           onVisibleChange={this.toggleMenu}
           overlay={overlay}
-          visible={this.isOpened()}
+          visible={opened}
           placement="bottomLeft"
         >
           <span />
@@ -239,8 +207,7 @@ class Filter extends React.Component {
           visible={this.isVisible()}
           closable={this.isRemovable()}
           onClose={this.handleClose}
-          color={this.isSelected() ? 'blue' : ''}
-          onClick={this.handleSelect}
+          color={opened ? 'blue' : ''}
         >
           <Popover
             className="legend"
@@ -254,7 +221,7 @@ class Filter extends React.Component {
             { label }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
+          <Dropdown overlay={overlay} visible={opened} placement="bottomLeft">
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }

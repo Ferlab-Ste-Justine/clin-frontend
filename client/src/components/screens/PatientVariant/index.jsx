@@ -21,20 +21,19 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
+import { createNewQuery, fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, undo } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.handleCreateNewQuery = this.handleCreateNewQuery.bind(this);
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueriesChange = this.handleQueriesChange.bind(this);
     this.handleQueriesRemoval = this.handleQueriesRemoval.bind(this);
     this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
     this.handleStatementSort = this.handleStatementSort.bind(this);
-    this.handleCommitHistory = this.handleCommitHistory.bind(this);
     this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
 
     // @NOTE Initialize Component State
@@ -46,72 +45,39 @@ class PatientVariantScreen extends React.Component {
     }
   }
 
-  componentDidMount() {
-    //@NOTE PA00002 currently is the only patient with indexed data.
-    this.props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+  handleCreateNewQuery() {
+    const { actions } = this.props;
+    actions.createNewQuery();
   }
 
-  handleQuerySelection(query) {
-    const { actions, variant } = this.props;
-    //@NOTE PA00002 currently is the only patient with indexed data.
-    if (!query) {
-      actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
-    } else {
-      const { activeQuery, draftQueries } = variant;
-      if (activeQuery !== query.key) actions.selectQuery(query);
-      actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
-    }
+  handleQuerySelection(key) {
+    const { actions } = this.props;
+    actions.selectQuery(key);
   }
 
   handleQueryChange(query) {
     const { actions } = this.props;
-    this.handleCommitHistory();
     actions.replaceQuery(query.data || query);
-
-    setTimeout(() => {
-      this.handleQuerySelection(query.data || query);
-    }, 100)
   }
 
   handleQueriesChange(queries, activeQuery) {
     const { actions } = this.props;
-    this.handleCommitHistory();
-    actions.replaceQueries(queries);
-    setTimeout(() => {
-      if (activeQuery) {
-        this.handleQuerySelection(activeQuery);
-      } else if (queries.length === 1) {
-        this.handleQuerySelection(queries[0]);
-      }
-    }, 100)
+    actions.replaceQueries(queries, activeQuery);
   }
 
   handleQueriesRemoval(keys) {
     const { actions } = this.props;
-    this.handleCommitHistory();
     actions.removeQuery(keys);
   }
 
   handleQueryDuplication(query, index) {
     const { actions } = this.props;
-    this.handleCommitHistory();
     actions.duplicateQuery(query.data, index);
-
-    setTimeout(() => {
-      this.handleQuerySelection(query.data || query);
-    }, 100)
   }
 
   handleStatementSort(sortedQueries) {
     const { actions } = this.props;
-    this.handleCommitHistory();
     actions.sortStatement(sortedQueries)
-  }
-  
-  handleCommitHistory() {
-    const { actions, variant } = this.props;
-    const { draftQueries } = variant;
-    actions.commitHistory(draftQueries);
   }
 
   handleDraftHistoryUndo() {
@@ -217,6 +183,7 @@ class PatientVariantScreen extends React.Component {
               display={{
                   compoundOperators: true,
               }}
+              onCreateNewQueryCallback={this.handleCreateNewQuery}
               onSelectCallback={this.handleQuerySelection}
               onSortCallback={this.handleStatementSort}
               onEditCallback={this.handleQueryChange}
@@ -256,7 +223,7 @@ const mapDispatchToProps = dispatch => ({
     duplicateQuery,
     sortStatement,
     searchVariants,
-    commitHistory,
+    createNewQuery,
     undo,
   }, dispatch),
 });

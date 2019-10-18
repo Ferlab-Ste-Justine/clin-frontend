@@ -5,10 +5,14 @@ export const fetchSchema = () => ({
   type: actions.VARIANT_SCHEMA_REQUESTED,
 });
 
-export const selectQuery = query => ({
+export const createNewQuery = () => ({
+  type: actions.PATIENT_VARIANT_QUERY_NEW,
+});
+
+export const selectQuery = key => ({
   type: actions.PATIENT_VARIANT_QUERY_SELECTION,
   payload: {
-    query,
+    key,
   },
 });
 
@@ -19,10 +23,11 @@ export const replaceQuery = query => ({
   },
 });
 
-export const replaceQueries = queries => ({
+export const replaceQueries = (queries, activeQuery) => ({
   type: actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
   payload: {
     queries,
+    activeQuery,
   },
 });
 
@@ -57,13 +62,6 @@ export const searchVariants = (patient, statement, query, group = null, index = 
     group,
     index,
     limit,
-  },
-});
-
-export const commitHistory = version => ({
-  type: actions.PATIENT_VARIANT_COMMIT_HISTORY,
-  payload: {
-    version,
   },
 });
 

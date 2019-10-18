@@ -42,7 +42,7 @@ function* searchVariantsForPatient(action) {
   }
 }
 
-function* undo() {
+function* getUpdatedData() {
   const { activeQuery, draftQueries } = yield select(state => state.variant);
   const query = find(draftQueries, { key: activeQuery });
   const type = 'PATIENT_VARIANT_SEARCH_REQUESTED';
@@ -70,22 +70,38 @@ function* undo() {
   }
 }
 
+function* createNewQuery() {
+  yield put({ type: actions.PATIENT_VARIANT_QUERY_NEW });
+}
+
+function* watchForPatientFetchSucceed() {
+  yield takeLatest(actions.PATIENT_FETCH_SUCCEEDED, createNewQuery);
+}
+
 function* watchVariantSchemaFetch() {
   yield takeLatest(actions.VARIANT_SCHEMA_REQUESTED, fetchSchema);
+}
+
+function* watchForUpdatedQueries() {
+  yield takeLatest([
+    actions.PATIENT_VARIANT_QUERY_NEW,
+    actions.PATIENT_VARIANT_QUERY_REPLACEMENT,
+    actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
+    actions.PATIENT_VARIANT_QUERY_REMOVAL,
+    actions.PATIENT_VARIANT_QUERY_DUPLICATION,
+    actions.PATIENT_VARIANT_UNDO,
+  ], getUpdatedData);
 }
 
 function* watchVariantSearch() {
   yield takeLatest(actions.PATIENT_VARIANT_SEARCH_REQUESTED, searchVariantsForPatient);
 }
 
-function* watchUndo() {
-  yield takeLatest(actions.PATIENT_VARIANT_UNDO, undo);
-}
-
 export default function* watchedVariantSagas() {
   yield all([
     watchVariantSchemaFetch(),
+    watchForPatientFetchSucceed(),
     watchVariantSearch(),
-    watchUndo(),
+    watchForUpdatedQueries(),
   ]);
 }
