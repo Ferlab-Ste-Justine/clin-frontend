@@ -98,10 +98,10 @@ class Filter extends React.Component {
     if (this.isEditable()) {
       // const { draft } = this.state;
       const { editor, onEditCallback, onAddInstructionCallback } = this.props;
-      const value = editor.props.children[6].props.children.props.children.props.value;
+      const values = editor.props.children[6].props.children.props.children.props.value;
       const operand = editor.props.children[0].props.children.props.children.props.value;
-      if (value.length > 0) {
-        const instruction = { value, operand };
+      if (values.length > 0) {
+        const instruction = { values, operand };
         console.log('instruction', instruction);
         this.setState({
           // data: { ...draft },
