@@ -21,7 +21,7 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { createNewQuery, fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, undo } from '../../../actions/variant';
+import { createNewQuery, fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, undo, addIntruction } from '../../../actions/variant';
 
 
 class PatientVariantScreen extends React.Component {
@@ -35,6 +35,7 @@ class PatientVariantScreen extends React.Component {
     this.handleQueryDuplication = this.handleQueryDuplication.bind(this);
     this.handleStatementSort = this.handleStatementSort.bind(this);
     this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
+    this.handleAddInstruction = this.handleAddInstruction.bind(this);
 
     // @NOTE Initialize Component State
     const { actions, variant } = props;
@@ -83,6 +84,12 @@ class PatientVariantScreen extends React.Component {
   handleDraftHistoryUndo() {
     const { actions } = this.props;
     actions.undo();
+  }
+
+  handleAddInstruction(instruction) {
+    console.log('handleAddInstruction in PatientVariant', instruction);
+    const { actions } = this.props;
+    actions.addIntruction(instruction);
   }
 
   render() {
@@ -157,6 +164,7 @@ class PatientVariantScreen extends React.Component {
                 activeQuery={activeQuery}
                 data={facets[activeQuery] || {}}
                 onEditCallback={this.handleQueryChange}
+                onAddInstructionCallback={this.handleAddInstruction}
                 searchData={searchData}
             />
             <br />
@@ -188,6 +196,7 @@ class PatientVariantScreen extends React.Component {
               onSortCallback={this.handleStatementSort}
               onEditCallback={this.handleQueryChange}
               onBatchEditCallback={this.handleQueriesChange}
+              onAddInstructionCallback={this.handleAddInstruction}
               onRemoveCallback={this.handleQueriesRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
               onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
@@ -225,6 +234,7 @@ const mapDispatchToProps = dispatch => ({
     searchVariants,
     createNewQuery,
     undo,
+    addIntruction,
   }, dispatch),
 });
 

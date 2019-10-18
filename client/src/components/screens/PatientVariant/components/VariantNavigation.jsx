@@ -80,6 +80,7 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterChange(filter) {
+    console.log('VariantPatient handleFilterChange filter', filter);
     const { onEditCallback } = this.props;
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
@@ -120,8 +121,7 @@ class VariantNavigation extends React.Component {
   }
 
   render() {
-    const { searchData } = this.props;
-    const { intl, activeQuery, schema, queries, data,  } = this.props;
+    const { intl, activeQuery, schema, queries, data, onAddInstructionCallback } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
@@ -185,6 +185,7 @@ class VariantNavigation extends React.Component {
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemove}
                     onCancelCallback={this.handleCategoryOpenChange}
+                    onAddInstructionCallback={onAddInstructionCallback}
                   />
                   )}
                 </Menu.SubMenu>
@@ -205,6 +206,7 @@ VariantNavigation.propTypes = {
   queries: PropTypes.array,
   activeQuery: PropTypes.string,
   onEditCallback: PropTypes.func,
+  onAddInstructionCallback: PropTypes.func
 };
 
 VariantNavigation.defaultProps = {

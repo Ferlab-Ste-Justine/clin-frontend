@@ -65,6 +65,13 @@ export const searchVariants = (patient, statement, query, group = null, index = 
   },
 });
 
+export const addIntruction = instruction => ({
+  type: actions.PATIENT_VARIANT_QUERY_ADD_INSTRUCTION,
+  payload: {
+    instruction,
+  },
+});
+
 export const undo = () => ({
   type: actions.PATIENT_VARIANT_UNDO,
 });

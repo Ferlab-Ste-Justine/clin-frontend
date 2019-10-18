@@ -1,30 +1,13 @@
 /* eslint-disable  */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
-import { isEqual, findIndex, last, cloneDeep } from 'lodash';
+import { findIndex } from 'lodash';
 import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
-
-const MAX_REVISIONS = 10;
-
-function getUpdatedDraftHistory({ draftQueries, activeQuery, draftHistory }) {
-  const newCommit = {
-    activeQuery,
-    draftQueries
-  };
-  const lastVersionInHistory = last(draftHistory)
-  const newDraftHistory = [
-    ...draftHistory,
-    ...!isEqual(newCommit, lastVersionInHistory) ? [newCommit] : []
-  ]
-  const revisions = draftHistory.length;
-  if (revisions > MAX_REVISIONS) {
-    newDraftHistory.shift();
-  }
-  return newDraftHistory;
-}
+import { getUpdatedDraftHistory, getPreviousDraft } from '../helpers/draftQueriesHistory';
+import { getUpdatedDraftAddInstruction } from '../helpers/instructions';
 
 export const initialVariantState = {
   schema: {},
@@ -72,7 +55,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_NEW:
-      draft.draftHistory = getUpdatedDraftHistory(cloneDeep(draft));
+      draft.draftHistory = getUpdatedDraftHistory(draft);
       const key = uuidv1()
       draft.draftQueries = [
         ...draft.draftQueries,
@@ -108,7 +91,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
-      draft.draftHistory = getUpdatedDraftHistory(cloneDeep(draft));
+      draft.draftHistory = getUpdatedDraftHistory(draft);
       const keyToDuplicate = action.payload.query.key;
       const indexToInsertAt = action.payload.index || draft.draftQueries.length;
       const indexToDuplicate = findIndex(draftQueries, { key: keyToDuplicate })
@@ -119,7 +102,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
-      draft.draftHistory = getUpdatedDraftHistory(cloneDeep(draft));
+      draft.draftHistory = getUpdatedDraftHistory(draft);
       const { query } = action.payload;
       const index = findIndex(draftQueries, { key: query.key })
       if (index > -1) {
@@ -132,22 +115,31 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
     
     case actions.PATIENT_VARIANT_QUERIES_REPLACEMENT:
-      draft.draftHistory = getUpdatedDraftHistory(cloneDeep(draft));
-      const { queries, activeQuery } = action.payload;
+      draft.draftHistory = getUpdatedDraftHistory(draft);
+      const { queries, activeQuery: activeQueryKey } = action.payload;
       draft.draftQueries = queries
-      draft.activeQuery = activeQuery || queries[0];
+      draft.activeQuery = activeQueryKey || queries[0];
       break;
 
     case actions.PATIENT_VARIANT_STATEMENT_SORT:
-      draft.draftHistory = getUpdatedDraftHistory(cloneDeep(draft));
+      draft.draftHistory = getUpdatedDraftHistory(draft);
       const { statement } = action.payload;
       draft.draftQueries = statement
       break;
 
+    case actions.PATIENT_VARIANT_QUERY_ADD_INSTRUCTION:
+      draft.draftHistory = getUpdatedDraftHistory(draft);
+      const { instruction } = action.payload;
+      const { draftQueries: newDraftQueries } = getUpdatedDraftAddInstruction(draft, instruction);
+      draft.draftQueries = newDraftQueries;
+      break;
+
     case actions.PATIENT_VARIANT_UNDO:
-      const lastVersion = draftHistory.pop();
-      draft.draftQueries = lastVersion.draftQueries;
-      draft.activeQuery = lastVersion.activeQuery;
+      const { draftQueries, draftHistory, activeQuery } = getPreviousDraft(draft);
+      draft.draftQueries = draftQueries;
+      draft.draftHistory = draftHistory;
+      draft.activeQuery = activeQuery;
+      break;
 
     default:
       break;

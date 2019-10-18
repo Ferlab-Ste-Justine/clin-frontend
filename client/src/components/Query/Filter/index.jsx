@@ -25,16 +25,16 @@ export const createFilter = type => ({
 class Filter extends React.Component {
   constructor(props) {
     super(props);
-    const { data, dataSet = [], autoOpen, visible, sortData } = props;
+    const { /*data,*/ dataSet = [], autoOpen, visible, sortData } = props;
     this.state = {
       type: null,
-      data,
+      // data,
       dataSet,
-      draft: cloneDeep(data),
+      // draft: cloneDeep(data),
       visible,
       opened: autoOpen,
       allOptions: cloneDeep(sortData),
-      selection: data.values || [],
+      // selection: data.values || [],
       size: 10,
       page: 1,
     };
@@ -96,18 +96,19 @@ class Filter extends React.Component {
 
   handleApply() {
     if (this.isEditable()) {
-      const { draft } = this.state;
-      const { editor, onEditCallback } = this.props;
+      // const { draft } = this.state;
+      const { editor, onEditCallback, onAddInstructionCallback } = this.props;
       const value = editor.props.children[6].props.children.props.children.props.value;
       const operand = editor.props.children[0].props.children.props.children.props.value;
       if (value.length > 0) {
-        draft.operand = operand;
-        draft.values = value;
+        const instruction = { value, operand };
+        console.log('instruction', instruction);
         this.setState({
-          data: { ...draft },
+          // data: { ...draft },
           opened: false,
         }, () => {
-          onEditCallback(this.serialize());
+          onAddInstructionCallback(instruction);
+          // onEditCallback(this.serialize());
         });
       } else {
         this.handleClose(true);
@@ -116,10 +117,10 @@ class Filter extends React.Component {
   }
 
   handleCancel() {
-    const { draft } = this.state;
+    // const { draft } = this.state;
     const { onCancelCallback } = this.props;
     this.setState({
-      data: { ...draft },
+      // data: { ...draft },
       opened: false,
     }, () => {
       onCancelCallback(this.serialize());
@@ -141,12 +142,9 @@ class Filter extends React.Component {
   }
 
   render() {
-    const {
-      data, allOptions, size, page, opened
-    } = this.state;
-    const {
-      intl, overlayOnly, editor, label, legend, content, dataSet,
-    } = this.props;
+    const { allOptions, size, page, opened } = this.state;
+    const { data, intl, overlayOnly, editor, label, legend, content, dataSet } = this.props;
+    // console.log('Filter', this.props);
     const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const overlay = (
@@ -240,6 +238,7 @@ Filter.propTypes = {
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
+  onAddInstructionCallback: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
   label: PropTypes.string,
   legend: PropTypes.shape({}).isRequired,
@@ -260,6 +259,7 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
+  onAddInstructionCallback: () => {},
   label: '',
   autoOpen: false,
   overlayOnly: false,

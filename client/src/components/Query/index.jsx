@@ -174,6 +174,7 @@ class Query extends React.Component {
   }
 
   handleFilterChange(filter) {
+    console.log('handleFilterChange in Query - filter', filter)
     const instruction = {
       type: INSTRUCTION_TYPE_FILTER,
       data: filter.data,
@@ -494,7 +495,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets  ,categories} = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, onAddInstructionCallback} = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -566,6 +567,7 @@ class Query extends React.Component {
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
+                    onAddInstructionCallback={onAddInstructionCallback}
                     key={index}
                   />
                 );
@@ -629,6 +631,7 @@ Query.propTypes = {
   onDuplicateCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
+  onAddInstructionCallback: PropTypes.func,
   onUndoCallback: PropTypes.func,
   findQueryIndexForKey: PropTypes.func,
 };
@@ -654,6 +657,7 @@ Query.defaultProps = {
   onCopyCallback: null,
   onDisplayCallback: null,
   onEditCallback: null,
+  onAddInstructionCallback: null,
   onDuplicateCallback: null,
   onRemoveCallback: null,
   onSelectCallback: null,

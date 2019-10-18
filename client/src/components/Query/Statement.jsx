@@ -357,7 +357,7 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory } = this.props;
+    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory, onAddInstructionCallback } = this.props;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -414,6 +414,7 @@ class Statement extends React.Component {
             categories= {categories}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
+            onAddInstructionCallback={onAddInstructionCallback}
             onDisplayCallback={this.handleDisplay}
             onDuplicateCallback={this.handleDuplicate}
             onRemoveCallback={this.handleRemove}
@@ -510,6 +511,8 @@ Statement.propTypes = {
   onCreateNewQueryCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
+  onBatchEditCallback: PropTypes.func,
+  onAddInstructionCallback: PropTypes.func,
   onSortCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
@@ -534,6 +537,7 @@ Statement.defaultProps = {
   onSelectCallback: () => {},
   onEditCallback: () => {},
   onBatchEditCallback: () => {},
+  onAddInstructionCallback: () => {},
   onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},

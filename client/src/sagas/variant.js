@@ -89,6 +89,7 @@ function* watchForUpdatedQueries() {
     actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
     actions.PATIENT_VARIANT_QUERY_REMOVAL,
     actions.PATIENT_VARIANT_QUERY_DUPLICATION,
+    actions.PATIENT_VARIANT_QUERY_ADD_INSTRUCTION,
     actions.PATIENT_VARIANT_UNDO,
   ], getUpdatedData);
 }
