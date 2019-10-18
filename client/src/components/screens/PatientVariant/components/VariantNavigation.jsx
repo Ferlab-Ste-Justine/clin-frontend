@@ -156,7 +156,7 @@ class VariantNavigation extends React.Component {
                     removable: false,
                   }}
                   intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0})}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0 , type:"numcomparison"})}
                   dataSet={data[activeFilterId] ? data[activeFilterId] : []}
                   onEditCallback={this.handleFilterChange}
                   onRemoveCallback={this.handleFilterRemove}
@@ -208,8 +208,8 @@ class VariantNavigation extends React.Component {
               const {searchData} = this.props
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
 
-              const categoryInfo =find(searchData, ['id', id]);
-              const categoryData = find(categoryInfo.data, ['id', activeFilterId]);
+              const categoryInfo =find(schema.categories, ['id', id]);
+              const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
               const type = categoryData ? this.renderFilterType(categoryData.type) : null
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>

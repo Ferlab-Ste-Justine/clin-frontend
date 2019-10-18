@@ -8,6 +8,7 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import Filter from './index';
+import FILTER_TYPE_NUMERICAL_COMPARISON from './index'
 
 
 export const FILTER_OPERAND_TYPE_GREATER_THAN = '>';
@@ -30,7 +31,7 @@ class NumericalComparisonFilter extends React.Component {
     this.getPopoverContent = this.getPopoverContent.bind(this);
     this.getPopoverLegend = this.getPopoverLegend.bind(this);
     this.handleComparatorChange = this.handleComparatorChange.bind(this)
-    this.handleFilterChange= this.handleFilterChange.bind(this)
+    this.handleValueChange=this.handleValueChange.bind(this)
 
     // @NOTE Initialize Component State
     const { data } = props;
@@ -108,21 +109,12 @@ class NumericalComparisonFilter extends React.Component {
             {valueText}
           </Col>
           <Col>
-            <InputNumber defaultValue={value} step={0.1} />
+            <InputNumber onChange={this.handleValueChange} defaultValue={value} step={0.1} />
           </Col>
         </Row>
       </>
     );
   }
-
-handleFilterChange(test){
-    console.log("test")
-    this.setState({
-      data: { ...draft },
-    }, () => {
-      onEditCallback(this.serialize());
-    });
-}
 
   handleComparatorChange(e){
         const { draft } = this.state;
@@ -130,11 +122,17 @@ handleFilterChange(test){
         this.setState({ draft });
   }
 
+  handleValueChange(value){
+      const { draft } = this.state;
+      draft.value = value;
+      this.setState({ draft });
+  }
+
   render() {
     return (
       <Filter
         {...this.props}
-        onEditCallback= {this.handleFilterChange}
+        type={FILTER_TYPE_NUMERICAL_COMPARISON}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}
