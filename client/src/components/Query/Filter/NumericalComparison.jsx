@@ -8,8 +8,6 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import Filter from './index';
-import FILTER_TYPE_NUMERICAL_COMPARISON from './index'
-
 
 export const FILTER_OPERAND_TYPE_GREATER_THAN = '>';
 export const FILTER_OPERAND_TYPE_GREATER_THAN_OR_EQUAL = '>=';
@@ -62,21 +60,41 @@ class NumericalComparisonFilter extends React.Component {
 
   getPopoverLegend() {
     const { data } = this.props;
-    const { operand } = data;
-
-    return (<span>{operand}</span>);
+    const { comparator } = data;
+    return (<span>{comparator} {data.value}</span>);
   }
 
   getPopoverContent() {
-    const { data } = this.props;
-    const { operand } = data;
+    const { intl, data, category } = this.props;
+    const { Text } = Typography;
+
+    const titleText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
+    const descriptionText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
+    const categoryText = category ? intl.formatMessage({ id: `screen.patientvariant.category_${category}` }) : null;
+    const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter_value' });
+    const valueList = data.values ? data.values.map((x, index) => <li key={index}>{x}</li>) : null;
+
     return (
       <div>
-        <Typography.Text>{operand}</Typography.Text>
-        <ul>
-          <li>VALUE 1</li>
-          <li>VALUE 3</li>
-        </ul>
+        <Row type="flex" justify="space-between" gutter={32}>
+          <Col>
+            <Text strong>{titleText}</Text>
+          </Col>
+          <Col>
+            <Text>{categoryText}</Text>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Text>{descriptionText}</Text>
+          </Col>
+        </Row>
+        <br />
+        <Row>
+          <Col>
+            <Text>{data.comparator} {data.value}</Text>
+          </Col>
+        </Row>
       </div>
     );
   }
@@ -132,7 +150,7 @@ class NumericalComparisonFilter extends React.Component {
     return (
       <Filter
         {...this.props}
-        type={FILTER_TYPE_NUMERICAL_COMPARISON}
+        type="numcomparison"
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}

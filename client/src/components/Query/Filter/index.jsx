@@ -55,7 +55,7 @@ class Filter extends React.Component {
 
     // @NOTE Initialize Component State
     const {
-      data, dataSet, autoOpen, visible, sortData,
+      data, dataSet, autoOpen, visible, sortData, type
     } = props;
     this.state.data = data;
     this.state.dataSet = dataSet || [];
@@ -66,7 +66,7 @@ class Filter extends React.Component {
     this.state.allOptions = cloneDeep(sortData);
     this.state.page = 1;
     this.state.size = 10;
-    this.state.type = this.props.type;
+    this.state.type = type;
   }
 
   isEditable() {
@@ -121,23 +121,28 @@ class Filter extends React.Component {
       let { draft,type , opened } = this.state;
       const { editor, onEditCallback } = this.props;
       let value = null
+      let needEdit = true
       if(type === FILTER_TYPE_GENERIC){
           value = editor.props.children[6].props.children.props.children.props.value;
           const operand = editor.props.children[0].props.children.props.children.props.value;
           draft.operand = operand;
           draft.values = value;
+          const filterType = {type:type}
+          draft = {...draft , ...filterType}
           if(value.length === 0){
+            needEdit=false
             this.handleClose(true);
           }
        }else if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
          const comparator = editor.props.children[0].props.children.props.children.props.value;
          value = editor.props.children[2].props.children[1].props.children.props.defaultValue
          draft.comparator = comparator;
-         const type = {type:type}
-         draft = {...draft , ...type}
+         draft.value = value
+         const filterType = {type:type}
+         draft = {...draft , ...filterType}
        }
 
-        if(opened){
+        if(needEdit){
             this.setState({
               data: { ...draft },
               opened: false,

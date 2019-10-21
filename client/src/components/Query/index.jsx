@@ -11,6 +11,7 @@ const Joi = require('@hapi/joi');
 import './style.scss';
 import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
 import GenericFilter from './Filter/Generic';
+import NumericalComparisonFilter from './Filter/NumericalComparison';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
@@ -557,23 +558,41 @@ class Query extends React.Component {
                     if(value){
                         category = x.id
                         type = value.type
-                        console.log("type" , type)
                     }
                 })
-                return (
-                  <GenericFilter
-                    index={index}
-                    options={options}
-                    data={item.data}
-                    dataSet={facets[item.data.id] || []}
-                    intl={intl}
-                    category={category}
-                    onEditCallback={this.handleFilterChange}
-                    onRemoveCallback={this.handleFilterRemoval}
-                    onSelectCallback={onSelectCallback}
-                    key={index}
-                  />
-                );
+
+                if(type === "generic"){
+                    return (
+                        <GenericFilter
+                            index={index}
+                            options={options}
+                            data={item.data}
+                            dataSet={facets[item.data.id] || []}
+                            intl={intl}
+                            category={category}
+                            onEditCallback={this.handleFilterChange}
+                            onRemoveCallback={this.handleFilterRemoval}
+                            onSelectCallback={onSelectCallback}
+                            key={index}
+                          />
+                    );
+                }if(type === "numcomparison"){
+                    return (
+                        <NumericalComparisonFilter
+                         index={index}
+                         options={options}
+                         data={item.data}
+                         dataSet={facets[item.data.id] || []}
+                         intl={intl}
+                         category={category}
+                         onEditCallback={this.handleFilterChange}
+                         onRemoveCallback={this.handleFilterRemoval}
+                         onSelectCallback={onSelectCallback}
+                         key={index}
+                       />
+                    );
+                }
+
               case INSTRUCTION_TYPE_SUBQUERY:
                 const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
                 return (
