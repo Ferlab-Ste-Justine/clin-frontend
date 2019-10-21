@@ -12,6 +12,7 @@ import {
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
+export const FILTER_TYPE_GENERICBOOL = 'genericbool'
 export const FILTER_TYPE_SPECIFIC = 'specific';
 export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_SPECIFIC];
 
