@@ -14,6 +14,7 @@ import {
 import GenericFilter from '../../../Query/Filter/Generic';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
 import { sanitizeInstructions } from '../../../Query/index';
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from '../../../Query/Filter/index'
 
 
 class VariantNavigation extends React.Component {
@@ -127,7 +128,7 @@ class VariantNavigation extends React.Component {
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
     switch (type) {
-        case 'generic':
+        case FILTER_TYPE_GENERIC:
             return (
               <GenericFilter
                 overlayOnly
@@ -145,7 +146,7 @@ class VariantNavigation extends React.Component {
                 onCancelCallback={this.handleCategoryOpenChange}
               />
             );
-            case 'numcomparison':
+            case FILTER_TYPE_NUMERICAL_COMPARISON:
               return (
                 <NumericalComparisonFilter
                   overlayOnly

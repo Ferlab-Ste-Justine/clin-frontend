@@ -8,6 +8,7 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import Filter from './index';
+import {FILTER_TYPE_NUMERICAL_COMPARISON} from './index';
 
 export const FILTER_OPERAND_TYPE_GREATER_THAN = '>';
 export const FILTER_OPERAND_TYPE_GREATER_THAN_OR_EQUAL = '>=';
@@ -22,7 +23,6 @@ class NumericalComparisonFilter extends React.Component {
       selection: [],
       size: null,
       page: null,
-      allOptions: null,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getLabel = this.getLabel.bind(this);
@@ -37,8 +37,6 @@ class NumericalComparisonFilter extends React.Component {
     this.state.selection = data.values ? cloneDeep(data.values) : [];
     this.state.page = 1;
     this.state.size = 10;
-
-    this.state.allOptions = [FILTER_OPERAND_TYPE_GREATER_THAN, FILTER_OPERAND_TYPE_GREATER_THAN_OR_EQUAL];
   }
 
   componentDidMount() {
@@ -150,7 +148,7 @@ class NumericalComparisonFilter extends React.Component {
     return (
       <Filter
         {...this.props}
-        type="numcomparison"
+        type={FILTER_TYPE_NUMERICAL_COMPARISON}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}

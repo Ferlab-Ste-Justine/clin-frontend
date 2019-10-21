@@ -15,6 +15,8 @@ import NumericalComparisonFilter from './Filter/NumericalComparison';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from './Filter/index'
+
 
 export const DEFAULT_EMPTY_QUERY = {};
 
@@ -561,7 +563,7 @@ class Query extends React.Component {
                     }
                 })
 
-                if(type === "generic"){
+                if(type === FILTER_TYPE_GENERIC){
                     return (
                         <GenericFilter
                             index={index}
@@ -576,7 +578,7 @@ class Query extends React.Component {
                             key={index}
                           />
                     );
-                }if(type === "numcomparison"){
+                }if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
                     return (
                         <NumericalComparisonFilter
                          index={index}

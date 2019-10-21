@@ -191,7 +191,7 @@ const fr = {
   'screen.patientvariant.filter.operand.lte': '<=',
   'screen.patientvariant.filter.selection.all': 'Tous',
   'screen.patientvariant.filter.selection.none': 'Aucun',
-  'screen.patientvariant.filter.numerical.value': 'Valeur:',
+  'screen.patientvariant.filter.numerical.value': 'Valeur',
   'screen.patientvariant.results.table.variant': 'Variant',
   'screen.patientvariant.results.table.type': 'Type',
   'screen.patientvariant.results.table.dbsnp': 'dbSnp',

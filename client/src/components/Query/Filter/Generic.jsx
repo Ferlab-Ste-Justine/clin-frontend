@@ -13,6 +13,7 @@ import {
 import PropTypes from 'prop-types';
 
 import Filter from './index';
+import {FILTER_TYPE_GENERIC} from './index';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
@@ -282,7 +283,7 @@ class GenericFilter extends React.Component {
     return (
       <Filter
         {...this.props}
-        type="generic"
+        type={FILTER_TYPE_GENERIC}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}

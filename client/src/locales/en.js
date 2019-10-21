@@ -189,7 +189,7 @@ const en = {
   'screen.patientvariant.filter.operand.lte': '<=',
   'screen.patientvariant.filter.selection.all': 'All',
   'screen.patientvariant.filter.selection.none': 'None',
-  'screen.patientvariant.filter.numerical.value': 'Value:',
+  'screen.patientvariant.filter.numerical.value': 'Value',
   'screen.patientvariant.results.table.variant': 'Variant',
   'screen.patientvariant.results.table.type': 'Type',
   'screen.patientvariant.results.table.dbsnp': 'dbSnp',
