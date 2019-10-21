@@ -147,6 +147,7 @@ const en = {
   'screen.patientvariant.filter_prediction_polyphen2_hvar.description': 'This is a description',
   'screen.patientvariant.filter_prediction_gerp': 'Gerp',
   'screen.patientvariant.filter_prediction_gerp.description': 'Ceci est une description',
+  'screen.patientvariant.category_conservation': 'Conservation',
   'screen.patientvariant.category_cohort': 'Cohorts',
   'screen.patientvariant.category_zygosity': 'Zygosity and Family',
   'screen.patientvariant.filter_transmission': 'Transmission',
