@@ -136,6 +136,11 @@ class Filter extends React.Component {
         const comparator = editor.props.children.props.children[2] ? editor.props.children.props.children[2].props.children.props.value : null;
         const score = editor.props.children.props.children[3] ? editor.props.children.props.children[3].props.children.props.defaultValue : null;
 
+        console.log('== handleApply')
+        console.log('== quality ' + quality);
+        console.log('== comparator ' + comparator);
+        console.log('== score ' + score);
+
         if (comparator) {
           draft.comparator = comparator;
           draft.value = score;
