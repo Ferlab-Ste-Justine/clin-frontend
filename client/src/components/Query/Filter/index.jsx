@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,Input
 } from 'antd';
 import {
   cloneDeep,
@@ -53,6 +53,7 @@ class Filter extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
 
     // @NOTE Initialize Component State
     const {
@@ -124,7 +125,7 @@ class Filter extends React.Component {
       let value = null
       let needEdit = true
       if(type === FILTER_TYPE_GENERIC){
-          value = editor.props.children[6].props.children.props.children.props.value;
+          value = editor.props.children[4].props.children.props.children.props.value;
           const operand = editor.props.children[0].props.children.props.children.props.value;
           draft.operand = operand;
           draft.values = value;
@@ -141,6 +142,9 @@ class Filter extends React.Component {
          draft.value = value
          const filterType = {type:type}
          draft = {...draft , ...filterType}
+       }else if(type === FILTER_TYPE_GENERICBOOL){
+            value = editor.props.children[2].props.children.props.children.props.value
+            draft.values = value;
        }
 
         if(needEdit){
@@ -190,15 +194,25 @@ class Filter extends React.Component {
     });
   }
 
+  handleSearchByQuery(value){
+      const { onSearchCallback } = this.props;
+      const search = value.target.value
+      this.setState({
+      }, () => {
+        onSearchCallback(search);
+      });
+  }
+
   render() {
     const {
       data, allOptions, size, page, type
     } = this.state;
     const {
-      intl, overlayOnly, editor, label, legend, content, dataSet,
+      intl, overlayOnly, editor, label, legend, content, dataSet, searchable
     } = this.props;
     const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
+    const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
     const overlay = (
       <Popover
         visible={this.isOpened()}
@@ -207,6 +221,21 @@ class Filter extends React.Component {
           <Typography.Title level={4}>{titleText}</Typography.Title>
           <Typography>{descriptionText}</Typography>
           <br />
+          {searchable  && (
+               <>
+               <Row>
+                 <Input
+                   allowClear
+                   placeholder={filterSearch}
+                   size="small"
+                   onChange={this.handleSearchByQuery}
+                 />
+               </Row>
+               <br/>
+               </>
+          )
+          }
+
           { editor }
 
           { allOptions  && (

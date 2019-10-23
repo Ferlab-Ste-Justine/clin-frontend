@@ -12,11 +12,11 @@ import './style.scss';
 import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
+import GenericBooleanFilter from './Filter/GenericBoolean'
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from './Filter/index'
-
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON , FILTER_TYPE_GENERICBOOL} from './Filter/index'
 
 export const DEFAULT_EMPTY_QUERY = {};
 
@@ -578,7 +578,7 @@ class Query extends React.Component {
                             key={index}
                           />
                     );
-                }if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
+                }else if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
                     return (
                         <NumericalComparisonFilter
                          index={index}
@@ -593,7 +593,22 @@ class Query extends React.Component {
                          key={index}
                        />
                     );
-                }
+                }else if(type === FILTER_TYPE_GENERICBOOL){
+                     return (
+                         <GenericBooleanFilter
+                          index={index}
+                          options={options}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          intl={intl}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={index}
+                        />
+                     );
+                 }
 
               case INSTRUCTION_TYPE_SUBQUERY:
                 const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
