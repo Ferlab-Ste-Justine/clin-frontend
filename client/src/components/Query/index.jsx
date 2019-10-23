@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep, isEqual, find } from 'lodash';
@@ -6,16 +7,18 @@ import {
   Dropdown, Icon, Menu, Input, Divider, Badge,
 } from 'antd';
 import copy from 'copy-to-clipboard';
-const Joi = require('@hapi/joi');
 
 import './style.scss';
-import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
+import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
-import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
-import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
-import {convertIndexToColor, convertIndexToLetter} from './Statement';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from './Filter/index'
+import CompositeFilter from './Filter/Composite';
+import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
+import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
+import { convertIndexToColor, convertIndexToLetter } from './Statement';
+import { FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE } from './Filter/index';
+
+const Joi = require('@hapi/joi');
 
 
 export const DEFAULT_EMPTY_QUERY = {};
@@ -29,11 +32,11 @@ const QUERY_ACTION_VIEW_SQON = 'view-sqon';
 const QUERY_ACTION_TITLE = 'title';
 
 export const sanitizeInstructions = (instructions) => {
-    instructions = sanitizeSubqueries(instructions);
-    instructions = sanitizeFilters(instructions);
-    instructions = sanitizeOperators(instructions);
-    return instructions;
-}
+  instructions = sanitizeSubqueries(instructions);
+  instructions = sanitizeFilters(instructions);
+  instructions = sanitizeOperators(instructions);
+  return instructions;
+};
 
 const sanitizeOperators = (instructions) => {
   // @NOTE No subsequent operators
@@ -51,7 +54,7 @@ const sanitizeOperators = (instructions) => {
 
   // @NOTE No prefix operator
   if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
-      sanitizedInstructions.shift();
+    sanitizedInstructions.shift();
   }
 
   // @NOTE No suffix operator
@@ -61,17 +64,19 @@ const sanitizeOperators = (instructions) => {
   }
 
   // @No subsequent filters or subqueries without an operator
-  for(let i in sanitizedInstructions){
-    const defaultOperator = {data:{type:"and"} ,
-                             type:INSTRUCTION_TYPE_OPERATOR }
-    const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator
-    const next = Number(i)+1
-    if(next < sanitizedInstructions.length){
-        if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
-            if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
-                sanitizedInstructions.splice(next, 0, operator);
-            }
+  for (const i in sanitizedInstructions) {
+    const defaultOperator = {
+      data: { type: 'and' },
+      type: INSTRUCTION_TYPE_OPERATOR,
+    };
+    const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator;
+    const next = Number(i) + 1;
+    if (next < sanitizedInstructions.length) {
+      if (sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY) {
+        if (sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY) {
+          sanitizedInstructions.splice(next, 0, operator);
         }
+      }
     }
   }
 
@@ -119,17 +124,17 @@ class Query extends React.Component {
   }
 
   addInstruction(item) {
-      const { data } = this.state;
-      const { onEditCallback } = this.props;
-      data.instructions.push(item);
-      data.instructions = sanitizeInstructions(data.instructions);
-      this.setState({
-          data,
-      }, () => {
-          if (onEditCallback) {
-              onEditCallback(this.serialize());
-          }
-      });
+    const { data } = this.state;
+    const { onEditCallback } = this.props;
+    data.instructions.push(item);
+    data.instructions = sanitizeInstructions(data.instructions);
+    this.setState({
+      data,
+    }, () => {
+      if (onEditCallback) {
+        onEditCallback(this.serialize());
+      }
+    });
   }
 
   replaceInstruction(item) {
@@ -184,10 +189,10 @@ class Query extends React.Component {
     };
 
     if (filter.index !== undefined) {
-      instruction.index = filter.index
+      instruction.index = filter.index;
       this.replaceInstruction(instruction);
     } else {
-      this.addInstruction(instruction)
+      this.addInstruction(instruction);
     }
   }
 
@@ -237,7 +242,7 @@ class Query extends React.Component {
     const { options, display } = this.props;
     const { editable } = options;
     if (editable) {
-      const {value} = e.target;
+      const { value } = e.target;
       let rawQuery = data;
       try {
         rawQuery = JSON.parse(value);
@@ -245,7 +250,7 @@ class Query extends React.Component {
           title: Joi.string(),
           instructions: Joi.array().items(Joi.object().keys({
             type: Joi.string().valid(INSTRUCTION_TYPE_FILTER, INSTRUCTION_TYPE_OPERATOR, INSTRUCTION_TYPE_SUBQUERY).required(),
-            //data: Joi.object()
+            // data: Joi.object()
 
 
             /*
@@ -285,21 +290,17 @@ class Query extends React.Component {
                 })
               }),
               */
-          }))
+          })),
         });
 
-      const validation = Joi.validate(rawQuery, QuerySchema);
-      console.log(' === valid schema? ')
-      console.log((!validation.error))
-      display.viewableSqonIsValid = !validation.error;
-
-
-
+        const validation = Joi.validate(rawQuery, QuerySchema);
+        console.log(' === valid schema? ');
+        console.log((!validation.error));
+        display.viewableSqonIsValid = !validation.error;
       } catch (e) {
         display.viewableSqonIsValid = false;
-        console.log(e)
+        console.log(e);
       }
-
 
 
       this.setState({
@@ -346,7 +347,7 @@ class Query extends React.Component {
   handleClick(e) {
     const { onClickCallback } = this.props;
     if (onClickCallback) {
-      onClickCallback(this.serialize())
+      onClickCallback(this.serialize());
     }
   }
 
@@ -423,7 +424,7 @@ class Query extends React.Component {
 
   hasTitle() {
     const { data } = this.state;
-    return data.title !== undefined
+    return data.title !== undefined;
   }
 
   createMenuComponent() {
@@ -497,7 +498,9 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets  ,categories} = this.props;
+    const {
+      active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories,
+    } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -507,7 +510,7 @@ class Query extends React.Component {
     const isDirty = !isEqual(original, data);
     let operatorsHandler = null;
     if (compoundOperators) {
-      const operator = find(data.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
+      const operator = find(data.instructions, { type: INSTRUCTION_TYPE_OPERATOR });
       if (operator) {
         operatorsHandler = (
           <Operator
@@ -553,46 +556,61 @@ class Query extends React.Component {
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
-                let category = null
-                let type = null
+                let category = null;
+                let type = null;
                 categories.map((x, index) => {
-                    const value = find(x.filters, ['id', item.data.id]  );
-                    if(value){
-                        category = x.id
-                        type = value.type
-                    }
-                })
+                  const value = find(x.filters, ['id', item.data.id]);
+                  if (value) {
+                    category = x.id;
+                    type = value.type;
+                  }
+                });
 
-                if(type === FILTER_TYPE_GENERIC){
-                    return (
-                        <GenericFilter
-                            index={index}
-                            options={options}
-                            data={item.data}
-                            dataSet={facets[item.data.id] || []}
-                            intl={intl}
-                            category={category}
-                            onEditCallback={this.handleFilterChange}
-                            onRemoveCallback={this.handleFilterRemoval}
-                            onSelectCallback={onSelectCallback}
-                            key={index}
-                          />
-                    );
-                }if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
-                    return (
-                        <NumericalComparisonFilter
-                         index={index}
-                         options={options}
-                         data={item.data}
-                         dataSet={facets[item.data.id] || []}
-                         intl={intl}
-                         category={category}
-                         onEditCallback={this.handleFilterChange}
-                         onRemoveCallback={this.handleFilterRemoval}
-                         onSelectCallback={onSelectCallback}
-                         key={index}
-                       />
-                    );
+                if (type === FILTER_TYPE_GENERIC) {
+                  return (
+                    <GenericFilter
+                      index={index}
+                      options={options}
+                      data={item.data}
+                      dataSet={facets[item.data.id] || []}
+                      intl={intl}
+                      category={category}
+                      onEditCallback={this.handleFilterChange}
+                      onRemoveCallback={this.handleFilterRemoval}
+                      onSelectCallback={onSelectCallback}
+                      key={index}
+                    />
+                  );
+                } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
+                  return (
+                    <NumericalComparisonFilter
+                      index={index}
+                      options={options}
+                      data={item.data}
+                      dataSet={facets[item.data.id] || []}
+                      intl={intl}
+                      category={category}
+                      onEditCallback={this.handleFilterChange}
+                      onRemoveCallback={this.handleFilterRemoval}
+                      onSelectCallback={onSelectCallback}
+                      key={index}
+                    />
+                  );
+                } else if (type === FILTER_TYPE_COMPOSITE) {
+                  return (
+                    <CompositeFilter
+                      index={index}
+                      options={options}
+                      data={item.data}
+                      dataSet={facets[item.data.id] || []}
+                      intl={intl}
+                      category={category}
+                      onEditCallback={this.handleFilterChange}
+                      onRemoveCallback={this.handleFilterRemoval}
+                      onSelectCallback={onSelectCallback}
+                      key={index}
+                    />
+                  );
                 }
 
               case INSTRUCTION_TYPE_SUBQUERY:
@@ -605,7 +623,7 @@ class Query extends React.Component {
                     intl={intl}
                     queryIndex={queryIndex}
                     queryColor={active && queryIndex !== null ? convertIndexToColor(queryIndex) : null}
-                    queryTitle={queryIndex !== null ? convertIndexToLetter(queryIndex) : index }
+                    queryTitle={queryIndex !== null ? convertIndexToLetter(queryIndex) : index}
                     onEditCallback={this.handleSubqueryChange}
                     onRemoveCallback={this.handleSubqueryRemoval}
                     onSelectCallback={onSelectCallback}
@@ -626,17 +644,17 @@ class Query extends React.Component {
           ) }
         </div>
         <div className="actions">
-          { compoundOperators && ( operatorsHandler ) }
+          { compoundOperators && (operatorsHandler) }
           { hasMenu && (<Divider type="vertical" />) }
           { hasMenu && (
-          <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
+          <Dropdown overlay={this.createMenuComponent} trigger={['click']}>
             <Icon type="more" />
           </Dropdown>
           ) }
         </div>
       </div>
     ) : null;
-    return !!results ? <Badge className={( active ? 'active' : 'inactive' )} count={results} overflowCount={9999}>{query}</Badge> : query
+    return results ? <Badge className={(active ? 'active' : 'inactive')} count={results} overflowCount={9999}>{query}</Badge> : query;
   }
 }
 
@@ -660,7 +678,7 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
-  original : [],
+  original: [],
   display: {
     compoundOperators: false,
     viewableSqon: false,

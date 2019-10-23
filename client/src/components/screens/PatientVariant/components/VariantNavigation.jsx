@@ -4,17 +4,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  find, cloneDeep
+  find, cloneDeep,
 } from 'lodash';
 
 import {
   Menu, Input, AutoComplete, Icon, Tag,
 } from 'antd';
 
-import GenericFilter from '../../../Query/Filter/Generic';
+import GenericFilter, { FILTER_OPERAND_TYPE_ALL } from '../../../Query/Filter/Generic';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
+import CompositeFilter from '../../../Query/Filter/Composite';
 import { sanitizeInstructions } from '../../../Query/index';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from '../../../Query/Filter/index'
+import { FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE } from '../../../Query/Filter/index';
 
 
 class VariantNavigation extends React.Component {
@@ -35,16 +36,16 @@ class VariantNavigation extends React.Component {
 
   handleNavigationSearch(query) {
     if (query) {
-      const { searchData } = this.props
-      const normalizedQuery = query.toLowerCase()
+      const { searchData } = this.props;
+      const normalizedQuery = query.toLowerCase();
       const searchResults = searchData.reduce((accumulator, group) => {
         const matches = group.data.filter((datum) => {
           if (datum.value.toLowerCase) {
             return datum.value.toLowerCase()
-              .indexOf(normalizedQuery) !== -1
+              .indexOf(normalizedQuery) !== -1;
           }
           return false;
-        })
+        });
 
         if (matches.length > 0) {
           accumulator.push({
@@ -52,23 +53,20 @@ class VariantNavigation extends React.Component {
             type: group.type,
             label: group.label,
             matches,
-          })
+          });
         }
 
-        return accumulator
-      }, [])
+        return accumulator;
+      }, []);
 
       this.setState({
-        searchResults
-      })
+        searchResults,
+      });
     }
   }
 
   handleNavigationSelection(value, option) {
     console.log('handleNavigationSelection', value, option);
-
-
-
   }
 
   handleFilterSelection({ key }) {
@@ -78,40 +76,40 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterRemove(filter) {
-    filter.remove = true
-    this.handleFilterChange(filter)
+    filter.remove = true;
+    this.handleFilterChange(filter);
   }
 
   handleFilterChange(filter) {
     const { onEditCallback } = this.props;
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
-      const query = find(queries, { key: activeQuery })
+      const query = find(queries, { key: activeQuery });
       if (query) {
-          const updatedQuery = cloneDeep(query);
-          let updatedInstructions = []
-          if (!filter.remove) {
-            let updated = false
-            updatedInstructions = updatedQuery.instructions.map((instruction) => {
-              if (instruction.data.id === filter.data.id) {
-                  updated = true
-                  return { type: 'filter', data: filter.data };
-              }
-              return instruction;
-            })
-            if (!updated) {
-              updatedInstructions.push({ type: 'filter', data: filter.data })
+        const updatedQuery = cloneDeep(query);
+        let updatedInstructions = [];
+        if (!filter.remove) {
+          let updated = false;
+          updatedInstructions = updatedQuery.instructions.map((instruction) => {
+            if (instruction.data.id === filter.data.id) {
+              updated = true;
+              return { type: 'filter', data: filter.data };
             }
-          } else {
-            updatedInstructions = updatedQuery.instructions.filter((instruction) => {
-              if (instruction.data.id === filter.data.id) {
-                return false;
-              }
-              return true;
-            })
+            return instruction;
+          });
+          if (!updated) {
+            updatedInstructions.push({ type: 'filter', data: filter.data });
           }
-          updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
-          onEditCallback(updatedQuery);
+        } else {
+          updatedInstructions = updatedQuery.instructions.filter((instruction) => {
+            if (instruction.data.id === filter.data.id) {
+              return false;
+            }
+            return true;
+          });
+        }
+        updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
+        onEditCallback(updatedQuery);
       }
     }
   }
@@ -122,66 +120,90 @@ class VariantNavigation extends React.Component {
     });
   }
 
-  renderFilterType(type){
-    const { intl, activeQuery, schema, queries, data } = this.props;
-    const { activeFilterId, searchResults } = this.state;
+  // @TODO Refactor
+  renderFilterType(type) {
+    const {
+      intl, activeQuery, schema, queries, data,
+    } = this.props;
+    const { activeFilterId } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
     switch (type) {
-        case FILTER_TYPE_GENERIC:
-            return (
-              <GenericFilter
-                overlayOnly
-                autoOpen
-                options={{
-                  editable: true,
-                  selectable: false,
-                  removable: false,
-                }}
-                intl={intl}
-                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: 'all' })}
-                dataSet={data[activeFilterId] ? data[activeFilterId] : []}
-                onEditCallback={this.handleFilterChange}
-                onRemoveCallback={this.handleFilterRemove}
-                onCancelCallback={this.handleCategoryOpenChange}
-              />
-            );
-            case FILTER_TYPE_NUMERICAL_COMPARISON:
-              return (
-                <NumericalComparisonFilter
-                  overlayOnly
-                  autoOpen
-                  options={{
-                    editable: true,
-                    selectable: false,
-                    removable: false,
-                  }}
-                  intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0 , type:"numcomparison"})}
-                  dataSet={data[activeFilterId] ? data[activeFilterId] : []}
-                  onEditCallback={this.handleFilterChange}
-                  onRemoveCallback={this.handleFilterRemove}
-                  onCancelCallback={this.handleCategoryOpenChange}
-                />
-              );
+      case FILTER_TYPE_GENERIC:
+        return (
+          <GenericFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type: FILTER_TYPE_GENERIC, operand: FILTER_OPERAND_TYPE_ALL })}
+            dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
+      case FILTER_TYPE_NUMERICAL_COMPARISON:
+        return (
+          <NumericalComparisonFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
+              id: activeFilterId, type: FILTER_TYPE_NUMERICAL_COMPARISON,
+            })}
+            dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
+      case FILTER_TYPE_COMPOSITE:
+        return (
+          <CompositeFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
+              id: activeFilterId, comparator: '>', value: 0, type: FILTER_TYPE_COMPOSITE,
+            })}
+            dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
     }
-
   }
 
   render() {
     const { intl, schema, data } = this.props;
     const { activeFilterId, searchResults } = this.state;
-    const autocompletes = searchResults.map((group) => {
-      return (
-          <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
-            { group.matches.map((match) => (
-              <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
-                {match.value} {match.count && (<Tag>{match.count}</Tag>)}
-              </AutoComplete.Option>
-            ))}
-          </AutoComplete.OptGroup>
-        )
-    })
+    const autocompletes = searchResults.map(group => (
+      <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
+        { group.matches.map(match => (
+          <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
+            {match.value}
+            {' '}
+            {match.count && (<Tag>{match.count}</Tag>)}
+          </AutoComplete.Option>
+        ))}
+      </AutoComplete.OptGroup>
+    ));
 
     return (
       <div className="variant-navigation">
@@ -189,29 +211,28 @@ class VariantNavigation extends React.Component {
           <Menu.SubMenu
             key="search"
             title={(
-                <AutoComplete
-                  allowClear
-                  autoFocus
-                  optionLabelProp="value"
-                  size="large"
-                  dataSource={autocompletes}
-                  onSelect={this.handleNavigationSelection}
-                  onChange={this.handleNavigationSearch}
-                  placeholder="Recherche de filtres"
-                >
-                  <Input prefix={<Icon type="search" />} />
-                </AutoComplete>
+              <AutoComplete
+                allowClear
+                autoFocus
+                optionLabelProp="value"
+                size="large"
+                dataSource={autocompletes}
+                onSelect={this.handleNavigationSelection}
+                onChange={this.handleNavigationSearch}
+                placeholder="Recherche de filtres"
+              >
+                <Input prefix={<Icon type="search" />} />
+              </AutoComplete>
             )}
           />
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
-              const {searchData} = this.props
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
 
-              const categoryInfo =find(schema.categories, ['id', id]);
+              const categoryInfo = find(schema.categories, ['id', id]);
               const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-              const type = categoryData ? this.renderFilterType(categoryData.type) : null
+              const type = categoryData ? this.renderFilterType(categoryData.type) : null;
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (
@@ -222,7 +243,7 @@ class VariantNavigation extends React.Component {
                   />
                   ))}
                   { activeFilterId !== null && (
-                      type
+                    type
                   )}
                 </Menu.SubMenu>
               );
