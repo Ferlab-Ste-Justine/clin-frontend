@@ -58,7 +58,7 @@ class GenericBooleanFilter extends React.Component {
 
 }
       getPopoverLegend() {
-        return (<span>b</span>);
+
       }
 
       getLabel() {
