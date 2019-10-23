@@ -497,7 +497,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets  ,categories} = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets  ,categories, searchData} = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -594,12 +594,25 @@ class Query extends React.Component {
                        />
                     );
                 }else if(type === FILTER_TYPE_GENERICBOOL){
+
+                const categoryInfo =find(categories, ['id', category]);
+                const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+
+                  const allOption = []
+                  Object.keys(categoryData.search).map((keyName) => {
+                      const data = find(searchData, ['id', keyName])
+                      if(data){
+                        const count = data.data[0].count
+                        allOption.push({value:keyName , count:count})
+                      }
+                    }
+                  )
                      return (
                          <GenericBooleanFilter
                           index={index}
                           options={options}
                           data={item.data}
-                          dataSet={facets[item.data.id] || []}
+                          dataSet={allOption ? allOption : []}
                           intl={intl}
                           category={category}
                           onEditCallback={this.handleFilterChange}

@@ -35,12 +35,25 @@ class GenericBooleanFilter extends React.Component {
 
     // @NOTE Initialize Component State
     const { data, dataSet } = props;
-    const {selection} = this.state
+
     this.state.draft = cloneDeep(data);
     this.state.selection = data.values ? cloneDeep(data.values) : [];
     this.state.allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc'])
     this.state.page = 1;
     this.state.size = 10;
+
+    if (this.state.selection.length > 0) {
+      const value = filter(cloneDeep(dataSet), o => this.state.selection.includes(o.value));
+      if (value.length === 0) {
+        const selectedValue = [];
+        this.state.selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        this.state.allOptions.unshift(...selectedValue);
+      } else {
+        const sorted = orderBy(value, ['count'], ['desc']);
+        pullAllBy(this.state.allOptions, cloneDeep(sorted), 'value');
+        this.state.allOptions.unshift(...sorted);
+      }
+    }
 
 
 }
