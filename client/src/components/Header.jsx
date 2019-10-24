@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
@@ -6,6 +7,8 @@ import { connect } from 'react-redux';
 import {
   Layout, Row, Col, Dropdown, Menu, Icon,
 } from 'antd';
+import IconKit from 'react-icons-kit';
+import { ic_translate, ic_account_circle } from 'react-icons-kit/md';
 import { Desktop, Tablet } from '../containers/Responsive';
 import { logoutUser } from '../actions/user';
 import { changeLanguage } from '../actions/app';
@@ -60,40 +63,40 @@ const languageMenu = (intl, actions) => {
 const Header = ({
   intl, user, app, actions,
 }) => {
+  const lang = intl.locale
   const title = intl.formatMessage({ id: 'header.title' });
+  const langText = intl.formatMessage({ id: `lang.${lang}.short`})
+  console.log("intl", intl)
   return (
     <Layout.Header id="header">
-      <Row type="flex">
-        <Col span={16}>
-          <img className="logo" alt={title} src="/images/cqgc.png" />
+      <Row type="flex" justify="space-between" align='middle'>
+        <Col>
+          <img className="logo" alt={title} src="/images/logo_CQGC.svg" />
         </Col>
-        <Col span={5} align="end">
-          {user.username !== null && (
+        <div className="secondaryNav">
+          <Col className="userName">
+            {user.username !== null && (
             <Dropdown overlay={userMenu(intl, actions)}>
               { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="ant-dropdown-link">
-                <Desktop><Icon type="user" /></Desktop>
+                <Desktop><IconKit size={16} icon={ic_account_circle} /></Desktop>
                 {` ${user.firstName} `}
-                <Desktop><Icon type="down" /></Desktop>
-                <Tablet><Icon type="down" /></Tablet>
               </a>
             </Dropdown>
-          )}
-        </Col>
-        <Col span={3} align="end">
-          {app.locale.lang !== null && (
+            )}
+          </Col>
+          <Col>
+            {app.locale.lang !== null && (
             <Dropdown overlay={languageMenu(intl, actions)}>
               { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="ant-dropdown-link">
-                <Desktop><Icon type="flag" /></Desktop>
-                {` ${intl.formatMessage({ id: `lang.${app.locale.lang}.long` })} `}
-                <Desktop><Icon type="down" /></Desktop>
-                <Tablet><Icon type="down" /></Tablet>
+                <Desktop><IconKit size={16} icon={ic_translate} /></Desktop>
+                {langText}
               </a>
             </Dropdown>
-          )}
-        </Col>
-
+            )}
+          </Col>
+        </div>
 
       </Row>
     </Layout.Header>
