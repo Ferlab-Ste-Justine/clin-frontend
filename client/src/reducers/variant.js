@@ -7,7 +7,7 @@ import uuidv1 from 'uuid/v1';
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 import { getUpdatedDraftHistory, getPreviousDraft } from '../helpers/draftQueriesHistory';
-import { getUpdatedDraftAddInstruction } from '../helpers/instructions';
+import { getUpdatedDraftAddInstruction, getUpdatedDraftRemoveInstruction } from '../helpers/instructions';
 
 export const initialVariantState = {
   schema: {},
@@ -16,6 +16,7 @@ export const initialVariantState = {
   originalQueries: [],
   draftQueries: [],
   draftHistory: [],
+  statementVersionNumber: 1,
   matches: {},
   results: {},
   facets: {},
@@ -34,8 +35,6 @@ export const variantShape = {
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
-  const { draftQueries, draftHistory } = draft;
-
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
@@ -86,7 +85,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
-      draft.draftQueries = draftQueries.filter((query) => !Boolean(action.payload.keys.find((key) => key === query.key)));
+      draft.draftHistory = getUpdatedDraftHistory(draft);
+      draft.draftQueries = draft.draftQueries.filter((query) => !Boolean(action.payload.keys.find((key) => key === query.key)));
       draft.activeQuery = draft.draftQueries.find((query) => query.key === draft.activeQuery) ? draft.activeQuery : draft.draftQueries[0].key;
       break;
 
@@ -94,24 +94,33 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.draftHistory = getUpdatedDraftHistory(draft);
       const keyToDuplicate = action.payload.query.key;
       const indexToInsertAt = action.payload.index || draft.draftQueries.length;
-      const indexToDuplicate = findIndex(draftQueries, { key: keyToDuplicate })
+      const indexToDuplicate = findIndex(draft.draftQueries, { key: keyToDuplicate })
       if (indexToDuplicate) {
         draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
         draft.activeQuery = action.payload.query.key
       }
       break;
 
+    case actions.PATIENT_VARIANT_QUERY_CHANGE_TITLE:
+      draft.draftHistory = getUpdatedDraftHistory(draft);
+      const queryIndex = findIndex(draft.draftQueries, { key: action.payload.key });
+      if (action.payload.title || action.payload.title === '') {
+        draft.draftQueries[queryIndex].title = action.payload.title;
+      } else {
+        delete draft.draftQueries[queryIndex].title;
+      }
+      break;
+
     case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
       draft.draftHistory = getUpdatedDraftHistory(draft);
       const { query } = action.payload;
-      const index = findIndex(draftQueries, { key: query.key })
+      const index = findIndex(draft.draftQueries, { key: query.key });
       if (index > -1) {
-        draftQueries[index] = query
+        draft.draftQueries[index] = query;
       } else {
-        draftQueries.push(query)
+        draft.draftQueries.push(query);
       }
-      draft.draftQueries = draftQueries
-      draft.activeQuery = query.key
+      draft.activeQuery = query.key;
       break;
     
     case actions.PATIENT_VARIANT_QUERIES_REPLACEMENT:
@@ -129,9 +138,14 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_QUERY_ADD_INSTRUCTION:
       draft.draftHistory = getUpdatedDraftHistory(draft);
-      const { instruction } = action.payload;
-      const { draftQueries: newDraftQueries } = getUpdatedDraftAddInstruction(draft, instruction);
-      draft.draftQueries = newDraftQueries;
+      const { draftQueries: newDraftQueriesAddInstruction } = getUpdatedDraftAddInstruction(draft, action.payload.instruction);
+      draft.draftQueries = newDraftQueriesAddInstruction;
+      break;
+
+    case actions.PATIENT_VARIANT_QUERY_REMOVE_INSTRUCTION:
+      draft.draftHistory = getUpdatedDraftHistory(draft);
+      const { draftQueries: newDraftQueriesRemoveInstruction } = getUpdatedDraftRemoveInstruction(draft, action.payload.instruction);
+      draft.draftQueries = newDraftQueriesRemoveInstruction;
       break;
 
     case actions.PATIENT_VARIANT_UNDO:
@@ -139,6 +153,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.draftQueries = draftQueries;
       draft.draftHistory = draftHistory;
       draft.activeQuery = activeQuery;
+      draft.statementVersionNumber++;
       break;
 
     default:

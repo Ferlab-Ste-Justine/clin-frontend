@@ -14,7 +14,6 @@ import GenericFilter from './Filter/Generic';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
-
 export const DEFAULT_EMPTY_QUERY = {};
 
 const QUERY_ACTION_COPY = 'copy';
@@ -25,75 +24,12 @@ const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
 const QUERY_ACTION_VIEW_SQON = 'view-sqon';
 const QUERY_ACTION_TITLE = 'title';
 
-export const sanitizeInstructions = (instructions) => {
-    instructions = sanitizeSubqueries(instructions);
-    instructions = sanitizeFilters(instructions);
-    instructions = sanitizeOperators(instructions);
-    return instructions;
-}
-
-const sanitizeOperators = (instructions) => {
-  // @NOTE No subsequent operators
-  let lastOperatorIndex = null;
-  const sanitizedInstructions = instructions.filter((instruction, index) => {
-    if (instruction.type === INSTRUCTION_TYPE_OPERATOR) {
-      if (lastOperatorIndex !== null && ((lastOperatorIndex + 1) === index)) {
-        lastOperatorIndex = index;
-        return false;
-      }
-      lastOperatorIndex = index;
-    }
-    return true;
-  });
-
-  // @NOTE No prefix operator
-  if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
-      sanitizedInstructions.shift();
-  }
-
-  // @NOTE No suffix operator
-  const instructionsLength = sanitizedInstructions.length - 1;
-  if (sanitizedInstructions[instructionsLength] && sanitizedInstructions[instructionsLength].type === INSTRUCTION_TYPE_OPERATOR) {
-    sanitizedInstructions.pop();
-  }
-
-  // @No subsequent filters or subqueries without an operator
-  for(let i in sanitizedInstructions){
-    const defaultOperator = {data:{type:"and"} ,
-                             type:INSTRUCTION_TYPE_OPERATOR }
-    const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator
-    const next = Number(i)+1
-    if(next < sanitizedInstructions.length){
-        if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
-            if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
-                sanitizedInstructions.splice(next, 0, operator);
-            }
-        }
-    }
-  }
-
-  return sanitizedInstructions;
-};
-
-const sanitizeSubqueries = (instructions) => {
-  if (instructions.length === 1 && instructions[0].type === INSTRUCTION_TYPE_SUBQUERY) {
-    instructions.shift();
-  }
-
-  return instructions;
-};
-
-// @NOTE No subsequent filters
-const sanitizeFilters = instructions => instructions;
-
-
 class Query extends React.Component {
   constructor(props) {
     super(props);
-    const { display = null, draft = null } = props;
+    const { display = null } = props;
     this.state = {
-      data: cloneDeep(draft),
-      display: cloneDeep(display),
+      display: cloneDeep(display)
     };
     this.addInstruction = this.addInstruction.bind(this);
     this.replaceInstruction = this.replaceInstruction.bind(this);
@@ -115,50 +51,38 @@ class Query extends React.Component {
     this.hasTitle = this.hasTitle.bind(this);
   }
 
-  addInstruction(item) {
-      const { data } = this.state;
-      const { onEditCallback } = this.props;
-      data.instructions.push(item);
-      data.instructions = sanitizeInstructions(data.instructions);
-      this.setState({
-          data,
-      }, () => {
-          if (onEditCallback) {
-              onEditCallback(this.serialize());
-          }
-      });
+  shouldComponentUpdate(nextProps, nextState) {
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
   }
 
-  replaceInstruction(item) {
-    const { data } = this.state;
-    const { onEditCallback } = this.props;
-    data.instructions[item.index] = item;
-    this.setState({
-      data,
-    }, () => {
-      if (onEditCallback) {
-        onEditCallback(this.serialize());
-      }
-    });
+  addInstruction(instruction) {
+    this.props.onAddInstructionCallback(instruction);
+  }
+
+  replaceInstruction(instruction) {
+    this.props.onReplaceInstructionCallback(instruction);
   }
 
   removeInstruction(instruction) {
-    const { data } = this.state;
-    const { onEditCallback, onRemoveCallback } = this.props;
-    const index = instruction.index;
-    data.instructions.splice(index, 1);
-    data.instructions = sanitizeInstructions(data.instructions);
-    if (data.instructions.length > 0) {
-      this.setState({
-        data,
-      }, () => {
-        if (onEditCallback) {
-          onEditCallback(this.serialize());
-        }
-      });
-    } else if (onRemoveCallback) {
-      onRemoveCallback(this.serialize());
-    }
+    this.props.onRemoveInstructionCallback(instruction);
+    // const { data } = this.state;
+    // const { onEditCallback, onRemoveCallback } = this.props;
+    // const index = instruction.index;
+    // data.instructions.splice(index, 1);
+    // data.instructions = sanitizeInstructions(data.instructions);
+    // if (data.instructions.length > 0) {
+    //   this.setState({
+    //     data,
+    //   }, () => {
+    //     console.log('Query index removeInstruction 1');
+    //     if (onEditCallback) {
+    //       onEditCallback(this.serialize());
+    //     }
+    //   });
+    // } else if (onRemoveCallback) {
+    //   console.log('Query index removeInstruction 2');
+    //   onRemoveCallback(this.serialize());
+    // }
   }
 
   handleFilterRemoval(filter) {
@@ -174,38 +98,23 @@ class Query extends React.Component {
   }
 
   handleFilterChange(filter) {
-    console.log('handleFilterChange in Query - filter', filter)
-    const instruction = {
-      type: INSTRUCTION_TYPE_FILTER,
-      data: filter.data,
-      options: filter.options,
-    };
-
-    if (filter.index !== undefined) {
-      instruction.index = filter.index
-      this.replaceInstruction(instruction);
-    } else {
-      this.addInstruction(instruction)
-    }
+    this.addInstruction(filter);
   }
 
   // @NOTE All operators within a query must have the same type
   handleOperatorChange(operator) {
-    const { data } = this.state;
-    const { onEditCallback } = this.props;
-    data.instructions.map((datum, index) => {
+    const { draft, onEditCallback } = this.props;
+    const instructions = draft.instructions.map((datum) => {
       if (datum.type === INSTRUCTION_TYPE_OPERATOR) {
         datum.data.type = operator.data.type;
       }
       return datum;
     });
-    this.setState({
-      data,
-    }, () => {
-      if (onEditCallback) {
-        onEditCallback(this.serialize());
-      }
-    });
+    const updatedDraft = {
+      ...draft,
+      instructions
+    }
+    onEditCallback(updatedDraft);
   }
 
   handleSubqueryChange(subquery) {
@@ -219,15 +128,10 @@ class Query extends React.Component {
 
   handleTitleChange(e) {
     const title = e.target.value;
-    const { data } = this.state;
-    data.title = title;
-    this.setState({
-      data,
-    }, () => {
-      if (this.props.onEditCallback) {
-        this.props.onEditCallback(this.serialize());
-      }
-    });
+    const { draft, onChangeQueryTitleCallback } = this.props;
+    if (title !== draft.title) {
+      onChangeQueryTitleCallback({ key: draft.key, title});
+    }
   }
 
   handleAdvancedChange(e) {
@@ -243,46 +147,6 @@ class Query extends React.Component {
           title: Joi.string(),
           instructions: Joi.array().items(Joi.object().keys({
             type: Joi.string().valid(INSTRUCTION_TYPE_FILTER, INSTRUCTION_TYPE_OPERATOR, INSTRUCTION_TYPE_SUBQUERY).required(),
-            //data: Joi.object()
-
-
-            /*
-            filter: Joi.string().when(
-              'type', {
-                is: INSTRUCTION_TYPE_FILTER,
-                then: Joi.object().keys({
-                  data: Joi.object().keys({
-                    id: Joi.string().required(),
-                    type: Joi.string().valid('generic', 'specific').required(),
-                    operand: Joi.string().valid('all', 'one', 'none').required(),
-                    values: Joi.array().items(Joi.string()).required(),
-                  }).required()
-                })
-              }),
-              */
-
-            /*
-                        operator: Joi.string().when(
-                          'type', {
-                            is: INSTRUCTION_TYPE_OPERATOR,
-                            then: Joi.object().keys({
-                              data: Joi.object().keys({
-                                type: Joi.string().valid(OPERATOR_TYPES).required()
-                              })
-                            })
-                        }),
-            */
-            /*
-            subquery: Joi.string().when(
-              'type', {
-                is: INSTRUCTION_TYPE_SUBQUERY,
-                then: Joi.object().keys({
-                  data: Joi.object().keys({
-                    type: Joi.string().valid('generic', 'specific').required(),
-                  }).required()
-                })
-              }),
-              */
           }))
         });
 
@@ -301,29 +165,29 @@ class Query extends React.Component {
 
 
       this.setState({
-        data: rawQuery,
+        // data: rawQuery,
         display,
       }, () => {
         if (this.props.onEditCallback) {
-          this.props.onEditCallback(this.serialize());
+          this.props.onEditCallback(rawQuery);
         }
       });
     }
   }
 
   json() {
-    const { data } = this.state;
-    const instructions = data.instructions.map((datum) => {
+    const { draft } = this.props;
+    const instructions = draft.instructions.map((datum) => {
       delete datum.key;
       delete datum.display;
       return datum;
     });
-    return { ...data, instructions };
+    return { ...draft, instructions };
   }
 
   sqon() {
-    const { data } = this.state;
-    const sqon = data.instructions.map((datum) => {
+    const { draft } = this.props;
+    const sqon = draft.instructions.map((datum) => {
       delete datum.key;
       delete datum.display;
       return datum;
@@ -332,7 +196,8 @@ class Query extends React.Component {
   }
 
   serialize() {
-    const { data, display } = this.state;
+    const { draft: data } = this.props;
+    const { display } = this.state;
     const { index } = this.props;
     return {
       data,
@@ -342,15 +207,13 @@ class Query extends React.Component {
   }
 
   handleClick(e) {
-    const { onClickCallback } = this.props;
-    if (onClickCallback) {
-      onClickCallback(this.serialize())
-    }
+    const { onClickCallback, draft } = this.props;
+    onClickCallback(draft.key);
   }
 
   handleMenuSelection({ key }) {
+    const { draft } = this.props;
     const { display } = this.state;
-    const { data } = this.state;
     switch (key) {
       case QUERY_ACTION_COPY:
         const sqon = JSON.stringify(this.sqon());
@@ -380,22 +243,14 @@ class Query extends React.Component {
         });
         break;
       case QUERY_ACTION_TITLE:
-        if (!this.hasTitle()) {
-          data.title = '';
-        } else {
-          delete data.title;
+        const title = this.hasTitle() ? null : '';
+        if (this.props.onChangeQueryTitleCallback) {
+          this.props.onChangeQueryTitleCallback({ key: draft.key, title });
         }
-        this.setState({
-          data,
-        }, () => {
-          if (this.props.onEditCallback) {
-            this.props.onEditCallback(this.serialize());
-          }
-        });
         break;
       case QUERY_ACTION_DELETE:
         if (this.props.onRemoveCallback) {
-          this.props.onRemoveCallback(this.serialize());
+          this.props.onRemoveCallback(draft.key);
         }
         break;
       case QUERY_ACTION_DUPLICATE:
@@ -404,15 +259,11 @@ class Query extends React.Component {
         }
         break;
       case QUERY_ACTION_UNDO_ALL:
-        const { original } = this.props;
+        const { original, onEditCallback } = this.props;
         const clone = cloneDeep(original);
-        this.setState({
-          data: clone,
-        }, () => {
-          if (this.props.onEditCallback) {
-            this.props.onEditCallback(this.serialize());
-          }
-        });
+        if (onEditCallback) {
+          onEditCallback(clone);
+        }
         break;
       default:
         break;
@@ -420,8 +271,8 @@ class Query extends React.Component {
   }
 
   hasTitle() {
-    const { data } = this.state;
-    return data.title !== undefined
+    const { draft } = this.props;
+    return draft.title !== undefined;
   }
 
   createMenuComponent() {
@@ -495,17 +346,17 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, onAddInstructionCallback} = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
-    const { display, data } = this.state;
+    const { display } = this.state;
     const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
-    const isDirty = !isEqual(original, data);
+    const isDirty = !isEqual(original, draft);
     let operatorsHandler = null;
     if (compoundOperators) {
-      const operator = find(data.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
+      const operator = find(draft.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
       if (operator) {
         operatorsHandler = (
           <Operator
@@ -518,7 +369,7 @@ class Query extends React.Component {
         );
       }
     }
-    const query = data.instructions ? (
+    const query = draft.instructions ? (
       <div className={`query${(isDirty ? ' dirty' : '')}`} onClick={this.handleClick}>
         {this.hasTitle()
           && (
@@ -527,14 +378,14 @@ class Query extends React.Component {
             className="title"
             allowClear
             placeholder="Add Title"
-            defaultValue={data.title}
+            defaultValue={draft.title}
             onBlur={this.handleTitleChange}
             onPressEnter={this.handleTitleChange}
           />
           )
         }
         <div className="instructions">
-          { !viewableSqon && data.instructions.map((item, index) => {
+          { !viewableSqon && draft.instructions.map((item, index) => {
             switch (item.type) {
               case INSTRUCTION_TYPE_OPERATOR:
                 if (compoundOperators) {
@@ -567,7 +418,6 @@ class Query extends React.Component {
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
-                    onAddInstructionCallback={onAddInstructionCallback}
                     key={index}
                   />
                 );
@@ -632,6 +482,9 @@ Query.propTypes = {
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   onAddInstructionCallback: PropTypes.func,
+  onRemoveInstructionCallback: PropTypes.func,
+  onReplaceInstructionCallback: PropTypes.func,
+  onChangeQueryTitleCallback: PropTypes.func,
   onUndoCallback: PropTypes.func,
   findQueryIndexForKey: PropTypes.func,
 };
@@ -658,6 +511,9 @@ Query.defaultProps = {
   onDisplayCallback: null,
   onEditCallback: null,
   onAddInstructionCallback: null,
+  onRemoveInstructionCallback: null,
+  onReplaceInstructionCallback: null,
+  onChangeQueryTitleCallback: null,
   onDuplicateCallback: null,
   onRemoveCallback: null,
   onSelectCallback: null,

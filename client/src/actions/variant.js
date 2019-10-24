@@ -65,10 +65,32 @@ export const searchVariants = (patient, statement, query, group = null, index = 
   },
 });
 
-export const addIntruction = instruction => ({
+export const addInstruction = instruction => ({
   type: actions.PATIENT_VARIANT_QUERY_ADD_INSTRUCTION,
   payload: {
     instruction,
+  },
+});
+
+export const removeInstruction = instruction => ({
+  type: actions.PATIENT_VARIANT_QUERY_REMOVE_INSTRUCTION,
+  payload: {
+    instruction,
+  },
+});
+
+export const replaceInstruction = instruction => ({
+  type: actions.PATIENT_VARIANT_QUERY_REPLACE_INSTRUCTION,
+  payload: {
+    instruction,
+  },
+});
+
+export const changeQueryTitle = ({ key, title }) => ({
+  type: actions.PATIENT_VARIANT_QUERY_CHANGE_TITLE,
+  payload: {
+    key,
+    title,
   },
 });
 

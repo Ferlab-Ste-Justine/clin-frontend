@@ -25,16 +25,13 @@ export const createFilter = type => ({
 class Filter extends React.Component {
   constructor(props) {
     super(props);
-    const { /*data,*/ dataSet = [], autoOpen, visible, sortData } = props;
+    const { dataSet = [], autoOpen, visible, sortData } = props;
     this.state = {
       type: null,
-      // data,
       dataSet,
-      // draft: cloneDeep(data),
       visible,
       opened: autoOpen,
       allOptions: cloneDeep(sortData),
-      // selection: data.values || [],
       size: 10,
       page: 1,
     };
@@ -90,25 +87,24 @@ class Filter extends React.Component {
       this.setState({
         opened: false,
         visible: false,
-      }, () => { onRemoveCallback(this.serialize()); });
+      }, () => {
+        onRemoveCallback(this.serialize());
+      });
     }
   }
 
   handleApply() {
     if (this.isEditable()) {
-      // const { draft } = this.state;
-      const { editor, onEditCallback, onAddInstructionCallback } = this.props;
+      const { data, editor, onEditCallback } = this.props;
+      const { id } = data;
       const values = editor.props.children[6].props.children.props.children.props.value;
       const operand = editor.props.children[0].props.children.props.children.props.value;
       if (values.length > 0) {
-        const instruction = { values, operand };
-        console.log('instruction', instruction);
+        const instruction = { id, values, operand };
         this.setState({
-          // data: { ...draft },
           opened: false,
         }, () => {
-          onAddInstructionCallback(instruction);
-          // onEditCallback(this.serialize());
+          onEditCallback(instruction);
         });
       } else {
         this.handleClose(true);
@@ -238,7 +234,6 @@ Filter.propTypes = {
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
-  onAddInstructionCallback: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
   label: PropTypes.string,
   legend: PropTypes.shape({}).isRequired,
@@ -259,7 +254,6 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
-  onAddInstructionCallback: () => {},
   label: '',
   autoOpen: false,
   overlayOnly: false,

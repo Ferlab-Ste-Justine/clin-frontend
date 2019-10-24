@@ -2,18 +2,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import {
-  find, cloneDeep
-} from 'lodash';
-
-import {
-  Menu, Input, AutoComplete, Icon, Tag,
-} from 'antd';
-
+import { find } from 'lodash';
+import { Menu, Input, AutoComplete, Icon, Tag } from 'antd';
 import GenericFilter from '../../../Query/Filter/Generic';
-import { sanitizeInstructions } from '../../../Query/index';
-
 
 class VariantNavigation extends React.Component {
   constructor(props) {
@@ -63,9 +54,6 @@ class VariantNavigation extends React.Component {
 
   handleNavigationSelection(value, option) {
     console.log('handleNavigationSelection', value, option);
-
-
-
   }
 
   handleFilterSelection({ key }) {
@@ -75,43 +63,11 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterRemove(filter) {
-    filter.remove = true
-    this.handleFilterChange(filter)
+    this.props.onRemoveInstructionCallback(filter);
   }
 
   handleFilterChange(filter) {
-    console.log('VariantPatient handleFilterChange filter', filter);
-    const { onEditCallback } = this.props;
-    if (onEditCallback) {
-      const { activeQuery, queries } = this.props;
-      const query = find(queries, { key: activeQuery })
-      if (query) {
-          const updatedQuery = cloneDeep(query);
-          let updatedInstructions = []
-          if (!filter.remove) {
-            let updated = false
-            updatedInstructions = updatedQuery.instructions.map((instruction) => {
-              if (instruction.data.id === filter.data.id) {
-                  updated = true
-                  return { type: 'filter', data: filter.data };
-              }
-              return instruction;
-            })
-            if (!updated) {
-              updatedInstructions.push({ type: 'filter', data: filter.data })
-            }
-          } else {
-            updatedInstructions = updatedQuery.instructions.filter((instruction) => {
-              if (instruction.data.id === filter.data.id) {
-                return false;
-              }
-              return true;
-            })
-          }
-          updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
-          onEditCallback(updatedQuery);
-      }
-    }
+    this.props.onAddInstructionCallback(filter);
   }
 
   handleCategoryOpenChange(keys) {
@@ -121,7 +77,7 @@ class VariantNavigation extends React.Component {
   }
 
   render() {
-    const { intl, activeQuery, schema, queries, data, onAddInstructionCallback } = this.props;
+    const { intl, activeQuery, schema, queries, data } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
@@ -185,7 +141,6 @@ class VariantNavigation extends React.Component {
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemove}
                     onCancelCallback={this.handleCategoryOpenChange}
-                    onAddInstructionCallback={onAddInstructionCallback}
                   />
                   )}
                 </Menu.SubMenu>

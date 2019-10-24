@@ -15,7 +15,7 @@ export function getUpdatedDraftHistory(draft) {
     ...!isEqual(newCommit, lastVersionInHistory) ? [newCommit] : [],
   ];
   const revisions = draftHistory.length;
-  if (revisions > MAX_REVISIONS) {
+  if (revisions > MAX_REVISIONS - 1) {
     newDraftHistory.shift();
   }
   return newDraftHistory;

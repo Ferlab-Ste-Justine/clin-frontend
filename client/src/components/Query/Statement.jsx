@@ -1,12 +1,12 @@
 /* eslint-disable */
 
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
   Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal,
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty,
+  cloneDeep, find, findIndex, pull, isEqual, filter, isEmpty,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -74,6 +74,14 @@ class Statement extends React.Component {
     this.handleNewQuery = this.handleNewQuery.bind(this);
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
+    this.handleAddInstruction = this.handleAddInstruction.bind(this);
+    this.handleRemoveInstruction = this.handleRemoveInstruction.bind(this);
+    this.handleReplaceInstruction = this.handleReplaceInstruction.bind(this);
+    this.handleChangeQueryTitle = this.handleChangeQueryTitle.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
   }
 
   isCopyable() {
@@ -124,9 +132,9 @@ class Statement extends React.Component {
     }
   }
 
-  handleClick(query) {
+  handleClick(key) {
     const { onSelectCallback } = this.props;
-    onSelectCallback(query.data.key);
+    onSelectCallback(key);
   }
 
   handleEdit(query) {
@@ -162,17 +170,17 @@ class Statement extends React.Component {
     }
   }
 
-  handleRemove(query) {
+  handleRemove(key) {
     if (this.isRemovable()) {
-      const subqueryKeys = this.getSubqueryKeys([query.data.key]);
+      const subqueryKeys = this.getSubqueryKeys([key]);
       if (!isEmpty(subqueryKeys)) {
         const subqueryKeysToDelete = [
           ...subqueryKeys,
-          query.data.key
-        ]
+          key
+        ];
         this.showDeleteConfirm(subqueryKeysToDelete);
       } else {
-        this.confirmRemove([query.data.key]);
+        this.confirmRemove([key]);
       }
     }
   }
@@ -313,7 +321,6 @@ class Statement extends React.Component {
     }
   }
 
-
   showDeleteConfirm(keys) {
     const { confirm } = Modal;
     const { intl } = this.props;
@@ -356,8 +363,36 @@ class Statement extends React.Component {
     return findIndex(data, { key });
   }
 
+  handleAddInstruction(payload) {
+    const { onAddInstructionCallback } = this.props;
+    if (onAddInstructionCallback) {
+      onAddInstructionCallback(payload);
+    }
+  }
+
+  handleRemoveInstruction(payload) {
+    const { onRemoveInstructionCallback } = this.props;
+    if (onRemoveInstructionCallback) {
+      onRemoveInstructionCallback(payload);
+    }
+  }
+
+  handleReplaceInstruction(payload) {
+    const { onReplaceInstructionCallback } = this.props;
+    if (onReplaceInstructionCallback) {
+      onReplaceInstructionCallback(payload);
+    }
+  }
+
+  handleChangeQueryTitle(payload) {
+    const { onChangeQueryTitleCallback } = this.props;
+    if (onChangeQueryTitleCallback) {
+      onChangeQueryTitleCallback(payload);
+    }
+  }
+
   render() {
-    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory, onAddInstructionCallback } = this.props;
+    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory } = this.props;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -382,7 +417,6 @@ class Statement extends React.Component {
       const initial = find(original, { key: query.key }) || null;
       const subqueries = isActive ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
       const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
-
       return [...accumulator, (
         <div key={query.key} className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
           <div
@@ -414,7 +448,10 @@ class Statement extends React.Component {
             categories= {categories}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
-            onAddInstructionCallback={onAddInstructionCallback}
+            onAddInstructionCallback={this.handleAddInstruction}
+            onRemoveInstructionCallback={this.handleRemoveInstruction}
+            onReplaceInstructionCallback={this.handleReplaceInstruction}
+            onChangeQueryTitleCallback={this.handleChangeQueryTitle}
             onDisplayCallback={this.handleDisplay}
             onDuplicateCallback={this.handleDuplicate}
             onRemoveCallback={this.handleRemove}
@@ -493,7 +530,7 @@ class Statement extends React.Component {
             <DragSortableList
               key="sortable"
               type="vertical"
-              items={queries.map((query, index) => ({ content: query, index }))}
+              items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
               onSort={this.handleReorder}
             />
           ) : queries
@@ -517,6 +554,7 @@ Statement.propTypes = {
   onRemoveCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
   onDraftHistoryUndoCallback: PropTypes.func,
+  onChangeQueryTitleCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -538,10 +576,13 @@ Statement.defaultProps = {
   onEditCallback: () => {},
   onBatchEditCallback: () => {},
   onAddInstructionCallback: () => {},
+  onRemoveInstructionCallback: () => {},
+  onReplaceInstructionCallback: () => {},
   onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},
-  onDraftHistoryUndoCallback: () => {}
+  onDraftHistoryUndoCallback: () => {},
+  onChangeQueryTitleCallback: () => {},
 };
 
 export default Statement;
