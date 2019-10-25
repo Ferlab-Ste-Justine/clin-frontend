@@ -207,7 +207,7 @@ class GenericFilter extends React.Component {
   handleSearchByQuery(values) {
     const { dataSet } = this.props;
     const allOptions = cloneDeep(dataSet);
-    const search = values
+    const search = values.toLowerCase()
     const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
     pullAllBy(allOptions, cloneDeep(toRemove), 'value');
