@@ -147,7 +147,7 @@ class GenericFilter extends React.Component {
     const typeNone = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.none' });
     const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
     const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
-    const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
+
     const minValue = size * (page - 1);
     const maxValue = size * page;
 
@@ -181,15 +181,6 @@ class GenericFilter extends React.Component {
         </Row>
         <br />
         <Row>
-          <Input
-            allowClear
-            placeholder={filterSearch}
-            size="small"
-            onChange={this.handleSearchByQuery}
-          />
-        </Row>
-        <br />
-        <Row>
           <Checkbox
             key="check-all"
             className="selector"
@@ -216,7 +207,7 @@ class GenericFilter extends React.Component {
   handleSearchByQuery(values) {
     const { dataSet } = this.props;
     const allOptions = cloneDeep(dataSet);
-    const search = (values.target.value).toLowerCase();
+    const search = values
     const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
     pullAllBy(allOptions, cloneDeep(toRemove), 'value');
@@ -284,11 +275,13 @@ class GenericFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_GENERIC}
+        searchable= {true}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}
         content={this.getPopoverContent()}
         onPageChangeCallBack={this.handlePageChange}
+        onSearchCallback = {this.handleSearchByQuery}
         sortData={allOptions}
       />
     );
