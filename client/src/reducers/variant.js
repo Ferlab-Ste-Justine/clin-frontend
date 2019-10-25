@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import { findIndex } from 'lodash';
 import uuidv1 from 'uuid/v1';
-
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 import { getUpdatedDraftHistory, getPreviousDraft } from '../helpers/draftQueriesHistory';
@@ -122,7 +121,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       }
       draft.activeQuery = query.key;
       break;
-    
+
     case actions.PATIENT_VARIANT_QUERIES_REPLACEMENT:
       draft.draftHistory = getUpdatedDraftHistory(draft);
       const { queries, activeQuery: activeQueryKey } = action.payload;

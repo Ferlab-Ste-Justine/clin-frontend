@@ -27,7 +27,6 @@ class Filter extends React.Component {
     super(props);
     const { dataSet = [], autoOpen, visible, sortData } = props;
     this.state = {
-      type: null,
       dataSet,
       visible,
       opened: autoOpen,
@@ -93,30 +92,45 @@ class Filter extends React.Component {
     }
   }
 
-  handleApply() {
-    if (this.isEditable()) {
-      const { data, editor, onEditCallback } = this.props;
-      const { id } = data;
-      const values = editor.props.children[6].props.children.props.children.props.value;
-      const operand = editor.props.children[0].props.children.props.children.props.value;
-      if (values.length > 0) {
-        const instruction = { id, values, operand };
-        this.setState({
-          opened: false,
-        }, () => {
-          onEditCallback(instruction);
-        });
-      } else {
-        this.handleClose(true);
-      }
+  old() {
+    const { data, editor, onEditCallback } = this.props;
+    const { id } = data;
+    const values = editor.props.children[6].props.children.props.children.props.value;
+    const operand = editor.props.children[0].props.children.props.children.props.value;
+    if (values.length > 0) {
+      const instruction = { id, values, operand };
+      this.setState({
+        opened: false,
+      }, () => {
+        onEditCallback(instruction);
+      });
+    } else {
+      this.handleClose(true);
     }
   }
 
+  handleApply() {
+    if (this.isEditable()) {
+      const { editor, onEditCallback, data, type } = this.props;
+      const { id } = data;
+      let instruction = { id, type };
+      if (type === FILTER_TYPE_GENERIC) {
+        instruction.values = editor.props.children[6].props.children.props.children.props.value;
+        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
+        if (instruction.values.length === 0) {
+          this.handleClose(true);
+        }
+      } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON){
+        instruction.comparator = editor.props.children[0].props.children.props.children.props.value;
+        instruction.value = editor.props.children[2].props.children[1].props.children.props.defaultValue;
+      }
+      onEditCallback(instruction);
+   }
+  }
+
   handleCancel() {
-    // const { draft } = this.state;
     const { onCancelCallback } = this.props;
     this.setState({
-      // data: { ...draft },
       opened: false,
     }, () => {
       onCancelCallback(this.serialize());
@@ -140,7 +154,6 @@ class Filter extends React.Component {
   render() {
     const { allOptions, size, page, opened } = this.state;
     const { data, intl, overlayOnly, editor, label, legend, content, dataSet } = this.props;
-    // console.log('Filter', this.props);
     const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const overlay = (
@@ -152,23 +165,26 @@ class Filter extends React.Component {
           <Typography>{descriptionText}</Typography>
           <br />
           { editor }
-          {
-              allOptions.length >= size
-                ? (
-                  <Row style={{ marginTop: 'auto' }}>
-                    <br />
-                    <Col align="end" span={24}>
-                      <Pagination
-                        total={allOptions.length}
-                        pageSize={size}
-                        current={page}
-                        pageSizeOptions={['10', '25', '50', '100']}
-                        onChange={this.handlePageChange}
-                      />
-                    </Col>
-                  </Row>
-                ) : null
+
+          { allOptions  && (
+                allOptions.length >= size
+                  ? (
+                    <Row style={{ marginTop: 'auto' }}>
+                      <br />
+                      <Col align="end" span={24}>
+                        <Pagination
+                          total={allOptions.length}
+                          pageSize={size}
+                          current={page}
+                          pageSizeOptions={['10', '25', '50', '100']}
+                          onChange={this.handlePageChange}
+                        />
+                      </Col>
+                    </Row>
+                  ) : null
+          )
           }
+
           <br />
           <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
             <Col>
@@ -229,6 +245,7 @@ Filter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
+  type:PropTypes.string.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -241,7 +258,7 @@ Filter.propTypes = {
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
-  sortData: PropTypes.array.isRequired,
+  sortData: PropTypes.array,
 };
 
 Filter.defaultProps = {
@@ -258,6 +275,7 @@ Filter.defaultProps = {
   autoOpen: false,
   overlayOnly: false,
   visible: true,
+  sortData:[]
 };
 
 export default Filter;

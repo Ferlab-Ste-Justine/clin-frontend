@@ -11,9 +11,13 @@ const Joi = require('@hapi/joi');
 import './style.scss';
 import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
 import GenericFilter from './Filter/Generic';
+import NumericalComparisonFilter from './Filter/NumericalComparison';
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from './Filter/index'
+
+
 export const DEFAULT_EMPTY_QUERY = {};
 
 const QUERY_ACTION_COPY = 'copy';
@@ -65,6 +69,9 @@ class Query extends React.Component {
 
   removeInstruction(instruction) {
     this.props.onRemoveInstructionCallback(instruction);
+    // TODO: We need to implement a confirmation that can be triggered from any component
+    // Because instructions can also be removed from the Variant Navigation.
+
     // const { data } = this.state;
     // const { onEditCallback, onRemoveCallback } = this.props;
     // const index = instruction.index;
@@ -403,24 +410,47 @@ class Query extends React.Component {
                 );
               case INSTRUCTION_TYPE_FILTER:
                 let category = null
+                let type = null
                 categories.map((x, index) => {
                     const value = find(x.filters, ['id', item.data.id]  );
-                    value ? category = x.id : null
+                    if(value){
+                        category = x.id
+                        type = value.type
+                    }
                 })
-                return (
-                  <GenericFilter
-                    index={index}
-                    options={options}
-                    data={item.data}
-                    dataSet={facets[item.data.id] || []}
-                    intl={intl}
-                    category={category}
-                    onEditCallback={this.handleFilterChange}
-                    onRemoveCallback={this.handleFilterRemoval}
-                    onSelectCallback={onSelectCallback}
-                    key={index}
-                  />
-                );
+
+                if(type === FILTER_TYPE_GENERIC){
+                    return (
+                        <GenericFilter
+                            index={index}
+                            options={options}
+                            data={item.data}
+                            dataSet={facets[item.data.id] || []}
+                            intl={intl}
+                            category={category}
+                            onEditCallback={this.handleFilterChange}
+                            onRemoveCallback={this.handleFilterRemoval}
+                            onSelectCallback={onSelectCallback}
+                            key={index}
+                          />
+                    );
+                }if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
+                    return (
+                        <NumericalComparisonFilter
+                         index={index}
+                         options={options}
+                         data={item.data}
+                         dataSet={facets[item.data.id] || []}
+                         intl={intl}
+                         category={category}
+                         onEditCallback={this.handleFilterChange}
+                         onRemoveCallback={this.handleFilterRemoval}
+                         onSelectCallback={onSelectCallback}
+                         key={index}
+                       />
+                    );
+                }
+
               case INSTRUCTION_TYPE_SUBQUERY:
                 const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
                 return (
