@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,Input
 } from 'antd';
 import {
   cloneDeep,
@@ -12,6 +12,7 @@ import {
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
+export const FILTER_TYPE_GENERICBOOL = 'genericbool'
 export const FILTER_TYPE_SPECIFIC = 'specific';
 export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_SPECIFIC];
 
@@ -46,6 +47,7 @@ class Filter extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
   }
 
   isEditable() {
@@ -120,9 +122,11 @@ class Filter extends React.Component {
         if (instruction.values.length === 0) {
           this.handleClose(true);
         }
-      } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON){
+      } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
         instruction.comparator = editor.props.children[0].props.children.props.children.props.value;
         instruction.value = editor.props.children[2].props.children[1].props.children.props.defaultValue;
+      } else if (type === FILTER_TYPE_GENERICBOOL) {
+        instruction.values = editor.props.children[2].props.children.props.children.props.value
       }
       onEditCallback(instruction);
    }
@@ -151,11 +155,18 @@ class Filter extends React.Component {
     });
   }
 
+  handleSearchByQuery(value){
+      const { onSearchCallback } = this.props;
+      const search = value.target.value
+      onSearchCallback(search);
+  }
+
   render() {
     const { allOptions, size, page, opened } = this.state;
-    const { data, intl, overlayOnly, editor, label, legend, content, dataSet } = this.props;
+    const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable } = this.props;
     const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
+    const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
     const overlay = (
       <Popover
         visible={opened}
@@ -164,6 +175,21 @@ class Filter extends React.Component {
           <Typography.Title level={4}>{titleText}</Typography.Title>
           <Typography>{descriptionText}</Typography>
           <br />
+          {searchable  && (
+               <>
+               <Row>
+                 <Input
+                   allowClear
+                   placeholder={filterSearch}
+                   size="small"
+                   onChange={this.handleSearchByQuery}
+                 />
+               </Row>
+               <br/>
+               </>
+          )
+          }
+
           { editor }
 
           { allOptions  && (

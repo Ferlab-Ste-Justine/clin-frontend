@@ -227,6 +227,7 @@ class PatientVariantScreen extends React.Component {
               onDuplicateCallback={this.handleQueryDuplication}
               onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
               onChangeQueryTitleCallback={this.handleChangeQueryTitle}
+              searchData={searchData}
             />
             <br/>
             <br />

@@ -6,7 +6,8 @@ import { find } from 'lodash';
 import { Menu, Input, AutoComplete, Icon, Tag } from 'antd';
 import GenericFilter from '../../../Query/Filter/Generic';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from '../../../Query/Filter/index'
+import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON , FILTER_TYPE_GENERICBOOL} from '../../../Query/Filter/index'
 
 
 class VariantNavigation extends React.Component {
@@ -80,8 +81,8 @@ class VariantNavigation extends React.Component {
     });
   }
 
-  renderFilterType(type){
-    const { intl, activeQuery, schema, queries, data } = this.props;
+  renderFilterType(type , categoryData){
+    const { intl, activeQuery, schema, queries, data ,searchData } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
@@ -115,10 +116,38 @@ class VariantNavigation extends React.Component {
                     removable: false,
                   }}
                   intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0 , type:"numcomparison"})}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0 , type:NumericalComparisonFilter})}
                   dataSet={data[activeFilterId] ? data[activeFilterId] : []}
                   onEditCallback={this.handleFilterChange}
                   onRemoveCallback={this.handleFilterRemove}
+                  onCancelCallback={this.handleCategoryOpenChange}
+                />
+              );
+            case FILTER_TYPE_GENERICBOOL:
+              const allOption = []
+              Object.keys(categoryData.search).map((keyName) => {
+                  const data = find(searchData, ['id', keyName])
+                  if(data){
+                    const count = data.data[0].count
+                    allOption.push({value:keyName , count:count})
+                  }
+                }
+              )
+              return (
+                <GenericBooleanFilter
+                  overlayOnly
+                  autoOpen
+                  options={{
+                    editable: true,
+                    selectable: false,
+                    removable: false,
+                  }}
+                  intl={intl}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type:FILTER_TYPE_GENERICBOOL})}
+                  dataSet={allOption ? allOption : []}
+                  onEditCallback={this.handleFilterChange}
+                  onRemoveCallback={this.handleFilterRemove}
+                  onCancelCallback={this.handleCategoryOpenChange}
                   onCancelCallback={this.handleCategoryOpenChange}
                 />
               );
@@ -169,7 +198,8 @@ class VariantNavigation extends React.Component {
 
               const categoryInfo =find(schema.categories, ['id', id]);
               const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-              const type = categoryData ? this.renderFilterType(categoryData.type) : null
+
+              const type = categoryData ? this.renderFilterType(categoryData.type , categoryData) : null
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (
