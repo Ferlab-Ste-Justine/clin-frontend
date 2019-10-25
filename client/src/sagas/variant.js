@@ -1,7 +1,7 @@
 import {
   all, put, takeLatest, select,
 } from 'redux-saga/effects';
-import { find } from 'lodash';
+import { isEmpty, find } from 'lodash';
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
@@ -71,11 +71,14 @@ function* getUpdatedData() {
 }
 
 function* createNewQuery() {
-  yield put({ type: actions.PATIENT_VARIANT_QUERY_NEW });
+  const { draftQueries } = yield select(state => state.variant);
+  if (isEmpty(draftQueries)) {
+    yield put({ type: actions.PATIENT_VARIANT_QUERY_NEW });
+  }
 }
 
-function* watchForPatientFetchSucceed() {
-  yield takeLatest(actions.PATIENT_FETCH_SUCCEEDED, createNewQuery);
+function* watchForPatientVariantScreenSucceeded() {
+  yield takeLatest(actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED, createNewQuery);
 }
 
 function* watchVariantSchemaFetch() {
@@ -101,7 +104,7 @@ function* watchVariantSearch() {
 export default function* watchedVariantSagas() {
   yield all([
     watchVariantSchemaFetch(),
-    watchForPatientFetchSucceed(),
+    watchForPatientVariantScreenSucceeded(),
     watchVariantSearch(),
     watchForUpdatedQueries(),
   ]);

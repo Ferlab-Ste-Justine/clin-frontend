@@ -94,30 +94,13 @@ class Filter extends React.Component {
     }
   }
 
-  old() {
-    const { data, editor, onEditCallback } = this.props;
-    const { id } = data;
-    const values = editor.props.children[6].props.children.props.children.props.value;
-    const operand = editor.props.children[0].props.children.props.children.props.value;
-    if (values.length > 0) {
-      const instruction = { id, values, operand };
-      this.setState({
-        opened: false,
-      }, () => {
-        onEditCallback(instruction);
-      });
-    } else {
-      this.handleClose(true);
-    }
-  }
-
   handleApply() {
     if (this.isEditable()) {
       const { editor, onEditCallback, data, type } = this.props;
       const { id } = data;
       let instruction = { id, type };
       if (type === FILTER_TYPE_GENERIC) {
-        instruction.values = editor.props.children[6].props.children.props.children.props.value;
+        instruction.values = editor.props.children[4].props.children.props.children.props.value;
         instruction.operand = editor.props.children[0].props.children.props.children.props.value;
         if (instruction.values.length === 0) {
           this.handleClose(true);
@@ -129,6 +112,9 @@ class Filter extends React.Component {
         instruction.values = editor.props.children[2].props.children.props.children.props.value
       }
       onEditCallback(instruction);
+      this.setState({
+        opened: false,
+      });
    }
   }
 
