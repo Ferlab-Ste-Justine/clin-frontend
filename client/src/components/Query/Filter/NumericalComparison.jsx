@@ -52,14 +52,14 @@ class NumericalComparisonFilter extends React.Component {
 
   getLabel() {
     const { data } = this.props;
-    const { values } = data;
-    return JSON.stringify(values);
+    const { value } = data;
+    return JSON.stringify(value);
   }
 
   getPopoverLegend() {
     const { data } = this.props;
     const { comparator } = data;
-    return (<span>{comparator} {data.value}</span>);
+    return (<span>{comparator}</span>);
   }
 
   getPopoverContent() {
@@ -145,6 +145,7 @@ class NumericalComparisonFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_NUMERICAL_COMPARISON}
+        searchable = {false}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}

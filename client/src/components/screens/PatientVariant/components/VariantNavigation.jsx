@@ -13,8 +13,10 @@ import {
 
 import GenericFilter, { FILTER_OPERAND_TYPE_ALL } from '../../../Query/Filter/Generic';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
+import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
 import CompositeFilter from '../../../Query/Filter/Composite';
 import { sanitizeInstructions } from '../../../Query/index';
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON , FILTER_TYPE_GENERICBOOL} from '../../../Query/Filter/index'
 import { FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE } from '../../../Query/Filter/index';
 
 
@@ -121,11 +123,11 @@ class VariantNavigation extends React.Component {
   }
 
   // @TODO Refactor
-  renderFilterType(type) {
+  renderFilterType(type, categoryData) {
     const {
-      intl, activeQuery, schema, queries, data,
+      intl, activeQuery, schema, queries, data, searchData
     } = this.props;
-    const { activeFilterId } = this.state;
+    const { activeFilterId, searchResults } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
     switch (type) {
@@ -167,6 +169,34 @@ class VariantNavigation extends React.Component {
             onCancelCallback={this.handleCategoryOpenChange}
           />
         );
+      case FILTER_TYPE_GENERICBOOL:
+        const allOption = []
+        Object.keys(categoryData.search).map((keyName) => {
+            const data = find(searchData, ['id', keyName])
+            if(data){
+              const count = data.data[0].count
+              allOption.push({value:keyName , count:count})
+            }
+          }
+        )
+        return (
+          <GenericBooleanFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type:FILTER_TYPE_GENERICBOOL})}
+            dataSet={allOption ? allOption : []}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
       case FILTER_TYPE_COMPOSITE:
         return (
           <CompositeFilter
@@ -193,17 +223,17 @@ class VariantNavigation extends React.Component {
   render() {
     const { intl, schema, data } = this.props;
     const { activeFilterId, searchResults } = this.state;
-    const autocompletes = searchResults.map(group => (
-      <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
-        { group.matches.map(match => (
-          <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
-            {match.value}
-            {' '}
-            {match.count && (<Tag>{match.count}</Tag>)}
-          </AutoComplete.Option>
-        ))}
-      </AutoComplete.OptGroup>
-    ));
+    const autocompletes = searchResults.map((group) => {
+      return (
+          <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
+            { group.matches.map((match) => (
+              <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
+                {match.value} {match.count && (<Tag>{match.count}</Tag>)}
+              </AutoComplete.Option>
+            ))}
+          </AutoComplete.OptGroup>
+        )
+    })
 
     return (
       <div className="variant-navigation">
@@ -230,9 +260,10 @@ class VariantNavigation extends React.Component {
               const { id } = category;
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
 
-              const categoryInfo = find(schema.categories, ['id', id]);
+              const categoryInfo =find(schema.categories, ['id', id]);
               const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-              const type = categoryData ? this.renderFilterType(categoryData.type) : null;
+
+              const type = categoryData ? this.renderFilterType(categoryData.type , categoryData) : null
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (

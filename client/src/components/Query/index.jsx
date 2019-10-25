@@ -13,10 +13,11 @@ import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
-import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
-import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
+import GenericBooleanFilter from './Filter/GenericBoolean'
+import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
+import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import { convertIndexToColor, convertIndexToLetter } from './Statement';
-import { FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE } from './Filter/index';
+import { FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE } from './Filter/index';
 
 const Joi = require('@hapi/joi');
 
@@ -498,9 +499,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const {
-      active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories,
-    } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets  ,categories, searchData} = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -566,36 +565,64 @@ class Query extends React.Component {
                   }
                 });
 
-                if (type === FILTER_TYPE_GENERIC) {
-                  return (
-                    <GenericFilter
-                      index={index}
-                      options={options}
-                      data={item.data}
-                      dataSet={facets[item.data.id] || []}
-                      intl={intl}
-                      category={category}
-                      onEditCallback={this.handleFilterChange}
-                      onRemoveCallback={this.handleFilterRemoval}
-                      onSelectCallback={onSelectCallback}
-                      key={index}
-                    />
-                  );
-                } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
-                  return (
-                    <NumericalComparisonFilter
-                      index={index}
-                      options={options}
-                      data={item.data}
-                      dataSet={facets[item.data.id] || []}
-                      intl={intl}
-                      category={category}
-                      onEditCallback={this.handleFilterChange}
-                      onRemoveCallback={this.handleFilterRemoval}
-                      onSelectCallback={onSelectCallback}
-                      key={index}
-                    />
-                  );
+                if(type === FILTER_TYPE_GENERIC){
+                    return (
+                        <GenericFilter
+                            index={index}
+                            options={options}
+                            data={item.data}
+                            dataSet={facets[item.data.id] || []}
+                            intl={intl}
+                            category={category}
+                            onEditCallback={this.handleFilterChange}
+                            onRemoveCallback={this.handleFilterRemoval}
+                            onSelectCallback={onSelectCallback}
+                            key={index}
+                          />
+                    );
+                }else if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
+                    return (
+                        <NumericalComparisonFilter
+                         index={index}
+                         options={options}
+                         data={item.data}
+                         dataSet={facets[item.data.id] || []}
+                         intl={intl}
+                         category={category}
+                         onEditCallback={this.handleFilterChange}
+                         onRemoveCallback={this.handleFilterRemoval}
+                         onSelectCallback={onSelectCallback}
+                         key={index}
+                       />
+                    );
+                }else if(type === FILTER_TYPE_GENERICBOOL){
+
+                const categoryInfo =find(categories, ['id', category]);
+                const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+
+                  const allOption = []
+                  Object.keys(categoryData.search).map((keyName) => {
+                      const data = find(searchData, ['id', keyName])
+                      if(data){
+                        const count = data.data[0].count
+                        allOption.push({value:keyName , count:count})
+                      }
+                    }
+                  )
+                     return (
+                         <GenericBooleanFilter
+                          index={index}
+                          options={options}
+                          data={item.data}
+                          dataSet={allOption ? allOption : []}
+                          intl={intl}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={index}
+                        />
+                     );
                 } else if (type === FILTER_TYPE_COMPOSITE) {
                   return (
                     <CompositeFilter
