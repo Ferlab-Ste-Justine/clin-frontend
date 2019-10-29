@@ -39,7 +39,6 @@ class Filter extends React.Component {
 
     this.isEditable = this.isEditable.bind(this);
     this.isRemovable = this.isRemovable.bind(this);
-    this.isSelectable = this.isSelectable.bind(this);
     this.isOpened = this.isOpened.bind(this);
     this.isVisible = this.isVisible.bind(this);
     this.serialize = this.serialize.bind(this);
@@ -55,12 +54,6 @@ class Filter extends React.Component {
     const { options } = this.props;
     const { editable } = options;
     return editable === true;
-  }
-
-  isSelectable() {
-    const { options } = this.props;
-    const { selectable } = options;
-    return selectable === true;
   }
 
   isRemovable() {
