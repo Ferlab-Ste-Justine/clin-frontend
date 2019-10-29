@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import {
   Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,Input
@@ -200,10 +201,19 @@ class Filter extends React.Component {
           <br />
           <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
             <Col>
-              <Button onClick={this.handleCancel}>Annuler</Button>
+              <Button onClick={this.handleCancel}>
+                <FormattedMessage id="screen.patientvariant.filter_popover_back" />
+              </Button>
             </Col>
             <Col>
-              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>Appliquer</Button>
+              <Button style={{ marginLeft: '8px' }} onClick={this.toggleMenu}>
+                <FormattedMessage id="screen.patientvariant.filter_popover_cancel" />
+              </Button>
+            </Col>
+            <Col>
+              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>
+                <FormattedMessage id="screen.patientvariant.filter_popover_apply" />
+              </Button>
             </Col>
           </Row>
         </Card>
@@ -213,6 +223,7 @@ class Filter extends React.Component {
     if (overlayOnly === true) {
       return (
         <Dropdown
+          trigger="click"
           onVisibleChange={this.toggleMenu}
           overlay={overlay}
           visible={this.isOpened()}
