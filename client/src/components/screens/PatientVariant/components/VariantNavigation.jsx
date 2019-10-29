@@ -141,7 +141,7 @@ class VariantNavigation extends React.Component {
               removable: false,
             }}
             intl={intl}
-            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type: FILTER_TYPE_GENERIC, operand: FILTER_OPERAND_TYPE_ALL })}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: FILTER_OPERAND_TYPE_ALL })}
             dataSet={data[activeFilterId] ? data[activeFilterId] : []}
             onEditCallback={this.handleFilterChange}
             onRemoveCallback={this.handleFilterRemove}
@@ -160,7 +160,7 @@ class VariantNavigation extends React.Component {
             }}
             intl={intl}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
-              id: activeFilterId, type: FILTER_TYPE_NUMERICAL_COMPARISON,
+              id: activeFilterId,
             })}
             dataSet={data[activeFilterId] ? data[activeFilterId] : []}
             onEditCallback={this.handleFilterChange}
@@ -188,7 +188,7 @@ class VariantNavigation extends React.Component {
               removable: false,
             }}
             intl={intl}
-            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type:FILTER_TYPE_GENERICBOOL})}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId })}
             dataSet={allOption ? allOption : []}
             onEditCallback={this.handleFilterChange}
             onRemoveCallback={this.handleFilterRemove}
@@ -208,7 +208,7 @@ class VariantNavigation extends React.Component {
             }}
             intl={intl}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
-              id: activeFilterId, comparator: '>', value: 0, type: FILTER_TYPE_COMPOSITE,
+              id: activeFilterId, comparator: '>'
             })}
             dataSet={data[activeFilterId] ? data[activeFilterId] : []}
             onEditCallback={this.handleFilterChange}
@@ -220,7 +220,7 @@ class VariantNavigation extends React.Component {
   }
 
   render() {
-    const { intl, schema, data } = this.props;
+    const { intl, schema } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const autocompletes = searchResults.map((group) => {
       return (

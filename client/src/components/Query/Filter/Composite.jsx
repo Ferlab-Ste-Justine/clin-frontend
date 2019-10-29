@@ -33,6 +33,7 @@ class CompositeFilter extends React.Component {
 
     // @NOTE Initialize Component State
     const { data } = props;
+
     this.state.draft = cloneDeep(data);
     this.state.selection = data.values ? cloneDeep(data.values) : [];
     this.state.page = 1;
@@ -63,7 +64,7 @@ class CompositeFilter extends React.Component {
       <span>
         {comparator}
         {' '}
-        {JSON.stringify(data.values)}
+        {data.value}
       </span>
     );
   }
@@ -106,32 +107,33 @@ class CompositeFilter extends React.Component {
 
   handleQualityChange(quality) {
     const { draft } = this.state;
+    const clone = cloneDeep(draft)
 
     if (quality !== '_score_') {
-      delete draft.comparator;
+      delete clone.comparator;
+    } else if (!clone.comparator) {
+      clone.comparator = FILTER_COMPARATOR_TYPE_GREATER_THAN
+      quality = 0
     }
-    draft.value = quality;
-    this.setState({ draft });
+
+    clone.value = quality;
+    this.setState({ draft: clone });
   }
 
   handleComparatorChange(comparator) {
     const { draft } = this.state;
+    const clone = cloneDeep(draft)
 
-    if (!draft.comparator || draft.value === '_score_') {
-      draft.value = 0;
-    }
-    draft.comparator = comparator;
-    this.setState({ draft });
+    clone.comparator = comparator;
+    this.setState({ draft: clone });
   }
 
   handleScoreChange(score) {
     const { draft } = this.state;
+    const clone = cloneDeep(draft)
 
-    if (!draft.comparator) {
-      draft.comparator = FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL;
-    }
-    draft.value = score;
-    this.setState({ draft });
+    clone.value = score;
+    this.setState({ draft: clone });
   }
 
   getEditor() {
@@ -142,16 +144,6 @@ class CompositeFilter extends React.Component {
     const typeGte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.gte' });
     const typeLt = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lt' });
     const typeLte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lte' });
-    const isScore = (value === '_score_');
-
-    console.log('++ getEditor');
-    console.log('++ comparator ' + comparator);
-    console.log('++ value ' + value);
-    console.log('++ isScore ' + isScore);
-
-
-
-
 
     return (
       <>
@@ -160,7 +152,7 @@ class CompositeFilter extends React.Component {
             {data.id}
           </Col>
           <Col>
-            <Select value={(!isScore ? value : '_score_')} size="small" type="primary" onChange={this.handleQualityChange}>
+            <Select value={(!comparator ? value : '_score_')} size="small" type="primary" onChange={this.handleQualityChange}>
               <Option value="_score_">Score</Option>
               { dataSet.map(datum => (
                 <Option value={datum.value}>{datum.value} [ {datum.count} ]</Option>
@@ -168,7 +160,7 @@ class CompositeFilter extends React.Component {
             </Select>
           </Col>
           <Col>
-            <Select disabled={!isScore} value={(isScore ? comparator || FILTER_COMPARATOR_TYPE_GREATER_THAN : '')} size="small" type="primary" onChange={this.handleComparatorChange}>
+            <Select disabled={!comparator} value={(comparator ? comparator || FILTER_COMPARATOR_TYPE_GREATER_THAN : '')} size="small" type="primary" onChange={this.handleComparatorChange}>
               <Option value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Option>
               <Option value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Option>
               <Option value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Option>
@@ -176,7 +168,7 @@ class CompositeFilter extends React.Component {
             </Select>
           </Col>
           <Col>
-            <InputNumber disabled={!isScore} onChange={this.handleScoreChange} value={(isScore ? value || 0 : '')} step={0.25} />
+            <InputNumber disabled={!comparator} onChange={this.handleScoreChange} value={(comparator ? value || 0 : '')} step={0.25} />
           </Col>
         </Row>
       </>
