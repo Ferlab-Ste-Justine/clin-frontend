@@ -148,14 +148,14 @@ class Filter extends React.Component {
   }
 
   render() {
-    const { allOptions, size, page, opened } = this.state;
+    const { allOptions, size, page } = this.state;
     const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable } = this.props;
     const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
     const overlay = (
       <Popover
-        visible={opened}
+        visible={this.isOpened()}
       >
         <Card className="filterCard">
           <Typography.Title level={4}>{titleText}</Typography.Title>
@@ -215,7 +215,7 @@ class Filter extends React.Component {
         <Dropdown
           onVisibleChange={this.toggleMenu}
           overlay={overlay}
-          visible={opened}
+          visible={this.isOpened()}
           placement="bottomLeft"
         >
           <span />
@@ -229,7 +229,7 @@ class Filter extends React.Component {
           visible={this.isVisible()}
           closable={this.isRemovable()}
           onClose={this.handleClose}
-          color={opened ? 'blue' : ''}
+          color={this.isOpened() ? 'blue' : ''}
         >
           <Popover
             className="legend"
@@ -243,7 +243,7 @@ class Filter extends React.Component {
             { label }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={opened} placement="bottomLeft">
+          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }
