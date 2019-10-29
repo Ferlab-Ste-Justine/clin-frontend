@@ -127,7 +127,7 @@ class VariantNavigation extends React.Component {
               const allOption = []
               Object.keys(categoryData.search).map((keyName) => {
                   const data = find(searchData, ['id', keyName])
-                  if(data){
+                  if (data && data.data[0]) {
                     const count = data.data[0].count
                     allOption.push({value:keyName , count:count})
                   }
