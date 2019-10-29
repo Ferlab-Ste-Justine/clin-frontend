@@ -146,9 +146,12 @@ class Statement extends React.Component {
 
   handleDisplay(config) {
     const { display } = this.state;
-    display[config.index] = config.display;
+    const updatedDisplayList = [
+      ...display,
+    ];
+    updatedDisplayList[config.index] = config.display;
     this.setState({
-      display,
+      display: updatedDisplayList,
     });
   }
 

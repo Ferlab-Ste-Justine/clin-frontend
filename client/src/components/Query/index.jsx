@@ -31,10 +31,6 @@ const QUERY_ACTION_TITLE = 'title';
 class Query extends React.Component {
   constructor(props) {
     super(props);
-    const { display = null } = props;
-    this.state = {
-      display: cloneDeep(display)
-    };
     this.addInstruction = this.addInstruction.bind(this);
     this.replaceInstruction = this.replaceInstruction.bind(this);
     this.removeInstruction = this.removeInstruction.bind(this);
@@ -55,8 +51,8 @@ class Query extends React.Component {
     this.hasTitle = this.hasTitle.bind(this);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
+  shouldComponentUpdate(nextProps) {
+    return !isEqual(this.props, nextProps);
   }
 
   addInstruction(instruction) {
@@ -142,12 +138,11 @@ class Query extends React.Component {
   }
 
   handleAdvancedChange(e) {
-    const { data } = this.state;
-    const { options, display } = this.props;
+    const { options, display, draft } = this.props;
     const { editable } = options;
     if (editable) {
       const {value} = e.target;
-      let rawQuery = data;
+      let rawQuery = draft;
       try {
         rawQuery = JSON.parse(value);
         const QuerySchema = Joi.object().keys({
@@ -156,23 +151,15 @@ class Query extends React.Component {
             type: Joi.string().valid(INSTRUCTION_TYPE_FILTER, INSTRUCTION_TYPE_OPERATOR, INSTRUCTION_TYPE_SUBQUERY).required(),
           }))
         });
-
       const validation = Joi.validate(rawQuery, QuerySchema);
       console.log(' === valid schema? ')
       console.log((!validation.error))
       display.viewableSqonIsValid = !validation.error;
-
-
-
       } catch (e) {
         display.viewableSqonIsValid = false;
         console.log(e)
       }
-
-
-
       this.setState({
-        // data: rawQuery,
         display,
       }, () => {
         if (this.props.onEditCallback) {
@@ -203,9 +190,7 @@ class Query extends React.Component {
   }
 
   serialize() {
-    const { draft: data } = this.props;
-    const { display } = this.state;
-    const { index } = this.props;
+    const { draft: data, display, index } = this.props;
     return {
       data,
       display,
@@ -219,8 +204,7 @@ class Query extends React.Component {
   }
 
   handleMenuSelection({ key }) {
-    const { draft } = this.props;
-    const { display } = this.state;
+    const { display, draft, index } = this.props;
     switch (key) {
       case QUERY_ACTION_COPY:
         const sqon = JSON.stringify(this.sqon());
@@ -230,24 +214,22 @@ class Query extends React.Component {
         }
         break;
       case QUERY_ACTION_VIEW_SQON:
-        display.viewableSqon = !display.viewableSqon;
-        this.setState({
-          display,
-        }, () => {
-          if (this.props.onDisplayCallback) {
-            this.props.onDisplayCallback(this.serialize());
-          }
-        });
+        const updatedDisplayViewSqon = {
+          ...display,
+          viewableSqon: !display.viewableSqon,
+        };
+        if (this.props.onDisplayCallback) {
+          this.props.onDisplayCallback({ display: updatedDisplayViewSqon, index});
+        }
         break;
       case QUERY_ACTION_COMPOUND_OPERATORS:
-        display.compoundOperators = !display.compoundOperators;
-        this.setState({
-          display,
-        }, () => {
-          if (this.props.onDisplayCallback) {
-            this.props.onDisplayCallback(this.serialize());
-          }
-        });
+        const updatedDisplayCompoundOperators = {
+          ...display,
+          compoundOperators: !display.compoundOperators,
+        };
+        if (this.props.onDisplayCallback) {
+          this.props.onDisplayCallback({ display: updatedDisplayCompoundOperators, index });
+        }
         break;
       case QUERY_ACTION_TITLE:
         const title = this.hasTitle() ? null : '';
@@ -283,8 +265,7 @@ class Query extends React.Component {
   }
 
   createMenuComponent() {
-    const { options, original, intl } = this.props;
-    const { display } = this.state;
+    const { options, original, intl, display } = this.props;
     const {
       copyable, duplicatable, editable, removable, undoable,
     } = options;
@@ -353,12 +334,11 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
-    const { display } = this.state;
     const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
     const isDirty = !isEqual(original, draft);
     let operatorsHandler = null;
