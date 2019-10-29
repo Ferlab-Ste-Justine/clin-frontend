@@ -254,7 +254,13 @@ class Filter extends React.Component {
             { label }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
+          <Dropdown
+            trigger="click"
+            onVisibleChange={this.toggleMenu}
+            overlay={overlay}
+            visible={this.isOpened()}
+            placement="bottomLeft"
+          >
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }
