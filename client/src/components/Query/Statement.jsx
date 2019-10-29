@@ -30,7 +30,7 @@ export const convertIndexToColor = index => `#${[
 class Statement extends React.Component {
   constructor(props) {
     super(props);
-    const { data, display, original } = this.props;
+    const { data, display, original } = props;
     this.state = {
       original: cloneDeep(original),
       checkedQueries: [],
