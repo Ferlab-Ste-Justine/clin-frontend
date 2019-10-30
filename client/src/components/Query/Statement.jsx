@@ -125,7 +125,7 @@ class Statement extends React.Component {
   }
 
   handleClick(key) {
-    const { activeQuery, onSelectCallback, data } = this.props;
+    const { activeQuery, onSelectCallback } = this.props;
     const isActive = activeQuery === key;
     if (!isActive) {
       onSelectCallback(key);

@@ -9,14 +9,15 @@ import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
 
 import './style.scss';
-import { INSTRUCTION_TYPE_FILTER, FILTER_TYPES } from './Filter/index';
+import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
+import CompositeFilter from './Filter/Composite';
 import GenericBooleanFilter from './Filter/GenericBoolean'
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON , FILTER_TYPE_GENERICBOOL} from './Filter/index'
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE} from './Filter/index'
 
 export const DEFAULT_EMPTY_QUERY = {};
 
@@ -114,19 +115,10 @@ class Query extends React.Component {
   }
 
   addInstruction(instruction) {
-
-    console.log('addInstruction', instruction)
-
       const { draft, display, index, onEditCallback } = this.props;
       const newDraft = cloneDeep(draft)
-
       newDraft.instructions.push(instruction);
       newDraft.instructions = sanitizeInstructions(newDraft.instructions);
-
-
-    console.log('addInstruction newDraft', newDraft)
-
-
       onEditCallback({
         data: newDraft,
         display,
@@ -135,16 +127,11 @@ class Query extends React.Component {
   }
 
   replaceInstruction(instruction) {
-    console.log('replaceInstruction', instruction)
     const { draft, display, index, onEditCallback } = this.props;
     const newDraft = cloneDeep(draft)
-
-    const instructionIndex = instruction.index
-    delete instruction.index
+    const instructionIndex = instruction.index || instruction.data.index
     newDraft.instructions[instructionIndex] = instruction;
-
-    console.log('addInstruction newDraft', newDraft)
-
+    newDraft.instructions = sanitizeInstructions(newDraft.instructions);
     onEditCallback({
       data: newDraft,
       display,
@@ -153,9 +140,6 @@ class Query extends React.Component {
   }
 
   removeInstruction(instruction) {
-
-    console.log('removeInstruction', instruction)
-
     const { draft, display, index, onEditCallback, onRemoveCallback } = this.props;
     const instructionIndex = instruction.index;
     const newDraft = cloneDeep(draft)
@@ -185,28 +169,12 @@ class Query extends React.Component {
   }
 
   handleFilterChange(filter) {
-
-    console.log('handleFilterChange', filter)
-
     const instruction = {
       type: INSTRUCTION_TYPE_FILTER,
       data: filter
     };
-
-
-    /*
-          const { data } = this.state;
-      const { onEditCallback } = this.props;
-      data.instructions.push(item);
-      data.instructions = sanitizeInstructions(data.instructions);
-      this.setState({
-     */
-
-
-
     if (filter.index !== undefined) {
       instruction.index = filter.index
-      delete instruction.data.index
       this.replaceInstruction(instruction);
     } else {
       this.addInstruction(instruction)
@@ -311,8 +279,6 @@ class Query extends React.Component {
         console.log(e)
       }
 
-
-
       this.setState({
         display,
       }, () => {
@@ -325,12 +291,8 @@ class Query extends React.Component {
 
   json() {
     const { draft } = this.props;
-    const instructions = draft.instructions.map((datum) => {
-      delete datum.key;
-      delete datum.display;
-      return datum;
-    });
-    return { ...draft, instructions };
+    const sqon = this.sqon()
+    return { ...draft, instructions: sqon };
   }
 
   sqon() {
@@ -338,6 +300,7 @@ class Query extends React.Component {
     const sqon = draft.instructions.map((datum) => {
       delete datum.key;
       delete datum.display;
+      delete datum.data.index;
       return datum;
     });
     return sqon;
@@ -606,8 +569,23 @@ class Query extends React.Component {
                           key={index}
                         />
                      );
-                 }
-                break;
+              } else if (type === FILTER_TYPE_COMPOSITE) {
+                return (
+                  <CompositeFilter
+                    index={index}
+                    options={options}
+                    data={item.data}
+                    dataSet={facets[item.data.id] || []}
+                    intl={intl}
+                    category={category}
+                    onEditCallback={this.handleFilterChange}
+                    onRemoveCallback={this.handleFilterRemoval}
+                    onSelectCallback={onSelectCallback}
+                    key={index}
+                  />
+                );
+              }
+              break;
 
               case INSTRUCTION_TYPE_SUBQUERY:
                 const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;

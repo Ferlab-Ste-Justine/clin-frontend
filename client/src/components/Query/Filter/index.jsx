@@ -12,9 +12,10 @@ import {
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
-export const FILTER_TYPE_GENERICBOOL = 'genericbool'
+export const FILTER_TYPE_COMPOSITE = 'composite';
+export const FILTER_TYPE_GENERICBOOL = 'genericbool';
 export const FILTER_TYPE_SPECIFIC = 'specific';
-export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_SPECIFIC];
+export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,
@@ -126,7 +127,19 @@ class Filter extends React.Component {
         instruction.value = editor.props.children[2].props.children[1].props.children.props.defaultValue;
       } else if (type === FILTER_TYPE_GENERICBOOL) {
         instruction.values = editor.props.children[2].props.children.props.children.props.value
+      } else if (type === FILTER_TYPE_COMPOSITE) {
+        const quality = editor.props.children.props.children[1] ? editor.props.children.props.children[1].props.children.props.value : null;
+        const comparator = editor.props.children.props.children[2] ? editor.props.children.props.children[2].props.children.props.value : null;
+        const score = editor.props.children.props.children[3] ? editor.props.children.props.children[3].props.children.props.value : null;
+        if (comparator) {
+          instruction.comparator = comparator;
+          instruction.value = score;
+        } else {
+          delete instruction.comparator;
+          instruction.value = quality;
+        }
       }
+
       this.setState({
         opened: false,
       }, () => {

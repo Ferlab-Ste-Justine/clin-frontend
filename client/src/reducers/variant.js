@@ -58,9 +58,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
-
-      console.log(action.payload)
-
       if (action.payload.key) {
         draft.activeQuery = action.payload.key;
       }
