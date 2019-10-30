@@ -87,7 +87,7 @@ const Header = ({
           </Col>
           <Col>
             {app.locale.lang !== null && (
-            <Dropdown overlay={languageMenu(intl, actions)}>
+            <Dropdown overlay={languageMenu(intl, actions)}  trigger={['click']}>
               { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="ant-dropdown-link">
                 <Desktop><IconKit size={16} icon={ic_translate} /></Desktop>

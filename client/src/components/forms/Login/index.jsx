@@ -1,10 +1,12 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Card, Row, Col, Divider, Form, Typography, Icon, Input, Button,
+  Card, Row, Col, Form, Icon, Input, Button, Typography
 } from 'antd';
 import { injectIntl } from 'react-intl';
-
+import IconKit from 'react-icons-kit';
+import { ic_email,  ic_https } from 'react-icons-kit/md';
 import './style.scss';
 
 
@@ -72,22 +74,37 @@ class LoginForm extends React.Component {
     const { appIsLoading, form, intl } = this.props;
     const { animationClass } = this.state;
     const { submitLoading, forgotLoading } = this.state;
+    const { Text } = Typography;
+
     const submitLoadingState = submitLoading && appIsLoading;
     const forgotLoadingState = forgotLoading && appIsLoading;
     const formErrorIsRequired = intl.formatMessage({ id: 'form.error.isRequired' });
     const formErrorIsNotEmail = intl.formatMessage({ id: 'form.error.isNotEmail' });
     const formTextForgotPassword = intl.formatMessage({ id: 'form.login.forgotPassword' });
-    const formTextHowToRegister = intl.formatMessage({ id: 'form.login.howToRegister' });
     const usernameField = intl.formatMessage({ id: 'form.login.usernameField' });
+    const usernamePlaceHolder = intl.formatMessage({ id: 'form.login.username.PlaceHolder' });
     const passwordField = intl.formatMessage({ id: 'form.login.passwordField' });
     const submitButton = intl.formatMessage({ id: 'form.login.submitButton' });
+    const connexionTitle = intl.formatMessage({ id: 'form.login.headline5' });
+    const createAccount = intl.formatMessage({ id: 'form.login.createAccount' });
+    const introText = intl.formatMessage({ id: 'form.login.introText' });
     const usernameError = form.isFieldTouched('username') && form.getFieldError('username');
     const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
 
+
     return (
-      <Card id="login" className={animationClass}>
-        <Row type="flex" justify="space-between">
-          <Col className="left" span={11}>
+      <Card bordered={false} id="login" className={animationClass}>
+        <Row type="flex" justify="end">
+          <a className="newAccount">{createAccount}</a>
+        </Row>
+        <Row>
+          <Text type="primary" className="loginTitle">{connexionTitle}</Text>
+        </Row>
+        <Row className="introText">
+          {introText}
+        </Row>
+        <Row type="flex">
+          <Col className="left">
             <Form onSubmit={this.handleSubmit}>
               <Form.Item
                 validateStatus={usernameError ? 'error' : ''}
@@ -99,13 +116,15 @@ class LoginForm extends React.Component {
                     { type: 'email', message: formErrorIsNotEmail },
                   ],
                 })(
+                  <>
+                  <Text className="inputLabel">{usernameField}</Text>
                   <Input
-                    prefix={<Icon type="mail" />}
-                    placeholder={usernameField}
+                    suffix={<IconKit size={16} icon={ic_email} />}
+                    placeholder={usernamePlaceHolder}
                     autoComplete="off"
-                    allowClear
                     className="autofocus"
-                  />,
+                  />
+                  </>,
                 )}
               </Form.Item>
               <Form.Item
@@ -115,44 +134,29 @@ class LoginForm extends React.Component {
                 {form.getFieldDecorator('password', {
                   rules: [{ required: true, message: formErrorIsRequired }],
                 })(
+                  <>
+                  <Text className="inputLabel">{passwordField}</Text>
                   <Input
-                    prefix={<Icon type="lock" />}
+                    suffix={<IconKit size={16} icon={ic_https} />}
                     placeholder={passwordField}
-                    allowClear
                     autoComplete="off"
                     type="password"
-                  />,
+                  />
+                  <a className="forgotPass" onClick={this.handleClick}>
+                    {formTextForgotPassword}
+                  </a>
+                  </>,
                 )}
               </Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
-                icon="login"
                 loading={submitLoadingState}
                 disabled={(forgotLoadingState || hasErrors(form.getFieldsError()))}
               >
                 {submitButton}
               </Button>
             </Form>
-          </Col>
-          <Col>
-            <Divider type="vertical" />
-          </Col>
-          <Col className="right" span={10}>
-            <Typography.Paragraph type="secondary">
-              {formTextHowToRegister}
-            </Typography.Paragraph>
-            <Divider />
-            <Button
-              type="secondary"
-              htmlType="button"
-              icon="meh"
-              loading={forgotLoadingState}
-              disabled={submitLoadingState || forgotLoadingState}
-              onClick={this.handleClick}
-            >
-              {formTextForgotPassword}
-            </Button>
           </Col>
         </Row>
       </Card>
