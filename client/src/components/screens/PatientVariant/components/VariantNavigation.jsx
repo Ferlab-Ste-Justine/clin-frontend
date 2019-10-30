@@ -67,9 +67,6 @@ class VariantNavigation extends React.Component {
 
   handleNavigationSelection(value, option) {
     console.log('handleNavigationSelection', value, option);
-
-
-
   }
 
   handleFilterSelection({ key }) {
@@ -94,18 +91,18 @@ class VariantNavigation extends React.Component {
           if (!filter.remove) {
             let updated = false
             updatedInstructions = updatedQuery.instructions.map((instruction) => {
-              if (instruction.data.id === filter.data.id) {
+              if (instruction.data.id === filter.id) {
                   updated = true
-                  return { type: 'filter', data: filter.data };
+                  return { type: 'filter', data: filter };
               }
               return instruction;
             })
             if (!updated) {
-              updatedInstructions.push({ type: 'filter', data: filter.data })
+              updatedInstructions.push({ type: 'filter', data: filter })
             }
           } else {
             updatedInstructions = updatedQuery.instructions.filter((instruction) => {
-              if (instruction.data.id === filter.data.id) {
+              if (instruction.data.id === filter.id) {
                 return false;
               }
               return true;
@@ -124,8 +121,8 @@ class VariantNavigation extends React.Component {
   }
 
   renderFilterType(type , categoryData){
-    const { intl, activeQuery, schema, queries, data ,searchData } = this.props;
-    const { activeFilterId, searchResults } = this.state;
+    const { intl, activeQuery, queries, data, searchData } = this.props;
+    const { activeFilterId } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
     switch (type) {
@@ -169,7 +166,7 @@ class VariantNavigation extends React.Component {
               const allOption = []
               Object.keys(categoryData.search).map((keyName) => {
                   const data = find(searchData, ['id', keyName])
-                  if(data){
+                  if (data && data.data[0]) {
                     const count = data.data[0].count
                     allOption.push({value:keyName , count:count})
                   }
@@ -235,13 +232,11 @@ class VariantNavigation extends React.Component {
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
-              const {searchData} = this.props
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
-
               const categoryInfo =find(schema.categories, ['id', id]);
               const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-
               const type = categoryData ? this.renderFilterType(categoryData.type , categoryData) : null
+
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (

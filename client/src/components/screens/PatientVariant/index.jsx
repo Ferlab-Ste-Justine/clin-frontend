@@ -27,7 +27,6 @@ import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, du
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueriesChange = this.handleQueriesChange.bind(this);
@@ -44,11 +43,9 @@ class PatientVariantScreen extends React.Component {
     if (!schema.version) {
       actions.fetchSchema();
     }
-  }
 
-  componentDidMount() {
     //@NOTE PA00002 currently is the only patient with indexed data.
-    this.props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+    props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
   }
 
   handleQuerySelection(query) {
@@ -107,7 +104,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     actions.sortStatement(sortedQueries)
   }
-  
+
   handleCommitHistory() {
     const { actions, variant } = this.props;
     const { draftQueries } = variant;
@@ -121,7 +118,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const { intl, variant } = this.props;
-    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
+    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery, statementVersionNumber } = variant;
     const searchData = [];
 
     if (schema.categories) {
@@ -196,7 +193,7 @@ class PatientVariantScreen extends React.Component {
             <br />
             <br />
             <Statement
-              key="variant-statement"
+              key={`variant-statement-v${statementVersionNumber}`}
               activeQuery={activeQuery}
               data={draftQueries}
               draftHistory={draftHistory}
