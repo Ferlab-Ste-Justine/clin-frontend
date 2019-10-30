@@ -32,7 +32,6 @@ class Filter extends React.Component {
       selected: false,
       opened: null,
       allOptions: [],
-      selection: [],
       size: null,
       page: null,
     };
@@ -53,9 +52,8 @@ class Filter extends React.Component {
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
 
     // @NOTE Initialize Component State
-    const { dataSet, draft, autoOpen, visible, sortData } = props;
+    const { dataSet, autoOpen, visible, sortData } = props;
     this.state.dataSet = dataSet || [];
-    this.state.selection = (draft && draft.values) ? cloneDeep(draft.values) : [];
     this.state.opened = autoOpen;
     this.state.visible = visible;
     this.state.allOptions = cloneDeep(sortData);
@@ -191,7 +189,7 @@ class Filter extends React.Component {
           <Typography.Title level={4}>{titleText}</Typography.Title>
           <Typography>{descriptionText}</Typography>
           <br />
-          {searchable  && (
+          {searchable && (
                <>
                <Row>
                  <Input

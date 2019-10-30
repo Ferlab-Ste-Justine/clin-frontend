@@ -363,59 +363,45 @@ class Query extends React.Component {
       case QUERY_ACTION_COPY:
         const sqon = JSON.stringify(this.sqon());
         copy(sqon);
-        if (this.props.onCopyCallback) {
-          this.props.onCopyCallback(sqon);
-        }
+        this.props.onCopyCallback(sqon);
         break;
       case QUERY_ACTION_VIEW_SQON:
         const updatedDisplayViewSqon = {
           ...display,
           viewableSqon: !display.viewableSqon,
         };
-        if (this.props.onDisplayCallback) {
-          this.props.onDisplayCallback({ display: updatedDisplayViewSqon, index});
-        }
+        this.props.onDisplayCallback({ display: updatedDisplayViewSqon, index});
         break;
       case QUERY_ACTION_COMPOUND_OPERATORS:
         const updatedDisplayCompoundOperators = {
           ...display,
           compoundOperators: !display.compoundOperators,
         };
-        if (this.props.onDisplayCallback) {
-          this.props.onDisplayCallback({ display: updatedDisplayCompoundOperators, index });
-        }
+        this.props.onDisplayCallback({ display: updatedDisplayCompoundOperators, index });
         break;
       case QUERY_ACTION_TITLE:
-        //@REDO
+        const newDraft = cloneDeep(draft);
         if (!this.hasTitle()) {
-          data.title = '';
+          newDraft.title = '';
         } else {
-          delete data.title;
+          delete newDraft.title;
         }
-        this.setState({
-          data,
-        }, () => {
-          if (this.props.onEditCallback) {
-            this.props.onEditCallback(this.serialize());
-          }
+        this.props.onEditCallback({
+          data: newDraft,
+          display,
+          index,
         });
         break;
       case QUERY_ACTION_DELETE:
-        if (this.props.onRemoveCallback) {
-          this.props.onRemoveCallback(draft.key);
-        }
+        this.props.onRemoveCallback(draft.key);
         break;
       case QUERY_ACTION_DUPLICATE:
-        if (this.props.onDuplicateCallback) {
-          this.props.onDuplicateCallback(this.serialize());
-        }
+        this.props.onDuplicateCallback(this.serialize());
         break;
       case QUERY_ACTION_UNDO_ALL:
-        const { original, onEditCallback } = this.props;
+        const { original } = this.props;
         const clone = cloneDeep(original);
-        if (onEditCallback) {
-          onEditCallback(clone);
-        }
+        this.props.onEditCallback(clone);
         break;
       default:
         break;
@@ -704,14 +690,14 @@ Query.defaultProps = {
   },
   active: false,
   results: null,
-  onClickCallback: null,
-  onCopyCallback: null,
-  onDisplayCallback: null,
-  onEditCallback: null,
-  onDuplicateCallback: null,
-  onRemoveCallback: null,
-  onSelectCallback: null,
-  onUndoCallback: null,
+  onClickCallback: () => {},
+  onCopyCallback: () => {},
+  onDisplayCallback: () => {},
+  onEditCallback: () => {},
+  onDuplicateCallback: () => {},
+  onRemoveCallback: () => {},
+  onSelectCallback: () => {},
+  onUndoCallback: () => {},
   findQueryIndexForKey: null,
 };
 

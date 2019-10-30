@@ -5,10 +5,10 @@ export const fetchSchema = () => ({
   type: actions.VARIANT_SCHEMA_REQUESTED,
 });
 
-export const selectQuery = query => ({
+export const selectQuery = key => ({
   type: actions.PATIENT_VARIANT_QUERY_SELECTION,
   payload: {
-    query,
+    key,
   },
 });
 

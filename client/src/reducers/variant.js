@@ -58,6 +58,9 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
+
+      console.log(action.payload)
+
       if (action.payload.key) {
         draft.activeQuery = action.payload.key;
       }
@@ -76,8 +79,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
-      draft.draftHistory = getUpdatedDraftHistory(draft);
-      draft.draftQueries = draft.draftQueries.filter((query) => !Boolean(action.payload.keys.find((key) => key === query.key)));
+      draft.draftQueries = draftQueries.filter((query) => !Boolean(action.payload.keys.find((key) => key === query.key)));
       draft.activeQuery = draft.draftQueries.find((query) => query.key === draft.activeQuery) ? draft.activeQuery : draft.draftQueries[0].key;
       break;
 

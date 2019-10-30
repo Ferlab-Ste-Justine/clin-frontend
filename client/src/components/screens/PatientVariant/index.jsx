@@ -48,15 +48,15 @@ class PatientVariantScreen extends React.Component {
     props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
   }
 
-  handleQuerySelection(query) {
+  handleQuerySelection(key) {
     const { actions, variant } = this.props;
     //@NOTE PA00002 currently is the only patient with indexed data.
-    if (!query) {
+    if (!key) {
       actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
     } else {
-      const { activeQuery, draftQueries } = variant;
-      if (activeQuery !== query.key) actions.selectQuery(query);
-      actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
+      const { draftQueries } = variant;
+      actions.selectQuery(key);
+      actions.searchVariants('PA00002', draftQueries, key, 'impact', 0, 25);
     }
   }
 
@@ -66,7 +66,7 @@ class PatientVariantScreen extends React.Component {
     actions.replaceQuery(query.data || query);
 
     setTimeout(() => {
-      this.handleQuerySelection(query.data || query);
+      this.handleQuerySelection(query.key || query.data.key);
     }, 100)
   }
 
@@ -76,9 +76,9 @@ class PatientVariantScreen extends React.Component {
     actions.replaceQueries(queries);
     setTimeout(() => {
       if (activeQuery) {
-        this.handleQuerySelection(activeQuery);
+        this.handleQuerySelection((activeQuery.key || activeQuery.data.key));
       } else if (queries.length === 1) {
-        this.handleQuerySelection(queries[0]);
+        this.handleQuerySelection(queries[0].key);
       }
     }, 100)
   }
@@ -95,7 +95,7 @@ class PatientVariantScreen extends React.Component {
     actions.duplicateQuery(query.data, index);
 
     setTimeout(() => {
-      this.handleQuerySelection(query.data || query);
+      this.handleQuerySelection(query.key);
     }, 100)
   }
 
@@ -118,7 +118,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const { intl, variant } = this.props;
-    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery, statementVersionNumber } = variant;
+    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
     const searchData = [];
 
     if (schema.categories) {
@@ -193,7 +193,7 @@ class PatientVariantScreen extends React.Component {
             <br />
             <br />
             <Statement
-              key={`variant-statement-v${statementVersionNumber}`}
+              key="variant-statement"
               activeQuery={activeQuery}
               data={draftQueries}
               draftHistory={draftHistory}

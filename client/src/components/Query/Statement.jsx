@@ -125,10 +125,10 @@ class Statement extends React.Component {
   }
 
   handleClick(key) {
-    const { activeQuery } = this.props;
+    const { activeQuery, onSelectCallback, data } = this.props;
     const isActive = activeQuery === key;
     if (!isActive) {
-      this.props.onSelectCallback(key);
+      onSelectCallback(key);
     }
   }
 
@@ -184,8 +184,7 @@ class Statement extends React.Component {
   }
 
   confirmRemove(keys) {
-    const { onRemoveCallback } = this.props;
-    onRemoveCallback(keys);
+    this.props.onRemoveCallback(keys);
   }
 
   handleReorder(sorted) {
@@ -340,7 +339,7 @@ class Statement extends React.Component {
 
   confirmRemoveChecked() {
     const { checkedQueries } = this.state;
-    const { onBatchEditCallback, onRemoveCallback, data } = this.props;
+    const { onRemoveCallback } = this.props;
     const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, key], []);
     this.setState({
       checkedQueries: [],
