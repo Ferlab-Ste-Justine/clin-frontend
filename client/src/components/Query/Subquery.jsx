@@ -1,18 +1,16 @@
-/* eslint-disable camelcase, import/no-cycle, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
+/* eslint-disable import/no-cycle, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Tag, Popover, Typography, Icon,
 } from 'antd';
 
-import { convertIndexToLetter } from './Statement';
-
 
 export const INSTRUCTION_TYPE_SUBQUERY = 'subquery';
 export const SUBQUERY_TYPE_INTERSECT = 'and';
 export const SUBQUERY_TYPE_UNITE = 'or';
 export const SUBQUERY_TYPE_SUBTRACT = 'and not';
-// const SUBQUERY_TYPES = [SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT];
+export const SUBQUERY_TYPES = [SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT];
 
 export const createSubquery = (operand, query) => ({
   type: INSTRUCTION_TYPE_SUBQUERY,
@@ -65,12 +63,12 @@ const createPopoverBySubqueryType = (state) => {
 
 
 class Subquery extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       data: null,
       draft: null,
-      visible: null,
+      visible: true,
     };
     this.isEditable = this.isEditable.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
@@ -80,15 +78,11 @@ class Subquery extends React.Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.createPopoverComponent = this.createPopoverComponent.bind(this);
-  }
 
-  componentWillMount() {
-    const { data } = this.props;
-    this.setState({
-      data,
-      draft: { ...data },
-      visible: true,
-    });
+    // @NOTE Initialize Component State
+    const { data } = props;
+    this.state.data = data;
+    this.state.draft = { ...data };
   }
 
   isEditable() {
@@ -137,9 +131,7 @@ class Subquery extends React.Component {
   }
 
   render() {
-    const { queryIndex, queryColor } = this.props;
-    const { data } = this.state;
-    const { query } = data;
+    const { queryIndex, queryTitle, queryColor } = this.props;
     const popover = this.createPopoverComponent();
     if (queryIndex === -1) {
       this.handleClose();
@@ -157,7 +149,7 @@ class Subquery extends React.Component {
         >
           {popover}
           <span onClick={this.handleSelect}>
-            {(`Query #${(queryIndex !== null ? convertIndexToLetter(queryIndex) : query)}`)}
+            {queryTitle}
           </span>
         </Tag>
       </span>
@@ -168,6 +160,7 @@ class Subquery extends React.Component {
 Subquery.propTypes = {
   queryIndex: PropTypes.number,
   queryColor: PropTypes.string,
+  queryTitle: PropTypes.string,
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onRemoveCallback: PropTypes.func,
@@ -176,6 +169,7 @@ Subquery.propTypes = {
 Subquery.defaultProps = {
   queryIndex: null,
   queryColor: null,
+  queryTitle: null,
   options: {
     editable: false,
     selectable: false,

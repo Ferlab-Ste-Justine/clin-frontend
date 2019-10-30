@@ -6,6 +6,7 @@ import appReducer from './app';
 import patientReducer from './patient';
 import searchReducer from './search';
 import userReducer from './user';
+import variantReducer from './variant';
 
 const rootReducer = history => combineReducers({
   app: appReducer,
@@ -14,6 +15,7 @@ const rootReducer = history => combineReducers({
   router: connectRouter(history),
   search: searchReducer,
   user: userReducer,
+  variant: variantReducer,
 });
 
 export default rootReducer;

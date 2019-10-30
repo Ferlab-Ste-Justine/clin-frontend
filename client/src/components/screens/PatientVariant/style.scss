@@ -1,0 +1,23 @@
+.variant-navigation {
+
+  .ant-menu-horizontal {
+    display: flex;
+
+    .ant-menu-item, .ant-menu-submenu {
+      margin-right: auto;
+
+      .ant-menu-submenu-title {
+        padding: 0;
+        min-width: 150px;
+        text-align: center;
+        .ant-input {
+          width: 300px;
+        }
+        .ant-input-affix-wrapper .ant-input-suffix {
+          right: 0;
+        }
+      }
+    }
+  }
+
+}

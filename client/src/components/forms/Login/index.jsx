@@ -25,6 +25,14 @@ class LoginForm extends React.Component {
   componentDidMount() {
     const { form } = this.props;
     document.querySelector('#login .autofocus input').autofocus = true;
+    form.setFields({
+      username: {
+        value: window.CLIN.defaultUsername,
+      },
+      password: {
+        value: window.CLIN.defaultPassword,
+      },
+    });
     form.validateFields();
     this.setState({
       animationClass: 'animated flipInX',

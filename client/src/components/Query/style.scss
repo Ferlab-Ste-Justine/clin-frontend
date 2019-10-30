@@ -6,11 +6,17 @@ div.statement {
     cursor: grab;
   }
 
+  .placeholder {
+    opacity: 0.5;
+  }
+
   .dragged {
     cursor: grabbing;
-    width: 85%;
-    .query {
-      filter: invert(0.1);
+    width: 80%;
+    margin-left: -10%;
+    filter: invert(0.15);
+    > * {
+      transform: scale(0.66);
     }
   }
 
@@ -53,11 +59,11 @@ div.action-container {
 div.query-container {
   display: flex;
   margin-top: 14px;
+  margin-right: 1em;
 
   .selector {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
     padding-top: 4px;
     background-color: #EEEEEE;
@@ -67,6 +73,7 @@ div.query-container {
       font-size: 14px;
       font-weight: bold;
     }
+
   }
 
   .ant-badge {
@@ -83,8 +90,23 @@ div.query-container {
     background-color: #BBBBBB;
   }
 
+  .ant-input{
+    border:none;
+    margin-bottom: -4px;
+  }
+
   &.active {
     .query {
+      background-color: aliceblue;
+        .ant-input{
+          border:1px solid #d9d9d9;
+          padding-left: 6px;
+        }
+    }
+    .selector {
+      background-color: aliceblue;
+    }
+    .selector {
       background-color: aliceblue;
     }
     .selector {
@@ -98,26 +120,26 @@ div.query-container {
 
 .operator {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  mix-blend-mode: difference;
-  min-width: 60px;
+  background-color: #095797;
+  color:white;
+  min-width: 75px;
   height: 20px;
   text-transform: uppercase;
-
   .anticon-caret-down {
     cursor: pointer;
-    margin-left: 4px;
   }
 }
 
 .ant-tag.filter, .ant-tag.subquery {
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 6px 8px;
   font-size: inherit;
-
+  color: #000000;
   .legend {
     cursor: pointer;
     padding-right: 6px;
@@ -127,10 +149,10 @@ div.query-container {
     cursor: pointer;
     padding-left: 4px;
   }
-}
 
-.ant-tag-has-color.subquery span {
-   color: #000000;
+  .anticon-close{
+    color:black;
+  }
 }
 
 div.query {
@@ -138,6 +160,7 @@ div.query {
   flex-wrap: wrap;
   width: 100%;
   padding: 5px;
+  min-height: 45px;
   justify-content: space-between;
   border: 1px solid #AAAAAA;
   border-left: none;
@@ -155,10 +178,18 @@ div.query {
     display: flex;
     align-items: center;
     max-width: 85%;
+    width: 100%;
     flex-wrap: wrap;
+
+    textarea.ant-input {
+      background-color: palegreen;
+      &.invalid {
+        background-color: indianred;
+      }
+    }
+
     > * {
       margin-top: 2px;
-      margin-right: 10px;
     }
   }
 
@@ -180,4 +211,44 @@ div.query {
 
   }
 
+}
+.filterCard{
+
+    .ant-card-body{
+        min-height:46em;
+        display:flex;
+        flex-direction:column;
+    }
+
+    .ant-checkbox-group{
+        display:flex;
+        flex-direction:column
+    }
+
+    .ant-checkbox-group-item{
+      margin-top:5px;
+    }
+
+    .ant-tag{
+        width:auto;
+        padding:2px 5px;
+        font-size:11px;
+        width:55px;
+        text-align:right;
+        float: right
+
+    }
+
+    .ant-checkbox-group-item {
+        margin-right: 0;
+    }
+}
+
+.ant-checkbox-group-item
+.consequence{
+    color:#E88367;
+}
+
+.ant-tooltip{
+    max-width:350px
 }
