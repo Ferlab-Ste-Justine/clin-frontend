@@ -275,7 +275,7 @@ class GenericFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_GENERIC}
-        searchable= {true}
+        searchable={true}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}
