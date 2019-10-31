@@ -1,31 +1,137 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+
+$font: 'Roboto', sans-serif;
+$primary-color: #125a90;
+$medium-blue: #1b7ab2;
+$dark-color: #233750;
+$high-emphaphis-color:#233750;
+$large-font:24px;
+$medium-font:16px;
+$small-font:14px;
+
 div#login {
 
-  box-shadow: 10px 10px 30px -10px rgba(0,0,0,1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  box-shadow:  0px 16px 24px 2px rgba(89, 121, 144, 0.14),
+              0px 6px 30px 5px rgba(89, 121, 144, 0.12),
+              0px 8px 10px -5px rgba(89, 121, 144, 0.2);
+  max-width:488px;
+  padding: 24px 64px;
+  display:block;
 
-  div.ant-form-item, button.ant-btn {
-    width: 100%;
+
+  .ant-card-body{
+    padding:0;
   }
 
-  div.ant-divider-vertical {
-    height: 100%;
+  .newAccount{
+    color:#primary-color;
+    text-decoration:none;
+    font-family: $font;
+    font-size: $medium-font;
+    height: 28px;
+    letter-spacing: 0.5px;
+    line-height: 28px;
+  }
+  .newAccount:hover{
+      color:$medium-blue;
   }
 
-  div.ant-row-flex .left {
-    display: flex;
-    flex-direction: column;
-    justify-content: inherit;
+  .loginTitle{
+      display:inline-block;
+      font-family: $font;
+      font-size: $large-font;
+      height: 28px;
+      margin:0;
+      font-weight: normal;
+      color:$dark-color;
   }
 
-  div.ant-row-flex .right {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    justify-content: inherit;
-    margin-top: 20px;
+  .introText{
+    height: 28px;
+    color: rgba(35, 55, 80, 0.78);
+    font-size: $medium-font;
+    font-family: $font;
+    letter-spacing: 0.5px;
+    line-height: 28px;
+    margin-bottom:40px;
+  }
+
+  .ant-form-item-control{
+    line-height:0;
+  }
+    .ant-form-item{
+      margin-bottom:0;
+    }
+
+  .ant-form-item:first-child{
+    margin-bottom:24px;
+  }
+
+  .ant-form-item-label > label{
+        color:$high-emphaphis-color;
+        font-size: $small-font;
+        font-family: $font;
+        font-weight: normal;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+  }
+
+  .ant-form-item-required::before, .ant-form-item-required::after{
+    content:none
+  }
+
+  .ant-input-affix-wrapper{
+    width: 360px;
+    height:48px;
+
+      .ant-input{
+        border-radius:2px;
+        padding:12px 16px;
+        font-family: $font;
+        font-size: $medium-font;
+        letter-spacing: 0.15px;
+        line-height: 24px;
+        height: 24px;
+      }
+
+      .ant-input:hover{
+        border: 1px solid rgba(28, 132, 189, 0.2);
+
+      }
+      .ant-input:focus{
+        outline: 2px solid #1d8bc6;
+        border:none;
+        box-shadow: none;
+        outline-offset:-2px;
+      }
+    .ant-input-suffix i svg{
+      color:rgba(35, 55, 80, 0.38);
+      width:24px;
+      height:24px;
+    }
+  }
+
+  .forgotPass{
+    display:inline-block;
+    width: 359px;
+    height: 16px;
+    color: rgba(35, 55, 80, 0.78);
+    font-size: 12px;
+    font-family: $font;
+    font-weight: normal;
+    text-decoration: underline;
+    letter-spacing: 0.4px;
+    line-height: 16px;
+    margin-top:8px;
+    margin-bottom:32px;
+  }
+
+  .ant-btn-primary{
+    width: 360px;
+    height:48px;
+    border-radius:0px;
+    background-color:$medium-blue;
+    border:none;
   }
 
 }

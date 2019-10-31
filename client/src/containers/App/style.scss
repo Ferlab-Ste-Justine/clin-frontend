@@ -1,18 +1,26 @@
 $use-all: true;
 @import '/../../../../node_modules/animate-sass/animate';
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 
-$header-background-color: #095797;
+
+
+$text-onprimary-medium: rgba(255, 255, 255, 0.71);
+$font: 'Roboto', sans-serif;
+$icon-size: 24px;
+
+$primary-blue: #095797;
 $header-font-color: #FFFFFF;
+
+$navigation-tab-active: #FFFFFF;
+$navigation-color: #223653;
+$navigation-tab: #FFFFFF;
+
 $link-color: #E88367;
 $footer-background-color: #EEEEEE;
 $footer-font-color: #FFFFFF;
-$navigation-color: #223653;
-$navigation-tab: #FFFFFF;
-$navigation-tab-active: #FFFFFF;
 
 #root {
   display: block;
-  width: 100vw;
   height: 100vh;
 }
 
@@ -29,34 +37,53 @@ $navigation-tab-active: #FFFFFF;
 }
 
 header#header {
-  padding: 0 15px;
-  background-color: $header-background-color;
+height: 80px;
+background: $primary-blue;
+border-radius: 0px;
+padding:20px 0 0 40px ;
+line-height: 0;
+
   h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
     line-height: unset;
     color: $header-font-color;
   }
 
-  ul.ant-menu {
-    background-color: $navigation-color;
-    top: unset;
-    line-height: unset;
-    li.ant-menu-item {
-      color: $link-color;
-      padding: 5px 5px 2px 5px;
-    }
-  }
-  a.ant-dropdown-link {
-    padding-top: 2px;
-    padding-right: 25px;
-    font-size: 12px;
-    color: $link-color;
-  }
+    img.logo {
+      height: 40px;
+      filter: drop-shadow(0px 0px 1px #222222);
+    };
 
-  img.logo {
-    height: 160px;
-    position: relative;
-    top: -46px;
-    filter: drop-shadow(0px 0px 1px #222222);
+  .secondaryNav{
+      padding-left:56px;
+      padding-right:40px;
+      display:flex;
+      .userName{
+          padding-right:24px
+      }
+      a{
+        color:$text-onprimary-medium;
+        padding-top: 2px;
+        letter-spacing: 1.25px;
+        text-transform: uppercase;
+        font-family: $font;
+        font-weight: 500;
+        font-size: 14px;
+        height: 16px;
+
+          i{
+            padding-right: 8px;
+            position:relative;
+            top:-2px;
+              svg{
+                width: 24px;
+                height: $icon-size;
+              }
+          };
+      };
+
+      a:hover{
+        color:#ffffff
+      }
   }
 }
 
@@ -100,14 +127,120 @@ nav#navigation {
 }
 
 footer#footer {
-  padding: 10px 15px;
-  background-color: $footer-background-color;
-  color: $footer-font-color;
 
-  i.icon-large {
-    font-size: 48px;
-    color: $link-color;
+  color: $footer-font-color;
+  padding:0;
+
+  .footerPrimary{
+    background-color: $primary-blue;
+    width:100%;
+    height:200px;
+    align-items:center;
+
+    .footerNav{
+        width: 1200px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin:0 auto;
+        padding:0 24px;
+
+        .navTitle{
+          font-family: $font;
+          font-weight: 500;
+          letter-spacing: 0.25px;
+          font-size: 20px;
+          color: rgb(255, 255, 255);
+          margin-bottom:8px;
+          display:block
+        }
+
+
+        ul{
+          list-style-type:none;
+          margin:0;
+          padding:0;
+          font-family: $font;
+          font-size: 14px;
+          letter-spacing: 0.25px;
+          line-height: 20px;
+
+          li{
+            padding-bottom:8px;
+              i{
+                margin-right:4px;
+                color:rgba(255, 255, 255, 0.54);
+                svg{
+                  width:16px;
+                  height:16px;
+                }
+              }
+
+              a{
+                color:#ffffff;
+              }
+              a:hover{
+                i{
+                    color:#ffffff
+                }
+              }
+          }
+        }
+    }
   }
+
+  .footerSecondary{
+    background-color:#ffffff;
+    width:100%;
+    height:104px;
+
+    .footerLogo{
+        display:flex;
+        justify-content:space-between;
+        width:1200px;
+        margin:0 auto;
+        padding:0 24px;
+
+        nav{
+            display:flex;
+            align-items:center;
+            width:90%;
+            ul {
+
+                padding:0;
+                margin:0;
+                list-style-type:none;
+                width:100%;
+
+               li{
+                    display:inline-block;
+                    font-family: $font;
+                    font-size: 14px;
+                    letter-spacing: 0.25px;
+                    line-height: 20px;
+                    padding-right: 2%;
+
+                    a{
+                        color: rgba(35, 55, 80, 0.78);
+                    }
+
+                    a:hover{
+                        color:#233750;
+                    }
+                }
+            }
+        }
+        img{
+            height: 55px;
+            width: 184px;
+        }
+    }
+
+
+  }
+
+
+
 }
 
 h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
