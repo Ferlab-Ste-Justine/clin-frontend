@@ -66,7 +66,6 @@ const Header = ({
   const lang = intl.locale
   const title = intl.formatMessage({ id: 'header.title' });
   const langText = intl.formatMessage({ id: `lang.${lang}.short`})
-  console.log("intl", intl)
   return (
     <Layout.Header id="header">
       <Row type="flex" justify="space-between" align='middle'>

@@ -109,6 +109,7 @@ class LoginForm extends React.Component {
               <Form.Item
                 validateStatus={usernameError ? 'error' : ''}
                 help={usernameError || ''}
+                label={usernameField}
               >
                 {form.getFieldDecorator('username', {
                   rules: [
@@ -116,38 +117,33 @@ class LoginForm extends React.Component {
                     { type: 'email', message: formErrorIsNotEmail },
                   ],
                 })(
-                  <>
-                  <Text className="inputLabel">{usernameField}</Text>
                   <Input
                     suffix={<IconKit size={16} icon={ic_email} />}
                     placeholder={usernamePlaceHolder}
                     autoComplete="off"
                     className="autofocus"
-                  />
-                  </>,
+                  />,
                 )}
               </Form.Item>
               <Form.Item
                 validateStatus={passwordError ? 'error' : ''}
                 help={passwordError || ''}
+                label={passwordField}
               >
                 {form.getFieldDecorator('password', {
                   rules: [{ required: true, message: formErrorIsRequired }],
                 })(
-                  <>
-                  <Text className="inputLabel">{passwordField}</Text>
                   <Input
                     suffix={<IconKit size={16} icon={ic_https} />}
                     placeholder={passwordField}
                     autoComplete="off"
                     type="password"
-                  />
-                  <a className="forgotPass" onClick={this.handleClick}>
-                    {formTextForgotPassword}
-                  </a>
-                  </>,
+                  />,
                 )}
               </Form.Item>
+            <a className="forgotPass" onClick={this.handleClick}>
+              {formTextForgotPassword}
+            </a>
               <Button
                 type="primary"
                 htmlType="submit"

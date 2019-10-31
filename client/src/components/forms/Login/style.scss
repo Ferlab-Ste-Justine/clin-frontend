@@ -56,24 +56,28 @@ div#login {
     margin-bottom:40px;
   }
 
-  .inputLabel{
-    width: 360px;
-    height: 20px;
-    display:inline-block;
-    color:$high-emphaphis-color;
-    font-size: $small-font;
-    font-family: $font;
-    font-weight: normal;
-    letter-spacing: 0.25px;
-    line-height: 20px;
-    margin-bottom:8px;
-  }
   .ant-form-item-control{
     line-height:0;
   }
+    .ant-form-item{
+      margin-bottom:0;
+    }
 
-  .ant-form-item{
+  .ant-form-item:first-child{
     margin-bottom:24px;
+  }
+
+  .ant-form-item-label > label{
+        color:$high-emphaphis-color;
+        font-size: $small-font;
+        font-family: $font;
+        font-weight: normal;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+  }
+
+  .ant-form-item-required::before, .ant-form-item-required::after{
+    content:none
   }
 
   .ant-input-affix-wrapper{
@@ -119,6 +123,7 @@ div#login {
     letter-spacing: 0.4px;
     line-height: 16px;
     margin-top:8px;
+    margin-bottom:32px;
   }
 
   .ant-btn-primary{
