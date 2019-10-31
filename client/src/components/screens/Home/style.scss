@@ -26,6 +26,16 @@ $font: 'Roboto', sans-serif;
             height: auto;
             width: 346px;
             margin-bottom:40px;
+
+
+        }
+
+        .partenaire{
+            display:grid;
+            grid-template-columns: repeat(4,1fr);
+            grid-gap: 24px;
+            justify-items:center;
+            align-items:center;
         }
 
         .ant-typography{
