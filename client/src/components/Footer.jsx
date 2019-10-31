@@ -1,86 +1,72 @@
+/* eslint-disable */
 import React from 'react';
 import { connect } from 'react-redux';
 import {
-  Layout, Row, Col, BackTop, Icon,
+  Layout, Row, Col, Typography,
 } from 'antd';
-import { Mobile, Tablet, Desktop } from '../containers/Responsive';
+import IconKit from 'react-icons-kit';
+/* eslint-disable-next-line */
+import { ic_phone, ic_launch, ic_email, ic_location_on } from 'react-icons-kit/md';
+
+const { Text } = Typography;
 
 const Footer = () => (
   <Layout.Footer id="footer">
-    <Row type="flex" justify="space-between" align="middle">
-      <Desktop>
-        <Col span={3} align="start">
-          <img height="25" alt="Centre universitaire de santé McGill" src="/images/mcgill.gif" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="45" alt="Centre hospitalier urbain de Montréal" src="/images/chum.png" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="45" alt="Hôpital général juif" src="/images/hgj.png" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="42" alt="CHU du Québec" src="/images/chu.png" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="40" alt="Hôpital Maisonneuve-Rosemont" src="/images/hmr.gif" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="35" alt="Institut de cardiologie de Montréal" src="/images/icm.png" />
-        </Col>
-        <Col span={3} align="end">
-          <img height="50" alt="Centre hospitalier universitaire de Sherbrooke" src="/images/chus.gif" />
-        </Col>
-      </Desktop>
-      <Tablet>
-        <Col span={3} align="start">
-          <img height="25" alt="Centre universitaire de santé McGill" src="/images/mcgill.gif" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="45" alt="Centre hospitalier urbain de Montréal" src="/images/chum.png" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="45" alt="Hôpital général juif" src="/images/hgj.png" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="42" alt="CHU du Québec" src="/images/chu.png" />
-        </Col>
-        <Col span={3} align="start">
-          <img height="40" alt="Hôpital Maisonneuve-Rosemont" src="/images/hmr.gif" />
-        </Col>
-        <Col span={3} align="center">
-          <img height="30" alt="Institut de cardiologie de Montréal" src="/images/icm.png" />
-        </Col>
-        <Col span={3} align="end">
-          <img height="50" alt="Centre hospitalier universitaire de Sherbrooke" src="/images/chus.gif" />
-        </Col>
-      </Tablet>
-      <Mobile>
-        <Col span={4} align="start">
-          <img height="20" alt="Centre universitaire de santé McGill" src="/images/mcgill.gif" />
-        </Col>
-        <Col span={2} align="center">
-          <img height="40" alt="Centre hospitalier urbain de Montréal" src="/images/chum.png" />
-        </Col>
-        <Col span={4} align="center">
-          <img height="40" alt="Hôpital général juif" src="/images/hgj.png" />
-        </Col>
-        <Col span={2} align="center">
-          <img height="42" alt="CHU du Québec" src="/images/chu.png" />
-        </Col>
-        <Col span={3} align="end">
-          <img height="40" alt="Hôpital Maisonneuve-Rosemont" src="/images/hmr.gif" />
-        </Col>
-        <Col span={5} align="end">
-          <img height="30" alt="Institut de cardiologie de Montréal" src="/images/icm.png" />
-        </Col>
-        <Col span={4} align="end">
-          <img height="50" alt="Centre hospitalier universitaire de Sherbrooke" src="/images/chus.gif" />
-        </Col>
-      </Mobile>
+    <Row className="footerPrimary" type="flex" align="middle">
+      <div className="footerNav">
+          <Col>
+            <Text type="primary" className="navTitle">Information et services</Text>
+            <nav>
+              <ul>
+                <li><a href="#">Documentation</a></li>
+                <li><a href="#">FAQ</a></li>
+                <li>
+                  <a href="#">
+                  Lien externe
+                  <IconKit size={16} icon={ic_launch} />
+                  </a>
+
+                </li>
+              </ul>
+            </nav>
+          </Col>
+          <Col>
+            <Text type="primary" className="navTitle">Nous joindre</Text>
+            <nav>
+              <ul>
+                <li>
+                  <IconKit size={16} icon={ic_phone} />
+                  (514)-123-4567
+                </li>
+                <li>
+                  <IconKit size={16} icon={ic_email} />
+                  courriel@domain.com
+                </li>
+                <li>
+                  <IconKit size={16} icon={ic_location_on} />
+                  123 Rue Metcalf, Montreal QC, A1A 1A1
+                </li>
+              </ul>
+            </nav>
+          </Col>
+          <Col>
+            <img className="logo" alt="Saint-Justine" src="/images/logo_CHUSJ.png" />
+          </Col>
+      </div>
     </Row>
-    <BackTop>
-      <Icon className="icon-large" type="up-circle" theme="filled" />
-    </BackTop>
+    <Row className="footerSecondary" type="flex" align="middle">
+        <div className="footerLogo">
+            <nav>
+              <ul>
+                <li><a href="#">Accessibilité</a></li>
+                <li><a href="#">Accès à l'information</a></li>
+                <li><a href="#">Politique de confidentialité</a></li>
+                <li><a href="#">À propos</a></li>
+              </ul>
+            </nav>
+            <img className="logo" alt="Saint-Justine" src="/images/msss.png" />
+        </div>
+    </Row>
   </Layout.Footer>
 );
 
