@@ -121,13 +121,17 @@ class VariantNavigation extends React.Component {
     });
   }
 
-  renderFilterType(type , categoryData){
+  renderFilterType(categoryData){
     const { intl, activeQuery, queries, data, searchData } = this.props;
     const { activeFilterId } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
-    switch (type) {
+
+    switch (categoryData.type) {
         case FILTER_TYPE_GENERIC:
+
+            const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : 'all' )
+
             return (
               <GenericFilter
                 overlayOnly
@@ -138,8 +142,9 @@ class VariantNavigation extends React.Component {
                   removable: false,
                 }}
                 intl={intl}
-                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: 'all' })}
+                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand})}
                 dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+                config={categoryData.config && categoryData.config[categoryData.id]}
                 onEditCallback={this.handleFilterChange}
                 onRemoveCallback={this.handleFilterRemove}
                 onCancelCallback={this.handleCategoryOpenChange}
@@ -215,7 +220,7 @@ class VariantNavigation extends React.Component {
   }
 
   render() {
-    const { intl, schema, data } = this.props;
+    const { intl, schema } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const autocompletes = searchResults.map((group) => {
       return (
@@ -253,9 +258,9 @@ class VariantNavigation extends React.Component {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
-              const categoryInfo =find(schema.categories, ['id', id]);
+              const categoryInfo = find(schema.categories, ['id', id]);
               const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-              const type = categoryData ? this.renderFilterType(categoryData.type , categoryData) : null
+              const filter = categoryData ? this.renderFilterType(categoryData) : null
 
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
@@ -267,7 +272,7 @@ class VariantNavigation extends React.Component {
                   />
                   ))}
                   { activeFilterId !== null && (
-                      type
+                    filter
                   )}
                 </Menu.SubMenu>
               );
