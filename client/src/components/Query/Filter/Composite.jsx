@@ -8,7 +8,7 @@ import {
   cloneDeep, orderBy, pullAllBy, filter,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import Filter, { FILTER_TYPE_COMPOSITE } from './index';
+import Filter, { FILTER_TYPE_COMPOSITE, FILTER_TYPE_GENERICBOOL } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN, FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, FILTER_COMPARATOR_TYPE_LOWER_THAN, FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
@@ -22,9 +22,6 @@ class CompositeFilter extends React.Component {
     super(props);
     this.state = {
       draft: null,
-      selection: [],
-      size: null,
-      page: null,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getLabel = this.getLabel.bind(this);
@@ -36,22 +33,7 @@ class CompositeFilter extends React.Component {
 
     // @NOTE Initialize Component State
     const { data } = props;
-
     this.state.draft = cloneDeep(data);
-    this.state.selection = data.values ? cloneDeep(data.values) : [];
-    this.state.page = 1;
-    this.state.size = 10;
-  }
-
-  componentDidMount() {
-    const { dataSet } = this.props;
-    const { selection } = this.state;
-    if (selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
-      const sorted = orderBy(value, ['count'], ['desc']);
-      pullAllBy(dataSet, cloneDeep(sorted), 'value');
-      dataSet.unshift(...sorted);
-    }
   }
 
   getLabel() {
@@ -183,6 +165,7 @@ class CompositeFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_COMPOSITE}
+        searchable={false}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}
