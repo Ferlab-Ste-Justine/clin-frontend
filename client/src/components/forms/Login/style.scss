@@ -134,4 +134,17 @@ div#login {
     border:none;
   }
 
+  .ant-btn-primary[disabled]{
+    background-color:#e5e7ea;
+    color: rgba(35, 55, 80, 0.38);
+  }
+
+  .ant-btn-primary:hover{
+    background-color:#2B84B8
+  }
+  .ant-btn-primary:focus{
+    background-color:#5199c4;
+  }
+
+
 }
