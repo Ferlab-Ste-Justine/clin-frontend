@@ -30,7 +30,7 @@ export const convertIndexToColor = index => `#${[
 class Statement extends React.Component {
   constructor(props) {
     super(props);
-    const { data, display, original } = this.props;
+    const { data, display, original } = props;
     this.state = {
       original: cloneDeep(original),
       checkedQueries: [],
@@ -124,11 +124,11 @@ class Statement extends React.Component {
     }
   }
 
-  handleClick(query) {
-    const { activeQuery } = this.props;
-    const isActive = activeQuery === query.data.key;
+  handleClick(key) {
+    const { activeQuery, onSelectCallback } = this.props;
+    const isActive = activeQuery === key;
     if (!isActive) {
-      this.props.onSelectCallback(query.data);
+      onSelectCallback(key);
     }
   }
 
@@ -141,9 +141,12 @@ class Statement extends React.Component {
 
   handleDisplay(config) {
     const { display } = this.state;
-    display[config.index] = config.display;
+    const updatedDisplayList = [
+      ...display,
+    ];
+    updatedDisplayList[config.index] = config.display;
     this.setState({
-      display,
+      display: updatedDisplayList,
     });
   }
 
@@ -165,24 +168,23 @@ class Statement extends React.Component {
     }
   }
 
-  handleRemove(query) {
+  handleRemove(key) {
     if (this.isRemovable()) {
-      const subqueryKeys = this.getSubqueryKeys([query.data.key]);
+      const subqueryKeys = this.getSubqueryKeys([key]);
       if (!isEmpty(subqueryKeys)) {
         const subqueryKeysToDelete = [
           ...subqueryKeys,
-          query.data.key
-        ]
+          key
+        ];
         this.showDeleteConfirm(subqueryKeysToDelete);
       } else {
-        this.confirmRemove([query.data.key]);
+        this.confirmRemove([key]);
       }
     }
   }
 
   confirmRemove(keys) {
-    const { onRemoveCallback } = this.props;
-    onRemoveCallback(keys);
+    this.props.onRemoveCallback(keys);
   }
 
   handleReorder(sorted) {
@@ -237,7 +239,7 @@ class Statement extends React.Component {
 
   handleCombine({ key }) {
     const { data } = this.props;
-    
+
     const { checkedQueries, display } = this.state;
     const defaultDisplay = cloneDeep(this.props.display);
     display.push(defaultDisplay);
@@ -316,7 +318,6 @@ class Statement extends React.Component {
     }
   }
 
-
   showDeleteConfirm(keys) {
     const { confirm } = Modal;
     const { intl } = this.props;
@@ -338,7 +339,7 @@ class Statement extends React.Component {
 
   confirmRemoveChecked() {
     const { checkedQueries } = this.state;
-    const { onBatchEditCallback, onRemoveCallback, data } = this.props;
+    const { onRemoveCallback } = this.props;
     const keysToRemove = checkedQueries.reduce((accumulator, key) => [...accumulator, key], []);
     this.setState({
       checkedQueries: [],
@@ -371,7 +372,7 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory } = this.props;
+    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory, searchData } = this.props;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -398,7 +399,7 @@ class Statement extends React.Component {
       const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
 
       return [...accumulator, (
-        <div className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
+        <div key={query.key} className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
           <div
             className="selector"
             style={{
@@ -435,6 +436,7 @@ class Statement extends React.Component {
             onUndoCallback={this.handleUndo}
             onClickCallback={this.handleClick}
             findQueryIndexForKey={this.findQueryIndexForKey}
+            searchData={searchData}
           />
         </div>
       )];
@@ -506,7 +508,7 @@ class Statement extends React.Component {
             <DragSortableList
               key="sortable"
               type="vertical"
-              items={queries.map((query, index) => ({ content: query, index }))}
+              items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
               onSort={this.handleReorder}
             />
           ) : queries

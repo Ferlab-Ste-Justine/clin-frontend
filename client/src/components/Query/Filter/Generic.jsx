@@ -136,18 +136,15 @@ class GenericFilter extends React.Component {
 
 
   getEditor() {
-    const { intl } = this.props;
+    const { intl, config } = this.props;
     const {
       draft, selection, size, page, allOptions,
     } = this.state;
     const { operand } = draft;
     const allSelected = allOptions ? selection.length === allOptions.length : false;
-    const typeAll = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.all' });
-    const typeOne = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.one' });
-    const typeNone = intl.formatMessage({ id: 'screen.patientvariant.filter.operand.none' });
     const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
     const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
-    const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
+
     const minValue = size * (page - 1);
     const maxValue = size * page;
 
@@ -173,20 +170,13 @@ class GenericFilter extends React.Component {
         <Row>
           <Col span={24}>
             <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
-              <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ALL}>{typeAll}</Radio.Button>
-              <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_ONE}>{typeOne}</Radio.Button>
-              <Radio.Button style={{ width: 150, textAlign: 'center' }} value={FILTER_OPERAND_TYPE_NONE}>{typeNone}</Radio.Button>
+              {config.operands.map(configOperand => (
+                <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
+                  {intl.formatMessage({ id: `screen.patientvariant.filter.operand.${configOperand}` })}
+                </Radio.Button>
+              ))}
             </Radio.Group>
           </Col>
-        </Row>
-        <br />
-        <Row>
-          <Input
-            allowClear
-            placeholder={filterSearch}
-            size="small"
-            onChange={this.handleSearchByQuery}
-          />
         </Row>
         <br />
         <Row>
@@ -216,7 +206,7 @@ class GenericFilter extends React.Component {
   handleSearchByQuery(values) {
     const { dataSet } = this.props;
     const allOptions = cloneDeep(dataSet);
-    const search = (values.target.value).toLowerCase();
+    const search = values.toLowerCase()
     const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
     pullAllBy(allOptions, cloneDeep(toRemove), 'value');
@@ -273,9 +263,13 @@ class GenericFilter extends React.Component {
   }
 
   handleOperandChange(e) {
-    const { draft } = this.state;
-    draft.operand = e.target.value;
-    this.setState({ draft });
+    const { config } = this.props;
+    const operand = e.target.value;
+    if (config.operands.indexOf(operand) !== -1) {
+      const { draft } = this.state;
+      draft.operand = operand;
+      this.setState({ draft });
+    }
   }
 
   render() {
@@ -284,11 +278,13 @@ class GenericFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_GENERIC}
+        searchable={true}
         editor={this.getEditor()}
         label={this.getLabel()}
         legend={this.getPopoverLegend()}
         content={this.getPopoverContent()}
         onPageChangeCallBack={this.handlePageChange}
+        onSearchCallback = {this.handleSearchByQuery}
         sortData={allOptions}
       />
     );
@@ -300,10 +296,14 @@ GenericFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
   category: PropTypes.string,
+  config: PropTypes.shape({}).isRequired,
 };
 
 GenericFilter.defaultProps = {
   category: '',
+  config: {
+    operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE]
+  },
 };
 
 export default GenericFilter;

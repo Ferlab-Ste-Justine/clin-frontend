@@ -27,7 +27,6 @@ import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, du
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueriesChange = this.handleQueriesChange.bind(this);
@@ -44,22 +43,20 @@ class PatientVariantScreen extends React.Component {
     if (!schema.version) {
       actions.fetchSchema();
     }
-  }
 
-  componentDidMount() {
     //@NOTE PA00002 currently is the only patient with indexed data.
-    this.props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+    props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
   }
 
-  handleQuerySelection(query) {
+  handleQuerySelection(key) {
     const { actions, variant } = this.props;
     //@NOTE PA00002 currently is the only patient with indexed data.
-    if (!query) {
+    if (!key) {
       actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
     } else {
-      const { activeQuery, draftQueries } = variant;
-      if (activeQuery !== query.key) actions.selectQuery(query);
-      actions.searchVariants('PA00002', draftQueries, query.key, 'impact', 0, 25);
+      const { draftQueries } = variant;
+      actions.selectQuery(key);
+      actions.searchVariants('PA00002', draftQueries, key, 'impact', 0, 25);
     }
   }
 
@@ -69,7 +66,7 @@ class PatientVariantScreen extends React.Component {
     actions.replaceQuery(query.data || query);
 
     setTimeout(() => {
-      this.handleQuerySelection(query.data || query);
+      this.handleQuerySelection(query.key || query.data.key);
     }, 100)
   }
 
@@ -79,9 +76,9 @@ class PatientVariantScreen extends React.Component {
     actions.replaceQueries(queries);
     setTimeout(() => {
       if (activeQuery) {
-        this.handleQuerySelection(activeQuery);
+        this.handleQuerySelection((activeQuery.key || activeQuery.data.key));
       } else if (queries.length === 1) {
-        this.handleQuerySelection(queries[0]);
+        this.handleQuerySelection(queries[0].key);
       }
     }, 100)
   }
@@ -98,7 +95,7 @@ class PatientVariantScreen extends React.Component {
     actions.duplicateQuery(query.data, index);
 
     setTimeout(() => {
-      this.handleQuerySelection(query.data || query);
+      this.handleQuerySelection(query.key);
     }, 100)
   }
 
@@ -107,7 +104,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     actions.sortStatement(sortedQueries)
   }
-  
+
   handleCommitHistory() {
     const { actions, variant } = this.props;
     const { draftQueries } = variant;
@@ -224,6 +221,7 @@ class PatientVariantScreen extends React.Component {
               onRemoveCallback={this.handleQueriesRemoval}
               onDuplicateCallback={this.handleQueryDuplication}
               onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
+              searchData={searchData}
             />
             <br/>
             <br />

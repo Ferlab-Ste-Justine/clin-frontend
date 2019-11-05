@@ -13,8 +13,10 @@ import {
 
 import GenericFilter from '../../../Query/Filter/Generic';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
+import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
+import CompositeFilter from '../../../Query/Filter/Composite';
 import { sanitizeInstructions } from '../../../Query/index';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON} from '../../../Query/Filter/index'
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE} from '../../../Query/Filter/index'
 
 
 class VariantNavigation extends React.Component {
@@ -66,9 +68,6 @@ class VariantNavigation extends React.Component {
 
   handleNavigationSelection(value, option) {
     console.log('handleNavigationSelection', value, option);
-
-
-
   }
 
   handleFilterSelection({ key }) {
@@ -93,18 +92,18 @@ class VariantNavigation extends React.Component {
           if (!filter.remove) {
             let updated = false
             updatedInstructions = updatedQuery.instructions.map((instruction) => {
-              if (instruction.data.id === filter.data.id) {
+              if (instruction.data.id === filter.id) {
                   updated = true
-                  return { type: 'filter', data: filter.data };
+                  return { type: 'filter', data: filter };
               }
               return instruction;
             })
             if (!updated) {
-              updatedInstructions.push({ type: 'filter', data: filter.data })
+              updatedInstructions.push({ type: 'filter', data: filter })
             }
           } else {
             updatedInstructions = updatedQuery.instructions.filter((instruction) => {
-              if (instruction.data.id === filter.data.id) {
+              if (instruction.data.id === filter.id) {
                 return false;
               }
               return true;
@@ -122,13 +121,17 @@ class VariantNavigation extends React.Component {
     });
   }
 
-  renderFilterType(type){
-    const { intl, activeQuery, schema, queries, data } = this.props;
-    const { activeFilterId, searchResults } = this.state;
+  renderFilterType(categoryData){
+    const { intl, activeQuery, queries, data, searchData } = this.props;
+    const { activeFilterId } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
-    switch (type) {
+
+    switch (categoryData.type) {
         case FILTER_TYPE_GENERIC:
+
+            const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : 'all' )
+
             return (
               <GenericFilter
                 overlayOnly
@@ -139,8 +142,9 @@ class VariantNavigation extends React.Component {
                   removable: false,
                 }}
                 intl={intl}
-                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: 'all' })}
+                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand})}
                 dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+                config={categoryData.config && categoryData.config[categoryData.id]}
                 onEditCallback={this.handleFilterChange}
                 onRemoveCallback={this.handleFilterRemove}
                 onCancelCallback={this.handleCategoryOpenChange}
@@ -157,19 +161,66 @@ class VariantNavigation extends React.Component {
                     removable: false,
                   }}
                   intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0 , type:"numcomparison"})}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0 , type:NumericalComparisonFilter})}
                   dataSet={data[activeFilterId] ? data[activeFilterId] : []}
                   onEditCallback={this.handleFilterChange}
                   onRemoveCallback={this.handleFilterRemove}
                   onCancelCallback={this.handleCategoryOpenChange}
                 />
               );
+            case FILTER_TYPE_GENERICBOOL:
+              const allOption = []
+              Object.keys(categoryData.search).map((keyName) => {
+                  const data = find(searchData, ['id', keyName])
+                  if (data && data.data[0]) {
+                    const count = data.data[0].count
+                    allOption.push({value:keyName , count:count})
+                  }
+                }
+              )
+              return (
+                <GenericBooleanFilter
+                  overlayOnly
+                  autoOpen
+                  options={{
+                    editable: true,
+                    selectable: false,
+                    removable: false,
+                  }}
+                  intl={intl}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type:FILTER_TYPE_GENERICBOOL})}
+                  dataSet={allOption ? allOption : []}
+                  onEditCallback={this.handleFilterChange}
+                  onRemoveCallback={this.handleFilterRemove}
+                  onCancelCallback={this.handleCategoryOpenChange}
+                />
+              );
+          case FILTER_TYPE_COMPOSITE:
+            return (
+              <CompositeFilter
+                overlayOnly
+                autoOpen
+                options={{
+                  editable: true,
+                  selectable: false,
+                  removable: false,
+                }}
+                intl={intl}
+                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
+                  id: activeFilterId, comparator: '>'
+                })}
+                dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+                onEditCallback={this.handleFilterChange}
+                onRemoveCallback={this.handleFilterRemove}
+                onCancelCallback={this.handleCategoryOpenChange}
+              />
+            );
     }
 
   }
 
   render() {
-    const { intl, schema, data } = this.props;
+    const { intl, schema } = this.props;
     const { activeFilterId, searchResults } = this.state;
     const autocompletes = searchResults.map((group) => {
       return (
@@ -206,12 +257,11 @@ class VariantNavigation extends React.Component {
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
-              const {searchData} = this.props
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
-
-              const categoryInfo =find(schema.categories, ['id', id]);
+              const categoryInfo = find(schema.categories, ['id', id]);
               const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-              const type = categoryData ? this.renderFilterType(categoryData.type) : null
+              const filter = categoryData ? this.renderFilterType(categoryData) : null
+
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (
@@ -222,7 +272,7 @@ class VariantNavigation extends React.Component {
                   />
                   ))}
                   { activeFilterId !== null && (
-                      type
+                    filter
                   )}
                 </Menu.SubMenu>
               );

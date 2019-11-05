@@ -48,7 +48,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_FETCH_SUCCEEDED:
       const details = normalizePatientDetails(action.payload.data);
       draft.activePatient = details.id;
-      let queryKey = 'aggs'
+      let queryKey = 'aggs';
       draft.originalQueries = [{
         key: queryKey,
         instructions: [],
@@ -58,10 +58,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
-      if (action.payload.query) {
-        draft.activeQuery = action.payload.query.key;
-      } else {
-        draft.activeQuery = null;
+      if (action.payload.key) {
+        draft.activeQuery = action.payload.key;
       }
       break;
 
@@ -79,12 +77,13 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
       draft.draftQueries = draftQueries.filter((query) => !Boolean(action.payload.keys.find((key) => key === query.key)));
+      draft.activeQuery = draft.draftQueries.find((query) => query.key === draft.activeQuery) ? draft.activeQuery : draft.draftQueries[0].key;
       break;
 
     case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
       const keyToDuplicate = action.payload.query.key;
       const indexToInsertAt = action.payload.index || draft.draftQueries.length;
-      const indexToDuplicate = findIndex(draftQueries, { key: keyToDuplicate })
+      const indexToDuplicate = findIndex(draft.draftQueries, { key: keyToDuplicate })
       if (indexToDuplicate) {
         draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
         draft.activeQuery = action.payload.query.key
