@@ -7,6 +7,7 @@ import {
 } from 'react-icons-kit/entypo';
 
 import Filter from './index';
+import { FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_NONE, FILTER_OPERAND_TYPE_ONE } from './Generic';
 
 
 class SpecificFilter extends Filter {
@@ -44,8 +45,14 @@ class SpecificFilter extends Filter {
   }
 }
 
-SpecificFilter.propTypes = {};
+SpecificFilter.propTypes = {
+  config: PropTypes.shape({}).isRequired,
+};
 
-SpecificFilter.defaultProps = {};
+SpecificFilter.defaultProps = {
+  config: {
+    operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE]
+  },
+};
 
 export default SpecificFilter;
