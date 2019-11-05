@@ -466,6 +466,7 @@ class Query extends React.Component {
         );
       }
     }
+
     const query = draft.instructions ? (
       <div className={`query${(isDirty ? ' dirty' : '')}`} onClick={this.handleClick}>
         {this.hasTitle()
@@ -510,12 +511,15 @@ class Query extends React.Component {
                 })
 
                 if(type === FILTER_TYPE_GENERIC){
+                    const categoryInfo =find(categories, ['id', category]);
+                    const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
                     return (
                         <GenericFilter
                             index={index}
                             options={options}
                             data={item.data}
                             dataSet={facets[item.data.id] || []}
+                            config={categoryData.config && categoryData.config[categoryData.id]}
                             intl={intl}
                             category={category}
                             onEditCallback={this.handleFilterChange}
@@ -541,8 +545,8 @@ class Query extends React.Component {
                     );
                 }else if(type === FILTER_TYPE_GENERICBOOL){
 
-                const categoryInfo =find(categories, ['id', category]);
-                const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+                  const categoryInfo =find(categories, ['id', category]);
+                  const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
 
                   const allOption = []
                   Object.keys(categoryData.search).map((keyName) => {
