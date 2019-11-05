@@ -1,16 +1,19 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button, Dropdown,
 } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode,
 } from '@blueprintjs/table';
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
+import IconKit from 'react-icons-kit';
+import { ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download } from 'react-icons-kit/md';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -18,6 +21,8 @@ import Content from '../../Content';
 import Footer from '../../Footer';
 
 import './style.scss';
+import style from '../../../containers/App/style.module.scss'
+
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
@@ -44,6 +49,7 @@ class PatientSearchScreen extends React.Component {
       data: [],
       size: 25,
       page: 1,
+      isReordering:false,
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -54,6 +60,7 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.exportToTsv = this.exportToTsv.bind(this);
+    this.handleReordering = this.handleReordering.bind(this)
 
     // @NOTE Initialize Component State
     const { intl } = props;
@@ -229,6 +236,13 @@ class PatientSearchScreen extends React.Component {
     csvExporter.generateCsv(data);
   }
 
+  handleReordering(){
+    const { isReordering } = this.state;
+    this.setState({
+      isReordering: !isReordering,
+    });
+  }
+
   handleAutoCompleteChange(query) {
     const { actions } = this.props;
     const { size } = this.state;
@@ -303,8 +317,9 @@ class PatientSearchScreen extends React.Component {
     const { patient } = search;
     const { total } = patient;
     const {
-      columns, autoCompleteIsOpen, size, page,
+      columns, autoCompleteIsOpen, size, page, isReordering
     } = this.state;
+    const { Title } = Typography;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
     const downloadText = intl.formatMessage({ id: 'screen.patientsearch.download' });
     const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
@@ -314,10 +329,20 @@ class PatientSearchScreen extends React.Component {
     return (
       <Content>
         <Header />
-        <Navigation />
-        <Card>
+        <Card className="patientSearch">
           <Row>
             <Col span={24}>
+              <Title level={3}>Liste des patients</Title>
+            </Col>
+          </Row>
+          <Row type="flex" justify="space-between" className="searchNav">
+            <Col>
+              <Button className="btn-filter">
+                <IconKit size={16} icon={ic_tune} />
+                Filter
+              </Button>
+            </Col>
+            <Col className="autoSearch">
               <AutoComplete
                 size="large"
                 style={{ width: '100%' }}
@@ -330,58 +355,85 @@ class PatientSearchScreen extends React.Component {
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
                 open={autoCompleteIsOpen}
+
               >
                 <Input prefix={<Icon type="search" />} onPressEnter={this.handleAutoCompletePressEnter} />
               </AutoComplete>
             </Col>
-          </Row>
-          <Row type="flex" align="bottom" style={{ paddingBottom: 5, paddingTop: 5 }}>
-            <Col span={12} align="start">
-              <Typography>
-                { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
-              </Typography>
-            </Col>
-            <Col span={12} align="end">
-              <Button
-                type="primary"
-                shape="round"
-                icon="download"
-                size="small"
-                onClick={this.exportToTsv}
-              >
-                {downloadText}
+            <Col>
+              <Button className={`${style.btnBlue} ${style.btn}`}>
+                <IconKit size={16} icon={ic_add} />
+                Nouveau patient
               </Button>
             </Col>
           </Row>
-          <Row>
-            <Col span={24}>
-              <Table
-                numRows={(size <= total ? size : total)}
-                enableColumnReordering
-                enableColumnResizing
-                onColumnsReordered={this.handleColumnsReordered}
-                bodyContextMenuRenderer={renderBodyContextMenu}
-                renderMode={RenderMode.NONE}
-                enableGhostCells
-              >
-                { columns.map(column => (column)) }
-              </Table>
-            </Col>
-          </Row>
-          <br />
-          <Row>
-            <Col align="end" span={24}>
-              <Pagination
-                total={search.patient.total}
-                pageSize={size}
-                current={page}
-                pageSizeOptions={['25', '50', '100', '250', '500', '1000']}
-                showSizeChanger
-                onChange={this.handlePageChange}
-                onShowSizeChange={this.handlePageSizeChange}
-              />
-            </Col>
-          </Row>
+          <Row >
+            <Card bordered={false} className="tablePatient">
+              <Row type="flex" justify="end" className="controls">
+                <Col>
+                  <Button
+                    onClick={this.handleReordering}
+                    className= {isReordering ? "reorder" : ""}
+                  >
+                    <IconKit size={16} icon={ic_swap_horiz} />
+                    Organiser
+                  </Button>
+                </Col>
+               <Col>
+                  <Button
+                    onClick={this.handleReordering}
+                  >
+                    <IconKit size={16} icon={ic_view_column} />
+                    Afficher
+                  </Button>
+                </Col>
+                <Col>
+                  <Button
+                    onClick={this.exportToTsv}
+                  >
+                    <IconKit size={16} icon={ic_cloud_download} />
+                    Exporter
+                  </Button>
+                </Col>
+              </Row>
+                <Row type="flex" align="bottom" style={{ paddingBottom: 5, paddingTop: 5 }}>
+                  <Col span={12} align="start">
+                    <Typography>
+                      { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
+                    </Typography>
+                  </Col>
+                </Row>
+              <Row>
+                <Col span={24}>
+                  <Table
+                    numRows={(size <= total ? size : total)}
+                    enableColumnReordering={isReordering}
+                    enableColumnResizing
+                    onColumnsReordered={this.handleColumnsReordered}
+                    bodyContextMenuRenderer={renderBodyContextMenu}
+                    renderMode={RenderMode.NONE}
+                    enableGhostCells
+                  >
+                    { columns.map(column => (column)) }
+                  </Table>
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col align="end" span={24}>
+                  <Pagination
+                    total={search.patient.total}
+                    pageSize={size}
+                    current={page}
+                    pageSizeOptions={['25', '50', '100', '250', '500', '1000']}
+                    showSizeChanger
+                    onChange={this.handlePageChange}
+                    onShowSizeChange={this.handlePageSizeChange}
+                  />
+                </Col>
+              </Row>
+            </Card>
+            </Row>
         </Card>
         <Footer />
       </Content>

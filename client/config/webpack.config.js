@@ -430,9 +430,9 @@ module.exports = function (webpackEnv) {
                 {
                   javascriptEnabled: true,
                   modifyVars: {
-                    'primary-color': '#E88367', // primary color for all components
+                    'primary-color': '#125a90', // primary color for all components
                     'secondary-color': '#dbe9ff', // secondary color for all components
-                    'processing-color': '#E88367', // progress color
+                    'processing-color': 'rgba(18, 90, 144, 0.3)', // progress color
                     'success-color': '#77a309', // success state color
                     'info-color': '#E88367', // info state color
                     'text-color': '#222222', // major text color

@@ -12,8 +12,8 @@ $small-font:14px;
 div#login {
 
   box-shadow:  0px 16px 24px 2px rgba(89, 121, 144, 0.14),
-              0px 6px 30px 5px rgba(89, 121, 144, 0.12),
-              0px 8px 10px -5px rgba(89, 121, 144, 0.2);
+               0px 6px 30px 5px rgba(89, 121, 144, 0.12),
+               0px 8px 10px -5px rgba(89, 121, 144, 0.2);
   max-width:488px;
   padding: 24px 64px;
   display:block;
@@ -129,9 +129,7 @@ div#login {
   .ant-btn-primary{
     width: 360px;
     height:48px;
-    border-radius:0px;
-    background-color:$medium-blue;
-    border:none;
   }
+
 
 }

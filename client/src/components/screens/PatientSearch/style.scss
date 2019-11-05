@@ -1,5 +1,6 @@
 @import '/../../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
 @import '/../../../../../node_modules/@blueprintjs/table/src/table.scss';
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 
 div.bp3-table-container {
   height: auto;
@@ -20,3 +21,119 @@ div.ant-tag {
   text-align: center;
   text-transform: uppercase;
 }
+
+.patientSearch{
+    background-color:#f3f5f7;
+
+    h3.ant-typography{
+        color: rgb(35, 55, 80);
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: 0.25px;
+        line-height: 30px;
+    }
+
+
+
+    .searchNav{
+        .ant-btn{
+            height: 40px;
+
+
+
+
+
+            svg{
+              height: 20px;
+              width: 20px;
+            }
+        }
+        .btn-filter{
+            width: 112px;
+            color: #125a90;
+        }
+        .autoSearch{
+            flex: 2 2 20em;
+            padding:0 24px;
+
+            .ant-input{
+                border-radius:2px;
+                border:none;
+                width:100%;
+
+                font-size: 14px;
+                font-family: Roboto;
+                font-weight: normal;
+                letter-spacing: 0.25px;
+                line-height: 20px;
+            }
+
+            .ant-input:focus{
+                box-shadow: none;
+                border: 2px solid rgb(29, 139, 198);
+                border-right-width: 2px !important
+            }
+
+            .ant-input:hover{
+                border: 1px solid rgba(28, 132, 189, 0.2);
+            }
+
+            .ant-select-selection__placeholder{
+                color: rgba(35, 55, 80, 0.78);
+            }
+            i{
+                padding-right:8px;
+                display:inline-block;
+            }
+
+            svg{
+              color:rgba(35, 55, 80, 0.38);
+              height: 16px;
+              width: 16px;
+            }
+        }
+
+        .newPatient{
+            width: 200px;
+        }
+
+
+
+    }
+
+
+    .tablePatient{
+      margin-top:24px;
+
+      .reorder{
+        background-color:#E4F1F9;
+      }
+
+      .controls button{
+        color: rgba(35, 55, 80, 0.78);
+        font-size: 14px;
+        font-family: Roboto;
+        font-weight: normal;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+        margin-left:8px;
+
+        i{
+            color:rgba(35, 55, 80, 0.38);
+            margin-right:8px;
+            svg{
+              height: 24px;
+              width: 24px;
+            }
+
+        }
+      }
+
+      .ant-btn:hover{
+          background-color:#F7FBFD;
+      }
+    }
+
+
+}
+

@@ -1,0 +1,42 @@
+@import './variables.scss';
+
+
+.btn{
+    border:none;
+    border-radius:2px;
+    outline:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.btnBlue{
+    background-color:$primary-blue;
+    color:$light;
+
+    span{
+      text-transform: uppercase;
+      letter-spacing: 1.25px;
+      line-height: 16px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+}
+
+.btnBlue:hover{
+    background-color:#2B84B8;
+    color:$light;
+}
+
+.btnBlue:disabled,.btnBlue:disabled:hover {
+    background-color:#E5E7EA;
+    color: rgba(35, 55, 80, 0.38);
+}
+
+.btnBlue:focus{
+    background-color:#5199C4;
+    color:$light;
+}
+
+

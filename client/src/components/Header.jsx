@@ -75,7 +75,7 @@ const Header = ({
         <div className="secondaryNav">
           <Col className="userName">
             {user.username !== null && (
-            <Dropdown overlay={userMenu(intl, actions)}>
+            <Dropdown overlay={userMenu(intl, actions)} trigger={['click']}>
               { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="ant-dropdown-link">
                 <Desktop><IconKit size={16} icon={ic_account_circle} /></Desktop>
