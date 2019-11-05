@@ -14,7 +14,7 @@ import IconKit from 'react-icons-kit';
 import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
-import Query, { DEFAULT_EMPTY_QUERY } from './index';
+import Query from './index';
 import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
 } from './Subquery';

@@ -18,6 +18,7 @@ export const initialAppState = {
   },
 };
 
+// @TODO
 export const appShape = {
   showLoadingAnimation: PropTypes.bool.isRequired,
   locale: PropTypes.shape({

@@ -19,8 +19,6 @@ import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery'
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE} from './Filter/index'
 
-export const DEFAULT_EMPTY_QUERY = {};
-
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
 const QUERY_ACTION_DELETE = 'delete';

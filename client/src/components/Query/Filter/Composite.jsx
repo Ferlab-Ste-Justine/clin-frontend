@@ -14,6 +14,9 @@ import {
 } from './NumericalComparison';
 
 
+export const EMPTY_COMPOSITE_FILTER_INSTRUCTION = { instructions: [] };
+
+
 class CompositeFilter extends React.Component {
   constructor(props) {
     super(props);

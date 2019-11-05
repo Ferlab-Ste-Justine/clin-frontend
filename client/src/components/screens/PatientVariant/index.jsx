@@ -62,8 +62,8 @@ class PatientVariantScreen extends React.Component {
 
   handleQueryChange(query) {
     const { actions } = this.props;
-    this.handleCommitHistory();
     actions.replaceQuery(query.data || query);
+    this.handleCommitHistory();
 
     setTimeout(() => {
       this.handleQuerySelection(query.key || query.data.key);

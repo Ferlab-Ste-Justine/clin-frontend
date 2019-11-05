@@ -28,6 +28,7 @@ export const initialSearchState = {
   },
 };
 
+// @TODO
 export const searchShape = {
   lastSearchType: PropTypes.string,
   autocomplete: PropTypes.shape({

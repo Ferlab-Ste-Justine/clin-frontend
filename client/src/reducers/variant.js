@@ -20,6 +20,7 @@ export const initialVariantState = {
   facets: {},
 };
 
+// @TODO
 export const variantShape = {
   schema: PropTypes.shape({}),
   activePatient: PropTypes.String,
