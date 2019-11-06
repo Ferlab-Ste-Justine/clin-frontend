@@ -1,44 +1,149 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Column, Table, Utils, Cell, RenderMode,
+  Table, Cell, RenderMode, Utils,
 } from '@blueprintjs/table';
+import {
+  Badge, Text, Button,
+} from 'antd';
 
 import './style.scss';
 
 
 const TableHeader = (props) => {
-  return (
-    <div>Table Header</div>
-  );
-};
-
-const TableFooter = (props) => {
-  return (
-    <div>Table Footer</div>
-  );
-};
-
-const TableFooter = (props) => {
-  return (
-    <div>Table Footer</div>
-  );
+  const { label } = props;
+  return (<div>{label}</div>);
 };
 
 TableHeader.propTypes = {
-  total: PropTypes.number,
-  page: PropTypes.number,
-  size: PropTypes.number,
-  handlePageChange: PropTypes.func,
-  handleSizeChange: PropTypes.func,
+  label: PropTypes.string,
 };
 
 TableHeader.defaultProps = {
-  total: 0,
-  page: 1,
-  size: 25,
-  handlePageChange: () => {},
-  handleSizeChange: () => {},
+  label: 'Untiled',
 };
 
-export default TableHeader;
+const TableFooter = (props) => {
+  const { label } = props;
+  return (<div>{label}</div>);
+};
+
+TableFooter.propTypes = {
+  label: PropTypes.string,
+};
+
+TableFooter.defaultProps = {
+  label: 'Untiled',
+};
+
+export const createCellRenderer = (key, type, dataSet, options = {}) => {
+  let valueRenderer = null;
+  switch (type) {
+    default:
+    case 'text':
+      valueRenderer = value => (<Text {...options.style} type={options.type} ellipsis>{value}</Text>);
+      break;
+    case 'link':
+      valueRenderer = value => (
+        <Button
+          type="link"
+          size={options.size}
+          shape={options.shape}
+          icon={options.icon}
+          href={(options.linkRenderer ? options.linkRenderer(value) : '#')}
+        >
+          {value}
+        </Button>
+      );
+      break;
+    case 'button':
+      valueRenderer = value => (
+        <Button
+          data-key={key}
+          type={options.type}
+          size={options.size}
+          shape={options.shape}
+          icon={options.icon}
+          onClick={options.clickHandler}
+        >
+          {value}
+        </Button>
+      );
+      break;
+    case 'badge':
+      valueRenderer = value => (<Badge count={value} />);
+      break;
+    case 'dot':
+      valueRenderer = value => (<Badge status={options.statusRenderer(value)} text={value} />);
+      break;
+    case 'custom':
+      valueRenderer = value => options.componentRenderer(value, key, options);
+      break;
+  }
+
+  return (row) => {
+    const value = dataSet[row] ? dataSet[row][key] : '';
+    return (
+      <Cell data-row={row} data-key={key} data-value={value}>{valueRenderer(value)}</Cell>
+    );
+  };
+};
+
+const TableBody = (props) => {
+  const {
+    columns, size, total, renderMode, enableGhostCells, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback,
+  } = props;
+
+  const handleColumnsReordered = (oldIndex, newIndex, length) => {
+    if (oldIndex === newIndex) {
+      return;
+    }
+
+    const reorderedColumns = Utils.reorderArray(columns, oldIndex, newIndex, length);
+    reorderColumnsCallback(reorderedColumns);
+  };
+
+  return (
+    <>
+      <TableHeader />
+      <Table
+        numRows={(size <= total ? size : total)}
+        renderMode={renderMode}
+        enableColumnReordering={enableReordering}
+        enableColumnResizing={enableResizing}
+        enableGhostCells={enableGhostCells}
+        bodyContextMenuRenderer={renderContextMenu}
+        onColumnsReordered={handleColumnsReordered}
+      >
+        { columns.map(column => (column)) }
+      </Table>
+      <TableFooter />
+    </>
+  );
+};
+
+TableBody.propTypes = {
+  size: PropTypes.number,
+  total: PropTypes.number,
+  columns: PropTypes.shape([]),
+  renderMode: PropTypes.string,
+  enableGhostCells: PropTypes.bool,
+  enableReordering: PropTypes.bool,
+  enableResizing: PropTypes.bool,
+  renderContextMenu: PropTypes.func,
+  reorderColumnsCallback: PropTypes.func,
+};
+
+TableBody.defaultProps = {
+  size: 0,
+  total: 0,
+  columns: [],
+  renderMode: RenderMode.BATCH_ON_UPDATE,
+  enableGhostCells: true,
+  enableReordering: true,
+  enableResizing: true,
+  renderContextMenu: () => {},
+  reorderColumnsCallback: () => {},
+};
+
+export default TableBody;
