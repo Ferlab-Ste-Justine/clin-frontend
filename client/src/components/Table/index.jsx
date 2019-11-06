@@ -4,7 +4,7 @@ import {
   Table, Cell, RenderMode, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Text, Button,
+  Badge, Button, Typography,
 } from 'antd';
 
 import './style.scss';
@@ -41,7 +41,10 @@ export const createCellRenderer = (key, type, dataSet, options = {}) => {
   switch (type) {
     default:
     case 'text':
-      valueRenderer = value => (<Text {...options.style} type={options.type} ellipsis>{value}</Text>);
+      valueRenderer = value => (<Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>);
+      break;
+    case 'paragraph':
+      valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
       break;
     case 'link':
       valueRenderer = value => (
