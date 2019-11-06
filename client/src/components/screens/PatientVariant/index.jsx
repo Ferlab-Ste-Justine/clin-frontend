@@ -117,7 +117,7 @@ class PatientVariantScreen extends React.Component {
   }
 
   render() {
-    const { intl, variant } = this.props;
+    const { intl, variant, patient } = this.props;
     const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
     const searchData = [];
 
@@ -184,6 +184,7 @@ class PatientVariantScreen extends React.Component {
                 className="variant-navigation"
                 intl={intl}
                 schema={schema}
+                patient={patient}
                 queries={draftQueries}
                 activeQuery={activeQuery}
                 data={facets[activeQuery] || {}}
@@ -201,6 +202,7 @@ class PatientVariantScreen extends React.Component {
               intl={intl}
               matches={matches}
               facets={facets}
+              target={patient}
               categories={schema.categories}
               options={{
                   copyable: true,
@@ -222,6 +224,7 @@ class PatientVariantScreen extends React.Component {
               onDuplicateCallback={this.handleQueryDuplication}
               onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
               searchData={searchData}
+              externalData={patient}
             />
             <br/>
             <br />

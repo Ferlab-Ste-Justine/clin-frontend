@@ -372,7 +372,7 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory, searchData } = this.props;
+    const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory, searchData, target } = this.props;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -426,6 +426,7 @@ class Statement extends React.Component {
             results={(matches[query.key] ? matches[query.key] : 0)}
             intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
+            target={target}
             categories= {categories}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
@@ -437,6 +438,7 @@ class Statement extends React.Component {
             onClickCallback={this.handleClick}
             findQueryIndexForKey={this.findQueryIndexForKey}
             searchData={searchData}
+            externalData={externalData}
           />
         </div>
       )];
@@ -521,8 +523,10 @@ class Statement extends React.Component {
 Statement.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
+  externalData: PropTypes.shape({}),
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  target: PropTypes.shape({}),
   onSelectCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onSortCallback: PropTypes.func,
@@ -545,6 +549,8 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
+  target: {},
+  externalData: {},
   onSelectCallback: () => {},
   onEditCallback: () => {},
   onBatchEditCallback: () => {},

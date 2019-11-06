@@ -15,6 +15,7 @@ import {
 
 
 export const EMPTY_COMPOSITE_FILTER_INSTRUCTION = { instructions: [] };
+const SCORE_SELECTION = '_score_';
 
 
 class CompositeFilter extends React.Component {
@@ -94,7 +95,7 @@ class CompositeFilter extends React.Component {
     const { draft } = this.state;
     const clone = cloneDeep(draft)
 
-    if (quality !== '_score_') {
+    if (quality !== SCORE_SELECTION) {
       delete clone.comparator;
     } else if (!clone.comparator) {
       clone.comparator = FILTER_COMPARATOR_TYPE_GREATER_THAN
@@ -137,8 +138,8 @@ class CompositeFilter extends React.Component {
             {data.id}
           </Col>
           <Col>
-            <Select value={(!comparator ? value : '_score_')} size="small" type="primary" onChange={this.handleQualityChange}>
-              <Option value="_score_">Score</Option>
+            <Select value={(!comparator ? value : SCORE_SELECTION)} size="small" type="primary" onChange={this.handleQualityChange}>
+              <Option value={SCORE_SELECTION}>Score</Option>
               { dataSet.map(datum => (
                 <Option value={datum.value}>{datum.value} [ {datum.count} ]</Option>
               )) }

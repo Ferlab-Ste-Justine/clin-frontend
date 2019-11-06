@@ -11,7 +11,7 @@ const Joi = require('@hapi/joi');
 import './style.scss';
 import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
-import Specific from './Filter/Specific';
+import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
 import GenericBooleanFilter from './Filter/GenericBoolean'
@@ -445,7 +445,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -512,7 +512,7 @@ class Query extends React.Component {
                 })
 
                 if(type === FILTER_TYPE_GENERIC){
-                    const categoryInfo =find(categories, ['id', category]);
+                    const categoryInfo = find(categories, ['id', category]);
                     const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
                     return (
                         <GenericFilter
@@ -544,20 +544,20 @@ class Query extends React.Component {
                            key={index}
                        />
                     );
-                }else if(type === FILTER_TYPE_GENERICBOOL){
+                }else if(type === FILTER_TYPE_GENERICBOOL) {
 
                   const categoryInfo =find(categories, ['id', category]);
                   const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
 
-                    const allOption = []
-                    Object.keys(categoryData.search).map((keyName) => {
-                        const data = find(searchData, ['id', keyName])
-                        if (data && data.data[0]) {
-                          const count = data.data[0].count
-                          allOption.push({value:keyName , count:count})
-                        }
+                  const allOption = []
+                  Object.keys(categoryData.search).map((keyName) => {
+                      const data = find(searchData, ['id', keyName])
+                      if (data && data.data[0]) {
+                        const count = data.data[0].count
+                        allOption.push({value:keyName , count:count})
                       }
-                    )
+                    }
+                  )
                      return (
                          <GenericBooleanFilter
                           index={index}
@@ -575,16 +575,16 @@ class Query extends React.Component {
               } else if (type === FILTER_TYPE_COMPOSITE) {
                 return (
                   <CompositeFilter
-                    key={index}
                     index={index}
                     options={options}
-                    category={category}
-                    intl={intl}
                     data={item.data}
                     dataSet={facets[item.data.id] || []}
+                    intl={intl}
+                    category={category}
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
+                    key={index}
                   />
                 );
               } else if (type === FILTER_TYPE_SPECIFIC) {
@@ -594,6 +594,7 @@ class Query extends React.Component {
                       options={options}
                       data={item.data}
                       dataSet={facets[item.data.id] || []}
+                      externalDataSet={externalData}
                       intl={intl}
                       category={category}
                       onEditCallback={this.handleFilterChange}
@@ -602,7 +603,7 @@ class Query extends React.Component {
                       key={index}
                     />
                   );
-                }
+              }
               break;
 
               case INSTRUCTION_TYPE_SUBQUERY:
@@ -658,6 +659,7 @@ Query.propTypes = {
   options: PropTypes.shape({}),
   active: PropTypes.bool,
   results: PropTypes.number,
+  externalData: PropTypes.shape({}),
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
   onDisplayCallback: PropTypes.func,
@@ -686,6 +688,7 @@ Query.defaultProps = {
   },
   active: false,
   results: null,
+  externalData: {},
   onClickCallback: () => {},
   onCopyCallback: () => {},
   onDisplayCallback: () => {},

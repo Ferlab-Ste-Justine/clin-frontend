@@ -12,11 +12,12 @@ import {
 } from 'antd';
 
 import GenericFilter from '../../../Query/Filter/Generic';
+import SpecificFilter from '../../../Query/Filter/Specific';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
 import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
 import CompositeFilter from '../../../Query/Filter/Composite';
 import { sanitizeInstructions } from '../../../Query/index';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE} from '../../../Query/Filter/index'
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from '../../../Query/Filter/index'
 
 
 class VariantNavigation extends React.Component {
@@ -122,16 +123,14 @@ class VariantNavigation extends React.Component {
   }
 
   renderFilterType(categoryData){
-    const { intl, activeQuery, queries, data, searchData } = this.props;
+    const { intl, activeQuery, queries, data, searchData, patient } = this.props;
     const { activeFilterId } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
+    const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : 'all' )
 
     switch (categoryData.type) {
         case FILTER_TYPE_GENERIC:
-
-            const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : 'all' )
-
             return (
               <GenericFilter
                 overlayOnly
@@ -150,6 +149,26 @@ class VariantNavigation extends React.Component {
                 onCancelCallback={this.handleCategoryOpenChange}
               />
             );
+            case FILTER_TYPE_SPECIFIC:
+              return (
+                <SpecificFilter
+                  overlayOnly
+                  autoOpen
+                  options={{
+                    editable: true,
+                    selectable: false,
+                    removable: false,
+                  }}
+                  intl={intl}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand})}
+                  dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+                  externalDataSet={patient}
+                  config={categoryData.config && categoryData.config[categoryData.id]}
+                  onEditCallback={this.handleFilterChange}
+                  onRemoveCallback={this.handleFilterRemove}
+                  onCancelCallback={this.handleCategoryOpenChange}
+                />
+              );
             case FILTER_TYPE_NUMERICAL_COMPARISON:
               return (
                 <NumericalComparisonFilter
@@ -288,6 +307,7 @@ class VariantNavigation extends React.Component {
 VariantNavigation.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   schema: PropTypes.shape({}).isRequired,
+  patient: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}),
   queries: PropTypes.array,
   activeQuery: PropTypes.string,

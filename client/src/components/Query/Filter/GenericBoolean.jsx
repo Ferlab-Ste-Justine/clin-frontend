@@ -147,17 +147,17 @@ class GenericBooleanFilter extends React.Component {
     }
     }
 
-      handleSearchByQuery(values) {
-        const { dataSet } = this.props;
-        const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc'])
-        const search = values
-        const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
+    handleSearchByQuery(values) {
+      const { dataSet } = this.props;
+      const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc'])
+      const search = values
+      const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
-        pullAllBy(allOptions, cloneDeep(toRemove), 'value');
-        this.setState({
-          allOptions,
-        });
-      }
+      pullAllBy(allOptions, cloneDeep(toRemove), 'value');
+      this.setState({
+        allOptions,
+      });
+    }
 
     handleSelectionChange(values) {
       const { dataSet } = this.props;
