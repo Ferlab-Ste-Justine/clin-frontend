@@ -122,6 +122,12 @@ class Filter extends React.Component {
         if (instruction.values.length === 0) {
           this.handleClose(true);
         }
+      } else if (type === FILTER_TYPE_SPECIFIC) {
+        console.log('handleApply on ' + FILTER_TYPE_SPECIFIC)
+        console.log(editor.props.children)
+
+
+
       } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
         instruction.comparator = editor.props.children[0].props.children.props.children.props.value;
         instruction.value = editor.props.children[2].props.children[1].props.children.props.defaultValue;

@@ -11,15 +11,14 @@ const Joi = require('@hapi/joi');
 import './style.scss';
 import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
+import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
 import GenericBooleanFilter from './Filter/GenericBoolean'
 import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE} from './Filter/index'
-
-export const DEFAULT_EMPTY_QUERY = {};
+import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
@@ -446,7 +445,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -513,7 +512,7 @@ class Query extends React.Component {
                 })
 
                 if(type === FILTER_TYPE_GENERIC){
-                    const categoryInfo =find(categories, ['id', category]);
+                    const categoryInfo = find(categories, ['id', category]);
                     const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
                     return (
                         <GenericFilter
@@ -545,7 +544,7 @@ class Query extends React.Component {
                            key={index}
                        />
                     );
-                }else if(type === FILTER_TYPE_GENERICBOOL){
+                }else if(type === FILTER_TYPE_GENERICBOOL) {
 
                   const categoryInfo =find(categories, ['id', category]);
                   const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
@@ -588,6 +587,22 @@ class Query extends React.Component {
                     key={index}
                   />
                 );
+              } else if (type === FILTER_TYPE_SPECIFIC) {
+                  return (
+                    <SpecificFilter
+                      index={index}
+                      options={options}
+                      data={item.data}
+                      dataSet={facets[item.data.id] || []}
+                      externalDataSet={externalData}
+                      intl={intl}
+                      category={category}
+                      onEditCallback={this.handleFilterChange}
+                      onRemoveCallback={this.handleFilterRemoval}
+                      onSelectCallback={onSelectCallback}
+                      key={index}
+                    />
+                  );
               }
               break;
 
@@ -644,6 +659,7 @@ Query.propTypes = {
   options: PropTypes.shape({}),
   active: PropTypes.bool,
   results: PropTypes.number,
+  externalData: PropTypes.shape({}),
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
   onDisplayCallback: PropTypes.func,
@@ -672,6 +688,7 @@ Query.defaultProps = {
   },
   active: false,
   results: null,
+  externalData: {},
   onClickCallback: () => {},
   onCopyCallback: () => {},
   onDisplayCallback: () => {},

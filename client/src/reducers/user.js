@@ -11,6 +11,7 @@ export const initialUserState = {
   lastName: null,
 };
 
+// @TODO
 export const userShape = {
   username: PropTypes.string,
   firstName: PropTypes.string,
