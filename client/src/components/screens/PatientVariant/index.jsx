@@ -37,26 +37,25 @@ class PatientVariantScreen extends React.Component {
     this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
 
     // @NOTE Initialize Component State
-    const { actions, variant } = props;
+    const { actions, variant, patient } = props;
     const { schema } = variant;
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
       actions.fetchSchema();
     }
 
-    //@NOTE PA00002 currently is the only patient with indexed data.
-    props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+    props.actions.searchVariants(patient.details.id, [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
   }
 
   handleQuerySelection(key) {
-    const { actions, variant } = this.props;
-    //@NOTE PA00002 currently is the only patient with indexed data.
+    const { actions, variant, patient } = this.props;
+
     if (!key) {
-      actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+      actions.searchVariants(patient.details.id, [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
     } else {
       const { draftQueries } = variant;
       actions.selectQuery(key);
-      actions.searchVariants('PA00002', draftQueries, key, 'impact', 0, 25);
+      actions.searchVariants(patient.details.id, draftQueries, key, 'impact', 0, 25);
     }
   }
 

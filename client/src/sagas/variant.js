@@ -44,12 +44,13 @@ function* searchVariantsForPatient(action) {
 
 function* undo() {
   const { activeQuery, draftQueries } = yield select(state => state.variant);
+  const { details } = yield select(state => state.patient);
   const query = find(draftQueries, { key: activeQuery });
   const type = 'PATIENT_VARIANT_SEARCH_REQUESTED';
 
   if (!query) {
     const payload = {
-      patient: 'PA00002',
+      patient: details.id,
       statement: [{ key: 'aggs', instructions: [] }],
       query: 'aggs',
       group: 'impact',
@@ -59,7 +60,7 @@ function* undo() {
     yield put({ type, payload });
   } else {
     const payload = {
-      patient: 'PA00002',
+      patient: details.id,
       statement: draftQueries,
       query: query.key,
       group: 'impact',
