@@ -8,15 +8,15 @@ import { connect } from 'react-redux';
 import {
   Col, Row, Layout, Radio, Icon, Button, Typography,
 } from 'antd';
-import { Desktop } from '../../../containers/Responsive';
+import { Desktop } from '../../../../containers/Responsive';
 
-import { patientShape } from '../../../reducers/patient';
-import { searchShape } from '../../../reducers/search';
+import { patientShape } from '../../../../reducers/patient';
+import { searchShape } from '../../../../reducers/search';
 
 const { Text } = Typography;
 
 
-export const PatientNavigation = ({
+const PatientNavigation = ({
   intl, patient, search, navigateToPatientScreen, navigateToPatientSearchScreen,
 }) => {
   const backToSearch = intl.formatMessage({ id: 'screen.patient.backToSearch' });
