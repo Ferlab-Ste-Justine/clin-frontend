@@ -8,12 +8,15 @@
     display:flex;
     align-items:center;
     justify-content:center;
+    box-shadow:none;
+    i{
+        margin-right: 8px;
+    }
 }
 
 .btnBlue{
-    background-color:$primary-blue;
+    background-color:$blue-800;
     color:$light;
-
     span{
       text-transform: uppercase;
       letter-spacing: 1.25px;
@@ -21,22 +24,82 @@
       font-size: 14px;
       font-weight: 500;
     }
-
 }
-
 .btnBlue:hover{
     background-color:#2B84B8;
     color:$light;
 }
-
 .btnBlue:disabled,.btnBlue:disabled:hover {
     background-color:#E5E7EA;
     color: rgba(35, 55, 80, 0.38);
 }
-
 .btnBlue:focus{
     background-color:#5199C4;
     color:$light;
 }
+
+
+.btnWhite{
+    background-color:$light;
+    color:$primary-blue;
+    span{
+      text-transform: uppercase;
+      letter-spacing: 1.25px;
+      line-height: 16px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+}
+.btnWhite:hover{
+    background-color:#F7FBFD;
+    color:$primary-blue;
+}
+
+.btnWhite:disabled,.btnWhite:disabled:hover {
+    background-color:#E5E7EA;
+}
+
+.btnWhite:focus{
+    background-color:#E4F1F9;
+}
+
+
+
+
+.btnSec{
+    background-color:$light;
+    color:#233750;
+    span{
+        font-size: 14px;
+        font-family: Roboto;
+        font-weight: normal;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+    }
+    i{
+        color:rgba(35, 55, 80, 0.38);
+        margin-right:8px;
+        svg{
+          height: 24px;
+          width: 24px;
+        }
+
+    }
+}
+.btnSec:hover{
+    background-color:#F7FBFD;
+    color:#233750;
+}
+.btnSec:disabled,.btnSec:disabled:hover {
+    background-color:$dark;
+    color: rgba(35, 55, 80, 0.38);
+}
+.btnSec:focus{
+    background-color:#E4F1F9;
+    color:$light;
+}
+
+
+
 
 

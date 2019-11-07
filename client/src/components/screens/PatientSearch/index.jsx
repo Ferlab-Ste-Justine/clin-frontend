@@ -66,6 +66,7 @@ class PatientSearchScreen extends React.Component {
     const { intl } = props;
     this.state.columns = [
       <Column
+        className={style.test}
         key="1"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
         cellRenderer={this.getCellRenderer('status', 'status-tag')}
@@ -166,7 +167,7 @@ class PatientSearchScreen extends React.Component {
           const value = data[row] ? data[row][key] : '';
           return (
             <Cell>
-              <Text>
+              <Text className="CellValue patientLink">
                 <a /* eslint-disable-line */
                   data-patient-id={value}
                   onClick={(e) => {
@@ -187,7 +188,7 @@ class PatientSearchScreen extends React.Component {
           const value = data[row] ? data[row][key] : '';
           return (
             <Cell>
-              <Text strong>{value}</Text>
+              <Text className="CellValue">{value}</Text>
             </Cell>
           );
         };
@@ -196,13 +197,15 @@ class PatientSearchScreen extends React.Component {
         return (row) => {
           const { data } = this.state;
           const value = data[row] ? data[row][key] : '';
+          console.log("value", value)
           return (
             <Cell>
-              {value && (
-              <Tag color={value === 'completed' ? 'green' : ''}>
-                {value}
-              </Tag>
-              )}
+              <Row type="flex" align="middle">
+                  {value && (
+                  <div className={value ==="completed" ? "completed" : "active"}></div>
+                  )}
+                   <Text className="CellValue">{value}</Text>
+              </Row>
             </Cell>
           );
         };
@@ -212,8 +215,8 @@ class PatientSearchScreen extends React.Component {
           const { data } = this.state;
           const value = data[row] ? data[row][key] : '';
           return (
-            <Cell>
-              <Text>{value}</Text>
+            <Cell >
+              <Text className="CellValue">{value}</Text>
             </Cell>
           );
         };
@@ -337,9 +340,9 @@ class PatientSearchScreen extends React.Component {
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
             <Col>
-              <Button className="btn-filter">
+              <Button className={`${style.btn} ${style.btnWhite}`}>
                 <IconKit size={16} icon={ic_tune} />
-                Filter
+                Filtrer
               </Button>
             </Col>
             <Col className="autoSearch">
@@ -373,7 +376,7 @@ class PatientSearchScreen extends React.Component {
                 <Col>
                   <Button
                     onClick={this.handleReordering}
-                    className= {isReordering ? "reorder" : ""}
+                    className= {isReordering ? `reorder ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}
                   >
                     <IconKit size={16} icon={ic_swap_horiz} />
                     Organiser
@@ -382,6 +385,7 @@ class PatientSearchScreen extends React.Component {
                <Col>
                   <Button
                     onClick={this.handleReordering}
+                    className={`${style.btn} ${style.btnSec}`}
                   >
                     <IconKit size={16} icon={ic_view_column} />
                     Afficher
@@ -390,19 +394,13 @@ class PatientSearchScreen extends React.Component {
                 <Col>
                   <Button
                     onClick={this.exportToTsv}
+                    className={`${style.btn} ${style.btnSec}`}
                   >
                     <IconKit size={16} icon={ic_cloud_download} />
                     Exporter
                   </Button>
                 </Col>
               </Row>
-                <Row type="flex" align="bottom" style={{ paddingBottom: 5, paddingTop: 5 }}>
-                  <Col span={12} align="start">
-                    <Typography>
-                      { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
-                    </Typography>
-                  </Col>
-                </Row>
               <Row>
                 <Col span={24}>
                   <Table
@@ -413,6 +411,7 @@ class PatientSearchScreen extends React.Component {
                     bodyContextMenuRenderer={renderBodyContextMenu}
                     renderMode={RenderMode.NONE}
                     enableGhostCells
+                    className={style.table}
                   >
                     { columns.map(column => (column)) }
                   </Table>
@@ -420,6 +419,12 @@ class PatientSearchScreen extends React.Component {
               </Row>
               <br />
               <Row>
+
+                <Col span={12} align="start">
+                  <Typography>
+                    { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
+                  </Typography>
+                </Col>
                 <Col align="end" span={24}>
                   <Pagination
                     total={search.patient.total}
