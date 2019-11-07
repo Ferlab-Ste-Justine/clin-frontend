@@ -329,6 +329,21 @@ class PatientSearchScreen extends React.Component {
     const current = ((page - 1) * size) + 1;
     const pageTotal = size * page;
 
+    const menu = (
+      <Menu>
+        { columns.map(column => {
+            console.log("allo", column.props.name)
+            return(
+            <Menu.Item>
+                {column.props.name}
+            </Menu.Item>
+            )
+        }) }
+      </Menu>
+    );
+
+    console.log("columns", columns)
+
     return (
       <Content>
         <Header />
@@ -383,13 +398,15 @@ class PatientSearchScreen extends React.Component {
                   </Button>
                 </Col>
                <Col>
-                  <Button
-                    onClick={this.handleReordering}
-                    className={`${style.btn} ${style.btnSec}`}
-                  >
-                    <IconKit size={16} icon={ic_view_column} />
-                    Afficher
-                  </Button>
+                  <Dropdown overlay={menu} trigger="click">
+                      <Button
+                        onClick={this.handleReordering}
+                        className={`${style.btn} ${style.btnSec}`}
+                      >
+                        <IconKit size={16} icon={ic_view_column} />
+                        Afficher
+                      </Button>
+                  </Dropdown>
                 </Col>
                 <Col>
                   <Button
@@ -411,21 +428,21 @@ class PatientSearchScreen extends React.Component {
                     bodyContextMenuRenderer={renderBodyContextMenu}
                     renderMode={RenderMode.NONE}
                     enableGhostCells
-                    className={style.table}
+                    className="patientTable"
                   >
                     { columns.map(column => (column)) }
                   </Table>
                 </Col>
               </Row>
               <br />
-              <Row>
+              <Row type="flex" justify="space-between" align="middle">
 
-                <Col span={12} align="start">
+                <Col align="start">
                   <Typography>
                     { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
                   </Typography>
                 </Col>
-                <Col align="end" span={24}>
+                <Col align="end" >
                   <Pagination
                     total={search.patient.total}
                     pageSize={size}
