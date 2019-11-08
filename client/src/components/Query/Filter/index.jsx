@@ -111,6 +111,7 @@ class Filter extends React.Component {
     }
   }
 
+  // @NOTE Refactor this; logic should be moved within the class for the selected filter type
   handleApply() {
     if (this.isEditable()) {
       const { editor, onEditCallback, data, type, index } = this.props;
