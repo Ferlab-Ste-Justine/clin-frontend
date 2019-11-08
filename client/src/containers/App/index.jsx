@@ -33,6 +33,7 @@ export class App extends React.Component {
     actions.loadApp();
   }
 
+  // @TODO
   static getDerivedStateFromError() {
     return { caughtError: true };
   }

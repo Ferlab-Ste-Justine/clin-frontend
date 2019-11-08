@@ -10,12 +10,12 @@ import {
 } from 'antd';
 import ResizableAntdTable from 'resizable-antd-table';
 
+import PatientNavigation from './components/PatientNavigation';
 import Header from '../../Header';
 import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import DataList from '../../DataList';
-import { PatientNavigation } from './components';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';

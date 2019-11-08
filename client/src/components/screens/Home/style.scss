@@ -1,5 +1,86 @@
-div.ant-card.centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+
+$font: 'Roboto', sans-serif;
+
+.centered{
+     background-image:url("/images/bg_image.jpg");
+     background-color: #E2F5FC;
+     background-position:top center;
+     background-repeat: no-repeat;
+     background-size:cover;
+     display:flex;
+     align-items:center;
+}
+
+.centered>.ant-card-body {
+    padding:0 24px;
+    display:flex;
+    max-width:1200px;
+    margin:64px auto 80px auto;
+    justify-content:center;
+    align-items:center;
+
+    .content{
+        padding-left:7%;
+        .logo{
+            height: auto;
+            width: 346px;
+            margin-bottom:40px;
+
+
+        }
+
+        .partenaire{
+            display:grid;
+            grid-template-columns: repeat(4,1fr);
+            grid-gap: 24px;
+            justify-items:center;
+            align-items:center;
+        }
+
+        .ant-typography{
+            font-family:$font;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            line-height: 28px;
+            margin-bottom:40px;
+        }
+    }
+}
+
+
+@media screen and (min-width: 1600px) {
+    .centered>.ant-card-body {
+        width:1600px;
+    }
+
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .centered>.ant-card-body {
+        width:auto;
+    }
+        .content{
+            .logo{
+                height: auto;
+                width: 85%;
+                min-width:184px;
+                margin-bottom:8%;
+            }
+        }
+}
+
+@media (max-width: 768px) {
+    .centered>.ant-card-body {
+        flex-direction:column;
+    }
+    .content{
+        padding-left:0;
+        margin-top:80px;
+        .logo{
+            height: auto;
+            width: 346px;
+            margin-bottom:32px;
+        }
+     }
 }

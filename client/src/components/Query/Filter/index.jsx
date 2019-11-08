@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination, Input,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,Input
 } from 'antd';
 import {
   cloneDeep,
@@ -28,14 +28,11 @@ class Filter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
       dataSet: null,
-      draft: null,
       visible: null,
       selected: false,
       opened: null,
-      allOptions: null,
-      selection: [],
+      allOptions: [],
       size: null,
       page: null,
     };
@@ -53,16 +50,11 @@ class Filter extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
 
     // @NOTE Initialize Component State
-    const {
-      data, dataSet, autoOpen, visible, sortData,
-    } = props;
-    this.state.data = data;
+    const { dataSet, autoOpen, visible, sortData } = props;
     this.state.dataSet = dataSet || [];
-    this.state.draft = cloneDeep(data);
-    this.state.selection = data.values ? cloneDeep(data.values) : [];
     this.state.opened = autoOpen;
     this.state.visible = visible;
     this.state.allOptions = cloneDeep(sortData);
@@ -113,70 +105,59 @@ class Filter extends React.Component {
       this.setState({
         opened: false,
         visible: false,
-      }, () => { onRemoveCallback(this.serialize()); });
+      }, () => {
+        onRemoveCallback(this.serialize());
+      });
     }
   }
 
   // @NOTE Refactor this; logic should be moved within the class for the selected filter type
   handleApply() {
     if (this.isEditable()) {
-      let { draft } = this.state;
-      const { editor, type, onEditCallback } = this.props;
-      let value = null;
-      let needEdit = true;
+      const { editor, onEditCallback, data, type, index } = this.props;
+      const { id } = data;
+      let instruction = { id, type, index };
       if (type === FILTER_TYPE_GENERIC) {
-        value = editor.props.children[4].props.children.props.children.props.value;
-        const operand = editor.props.children[0].props.children.props.children.props.value;
-        draft.operand = operand;
-        draft.values = value;
-        const filterType = { type };
-        draft = { ...draft, ...filterType };
-        if (value.length === 0) {
-          needEdit = false;
+        instruction.values = editor.props.children[4].props.children.props.children.props.value;
+        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
+        if (instruction.values.length === 0) {
+          this.handleClose(true);
+        }
+      } else if (type === FILTER_TYPE_SPECIFIC) {
+        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
+        instruction.values = editor.props.children[3].props.children.props.children.props.value;
+        if (instruction.values.length === 0) {
           this.handleClose(true);
         }
       } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
-        const comparator = editor.props.children[0].props.children.props.children.props.value;
-        value = editor.props.children[2].props.children[1].props.children.props.defaultValue;
-        draft.comparator = comparator;
-        draft.value = value;
-        const filterType = { type };
-        draft = { ...draft, ...filterType };
+        instruction.comparator = editor.props.children[0].props.children.props.children.props.value;
+        instruction.value = editor.props.children[2].props.children[1].props.children.props.defaultValue;
       } else if (type === FILTER_TYPE_GENERICBOOL) {
-        value = editor.props.children[2].props.children.props.children.props.value;
-        draft.values = value;
+        instruction.values = editor.props.children[2].props.children.props.children.props.value
       } else if (type === FILTER_TYPE_COMPOSITE) {
         const quality = editor.props.children.props.children[1] ? editor.props.children.props.children[1].props.children.props.value : null;
         const comparator = editor.props.children.props.children[2] ? editor.props.children.props.children[2].props.children.props.value : null;
         const score = editor.props.children.props.children[3] ? editor.props.children.props.children[3].props.children.props.value : null;
-
         if (comparator) {
-          draft.comparator = comparator;
-          draft.value = score;
+          instruction.comparator = comparator;
+          instruction.value = score;
         } else {
-          delete draft.comparator;
-          draft.value = quality;
+          delete instruction.comparator;
+          instruction.value = quality;
         }
       }
 
-      if (needEdit) {
-        const filterType = { type };
-        draft = { ...draft, ...filterType };
-        this.setState({
-          data: { ...draft },
-          opened: false,
-        }, () => {
-          onEditCallback(this.serialize());
-        });
-      }
-    }
+      this.setState({
+        opened: false,
+      }, () => {
+        onEditCallback(instruction);
+      });
+   }
   }
 
   handleCancel() {
-    const { draft } = this.state;
     const { onCancelCallback } = this.props;
     this.setState({
-      data: { ...draft },
       opened: false,
     }, () => {
       onCancelCallback(this.serialize());
@@ -208,24 +189,17 @@ class Filter extends React.Component {
     });
   }
 
-  handleSearchByQuery(value) {
-    const { onSearchCallback } = this.props;
-    const search = value.target.value;
-    this.setState({
-    }, () => {
+  handleSearchByQuery(value){
+      const { onSearchCallback } = this.props;
+      const search = value.target.value
       onSearchCallback(search);
-    });
   }
 
   render() {
-    const {
-      data, allOptions, size, page,
-    } = this.state;
-    const {
-      intl, overlayOnly, editor, label, legend, content, dataSet, searchable,
-    } = this.props;
-    const titleText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
-    const descriptionText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
+    const { allOptions, size, page } = this.state;
+    const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable } = this.props;
+    const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
+    const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
     const overlay = (
       <Popover
@@ -236,36 +210,36 @@ class Filter extends React.Component {
           <Typography>{descriptionText}</Typography>
           <br />
           {searchable && (
-          <>
-            <Row>
-              <Input
-                allowClear
-                placeholder={filterSearch}
-                size="small"
-                onChange={this.handleSearchByQuery}
-              />
-            </Row>
-            <br />
-          </>
+               <>
+               <Row>
+                 <Input
+                   allowClear
+                   placeholder={filterSearch}
+                   size="small"
+                   onChange={this.handleSearchByQuery}
+                 />
+               </Row>
+               <br/>
+               </>
           )
           }
           { editor }
-          { allOptions && (
-            allOptions.length >= size
-              ? (
-                <Row style={{ marginTop: 'auto' }}>
-                  <br />
-                  <Col align="end" span={24}>
-                    <Pagination
-                      total={allOptions.length}
-                      pageSize={size}
-                      current={page}
-                      pageSizeOptions={['10', '25', '50', '100']}
-                      onChange={this.handlePageChange}
-                    />
-                  </Col>
-                </Row>
-              ) : null
+          { allOptions  && (
+                allOptions.length >= size
+                  ? (
+                    <Row style={{ marginTop: 'auto' }}>
+                      <br />
+                      <Col align="end" span={24}>
+                        <Pagination
+                          total={allOptions.length}
+                          pageSize={size}
+                          current={page}
+                          pageSizeOptions={['10', '25', '50', '100']}
+                          onChange={this.handlePageChange}
+                        />
+                      </Col>
+                    </Row>
+                  ) : null
           )
           }
 
@@ -285,6 +259,7 @@ class Filter extends React.Component {
     if (overlayOnly === true) {
       return (
         <Dropdown
+          trigger="click"
           onVisibleChange={this.toggleMenu}
           overlay={overlay}
           visible={this.isOpened()}
@@ -301,7 +276,7 @@ class Filter extends React.Component {
           visible={this.isVisible()}
           closable={this.isRemovable()}
           onClose={this.handleClose}
-          color={this.isSelected() ? 'blue' : ''}
+          color={(this.isOpened() || this.isSelected())? 'blue' : ''}
           onClick={this.handleSelect}
         >
           <Popover
@@ -316,7 +291,13 @@ class Filter extends React.Component {
             { label }
           </span>
           { this.isEditable() && (
-          <Dropdown overlay={overlay} visible={this.isOpened()} placement="bottomLeft">
+          <Dropdown
+            trigger="click"
+            onVisibleChange={this.toggleMenu}
+            overlay={overlay}
+            visible={this.isOpened()}
+            placement="bottomLeft"
+          >
             <Icon type="caret-down" onClick={this.toggleMenu} />
           </Dropdown>
           ) }
@@ -330,7 +311,7 @@ Filter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
-  type: PropTypes.string.isRequired,
+  type:PropTypes.string.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -360,7 +341,7 @@ Filter.defaultProps = {
   autoOpen: false,
   overlayOnly: false,
   visible: true,
-  sortData: [],
+  sortData:[]
 };
 
 export default Filter;
