@@ -20,7 +20,7 @@ TableHeader.propTypes = {
 };
 
 TableHeader.defaultProps = {
-  label: 'Untiled',
+  label: '',
 };
 
 const TableFooter = (props) => {
@@ -33,7 +33,7 @@ TableFooter.propTypes = {
 };
 
 TableFooter.defaultProps = {
-  label: 'Untiled',
+  label: '',
 };
 
 export const createCellRenderer = (key, type, dataSet, options = {}) => {
