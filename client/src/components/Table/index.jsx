@@ -36,6 +36,7 @@ TableFooter.defaultProps = {
   label: '',
 };
 
+
 export const createCellRenderer = (key, type, dataSet, options = {}) => {
   let valueRenderer = null;
   switch (type) {

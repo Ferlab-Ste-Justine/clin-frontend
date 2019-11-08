@@ -13,7 +13,7 @@ import Header from '../../Header';
 import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import Table from '../../Table/index'
+import TableResults, { createCellRenderer } from '../../Table/index';
 import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
 
@@ -35,13 +35,11 @@ class PatientVariantScreen extends React.Component {
       page: 1,
       size: 10,
       columns: [],
-      visibleVariant: false,
-      visibleGene: false,
-      currentTab: null,
       visibleColumns: {
         [VARIANT_TAB]: [],
         [GENE_TAB]: []
       },
+      currentTab: null,
       variantColumns: [],
       variantData: [],
       geneColumns: [],
@@ -57,8 +55,9 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory = this.handleCommitHistory.bind(this);
     this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
-    this.toggleMenu = this.toggleMenu.bind(this);
     this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
+    this.getVariantData = this.getVariantData.bind(this);
+    this.getGeneData = this.getGeneData.bind(this);
 
     // @NOTE Initialize Component State
     const { actions, variant, patient } = props;
@@ -66,28 +65,14 @@ class PatientVariantScreen extends React.Component {
 
     this.state.currentTab = VARIANT_TAB
     this.state.variantColumns = [
-      { key: 'variant', type: 'default' },
-      { key: 'type' },
-      { key: 'dbsnp' },
-      { key: 'consequence' },
-      { key: 'clinvar' },
-      { key: 'vep' },
-      { key: 'sift' },
-      { key: 'polyph' },
-      { key: 'zygosity' },
-      { key: 'pubmed', type: 'pubmed' },
+      { key: 'variant', label: 'Variant ID', component: createCellRenderer('variant', 'text', this.state.variantData) },
+      { key: 'type', label: 'Variant Type', component: createCellRenderer('type', 'text', this.state.variantData) },
     ];
-    this.state.geneColumns = [
-      { key: 'gene', type: 'default' },
-      { key: 'type' },
-      { key: 'localisation' },
-      { key: 'variants' },
-      { key: 'omin' },
-      { key: 'orphanet' },
-      { key: 'ensemble' },
-    ];
-    this.state.visibleColumns[VARIANT_TAB] = Array.from(Array(this.state.variantColumns.length).keys())
-    this.state.visibleColumns[GENE_TAB] = Array.from(Array(this.state.geneColumns.length).keys())
+    this.state.visibleColumns[VARIANT_TAB] = this.state.variantColumns.map(column => column.key)
+
+    //@TODO
+    this.state.geneColumns = [];
+    this.state.visibleColumns[GENE_TAB] = [];
 
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
@@ -182,14 +167,7 @@ class PatientVariantScreen extends React.Component {
     this.setState({
       columns: [],
       currentTab: key,
-      visibleVariant: false,
-      visibleGene: false,
     });
-  }
-
-  toggleMenu() {
-    const { visibleVariant, visibleGene, currentTab } = this.state;
-    currentTab === VARIANT_TAB ? this.setState({ visibleVariant: !visibleVariant }) : this.setState({ visibleGene: !visibleGene });
   }
 
   handleColumnsVisible(checkedValues) {
@@ -199,6 +177,14 @@ class PatientVariantScreen extends React.Component {
       columns: [],
       visibleColumns,
     });
+  }
+
+  getVariantData() {
+    return this.state.variantData
+  }
+
+  getGeneData() {
+    return this.state.getGeneData
   }
 
   render() {
@@ -244,34 +230,39 @@ class PatientVariantScreen extends React.Component {
     }
 
     const {
-      columns, variantColumns, geneColumns, size, page, visibleVariant, visibleGene, visibleColumns, currentTab, variantData, geneData
+      columns, variantColumns, geneColumns, size, page, visibleColumns, currentTab, variantData, geneData
     } = this.state;
 
     const columnData = currentTab === VARIANT_TAB ? variantColumns : geneColumns;
-    const columnSelectorIsVisible = currentTab === VARIANT_TAB ? visibleVariant : visibleGene;
-    const defaultVisibleColumns = visibleColumns[currentTab]
-    const count = currentTab === VARIANT_TAB ? variantData.length : geneData.length;
+    const total = currentTab === VARIANT_TAB ? variantData.length : geneData.length;
 
-    //if (count === 0) {
+    //if (total === 0) {
     //  return null
     //}
 
-    const visibleColumnsSelector = (
-      <Popover visible={columnSelectorIsVisible}>
-        <Card>
-          <Row>
-            <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={defaultVisibleColumns} onChange={this.handleColumnsVisible}>
-              {columnData.map((column , index) => (
-                <Row key={index}>
-                  <Col>
-                    <Checkbox  value={column.key}>{column.key}</Checkbox>
-                  </Col>
-                </Row>
-              ))}
-            </Checkbox.Group>
-          </Row>
-        </Card>
-      </Popover>
+    const columnVisibilitySelector = (
+      <Dropdown key="visibility-selector" overlay={(
+        <Popover>
+          <Card>
+            <Row>
+              <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={visibleColumns[currentTab]} onChange={this.handleColumnsVisible}>
+                {columnData.map((column , index) => (
+                  <Row key={index}>
+                    <Col>
+                      <Checkbox value={column.key}>{column.label}</Checkbox>
+                    </Col>
+                  </Row>
+                ))}
+              </Checkbox.Group>
+            </Row>
+          </Card>
+        </Popover>
+      )} trigger={['hover']}>
+        <Button type="primary">
+          Columns
+          <Icon type="caret-down" />
+        </Button>
+      </Dropdown>
     );
 
     return (
@@ -346,67 +337,65 @@ class PatientVariantScreen extends React.Component {
             <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
               <Row>
                 <Col align="end">
-                  <Dropdown overlay={visibleColumnsSelector} trigger={['click']} visible={visibleVariant}>
-                    <Button type="primary" onClick={this.toggleMenu}>
-                      Column
-                      <Icon type="caret-down" />
-                    </Button>
-                  </Dropdown>
+                  {columnVisibilitySelector}
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col span={24}>
-                  <Table
-                    key="variants-table"
-                    size={0}
-                    total={0}
-                    columns={[]}
+                <Col>
+                  <TableResults
+                    key="variant-results-table"
+                    size={size}
+                    total={total}
+                    columns={variantColumns.map(column => column.component)}
+
+
+
+
                   />
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col align="end" span={24}>
+                <Col align="end">
                   <TablePagination
-                    key="variants-pagination"
-                    total={0}
-                    page={1}
-                    size={25}
+                    key="variant-results-pagination"
+                    total={total}
+                    size={size}
+                    page={page}
+                    handlePageChange={(current, next) => { console.log('TablePagination Variants handlePageChange ', current, next) }}
+                    handleSizeChange={(current, next) => { console.log('TablePagination Variants handleSizeChange ', current, next) }}
                   />
                 </Col>
               </Row>
             </Tabs.TabPane>
-            <Tabs.TabPane tab="Genes" key={GENE_TAB}>
+            <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
               <Row>
                 <Col align="end">
-                  <Dropdown overlay={visibleColumnsSelector} trigger={['click']} visible={visibleGene}>
-                    <Button type="primary" onClick={this.toggleMenu}>
-                      Column
-                      <Icon type="caret-down" />
-                    </Button>
-                  </Dropdown>
+                  {columnVisibilitySelector}
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col span={24}>
-                  <Table
-                    key="genes-table"
-                    size={0}
-                    total={0}
+                <Col>
+                  <TableResults
+                    key="gene-results-table"
                     columns={[]}
+                    size={size}
+                    total={total}
                   />
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col align="end" span={24}>
+                <Col align="end">
                   <TablePagination
-                    key="genes-pagination"
-                    total={0}
-                    page={1}
-                    size={25}
+                    key="gene-results-pagination"
+                    total={total}
+                    size={size}
+                    page={page}
+                    handlePageChange={(current, next) => { console.log('TablePagination Genes handlePageChange ', current, next) }}
+                    handleSizeChange={(current, next) => { console.log('TablePagination Genes handleSizeChange ', current, next) }}
                   />
                 </Col>
               </Row>
