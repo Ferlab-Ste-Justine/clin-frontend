@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Table, Cell, RenderMode, Utils,
+  Table, Cell, RenderMode, Utils, Column,
 } from '@blueprintjs/table';
 import {
   Badge, Button, Typography,
@@ -37,7 +37,7 @@ TableFooter.defaultProps = {
 };
 
 
-export const createCellRenderer = (key, type, dataSet, options = {}) => {
+export const createCellRenderer = (key, type, getData, options = {}) => {
   let valueRenderer = null;
   switch (type) {
     default:
@@ -86,6 +86,7 @@ export const createCellRenderer = (key, type, dataSet, options = {}) => {
   }
 
   return (row) => {
+    const dataSet = getData();
     const value = dataSet[row] ? dataSet[row][key] : '';
     return (
       <Cell data-row={row} data-key={key} data-value={value}>{valueRenderer(value)}</Cell>
@@ -119,7 +120,13 @@ const TableBody = (props) => {
         bodyContextMenuRenderer={renderContextMenu}
         onColumnsReordered={handleColumnsReordered}
       >
-        { columns.map(column => (column)) }
+        { columns.map(column => (
+          <Column
+            key={column.key}
+            name={column.label}
+            cellRenderer={column.renderer}
+          />
+        )) }
       </Table>
       <TableFooter />
     </>

@@ -32,20 +32,15 @@ class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      page: 1,
-      size: 10,
+      currentTab: null,
       columns: [],
       visibleColumns: {
         [VARIANT_TAB]: [],
         [GENE_TAB]: []
       },
-      currentTab: null,
-      variantColumns: [],
-      variantData: [],
-      geneColumns: [],
-      geneData: [],
+      page: 1,
+      size: 25,
     };
-
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueriesChange = this.handleQueriesChange.bind(this);
@@ -56,22 +51,21 @@ class PatientVariantScreen extends React.Component {
     this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
-    this.getVariantData = this.getVariantData.bind(this);
-    this.getGeneData = this.getGeneData.bind(this);
+    this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
     const { actions, variant, patient } = props;
     const { schema } = variant;
 
     this.state.currentTab = VARIANT_TAB
-    this.state.variantColumns = [
-      { key: 'variant', label: 'Variant ID', component: createCellRenderer('variant', 'text', this.state.variantData) },
-      { key: 'type', label: 'Variant Type', component: createCellRenderer('type', 'text', this.state.variantData) },
-    ];
-    this.state.visibleColumns[VARIANT_TAB] = this.state.variantColumns.map(column => column.key)
+    this.variantColumns = {
+      'variant': { key: 'variant', label: 'Variant ID', renderer: createCellRenderer('mutationId', 'text', this.getData) },
+      'type': { key: 'type', label: 'Variant Type', renderer: createCellRenderer('type', 'text', this.getData) }
+    };
+    this.state.visibleColumns[VARIANT_TAB] = Object.keys(this.variantColumns);
 
     //@TODO
-    this.state.geneColumns = [];
+    this.geneColumns = {};
     this.state.visibleColumns[GENE_TAB] = [];
 
     // @NOTE Make sure we have a schema defined in redux
@@ -103,7 +97,7 @@ class PatientVariantScreen extends React.Component {
     } else {
       const { draftQueries } = variant;
       actions.selectQuery(key);
-      actions.searchVariants(patient.details.id, draftQueries, key, 'impact', 0, 25);
+      actions.searchVariants(patient.details.id, draftQueries, key, 'impact', ((this.state.page-1)*this.state.size), this.state.size);
     }
   }
 
@@ -179,19 +173,26 @@ class PatientVariantScreen extends React.Component {
     });
   }
 
-  getVariantData() {
-    return this.state.variantData
-  }
+  getData() {
 
-  getGeneData() {
-    return this.state.getGeneData
+    console.log('getData +++++')
+
+    const { currentTab } = this.state;
+    if (currentTab === VARIANT_TAB) {
+      const { activeQuery, results } = this.props.variant;
+
+      console.log(results[activeQuery])
+
+      return results[activeQuery]
+    }
+
+    return [];
   }
 
   render() {
     const { intl, variant, patient } = this.props;
-    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
+    const { facets, schema } = variant;
     const searchData = [];
-
     if (schema.categories) {
         schema.categories.forEach((category) => {
             searchData.push({
@@ -229,16 +230,17 @@ class PatientVariantScreen extends React.Component {
         })
     }
 
+    const { draftQueries, draftHistory, originalQueries, matches, activeQuery } = variant;
     const {
-      columns, variantColumns, geneColumns, size, page, visibleColumns, currentTab, variantData, geneData
+      size, page, visibleColumns, currentTab,
     } = this.state;
 
-    const columnData = currentTab === VARIANT_TAB ? variantColumns : geneColumns;
-    const total = currentTab === VARIANT_TAB ? variantData.length : geneData.length;
+    const columnData = currentTab === VARIANT_TAB ? this.variantColumns : this.geneColumns;
+    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
 
-    //if (total === 0) {
-    //  return null
-    //}
+    if (total === 0) {
+      return null
+    }
 
     const columnVisibilitySelector = (
       <Dropdown key="visibility-selector" overlay={(
@@ -246,10 +248,10 @@ class PatientVariantScreen extends React.Component {
           <Card>
             <Row>
               <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={visibleColumns[currentTab]} onChange={this.handleColumnsVisible}>
-                {columnData.map((column , index) => (
-                  <Row key={index}>
+                {Object.keys(columnData).map((key) => (
+                  <Row key={key}>
                     <Col>
-                      <Checkbox value={column.key}>{column.label}</Checkbox>
+                      <Checkbox value={key}>{columnData[key].label}</Checkbox>
                     </Col>
                   </Row>
                 ))}
@@ -347,11 +349,7 @@ class PatientVariantScreen extends React.Component {
                     key="variant-results-table"
                     size={size}
                     total={total}
-                    columns={variantColumns.map(column => column.component)}
-
-
-
-
+                    columns={visibleColumns[currentTab].map(visibleColumn => this.variantColumns[visibleColumn] )}
                   />
                 </Col>
               </Row>
