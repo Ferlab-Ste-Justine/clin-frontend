@@ -59,9 +59,15 @@ class PatientVariantScreen extends React.Component {
 
     this.state.currentTab = VARIANT_TAB
     this.variantColumns = {
-      'variant': { key: 'variant', label: 'Variant ID', renderer: createCellRenderer('mutationId', 'text', this.getData) },
-      'type': { key: 'type', label: 'Variant Type', renderer: createCellRenderer('type', 'text', this.getData) }
+      'variant_id': { key: 'variant', label: 'Variant ID', renderer: createCellRenderer('mutationId', 'text', this.getData) },
+      'variant_type': { key: 'type', label: 'Variant Type', renderer: createCellRenderer('type', 'text', this.getData) },
+      'gene_symbol': { key: 'gene', label: 'Gene Symbol', renderer: createCellRenderer('geneSymbol','custom', this.getData, {
+          renderer: (data) => { return data.genes[0].geneSymbol || ''; }
+       })},
     };
+
+
+
     this.state.visibleColumns[VARIANT_TAB] = Object.keys(this.variantColumns);
 
     //@TODO
@@ -174,14 +180,9 @@ class PatientVariantScreen extends React.Component {
   }
 
   getData() {
-
-    console.log('getData +++++')
-
     const { currentTab } = this.state;
     if (currentTab === VARIANT_TAB) {
       const { activeQuery, results } = this.props.variant;
-
-      console.log(results[activeQuery])
 
       return results[activeQuery]
     }

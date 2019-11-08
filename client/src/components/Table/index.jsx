@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -6,6 +8,7 @@ import {
 import {
   Badge, Button, Typography,
 } from 'antd';
+import { isFunction, cloneDeep } from 'lodash';
 
 import './style.scss';
 
@@ -54,7 +57,7 @@ export const createCellRenderer = (key, type, getData, options = {}) => {
           size={options.size}
           shape={options.shape}
           icon={options.icon}
-          href={(options.linkRenderer ? options.linkRenderer(value) : '#')}
+          href={(options.renderer ? options.renderer(value) : '#')}
         >
           {value}
         </Button>
@@ -68,7 +71,7 @@ export const createCellRenderer = (key, type, getData, options = {}) => {
           size={options.size}
           shape={options.shape}
           icon={options.icon}
-          onClick={options.clickHandler}
+          onClick={options.handler}
         >
           {value}
         </Button>
@@ -78,19 +81,24 @@ export const createCellRenderer = (key, type, getData, options = {}) => {
       valueRenderer = value => (<Badge count={value} />);
       break;
     case 'dot':
-      valueRenderer = value => (<Badge status={options.statusRenderer(value)} text={value} />);
+      valueRenderer = value => (<Badge status={options.renderer(value)} text={value} />);
       break;
     case 'custom':
-      valueRenderer = value => options.componentRenderer(value, key, options);
+      valueRenderer = options.renderer
       break;
   }
 
   return (row) => {
-    const dataSet = getData();
-    const value = dataSet[row] ? dataSet[row][key] : '';
-    return (
-      <Cell data-row={row} data-key={key} data-value={value}>{valueRenderer(value)}</Cell>
-    );
+    try {
+      const dataSet = getData();
+      const value = dataSet[row] ? dataSet[row][key] ? dataSet[row][key] : cloneDeep(dataSet[row]) : '';
+
+      return (
+        <Cell>{valueRenderer(value)}</Cell>
+      );
+    } catch (e) {
+      return <Cell/>
+    }
   };
 };
 
@@ -120,9 +128,9 @@ const TableBody = (props) => {
         bodyContextMenuRenderer={renderContextMenu}
         onColumnsReordered={handleColumnsReordered}
       >
-        { columns.map(column => (
+        { columns.map((column, index) => (
           <Column
-            key={column.key}
+            key={index}
             name={column.label}
             cellRenderer={column.renderer}
           />
