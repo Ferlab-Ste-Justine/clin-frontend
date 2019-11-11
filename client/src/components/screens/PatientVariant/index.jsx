@@ -74,7 +74,7 @@ class PatientVariantScreen extends React.Component {
           renderer: (data) => { try { return data.consequences[0].aaChange } catch (e) { return ''; } }
       })},
       { key: 'consequences', label: 'Consequence(s)', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return JSON.stringify(data.consequences[0]) } catch (e) { return ''; } }
+          renderer: (data) => { try { return data.consequences[0].consequence } catch (e) { return ''; } }
       })},
       { key: 'clinvar', label: 'ClinVar', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.clinvar.clinvar_clinsig } catch (e) { return ''; } }
