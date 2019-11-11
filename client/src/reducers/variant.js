@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import { cloneDeep, isEqual, findIndex, last } from 'lodash';
+import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
@@ -49,7 +50,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_FETCH_SUCCEEDED:
       const details = normalizePatientDetails(action.payload.data);
       draft.activePatient = details.id;
-      let queryKey = 'aggs';
+      let queryKey = uuidv1();
       draft.originalQueries = [{
         key: queryKey,
         instructions: [],

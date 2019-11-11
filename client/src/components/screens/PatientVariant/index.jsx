@@ -8,12 +8,13 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader, Tabs, Row, Col, Dropdown, Button, Popover, Checkbox, Icon
 } from 'antd';
+import { cloneDeep, find } from 'lodash';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import Table from '../../Table/index'
+import TableResults, { createCellRenderer } from '../../Table/index';
 import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
 
@@ -31,23 +32,23 @@ const GENE_TAB = 'GENES'
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.columnPreset = {
+      [VARIANT_TAB]: [],
+      [GENE_TAB]: []
+    };
     this.state = {
-      page: 1,
-      size: 10,
-      columns: [],
-      visibleVariant: false,
-      visibleGene: false,
       currentTab: null,
+      columns: {
+        [VARIANT_TAB]: [],
+        [GENE_TAB]: []
+      },
       visibleColumns: {
         [VARIANT_TAB]: [],
         [GENE_TAB]: []
       },
-      variantColumns: [],
-      variantData: [],
-      geneColumns: [],
-      geneData: [],
+      page: 1,
+      size: 25,
     };
-
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueriesChange = this.handleQueriesChange.bind(this);
@@ -57,69 +58,105 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory = this.handleCommitHistory.bind(this);
     this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
     this.handleTabChange = this.handleTabChange.bind(this);
-    this.toggleMenu = this.toggleMenu.bind(this);
-    this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
+    this.handleColumnVisibilityChange = this.handleColumnVisibilityChange.bind(this);
+    this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleSizeChange = this.handleSizeChange.bind(this);
+    this.getData = this.getData.bind(this);
+
+    this.columnPreset[VARIANT_TAB] = [
+      { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
+      { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
+      { key: 'gene', label: 'Gene Symbol', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.genes[0].geneSymbol } catch (e) { return ''; } }
+      })},
+      { key: 'aachanges', label: 'AA Change(s)', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].aaChange } catch (e) { return ''; } }
+      })},
+      { key: 'consequences', label: 'Consequence(s)', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].consequence } catch (e) { return ''; } }
+      })},
+      { key: 'clinvar', label: 'ClinVar', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.clinvar.clinvar_clinsig } catch (e) { return ''; } }
+      })},
+      { key: 'dbsnp', label: 'DbSnp', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.bdExt.dbSNP[0] } catch (e) { return ''; } }
+      })},
+      { key: 'pubmed', label: 'Pubmed', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed) } catch (e) { return ''; } }
+      })},
+      { key: 'sift', label: 'SIFT', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].predictions.SIFT } catch (e) { return ''; } }
+      })},
+      { key: 'polyphenhvar', label: 'Polyphen2 HVAR', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred } catch (e) { return ''; } }
+      })},
+      { key: 'phylop', label: 'PhyloP', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way } catch (e) { return ''; } }
+      })},
+    ];
+    this.columnPreset[GENE_TAB] = [];
 
     // @NOTE Initialize Component State
-    const { actions, variant, patient } = props;
+    const { actions, variant } = props;
     const { schema } = variant;
 
     this.state.currentTab = VARIANT_TAB
-    this.state.variantColumns = [
-      { key: 'variant', type: 'default' },
-      { key: 'type' },
-      { key: 'dbsnp' },
-      { key: 'consequence' },
-      { key: 'clinvar' },
-      { key: 'vep' },
-      { key: 'sift' },
-      { key: 'polyph' },
-      { key: 'zygosity' },
-      { key: 'pubmed', type: 'pubmed' },
-    ];
-    this.state.geneColumns = [
-      { key: 'gene', type: 'default' },
-      { key: 'type' },
-      { key: 'localisation' },
-      { key: 'variants' },
-      { key: 'omin' },
-      { key: 'orphanet' },
-      { key: 'ensemble' },
-    ];
-    this.state.visibleColumns[VARIANT_TAB] = Array.from(Array(this.state.variantColumns.length).keys())
-    this.state.visibleColumns[GENE_TAB] = Array.from(Array(this.state.geneColumns.length).keys())
+    this.state.columns[VARIANT_TAB] = cloneDeep(this.columnPreset[VARIANT_TAB])
+    this.state.visibleColumns[VARIANT_TAB] = this.columnPreset[VARIANT_TAB].map(column => column.key )
+
+    //@TODO Genes Tab
+    this.state.columns[GENE_TAB] = cloneDeep(this.columnPreset[GENE_TAB])
+    this.state.visibleColumns[GENE_TAB] = this.columnPreset[GENE_TAB].map(column => column.key )
 
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
       actions.fetchSchema();
     }
-    props.actions.searchVariants(patient.details.id, [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
-    this.handleTabChange(VARIANT_TAB)
   }
 
-  /*
-    static getDerivedStateFromProps(nextProps) {
-      const { results } = nextProps;
-      if (!results) {
-          return null;
-      }
-
-      return mapResults(results)
+  componentDidMount() {
+    const { variant } = this.props;
+    const { activeQuery } = variant;
+    this.handleQuerySelection(activeQuery);
   }
 
-   */
+  handleColumnsReordered(reorderedColumns) {
+    const { columns, currentTab } = this.state;
 
+    columns[currentTab] = reorderedColumns
+    this.setState({
+      columns
+    })
+  }
+
+  handlePageChange(next) {
+    const { variant } = this.props;
+    const { activeQuery } = variant;
+
+    this.setState({
+      page: next
+    }, () => {
+      this.handleQuerySelection(activeQuery)
+    })
+  }
+
+  handleSizeChange(current, next) {
+    const { variant } = this.props;
+    const { activeQuery } = variant;
+
+    this.setState({
+      size: next
+    }, () => {
+      this.handleQuerySelection(activeQuery)
+    })
+  }
 
   handleQuerySelection(key) {
     const { actions, variant, patient } = this.props;
-
-    if (!key) {
-      actions.searchVariants(patient.details.id, [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
-    } else {
-      const { draftQueries } = variant;
-      actions.selectQuery(key);
-      actions.searchVariants(patient.details.id, draftQueries, key, 'impact', 0, 25);
-    }
+    const { draftQueries } = variant;
+    actions.selectQuery(key);
+    actions.searchVariants(patient.details.id, draftQueries, key, 'impact', 0, this.state.size);
   }
 
   handleQueryChange(query) {
@@ -180,32 +217,34 @@ class PatientVariantScreen extends React.Component {
 
   handleTabChange(key) {
     this.setState({
-      columns: [],
       currentTab: key,
-      visibleVariant: false,
-      visibleGene: false,
     });
   }
 
-  toggleMenu() {
-    const { visibleVariant, visibleGene, currentTab } = this.state;
-    currentTab === VARIANT_TAB ? this.setState({ visibleVariant: !visibleVariant }) : this.setState({ visibleGene: !visibleGene });
-  }
-
-  handleColumnsVisible(checkedValues) {
+  handleColumnVisibilityChange(checkedValues) {
     const { visibleColumns, currentTab } = this.state;
     visibleColumns[currentTab] = checkedValues
+
     this.setState({
-      columns: [],
       visibleColumns,
     });
   }
 
+  getData() {
+    const { currentTab } = this.state;
+    if (currentTab === VARIANT_TAB) {
+      const { activeQuery, results } = this.props.variant;
+
+      return results[activeQuery]
+    }
+
+    return [];
+  }
+
   render() {
     const { intl, variant, patient } = this.props;
-    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
+    const { facets, schema, activeQuery } = variant;
     const searchData = [];
-
     if (schema.categories) {
         schema.categories.forEach((category) => {
             searchData.push({
@@ -243,35 +282,42 @@ class PatientVariantScreen extends React.Component {
         })
     }
 
+    const { draftQueries, draftHistory, originalQueries, matches } = variant;
     const {
-      columns, variantColumns, geneColumns, size, page, visibleVariant, visibleGene, visibleColumns, currentTab, variantData, geneData
+      size, page, visibleColumns, currentTab, columns,
     } = this.state;
 
-    const columnData = currentTab === VARIANT_TAB ? variantColumns : geneColumns;
-    const columnSelectorIsVisible = currentTab === VARIANT_TAB ? visibleVariant : visibleGene;
-    const defaultVisibleColumns = visibleColumns[currentTab]
-    const count = currentTab === VARIANT_TAB ? variantData.length : geneData.length;
+    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
 
-    //if (count === 0) {
-    //  return null
-    //}
+    if (total === 0) {
+      return null
+    }
 
-    const visibleColumnsSelector = (
-      <Popover visible={columnSelectorIsVisible}>
-        <Card>
-          <Row>
-            <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={defaultVisibleColumns} onChange={this.handleColumnsVisible}>
-              {columnData.map((column , index) => (
-                <Row key={index}>
-                  <Col>
-                    <Checkbox  value={column.key}>{column.key}</Checkbox>
-                  </Col>
-                </Row>
-              ))}
-            </Checkbox.Group>
-          </Row>
-        </Card>
-      </Popover>
+    const columnVisibilitySelector = (
+      <Dropdown key="visibility-selector" overlay={(
+        <Popover>
+          <Card>
+            <Row>
+              <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={visibleColumns[currentTab]} onChange={this.handleColumnVisibilityChange}>
+                {this.columnPreset[currentTab].map(column => {
+                  return (
+                    <Row key={column.key}>
+                      <Col>
+                        <Checkbox value={column.key}>{column.label}</Checkbox>
+                      </Col>
+                    </Row>
+                  )
+                })}
+              </Checkbox.Group>
+            </Row>
+          </Card>
+        </Popover>
+      )} trigger={['hover']}>
+        <Button type="primary">
+          Columns
+          <Icon type="caret-down" />
+        </Button>
+      </Dropdown>
     );
 
     return (
@@ -346,67 +392,62 @@ class PatientVariantScreen extends React.Component {
             <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
               <Row>
                 <Col align="end">
-                  <Dropdown overlay={visibleColumnsSelector} trigger={['click']} visible={visibleVariant}>
-                    <Button type="primary" onClick={this.toggleMenu}>
-                      Column
-                      <Icon type="caret-down" />
-                    </Button>
-                  </Dropdown>
+                  {columnVisibilitySelector}
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col span={24}>
-                  <Table
-                    key="variants-table"
-                    size={0}
-                    total={0}
-                    columns={[]}
+                <Col>
+                  <TableResults
+                    key="variant-results-table"
+                    size={size}
+                    total={total}
+                    columns={columns[VARIANT_TAB].filter(column => visibleColumns[VARIANT_TAB].indexOf(column.key) !== -1 )}
+                    reorderColumnsCallback={this.handleColumnsReordered}
                   />
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col align="end" span={24}>
+                <Col align="end">
                   <TablePagination
-                    key="variants-pagination"
-                    total={0}
-                    page={1}
-                    size={25}
+                    size={size}
+                    total={total}
+                    page={page}
+                    pageChangeCallback={this.handlePageChange}
+                    sizeChangeCallback={this.handleSizeChange}
                   />
                 </Col>
               </Row>
             </Tabs.TabPane>
-            <Tabs.TabPane tab="Genes" key={GENE_TAB}>
+            <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
               <Row>
                 <Col align="end">
-                  <Dropdown overlay={visibleColumnsSelector} trigger={['click']} visible={visibleGene}>
-                    <Button type="primary" onClick={this.toggleMenu}>
-                      Column
-                      <Icon type="caret-down" />
-                    </Button>
-                  </Dropdown>
+                  {columnVisibilitySelector}
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col span={24}>
-                  <Table
-                    key="genes-table"
-                    size={0}
-                    total={0}
-                    columns={[]}
+                <Col>
+                  <TableResults
+                    key="gene-results-table"
+                    size={size}
+                    total={total}
+                    columns={columns[GENE_TAB].filter(column => visibleColumns[GENE_TAB].indexOf(column.key) !== -1 )}
+                    reorderColumnsCallback={this.handleColumnsReordered}
                   />
                 </Col>
               </Row>
               <br />
               <Row>
-                <Col align="end" span={24}>
+                <Col align="end">
                   <TablePagination
-                    key="genes-pagination"
-                    total={0}
-                    page={1}
-                    size={25}
+                    key="gene-results-pagination"
+                    size={size}
+                    total={total}
+                    page={page}
+                    pageChangeCallback={this.handlePageChange}
+                    sizeChangeCallback={this.handleSizeChange}
                   />
                 </Col>
               </Row>
