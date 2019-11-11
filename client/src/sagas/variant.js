@@ -3,6 +3,7 @@ import {
 } from 'redux-saga/effects';
 import { find } from 'lodash';
 
+
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 
@@ -46,19 +47,8 @@ function* undo() {
   const { activeQuery, draftQueries } = yield select(state => state.variant);
   const { details } = yield select(state => state.patient);
   const query = find(draftQueries, { key: activeQuery });
-  const type = 'PATIENT_VARIANT_SEARCH_REQUESTED';
 
-  if (!query) {
-    const payload = {
-      patient: details.id,
-      statement: [{ key: 'aggs', instructions: [] }],
-      query: 'aggs',
-      group: 'impact',
-      index: 0,
-      limit: 1,
-    };
-    yield put({ type, payload });
-  } else {
+  if (query) {
     const payload = {
       patient: details.id,
       statement: draftQueries,
@@ -67,7 +57,7 @@ function* undo() {
       index: 0,
       limit: 25,
     };
-    yield put({ type, payload });
+    yield put({ type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload });
   }
 }
 

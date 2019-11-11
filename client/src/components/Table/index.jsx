@@ -40,7 +40,7 @@ TableFooter.defaultProps = {
 };
 
 
-export const createCellRenderer = (key, type, getData, options = {}) => {
+export const createCellRenderer = (type, getData, options = {}) => {
   let valueRenderer = null;
   switch (type) {
     default:
@@ -91,7 +91,7 @@ export const createCellRenderer = (key, type, getData, options = {}) => {
   return (row) => {
     try {
       const dataSet = getData();
-      const value = dataSet[row] ? dataSet[row][key] ? dataSet[row][key] : cloneDeep(dataSet[row]) : '';
+      const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : '';
 
       return (
         <Cell>{valueRenderer(value)}</Cell>
@@ -156,7 +156,7 @@ TableBody.defaultProps = {
   size: 0,
   total: 0,
   columns: [],
-  renderMode: RenderMode.BATCH_ON_UPDATE,
+  renderMode: RenderMode.NONE,
   enableGhostCells: true,
   enableReordering: true,
   enableResizing: true,
