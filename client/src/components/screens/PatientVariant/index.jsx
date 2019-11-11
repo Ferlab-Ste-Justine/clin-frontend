@@ -88,18 +88,13 @@ class PatientVariantScreen extends React.Component {
     this.handleTabChange(VARIANT_TAB)
   }
 
-  handleColumnsReordered(oldIndex, newIndex, length) {
-      const { columns, currentTab } = this.state;
-      if (oldIndex === newIndex) {
-        return;
-      }
+  handleColumnsReordered(reorderedColumns) {
+    const { columns, currentTab } = this.state;
 
-      const reorderedColumns = Utils.reorderArray(columns[currentTab], oldIndex, newIndex, length)
-      columns[currentTab] = reorderedColumns
-
-      this.setState({
-        columns
-      })
+    columns[currentTab] = reorderedColumns
+    this.setState({
+      columns
+    })
   }
 
   handleQuerySelection(key) {
