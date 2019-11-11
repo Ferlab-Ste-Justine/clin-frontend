@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Table, Cell, RenderMode, Utils, Column,
+  Table, Cell, RenderMode, Column,
 } from '@blueprintjs/table';
 import {
   Badge, Button, Typography,
@@ -107,15 +107,6 @@ const TableBody = (props) => {
     columns, size, total, renderMode, enableGhostCells, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback,
   } = props;
 
-  const handleColumnsReordered = (oldIndex, newIndex, length) => {
-    if (oldIndex === newIndex) {
-      return;
-    }
-
-    const reorderedColumns = Utils.reorderArray(columns, oldIndex, newIndex, length);
-    reorderColumnsCallback(reorderedColumns);
-  };
-
   return (
     <>
       <TableHeader />
@@ -126,11 +117,10 @@ const TableBody = (props) => {
         enableColumnResizing={enableResizing}
         enableGhostCells={enableGhostCells}
         bodyContextMenuRenderer={renderContextMenu}
-        onColumnsReordered={handleColumnsReordered}
+        onColumnsReordered={reorderColumnsCallback}
       >
-        { columns.map((column, index) => (
+        { columns.map(column => (
           <Column
-            key={index}
             name={column.label}
             cellRenderer={column.renderer}
           />
