@@ -129,6 +129,7 @@ const TableBody = (props) => {
       >
         { columns.map(column => (
           <Column
+            key={column.key}
             name={column.label}
             cellRenderer={column.renderer}
           />

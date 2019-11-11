@@ -7,7 +7,7 @@ import './style.scss';
 
 const TablePagination = (props) => {
   const {
-    total, page, defaultPage, size, defaultSize, sizeOptions, canChangeSize, isDisabled, handlePageChange, handleSizeChange,
+    total, page, defaultPage, size, defaultSize, sizeOptions, canChangeSize, isDisabled, pageChangeCallback, sizeChangeCallback,
   } = props;
 
   return (
@@ -20,8 +20,8 @@ const TablePagination = (props) => {
       pageSizeOptions={sizeOptions}
       showSizeChanger={canChangeSize}
       disabled={isDisabled}
-      onChange={handlePageChange}
-      onShowSizeChange={handleSizeChange}
+      onChange={pageChangeCallback}
+      onShowSizeChange={sizeChangeCallback}
     />
   );
 };
@@ -35,8 +35,8 @@ TablePagination.propTypes = {
   sizeOptions: PropTypes.shape([]),
   isDisabled: PropTypes.bool,
   canChangeSize: PropTypes.bool,
-  handlePageChange: PropTypes.func,
-  handleSizeChange: PropTypes.func,
+  pageChangeCallback: PropTypes.func,
+  sizeChangeCallback: PropTypes.func,
 };
 
 TablePagination.defaultProps = {
@@ -48,8 +48,8 @@ TablePagination.defaultProps = {
   sizeOptions: [25, 50, 100, 250, 500, 1000],
   canChangeSize: true,
   isDisabled: false,
-  handlePageChange: () => {},
-  handleSizeChange: () => {},
+  pageChangeCallback: () => {},
+  sizeChangeCallback: () => {},
 };
 
 export default TablePagination;
