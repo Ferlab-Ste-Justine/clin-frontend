@@ -2,10 +2,7 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import { cloneDeep, isEqual, findIndex, last } from 'lodash';
-<<<<<<< HEAD
-=======
 import uuidv1 from 'uuid/v1';
->>>>>>> fd74b09b41786605bc375c32c2b0be0ba56dfdc6
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
@@ -24,10 +21,7 @@ export const initialVariantState = {
   facets: {},
 };
 
-<<<<<<< HEAD
-=======
 // @TODO
->>>>>>> fd74b09b41786605bc375c32c2b0be0ba56dfdc6
 export const variantShape = {
   schema: PropTypes.shape({}),
   activePatient: PropTypes.String,
@@ -56,11 +50,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_FETCH_SUCCEEDED:
       const details = normalizePatientDetails(action.payload.data);
       draft.activePatient = details.id;
-<<<<<<< HEAD
-      let queryKey = 'aggs';
-=======
       let queryKey = uuidv1();
->>>>>>> fd74b09b41786605bc375c32c2b0be0ba56dfdc6
       draft.originalQueries = [{
         key: queryKey,
         instructions: [],

@@ -440,7 +440,6 @@ class PatientSearchScreen extends React.Component {
               </Button>
             </Col>
           </Row>
-<<<<<<< HEAD
           <Row >
             <Card bordered={false} className="tablePatient">
               <Row type="flex" justify="end" className="controls">

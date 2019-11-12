@@ -1,12 +1,11 @@
+/* eslint-disable */
+
 import {
   all, put, takeLatest, select,
 } from 'redux-saga/effects';
 import { find } from 'lodash';
 
-<<<<<<< HEAD
-=======
 
->>>>>>> fd74b09b41786605bc375c32c2b0be0ba56dfdc6
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 
@@ -48,42 +47,19 @@ function* searchVariantsForPatient(action) {
 
 function* undo() {
   const { activeQuery, draftQueries } = yield select(state => state.variant);
-<<<<<<< HEAD
-  const query = find(draftQueries, { key: activeQuery });
-  const type = 'PATIENT_VARIANT_SEARCH_REQUESTED';
-
-  if (!query) {
-    const payload = {
-      patient: 'PA00002',
-      statement: [{ key: 'aggs', instructions: [] }],
-      query: 'aggs',
-      group: 'impact',
-      index: 0,
-      limit: 1,
-    };
-    yield put({ type, payload });
-  } else {
-    const payload = {
-      patient: 'PA00002',
-=======
   const { details } = yield select(state => state.patient);
   const query = find(draftQueries, { key: activeQuery });
 
   if (query) {
     const payload = {
       patient: details.id,
->>>>>>> fd74b09b41786605bc375c32c2b0be0ba56dfdc6
       statement: draftQueries,
       query: query.key,
       group: 'impact',
       index: 0,
       limit: 25,
     };
-<<<<<<< HEAD
-    yield put({ type, payload });
-=======
     yield put({ type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload });
->>>>>>> fd74b09b41786605bc375c32c2b0be0ba56dfdc6
   }
 }
 
