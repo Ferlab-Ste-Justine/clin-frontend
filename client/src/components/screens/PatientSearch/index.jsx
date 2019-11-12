@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button, Dropdown,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button, Dropdown,Popover, Checkbox
 } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode,
@@ -13,7 +13,8 @@ import {
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
 import IconKit from 'react-icons-kit';
-import { ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download } from 'react-icons-kit/md';
+import { ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search } from 'react-icons-kit/md';
+import { cloneDeep, filter, pullAllBy } from 'lodash';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -45,11 +46,13 @@ class PatientSearchScreen extends React.Component {
     super(props);
     this.state = {
       autoCompleteIsOpen: false,
-      columns: [],
+      allColumns: [],
+      visibleColumns:[],
       data: [],
       size: 25,
       page: 1,
       isReordering:false,
+      columnName: [],
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -61,67 +64,75 @@ class PatientSearchScreen extends React.Component {
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.exportToTsv = this.exportToTsv.bind(this);
     this.handleReordering = this.handleReordering.bind(this)
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
+    this.handleColumnsViewChange= this.handleColumnsViewChange.bind(this)
 
     // @NOTE Initialize Component State
     const { intl } = props;
-    this.state.columns = [
+    this.state.allColumns = [
       <Column
         className={style.test}
-        key="1"
+        key="0"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
         cellRenderer={this.getCellRenderer('status', 'status-tag')}
       />,
       <Column
-        key="2"
+        key="1"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
         cellRenderer={this.getCellRenderer('id', 'patient-link')}
       />,
       <Column
-        key="3"
+        key="2"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.mrn' })}
         cellRenderer={this.getCellRenderer('mrn')}
       />,
       <Column
-        key="4"
+        key="3"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.organization' })}
         cellRenderer={this.getCellRenderer('organization')}
       />,
       <Column
-        key="5"
+        key="4"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
         cellRenderer={this.getCellRenderer('firstName', 'bold-string')}
       />,
       <Column
-        key="6"
+        key="5"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
         cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
       />,
       <Column
-        key="7"
+        key="6"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
         cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
       />,
       <Column
-        key="8"
+        key="7"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.familyId' })}
         cellRenderer={this.getCellRenderer('familyId')}
       />,
       <Column
-        key="9"
+        key="8"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.position' })}
         cellRenderer={this.getCellRenderer('proband')}
       />,
       <Column
-        key="10"
+        key="9"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' })}
         cellRenderer={this.getCellRenderer('practitioner')}
       />,
       <Column
-        key="11"
+        key="10"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
         cellRenderer={this.getCellRenderer('request')}
       />,
     ];
+
+    this.state.allColumns.map((column) => {
+        this.state.columnName.push(column.props.name)
+    })
+
+    this.state.visibleColumns= cloneDeep(this.state.allColumns)
   }
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -197,7 +208,6 @@ class PatientSearchScreen extends React.Component {
         return (row) => {
           const { data } = this.state;
           const value = data[row] ? data[row][key] : '';
-          console.log("value", value)
           return (
             <Cell>
               <Row type="flex" align="middle">
@@ -291,9 +301,12 @@ class PatientSearchScreen extends React.Component {
     if (oldIndex === newIndex) {
       return;
     }
-    const { columns } = this.state;
-    const nextChildren = Utils.reorderArray(columns, oldIndex, newIndex, length);
-    this.setState({ columns: nextChildren });
+    const { visibleColumns, allColumns } = this.state;
+    const nextChildren = Utils.reorderArray(visibleColumns, oldIndex, newIndex, length);
+    const nextChildren2 = Utils.reorderArray(allColumns, oldIndex, newIndex, length);
+    this.setState({ visibleColumns: nextChildren,
+                    allColumns:nextChildren2
+     });
   }
 
   handlePageChange(page, size) {
@@ -315,12 +328,44 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange(page, size);
   }
 
+    handleSearchByQuery(value){
+        let {allColumns, columnName} = this.state;
+        columnName= []
+        allColumns.map((column) => {
+            columnName.push(column.props.name)
+        })
+
+        const search = value.target.value.toLowerCase()
+        const finalResult = columnName.filter(name => name.toLowerCase().startsWith(search))
+
+        this.setState({
+          columnName: finalResult,
+        });
+
+    }
+
+  handleColumnsViewChange(checkedValues){
+    let {
+      visibleColumns, allColumns, columnName
+    } = this.state;
+      let uncheckedColumn =[]
+      columnName.map(name => !checkedValues.includes(name)? uncheckedColumn.push(name) : null)
+      const toRemove=filter(allColumns, (column) =>uncheckedColumn.includes(column.props.name));
+      visibleColumns=cloneDeep(allColumns)
+      pullAllBy(visibleColumns, toRemove, "key");
+
+   this.setState({
+     visibleColumns,
+   });
+
+  }
+
   render() {
     const { intl, search } = this.props;
     const { patient } = search;
     const { total } = patient;
     const {
-      columns, autoCompleteIsOpen, size, page, isReordering
+      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName , visibleColumns
     } = this.state;
     const { Title } = Typography;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
@@ -328,21 +373,31 @@ class PatientSearchScreen extends React.Component {
     const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
     const current = ((page - 1) * size) + 1;
     const pageTotal = size * page;
-
-    const menu = (
-      <Menu>
-        { columns.map(column => {
-            console.log("allo", column.props.name)
-            return(
-            <Menu.Item>
-                {column.props.name}
-            </Menu.Item>
-            )
-        }) }
-      </Menu>
+    const cardInputTitle=(
+        <Input
+         placeholder="Rechercher..."
+         suffix={<IconKit size={16} icon={ic_search}/>}
+         onChange={this.handleSearchByQuery}
+        />
+    )
+    const overlay = (
+        <Popover visible={true} >
+          <Card title={cardInputTitle} className="columnFilter">
+            <Row>
+              <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange}>
+                {columnName.map((name , index) => (
+                  <Row key={index}>
+                    <Col>
+                      <Checkbox  value={name}>{name}</Checkbox>
+                    </Col>
+                  </Row>
+                ))}
+              </Checkbox.Group>
+            </Row>
+          </Card>
+        </Popover>
     );
 
-    console.log("columns", columns)
 
     return (
       <Content>
@@ -398,7 +453,7 @@ class PatientSearchScreen extends React.Component {
                   </Button>
                 </Col>
                <Col>
-                  <Dropdown overlay={menu} trigger="click">
+                  <Dropdown overlay={overlay} trigger="click" visible={true} placement="bottomRight">
                       <Button
                         onClick={this.handleReordering}
                         className={`${style.btn} ${style.btnSec}`}
@@ -430,7 +485,7 @@ class PatientSearchScreen extends React.Component {
                     enableGhostCells
                     className="patientTable"
                   >
-                    { columns.map(column => (column)) }
+                    { visibleColumns.map(column => (column)) }
                   </Table>
                 </Col>
               </Row>

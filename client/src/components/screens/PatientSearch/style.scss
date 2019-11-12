@@ -102,6 +102,26 @@ div.ant-tag {
 
     }
 }
+.columnFilter{
+      .ant-checkbox-wrapper{
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between
+      }
+      .ant-checkbox-group{
+        width:100%
+      }
+
+      .ant-checkbox-checked .ant-checkbox-inner{
+        background-color:#1d8bc6;
+        border:1px solid #1d8bc6;
+      }
+
+      .ant-checkbox-inner{
+        border:1px solid rgba(35, 55, 80, 0.54);
+      }
+}
+
 
 .bp3-table-container, .bp3-table-column-headers .bp3-table-header , .bp3-table-row-headers .bp3-table-header, .bp3-table-cell, .bp3-table-menu{
     box-shadow:none;
