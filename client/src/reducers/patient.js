@@ -46,6 +46,7 @@ export const initialPatientState = {
   indications: [],
 };
 
+// @TODO
 export const patientShape = {
   details: PropTypes.shape({}),
   family: PropTypes.shape({}),

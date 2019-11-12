@@ -111,6 +111,7 @@ class Filter extends React.Component {
     }
   }
 
+  // @NOTE Refactor this; logic should be moved within the class for the selected filter type
   handleApply() {
     if (this.isEditable()) {
       const { editor, onEditCallback, data, type, index } = this.props;
@@ -119,6 +120,12 @@ class Filter extends React.Component {
       if (type === FILTER_TYPE_GENERIC) {
         instruction.values = editor.props.children[4].props.children.props.children.props.value;
         instruction.operand = editor.props.children[0].props.children.props.children.props.value;
+        if (instruction.values.length === 0) {
+          this.handleClose(true);
+        }
+      } else if (type === FILTER_TYPE_SPECIFIC) {
+        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
+        instruction.values = editor.props.children[3].props.children.props.children.props.value;
         if (instruction.values.length === 0) {
           this.handleClose(true);
         }

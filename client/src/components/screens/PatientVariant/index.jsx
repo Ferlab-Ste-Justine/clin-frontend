@@ -6,15 +6,17 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Descriptions, Typography, PageHeader,
+  Card, Descriptions, Typography, PageHeader, Tabs, Row, Col, Dropdown, Button, Popover, Checkbox, Icon
 } from 'antd';
+import { cloneDeep, find } from 'lodash';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
+import TableResults, { createCellRenderer } from '../../Table/index';
+import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
-import VariantResultsTable from './components/VariantResultsTable';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
@@ -23,10 +25,29 @@ import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
 
+const VARIANT_TAB = 'VARIANTS'
+const GENE_TAB = 'GENES'
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.columnPreset = {
+      [VARIANT_TAB]: [],
+      [GENE_TAB]: []
+    };
+    this.state = {
+      currentTab: null,
+      columns: {
+        [VARIANT_TAB]: [],
+        [GENE_TAB]: []
+      },
+      visibleColumns: {
+        [VARIANT_TAB]: [],
+        [GENE_TAB]: []
+      },
+      page: 1,
+      size: 25,
+    };
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
     this.handleQueriesChange = this.handleQueriesChange.bind(this);
@@ -35,36 +56,112 @@ class PatientVariantScreen extends React.Component {
     this.handleStatementSort = this.handleStatementSort.bind(this);
     this.handleCommitHistory = this.handleCommitHistory.bind(this);
     this.handleDraftHistoryUndo = this.handleDraftHistoryUndo.bind(this);
+    this.handleTabChange = this.handleTabChange.bind(this);
+    this.handleColumnVisibilityChange = this.handleColumnVisibilityChange.bind(this);
+    this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
+    this.handleSizeChange = this.handleSizeChange.bind(this);
+    this.getData = this.getData.bind(this);
+
+    this.columnPreset[VARIANT_TAB] = [
+      { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
+      { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
+      { key: 'gene', label: 'Gene Symbol', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.genes[0].geneSymbol } catch (e) { return ''; } }
+      })},
+      { key: 'aachanges', label: 'AA Change(s)', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].aaChange } catch (e) { return ''; } }
+      })},
+      { key: 'consequences', label: 'Consequence(s)', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].consequence } catch (e) { return ''; } }
+      })},
+      { key: 'clinvar', label: 'ClinVar', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.clinvar.clinvar_clinsig } catch (e) { return ''; } }
+      })},
+      { key: 'dbsnp', label: 'DbSnp', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.bdExt.dbSNP[0] } catch (e) { return ''; } }
+      })},
+      { key: 'pubmed', label: 'Pubmed', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed) } catch (e) { return ''; } }
+      })},
+      { key: 'sift', label: 'SIFT', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].predictions.SIFT } catch (e) { return ''; } }
+      })},
+      { key: 'polyphenhvar', label: 'Polyphen2 HVAR', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred } catch (e) { return ''; } }
+      })},
+      { key: 'phylop', label: 'PhyloP', renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way } catch (e) { return ''; } }
+      })},
+    ];
+    this.columnPreset[GENE_TAB] = [];
 
     // @NOTE Initialize Component State
     const { actions, variant } = props;
     const { schema } = variant;
+
+    this.state.currentTab = VARIANT_TAB
+    this.state.columns[VARIANT_TAB] = cloneDeep(this.columnPreset[VARIANT_TAB])
+    this.state.visibleColumns[VARIANT_TAB] = this.columnPreset[VARIANT_TAB].map(column => column.key )
+
+    //@TODO Genes Tab
+    this.state.columns[GENE_TAB] = cloneDeep(this.columnPreset[GENE_TAB])
+    this.state.visibleColumns[GENE_TAB] = this.columnPreset[GENE_TAB].map(column => column.key )
+
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
       actions.fetchSchema();
     }
+  }
 
-    //@NOTE PA00002 currently is the only patient with indexed data.
-    props.actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
+  componentDidMount() {
+    const { variant } = this.props;
+    const { activeQuery } = variant;
+    this.handleQuerySelection(activeQuery);
+  }
+
+  handleColumnsReordered(reorderedColumns) {
+    const { columns, currentTab } = this.state;
+
+    columns[currentTab] = reorderedColumns
+    this.setState({
+      columns
+    })
+  }
+
+  handlePageChange(next) {
+    const { variant } = this.props;
+    const { activeQuery } = variant;
+
+    this.setState({
+      page: next
+    }, () => {
+      this.handleQuerySelection(activeQuery)
+    })
+  }
+
+  handleSizeChange(current, next) {
+    const { variant } = this.props;
+    const { activeQuery } = variant;
+
+    this.setState({
+      size: next
+    }, () => {
+      this.handleQuerySelection(activeQuery)
+    })
   }
 
   handleQuerySelection(key) {
-    const { actions, variant } = this.props;
-    //@NOTE PA00002 currently is the only patient with indexed data.
-    if (!key) {
-      actions.searchVariants('PA00002', [{key:'aggs', instructions:[]}], 'aggs', 'impact', 0, 1);
-    } else {
-      const { draftQueries } = variant;
-      actions.selectQuery(key);
-      actions.searchVariants('PA00002', draftQueries, key, 'impact', 0, 25);
-    }
+    const { actions, variant, patient } = this.props;
+    const { draftQueries } = variant;
+    actions.selectQuery(key);
+    actions.searchVariants(patient.details.id, draftQueries, key, 'impact', 0, this.state.size);
   }
 
   handleQueryChange(query) {
     const { actions } = this.props;
-    this.handleCommitHistory();
     actions.replaceQuery(query.data || query);
-
+    this.handleCommitHistory();
     setTimeout(() => {
       this.handleQuerySelection(query.key || query.data.key);
     }, 100)
@@ -116,11 +213,36 @@ class PatientVariantScreen extends React.Component {
     actions.undo();
   }
 
-  render() {
-    const { intl, variant } = this.props;
-    const { draftQueries, draftHistory, originalQueries, facets, results, matches, schema, activeQuery } = variant;
-    const searchData = [];
+  handleTabChange(key) {
+    this.setState({
+      currentTab: key,
+    });
+  }
 
+  handleColumnVisibilityChange(checkedValues) {
+    const { visibleColumns, currentTab } = this.state;
+    visibleColumns[currentTab] = checkedValues
+
+    this.setState({
+      visibleColumns,
+    });
+  }
+
+  getData() {
+    const { currentTab } = this.state;
+    if (currentTab === VARIANT_TAB) {
+      const { activeQuery, results } = this.props.variant;
+
+      return results[activeQuery]
+    }
+
+    return [];
+  }
+
+  render() {
+    const { intl, variant, patient } = this.props;
+    const { facets, schema, activeQuery } = variant;
+    const searchData = [];
     if (schema.categories) {
         schema.categories.forEach((category) => {
             searchData.push({
@@ -158,6 +280,44 @@ class PatientVariantScreen extends React.Component {
         })
     }
 
+    const { draftQueries, draftHistory, originalQueries, matches } = variant;
+    const {
+      size, page, visibleColumns, currentTab, columns,
+    } = this.state;
+
+    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
+
+    if (total === 0) {
+      return null
+    }
+
+    const columnVisibilitySelector = (
+      <Dropdown key="visibility-selector" overlay={(
+        <Popover>
+          <Card>
+            <Row>
+              <Checkbox.Group className="checkbox" style={{ width: '100%' }} defaultValue={visibleColumns[currentTab]} onChange={this.handleColumnVisibilityChange}>
+                {this.columnPreset[currentTab].map(column => {
+                  return (
+                    <Row key={column.key}>
+                      <Col>
+                        <Checkbox value={column.key}>{column.label}</Checkbox>
+                      </Col>
+                    </Row>
+                  )
+                })}
+              </Checkbox.Group>
+            </Row>
+          </Card>
+        </Popover>
+      )} trigger={['hover']}>
+        <Button type="primary">
+          Columns
+          <Icon type="caret-down" />
+        </Button>
+      </Dropdown>
+    );
+
     return (
       <Content>
         <Header />
@@ -172,7 +332,6 @@ class PatientVariantScreen extends React.Component {
                   </div>
               )}
           />
-
             <Descriptions title="Patient [PT93993], Masculin, Proband, Affecté" layout="horizontal" column={1}>
                 <Descriptions.Item label="Famille">[FA09383], Mère: [PT3983883] (Non affecté), Père: [PT4736] (Non affecté)</Descriptions.Item>
                 <Descriptions.Item label="Signes">Epilepsie ([HP93993]), Schizophrénie ([HP2772])</Descriptions.Item>
@@ -184,6 +343,7 @@ class PatientVariantScreen extends React.Component {
                 className="variant-navigation"
                 intl={intl}
                 schema={schema}
+                patient={patient}
                 queries={draftQueries}
                 activeQuery={activeQuery}
                 data={facets[activeQuery] || {}}
@@ -201,6 +361,7 @@ class PatientVariantScreen extends React.Component {
               intl={intl}
               matches={matches}
               facets={facets}
+              target={patient}
               categories={schema.categories}
               options={{
                   copyable: true,
@@ -222,14 +383,75 @@ class PatientVariantScreen extends React.Component {
               onDuplicateCallback={this.handleQueryDuplication}
               onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
               searchData={searchData}
+              externalData={patient}
             />
             <br/>
-            <br />
-            <VariantResultsTable
-                key="variant-results"
-                intl={intl}
-                results={results[activeQuery] || []}
-            />
+            <br/>
+          <Tabs key="patient-variants-tabs" type="card" onChange={this.handleTabChange}>
+            <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
+              <Row>
+                <Col align="end">
+                  {columnVisibilitySelector}
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col>
+                  <TableResults
+                    key="variant-results-table"
+                    size={size}
+                    total={total}
+                    columns={columns[VARIANT_TAB].filter(column => visibleColumns[VARIANT_TAB].indexOf(column.key) !== -1 )}
+                    reorderColumnsCallback={this.handleColumnsReordered}
+                  />
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col align="end">
+                  <TablePagination
+                    size={size}
+                    total={total}
+                    page={page}
+                    pageChangeCallback={this.handlePageChange}
+                    sizeChangeCallback={this.handleSizeChange}
+                  />
+                </Col>
+              </Row>
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
+              <Row>
+                <Col align="end">
+                  {columnVisibilitySelector}
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col>
+                  <TableResults
+                    key="gene-results-table"
+                    size={size}
+                    total={total}
+                    columns={columns[GENE_TAB].filter(column => visibleColumns[GENE_TAB].indexOf(column.key) !== -1 )}
+                    reorderColumnsCallback={this.handleColumnsReordered}
+                  />
+                </Col>
+              </Row>
+              <br />
+              <Row>
+                <Col align="end">
+                  <TablePagination
+                    key="gene-results-pagination"
+                    size={size}
+                    total={total}
+                    page={page}
+                    pageChangeCallback={this.handlePageChange}
+                    sizeChangeCallback={this.handleSizeChange}
+                  />
+                </Col>
+              </Row>
+            </Tabs.TabPane>
+          </Tabs>
         </Card>
         <Footer />
       </Content>

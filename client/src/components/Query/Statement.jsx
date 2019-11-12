@@ -14,7 +14,7 @@ import IconKit from 'react-icons-kit';
 import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
-import Query, { DEFAULT_EMPTY_QUERY } from './index';
+import Query from './index';
 import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
 } from './Subquery';
@@ -372,7 +372,7 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { activeQuery, data, options, intl, facets, matches, categories, draftHistory, searchData } = this.props;
+    const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory, searchData, target } = this.props;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -426,6 +426,7 @@ class Statement extends React.Component {
             results={(matches[query.key] ? matches[query.key] : 0)}
             intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
+            target={target}
             categories= {categories}
             onCopyCallback={this.handleCopy}
             onEditCallback={this.handleEdit}
@@ -437,6 +438,7 @@ class Statement extends React.Component {
             onClickCallback={this.handleClick}
             findQueryIndexForKey={this.findQueryIndexForKey}
             searchData={searchData}
+            externalData={externalData}
           />
         </div>
       )];
@@ -521,8 +523,10 @@ class Statement extends React.Component {
 Statement.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
+  externalData: PropTypes.shape({}),
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  target: PropTypes.shape({}),
   onSelectCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onSortCallback: PropTypes.func,
@@ -545,6 +549,9 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
+
+  target: {},
+  externalData: {},
   onSelectCallback: () => {},
   onEditCallback: () => {},
   onBatchEditCallback: () => {},

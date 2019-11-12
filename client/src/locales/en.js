@@ -197,6 +197,8 @@ const en = {
   'screen.patientvariant.filter.selection.all': 'All',
   'screen.patientvariant.filter.selection.none': 'None',
   'screen.patientvariant.filter.numerical.value': 'Value',
+  'screen.patientvariant.filter.specific.selector.intersection': 'Observed Signs',
+  'screen.patientvariant.filter.specific.selector.difference': 'Not Observed Signs',
   'screen.patientvariant.results.table.variant': 'Variant',
   'screen.patientvariant.results.table.type': 'Type',
   'screen.patientvariant.results.table.dbsnp': 'dbSnp',
