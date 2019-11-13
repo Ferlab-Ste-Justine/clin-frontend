@@ -13,8 +13,8 @@ import {
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
 import IconKit from 'react-icons-kit';
-import { ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search } from 'react-icons-kit/md';
-import { cloneDeep, filter, pullAllBy } from 'lodash';
+import { ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay } from 'react-icons-kit/md';
+import { cloneDeep, filter, pullAllBy, isEqual, pullAll, find, findIndex } from 'lodash';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -52,6 +52,7 @@ class PatientSearchScreen extends React.Component {
       size: 25,
       page: 1,
       isReordering:false,
+      isColumnsCardOpen:false,
       columnName: [],
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
@@ -66,12 +67,14 @@ class PatientSearchScreen extends React.Component {
     this.handleReordering = this.handleReordering.bind(this)
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
     this.handleColumnsViewChange= this.handleColumnsViewChange.bind(this)
+    this.handleOpenColumnView = this.handleOpenColumnView.bind(this)
+    this.handleRedoViewChange =this.handleRedoViewChange.bind(this)
+    this.getCheckColumns = this.getCheckColumns.bind(this)
 
     // @NOTE Initialize Component State
     const { intl } = props;
     this.state.allColumns = [
       <Column
-        className={style.test}
         key="0"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
         cellRenderer={this.getCellRenderer('status', 'status-tag')}
@@ -344,20 +347,54 @@ class PatientSearchScreen extends React.Component {
 
     }
 
+    handleOpenColumnView(){
+       const {isColumnsCardOpen} = this.state;
+
+       this.setState({
+         isColumnsCardOpen: !isColumnsCardOpen,
+       });
+    }
+
   handleColumnsViewChange(checkedValues){
     let {
       visibleColumns, allColumns, columnName
     } = this.state;
-      let uncheckedColumn =[]
-      columnName.map(name => !checkedValues.includes(name)? uncheckedColumn.push(name) : null)
-      const toRemove=filter(allColumns, (column) =>uncheckedColumn.includes(column.props.name));
-      visibleColumns=cloneDeep(allColumns)
-      pullAllBy(visibleColumns, toRemove, "key");
+
+    const uncheckedColumns = columnName.filter(name => !checkedValues.includes(name))
+    const toRemove=filter(visibleColumns, (column) => uncheckedColumns.includes(column.props.name) );
+    pullAllBy(visibleColumns, toRemove, "key");
+
+    const check = this.getCheckColumns()
+    const toAdd = checkedValues.filter(name => !check.includes(name))
+    const addColumn=find(allColumns, (column) => toAdd.includes(column.props.name) );
+    const index = findIndex(allColumns, addColumn)
+    addColumn ? visibleColumns.splice(index, 0, addColumn): null
 
    this.setState({
      visibleColumns,
    });
+  }
 
+  handleRedoViewChange(){
+      let {visibleColumns, allColumns, columnName} = this.state;
+
+        columnName= []
+        allColumns.map((column) => {
+            columnName.push(column.props.name)
+        })
+
+        visibleColumns = cloneDeep(allColumns)
+      this.setState({
+        visibleColumns,
+        columnName,
+      });
+  }
+
+  getCheckColumns(){
+    const {visibleColumns} = this.state;
+    let check = []
+    visibleColumns.map(column => check.push(column.props.name))
+    return check
   }
 
   render() {
@@ -365,7 +402,7 @@ class PatientSearchScreen extends React.Component {
     const { patient } = search;
     const { total } = patient;
     const {
-      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName , visibleColumns
+      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName , visibleColumns, isColumnsCardOpen
     } = this.state;
     const { Title } = Typography;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
@@ -373,6 +410,8 @@ class PatientSearchScreen extends React.Component {
     const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
     const current = ((page - 1) * size) + 1;
     const pageTotal = size * page;
+    const checkColumns = this.getCheckColumns()
+
     const cardInputTitle=(
         <Input
          placeholder="Rechercher..."
@@ -382,13 +421,23 @@ class PatientSearchScreen extends React.Component {
     )
     const overlay = (
         <Popover visible={true} >
-          <Card title={cardInputTitle} className="columnFilter">
+          <Card title={cardInputTitle} className="columnFilter" bordered={false}>
+            { !isEqual(allColumns,visibleColumns) ? (
+                <Row>
+                    <a className="reinitialiser" onClick={this.handleRedoViewChange}>
+                        Réinitialiser
+                        <IconKit size={16} icon={ic_replay}/>
+                    </a>
+                </Row>
+            ): null
+            }
+
             <Row>
-              <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange}>
+              <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange}  option={columnName} value={checkColumns}>
                 {columnName.map((name , index) => (
                   <Row key={index}>
                     <Col>
-                      <Checkbox  value={name}>{name}</Checkbox>
+                      <Checkbox value={name}>{name}</Checkbox>
                     </Col>
                   </Row>
                 ))}
@@ -453,9 +502,9 @@ class PatientSearchScreen extends React.Component {
                   </Button>
                 </Col>
                <Col>
-                  <Dropdown overlay={overlay} trigger="click" visible={true} placement="bottomRight">
+                  <Dropdown overlay={overlay} trigger="click" visible={isColumnsCardOpen} placement="bottomRight">
                       <Button
-                        onClick={this.handleReordering}
+                        onClick={this.handleOpenColumnView}
                         className={`${style.btn} ${style.btnSec}`}
                       >
                         <IconKit size={16} icon={ic_view_column} />
