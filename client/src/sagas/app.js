@@ -11,12 +11,11 @@ function* loadApp() {
   try {
     yield put({ type: actions.APP_FETCH_SUCCEEDED });
     yield put({ type: actions.APP_CHANGE_LANGUAGE_REQUESTED, payload: { language: 'fr' } });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.APP_FETCH_FAILED, message: e.message });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* changeLanguage(action) {

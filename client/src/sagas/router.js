@@ -12,11 +12,10 @@ function* navigate(action) {
     yield put(push(location));
     window.scrollTo(0, 0);
     yield put({ type: actions.ROUTER_NAVIGATION_SUCCEEDED });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.ROUTER_NAVIGATION_FAILED, message: e.message });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToPatientScreen(action) {
@@ -30,11 +29,10 @@ function* navigateToPatientScreen(action) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
     LocalStore.write(LocalStore.keys.lastScreen, 'patient');
     LocalStore.write(LocalStore.keys.lastScreenState, action.payload);
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED, message: e.message });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToPatientVariantScreen(action) {
@@ -47,11 +45,10 @@ function* navigateToPatientVariantScreen(action) {
     yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
     LocalStore.write(LocalStore.keys.lastScreen, 'patient/variant');
     LocalStore.write(LocalStore.keys.lastScreenState, action.payload);
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED, message: e.message });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToPatientSearchScreen(action) {
@@ -66,14 +63,14 @@ function* navigateToPatientSearchScreen(action) {
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
     LocalStore.write(LocalStore.keys.lastScreen, 'patient/search');
     LocalStore.write(LocalStore.keys.lastScreenState, null);
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToLastKnownState() {
+  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const screen = LocalStore.read(LocalStore.keys.lastScreen);
     const state = LocalStore.read(LocalStore.keys.lastScreenState);

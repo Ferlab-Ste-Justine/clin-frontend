@@ -45,6 +45,7 @@ function* autoComplete(action) {
 }
 
 function* search(action) {
+  yield put({ type: actions.START_SUBLOADING_ANIMATION });
   try {
     let response = null;
 
@@ -61,6 +62,7 @@ function* search(action) {
     yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
     yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
+  yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
 }
 
 function* watchPatientFetch() {
