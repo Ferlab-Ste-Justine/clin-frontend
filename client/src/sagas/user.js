@@ -7,8 +7,8 @@ import LocalStore from '../helpers/storage/local';
 
 
 function* login(action) {
+  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
-    yield put({ type: actions.START_LOADING_ANIMATION });
     const response = yield Api.login(action.payload.username, action.payload.password);
     if (response.error) {
       throw new ApiError(response.error);
@@ -25,13 +25,13 @@ function* login(action) {
   } catch (e) {
     yield put({ type: actions.USER_LOGIN_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* logout() {
+  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
-    yield put({ type: actions.START_LOADING_ANIMATION });
     LocalStore.remove(LocalStore.keys.lastId);
     LocalStore.remove(LocalStore.keys.lastScreen);
     LocalStore.remove(LocalStore.keys.lastScreenState);
@@ -40,39 +40,36 @@ function* logout() {
       throw new ApiError(response.error);
     }
     yield put({ type: actions.USER_LOGOUT_SUCCEEDED });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.USER_LOGOUT_FAILED, payload: e });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* recover(action) {
+  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
-    yield put({ type: actions.START_LOADING_ANIMATION });
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
     yield put({ type: actions.USER_RECOVERY_SUCCEEDED, payload: action.payload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.USER_RECOVERY_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* fetch(action) {
+  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
-    yield put({ type: actions.START_LOADING_ANIMATION });
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
     yield put({ type: actions.USER_FETCH_SUCCEEDED, payload: action.payload });
     yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.USER_FETCH_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
+  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* watchUserLogin() {
