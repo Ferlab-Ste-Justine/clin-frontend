@@ -17,6 +17,7 @@ import Footer from '../../Footer';
 import TableResults, { createCellRenderer } from '../../Table/index';
 import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
+import Autocompleter, { createTokenizerByKey } from '../../../helpers/autocompleter';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
@@ -282,6 +283,19 @@ class PatientVariantScreen extends React.Component {
         })
     }
 
+    console.log('----')
+    console.log(searchData)
+    /*
+    (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+0: {id: "variant", type: "category", label: "Variants", data: Array(11)}
+1: {id: "genomic", type: "category", label: "Génomique", data: Array(5)}
+2: {id: "prediction", type: "category", label: "Prédictions in-silico", data: Array(4)}
+3: {id: "conservation", type: "category", label: "Conservation", data: Array(0)}
+4: {id: "cohort", type: "category", label: "Cohortes", data: Array(0)}
+5: {id: "zygosity", type: "category", label: "Zygosité et Famille", data: Array(1)}
+6: {id: "metric", type: "category", label: "Métriques", data: Array(0)}
+     */
+    const autocomplete = Autocompleter(searchData, createTokenizerByKey('data'))
     const { draftQueries, draftHistory, originalQueries, matches } = variant;
     const {
       size, page, visibleColumns, currentTab, columns,
@@ -350,6 +364,7 @@ class PatientVariantScreen extends React.Component {
                 data={facets[activeQuery] || {}}
                 onEditCallback={this.handleQueryChange}
                 searchData={searchData}
+                autocomplete={autocomplete}
             />
             <br />
             <br />

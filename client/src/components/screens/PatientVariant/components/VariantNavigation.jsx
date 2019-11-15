@@ -38,6 +38,59 @@ class VariantNavigation extends React.Component {
 
   handleNavigationSearch(query) {
     if (query) {
+
+      const { autocomplete } = this.props
+      const normalizedQuery = query;//.toLowerCase()
+
+      console.log('-----');
+      console.log(autocomplete)
+
+
+      autocomplete.then(engine => {
+
+        console.log(engine)
+        console.log('normalizedQuery ' + normalizedQuery)
+
+        engine.search(normalizedQuery, searchResults => {
+          console.log(searchResults);
+          //this.setState({
+          //  searchResults
+          //})
+        })
+
+
+      })
+
+
+
+      /*
+        console.log('normalizedQuery ' + normalizedQuery)
+
+          autocomplete.engine.search(normalizedQuery, searchResults => {
+            console.log(searchResults);
+            //this.setState({
+            //  searchResults
+            //})
+          })
+*/
+
+
+
+
+/*
+      autocomplete.initialize
+
+        autocomplete.search(normalizedQuery).then(searchResults => {
+
+          console.log(searchResults);
+
+          this.setState({
+            searchResults
+          })
+      })
+*/
+
+      /*
       const { searchData } = this.props
       const normalizedQuery = query.toLowerCase()
       const searchResults = searchData.reduce((accumulator, group) => {
@@ -60,10 +113,16 @@ class VariantNavigation extends React.Component {
 
         return accumulator
       }, [])
-
-      this.setState({
+        this.setState({
         searchResults
       })
+
+
+      */
+
+
+
+
     }
   }
 
