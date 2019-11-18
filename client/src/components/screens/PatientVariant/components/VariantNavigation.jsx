@@ -45,7 +45,6 @@ class VariantNavigation extends React.Component {
       console.log('-----');
       console.log(autocomplete)
 
-
       autocomplete.then(engine => {
 
         console.log(engine)
@@ -57,7 +56,6 @@ class VariantNavigation extends React.Component {
           //  searchResults
           //})
         })
-
 
       })
 

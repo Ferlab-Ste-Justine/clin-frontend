@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { cloneDeep, isEqual, find } from 'lodash';
+import { cloneDeep, isEqual, find, isNull } from 'lodash';
 import {
   Dropdown, Icon, Menu, Input, Divider, Badge,
 } from 'antd';
@@ -128,7 +128,8 @@ class Query extends React.Component {
   replaceInstruction(instruction) {
     const { draft, display, index, onEditCallback } = this.props;
     const newDraft = cloneDeep(draft)
-    const instructionIndex = instruction.index || instruction.data.index
+    const instructionIndex = instruction.index;
+
     newDraft.instructions[instructionIndex] = instruction;
     newDraft.instructions = sanitizeInstructions(newDraft.instructions);
     onEditCallback({
@@ -139,20 +140,17 @@ class Query extends React.Component {
   }
 
   removeInstruction(instruction) {
-    const { draft, display, index, onEditCallback, onRemoveCallback } = this.props;
-    const instructionIndex = instruction.index;
+    const { draft, display, index, onEditCallback } = this.props;
     const newDraft = cloneDeep(draft)
+    const instructionIndex = instruction.index;
+
     newDraft.instructions.splice(instructionIndex, 1);
     newDraft.instructions = sanitizeInstructions(newDraft.instructions);
-    if (newDraft.instructions.length > 0) {
-      onEditCallback({
-        data: newDraft,
-        display,
-        index
-      });
-    } else {
-      onRemoveCallback(this.serialize());
-    }
+    onEditCallback({
+      data: newDraft,
+      display,
+      index
+    });
   }
 
   handleFilterRemoval(filter) {
@@ -172,7 +170,7 @@ class Query extends React.Component {
       type: INSTRUCTION_TYPE_FILTER,
       data: filter
     };
-    if (filter.index !== undefined) {
+    if (!isNull(filter.index)) {
       instruction.index = filter.index
       this.replaceInstruction(instruction);
     } else {
@@ -683,7 +681,6 @@ Query.defaultProps = {
     duplicatable: true,
     editable: true,
     removable: true,
-    selectable: false,
     undoable: true,
   },
   active: false,
