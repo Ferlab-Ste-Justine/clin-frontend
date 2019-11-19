@@ -17,7 +17,7 @@ import Footer from '../../Footer';
 import TableResults, { createCellRenderer } from '../../Table/index';
 import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
-import Autocompleter, { createTokenizer } from '../../../helpers/autocompleter';
+import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
 
 import './style.scss';
 import { appShape } from '../../../reducers/app';
@@ -352,7 +352,34 @@ class PatientVariantScreen extends React.Component {
           })
         })
     }
-    const autocomplete = Autocompleter(searchData, createTokenizer)
+
+    const tokenizedSearchData = searchData.reduce((accumulator, group) => {
+      if (group.data) {
+        group.data.forEach(datum => {
+          if (group.type === 'category') {
+            accumulator.push({
+              id: group.id,
+              type: group.type,
+              label: group.label,
+              value: datum.value,
+            })
+          } else {
+            accumulator.push({
+              id: group.id,
+              type: group.type,
+              label: group.label,
+              value: datum.value,
+              count: datum.count,
+            })
+          }
+        })
+      }
+
+      return accumulator;
+    }, [])
+
+    const searchDataTokenizer = tokenizeObjectByKeys();
+    const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer)
     const columnVisibilitySelector = (
       <Dropdown key="visibility-selector" overlay={(
         <Popover>

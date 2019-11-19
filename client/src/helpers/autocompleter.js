@@ -1,10 +1,12 @@
+import { flatten } from 'lodash';
+
 const Bloodhound = require('bloodhound-js');
 
-export const createTokenizer = (datum) => {
-  const categoryTokens = [datum.label];
-  const subCategoryTokens = datum.data.map(dataDatum => dataDatum.value);
+export const tokenizeObjectByKeys = (keys = ['label', 'value']) => (datum) => {
+  const tokens = [];
+  keys.forEach(key => tokens.push(Bloodhound.tokenizers.whitespace(datum[key])));
 
-  return Bloodhound.tokenizers.whitespace(categoryTokens.concat(subCategoryTokens));
+  return flatten(tokens);
 };
 
 const Autocompleter = async (dataset, datumTokenizer = Bloodhound.tokenizers.whitespace, queryTokenizer = Bloodhound.tokenizers.whitespace) => {
