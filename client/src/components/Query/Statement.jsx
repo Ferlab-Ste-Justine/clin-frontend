@@ -549,6 +549,7 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
+
   target: {},
   externalData: {},
   onSelectCallback: () => {},

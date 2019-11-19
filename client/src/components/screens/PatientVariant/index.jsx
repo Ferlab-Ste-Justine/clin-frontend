@@ -30,7 +30,6 @@ import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, du
 const VARIANT_TAB = 'VARIANTS'
 const GENE_TAB = 'GENES'
 
-
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -223,7 +222,6 @@ class PatientVariantScreen extends React.Component {
     const { actions } = this.props;
     actions.replaceQuery(query.data || query);
     this.handleCommitHistory();
-
     setTimeout(() => {
       this.handleQuerySelection(query.key || query.data.key);
     }, 100)

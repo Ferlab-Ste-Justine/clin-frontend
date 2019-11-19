@@ -160,7 +160,6 @@ class CompositeFilter extends React.Component {
       </>
     );
   }
-
   render() {
     return (
       <Filter
@@ -175,13 +174,10 @@ class CompositeFilter extends React.Component {
     );
   }
 }
-
 CompositeFilter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
 };
-
 // CompositeFilter.defaultProps = {};
-
 export default CompositeFilter;

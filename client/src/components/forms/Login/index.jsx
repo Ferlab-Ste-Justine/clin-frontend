@@ -8,6 +8,8 @@ import { injectIntl } from 'react-intl';
 import IconKit from 'react-icons-kit';
 import { ic_email,  ic_https } from 'react-icons-kit/md';
 import './style.scss';
+import style from '../../../containers/App/style.module.scss'
+
 
 
 const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
@@ -121,7 +123,7 @@ class LoginForm extends React.Component {
                     suffix={<IconKit size={16} icon={ic_email} />}
                     placeholder={usernamePlaceHolder}
                     autoComplete="off"
-                    className="autofocus"
+                    className={`${style.input} autofocus`}
                   />,
                 )}
               </Form.Item>
@@ -138,6 +140,7 @@ class LoginForm extends React.Component {
                     placeholder={passwordField}
                     autoComplete="off"
                     type="password"
+                    className={`${style.input}`}
                   />,
                 )}
               </Form.Item>
@@ -149,6 +152,7 @@ class LoginForm extends React.Component {
                 htmlType="submit"
                 loading={submitLoadingState}
                 disabled={(forgotLoadingState || hasErrors(form.getFieldsError()))}
+                className={`${style.btnBlue} ${style.btn}`}
               >
                 {submitButton}
               </Button>

@@ -291,7 +291,6 @@ class SpecificFilter extends Filter {
       </>
     );
   }
-
   render() {
     const { allOptions } = this.state;
     return (
@@ -310,7 +309,6 @@ class SpecificFilter extends Filter {
     );
   }
 }
-
 SpecificFilter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
@@ -320,7 +318,6 @@ SpecificFilter.propTypes = {
   config: PropTypes.shape({}).isRequired,
   renderCustomDataSelector: PropTypes.shape.func,
 };
-
 SpecificFilter.defaultProps = {
   renderCustomDataSelector: (onChangeCallback, onCheckAllCallback, values, selector, checkboxLabel, checkboxIsChecked, checkboxIsIndeterminate) => (
     //@NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
@@ -354,5 +351,4 @@ SpecificFilter.defaultProps = {
     operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE]
   },
 };
-
 export default SpecificFilter;

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import {
   all, put, takeLatest, select,
 } from 'redux-saga/effects';
