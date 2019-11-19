@@ -123,7 +123,7 @@ class LoginForm extends React.Component {
                     suffix={<IconKit size={16} icon={ic_email} />}
                     placeholder={usernamePlaceHolder}
                     autoComplete="off"
-                    className="autofocus"
+                    className={`${style.input} autofocus`}
                   />,
                 )}
               </Form.Item>
@@ -140,6 +140,7 @@ class LoginForm extends React.Component {
                     placeholder={passwordField}
                     autoComplete="off"
                     type="password"
+                    className={`${style.input}`}
                   />,
                 )}
               </Form.Item>

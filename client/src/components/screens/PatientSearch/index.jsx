@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Tag, Pagination, Button, Dropdown,Popover, Checkbox
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox,
 } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode,
@@ -13,16 +13,19 @@ import {
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
 import IconKit from 'react-icons-kit';
-import { ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay } from 'react-icons-kit/md';
-import { cloneDeep, filter, pullAllBy, isEqual, pullAll, find, findIndex } from 'lodash';
+import {
+  ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay, ic_keyboard_arrow_right, ic_keyboard_arrow_down, ic_close
+} from 'react-icons-kit/md';
+import {
+  cloneDeep, filter, pullAllBy, isEqual, find, findIndex,
+} from 'lodash';
 
 import Header from '../../Header';
-import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 
 import './style.scss';
-import style from '../../../containers/App/style.module.scss'
+import style from '../../../containers/App/style.module.scss';
 
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
@@ -47,13 +50,16 @@ class PatientSearchScreen extends React.Component {
     this.state = {
       autoCompleteIsOpen: false,
       allColumns: [],
-      visibleColumns:[],
+      visibleColumns: [],
       data: [],
       size: 25,
       page: 1,
-      isReordering:false,
-      isColumnsCardOpen:false,
+      isReordering: false,
+      isColumnsCardOpen: false,
       columnName: [],
+      isFacetOpen: true,
+      facetFilterOpen: [],
+      facet:[]
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -64,12 +70,17 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.exportToTsv = this.exportToTsv.bind(this);
-    this.handleReordering = this.handleReordering.bind(this)
-    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
-    this.handleColumnsViewChange= this.handleColumnsViewChange.bind(this)
-    this.handleOpenColumnView = this.handleOpenColumnView.bind(this)
-    this.handleRedoViewChange =this.handleRedoViewChange.bind(this)
-    this.getCheckColumns = this.getCheckColumns.bind(this)
+    this.handleReordering = this.handleReordering.bind(this);
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
+    this.handleColumnsViewChange = this.handleColumnsViewChange.bind(this);
+    this.handleOpenColumnView = this.handleOpenColumnView.bind(this);
+    this.handleRedoViewChange = this.handleRedoViewChange.bind(this);
+    this.getCheckColumns = this.getCheckColumns.bind(this);
+    this.handleOpenFacet = this.handleOpenFacet.bind(this);
+    this.getCardCategoryTitle = this.getCardCategoryTitle.bind(this);
+    this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
+    this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
+
 
     // @NOTE Initialize Component State
     const { intl } = props;
@@ -131,11 +142,20 @@ class PatientSearchScreen extends React.Component {
       />,
     ];
 
-    this.state.allColumns.map((column) => {
-        this.state.columnName.push(column.props.name)
-    })
+    this.state.facet = [
+        intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),
+        intl.formatMessage({ id: 'screen.patientsearch.table.status' }),
+        "Category 1",
+        "Category 2",
+    ]
 
-    this.state.visibleColumns= cloneDeep(this.state.allColumns)
+    this.state.allColumns.map((column) => {
+      this.state.columnName.push(column.props.name);
+    });
+
+    this.state.visibleColumns = cloneDeep(this.state.allColumns);
+
+    this.state.facetFilterOpen = Array(this.state.columnName.length).fill(false);
   }
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -214,10 +234,10 @@ class PatientSearchScreen extends React.Component {
           return (
             <Cell>
               <Row type="flex" align="middle">
-                  {value && (
-                  <div className={value ==="completed" ? "completed" : "active"}></div>
-                  )}
-                   <Text className="CellValue">{value}</Text>
+                {value && (
+                  <div className={value === 'completed' ? 'completed' : 'active'} />
+                )}
+                <Text className="CellValue">{value}</Text>
               </Row>
             </Cell>
           );
@@ -228,7 +248,7 @@ class PatientSearchScreen extends React.Component {
           const { data } = this.state;
           const value = data[row] ? data[row][key] : '';
           return (
-            <Cell >
+            <Cell>
               <Text className="CellValue">{value}</Text>
             </Cell>
           );
@@ -252,7 +272,7 @@ class PatientSearchScreen extends React.Component {
     csvExporter.generateCsv(data);
   }
 
-  handleReordering(){
+  handleReordering() {
     const { isReordering } = this.state;
     this.setState({
       isReordering: !isReordering,
@@ -307,9 +327,10 @@ class PatientSearchScreen extends React.Component {
     const { visibleColumns, allColumns } = this.state;
     const nextChildren = Utils.reorderArray(visibleColumns, oldIndex, newIndex, length);
     const nextChildren2 = Utils.reorderArray(allColumns, oldIndex, newIndex, length);
-    this.setState({ visibleColumns: nextChildren,
-                    allColumns:nextChildren2
-     });
+    this.setState({
+      visibleColumns: nextChildren,
+      allColumns: nextChildren2,
+    });
   }
 
   handlePageChange(page, size) {
@@ -331,70 +352,101 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange(page, size);
   }
 
-    handleSearchByQuery(value){
-        let {allColumns, columnName} = this.state;
-        columnName= []
-        allColumns.map((column) => {
-            columnName.push(column.props.name)
-        })
+  handleSearchByQuery(value) {
+    let { allColumns, columnName } = this.state;
+    columnName = [];
+    allColumns.map((column) => {
+      columnName.push(column.props.name);
+    });
 
-        const search = value.target.value.toLowerCase()
-        const finalResult = columnName.filter(name => name.toLowerCase().startsWith(search))
+    const search = value.target.value.toLowerCase();
+    const finalResult = columnName.filter(name => name.toLowerCase().startsWith(search));
 
-        this.setState({
-          columnName: finalResult,
-        });
+    this.setState({
+      columnName: finalResult,
+    });
+  }
 
-    }
+  handleOpenColumnView() {
+    const { isColumnsCardOpen } = this.state;
 
-    handleOpenColumnView(){
-       const {isColumnsCardOpen} = this.state;
+    this.setState({
+      isColumnsCardOpen: !isColumnsCardOpen,
+    });
+  }
 
-       this.setState({
-         isColumnsCardOpen: !isColumnsCardOpen,
-       });
-    }
-
-  handleColumnsViewChange(checkedValues){
-    let {
-      visibleColumns, allColumns, columnName
+  handleColumnsViewChange(checkedValues) {
+    const {
+      visibleColumns, allColumns, columnName,
     } = this.state;
 
-    const uncheckedColumns = columnName.filter(name => !checkedValues.includes(name))
-    const toRemove=filter(visibleColumns, (column) => uncheckedColumns.includes(column.props.name) );
-    pullAllBy(visibleColumns, toRemove, "key");
+    const uncheckedColumns = columnName.filter(name => !checkedValues.includes(name));
+    const toRemove = filter(visibleColumns, column => uncheckedColumns.includes(column.props.name));
+    pullAllBy(visibleColumns, toRemove, 'key');
 
-    const check = this.getCheckColumns()
-    const toAdd = checkedValues.filter(name => !check.includes(name))
-    const addColumn=find(allColumns, (column) => toAdd.includes(column.props.name) );
-    const index = findIndex(allColumns, addColumn)
-    addColumn ? visibleColumns.splice(index, 0, addColumn): null
+    const check = this.getCheckColumns();
+    const toAdd = checkedValues.filter(name => !check.includes(name));
+    const addColumn = find(allColumns, column => toAdd.includes(column.props.name));
+    const index = findIndex(allColumns, addColumn);
+    addColumn ? visibleColumns.splice(index, 0, addColumn) : null;
 
-   this.setState({
-     visibleColumns,
-   });
+    this.setState({
+      visibleColumns,
+    });
   }
 
-  handleRedoViewChange(){
-      let {visibleColumns, allColumns, columnName} = this.state;
+  handleRedoViewChange() {
+    let { visibleColumns, allColumns, columnName } = this.state;
 
-        columnName= []
-        allColumns.map((column) => {
-            columnName.push(column.props.name)
-        })
+    columnName = [];
+    allColumns.map((column) => {
+      columnName.push(column.props.name);
+    });
 
-        visibleColumns = cloneDeep(allColumns)
-      this.setState({
-        visibleColumns,
-        columnName,
-      });
+    visibleColumns = cloneDeep(allColumns);
+    this.setState({
+      visibleColumns,
+      columnName,
+    });
   }
 
-  getCheckColumns(){
-    const {visibleColumns} = this.state;
-    let check = []
-    visibleColumns.map(column => check.push(column.props.name))
-    return check
+  getCheckColumns() {
+    const { visibleColumns } = this.state;
+    const check = [];
+    visibleColumns.map(column => check.push(column.props.name));
+    return check;
+  }
+
+  handleOpenFacet() {
+    const { isFacetOpen } = this.state;
+
+    this.setState({
+      isFacetOpen: !isFacetOpen,
+    });
+  }
+
+  getCardCategoryTitle(name, index) {
+    const open = this.isCategorieFacetOpen(index);
+    return (
+      <a onClick={this.changeFacetFilterOpen.bind(null, index)} key={index}>
+        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
+        {name}
+      </a>
+    );
+  }
+
+  changeFacetFilterOpen(index) {
+    const { facetFilterOpen } = this.state;
+
+    facetFilterOpen[index] = !facetFilterOpen[index];
+    this.setState({
+      facetFilterOpen,
+    });
+  }
+
+  isCategorieFacetOpen(index) {
+    const { facetFilterOpen } = this.state;
+    return facetFilterOpen[index];
   }
 
   render() {
@@ -402,7 +454,7 @@ class PatientSearchScreen extends React.Component {
     const { patient } = search;
     const { total } = patient;
     const {
-      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName , visibleColumns, isColumnsCardOpen
+      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns, isColumnsCardOpen, isFacetOpen,facet
     } = this.state;
     const { Title } = Typography;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
@@ -410,41 +462,41 @@ class PatientSearchScreen extends React.Component {
     const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
     const current = ((page - 1) * size) + 1;
     const pageTotal = size * page;
-    const checkColumns = this.getCheckColumns()
+    const checkColumns = this.getCheckColumns();
 
-    const cardInputTitle=(
-        <Input
-         placeholder="Rechercher..."
-         suffix={<IconKit size={16} icon={ic_search}/>}
-         onChange={this.handleSearchByQuery}
-        />
-    )
+    const cardInputTitle = (
+      <Input
+        placeholder="Rechercher..."
+        suffix={<IconKit size={16} icon={ic_search} />}
+        onChange={this.handleSearchByQuery}
+      />
+    );
     const overlay = (
-        <Popover visible={true} >
-          <Card title={cardInputTitle} className="columnFilter" bordered={false}>
-            { !isEqual(allColumns,visibleColumns) ? (
-                <Row>
-                    <a className="reinitialiser" onClick={this.handleRedoViewChange}>
+      <Popover visible>
+        <Card title={cardInputTitle} className="columnFilter" bordered={false}>
+          { !isEqual(allColumns, visibleColumns) && (
+            <Row>
+              <a className="reinitialiser" onClick={this.handleRedoViewChange}>
                         Réinitialiser
-                        <IconKit size={16} icon={ic_replay}/>
-                    </a>
-                </Row>
-            ): null
+                <IconKit size={16} icon={ic_replay} />
+              </a>
+            </Row>
+          )
             }
 
-            <Row>
-              <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange}  option={columnName} value={checkColumns}>
-                {columnName.map((name , index) => (
-                  <Row key={index}>
-                    <Col>
-                      <Checkbox value={name}>{name}</Checkbox>
-                    </Col>
-                  </Row>
-                ))}
-              </Checkbox.Group>
-            </Row>
-          </Card>
-        </Popover>
+          <Row>
+            <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange} option={columnName} value={checkColumns}>
+              {columnName.map((name, index) => (
+                <Row key={index}>
+                  <Col>
+                    <Checkbox value={name}>{name}</Checkbox>
+                  </Col>
+                </Row>
+              ))}
+            </Checkbox.Group>
+          </Row>
+        </Card>
+      </Popover>
     );
 
 
@@ -459,9 +511,15 @@ class PatientSearchScreen extends React.Component {
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
             <Col>
-              <Button className={`${style.btn} ${style.btnWhite}`}>
-                <IconKit size={16} icon={ic_tune} />
-                Filtrer
+              <Button className={`${style.btn} filter`} style={isFacetOpen ? { width: 280 } : { width: 'auto' }} onClick={this.handleOpenFacet}>
+                <div>
+                  <IconKit size={16} icon={ic_tune} />
+                  Filtrer
+                </div>
+                { isFacetOpen && (
+                     <IconKit size={16} icon={ic_close} />
+                )
+                }
               </Button>
             </Col>
             <Col className="autoSearch">
@@ -489,77 +547,107 @@ class PatientSearchScreen extends React.Component {
               </Button>
             </Col>
           </Row>
-          <Row >
-            <Card bordered={false} className="tablePatient">
-              <Row type="flex" justify="end" className="controls">
-                <Col>
-                  <Button
-                    onClick={this.handleReordering}
-                    className= {isReordering ? `reorder ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}
-                  >
-                    <IconKit size={16} icon={ic_swap_horiz} />
-                    Organiser
-                  </Button>
-                </Col>
-               <Col>
-                  <Dropdown overlay={overlay} trigger="click" visible={isColumnsCardOpen} placement="bottomRight">
+
+
+          <Row type="flex" justify="space-between">
+            { isFacetOpen && (
+            <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
+              {facet.map((column, index) => (
+                <Card bordered={false} className="category" title={this.getCardCategoryTitle(column, index)}>
+                  {
+                      this.isCategorieFacetOpen(index) && (
+                      <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange} option={columnName} value={checkColumns}>
+                        {columnName.map((name, index) => (
+                          <Row key={index}>
+                            <Col>
+                              <Checkbox value={name}>{name}</Checkbox>
+                            </Col>
+                          </Row>
+                        ))}
+                      </Checkbox.Group>
+                      )
+                   }
+                </Card>
+              ))
+                 }
+
+            </Col>
+
+            )}
+
+            <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
+              <Card bordered={false} className="tablePatient">
+                <Row type="flex" justify="end" className="controls">
+                  <Col>
+                    <Button
+                      onClick={this.handleReordering}
+                      className={isReordering ? `reorder ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}
+                    >
+                      <IconKit size={16} icon={ic_swap_horiz} />
+                        Organiser
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Dropdown overlay={overlay} trigger="click" visible={isColumnsCardOpen} placement="bottomRight">
                       <Button
                         onClick={this.handleOpenColumnView}
                         className={`${style.btn} ${style.btnSec}`}
                       >
                         <IconKit size={16} icon={ic_view_column} />
-                        Afficher
+                            Afficher
                       </Button>
-                  </Dropdown>
-                </Col>
-                <Col>
-                  <Button
-                    onClick={this.exportToTsv}
-                    className={`${style.btn} ${style.btnSec}`}
-                  >
-                    <IconKit size={16} icon={ic_cloud_download} />
-                    Exporter
-                  </Button>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <Table
-                    numRows={(size <= total ? size : total)}
-                    enableColumnReordering={isReordering}
-                    enableColumnResizing
-                    onColumnsReordered={this.handleColumnsReordered}
-                    bodyContextMenuRenderer={renderBodyContextMenu}
-                    renderMode={RenderMode.NONE}
-                    enableGhostCells
-                    className="patientTable"
-                  >
-                    { visibleColumns.map(column => (column)) }
-                  </Table>
-                </Col>
-              </Row>
-              <br />
-              <Row type="flex" justify="space-between" align="middle">
+                    </Dropdown>
+                  </Col>
+                  <Col>
+                    <Button
+                      onClick={this.exportToTsv}
+                      className={`${style.btn} ${style.btnSec}`}
+                    >
+                      <IconKit size={16} icon={ic_cloud_download} />
+                        Exporter
+                    </Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Table
+                      numRows={(size <= total ? size : total)}
+                      enableColumnReordering={isReordering}
+                      enableColumnResizing
+                      onColumnsReordered={this.handleColumnsReordered}
+                      bodyContextMenuRenderer={renderBodyContextMenu}
+                      renderMode={RenderMode.NONE}
+                      enableGhostCells
+                      className="patientTable"
+                    >
+                      { visibleColumns.map(column => (column)) }
+                    </Table>
+                  </Col>
+                </Row>
+                <br />
+                <Row type="flex" justify="space-between" align="middle">
 
-                <Col align="start">
-                  <Typography>
-                    { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
-                  </Typography>
-                </Col>
-                <Col align="end" >
-                  <Pagination
-                    total={search.patient.total}
-                    pageSize={size}
-                    current={page}
-                    pageSizeOptions={['25', '50', '100', '250', '500', '1000']}
-                    showSizeChanger
-                    onChange={this.handlePageChange}
-                    onShowSizeChange={this.handlePageSizeChange}
-                  />
-                </Col>
-              </Row>
-            </Card>
-            </Row>
+                  <Col align="start">
+                    <Typography>
+                      { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
+                    </Typography>
+                  </Col>
+                  <Col align="end">
+                    <Pagination
+                      total={search.patient.total}
+                      pageSize={size}
+                      current={page}
+                      pageSizeOptions={['25', '50', '100', '250', '500', '1000']}
+                      showSizeChanger
+                      onChange={this.handlePageChange}
+                      onShowSizeChange={this.handlePageSizeChange}
+                    />
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+
+          </Row>
         </Card>
         <Footer />
       </Content>
