@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  find, cloneDeep
+  find, cloneDeep, throttle,
 } from 'lodash';
 
 import {
@@ -37,91 +37,19 @@ class VariantNavigation extends React.Component {
   }
 
   handleNavigationSearch(query) {
-    if (query) {
+    //throttle(() => {
+      if (query) {
+        const { autocomplete } = this.props
 
-      const { autocomplete } = this.props
-      const normalizedQuery = query;//.toLowerCase()
-
-      console.log('-----');
-      console.log(autocomplete)
-
-      autocomplete.then(engine => {
-
-        console.log(engine)
-        console.log('normalizedQuery ' + normalizedQuery)
-
-        engine.search(normalizedQuery, searchResults => {
-          console.log(searchResults);
-          //this.setState({
-          //  searchResults
-          //})
+        autocomplete.then(engine => {
+          engine.search(query, searchResults => {
+            this.setState({
+              searchResults
+            })
+          })
         })
-
-      })
-
-
-
-      /*
-        console.log('normalizedQuery ' + normalizedQuery)
-
-          autocomplete.engine.search(normalizedQuery, searchResults => {
-            console.log(searchResults);
-            //this.setState({
-            //  searchResults
-            //})
-          })
-*/
-
-
-
-
-/*
-      autocomplete.initialize
-
-        autocomplete.search(normalizedQuery).then(searchResults => {
-
-          console.log(searchResults);
-
-          this.setState({
-            searchResults
-          })
-      })
-*/
-
-      /*
-      const { searchData } = this.props
-      const normalizedQuery = query.toLowerCase()
-      const searchResults = searchData.reduce((accumulator, group) => {
-        const matches = group.data.filter((datum) => {
-          if (datum.value.toLowerCase) {
-            return datum.value.toLowerCase()
-              .indexOf(normalizedQuery) !== -1
-          }
-          return false;
-        })
-
-        if (matches.length > 0) {
-          accumulator.push({
-            id: group.id,
-            type: group.type,
-            label: group.label,
-            matches,
-          })
-        }
-
-        return accumulator
-      }, [])
-        this.setState({
-        searchResults
-      })
-
-
-      */
-
-
-
-
-    }
+      }
+    //}, 1000);
   }
 
   handleNavigationSelection(value, option) {
@@ -298,10 +226,14 @@ class VariantNavigation extends React.Component {
   render() {
     const { intl, schema } = this.props;
     const { activeFilterId, searchResults } = this.state;
+
+    console.log('+ searchResults ' + JSON.stringify(searchResults))
+
+
     const autocompletes = searchResults.map((group) => {
       return (
           <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
-            { group.matches.map((match) => (
+            { group.matches && group.matches.map((match) => (
               <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
                 {match.value} {match.count && (<Tag>{match.count}</Tag>)}
               </AutoComplete.Option>

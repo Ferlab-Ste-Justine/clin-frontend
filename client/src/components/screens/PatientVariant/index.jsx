@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader, Tabs, Row, Col, Dropdown, Button, Popover, Checkbox, Icon
 } from 'antd';
-import { cloneDeep, find } from 'lodash';
+import { cloneDeep, find, flatten } from 'lodash';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -17,7 +17,7 @@ import Footer from '../../Footer';
 import TableResults, { createCellRenderer } from '../../Table/index';
 import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
-import Autocompleter, { createTokenizerByKey } from '../../../helpers/autocompleter';
+import Autocompleter, { createTokenizer } from '../../../helpers/autocompleter';
 
 import './style.scss';
 import { patientShape } from '../../../reducers/patient';
@@ -121,6 +121,64 @@ class PatientVariantScreen extends React.Component {
     const { activeQuery } = variant;
     this.handleQuerySelection(activeQuery);
   }
+
+  /*
+  static getDerivedStateFromProps(props, state) {
+    const { intl, variant } = props;
+    const { facets, schema, activeQuery } = variant;
+    const { searchData, autocomplete } = state
+    const lastSearchDataCount = searchData.length;
+    const categoryDataLength = schema.categories ? schema.categories.length : 0;
+    const facetDataLength =  facets[activeQuery] ? Object.values(facets[activeQuery]).reduce((total, arr) => { return total + arr.length }, 0) : 0;
+    const newSearchDataLength = categoryDataLength + facetDataLength;
+
+    if (autocomplete === null || newSearchDataLength !== lastSearchDataCount) {
+      const newSearchData = [];
+      if (schema.categories) {
+        schema.categories.forEach((category) => {
+          newSearchData.push({
+            id: category.id,
+            type: 'category',
+            label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
+            data: category.filters ? category.filters.reduce((accumulator, filter) => {
+              const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
+                return {
+                  id: facet.id,
+                  value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
+                }
+              }) : []
+
+              return accumulator.concat(searcheableFacet)
+            }, []) : []
+          })
+        })
+      }
+      if (facets[activeQuery]) {
+        Object.keys(facets[activeQuery])
+          .forEach((key) => {
+            newSearchData.push({
+              id: key,
+              type: 'filter',
+              label: intl.formatMessage({ id: `screen.patientvariant.filter_${key}` }),
+              data: facets[activeQuery][key].map((value) => {
+                return {
+                  id: value.value,
+                  value: value.value,
+                  count: value.count,
+                }
+              })
+            })
+          })
+      }
+      const autocomplete = Autocompleter(newSearchData, createTokenizer)
+
+      return {
+        autocomplete,
+        searchData: newSearchData
+      }
+    }
+  }
+*/
 
   handleColumnsReordered(reorderedColumns) {
     const { columns, currentTab } = this.state;
@@ -243,27 +301,37 @@ class PatientVariantScreen extends React.Component {
   }
 
   render() {
-    const { intl, variant, patient } = this.props;
-    const { facets, schema, activeQuery } = variant;
+    const { variant, patient, intl } = this.props;
+    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery } = variant;
+    const {
+      size, page, visibleColumns, currentTab, columns,
+    } = this.state;
+
+    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
+
+    if (total === 0) {
+      return null
+    }
+
     const searchData = [];
     if (schema.categories) {
-        schema.categories.forEach((category) => {
-            searchData.push({
-                id: category.id,
-                type: 'category',
-                label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
-                data: category.filters ? category.filters.reduce((accumulator, filter) => {
-                  const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
-                    return {
-                      id: facet.id,
-                      value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
-                    }
-                  }) : []
+      schema.categories.forEach((category) => {
+        searchData.push({
+          id: category.id,
+          type: 'category',
+          label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
+          data: category.filters ? category.filters.reduce((accumulator, filter) => {
+            const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
+              return {
+                id: facet.id,
+                value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
+              }
+            }) : []
 
-                  return accumulator.concat(searcheableFacet)
-                }, []) : []
-            })
+            return accumulator.concat(searcheableFacet)
+          }, []) : []
         })
+      })
     }
     if (facets[activeQuery]) {
       Object.keys(facets[activeQuery])
@@ -282,31 +350,7 @@ class PatientVariantScreen extends React.Component {
           })
         })
     }
-
-    console.log('----')
-    console.log(searchData)
-    /*
-    (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
-0: {id: "variant", type: "category", label: "Variants", data: Array(11)}
-1: {id: "genomic", type: "category", label: "Génomique", data: Array(5)}
-2: {id: "prediction", type: "category", label: "Prédictions in-silico", data: Array(4)}
-3: {id: "conservation", type: "category", label: "Conservation", data: Array(0)}
-4: {id: "cohort", type: "category", label: "Cohortes", data: Array(0)}
-5: {id: "zygosity", type: "category", label: "Zygosité et Famille", data: Array(1)}
-6: {id: "metric", type: "category", label: "Métriques", data: Array(0)}
-     */
-    const autocomplete = Autocompleter(searchData, createTokenizerByKey('data'))
-    const { draftQueries, draftHistory, originalQueries, matches } = variant;
-    const {
-      size, page, visibleColumns, currentTab, columns,
-    } = this.state;
-
-    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
-
-    if (total === 0) {
-      return null
-    }
-
+    const autocomplete = Autocompleter(searchData, createTokenizer)
     const columnVisibilitySelector = (
       <Dropdown key="visibility-selector" overlay={(
         <Popover>
