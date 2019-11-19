@@ -482,7 +482,7 @@ class PatientSearchScreen extends React.Component {
               </a>
             </Row>
           )
-            }
+          }
 
           <Row>
             <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange} option={columnName} value={checkColumns}>
@@ -556,7 +556,7 @@ class PatientSearchScreen extends React.Component {
                 <Card bordered={false} className="category" title={this.getCardCategoryTitle(column, index)}>
                   {
                       this.isCategorieFacetOpen(index) && (
-                      <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange} option={columnName} value={checkColumns}>
+                      <Checkbox.Group className="checkbox" defaultValue={columnName} >
                         {columnName.map((name, index) => (
                           <Row key={index}>
                             <Col>
