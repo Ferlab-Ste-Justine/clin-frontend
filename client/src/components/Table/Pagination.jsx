@@ -1,28 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Pagination } from 'antd';
+import { Pagination, Spin } from 'antd';
 
 import './style.scss';
 
 
 const TablePagination = (props) => {
   const {
-    total, page, defaultPage, size, defaultSize, sizeOptions, canChangeSize, isDisabled, pageChangeCallback, sizeChangeCallback,
+    isLoading, total, page, defaultPage, size, defaultSize, sizeOptions, canChangeSize, isDisabled, pageChangeCallback, sizeChangeCallback,
   } = props;
 
   return (
-    <Pagination
-      total={total}
-      current={page}
-      pageSize={size}
-      defaultCurrent={defaultPage}
-      defaultPageSize={defaultSize}
-      pageSizeOptions={sizeOptions}
-      showSizeChanger={canChangeSize}
-      disabled={isDisabled}
-      onChange={pageChangeCallback}
-      onShowSizeChange={sizeChangeCallback}
-    />
+    <Spin spinning={isLoading}>
+      <Pagination
+        total={total}
+        current={page}
+        pageSize={size}
+        defaultCurrent={defaultPage}
+        defaultPageSize={defaultSize}
+        pageSizeOptions={sizeOptions}
+        showSizeChanger={canChangeSize}
+        disabled={isDisabled}
+        onChange={pageChangeCallback}
+        onShowSizeChange={sizeChangeCallback}
+      />
+    </Spin>
   );
 };
 
@@ -33,8 +35,9 @@ TablePagination.propTypes = {
   defaultPage: PropTypes.number,
   defaultSize: PropTypes.number,
   sizeOptions: PropTypes.shape([]),
-  isDisabled: PropTypes.bool,
   canChangeSize: PropTypes.bool,
+  isDisabled: PropTypes.bool,
+  isLoading: PropTypes.bool,
   pageChangeCallback: PropTypes.func,
   sizeChangeCallback: PropTypes.func,
 };
@@ -48,6 +51,7 @@ TablePagination.defaultProps = {
   sizeOptions: [25, 50, 100, 250, 500, 1000],
   canChangeSize: true,
   isDisabled: false,
+  isLoading: false,
   pageChangeCallback: () => {},
   sizeChangeCallback: () => {},
 };

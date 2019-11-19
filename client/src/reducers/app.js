@@ -12,6 +12,7 @@ import * as actions from '../actions/type';
 
 export const initialAppState = {
   showLoadingAnimation: false,
+  showSubloadingAnimation: false,
   locale: {
     lang: null,
     antd: null,
@@ -21,6 +22,7 @@ export const initialAppState = {
 // @TODO
 export const appShape = {
   showLoadingAnimation: PropTypes.bool.isRequired,
+  showSubloadingAnimation: PropTypes.bool.isRequired,
   locale: PropTypes.shape({
     lang: PropTypes.string,
     antd: PropTypes.shape({}),
@@ -59,6 +61,14 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
         const agentIdle = ['IdleScratch', 'IdleStretch', 'IdleTailWagA', 'IdleTailWagB', 'IdleTailWagC', 'IdleTailWagD', 'IdleTwitch', 'IdleYawn', 'IdleButterFly', 'IdleCleaning', 'IdleLegLick', 'GetArtsy'];
         window.agent.play(agentIdle[Math.floor((Math.random() * agentIdle.length))]);
       }
+      break;
+
+    case actions.START_SUBLOADING_ANIMATION:
+      draft.showSubloadingAnimation = true;
+      break;
+
+    case actions.STOP_SUBLOADING_ANIMATION:
+      draft.showSubloadingAnimation = false;
       break;
 
     case actions.APP_CHANGE_LANGUAGE_REQUESTED:
