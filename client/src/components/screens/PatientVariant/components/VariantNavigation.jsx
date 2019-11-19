@@ -233,7 +233,7 @@ class VariantNavigation extends React.Component {
     const autocompletes = searchResults.map((group) => {
       return (
           <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
-            { group.matches && group.matches.map((match) => (
+            { group.data && group.data.map((match) => (
               <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
                 {match.value} {match.count && (<Tag>{match.count}</Tag>)}
               </AutoComplete.Option>

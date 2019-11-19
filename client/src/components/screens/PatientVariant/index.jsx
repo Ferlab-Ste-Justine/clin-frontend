@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Descriptions, Typography, PageHeader, Tabs, Row, Col, Dropdown, Button, Popover, Checkbox, Icon
+  Card, Descriptions, Typography, PageHeader, Tabs, Row, Col, Dropdown, Button, Popover, Checkbox, Icon, Spin,
 } from 'antd';
 import { cloneDeep, find, flatten } from 'lodash';
 
@@ -20,6 +20,7 @@ import VariantNavigation from './components/VariantNavigation';
 import Autocompleter, { createTokenizer } from '../../../helpers/autocompleter';
 
 import './style.scss';
+import { appShape } from '../../../reducers/app';
 import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
@@ -185,7 +186,7 @@ class PatientVariantScreen extends React.Component {
 
     columns[currentTab] = reorderedColumns
     this.setState({
-      columns
+      columns,
     })
   }
 
@@ -194,7 +195,7 @@ class PatientVariantScreen extends React.Component {
     const { activeQuery } = variant;
 
     this.setState({
-      page: next
+      page: next,
     }, () => {
       this.handleQuerySelection(activeQuery)
     })
@@ -205,7 +206,7 @@ class PatientVariantScreen extends React.Component {
     const { activeQuery } = variant;
 
     this.setState({
-      size: next
+      size: next,
     }, () => {
       this.handleQuerySelection(activeQuery)
     })
@@ -301,7 +302,8 @@ class PatientVariantScreen extends React.Component {
   }
 
   render() {
-    const { variant, patient, intl } = this.props;
+    const { intl, app, variant, patient } = this.props;
+    const { showSubloadingAnimation } = app;
     const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery } = variant;
     const {
       size, page, visibleColumns, currentTab, columns,
@@ -447,7 +449,8 @@ class PatientVariantScreen extends React.Component {
             />
             <br/>
             <br/>
-          <Tabs key="patient-variants-tabs" type="card" onChange={this.handleTabChange}>
+          <Spin spinning={showSubloadingAnimation}>
+            <Tabs key="patient-variants-tabs" type="card" onChange={this.handleTabChange}>
             <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
               <Row>
                 <Col align="end">
@@ -512,6 +515,7 @@ class PatientVariantScreen extends React.Component {
               </Row>
             </Tabs.TabPane>
           </Tabs>
+          </Spin>
         </Card>
         <Footer />
       </Content>
@@ -521,6 +525,7 @@ class PatientVariantScreen extends React.Component {
 
 PatientVariantScreen.propTypes = {
   intl: PropTypes.shape({}).isRequired,
+  app: PropTypes.shape(appShape).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
@@ -543,6 +548,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   intl: state.intl,
+  app: state.app,
   patient: state.patient,
   variant: state.variant,
 });

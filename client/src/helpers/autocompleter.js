@@ -1,10 +1,10 @@
 const Bloodhound = require('bloodhound-js');
 
 export const createTokenizer = (datum) => {
-  const categoryTokens = Bloodhound.tokenizers.whitespace(datum.label);
-  const subCategoryTokens = datum.data.reduce(dataDatum => Bloodhound.tokenizers.whitespace(dataDatum.value));
+  const categoryTokens = [datum.label];
+  const subCategoryTokens = datum.data.map(dataDatum => dataDatum.value);
 
-  return categoryTokens.concat(subCategoryTokens);
+  return Bloodhound.tokenizers.whitespace(categoryTokens.concat(subCategoryTokens));
 };
 
 const Autocompleter = async (dataset, datumTokenizer = Bloodhound.tokenizers.whitespace, queryTokenizer = Bloodhound.tokenizers.whitespace) => {

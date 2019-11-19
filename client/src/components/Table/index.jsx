@@ -6,7 +6,7 @@ import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography,
+  Badge, Button, Typography, Spin,
 } from 'antd';
 import { isFunction, cloneDeep } from 'lodash';
 
@@ -42,69 +42,74 @@ TableFooter.defaultProps = {
 
 export const createCellRenderer = (type, getData, options = {}) => {
   let valueRenderer = null;
-  switch (type) {
-    default:
-    case 'text':
-      valueRenderer = value => (<Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>);
-      break;
-    case 'paragraph':
-      valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
-      break;
-    case 'link':
-      valueRenderer = value => (
-        <Button
-          type="link"
-          size={options.size}
-          shape={options.shape}
-          icon={options.icon}
-          href={(options.renderer ? options.renderer(value) : '#')}
-        >
-          {value}
-        </Button>
-      );
-      break;
-    case 'button':
-      valueRenderer = value => (
-        <Button
-          data-key={key}
-          type={options.type}
-          size={options.size}
-          shape={options.shape}
-          icon={options.icon}
-          onClick={options.handler}
-        >
-          {value}
-        </Button>
-      );
-      break;
-    case 'badge':
-      valueRenderer = value => (<Badge count={value} />);
-      break;
-    case 'dot':
-      valueRenderer = value => (<Badge status={options.renderer(value)} text={value} />);
-      break;
-    case 'custom':
-      valueRenderer = options.renderer
-      break;
-  }
-
-  return (row) => {
-    try {
-      const dataSet = getData();
-      const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : '';
-
-      return (
-        <Cell>{valueRenderer(value)}</Cell>
-      );
-    } catch (e) {
-      return <Cell/>
+  try {
+    switch (type) {
+      default:
+      case 'text':
+        valueRenderer = value => (
+          <Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>);
+        break;
+      case 'paragraph':
+        valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
+        break;
+      case 'link':
+        valueRenderer = value => (
+          <Button
+            type="link"
+            size={options.size}
+            shape={options.shape}
+            icon={options.icon}
+            href={(options.renderer ? options.renderer(value) : '#')}
+          >
+            {value}
+          </Button>
+        );
+        break;
+      case 'button':
+        valueRenderer = value => (
+          <Button
+            data-key={key}
+            type={options.type}
+            size={options.size}
+            shape={options.shape}
+            icon={options.icon}
+            onClick={options.handler}
+          >
+            {value}
+          </Button>
+        );
+        break;
+      case 'badge':
+        valueRenderer = value => (<Badge count={value}/>);
+        break;
+      case 'dot':
+        valueRenderer = value => (<Badge status={options.renderer(value)} text={value}/>);
+        break;
+      case 'custom':
+        valueRenderer = options.renderer
+        break;
     }
-  };
+
+    return (row) => {
+      try {
+        const dataSet = getData();
+        const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : '';
+
+        return (
+          <Cell>{valueRenderer(value)}</Cell>
+        );
+      } catch (e) {
+        return <Cell/>
+      }
+    };
+  } catch (e) {
+    return () => {}
+  }
 };
 
 const TableBody = (props) => {
   const {
-    columns, size, total, renderMode, enableGhostCells, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback,
+    isLoading, columns, size, total, renderMode, enableGhostCells, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback,
   } = props;
 
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
@@ -116,7 +121,7 @@ const TableBody = (props) => {
   };
 
   return (
-    <>
+    <Spin spinning={isLoading}>
       <TableHeader />
       <Table
         numRows={(size <= total ? size : total)}
@@ -136,7 +141,7 @@ const TableBody = (props) => {
         )) }
       </Table>
       <TableFooter />
-    </>
+    </Spin>
   );
 };
 
@@ -148,6 +153,7 @@ TableBody.propTypes = {
   enableGhostCells: PropTypes.bool,
   enableReordering: PropTypes.bool,
   enableResizing: PropTypes.bool,
+  isLoading: PropTypes.bool,
   renderContextMenu: PropTypes.func,
   reorderColumnsCallback: PropTypes.func,
 };
@@ -156,10 +162,11 @@ TableBody.defaultProps = {
   size: 0,
   total: 0,
   columns: [],
-  renderMode: RenderMode.NONE,
+  renderMode: RenderMode.BATCH_ON_UPDATE,
   enableGhostCells: true,
   enableReordering: true,
   enableResizing: true,
+  isLoading: false,
   renderContextMenu: () => {},
   reorderColumnsCallback: () => {},
 };
