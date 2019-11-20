@@ -272,8 +272,10 @@ class PatientSearchScreen extends React.Component {
     csvExporter.generateCsv(data);
   }
 
-  handleReordering() {
+  handleReordering(e) {
     const { isReordering } = this.state;
+
+    e.target.blur()
     this.setState({
       isReordering: !isReordering,
     });
@@ -367,8 +369,10 @@ class PatientSearchScreen extends React.Component {
     });
   }
 
-  handleOpenColumnView() {
+  handleOpenColumnView(e) {
     const { isColumnsCardOpen } = this.state;
+
+    isColumnsCardOpen ? e.target.blur()  :null
 
     this.setState({
       isColumnsCardOpen: !isColumnsCardOpen,
