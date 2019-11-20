@@ -96,12 +96,22 @@ div.query-container {
   }
 
   &.active {
+
+    border-radius: unset;
+    width: auto;
+    height: auto;
+    .ant-badge {
+      width: 100%;
+      margin-right: unset;
+      overflow: initial;
+    }
+
     .query {
       background-color: aliceblue;
-        .ant-input{
-          border:1px solid #d9d9d9;
-          padding-left: 6px;
-        }
+      .ant-input{
+        border:1px solid #d9d9d9;
+        padding-left: 6px;
+      }
     }
     .selector {
       background-color: aliceblue;

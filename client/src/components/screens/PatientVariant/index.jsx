@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader, Tabs, Row, Col, Dropdown, Button, Popover, Checkbox, Icon, Spin,
 } from 'antd';
-import { cloneDeep, find } from 'lodash';
+import { cloneDeep, find, flatten } from 'lodash';
 
 import Header from '../../Header';
 import Navigation from '../../Navigation';
@@ -17,6 +17,7 @@ import Footer from '../../Footer';
 import TableResults, { createCellRenderer } from '../../Table/index';
 import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
+import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
 
 import './style.scss';
 import { appShape } from '../../../reducers/app';
@@ -120,6 +121,64 @@ class PatientVariantScreen extends React.Component {
     const { activeQuery } = variant;
     this.handleQuerySelection(activeQuery);
   }
+
+  /*
+  static getDerivedStateFromProps(props, state) {
+    const { intl, variant } = props;
+    const { facets, schema, activeQuery } = variant;
+    const { searchData, autocomplete } = state
+    const lastSearchDataCount = searchData.length;
+    const categoryDataLength = schema.categories ? schema.categories.length : 0;
+    const facetDataLength =  facets[activeQuery] ? Object.values(facets[activeQuery]).reduce((total, arr) => { return total + arr.length }, 0) : 0;
+    const newSearchDataLength = categoryDataLength + facetDataLength;
+
+    if (autocomplete === null || newSearchDataLength !== lastSearchDataCount) {
+      const newSearchData = [];
+      if (schema.categories) {
+        schema.categories.forEach((category) => {
+          newSearchData.push({
+            id: category.id,
+            type: 'category',
+            label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
+            data: category.filters ? category.filters.reduce((accumulator, filter) => {
+              const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
+                return {
+                  id: facet.id,
+                  value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
+                }
+              }) : []
+
+              return accumulator.concat(searcheableFacet)
+            }, []) : []
+          })
+        })
+      }
+      if (facets[activeQuery]) {
+        Object.keys(facets[activeQuery])
+          .forEach((key) => {
+            newSearchData.push({
+              id: key,
+              type: 'filter',
+              label: intl.formatMessage({ id: `screen.patientvariant.filter_${key}` }),
+              data: facets[activeQuery][key].map((value) => {
+                return {
+                  id: value.value,
+                  value: value.value,
+                  count: value.count,
+                }
+              })
+            })
+          })
+      }
+      const autocomplete = Autocompleter(newSearchData, createTokenizer)
+
+      return {
+        autocomplete,
+        searchData: newSearchData
+      }
+    }
+  }
+*/
 
   handleColumnsReordered(reorderedColumns) {
     const { columns, currentTab } = this.state;
@@ -243,26 +302,36 @@ class PatientVariantScreen extends React.Component {
   render() {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
-    const { facets, schema, activeQuery } = variant;
+    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery } = variant;
+    const {
+      size, page, visibleColumns, currentTab, columns,
+    } = this.state;
+
+    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
+
+    if (total === 0) {
+      return null
+    }
+
     const searchData = [];
     if (schema.categories) {
-        schema.categories.forEach((category) => {
-            searchData.push({
-                id: category.id,
-                type: 'category',
-                label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
-                data: category.filters ? category.filters.reduce((accumulator, filter) => {
-                  const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
-                    return {
-                      id: facet.id,
-                      value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
-                    }
-                  }) : []
+      schema.categories.forEach((category) => {
+        searchData.push({
+          id: category.id,
+          type: 'category',
+          label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
+          data: category.filters ? category.filters.reduce((accumulator, filter) => {
+            const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
+              return {
+                id: facet.id,
+                value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
+              }
+            }) : []
 
-                  return accumulator.concat(searcheableFacet)
-                }, []) : []
-            })
+            return accumulator.concat(searcheableFacet)
+          }, []) : []
         })
+      })
     }
     if (facets[activeQuery]) {
       Object.keys(facets[activeQuery])
@@ -282,17 +351,33 @@ class PatientVariantScreen extends React.Component {
         })
     }
 
-    const { draftQueries, draftHistory, originalQueries, matches } = variant;
-    const {
-      size, page, visibleColumns, currentTab, columns,
-    } = this.state;
+    const tokenizedSearchData = searchData.reduce((accumulator, group) => {
+      if (group.data) {
+        group.data.forEach(datum => {
+          if (group.type === 'category') {
+            accumulator.push({
+              id: group.id,
+              type: group.type,
+              label: group.label,
+              value: datum.value,
+            })
+          } else {
+            accumulator.push({
+              id: group.id,
+              type: group.type,
+              label: group.label,
+              value: datum.value,
+              count: datum.count,
+            })
+          }
+        })
+      }
 
-    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
+      return accumulator;
+    }, [])
 
-    if (total === 0) {
-      return null
-    }
-
+    const searchDataTokenizer = tokenizeObjectByKeys();
+    const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer)
     const columnVisibilitySelector = (
       <Dropdown key="visibility-selector" overlay={(
         <Popover>
@@ -339,20 +424,19 @@ class PatientVariantScreen extends React.Component {
                 <Descriptions.Item label="Signes">Epilepsie ([HP93993]), Schizophrénie ([HP2772])</Descriptions.Item>
                 <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
             </Descriptions>
-            <Spin spinning={showSubloadingAnimation}>
-              <VariantNavigation
-                  key="variant-navigation"
-                  className="variant-navigation"
-                  intl={intl}
-                  schema={schema}
-                  patient={patient}
-                  queries={draftQueries}
-                  activeQuery={activeQuery}
-                  data={facets[activeQuery] || {}}
-                  onEditCallback={this.handleQueryChange}
-                  searchData={searchData}
-              />
-            </Spin>
+            <VariantNavigation
+                key="variant-navigation"
+                className="variant-navigation"
+                intl={intl}
+                schema={schema}
+                patient={patient}
+                queries={draftQueries}
+                activeQuery={activeQuery}
+                data={facets[activeQuery] || {}}
+                onEditCallback={this.handleQueryChange}
+                searchData={searchData}
+                autocomplete={autocomplete}
+            />
             <br />
             <br />
             <Statement

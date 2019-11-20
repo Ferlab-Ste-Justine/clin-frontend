@@ -373,7 +373,6 @@ class PatientSearchScreen extends React.Component {
     const { isColumnsCardOpen } = this.state;
 
     isColumnsCardOpen ? e.target.blur()  :null
-
     this.setState({
       isColumnsCardOpen: !isColumnsCardOpen,
     });
