@@ -81,7 +81,6 @@ class PatientSearchScreen extends React.Component {
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
     this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
 
-
     // @NOTE Initialize Component State
     const { intl } = props;
     this.state.allColumns = [
@@ -402,7 +401,7 @@ class PatientSearchScreen extends React.Component {
     let { visibleColumns, allColumns, columnName } = this.state;
 
     columnName = [];
-    allColumns.map((column) => {
+    allColumns.map(column => {
       columnName.push(column.props.name);
     });
 
@@ -484,9 +483,7 @@ class PatientSearchScreen extends React.Component {
                 <IconKit size={16} icon={ic_replay} />
               </a>
             </Row>
-          )
-          }
-
+          ) }
           <Row>
             <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange} option={columnName} value={checkColumns}>
               {columnName.map((name, index) => (
@@ -501,7 +498,6 @@ class PatientSearchScreen extends React.Component {
         </Card>
       </Popover>
     );
-
 
     return (
       <Content>
@@ -521,8 +517,7 @@ class PatientSearchScreen extends React.Component {
                 </div>
                 { isFacetOpen && (
                      <IconKit size={16} icon={ic_close} />
-                )
-                }
+                )}
               </Button>
             </Col>
             <Col className="autoSearch">
