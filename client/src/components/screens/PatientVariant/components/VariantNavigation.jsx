@@ -77,10 +77,9 @@ class VariantNavigation extends React.Component {
   }
 
   handleNavigationSelection(value, option) {
-    console.log('+ handleNavigationSelection');
+    console.log('+ handleNavigationSelection +');
     console.log('+ value ' + JSON.stringify(value));
     console.log('+ option ' + JSON.stringify(option));
-
   }
 
   handleFilterSelection({ key }) {
@@ -95,6 +94,9 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterChange(filter) {
+
+    console.log('+ handleFilterChange ? ' + JSON.stringify(filter))
+
     const { onEditCallback } = this.props;
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
@@ -252,9 +254,6 @@ class VariantNavigation extends React.Component {
   render() {
     const { intl, schema } = this.props;
     const { activeFilterId, searchResults } = this.state;
-
-
-
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
@@ -267,7 +266,7 @@ class VariantNavigation extends React.Component {
 
     return (
       <div className="variant-navigation">
-        <Menu key="category-search" mode="horizontal">
+        <Menu key="category-search" mode="vertical">
           <Menu.SubMenu
             key="search"
             title={(
