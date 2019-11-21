@@ -32,7 +32,7 @@ class VariantNavigation extends React.Component {
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
     this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 500, { leading: true });
-    this.handleNavigationSearchSelection = this.handleNavigationSearchSelection.bind(this);
+    this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
   }
 
@@ -68,17 +68,19 @@ class VariantNavigation extends React.Component {
           })
         })
       })
-    } else {
+    }
+    /*else {
       this.setState({
         searchResults: [],
       })
-    }
+    }*/
   }
 
-  handleNavigationSearchSelection(value, option) {
-    console.log('+ handleNavigationSelection +');
+  handleNavigationSelection(value, option) {
+    console.log('+ handleNavigationSelection');
     console.log('+ value ' + JSON.stringify(value));
     console.log('+ option ' + JSON.stringify(option));
+
   }
 
   handleFilterSelection({ key }) {
@@ -245,12 +247,14 @@ class VariantNavigation extends React.Component {
               />
             );
     }
-
   }
 
   render() {
     const { intl, schema } = this.props;
     const { activeFilterId, searchResults } = this.state;
+
+
+
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
@@ -263,24 +267,27 @@ class VariantNavigation extends React.Component {
 
     return (
       <div className="variant-navigation">
-        <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
+        <Menu key="category-search" mode="horizontal">
           <Menu.SubMenu
             key="search"
             title={(
-                <AutoComplete
-                  allowClear
-                  autoFocus
-                  optionLabelProp="value"
-                  size="large"
-                  dataSource={autocompletes}
-                  //onSelect={this.handleNavigationSearchSelection}
-                  onChange={this.handleNavigationSearch}
-                  placeholder="Recherche de filtres"
-                >
-                  <Input prefix={<Icon type="search" />} />
-                </AutoComplete>
+              <AutoComplete
+                allowClear
+                autoFocus
+                optionLabelProp="value"
+                size="large"
+                dataSource={autocompletes}
+                onSearch={this.handleNavigationSearch}
+                onSelect={this.handleNavigationSelection}
+                onChange={() => {}}
+                placeholder="Recherche de filtres"
+              >
+                <Input prefix={<Icon type="search" />} />
+              </AutoComplete>
             )}
           />
+        </Menu>
+        <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
