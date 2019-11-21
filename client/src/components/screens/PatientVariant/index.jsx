@@ -122,64 +122,6 @@ class PatientVariantScreen extends React.Component {
     this.handleQuerySelection(activeQuery);
   }
 
-  /*
-  static getDerivedStateFromProps(props, state) {
-    const { intl, variant } = props;
-    const { facets, schema, activeQuery } = variant;
-    const { searchData, autocomplete } = state
-    const lastSearchDataCount = searchData.length;
-    const categoryDataLength = schema.categories ? schema.categories.length : 0;
-    const facetDataLength =  facets[activeQuery] ? Object.values(facets[activeQuery]).reduce((total, arr) => { return total + arr.length }, 0) : 0;
-    const newSearchDataLength = categoryDataLength + facetDataLength;
-
-    if (autocomplete === null || newSearchDataLength !== lastSearchDataCount) {
-      const newSearchData = [];
-      if (schema.categories) {
-        schema.categories.forEach((category) => {
-          newSearchData.push({
-            id: category.id,
-            type: 'category',
-            label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
-            data: category.filters ? category.filters.reduce((accumulator, filter) => {
-              const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
-                return {
-                  id: facet.id,
-                  value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
-                }
-              }) : []
-
-              return accumulator.concat(searcheableFacet)
-            }, []) : []
-          })
-        })
-      }
-      if (facets[activeQuery]) {
-        Object.keys(facets[activeQuery])
-          .forEach((key) => {
-            newSearchData.push({
-              id: key,
-              type: 'filter',
-              label: intl.formatMessage({ id: `screen.patientvariant.filter_${key}` }),
-              data: facets[activeQuery][key].map((value) => {
-                return {
-                  id: value.value,
-                  value: value.value,
-                  count: value.count,
-                }
-              })
-            })
-          })
-      }
-      const autocomplete = Autocompleter(newSearchData, createTokenizer)
-
-      return {
-        autocomplete,
-        searchData: newSearchData
-      }
-    }
-  }
-*/
-
   handleColumnsReordered(reorderedColumns) {
     const { columns, currentTab } = this.state;
 

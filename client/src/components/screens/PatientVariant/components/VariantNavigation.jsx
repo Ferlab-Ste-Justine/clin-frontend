@@ -32,7 +32,7 @@ class VariantNavigation extends React.Component {
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
     this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 500, { leading: true });
-    this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
+    this.handleNavigationSearchSelection = this.handleNavigationSearchSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
   }
 
@@ -75,8 +75,10 @@ class VariantNavigation extends React.Component {
     }
   }
 
-  handleNavigationSelection(value, option) {
-    console.log('handleNavigationSelection', value, option);
+  handleNavigationSearchSelection(value, option) {
+    console.log('+ handleNavigationSelection +');
+    console.log('+ value ' + JSON.stringify(value));
+    console.log('+ option ' + JSON.stringify(option));
   }
 
   handleFilterSelection({ key }) {
@@ -252,7 +254,7 @@ class VariantNavigation extends React.Component {
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
-          <AutoComplete.Option key={match.id} group={group} value={match.value} disabled>
+          <AutoComplete.Option key={match.id} group={group} value={match.value}>
             {match.value} {match.count && (<Tag>{match.count}</Tag>)}
           </AutoComplete.Option>
         ))}
@@ -271,7 +273,7 @@ class VariantNavigation extends React.Component {
                   optionLabelProp="value"
                   size="large"
                   dataSource={autocompletes}
-                  onSelect={this.handleNavigationSelection}
+                  //onSelect={this.handleNavigationSearchSelection}
                   onChange={this.handleNavigationSearch}
                   placeholder="Recherche de filtres"
                 >
