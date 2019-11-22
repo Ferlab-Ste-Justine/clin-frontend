@@ -68,18 +68,18 @@ class VariantNavigation extends React.Component {
           })
         })
       })
-    }
-    /*else {
+    } else {
       this.setState({
         searchResults: [],
       })
-    }*/
+    }
   }
 
   handleNavigationSelection(value, option) {
+    console.log('----- - -----');
     console.log('+ handleNavigationSelection +');
     console.log('+ value ' + JSON.stringify(value));
-    console.log('+ option ' + JSON.stringify(option));
+    console.log('+ option ', JSON.stringify(cloneDeep(option)));
   }
 
   handleFilterSelection({ key }) {
@@ -94,9 +94,6 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterChange(filter) {
-
-    console.log('+ handleFilterChange ? ' + JSON.stringify(filter))
-
     const { onEditCallback } = this.props;
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
@@ -257,7 +254,7 @@ class VariantNavigation extends React.Component {
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
-          <AutoComplete.Option key={match.id} group={group} value={match.value}>
+          <AutoComplete.Option key={match.id} value={match.value}>
             {match.value} {match.count && (<Tag>{match.count}</Tag>)}
           </AutoComplete.Option>
         ))}
@@ -273,12 +270,11 @@ class VariantNavigation extends React.Component {
               <AutoComplete
                 allowClear
                 autoFocus
-                optionLabelProp="value"
                 size="large"
                 dataSource={autocompletes}
                 onSearch={this.handleNavigationSearch}
                 onSelect={this.handleNavigationSelection}
-                onChange={() => {}}
+                optionLabelProp="value"
                 placeholder="Recherche de filtres"
               >
                 <Input prefix={<Icon type="search" />} />
@@ -286,6 +282,11 @@ class VariantNavigation extends React.Component {
             )}
           />
         </Menu>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
         <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
