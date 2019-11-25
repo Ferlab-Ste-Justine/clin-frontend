@@ -109,7 +109,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
 
 const TableBody = (props) => {
   const {
-    isLoading, columns, size, total, renderMode, enableGhostCells, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback,
+    isLoading, columns, size, total, renderMode, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback,
   } = props;
 
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
@@ -128,7 +128,6 @@ const TableBody = (props) => {
         renderMode={renderMode}
         enableColumnReordering={enableReordering}
         enableColumnResizing={enableResizing}
-        enableGhostCells={enableGhostCells}
         bodyContextMenuRenderer={renderContextMenu}
         onColumnsReordered={handleColumnsReordered}
       >
@@ -150,7 +149,6 @@ TableBody.propTypes = {
   total: PropTypes.number,
   columns: PropTypes.shape([]),
   renderMode: PropTypes.string,
-  enableGhostCells: PropTypes.bool,
   enableReordering: PropTypes.bool,
   enableResizing: PropTypes.bool,
   isLoading: PropTypes.bool,
@@ -163,7 +161,6 @@ TableBody.defaultProps = {
   total: 0,
   columns: [],
   renderMode: RenderMode.BATCH_ON_UPDATE,
-  enableGhostCells: true,
   enableReordering: true,
   enableResizing: true,
   isLoading: false,
