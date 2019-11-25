@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Card, Row, Col, Form, Icon, Input, Button, Typography
+  Card, Row, Col, Form, Input, Button, Typography
 } from 'antd';
 import { injectIntl } from 'react-intl';
 import IconKit from 'react-icons-kit';
@@ -18,7 +18,6 @@ class LoginForm extends React.Component {
   constructor() {
     super();
     this.state = {
-      animationClass: '',
       submitLoading: false,
       forgotLoading: false,
     };
@@ -38,15 +37,6 @@ class LoginForm extends React.Component {
       },
     });
     form.validateFields();
-    this.setState({
-      animationClass: 'animated flipInX',
-    });
-  }
-
-  componentWillUnmount() {
-    this.setState({
-      animationClass: 'animated zoomOut',
-    });
   }
 
   handleSubmit(e) {
@@ -74,7 +64,6 @@ class LoginForm extends React.Component {
 
   render() {
     const { appIsLoading, form, intl } = this.props;
-    const { animationClass } = this.state;
     const { submitLoading, forgotLoading } = this.state;
     const { Text } = Typography;
 
@@ -95,7 +84,7 @@ class LoginForm extends React.Component {
 
 
     return (
-      <Card bordered={false} id="login" className={animationClass}>
+      <Card bordered={false} id="login">
         <Row type="flex" justify="end">
           <a className="newAccount">{createAccount}</a>
         </Row>
