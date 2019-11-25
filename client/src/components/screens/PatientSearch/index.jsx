@@ -620,7 +620,6 @@ class PatientSearchScreen extends React.Component {
                       onColumnsReordered={this.handleColumnsReordered}
                       bodyContextMenuRenderer={renderBodyContextMenu}
                       renderMode={RenderMode.NONE}
-                      enableGhostCells
                       className="patientTable"
                     >
                       { visibleColumns.map(column => (column)) }
