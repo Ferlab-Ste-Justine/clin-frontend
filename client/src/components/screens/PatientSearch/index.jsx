@@ -87,13 +87,13 @@ class PatientSearchScreen extends React.Component {
     this.state.allColumns = [
       <Column
         key="0"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
-        cellRenderer={this.getCellRenderer('id', 'patient-link')}
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
+        cellRenderer={this.getCellRenderer('status', 'status-tag')}
       />,
       <Column
         key="1"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
-        cellRenderer={this.getCellRenderer('status', 'status-tag')}
+        name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
+        cellRenderer={this.getCellRenderer('id', 'patient-link')}
       />,
       <Column
         key="2"
@@ -248,7 +248,7 @@ class PatientSearchScreen extends React.Component {
           const { data } = this.state;
           const value = data[row] ? data[row][key] : '';
           return (
-            <Cell interactive={true}>
+            <Cell>
               <Text className="CellValue">{value}</Text>
             </Cell>
           );
@@ -272,8 +272,10 @@ class PatientSearchScreen extends React.Component {
     csvExporter.generateCsv(data);
   }
 
-  handleReordering() {
+  handleReordering(e) {
     const { isReordering } = this.state;
+
+    e.target.blur()
     this.setState({
       isReordering: !isReordering,
     });
@@ -367,9 +369,10 @@ class PatientSearchScreen extends React.Component {
     });
   }
 
-  handleOpenColumnView() {
+  handleOpenColumnView(e) {
     const { isColumnsCardOpen } = this.state;
 
+    isColumnsCardOpen ? e.target.blur()  :null
     this.setState({
       isColumnsCardOpen: !isColumnsCardOpen,
     });
@@ -617,9 +620,7 @@ class PatientSearchScreen extends React.Component {
                       onColumnsReordered={this.handleColumnsReordered}
                       bodyContextMenuRenderer={renderBodyContextMenu}
                       renderMode={RenderMode.NONE}
-                      enableGhostCells
                       className="patientTable"
-                      numFrozenColumns={1}
                     >
                       { visibleColumns.map(column => (column)) }
                     </Table>
