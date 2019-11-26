@@ -30,6 +30,8 @@ div.action-container {
   }
 
   .actions {
+    display: flex;
+    align-items: center;
     &.left {
       button {
         margin-right: 10px;
@@ -136,6 +138,7 @@ div.query {
   justify-content: space-between;
   border: 1px solid #AAAAAA;
   border-left: none;
+  width: 100%;
 
   &.dirty {
     border: 1px dashed #AAAAAA;
