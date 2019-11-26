@@ -95,7 +95,7 @@ const fr = {
   'screen.patientsearch.table.firstName': 'Prénom',
   'screen.patientsearch.table.lastName': 'Nom',
   'screen.patientsearch.table.dob': 'Date de naissance',
-  'screen.patientsearch.table.familyId': 'ID Famille',
+  'screen.patientsearch.table.familyComposition': 'ID Famille',
   'screen.patientsearch.table.position': 'Position',
   'screen.patientsearch.table.practitioner': 'Médecin référent',
   'screen.patientsearch.table.request': 'Requête',

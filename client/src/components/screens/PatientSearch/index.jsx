@@ -105,17 +105,15 @@ class PatientSearchScreen extends React.Component {
       name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
       cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
     />,
-
     <Column
       key="4"
       name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
       cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
     />,
-
     <Column
       key="5"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.familyId' })}
-      cellRenderer={this.getCellRenderer('familyId')}
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' })}
+      cellRenderer={this.getCellRenderer('familyComposition')}
     />,
     <Column
       key="6"
@@ -132,13 +130,11 @@ class PatientSearchScreen extends React.Component {
       name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
       cellRenderer={this.getCellRenderer('request')}
     />,
-
     <Column
       key="9"
       name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
       cellRenderer={this.getCellRenderer('status', 'status-tag')}
     />,
-
     ];
 
     this.state.facet = [
@@ -174,12 +170,15 @@ class PatientSearchScreen extends React.Component {
           firstName: result.details.firstName,
           lastName: result.details.lastName,
           birthDate: result.details.birthDate,
-          familyId: result.family.composition,
+          familyId: result.family.id,
+          familyComposition: result.family.composition || '',
           proband: result.details.proband,
           practitioner: result.practitioner.name,
           request: (lastRequest ? lastRequest.id : ''),
         };
       });
+
+      console.log('+ data ' + JSON.stringify(data));
 
       return {
         data,
@@ -315,7 +314,7 @@ class PatientSearchScreen extends React.Component {
     });
 
     if (!query || query.length < 1) {
-      actions.searchPatientsByQuery(null, 1, size);
+      actions.searchPatientsByQuery({}, 1, size);
     } else {
       actions.autoCompletePatients('complete', query, 1, size);
     }
@@ -459,9 +458,9 @@ class PatientSearchScreen extends React.Component {
     const {
       allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns,  isFacetOpen,facet, isColumnsCardOpen
     } = this.state;
+
     const { Title } = Typography;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
-    const downloadText = intl.formatMessage({ id: 'screen.patientsearch.download' });
     const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
     const current = ((page - 1) * size) + 1;
     const pageTotal = size * page;
@@ -616,6 +615,7 @@ class PatientSearchScreen extends React.Component {
                       renderMode={RenderMode.NONE}
                       className="patientTable"
                       defaultRowHeight={36}
+                      numFrozenColumns={1}
                     >
                       { visibleColumns }
                     </Table>
