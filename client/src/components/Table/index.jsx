@@ -118,6 +118,7 @@ const TableBody = (props) => {
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
 
+  console.log('columns', columns);
   return (
     <Spin spinning={isLoading}>
       <TableHeader />

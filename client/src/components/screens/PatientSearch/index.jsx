@@ -23,6 +23,7 @@ import {
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
+import TableResults, { createCellRenderer } from '../../Table/index';
 
 import './style.scss';
 import style from '../../../containers/App/style.module.scss';
@@ -47,6 +48,7 @@ const renderBodyContextMenu = context => (
 class PatientSearchScreen extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       autoCompleteIsOpen: false,
       allColumns: [],
@@ -59,7 +61,10 @@ class PatientSearchScreen extends React.Component {
       columnName: [],
       isFacetOpen: false,
       facetFilterOpen: [],
-      facet:[]
+      facet:[],
+
+
+      columnPreset:[]
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -83,6 +88,20 @@ class PatientSearchScreen extends React.Component {
 
     // @NOTE Initialize Component State
     const { intl } = props;
+    this.state.columnPreset= [
+      { key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer:this.getCellRenderer('id', 'patient-link')},
+
+    ];
+
     this.state.allColumns = [
  <Column
         key="0"
@@ -456,7 +475,7 @@ class PatientSearchScreen extends React.Component {
     const { patient } = search;
     const { total } = patient;
     const {
-      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns,  isFacetOpen,facet, isColumnsCardOpen
+      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns,  isFacetOpen,facet, isColumnsCardOpen,columnPreset
     } = this.state;
 
     const { Title } = Typography;
@@ -619,6 +638,15 @@ class PatientSearchScreen extends React.Component {
                     >
                       { visibleColumns }
                     </Table>
+
+
+                      <TableResults
+                        key="patientTable"
+                        size={size}
+                        total={total}
+                        columns={columnPreset}
+                        reorderColumnsCallback={this.handleColumnsReordered}
+                      />
                   </Col>
                 </Row>
                 <br />

@@ -19,6 +19,8 @@ import TablePagination from '../../Table/Pagination'
 import VariantNavigation from './components/VariantNavigation';
 import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
 
+
+
 import './style.scss';
 import { appShape } from '../../../reducers/app';
 import { patientShape } from '../../../reducers/patient';
