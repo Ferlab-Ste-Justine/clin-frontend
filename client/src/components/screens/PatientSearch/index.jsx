@@ -57,7 +57,7 @@ class PatientSearchScreen extends React.Component {
       isReordering: false,
       isColumnsCardOpen: false,
       columnName: [],
-      isFacetOpen: true,
+      isFacetOpen: false,
       facetFilterOpen: [],
       facet:[]
     };
@@ -81,65 +81,64 @@ class PatientSearchScreen extends React.Component {
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
     this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
 
-
     // @NOTE Initialize Component State
     const { intl } = props;
     this.state.allColumns = [
-      <Column
+ <Column
         key="0"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
-        cellRenderer={this.getCellRenderer('status', 'status-tag')}
-      />,
-      <Column
-        key="1"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
         cellRenderer={this.getCellRenderer('id', 'patient-link')}
       />,
       <Column
-        key="2"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.mrn' })}
-        cellRenderer={this.getCellRenderer('mrn')}
-      />,
-      <Column
-        key="3"
+        key="1"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.organization' })}
         cellRenderer={this.getCellRenderer('organization')}
       />,
+
       <Column
-        key="4"
+        key="2"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
         cellRenderer={this.getCellRenderer('firstName', 'bold-string')}
       />,
-      <Column
-        key="5"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
-        cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
-      />,
-      <Column
-        key="6"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
-        cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
-      />,
-      <Column
-        key="7"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.familyId' })}
-        cellRenderer={this.getCellRenderer('familyId')}
-      />,
-      <Column
-        key="8"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.position' })}
-        cellRenderer={this.getCellRenderer('proband')}
-      />,
-      <Column
-        key="9"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' })}
-        cellRenderer={this.getCellRenderer('practitioner')}
-      />,
-      <Column
-        key="10"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
-        cellRenderer={this.getCellRenderer('request')}
-      />,
+    <Column
+      key="3"
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
+      cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
+    />,
+
+    <Column
+      key="4"
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
+      cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
+    />,
+
+    <Column
+      key="5"
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.familyId' })}
+      cellRenderer={this.getCellRenderer('familyId')}
+    />,
+    <Column
+      key="6"
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.position' })}
+      cellRenderer={this.getCellRenderer('proband')}
+    />,
+    <Column
+      key="7"
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' })}
+      cellRenderer={this.getCellRenderer('practitioner')}
+    />,
+    <Column
+      key="8"
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
+      cellRenderer={this.getCellRenderer('request')}
+    />,
+
+    <Column
+      key="9"
+      name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
+      cellRenderer={this.getCellRenderer('status', 'status-tag')}
+    />,
+
     ];
 
     this.state.facet = [
@@ -175,7 +174,7 @@ class PatientSearchScreen extends React.Component {
           firstName: result.details.firstName,
           lastName: result.details.lastName,
           birthDate: result.details.birthDate,
-          familyId: result.family.id,
+          familyId: result.family.composition,
           proband: result.details.proband,
           practitioner: result.practitioner.name,
           request: (lastRequest ? lastRequest.id : ''),
@@ -402,7 +401,7 @@ class PatientSearchScreen extends React.Component {
     let { visibleColumns, allColumns, columnName } = this.state;
 
     columnName = [];
-    allColumns.map((column) => {
+    allColumns.map(column => {
       columnName.push(column.props.name);
     });
 
@@ -421,10 +420,11 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleOpenFacet() {
-    const { isFacetOpen } = this.state;
+    const { isFacetOpen, columnsWidth } = this.state;
 
     this.setState({
       isFacetOpen: !isFacetOpen,
+      columnsWidth:120,
     });
   }
 
@@ -457,7 +457,7 @@ class PatientSearchScreen extends React.Component {
     const { patient } = search;
     const { total } = patient;
     const {
-      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns, isColumnsCardOpen, isFacetOpen,facet
+      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns,  isFacetOpen,facet, isColumnsCardOpen
     } = this.state;
     const { Title } = Typography;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
@@ -466,7 +466,6 @@ class PatientSearchScreen extends React.Component {
     const current = ((page - 1) * size) + 1;
     const pageTotal = size * page;
     const checkColumns = this.getCheckColumns();
-
     const cardInputTitle = (
       <Input
         placeholder="Rechercher..."
@@ -484,9 +483,7 @@ class PatientSearchScreen extends React.Component {
                 <IconKit size={16} icon={ic_replay} />
               </a>
             </Row>
-          )
-          }
-
+          ) }
           <Row>
             <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange} option={columnName} value={checkColumns}>
               {columnName.map((name, index) => (
@@ -501,7 +498,6 @@ class PatientSearchScreen extends React.Component {
         </Card>
       </Popover>
     );
-
 
     return (
       <Content>
@@ -521,8 +517,7 @@ class PatientSearchScreen extends React.Component {
                 </div>
                 { isFacetOpen && (
                      <IconKit size={16} icon={ic_close} />
-                )
-                }
+                )}
               </Button>
             </Col>
             <Col className="autoSearch">
@@ -591,7 +586,7 @@ class PatientSearchScreen extends React.Component {
                     </Button>
                   </Col>
                   <Col>
-                    <Dropdown overlay={overlay} trigger="click" visible={isColumnsCardOpen} placement="bottomRight">
+                    <Dropdown overlay={overlay} trigger="click"  placement="bottomRight"  visible={isColumnsCardOpen}>
                       <Button
                         onClick={this.handleOpenColumnView}
                         className={`${style.btn} ${style.btnSec}`}
@@ -618,11 +613,11 @@ class PatientSearchScreen extends React.Component {
                       enableColumnReordering={isReordering}
                       enableColumnResizing
                       onColumnsReordered={this.handleColumnsReordered}
-                      bodyContextMenuRenderer={renderBodyContextMenu}
                       renderMode={RenderMode.NONE}
                       className="patientTable"
+                      defaultRowHeight={36}
                     >
-                      { visibleColumns.map(column => (column)) }
+                      { visibleColumns }
                     </Table>
                   </Col>
                 </Row>

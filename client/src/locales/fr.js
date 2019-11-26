@@ -67,7 +67,7 @@ const fr = {
   'screen.patient.details.notes': 'Notes',
   'screen.patient.details.mother': 'Mère',
   'screen.patient.details.father': 'Père',
-  'screen.patient.details.familyId': 'ID Famille',
+  'screen.patient.details.familyId': 'Famille',
   'screen.patient.details.configuration': 'Configuration',
   'screen.patient.details.dateAndTime': 'Date et heure',
   'screen.patient.details.ontology': 'Ontologie',

@@ -104,11 +104,11 @@ class PatientVariantScreen extends React.Component {
 
     this.state.currentTab = VARIANT_TAB
     this.state.columns[VARIANT_TAB] = cloneDeep(this.columnPreset[VARIANT_TAB])
-    this.state.visibleColumns[VARIANT_TAB] = this.columnPreset[VARIANT_TAB].map(column => column.key )
+    this.state.visibleColumns[VARIANT_TAB] = this.columnPreset[VARIANT_TAB].map(column => column.key)
 
     //@TODO Genes Tab
     this.state.columns[GENE_TAB] = cloneDeep(this.columnPreset[GENE_TAB])
-    this.state.visibleColumns[GENE_TAB] = this.columnPreset[GENE_TAB].map(column => column.key )
+    this.state.visibleColumns[GENE_TAB] = this.columnPreset[GENE_TAB].map(column => column.key)
 
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
@@ -121,64 +121,6 @@ class PatientVariantScreen extends React.Component {
     const { activeQuery } = variant;
     this.handleQuerySelection(activeQuery);
   }
-
-  /*
-  static getDerivedStateFromProps(props, state) {
-    const { intl, variant } = props;
-    const { facets, schema, activeQuery } = variant;
-    const { searchData, autocomplete } = state
-    const lastSearchDataCount = searchData.length;
-    const categoryDataLength = schema.categories ? schema.categories.length : 0;
-    const facetDataLength =  facets[activeQuery] ? Object.values(facets[activeQuery]).reduce((total, arr) => { return total + arr.length }, 0) : 0;
-    const newSearchDataLength = categoryDataLength + facetDataLength;
-
-    if (autocomplete === null || newSearchDataLength !== lastSearchDataCount) {
-      const newSearchData = [];
-      if (schema.categories) {
-        schema.categories.forEach((category) => {
-          newSearchData.push({
-            id: category.id,
-            type: 'category',
-            label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
-            data: category.filters ? category.filters.reduce((accumulator, filter) => {
-              const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
-                return {
-                  id: facet.id,
-                  value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
-                }
-              }) : []
-
-              return accumulator.concat(searcheableFacet)
-            }, []) : []
-          })
-        })
-      }
-      if (facets[activeQuery]) {
-        Object.keys(facets[activeQuery])
-          .forEach((key) => {
-            newSearchData.push({
-              id: key,
-              type: 'filter',
-              label: intl.formatMessage({ id: `screen.patientvariant.filter_${key}` }),
-              data: facets[activeQuery][key].map((value) => {
-                return {
-                  id: value.value,
-                  value: value.value,
-                  count: value.count,
-                }
-              })
-            })
-          })
-      }
-      const autocomplete = Autocompleter(newSearchData, createTokenizer)
-
-      return {
-        autocomplete,
-        searchData: newSearchData
-      }
-    }
-  }
-*/
 
   handleColumnsReordered(reorderedColumns) {
     const { columns, currentTab } = this.state;
@@ -498,6 +440,7 @@ class PatientVariantScreen extends React.Component {
               <Row>
                 <Col align="end">
                   <TablePagination
+                    key="variant-results-pagination"
                     size={size}
                     total={total}
                     page={page}

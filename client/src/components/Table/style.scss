@@ -1,5 +1,12 @@
+.bp3-table-container{
+border-bottom:1px solid #CDDDE8;
+}
+
+
+
 .bp3-table-container, .bp3-table-column-headers .bp3-table-header , .bp3-table-row-headers .bp3-table-header, .bp3-table-cell, .bp3-table-menu{
     box-shadow:none;
+
 }
 
 .bp3-table-quadrant-left, .bp3-table-quadrant.bp3-table-quadrant-top-left, .bp3-table-menu{
@@ -23,7 +30,6 @@
 }
 
 .bp3-table-row-headers .bp3-table-header:nth-child(even)::before, .bp3-table-cell-ledger-odd{
-height:40px;
     background-color:#F6F9FB;
 }
 
@@ -37,6 +43,10 @@ height:40px;
     height: 20px;
     letter-spacing: 0.25px;
     line-height: 20px;
+
+}
+
+.bp3-table-row-headers .bp3-table-header::before{
     border-right:1px solid #CDDDE8;
 }
 

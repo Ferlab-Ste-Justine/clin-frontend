@@ -67,7 +67,7 @@ div.ant-tag {
 
             .ant-input{
                 border-radius:2px;
-                border:none;
+                border:1px solid white;
                 width:100%;
 
                 font-size: 14px;
@@ -84,7 +84,7 @@ div.ant-tag {
             }
 
             .ant-input:hover{
-                border: 1px solid rgba(28, 132, 189, 0.2);
+                border-color:#CFE6F2;
             }
 
             .ant-select-selection__placeholder{
@@ -180,6 +180,10 @@ div.ant-tag {
      border:1px solid #1d8bc6;
    }
 
+   .ant-checkbox-checked::after{
+    border:none;
+   }
+
    .ant-checkbox-inner{
      border:1px solid rgba(35, 55, 80, 0.54);
      height:18px;
@@ -189,6 +193,8 @@ div.ant-tag {
  .ant-checkbox-inner::after{
    left:22%;
  }
+
+
 
 }
 
@@ -215,7 +221,7 @@ div.ant-tag {
       }
 
       .ant-card-body{
-       padding: 8px;
+       padding: 12px 0 0 0;
        width:100%;
       }
 
@@ -226,6 +232,17 @@ div.ant-tag {
         .ant-card-head-title{
           padding:0
         }
+      }
+
+      a{
+        padding:0 8px;
+      }
+
+      label{
+        padding:0 8px;
+      }
+      label:hover{
+        background-color:#F7FBFD;
       }
 
       .ant-checkbox + span{
