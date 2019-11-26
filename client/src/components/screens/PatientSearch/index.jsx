@@ -85,7 +85,7 @@ class PatientSearchScreen extends React.Component {
     // @NOTE Initialize Component State
     const { intl } = props;
     this.state.allColumns = [
-      <Column
+ <Column
         key="0"
         name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
         cellRenderer={this.getCellRenderer('id', 'patient-link')}
