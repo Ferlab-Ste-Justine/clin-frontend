@@ -432,8 +432,8 @@ class PatientSearchScreen extends React.Component {
     const open = this.isCategorieFacetOpen(index);
     return (
       <a onClick={this.changeFacetFilterOpen.bind(null, index)} key={index}>
-        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
         {name}
+        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
       </a>
     );
   }
