@@ -178,8 +178,6 @@ class PatientSearchScreen extends React.Component {
         };
       });
 
-      console.log('+ data ' + JSON.stringify(data));
-
       return {
         data,
         page: nextProps.search[searchType].page,
