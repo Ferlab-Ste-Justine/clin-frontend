@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox, Divider,
 } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode,
@@ -64,6 +64,7 @@ class PatientSearchScreen extends React.Component {
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
     this.handleAutoCompletePressEnter = this.handleAutoCompletePressEnter.bind(this);
+    this.handleAutoCompleteClose = this.handleAutoCompleteClose.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.getCellRenderer = this.getCellRenderer.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
@@ -302,6 +303,12 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
+  handleAutoCompleteClose() {
+    this.setState({
+      autoCompleteIsOpen: false,
+    });
+  }
+
   handleAutoCompletePressEnter(e) {
     const { size } = this.state;
     const { actions } = this.props;
@@ -496,6 +503,18 @@ class PatientSearchScreen extends React.Component {
       </Popover>
     );
 
+    const autoCompleteResults = search.autocomplete.results.map(result => {
+      return {
+        value: result.id,
+        text: (<>
+          <Text strong>{result.firstName} {result.lastName}</Text>
+          <br />
+          <Text disabled style={{ fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block' }}>{result.ramq}</Text>
+          <hr style={{ borderTop: 'none', borderBottom: '1px solid #CCCCCC', marginBottom: -5, marginTop: 3 }}/>
+        </>)
+      };
+    })
+
     return (
       <Content>
         <Header />
@@ -526,11 +545,11 @@ class PatientSearchScreen extends React.Component {
                 allowClear
                 autoFocus
                 defaultActiveFirstOption={false}
-                dataSource={search.autocomplete.results}
+                dataSource={autoCompleteResults}
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
                 open={autoCompleteIsOpen}
-
+                onBlur={this.handleAutoCompleteClose}
               >
                 <Input prefix={<Icon type="search" />} onPressEnter={this.handleAutoCompletePressEnter} />
               </AutoComplete>

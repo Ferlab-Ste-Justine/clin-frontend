@@ -11,7 +11,6 @@ import {
 import { cloneDeep, find, flatten } from 'lodash';
 
 import Header from '../../Header';
-import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import TableResults, { createCellRenderer } from '../../Table/index';
@@ -350,7 +349,6 @@ class PatientVariantScreen extends React.Component {
     return (
       <Content>
         <Header />
-        <Navigation />
         <Card>
           <PageHeader
               title={(
