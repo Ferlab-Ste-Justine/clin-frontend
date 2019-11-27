@@ -1,3 +1,7 @@
+@import '../../containers/App/variables.scss';
+@import '/../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
+@import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
+
 .bp3-table-container{
 }
 
@@ -80,16 +84,39 @@
 }
 
 .CellValue{
-    height: 20px;
-    color: rgba(35, 55, 80, 0.78);
-    font-size: 14px;
-    font-family: Roboto;
-    font-weight: normal;
-    letter-spacing: 0.25px;
-    line-height: 20px;
+    span{
+        color: rgba(35, 55, 80, 0.78);
+        font-size: 14px;
+        font-family: Roboto;
+        font-weight: normal;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+
+        .ant-badge-status-default{
+            background-color:#b5b5b5;
+        }
+    }
+
+    .ant-btn{
+        padding:0;
+        height:auto;
+        font-size:inherit;
+
+        span{
+            height: 20px;
+            color: $primary-blue;
+            font-size: 14px;
+            font-family: Roboto;
+            font-weight: normal;
+            letter-spacing: 0.25px;
+            line-height: 20px;
+        }
+    }
+
+    a.ant-btn{
+        line-height:0;
+    }
 }
-
-
 
 .ant-pagination-item-active{
     background-color:#E4F1F9;

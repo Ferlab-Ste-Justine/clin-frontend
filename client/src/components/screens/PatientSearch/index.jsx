@@ -70,7 +70,6 @@ class PatientSearchScreen extends React.Component {
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
     this.handleAutoCompletePressEnter = this.handleAutoCompletePressEnter.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
-    this.getCellRenderer = this.getCellRenderer.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
@@ -85,20 +84,21 @@ class PatientSearchScreen extends React.Component {
     this.getCardCategoryTitle = this.getCardCategoryTitle.bind(this);
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
     this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
+    this.getData = this.getData.bind(this)
 
     // @NOTE Initialize Component State
     const { intl } = props;
     this.state.allColumns= [
-      { key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer:this.getCellRenderer('organization')},
-      { key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer:this.getCellRenderer('firstName', 'bold-string')},
-      { key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer:this.getCellRenderer('lastName', 'bold-string')},
-      { key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer:this.getCellRenderer('birthDate', 'bold-string')},
-      { key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }), renderer:this.getCellRenderer('familyComposition')},
-      { key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }), renderer:this.getCellRenderer('proband')},
-      { key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }), renderer:this.getCellRenderer('practitioner')},
-      { key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }), renderer:this.getCellRenderer('request')},
-      { key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer:this.getCellRenderer('status', 'status-tag')},
+      { key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' }) },
+      { key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
+      { key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
+      { key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
+      { key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
+      { key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
+      { key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }),renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
+      { key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
+      { key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }),renderer: createCellRenderer('text', this.getData, { key: 'request' })},
+      { key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
 
     ];
 
@@ -155,69 +155,10 @@ class PatientSearchScreen extends React.Component {
     return state;
   }
 
-  getCellRenderer(key, type) {
-    switch (type) {
-      case 'patient-link':
-        return (row) => {
-          const { actions } = this.props;
-          const { data } = this.state;
-          const value = data[row] ? data[row][key] : '';
-          return (
-            <Cell>
-              <Text className="CellValue patientLink">
-                <a /* eslint-disable-line */
-                  data-patient-id={value}
-                  onClick={(e) => {
-                    const id = e.currentTarget.attributes['data-patient-id'].nodeValue;
-                    actions.navigateToPatientScreen(id);
-                  }}
-                >
-                  {value}
-                </a>
-              </Text>
-            </Cell>
-          );
-        };
-
-      case 'bold-string':
-        return (row) => {
-          const { data } = this.state;
-          const value = data[row] ? data[row][key] : '';
-          return (
-            <Cell>
-              <Text className="CellValue">{value}</Text>
-            </Cell>
-          );
-        };
-
-      case 'status-tag':
-        return (row) => {
-          const { data } = this.state;
-          const value = data[row] ? data[row][key] : '';
-          return (
-            <Cell>
-              <Row type="flex" align="middle">
-                {value && (
-                  <div className={value === 'completed' ? 'completed' : 'active'} />
-                )}
-                <Text className="CellValue">{value}</Text>
-              </Row>
-            </Cell>
-          );
-        };
-
-      default:
-        return (row) => {
-          const { data } = this.state;
-          const value = data[row] ? data[row][key] : '';
-          return (
-            <Cell>
-              <Text className="CellValue">{value}</Text>
-            </Cell>
-          );
-        };
+    getData() {
+      const { data } = this.state;
+      return data
     }
-  }
 
   exportToTsv() {
     const { page, size, data } = this.state;
@@ -355,7 +296,6 @@ class PatientSearchScreen extends React.Component {
     const addColumn = find(allColumns, column => toAdd.includes(column.label));
     const index = findIndex(allColumns, addColumn);
     addColumn ? visibleColumns.splice(index, 0, addColumn) : null;
-    console.log("coucou", visibleColumns)
     this.setState({
       visibleColumns,
     });
@@ -417,7 +357,6 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    console.log("retour")
     const { intl, search } = this.props;
     const { patient } = search;
     const { total } = patient;

@@ -95,7 +95,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
 
         return (
-          <Cell>{valueRenderer(value)}</Cell>
+          <Cell className="CellValue">{valueRenderer(value)}</Cell>
         );
       } catch (e) {
         return <Cell />;
@@ -119,7 +119,6 @@ const TableBody = (props) => {
 
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
-  console.log('columns', columns);
   return (
     <Spin spinning={isLoading}>
       <TableHeader />

@@ -1,5 +1,3 @@
-@import '/../../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
-@import '/../../../../../node_modules/@blueprintjs/table/src/table.scss';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 @import '../../../containers/App/variables.scss';
 
@@ -271,33 +269,4 @@ div.ant-tag {
 
       }
 }
-
-
-.active{
-    border-radius:50%;
-    background-color:#b5b5b5;
-    width:8px;
-    height:8px;
-    margin-right:8px;
-}
-
-.completed{
-    border-radius:50%;
-    background-color:#52c41a;
-    width:8px;
-    height:8px;
-    margin-right:8px;
-
-}
-
-.patientLink a{
-    height: 20px;
-    color: $primary-blue;
-    font-size: 14px;
-    font-family: Roboto;
-    font-weight: normal;
-    letter-spacing: 0.25px;
-    line-height: 20px;
-}
-
 
