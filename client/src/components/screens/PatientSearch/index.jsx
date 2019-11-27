@@ -20,13 +20,13 @@ import {
   cloneDeep, filter, pullAllBy, isEqual, find, findIndex,
 } from 'lodash';
 
+import './style.scss';
+import style from '../../../containers/App/style.module.scss';
+
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import TableResults, { createCellRenderer } from '../../Table/index';
-
-import './style.scss';
-import style from '../../../containers/App/style.module.scss';
 
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
@@ -88,72 +88,18 @@ class PatientSearchScreen extends React.Component {
 
     // @NOTE Initialize Component State
     const { intl } = props;
-    this.state.columnPreset= [
+    this.state.allColumns= [
       { key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }), renderer:this.getCellRenderer('id', 'patient-link')},
-      { key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer:this.getCellRenderer('id', 'patient-link')},
+      { key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer:this.getCellRenderer('organization')},
+      { key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer:this.getCellRenderer('firstName', 'bold-string')},
+      { key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer:this.getCellRenderer('lastName', 'bold-string')},
+      { key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer:this.getCellRenderer('birthDate', 'bold-string')},
+      { key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }), renderer:this.getCellRenderer('familyComposition')},
+      { key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }), renderer:this.getCellRenderer('proband')},
+      { key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }), renderer:this.getCellRenderer('practitioner')},
+      { key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }), renderer:this.getCellRenderer('request')},
+      { key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer:this.getCellRenderer('status', 'status-tag')},
 
-    ];
-
-    this.state.allColumns = [
- <Column
-        key="0"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.patientId' })}
-        cellRenderer={this.getCellRenderer('id', 'patient-link')}
-      />,
-      <Column
-        key="1"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.organization' })}
-        cellRenderer={this.getCellRenderer('organization')}
-      />,
-
-      <Column
-        key="2"
-        name={intl.formatMessage({ id: 'screen.patientsearch.table.firstName' })}
-        cellRenderer={this.getCellRenderer('firstName', 'bold-string')}
-      />,
-    <Column
-      key="3"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.lastName' })}
-      cellRenderer={this.getCellRenderer('lastName', 'bold-string')}
-    />,
-    <Column
-      key="4"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.dob' })}
-      cellRenderer={this.getCellRenderer('birthDate', 'bold-string')}
-    />,
-    <Column
-      key="5"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' })}
-      cellRenderer={this.getCellRenderer('familyComposition')}
-    />,
-    <Column
-      key="6"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.position' })}
-      cellRenderer={this.getCellRenderer('proband')}
-    />,
-    <Column
-      key="7"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' })}
-      cellRenderer={this.getCellRenderer('practitioner')}
-    />,
-    <Column
-      key="8"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.request' })}
-      cellRenderer={this.getCellRenderer('request')}
-    />,
-    <Column
-      key="9"
-      name={intl.formatMessage({ id: 'screen.patientsearch.table.status' })}
-      cellRenderer={this.getCellRenderer('status', 'status-tag')}
-    />,
     ];
 
     this.state.facet = [
@@ -164,7 +110,7 @@ class PatientSearchScreen extends React.Component {
     ]
 
     this.state.allColumns.map((column) => {
-      this.state.columnName.push(column.props.name);
+      this.state.columnName.push(column.label);
     });
 
     this.state.visibleColumns = cloneDeep(this.state.allColumns);
@@ -197,7 +143,7 @@ class PatientSearchScreen extends React.Component {
         };
       });
 
-      console.log('+ data ' + JSON.stringify(data));
+     // console.log('+ data ' + JSON.stringify(data));
 
       return {
         data,
@@ -375,7 +321,7 @@ class PatientSearchScreen extends React.Component {
     let { allColumns, columnName } = this.state;
     columnName = [];
     allColumns.map((column) => {
-      columnName.push(column.props.name);
+      columnName.push(column.label);
     });
 
     const search = value.target.value.toLowerCase();
@@ -401,15 +347,15 @@ class PatientSearchScreen extends React.Component {
     } = this.state;
 
     const uncheckedColumns = columnName.filter(name => !checkedValues.includes(name));
-    const toRemove = filter(visibleColumns, column => uncheckedColumns.includes(column.props.name));
+    const toRemove = filter(visibleColumns, column => uncheckedColumns.includes(column.label));
     pullAllBy(visibleColumns, toRemove, 'key');
 
     const check = this.getCheckColumns();
     const toAdd = checkedValues.filter(name => !check.includes(name));
-    const addColumn = find(allColumns, column => toAdd.includes(column.props.name));
+    const addColumn = find(allColumns, column => toAdd.includes(column.label));
     const index = findIndex(allColumns, addColumn);
     addColumn ? visibleColumns.splice(index, 0, addColumn) : null;
-
+    console.log("coucou", visibleColumns)
     this.setState({
       visibleColumns,
     });
@@ -420,7 +366,7 @@ class PatientSearchScreen extends React.Component {
 
     columnName = [];
     allColumns.map(column => {
-      columnName.push(column.props.name);
+      columnName.push(column.label);
     });
 
     visibleColumns = cloneDeep(allColumns);
@@ -433,7 +379,7 @@ class PatientSearchScreen extends React.Component {
   getCheckColumns() {
     const { visibleColumns } = this.state;
     const check = [];
-    visibleColumns.map(column => check.push(column.props.name));
+    visibleColumns.map(column => check.push(column.label));
     return check;
   }
 
@@ -471,6 +417,7 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
+    console.log("retour")
     const { intl, search } = this.props;
     const { patient } = search;
     const { total } = patient;
@@ -626,26 +573,14 @@ class PatientSearchScreen extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <Table
-                      numRows={(size <= total ? size : total)}
-                      enableColumnReordering={isReordering}
-                      enableColumnResizing
-                      onColumnsReordered={this.handleColumnsReordered}
-                      renderMode={RenderMode.NONE}
-                      className="patientTable"
-                      defaultRowHeight={36}
-                      numFrozenColumns={1}
-                    >
-                      { visibleColumns }
-                    </Table>
-
-
                       <TableResults
                         key="patientTable"
                         size={size}
                         total={total}
-                        columns={columnPreset}
+                        columns={visibleColumns}
                         reorderColumnsCallback={this.handleColumnsReordered}
+                        enableReordering={isReordering}
+                        numFrozenColumns={1}
                       />
                   </Col>
                 </Row>

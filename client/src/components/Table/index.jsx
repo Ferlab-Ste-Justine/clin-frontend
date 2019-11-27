@@ -1,7 +1,9 @@
+/* eslint-disable */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Table, Cell, RenderMode, Column, Utils,
+  Table, Cell, Column, Utils,
 } from '@blueprintjs/table';
 import {
   Badge, Button, Typography, Spin,
@@ -117,7 +119,6 @@ const TableBody = (props) => {
 
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
-
   console.log('columns', columns);
   return (
     <Spin spinning={isLoading}>
@@ -125,8 +126,6 @@ const TableBody = (props) => {
       <Table
         numRows={(size <= total ? size : total)}
         numFrozenColumns={numFrozenColumns}
-        enableGhostCells
-        renderMode={RenderMode.BATCH_ON_UPDATE}
         enableColumnReordering={enableReordering}
         enableColumnResizing={enableResizing}
         bodyContextMenuRenderer={renderContextMenu}
