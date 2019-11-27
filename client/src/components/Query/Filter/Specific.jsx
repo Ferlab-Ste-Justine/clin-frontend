@@ -15,9 +15,10 @@ import PropTypes from 'prop-types';
 import Filter, { FILTER_TYPE_SPECIFIC } from './index';
 import { FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_NONE, FILTER_OPERAND_TYPE_ONE } from './Generic';
 
+const SELECTOR_ALL = 'all'
 const SELECTOR_INTERSECTION = 'intersection'
 const SELECTOR_DIFFERENCE = 'difference'
-const SELECTORS = [SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE]
+const SELECTORS = [SELECTOR_ALL, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE]
 
 class SpecificFilter extends Filter {
 
@@ -47,7 +48,7 @@ class SpecificFilter extends Filter {
       const { data, dataSet } = props;
 
       this.state.draft = cloneDeep(data);
-      this.state.selector = SELECTOR_INTERSECTION;
+      this.state.selector = SELECTOR_ALL;
       this.state.selection = data.values ? cloneDeep(data.values) : [];
       this.state.page = 1;
       this.state.size = 10;
@@ -169,13 +170,26 @@ class SpecificFilter extends Filter {
       const { dataSet, externalDataSet } = this.props;
       const { selector } = this.state;
       const externalOntology = externalDataSet.ontology.map(ontology => ontology.code)
-      const options = selector === SELECTOR_INTERSECTION ?
-        dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) !== -1) :
-        dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) === -1)
+      let options = [];
+      let indeterminate = false;
+      switch (selector) {
+        default:
+        case SELECTOR_ALL:
+          options = dataSet
+          break;
+        case SELECTOR_INTERSECTION:
+          indeterminate = true;
+          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) !== -1)
+          break;
+        case SELECTOR_DIFFERENCE:
+          indeterminate = true;
+          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) === -1)
+          break;
+      }
 
       this.setState({
         selection: options.map(option => option.value),
-        indeterminate: false,
+        indeterminate,
       });
     }
   }
@@ -223,12 +237,13 @@ class SpecificFilter extends Filter {
   getEditor() {
     const { intl, config, renderCustomDataSelector } = this.props;
     const {
-      draft, selection, selector, size, page, allOptions,
+      draft, selection, selector, size, page, allOptions, indeterminate
     } = this.state;
     const { operand } = draft;
     const allSelected = allOptions ? selection.length === allOptions.length : false;
     const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
     const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
+    const selectorAll = intl.formatMessage({ id: 'screen.patientvariant.filter.specific.selector.all' });
     const selectorIntersection = intl.formatMessage({ id: 'screen.patientvariant.filter.specific.selector.intersection' });
     const selectorDifference = intl.formatMessage({ id: 'screen.patientvariant.filter.specific.selector.difference' });
     const minValue = size * (page - 1);
@@ -257,11 +272,12 @@ class SpecificFilter extends Filter {
       [
         { label: selectorIntersection, value: SELECTOR_INTERSECTION},
         { label: selectorDifference, value: SELECTOR_DIFFERENCE },
+        { label: selectorAll, value: SELECTOR_ALL },
       ],
       selector,
       allSelected ? selectNone : selectAll,
       allSelected,
-      (!allSelected && selection.length !== 0),
+      indeterminate,
     )
 
     return (
@@ -319,7 +335,7 @@ SpecificFilter.propTypes = {
   renderCustomDataSelector: PropTypes.shape.func,
 };
 SpecificFilter.defaultProps = {
-  renderCustomDataSelector: (onChangeCallback, onCheckAllCallback, values, selector, checkboxLabel, checkboxIsChecked, checkboxIsIndeterminate) => (
+  renderCustomDataSelector: (onChangeCallback, onCheckAllCallback, values, selector, checkboxLabel, checkboxIsChecked, checkboxIsIndeterminate = false) => (
     //@NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
     <>
       <br />
