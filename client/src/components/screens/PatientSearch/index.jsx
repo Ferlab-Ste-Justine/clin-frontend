@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox,
+  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox, Divider,
 } from 'antd';
 import {
   Column, Table, Utils, Cell, RenderMode,
@@ -62,14 +62,12 @@ class PatientSearchScreen extends React.Component {
       isFacetOpen: false,
       facetFilterOpen: [],
       facet:[],
-
-
       columnPreset:[]
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
     this.handleAutoCompletePressEnter = this.handleAutoCompletePressEnter.bind(this);
-    this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
+    this.handleAutoCompleteClose = this.handleAutoCompleteClose.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
@@ -92,14 +90,13 @@ class PatientSearchScreen extends React.Component {
       { key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' }) },
       { key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
       { key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
-      { key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
-      { key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
-      { key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
-      { key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }),renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
-      { key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
-      { key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }),renderer: createCellRenderer('text', this.getData, { key: 'request' })},
-      { key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
-
+      //{ key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
+      //{ key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
+      //{ key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
+      //{ key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }),renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
+      //{ key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
+      //{ key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }),renderer: createCellRenderer('text', this.getData, { key: 'request' })},
+      //{ key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
     ];
 
     this.state.facet = [
@@ -109,12 +106,8 @@ class PatientSearchScreen extends React.Component {
         "Category 2",
     ]
 
-    this.state.allColumns.map((column) => {
-      this.state.columnName.push(column.label);
-    });
-
+    this.state.columnName = this.state.allColumns.map(column => column.label)
     this.state.visibleColumns = cloneDeep(this.state.allColumns);
-
     this.state.facetFilterOpen = Array(this.state.columnName.length).fill(false);
   }
 
@@ -239,6 +232,12 @@ class PatientSearchScreen extends React.Component {
     });
   }
 
+  handleAutoCompleteClose() {
+    this.setState({
+      autoCompleteIsOpen: false,
+    });
+  }
+
   handlePageChange(page, size) {
     const { actions } = this.props;
     const { search } = this.props;
@@ -336,8 +335,8 @@ class PatientSearchScreen extends React.Component {
     const open = this.isCategorieFacetOpen(index);
     return (
       <a onClick={this.changeFacetFilterOpen.bind(null, index)} key={index}>
-        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
         {name}
+        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
       </a>
     );
   }
@@ -403,6 +402,18 @@ class PatientSearchScreen extends React.Component {
       </Popover>
     );
 
+    const autoCompleteResults = search.autocomplete.results.map(result => {
+      return {
+        value: result.id,
+        text: (<>
+          <Text strong>{result.firstName} {result.lastName}</Text>
+          <br />
+          <Text disabled style={{ fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block' }}>{result.ramq}</Text>
+          <hr style={{ borderTop: 'none', borderBottom: '1px solid #CCCCCC', marginBottom: -5, marginTop: 3 }}/>
+        </>)
+      };
+    })
+
     return (
       <Content>
         <Header />
@@ -433,11 +444,11 @@ class PatientSearchScreen extends React.Component {
                 allowClear
                 autoFocus
                 defaultActiveFirstOption={false}
-                dataSource={search.autocomplete.results}
+                dataSource={autoCompleteResults}
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
                 open={autoCompleteIsOpen}
-
+                onBlur={this.handleAutoCompleteClose}
               >
                 <Input prefix={<Icon type="search" />} onPressEnter={this.handleAutoCompletePressEnter} />
               </AutoComplete>
@@ -516,7 +527,7 @@ class PatientSearchScreen extends React.Component {
                         key="patientTable"
                         size={size}
                         total={total}
-                        columns={visibleColumns}
+                        columns={visibleColumns.map(column => column.renderer)}
                         reorderColumnsCallback={this.handleColumnsReordered}
                         enableReordering={isReordering}
                         numFrozenColumns={1}

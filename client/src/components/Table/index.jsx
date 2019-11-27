@@ -1,9 +1,7 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Table, Cell, Column, Utils,
+  Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
   Badge, Button, Typography, Spin,
@@ -95,7 +93,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
 
         return (
-          <Cell className="CellValue">{valueRenderer(value)}</Cell>
+          <Cell>{valueRenderer(value)}</Cell>
         );
       } catch (e) {
         return <Cell />;
@@ -119,12 +117,15 @@ const TableBody = (props) => {
 
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
+
   return (
     <Spin spinning={isLoading}>
       <TableHeader />
       <Table
         numRows={(size <= total ? size : total)}
         numFrozenColumns={numFrozenColumns}
+        enableGhostCells
+        renderMode={RenderMode.BATCH_ON_UPDATE}
         enableColumnReordering={enableReordering}
         enableColumnResizing={enableResizing}
         bodyContextMenuRenderer={renderContextMenu}

@@ -8,10 +8,11 @@ import {
   Layout, Row, Col, Dropdown, Menu, Icon,
 } from 'antd';
 import IconKit from 'react-icons-kit';
-import { ic_translate, ic_account_circle } from 'react-icons-kit/md';
+import { ic_translate, ic_account_circle, ic_location_searching } from 'react-icons-kit/md';
 import { Desktop, Tablet } from '../containers/Responsive';
 import { logoutUser } from '../actions/user';
 import { changeLanguage } from '../actions/app';
+import { navigateToPatientSearchScreen } from '../actions/router';
 import { appShape } from '../reducers/app';
 import { userShape } from '../reducers/user';
 
@@ -73,17 +74,26 @@ const Header = ({
           <img className="logo" alt={title} src="/images/logo_CQGC.svg" />
         </Col>
         <div className="secondaryNav">
-          <Col className="userName">
-            {user.username !== null && (
-            <Dropdown overlay={userMenu(intl, actions)} trigger={['click']}>
-              { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a className="ant-dropdown-link">
-                <Desktop><IconKit size={16} icon={ic_account_circle} /></Desktop>
-                {` ${user.firstName} `}
-              </a>
-            </Dropdown>
-            )}
-          </Col>
+          {user.username !== null && (
+            <>
+              <Col className="patientList">
+                  { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link" style={{ marginRight: 22 }}>
+                    <Desktop><IconKit size={16} icon={ic_location_searching} /></Desktop>
+                    {`Patients`}
+                  </a>
+              </Col>
+              <Col className="userName">
+                <Dropdown overlay={userMenu(intl, actions)} trigger={['click']}>
+                  { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a className="ant-dropdown-link">
+                    <Desktop><IconKit size={16} icon={ic_account_circle} /></Desktop>
+                    {` ${user.firstName} `}
+                  </a>
+                </Dropdown>
+              </Col>
+            </>
+          )}
           <Col>
             {app.locale.lang !== null && (
             <Dropdown overlay={languageMenu(intl, actions)}  trigger={['click']}>
@@ -113,6 +123,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     logoutUser,
     changeLanguage,
+    navigateToPatientSearchScreen,
   }, dispatch),
 });
 
