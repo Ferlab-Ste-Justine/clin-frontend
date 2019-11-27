@@ -1,7 +1,4 @@
 div.statement {
-  display: flex;
-  flex-direction: column;
-
   .draggable {
     cursor: grab;
   }
@@ -12,16 +9,11 @@ div.statement {
 
   .dragged {
     cursor: grabbing;
-    width: 80%;
-    margin-left: -10%;
+    width: 100%;
     filter: invert(0.15);
     > * {
       transform: scale(0.66);
     }
-  }
-
-  .ant-divider-horizontal {
-    margin: 15px 0 0 0;
   }
 }
 
@@ -39,27 +31,28 @@ div.action-container {
   }
 
   .actions {
+    display: flex;
+    align-items: center;
     &.left {
-      margin-left: -16px;
       button {
-        margin-left: 10px;
+        margin-right: 10px;
       }
     }
-
     &.right {
       margin-left: auto;
       button {
         margin-left: 10px;
       }
     }
-
   }
 }
 
 div.query-container {
   display: flex;
-  margin-top: 14px;
-  margin-right: 1em;
+  margin-top: 1em;
+  padding-right: 2em;
+  width: auto;
+  height: auto;
 
   .selector {
     display: flex;
@@ -73,11 +66,14 @@ div.query-container {
       font-size: 14px;
       font-weight: bold;
     }
-
   }
 
   .ant-badge {
     width: 100%;
+    height: auto;
+    .ant-badge-count {
+      background-color: #BBBBBB;
+    }
   }
 
   &.selected {
@@ -86,39 +82,27 @@ div.query-container {
     }
   }
 
-  .ant-badge-count {
-    background-color: #BBBBBB;
-  }
-
-  .ant-input{
-    border:none;
-    margin-bottom: -4px;
-  }
-
   &.active {
-
-    border-radius: unset;
-    width: auto;
-    height: auto;
-    .ant-badge {
-      width: 100%;
-      margin-right: unset;
-      overflow: initial;
-    }
-
+    background-color: transparent;
+    margin-right: 0;
     .query {
       background-color: aliceblue;
-      .ant-input{
+      .ant-input {
         border:1px solid #d9d9d9;
-        padding-left: 6px;
       }
     }
     .selector {
       background-color: aliceblue;
     }
-    .ant-badge-count {
-      background-color: #0e5a8a;
+    .ant-badge {
+      margin-right: 0;
+      .ant-badge-count {
+        background-color: #0e5a8a;
+      }
     }
+  }
+  > * {
+    margin-top: 5px;
   }
 }
 
@@ -131,43 +115,33 @@ div.query-container {
   min-width: 75px;
   height: 20px;
   text-transform: uppercase;
-  .anticon-caret-down {
-    cursor: pointer;
-  }
+  cursor: pointer;
 }
 
 .ant-tag.filter, .ant-tag.subquery {
-
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 6px 8px;
   font-size: inherit;
   color: #000000;
+  cursor: pointer;
   .legend {
-    cursor: pointer;
     padding-right: 6px;
   }
-
   .anticon-caret-down {
-    cursor: pointer;
     padding-left: 4px;
-  }
-
-  .anticon-close{
-    color:black;
   }
 }
 
 div.query {
   display: flex;
   flex-wrap: wrap;
-  width: 100%;
   padding: 5px;
   min-height: 45px;
   justify-content: space-between;
   border: 1px solid #AAAAAA;
   border-left: none;
+  width: 100%;
 
   &.dirty {
     border: 1px dashed #AAAAAA;
@@ -175,7 +149,7 @@ div.query {
   }
 
   .title {
-    margin-bottom: 5px;
+    margin-bottom: 2px;
   }
 
   .instructions {
@@ -184,38 +158,22 @@ div.query {
     max-width: 85%;
     width: 100%;
     flex-wrap: wrap;
-
-    textarea.ant-input {
-      background-color: palegreen;
-      &.invalid {
-        background-color: indianred;
-      }
-    }
-
     > * {
       margin-top: 2px;
+      margin-bottom: 2px;
     }
   }
 
   .actions {
     display: flex;
     align-items: center;
-    align-items: flex-start;
-    margin-top: 8px;
-
     .anticon-more {
       cursor: pointer;
       font-size: 20px;
     }
-
-    .ant-divider-vertical {
-      height: 20px;
-      margin: 0 5px 0 15px;
-    }
-
   }
-
 }
+
 .filterCard{
 
     .ant-card-body{
