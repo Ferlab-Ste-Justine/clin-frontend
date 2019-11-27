@@ -556,20 +556,20 @@ class Query extends React.Component {
                       }
                     }
                   )
-                     return (
-                         <GenericBooleanFilter
-                          index={index}
-                          options={options}
-                          data={item.data}
-                          dataSet={allOption ? allOption : []}
-                          intl={intl}
-                          category={category}
-                          onEditCallback={this.handleFilterChange}
-                          onRemoveCallback={this.handleFilterRemoval}
-                          onSelectCallback={onSelectCallback}
-                          key={index}
-                        />
-                     );
+                   return (
+                       <GenericBooleanFilter
+                        index={index}
+                        options={options}
+                        data={item.data}
+                        dataSet={allOption ? allOption : []}
+                        intl={intl}
+                        category={category}
+                        onEditCallback={this.handleFilterChange}
+                        onRemoveCallback={this.handleFilterRemoval}
+                        onSelectCallback={onSelectCallback}
+                        key={index}
+                      />
+                   );
               } else if (type === FILTER_TYPE_COMPOSITE) {
                 return (
                   <CompositeFilter
