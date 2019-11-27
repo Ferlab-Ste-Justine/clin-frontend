@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep, isEqual, find, isNull } from 'lodash';
 import {
-  Dropdown, Icon, Menu, Input, Divider, Badge,
+  Dropdown, Icon, Menu, Input, Badge,
 } from 'antd';
 import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
@@ -636,7 +636,6 @@ class Query extends React.Component {
         </div>
         <div className="actions">
           { compoundOperators && ( operatorsHandler ) }
-          { hasMenu && (<Divider type="vertical" />) }
           { hasMenu && (
           <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
             <Icon type="more" />
