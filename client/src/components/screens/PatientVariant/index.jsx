@@ -25,6 +25,7 @@ import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
+import { navigateToPatientScreen } from '../../../actions/router';
 
 const VARIANT_TAB = 'VARIANTS'
 const GENE_TAB = 'GENES'
@@ -63,6 +64,7 @@ class PatientVariantScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.getData = this.getData.bind(this);
+    this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
 
     this.columnPreset[VARIANT_TAB] = [
       { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
@@ -119,6 +121,11 @@ class PatientVariantScreen extends React.Component {
     const { variant } = this.props;
     const { activeQuery } = variant;
     this.handleQuerySelection(activeQuery);
+  }
+
+  handleNavigationToPatientScreen(e) {
+    const { actions } = this.props;
+    actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
   handleColumnsReordered(reorderedColumns) {
@@ -358,6 +365,13 @@ class PatientVariantScreen extends React.Component {
                     </Typography.Title>
                   </div>
               )}
+              extra={(
+                <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
+                  <Button type="primary">
+                    Patient Details
+                  </Button>
+                </a>
+              )}
           />
             <Descriptions title="Patient [PT93993], Masculin, Proband, Affecté" layout="horizontal" column={1}>
                 <Descriptions.Item label="Famille">[FA09383], Mère: [PT3983883] (Non affecté), Père: [PT4736] (Non affecté)</Descriptions.Item>
@@ -509,6 +523,7 @@ const mapDispatchToProps = dispatch => ({
     searchVariants,
     commitHistory,
     undo,
+    navigateToPatientScreen,
   }, dispatch),
 });
 
