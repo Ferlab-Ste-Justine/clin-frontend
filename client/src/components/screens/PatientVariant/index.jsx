@@ -51,49 +51,44 @@ class PatientVariantScreen extends React.Component {
     this.handleColumnVisibilityChange = this.handleColumnVisibilityChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleSizeChange = this.handleSizeChange.bind(this);
-    this.getData = this.getData.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
+    this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
-    this.columnPreset[VARIANT_TAB] = [
-      { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
-      { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
-
-
-
-      //{ key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
-      /*
-      { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
-      { key: 'gene', label: 'Gene Symbol', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.genes[0].geneSymbol } catch (e) { return ''; } }
-        })},
-      { key: 'aachanges', label: 'AA Change(s)', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.consequences[0].aaChange } catch (e) { return ''; } }
-        })},
-      { key: 'consequences', label: 'Consequence(s)', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.consequences[0].consequence } catch (e) { return ''; } }
-        })},
-      { key: 'clinvar', label: 'ClinVar', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.clinvar.clinvar_clinsig } catch (e) { return ''; } }
-        })},
-      { key: 'dbsnp', label: 'DbSnp', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.bdExt.dbSNP[0] } catch (e) { return ''; } }
-        })},
-      { key: 'pubmed', label: 'Pubmed', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed) } catch (e) { return ''; } }
-        })},
-      { key: 'sift', label: 'SIFT', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.consequences[0].predictions.SIFT } catch (e) { return ''; } }
-        })},
-      { key: 'polyphenhvar', label: 'Polyphen2 HVAR', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred } catch (e) { return ''; } }
-        })},
-      { key: 'phylop', label: 'PhyloP', renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way } catch (e) { return ''; } }
-        })},
-      */
-    ];
-    this.columnPreset[GENE_TAB] = [];
+    this.columnPreset = {
+      [VARIANT_TAB]: [
+        { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
+        { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
+        { key: 'gene', label: 'Gene Symbol', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.genes[0].geneSymbol } catch (e) { return ''; } }
+          })},
+        { key: 'aachanges', label: 'AA Change(s)', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.consequences[0].aaChange } catch (e) { return ''; } }
+          })},
+        { key: 'consequences', label: 'Consequence(s)', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.consequences[0].consequence } catch (e) { return ''; } }
+          })},
+        { key: 'clinvar', label: 'ClinVar', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.clinvar.clinvar_clinsig } catch (e) { return ''; } }
+          })},
+        { key: 'dbsnp', label: 'DbSnp', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.bdExt.dbSNP[0] } catch (e) { return ''; } }
+          })},
+        { key: 'pubmed', label: 'Pubmed', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed) } catch (e) { return ''; } }
+          })},
+        { key: 'sift', label: 'SIFT', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.consequences[0].predictions.SIFT } catch (e) { return ''; } }
+          })},
+        { key: 'polyphenhvar', label: 'Polyphen2 HVAR', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred } catch (e) { return ''; } }
+          })},
+        { key: 'phylop', label: 'PhyloP', renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way } catch (e) { return ''; } }
+          })},
+      ],
+      [GENE_TAB]: []
+    };
 
     const { actions, variant } = props;
     const { schema } = variant;
