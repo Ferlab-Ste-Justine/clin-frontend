@@ -33,6 +33,7 @@ import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
 
+import style from './style.module.scss';
 
 /*
 const getColumnHeaderCellRenderer = name => () => {
