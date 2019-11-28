@@ -16,7 +16,7 @@ import {
   ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay, ic_keyboard_arrow_right, ic_keyboard_arrow_down, ic_close
 } from 'react-icons-kit/md';
 
-style
+import style from './style.module.scss';
 
 class InteractiveTable extends React.Component {
   constructor(props) {
