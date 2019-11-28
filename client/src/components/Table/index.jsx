@@ -8,8 +8,8 @@ import {
 } from 'antd';
 import { cloneDeep } from 'lodash';
 
-import style from './style.module.scss';
-
+import style from '../../containers/App/style.module.scss';
+// import customStyle from './style.module.scss';
 
 const TableHeader = () => null;
 

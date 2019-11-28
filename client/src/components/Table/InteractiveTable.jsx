@@ -11,7 +11,6 @@ import TablePagination from './Pagination'
 
 import { cloneDeep, isEqual, } from 'lodash';
 
-import style from '../../containers/App/style.module.scss';
 import IconKit from '../screens/PatientSearch';
 import {
   ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay, ic_keyboard_arrow_right, ic_keyboard_arrow_down, ic_close
