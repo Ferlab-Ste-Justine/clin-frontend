@@ -7,9 +7,6 @@ import { bindActionCreators } from 'redux';
 import {
   Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox, Divider,
 } from 'antd';
-import {
-  Utils,
-} from '@blueprintjs/table';
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
 import IconKit from 'react-icons-kit';
@@ -19,6 +16,8 @@ import {
 import {
   cloneDeep, filter, pullAllBy, isEqual, find, findIndex,
 } from 'lodash';
+const { Text } = Typography;
+
 
 import './style.scss';
 import style from '../../../containers/App/style.module.scss';
@@ -26,7 +25,9 @@ import style from '../../../containers/App/style.module.scss';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import TableResults, { createCellRenderer } from '../../Table/index';
+import { createCellRenderer } from '../../Table/index';
+import TablePagination from '../../Table/Pagination';
+import InteractiveTable from '../../Table/InteractiveTable';
 
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
@@ -38,7 +39,6 @@ const getColumnHeaderCellRenderer = name => () => {
   <ColumnHeaderCell name={name} />;
 };
 */
-const { Text } = Typography;
 const renderBodyContextMenu = context => (
   <Menu>
     <Menu.Item context={context}>Copy</Menu.Item>
@@ -523,7 +523,7 @@ class PatientSearchScreen extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                      <TableResults
+                      <InteractiveTable
                         key="patientTable"
                         size={size}
                         total={total}
@@ -543,7 +543,7 @@ class PatientSearchScreen extends React.Component {
                     </Typography>
                   </Col>
                   <Col align="end">
-                    <Pagination
+                    <TablePagination
                       total={search.patient.total}
                       pageSize={size}
                       current={page}

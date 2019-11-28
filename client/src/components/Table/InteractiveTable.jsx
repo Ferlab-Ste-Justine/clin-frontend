@@ -3,49 +3,45 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Pagination, Row, Col, Dropdown, Button, Icon, Checkbox, Popover, Card,
+  Row, Col, Dropdown, Button, Icon, Checkbox, Popover, Card, Spin, Input,
 } from 'antd';
 
-import TableResults, { createCellRenderer } from 'index';
-import TablePagination from 'Pagination'
+import TableResults  from './index';
+import TablePagination from './Pagination'
 
-import { cloneDeep } from 'lodash';
-import { tokenizeObjectByKeys } from '../../helpers/autocompleter';
-import Autocompleter from '../../helpers/autocompleter';
-import Content from '../screens/PatientVariant';
+import { cloneDeep, isEqual, } from 'lodash';
 
+import style from '../../containers/App/style.module.scss';
+import IconKit from '../screens/PatientSearch';
+import {
+  ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay, ic_keyboard_arrow_right, ic_keyboard_arrow_down, ic_close
+} from 'react-icons-kit/md';
 
 class InteractiveTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      size: 10,
-      page: 1,
       isLoading: false,
-      columnReordererIsActive: false,
-      columnSelectorIsActive: false,
       orderedColumns: [],
       visibleColumns: [],
+      matchingColumns: [],
+      columnReordererIsActive: false,
+      columnSelectorIsActive: false,
     };
-
-    props.schema = [
-      { key: 'patientId', label: 'Patient Id', renderer: createCellRenderer('text', this.getData, { key: 'id' }) },
-    ]
-
 
     this.getData = this.getData.bind(this);
     this.toggleColumnReorderer = this.toggleColumnReorderer.bind(this);
     this.toggleColumnSelector = this.toggleColumnSelector.bind(this);
     this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.handleColumnsSelected = this.handleColumnsSelected.bind(this);
-
+    this.handleResetColumnOrder = this.handleResetColumnOrder.bind(this);
+    this.handleSearchColumnByQuery = this.handleSearchColumnByQuery.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
 
     // @NOTE Initialize Component State
-    this.columnPreset = props.schema;
-    this.state.orderedColumns = cloneDeep(this.columnPreset)
-    this.state.visibleColumns = this.columnPreset.map(column => column.key)
+    this.state.visibleColumns = props.defaultVisibleColumns || props.schema.map(column => column.key)
+    this.handleResetColumnOrder();
   }
 
   getData() {
@@ -60,6 +56,24 @@ class InteractiveTable extends React.Component {
     this.setState({
       columnReordererIsActive: !columnReordererIsActive
     })
+  }
+
+  handleResetColumnOrder() {
+    const { schema } = this.props;
+    this.setState({
+      columnSelectorIsActive: false,
+      orderedColumns: cloneDeep(schema),
+    })
+  }
+
+  handleSearchColumnByQuery(e) {
+    let { orderedColumns } = this.state;
+    const query = e.target.value.toLowerCase();
+    const columnMatches = orderedColumns.filter(orderedName => orderedName.toLowerCase().startsWith(query));
+
+    this.setState({
+      matchingColumns: columnMatches,
+    });
   }
 
   handleColumnsReordered(reorderedColumns) {
@@ -84,34 +98,84 @@ class InteractiveTable extends React.Component {
 
   handlePageChange(next) {
     const { pageChangeCallback } = this.props;
-
-    this.setState({
-      page: next,
-    }, () => {
-      pageChangeCallback(next)
-    })
+    pageChangeCallback(next);
   }
 
   handlePageSizeChange(current, next) {
     const { pageSizeChangeCallback } = this.props;
-
-    if (current !== next) {
-      this.setState({
-        size: next,
-      }, () => {
-        pageSizeChangeCallback(next)
-      })
-    }
+    pageSizeChangeCallback(next);
   }
-
 
   render() {
     const {
-      size, page, total, orderedColumns, visibleColumns, isLoading,
+      size, page, total, orderedColumns, visibleColumns, matchingColumns, isLoading, columnReordererIsActive, columnSelectorIsActive,
     } = this.state;
+
+    const columnSelector = (
+      <Popover visible>
+        <Card title={(
+          <Input
+            placeholder="Rechercher..."
+            suffix={<IconKit size={16} icon={ic_search} />}
+            onChange={this.handleSearchColumnByQuery}
+          />
+        )} className="columnFilter" bordered={false}>
+          { !isEqual(orderedColumns.map(column => column.key), visibleColumns) && (
+            <Row>
+              <a className="reinitialiser" onClick={this.handleResetColumnOrder}>
+                Réinitialiser
+                <IconKit size={16} icon={ic_replay} />
+              </a>
+            </Row>
+          ) }
+          <Row>
+            <Checkbox.Group className="checkbox" defaultValue={matchingColumns} onChange={this.handleColumnsSelected} option={matchingColumns} value={orderedColumns}>
+              {matchingColumns.map((key, index) => (
+                <Row key={index}>
+                  <Col>
+                    <Checkbox value={key}>{key}</Checkbox>
+                  </Col>
+                </Row>
+              ))}
+            </Checkbox.Group>
+          </Row>
+        </Card>
+      </Popover>
+    );
 
     return (
       <Spin spinning={isLoading}>
+        <Row type="flex" justify="end" className="controls">
+          <Col>
+            <Button
+              onClick={this.toggleColumnReorderer}
+              className={columnReordererIsActive ? `reorder ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}
+            >
+              <IconKit size={16} icon={ic_swap_horiz} />
+              Organiser
+            </Button>
+          </Col>
+          <Col>
+            <Dropdown overlay={columnSelector} trigger="click"  placement="bottomRight"  visible={columnSelectorIsActive}>
+              <Button
+                onClick={this.toggleColumnSelector}
+                className={`${style.btn} ${style.btnSec}`}
+              >
+                <IconKit size={16} icon={ic_view_column} />
+                Afficher
+              </Button>
+            </Dropdown>
+          </Col>
+          <Col>
+            <Button
+              onClick={this.exportToTsv}
+              className={`${style.btn} ${style.btnSec}`}
+            >
+              <IconKit size={16} icon={ic_cloud_download} />
+              Exporter
+            </Button>
+          </Col>
+        </Row>
         <Row>
           <Col align="end">
             <Dropdown key="columns-selector" overlay={(
@@ -144,11 +208,11 @@ class InteractiveTable extends React.Component {
         <Row>
           <Col>
             <TableResults
-              key="interactive-table"
               size={size}
               total={total}
               columns={orderedColumns.filter(column => visibleColumns.indexOf(column.key) !== -1 )}
               reorderColumnsCallback={this.handleColumnsReordered}
+              enableReordering={columnReordererIsActive}
             />
           </Col>
         </Row>
@@ -156,7 +220,6 @@ class InteractiveTable extends React.Component {
         <Row>
           <Col align="end">
             <TablePagination
-              key="interactive-pagination"
               size={size}
               total={total}
               page={page}
@@ -181,10 +244,14 @@ class InteractiveTable extends React.Component {
 InteractiveTable.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.array,
+  defaultVisibleColumns: PropTypes.array,
+
+
 };
 
 InteractiveTable.defaultProps = {
   data: [],
+  defaultVisibleColumns: [],
 };
 
 export default InteractiveTable;

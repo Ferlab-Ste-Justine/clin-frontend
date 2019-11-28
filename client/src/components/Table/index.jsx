@@ -4,38 +4,16 @@ import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography, Spin,
+  Badge, Button, Typography,
 } from 'antd';
 import { cloneDeep } from 'lodash';
 
-import './style.scss';
+import style from './style.module.scss';
 
 
-const TableHeader = (props) => {
-  const { label } = props;
-  return (<div>{label}</div>);
-};
+const TableHeader = () => null;
 
-TableHeader.propTypes = {
-  label: PropTypes.string,
-};
-
-TableHeader.defaultProps = {
-  label: '',
-};
-
-const TableFooter = (props) => {
-  const { label } = props;
-  return (<div>{label}</div>);
-};
-
-TableFooter.propTypes = {
-  label: PropTypes.string,
-};
-
-TableFooter.defaultProps = {
-  label: '',
-};
+const TableFooter = () => null;
 
 
 export const createCellRenderer = (type, getData, options = {}) => {
@@ -106,9 +84,10 @@ export const createCellRenderer = (type, getData, options = {}) => {
 
 const TableBody = (props) => {
   const {
-    isLoading, columns, size, total, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback, resizeColumnsCallback,
-    numFrozenColumns,
+    columns, size, total, enableReordering, enableResizing, renderContextMenuCallback, reorderColumnsCallback, resizeColumnsCallback,
+    numFrozenColumns, enableGhostCells,
   } = props;
+  const rowsCount = size <= total ? size : total;
 
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
     if (oldIndex === newIndex) {
@@ -119,54 +98,56 @@ const TableBody = (props) => {
   };
 
   return (
-    <Spin spinning={isLoading}>
-      <TableHeader />
+    <>
+      <TableHeader className={style.tableHeader} />
       <Table
-        numRows={(size <= total ? size : total)}
+        className={style.tableBody}
+        numRows={rowsCount}
         numFrozenColumns={numFrozenColumns}
-        enableGhostCells
+        enableGhostCells={enableGhostCells}
         renderMode={RenderMode.BATCH_ON_UPDATE}
         enableColumnReordering={enableReordering}
         enableColumnResizing={enableResizing}
-        bodyContextMenuRenderer={renderContextMenu}
+        bodyContextMenuRenderer={renderContextMenuCallback}
         onColumnsReordered={handleColumnsReordered}
         onColumnWidthChanged={resizeColumnsCallback}
       >
         { columns.map(column => (
           <Column
+            className={style.tableColumn}
             key={column.key}
             name={column.label}
             cellRenderer={column.renderer}
           />
         )) }
       </Table>
-      <TableFooter />
-    </Spin>
+      <TableFooter className={style.tableFooter} />
+    </>
   );
 };
 
 TableBody.propTypes = {
-  isLoading: PropTypes.bool,
   size: PropTypes.number,
   total: PropTypes.number,
-  numFrozenColumns: PropTypes.number,
   columns: PropTypes.shape([]),
+  numFrozenColumns: PropTypes.number,
   enableReordering: PropTypes.bool,
   enableResizing: PropTypes.bool,
-  renderContextMenu: PropTypes.func,
+  enableGhostCells: PropTypes.bool,
+  renderContextMenuCallback: PropTypes.func,
   reorderColumnsCallback: PropTypes.func,
   resizeColumnsCallback: PropTypes.func,
 };
 
 TableBody.defaultProps = {
-  isLoading: false,
   size: 0,
   total: 0,
-  numFrozenColumns: 0,
   columns: [],
-  enableReordering: true,
-  enableResizing: true,
-  renderContextMenu: () => {},
+  numFrozenColumns: 0,
+  enableReordering: false,
+  enableResizing: false,
+  enableGhostCells: false,
+  renderContextMenuCallback: () => {},
   reorderColumnsCallback: () => {},
   resizeColumnsCallback: () => {},
 };

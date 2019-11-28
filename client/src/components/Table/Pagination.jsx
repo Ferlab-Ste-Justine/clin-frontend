@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Pagination, Spin } from 'antd';
 
-import './style.scss';
+import './style.module.scss';
 
 
 const TablePagination = (props) => {
