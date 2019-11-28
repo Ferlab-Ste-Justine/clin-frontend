@@ -87,9 +87,9 @@ class PatientSearchScreen extends React.Component {
     // @NOTE Initialize Component State
     const { intl } = props;
     this.state.allColumns= [
-      { key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' }) },
-      { key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
-      { key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
+      //{ key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' }) },
+      //{ key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
+      //{ key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
       //{ key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
       //{ key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
       //{ key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
@@ -547,7 +547,6 @@ class PatientSearchScreen extends React.Component {
                       total={search.patient.total}
                       pageSize={size}
                       current={page}
-                      pageSizeOptions={['25', '50', '100', '250', '500', '1000']}
                       showSizeChanger
                       onChange={this.handlePageChange}
                       onShowSizeChange={this.handlePageSizeChange}

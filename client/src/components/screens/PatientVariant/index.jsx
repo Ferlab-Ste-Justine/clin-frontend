@@ -17,10 +17,6 @@ import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable'
 import VariantNavigation from './components/VariantNavigation';
 import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
-
-
-
-import './style.scss';
 import { appShape } from '../../../reducers/app';
 import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
@@ -29,18 +25,17 @@ import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
+import './style.scss';
+
+
 const VARIANT_TAB = 'VARIANTS'
 const GENE_TAB = 'GENES'
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.columnPreset = {
-      [VARIANT_TAB]: [],
-      [GENE_TAB]: []
-    };
     this.state = {
-      currentTab: null,
+      currentTab: VARIANT_TAB,
       page: 1,
       size: 25,
     };
@@ -59,45 +54,49 @@ class PatientVariantScreen extends React.Component {
     this.getData = this.getData.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
 
+    // @NOTE Initialize Component State
     this.columnPreset[VARIANT_TAB] = [
       { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
       { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
+
+
+
+      //{ key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
+      /*
+      { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
       { key: 'gene', label: 'Gene Symbol', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.genes[0].geneSymbol } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'aachanges', label: 'AA Change(s)', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.consequences[0].aaChange } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'consequences', label: 'Consequence(s)', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.consequences[0].consequence } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'clinvar', label: 'ClinVar', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.clinvar.clinvar_clinsig } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'dbsnp', label: 'DbSnp', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.bdExt.dbSNP[0] } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'pubmed', label: 'Pubmed', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed) } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'sift', label: 'SIFT', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.consequences[0].predictions.SIFT } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'polyphenhvar', label: 'Polyphen2 HVAR', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred } catch (e) { return ''; } }
-      })},
+        })},
       { key: 'phylop', label: 'PhyloP', renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way } catch (e) { return ''; } }
-      })},
+        })},
+      */
     ];
     this.columnPreset[GENE_TAB] = [];
 
-    // @NOTE Initialize Component State
     const { actions, variant } = props;
     const { schema } = variant;
-
-    this.state.currentTab = VARIANT_TAB
-
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
       actions.fetchSchema();
@@ -276,7 +275,6 @@ class PatientVariantScreen extends React.Component {
           })
         })
     }
-
     const tokenizedSearchData = searchData.reduce((accumulator, group) => {
       if (group.data) {
         group.data.forEach(datum => {
@@ -301,7 +299,6 @@ class PatientVariantScreen extends React.Component {
 
       return accumulator;
     }, [])
-
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer)
 
@@ -380,10 +377,11 @@ class PatientVariantScreen extends React.Component {
           />
           <br/>
           <br/>
-          <Tabs key="variant-interpreter-tabs" type="card" onChange={this.handleTabChange}>
+          <Tabs key="variant-interpreter-tabs" activeKey={currentTab} onChange={this.handleTabChange}>
             <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
-              <InteractiveTable
+              { currentTab === VARIANT_TAB && (<InteractiveTable
                 key="variant-interactive-table"
+                intl={intl}
                 isLoading={showSubloadingAnimation}
                 size={size}
                 page={page}
@@ -391,11 +389,12 @@ class PatientVariantScreen extends React.Component {
                 schema={this.columnPreset[VARIANT_TAB]}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handleSizeChange}
-              />
+              />) }
             </Tabs.TabPane>
             <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
-              <InteractiveTable
+              { currentTab === GENE_TAB && (<InteractiveTable
                 key="gene-interactive-table"
+                intl={intl}
                 isLoading={showSubloadingAnimation}
                 size={size}
                 page={page}
@@ -403,7 +402,7 @@ class PatientVariantScreen extends React.Component {
                 schema={this.columnPreset[GENE_TAB]}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handleSizeChange}
-              />
+              />) }
             </Tabs.TabPane>
           </Tabs>
         <Footer />
