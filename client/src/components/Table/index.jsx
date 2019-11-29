@@ -11,6 +11,8 @@ import { cloneDeep } from 'lodash';
 import './style.scss';
 
 export const createCellRenderer = (type, getData, options = {}) => {
+  console.log('+ calling createCellRenderer');
+
   try {
     let valueRenderer = null;
     switch (type) {
@@ -110,7 +112,6 @@ const DataTable = (props) => {
       { columns.map(definition => (
         <Column
           id={definition.key}
-          key={definition.key}
           name={definition.label}
           cellRenderer={definition.renderer}
         />

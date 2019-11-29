@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox, Divider,
+  Card, AutoComplete, Row, Col, Input, Icon, Typography, Button, Checkbox,
 } from 'antd';
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
@@ -242,9 +242,9 @@ class PatientSearchScreen extends React.Component {
       return {
         value: result.id,
         text: (<>
-          <Text strong>{result.firstName} {result.lastName}</Text>
+          <Typography.Text strong>{result.firstName} {result.lastName}</Typography.Text>
           <br />
-          <Text disabled style={{ fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block' }}>{result.ramq}</Text>
+          <Typography.Text disabled style={{ fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block' }}>{result.ramq}</Typography.Text>
           <hr style={{ borderTop: 'none', borderBottom: '1px solid #CCCCCC', marginBottom: -5, marginTop: 3 }}/>
         </>)
       };
@@ -321,7 +321,6 @@ class PatientSearchScreen extends React.Component {
             </Col>
             )}
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
-              <br /><br /><Button onClick={() => { actions.navigateToPatientScreen('PA00002'); }}>Lea Roy !</Button>
               <InteractiveTable
                 key="patient-interactive-table"
                 intl={intl}
