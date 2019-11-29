@@ -8,7 +8,7 @@ import {
   Badge, Button, Typography,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-
+import './style.scss';
 
 export const createCellRenderer = (type, getData, options = {}) => {
   try {

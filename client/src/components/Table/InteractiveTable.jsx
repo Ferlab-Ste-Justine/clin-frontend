@@ -12,6 +12,8 @@ import {
 import DataTablePagination from './Pagination';
 import DataTable from './index';
 
+import style from '../../containers/App/style.module.scss';
+import './style.scss';
 
 class InteractiveTable extends React.Component {
   constructor(props) {
@@ -233,7 +235,7 @@ class InteractiveTable extends React.Component {
               ) }
               { isExportable && (
                 <Col>
-                  <Button onClick={this.handleExport}>
+                  <Button onClick={this.handleExport} className={`${style.btn} ${style.btnSec}`}>
                     <IconKit size={16} icon={ic_cloud_download} /> {intl.formatMessage({ id: 'components.table.action.export' })} { /* eslint-disable-line */ }
                   </Button>
                 </Col>
