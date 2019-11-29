@@ -176,12 +176,11 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
-  handlePageChange(page, size) {
-    const { actions } = this.props;
-    const { search } = this.props;
+  handlePageChange(page) {
+    const { actions, search } = this.props;
+    const { size } = this.state;
     this.setState({
       page,
-      size,
     });
 
     if (search.lastSearchType === 'autocomplete') {
@@ -191,8 +190,18 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
-  handlePageSizeChange(page, size) {
-    this.handlePageChange(page, size);
+  handlePageSizeChange(size) {
+    const { actions, search } = this.props;
+    const { page } = this.state;
+    this.setState({
+      size,
+    });
+
+    if (search.lastSearchType === 'autocomplete') {
+      actions.autoCompletePatients('partial', search.autocomplete.query, page, size);
+    } else {
+      actions.searchPatientsByQuery(search.patient.query, page, size);
+    }
   }
 
   handleOpenFacet() {
@@ -229,7 +238,7 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    const { intl, search, actions } = this.props;
+    const { intl, search } = this.props;
     const { patient } = search;
     const { total } = patient;
     const { autoCompleteIsOpen, size, page, columnName, isFacetOpen,facet,

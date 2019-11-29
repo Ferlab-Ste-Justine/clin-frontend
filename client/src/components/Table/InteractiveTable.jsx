@@ -267,7 +267,7 @@ class InteractiveTable extends React.Component {
               total={total}
               page={page}
               pageChangeCallback={this.handlePageChange}
-              sizeChangeCallback={this.handlePageSizeChange}
+              pageSizeChangeCallback={this.handlePageSizeChange}
             />
           </Col>
         </Row>
