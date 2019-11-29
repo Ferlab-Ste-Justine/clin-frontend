@@ -77,7 +77,6 @@ class PatientSearchScreen extends React.Component {
       { key: 'status', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
     ];
     this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
-
   }
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -104,8 +103,6 @@ class PatientSearchScreen extends React.Component {
           request: (lastRequest ? lastRequest.id : ''),
         };
       });
-
-     // console.log('+ data ' + JSON.stringify(data));
 
       return {
         data,
@@ -232,18 +229,14 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    const { intl, search } = this.props;
+    const { intl, search, actions } = this.props;
     const { patient } = search;
     const { total } = patient;
-    const {
-      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns,  isFacetOpen,facet, isColumnsCardOpen, columnPreset
+    const { autoCompleteIsOpen, size, page, columnName, isFacetOpen,facet,
     } = this.state;
 
     const { Title } = Typography;
     const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
-    const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
-    const current = ((page - 1) * size) + 1;
-    const pageTotal = size * page;
 
     const autoCompleteResults = search.autocomplete.results.map(result => {
       return {
@@ -328,6 +321,7 @@ class PatientSearchScreen extends React.Component {
             </Col>
             )}
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
+              <br /><br /><Button onClick={() => { actions.navigateToPatientScreen('PA00002'); }}>Lea Roy !</Button>
               <InteractiveTable
                 key="patient-interactive-table"
                 intl={intl}
