@@ -384,6 +384,7 @@ class PatientVariantScreen extends React.Component {
                 schema={this.columnPreset[VARIANT_TAB]}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handleSizeChange}
+                isExportable={false}
               />) }
             </Tabs.TabPane>
             <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
@@ -397,6 +398,7 @@ class PatientVariantScreen extends React.Component {
                 schema={this.columnPreset[GENE_TAB]}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handleSizeChange}
+                isExportable={false}
               />) }
             </Tabs.TabPane>
           </Tabs>

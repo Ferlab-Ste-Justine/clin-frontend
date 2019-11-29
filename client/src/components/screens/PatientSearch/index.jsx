@@ -7,9 +7,6 @@ import { bindActionCreators } from 'redux';
 import {
   Card, AutoComplete, Row, Col, Input, Icon, Menu, Typography, Pagination, Button, Dropdown, Popover, Checkbox, Divider,
 } from 'antd';
-import {
-  Utils,
-} from '@blueprintjs/table';
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
 import IconKit from 'react-icons-kit';
@@ -26,24 +23,12 @@ import style from '../../../containers/App/style.module.scss';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import TableResults, { createCellRenderer } from '../../Table/index';
-
+import { createCellRenderer } from '../../Table/index';
+import InteractiveTable from '../../Table/InteractiveTable'
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
 
-
-/*
-const getColumnHeaderCellRenderer = name => () => {
-  <ColumnHeaderCell name={name} />;
-};
-*/
-const { Text } = Typography;
-const renderBodyContextMenu = context => (
-  <Menu>
-    <Menu.Item context={context}>Copy</Menu.Item>
-  </Menu>
-);
 
 class PatientSearchScreen extends React.Component {
   constructor(props) {
@@ -51,33 +36,19 @@ class PatientSearchScreen extends React.Component {
 
     this.state = {
       autoCompleteIsOpen: false,
-      allColumns: [],
-      visibleColumns: [],
-      data: [],
       size: 25,
       page: 1,
-      isReordering: false,
-      isColumnsCardOpen: false,
-      columnName: [],
       isFacetOpen: false,
       facetFilterOpen: [],
       facet:[],
-      columnPreset:[]
+      data: [],
     };
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
     this.handleAutoCompletePressEnter = this.handleAutoCompletePressEnter.bind(this);
-    this.handleAutoCompleteClose = this.handleAutoCompleteClose.bind(this);
-    this.handleColumnsReordered = this.handleColumnsReordered.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.exportToTsv = this.exportToTsv.bind(this);
-    this.handleReordering = this.handleReordering.bind(this);
-    this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
-    this.handleColumnsViewChange = this.handleColumnsViewChange.bind(this);
-    this.handleOpenColumnView = this.handleOpenColumnView.bind(this);
-    this.handleRedoViewChange = this.handleRedoViewChange.bind(this);
-    this.getCheckColumns = this.getCheckColumns.bind(this);
     this.handleOpenFacet = this.handleOpenFacet.bind(this);
     this.getCardCategoryTitle = this.getCardCategoryTitle.bind(this);
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
@@ -86,18 +57,6 @@ class PatientSearchScreen extends React.Component {
 
     // @NOTE Initialize Component State
     const { intl } = props;
-    this.state.allColumns= [
-      //{ key: '0', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' }) },
-      //{ key: '1', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
-      //{ key: '2', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
-      //{ key: '3', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
-      //{ key: '4', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
-      //{ key: '5', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
-      //{ key: '6', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }),renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
-      //{ key: '7', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
-      //{ key: '8', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }),renderer: createCellRenderer('text', this.getData, { key: 'request' })},
-      //{ key: '9', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
-    ];
 
     this.state.facet = [
         intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),
@@ -105,10 +64,20 @@ class PatientSearchScreen extends React.Component {
         "Category 1",
         "Category 2",
     ]
+    this.columnPreset = [
+      { key: 'patientId', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' }) },
+      { key: 'organization', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
+      { key: 'firstName', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
+      { key: 'lastName', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
+      { key: 'dob', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
+      { key: 'familyComposition', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
+      { key: 'position', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }),renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
+      { key: 'practitioner', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
+      { key: 'request', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }),renderer: createCellRenderer('text', this.getData, { key: 'request' })},
+      { key: 'status', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
+    ];
+    this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
 
-    this.state.columnName = this.state.allColumns.map(column => column.label)
-    this.state.visibleColumns = cloneDeep(this.state.allColumns);
-    this.state.facetFilterOpen = Array(this.state.columnName.length).fill(false);
   }
 
   static getDerivedStateFromProps(nextProps, state) {
@@ -148,10 +117,10 @@ class PatientSearchScreen extends React.Component {
     return state;
   }
 
-    getData() {
-      const { data } = this.state;
-      return data
-    }
+  getData() {
+    const { data } = this.state;
+    return data
+  }
 
   exportToTsv() {
     const { page, size, data } = this.state;
@@ -167,15 +136,6 @@ class PatientSearchScreen extends React.Component {
     });
 
     csvExporter.generateCsv(data);
-  }
-
-  handleReordering(e) {
-    const { isReordering } = this.state;
-
-    e.target.blur()
-    this.setState({
-      isReordering: !isReordering,
-    });
   }
 
   handleAutoCompleteChange(query) {
@@ -219,25 +179,6 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
-  handleColumnsReordered(oldIndex, newIndex, length) {
-    if (oldIndex === newIndex) {
-      return;
-    }
-    const { visibleColumns, allColumns } = this.state;
-    const nextChildren = Utils.reorderArray(visibleColumns, oldIndex, newIndex, length);
-    const nextChildren2 = Utils.reorderArray(allColumns, oldIndex, newIndex, length);
-    this.setState({
-      visibleColumns: nextChildren,
-      allColumns: nextChildren2,
-    });
-  }
-
-  handleAutoCompleteClose() {
-    this.setState({
-      autoCompleteIsOpen: false,
-    });
-  }
-
   handlePageChange(page, size) {
     const { actions } = this.props;
     const { search } = this.props;
@@ -257,77 +198,12 @@ class PatientSearchScreen extends React.Component {
     this.handlePageChange(page, size);
   }
 
-  handleSearchByQuery(value) {
-    let { allColumns, columnName } = this.state;
-    columnName = [];
-    allColumns.map((column) => {
-      columnName.push(column.label);
-    });
-
-    const search = value.target.value.toLowerCase();
-    const finalResult = columnName.filter(name => name.toLowerCase().startsWith(search));
-
-    this.setState({
-      columnName: finalResult,
-    });
-  }
-
-  handleOpenColumnView(e) {
-    const { isColumnsCardOpen } = this.state;
-
-    isColumnsCardOpen ? e.target.blur()  :null
-    this.setState({
-      isColumnsCardOpen: !isColumnsCardOpen,
-    });
-  }
-
-  handleColumnsViewChange(checkedValues) {
-    const {
-      visibleColumns, allColumns, columnName,
-    } = this.state;
-
-    const uncheckedColumns = columnName.filter(name => !checkedValues.includes(name));
-    const toRemove = filter(visibleColumns, column => uncheckedColumns.includes(column.label));
-    pullAllBy(visibleColumns, toRemove, 'key');
-
-    const check = this.getCheckColumns();
-    const toAdd = checkedValues.filter(name => !check.includes(name));
-    const addColumn = find(allColumns, column => toAdd.includes(column.label));
-    const index = findIndex(allColumns, addColumn);
-    addColumn ? visibleColumns.splice(index, 0, addColumn) : null;
-    this.setState({
-      visibleColumns,
-    });
-  }
-
-  handleRedoViewChange() {
-    let { visibleColumns, allColumns, columnName } = this.state;
-
-    columnName = [];
-    allColumns.map(column => {
-      columnName.push(column.label);
-    });
-
-    visibleColumns = cloneDeep(allColumns);
-    this.setState({
-      visibleColumns,
-      columnName,
-    });
-  }
-
-  getCheckColumns() {
-    const { visibleColumns } = this.state;
-    const check = [];
-    visibleColumns.map(column => check.push(column.label));
-    return check;
-  }
-
   handleOpenFacet() {
     const { isFacetOpen, columnsWidth } = this.state;
 
     this.setState({
       isFacetOpen: !isFacetOpen,
-      columnsWidth:120,
+      columnsWidth: columnsWidth || 120,
     });
   }
 
@@ -360,7 +236,7 @@ class PatientSearchScreen extends React.Component {
     const { patient } = search;
     const { total } = patient;
     const {
-      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns,  isFacetOpen,facet, isColumnsCardOpen,columnPreset
+      allColumns, autoCompleteIsOpen, size, page, isReordering, columnName, visibleColumns,  isFacetOpen,facet, isColumnsCardOpen, columnPreset
     } = this.state;
 
     const { Title } = Typography;
@@ -368,39 +244,6 @@ class PatientSearchScreen extends React.Component {
     const paginationText = intl.formatMessage({ id: 'screen.patientsearch.pagination' });
     const current = ((page - 1) * size) + 1;
     const pageTotal = size * page;
-    const checkColumns = this.getCheckColumns();
-    const cardInputTitle = (
-      <Input
-        placeholder="Rechercher..."
-        suffix={<IconKit size={16} icon={ic_search} />}
-        onChange={this.handleSearchByQuery}
-      />
-    );
-    const overlay = (
-      <Popover visible>
-        <Card title={cardInputTitle} className="columnFilter" bordered={false}>
-          { !isEqual(allColumns, visibleColumns) && (
-            <Row>
-              <a className="reinitialiser" onClick={this.handleRedoViewChange}>
-                        Réinitialiser
-                <IconKit size={16} icon={ic_replay} />
-              </a>
-            </Row>
-          ) }
-          <Row>
-            <Checkbox.Group className="checkbox" defaultValue={columnName} onChange={this.handleColumnsViewChange} option={columnName} value={checkColumns}>
-              {columnName.map((name, index) => (
-                <Row key={index}>
-                  <Col>
-                    <Checkbox value={name}>{name}</Checkbox>
-                  </Col>
-                </Row>
-              ))}
-            </Checkbox.Group>
-          </Row>
-        </Card>
-      </Popover>
-    );
 
     const autoCompleteResults = search.autocomplete.results.map(result => {
       return {
@@ -460,8 +303,6 @@ class PatientSearchScreen extends React.Component {
               </Button>
             </Col>
           </Row>
-
-
           <Row type="flex" justify="space-between">
             { isFacetOpen && (
             <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
@@ -485,77 +326,21 @@ class PatientSearchScreen extends React.Component {
                  }
 
             </Col>
-
             )}
-
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
-              <Card bordered={false} className="tablePatient">
-                <Row type="flex" justify="end" className="controls">
-                  <Col>
-                    <Button
-                      onClick={this.handleReordering}
-                      className={isReordering ? `reorder ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}
-                    >
-                      <IconKit size={16} icon={ic_swap_horiz} />
-                        Organiser
-                    </Button>
-                  </Col>
-                  <Col>
-                    <Dropdown overlay={overlay} trigger="click"  placement="bottomRight"  visible={isColumnsCardOpen}>
-                      <Button
-                        onClick={this.handleOpenColumnView}
-                        className={`${style.btn} ${style.btnSec}`}
-                      >
-                        <IconKit size={16} icon={ic_view_column} />
-                            Afficher
-                      </Button>
-                    </Dropdown>
-                  </Col>
-                  <Col>
-                    <Button
-                      onClick={this.exportToTsv}
-                      className={`${style.btn} ${style.btnSec}`}
-                    >
-                      <IconKit size={16} icon={ic_cloud_download} />
-                        Exporter
-                    </Button>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                      <TableResults
-                        key="patientTable"
-                        size={size}
-                        total={total}
-                        columns={visibleColumns.map(column => column.renderer)}
-                        reorderColumnsCallback={this.handleColumnsReordered}
-                        enableReordering={isReordering}
-                        numFrozenColumns={1}
-                      />
-                  </Col>
-                </Row>
-                <br />
-                <Row type="flex" justify="space-between" align="middle">
-
-                  <Col align="start">
-                    <Typography>
-                      { format(paginationText, current, (pageTotal <= total ? pageTotal : total), total) }
-                    </Typography>
-                  </Col>
-                  <Col align="end">
-                    <Pagination
-                      total={search.patient.total}
-                      pageSize={size}
-                      current={page}
-                      showSizeChanger
-                      onChange={this.handlePageChange}
-                      onShowSizeChange={this.handlePageSizeChange}
-                    />
-                  </Col>
-                </Row>
-              </Card>
+              <InteractiveTable
+                key="patient-interactive-table"
+                intl={intl}
+                size={size}
+                page={page}
+                total={total}
+                schema={this.columnPreset}
+                pageChangeCallback={this.handlePageChange}
+                pageSizeChangeCallback={this.handlePageSizeChange}
+                exportCallback={this.exportToTsv}
+                numFrozenColumns={1}
+              />
             </Col>
-
           </Row>
         </Card>
         <Footer />
