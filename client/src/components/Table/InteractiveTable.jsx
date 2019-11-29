@@ -166,11 +166,11 @@ class InteractiveTable extends React.Component {
     const {
       size, page, total, orderedColumns, visibleColumns, matchingColumns, isLoading, columnReordererIsActive, columnSelectorIsActive,
     } = this.state;
-
     const isResizable = this.isResizable();
     const isReorderable = this.isReorderable();
     const isSelectable = this.isSelectable();
     const isExportable = this.isExportable();
+    const filteredColumns = orderedColumns.filter(column => visibleColumns.indexOf(column.key) !== -1);
 
     return (
       <Spin spinning={isLoading}>
@@ -251,8 +251,7 @@ class InteractiveTable extends React.Component {
               enableReordering={(isReorderable && columnReordererIsActive)}
               reorderColumnsCallback={this.handleColumnsReordered}
               resizeColumnsCallback={this.handleColumnResized}
-              columns={orderedColumns.filter(column => visibleColumns.indexOf(column) !== -1)}
-              visibleColumns={visibleColumns}
+              columns={filteredColumns}
             />
           </Col>
         </Row>

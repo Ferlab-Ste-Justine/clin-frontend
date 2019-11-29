@@ -11,67 +11,73 @@ import { cloneDeep } from 'lodash';
 
 
 export const createCellRenderer = (type, getData, options = {}) => {
-  let valueRenderer = null;
-  switch (type) {
-    default:
-    case 'text':
-      valueRenderer = value => (
-        <Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>);
-      break;
-    case 'paragraph':
-      valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
-      break;
-    case 'link':
-      valueRenderer = value => (
-        <Button
-          type="link"
-          size={options.size}
-          shape={options.shape}
-          icon={options.icon}
-          href={(options.renderer ? options.renderer(value) : '#')}
-        >
-          {value}
-        </Button>
-      );
-      break;
-    case 'button':
-      valueRenderer = value => (
-        <Button
-          type={options.type}
-          size={options.size}
-          shape={options.shape}
-          icon={options.icon}
-          onClick={options.handler}
-        >
-          {value}
-        </Button>
-      );
-      break;
-    case 'badge':
-      valueRenderer = value => (<Badge count={value} />);
-      break;
-    case 'dot':
-      valueRenderer = value => (<Badge status={options.renderer(value)} text={value} />);
-      break;
-    case 'custom':
-      valueRenderer = options.renderer;
-      break;
-  }
-
-  return (row) => {
-    try {
-      const dataSet = getData();
-      const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
-
-      return (
-        <Cell>
-          { valueRenderer(value) }
-        </Cell>
-      );
-    } catch (e) {
-      return <Cell />;
+  try {
+    let valueRenderer = null;
+    switch (type) {
+      default:
+      case 'text':
+        valueRenderer = value => (
+          <Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>);
+        break;
+      case 'paragraph':
+        valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
+        break;
+      case 'link':
+        valueRenderer = value => (
+          <Button
+            type="link"
+            size={options.size}
+            shape={options.shape}
+            icon={options.icon}
+            href={(options.renderer ? options.renderer(value) : '#')}
+          >
+            {value}
+          </Button>
+        );
+        break;
+      case 'button':
+        valueRenderer = value => (
+          <Button
+            type={options.type}
+            size={options.size}
+            shape={options.shape}
+            icon={options.icon}
+            onClick={options.handler}
+          >
+            {value}
+          </Button>
+        );
+        break;
+      case 'badge':
+        valueRenderer = value => (<Badge count={value} />);
+        break;
+      case 'dot':
+        valueRenderer = value => (<Badge status={options.renderer(value)} text={value} />);
+        break;
+      case 'custom':
+        valueRenderer = options.renderer;
+        break;
     }
-  };
+
+    return (row) => {
+      console.log('+ calling for row');
+      try {
+        const dataSet = getData();
+        const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
+
+        return (
+          <Cell>
+            {valueRenderer(value)}
+          </Cell>
+        );
+      } catch (e) {
+        return <Cell />;
+      }
+    };
+  } catch (e) {
+    console.log(`+ createCellRenderer ${e.toString()}`);
+    return () => {};
+  }
 };
 
 const DataTable = (props) => {

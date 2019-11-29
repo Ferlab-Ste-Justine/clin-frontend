@@ -55,7 +55,7 @@ class PatientVariantScreen extends React.Component {
     this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
-    this.columnPreset = {
+    this.state.columnPreset = {
       [VARIANT_TAB]: [
         { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
         { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
@@ -210,8 +210,12 @@ class PatientVariantScreen extends React.Component {
 
   getData() {
     const { currentTab } = this.state;
+    console.log('+ Patient getData called for tab : ' + currentTab)
     if (currentTab === VARIANT_TAB) {
       const { activeQuery, results } = this.props.variant;
+
+      console.log('+ Patient getData called, returned: ' + JSON.stringify(results[activeQuery]))
+
 
       return results[activeQuery]
     }
@@ -226,13 +230,7 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab,
     } = this.state;
-
     const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
-
-    if (total === 0) {
-      return null
-    }
-
     const searchData = [];
     if (schema.categories) {
       schema.categories.forEach((category) => {
@@ -381,7 +379,7 @@ class PatientVariantScreen extends React.Component {
                 size={size}
                 page={page}
                 total={total}
-                schema={this.columnPreset[VARIANT_TAB]}
+                schema={this.state.columnPreset[VARIANT_TAB]}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handleSizeChange}
                 isExportable={false}
@@ -395,7 +393,7 @@ class PatientVariantScreen extends React.Component {
                 size={size}
                 page={page}
                 total={total}
-                schema={this.columnPreset[GENE_TAB]}
+                schema={this.state.columnPreset[GENE_TAB]}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handleSizeChange}
                 isExportable={false}
