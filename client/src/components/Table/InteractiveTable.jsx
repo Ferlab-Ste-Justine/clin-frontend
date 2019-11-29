@@ -164,7 +164,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      intl, size, page, total, isLoading,
+      intl, size, page, total, isLoading, numFrozenColumns,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive,
@@ -254,6 +254,7 @@ class InteractiveTable extends React.Component {
               enableReordering={(isReorderable && columnReordererIsActive)}
               reorderColumnsCallback={this.handleColumnsReordered}
               resizeColumnsCallback={this.handleColumnResized}
+              numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
             />
           </Col>
@@ -282,6 +283,7 @@ InteractiveTable.propTypes = {
   page: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
   defaultVisibleColumns: PropTypes.shape([]),
+  numFrozenColumns: PropTypes.bool,
   isLoading: PropTypes.bool,
   isReorderable: PropTypes.bool,
   isResizable: PropTypes.bool,
@@ -300,6 +302,7 @@ InteractiveTable.defaultProps = {
   isResizable: true,
   isSelectable: true,
   isExportable: true,
+  numFrozenColumns: 0,
   exportCallback: () => {},
   resizeColumnCallback: () => {},
   pageChangeCallback: () => {},
