@@ -19,7 +19,6 @@ class InteractiveTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
       orderedColumns: [],
       visibleColumns: [],
       matchingColumns: [],
@@ -164,9 +163,11 @@ class InteractiveTable extends React.Component {
   }
 
   render() {
-    const { intl } = this.props;
     const {
-      size, page, total, orderedColumns, visibleColumns, matchingColumns, isLoading, columnReordererIsActive, columnSelectorIsActive,
+      intl, size, page, total, isLoading,
+    } = this.props;
+    const {
+      orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive,
     } = this.state;
     const isResizable = this.isResizable();
     const isReorderable = this.isReorderable();
@@ -277,7 +278,11 @@ class InteractiveTable extends React.Component {
 InteractiveTable.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   schema: PropTypes.shape({}).isRequired,
+  size: PropTypes.number.isRequired,
+  page: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
   defaultVisibleColumns: PropTypes.shape([]),
+  isLoading: PropTypes.bool,
   isReorderable: PropTypes.bool,
   isResizable: PropTypes.bool,
   isSelectable: PropTypes.bool,
@@ -290,6 +295,7 @@ InteractiveTable.propTypes = {
 
 InteractiveTable.defaultProps = {
   defaultVisibleColumns: [],
+  isLoading: false,
   isReorderable: true,
   isResizable: true,
   isSelectable: true,

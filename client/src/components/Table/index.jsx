@@ -11,8 +11,6 @@ import { cloneDeep } from 'lodash';
 import './style.scss';
 
 export const createCellRenderer = (type, getData, options = {}) => {
-  console.log('+ calling createCellRenderer');
-
   try {
     let valueRenderer = null;
     switch (type) {
@@ -62,7 +60,6 @@ export const createCellRenderer = (type, getData, options = {}) => {
     }
 
     return (row) => {
-      console.log('+ calling for row');
       try {
         const dataSet = getData();
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
@@ -77,7 +74,6 @@ export const createCellRenderer = (type, getData, options = {}) => {
       }
     };
   } catch (e) {
-    console.log(`+ createCellRenderer ${e.toString()}`);
     return () => {};
   }
 };
