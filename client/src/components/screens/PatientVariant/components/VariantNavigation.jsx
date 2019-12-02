@@ -68,18 +68,19 @@ class VariantNavigation extends React.Component {
           })
         })
       })
-    } else {
+    }
+    /*else {
       this.setState({
         searchResults: [],
       })
-    }
+    }*/
   }
 
   handleNavigationSelection(value, option) {
-    console.log('----- - -----');
-    console.log('+ handleNavigationSelection +');
+    console.log('+ handleNavigationSelection');
     console.log('+ value ' + JSON.stringify(value));
-    console.log('+ option ', JSON.stringify(cloneDeep(option)));
+    console.log('+ option ' + JSON.stringify(option));
+
   }
 
   handleFilterSelection({ key }) {
@@ -279,14 +280,22 @@ class VariantNavigation extends React.Component {
               >
                 <Input prefix={<Icon type="search" />} />
               </AutoComplete>
+              <AutoComplete
+                allowClear
+                autoFocus
+                optionLabelProp="value"
+                size="large"
+                dataSource={autocompletes}
+                onSearch={this.handleNavigationSearch}
+                onSelect={this.handleNavigationSelection}
+                onChange={() => {}}
+                placeholder="Recherche de filtres"
+              >
+                <Input prefix={<Icon type="search" />} />
+              </AutoComplete>
             )}
           />
         </Menu>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
         <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {

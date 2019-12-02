@@ -95,10 +95,7 @@ const searchReducer = (state = Object.assign({}, initialSearchState), action) =>
 
     case actions.PATIENT_AUTOCOMPLETE_SUCCEEDED:
       draft.autocomplete.total = action.payload.data.data.total;
-      draft.autocomplete.results = action.payload.data.data.hits.map((hit) => {
-        const details = normalizePatientDetails(hit._source);
-        return `${details.id} ${details.firstName} ${details.lastName}`;
-      });
+      draft.autocomplete.results = action.payload.data.data.hits.map(hit => normalizePatientDetails(hit._source));
       break;
 
     default:

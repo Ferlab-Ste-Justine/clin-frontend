@@ -11,7 +11,6 @@ import {
 import { cloneDeep, find, flatten } from 'lodash';
 
 import Header from '../../Header';
-import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import TableResults, { createCellRenderer } from '../../Table/index';
@@ -26,6 +25,7 @@ import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
+import { navigateToPatientScreen } from '../../../actions/router';
 
 const VARIANT_TAB = 'VARIANTS'
 const GENE_TAB = 'GENES'
@@ -64,6 +64,7 @@ class PatientVariantScreen extends React.Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.getData = this.getData.bind(this);
+    this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
 
     this.columnPreset[VARIANT_TAB] = [
       { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
@@ -104,11 +105,11 @@ class PatientVariantScreen extends React.Component {
 
     this.state.currentTab = VARIANT_TAB
     this.state.columns[VARIANT_TAB] = cloneDeep(this.columnPreset[VARIANT_TAB])
-    this.state.visibleColumns[VARIANT_TAB] = this.columnPreset[VARIANT_TAB].map(column => column.key )
+    this.state.visibleColumns[VARIANT_TAB] = this.columnPreset[VARIANT_TAB].map(column => column.key)
 
     //@TODO Genes Tab
     this.state.columns[GENE_TAB] = cloneDeep(this.columnPreset[GENE_TAB])
-    this.state.visibleColumns[GENE_TAB] = this.columnPreset[GENE_TAB].map(column => column.key )
+    this.state.visibleColumns[GENE_TAB] = this.columnPreset[GENE_TAB].map(column => column.key)
 
     // @NOTE Make sure we have a schema defined in redux
     if (!schema.version) {
@@ -120,6 +121,11 @@ class PatientVariantScreen extends React.Component {
     const { variant } = this.props;
     const { activeQuery } = variant;
     this.handleQuerySelection(activeQuery);
+  }
+
+  handleNavigationToPatientScreen(e) {
+    const { actions } = this.props;
+    actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
   handleColumnsReordered(reorderedColumns) {
@@ -350,7 +356,6 @@ class PatientVariantScreen extends React.Component {
     return (
       <Content>
         <Header />
-        <Navigation />
         <Card>
           <PageHeader
               title={(
@@ -359,6 +364,13 @@ class PatientVariantScreen extends React.Component {
                       Recherche de variants
                     </Typography.Title>
                   </div>
+              )}
+              extra={(
+                <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
+                  <Button type="primary">
+                    Patient Details
+                  </Button>
+                </a>
               )}
           />
             <Descriptions title="Patient [PT93993], Masculin, Proband, Affecté" layout="horizontal" column={1}>
@@ -440,6 +452,7 @@ class PatientVariantScreen extends React.Component {
               <Row>
                 <Col align="end">
                   <TablePagination
+                    key="variant-results-pagination"
                     size={size}
                     total={total}
                     page={page}
@@ -510,6 +523,7 @@ const mapDispatchToProps = dispatch => ({
     searchVariants,
     commitHistory,
     undo,
+    navigateToPatientScreen,
   }, dispatch),
 });
 

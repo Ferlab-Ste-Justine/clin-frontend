@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -8,7 +6,7 @@ import {
 import {
   Badge, Button, Typography, Spin,
 } from 'antd';
-import { isFunction, cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash';
 
 import './style.scss';
 
@@ -68,7 +66,6 @@ export const createCellRenderer = (type, getData, options = {}) => {
       case 'button':
         valueRenderer = value => (
           <Button
-            data-key={key}
             type={options.type}
             size={options.size}
             shape={options.shape}
@@ -80,36 +77,37 @@ export const createCellRenderer = (type, getData, options = {}) => {
         );
         break;
       case 'badge':
-        valueRenderer = value => (<Badge count={value}/>);
+        valueRenderer = value => (<Badge count={value} />);
         break;
       case 'dot':
-        valueRenderer = value => (<Badge status={options.renderer(value)} text={value}/>);
+        valueRenderer = value => (<Badge status={options.renderer(value)} text={value} />);
         break;
       case 'custom':
-        valueRenderer = options.renderer
+        valueRenderer = options.renderer;
         break;
     }
 
     return (row) => {
       try {
         const dataSet = getData();
-        const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : '';
+        const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
 
         return (
           <Cell>{valueRenderer(value)}</Cell>
         );
       } catch (e) {
-        return <Cell/>
+        return <Cell />;
       }
     };
   } catch (e) {
-    return () => {}
+    return () => {};
   }
 };
 
 const TableBody = (props) => {
   const {
-    isLoading, columns, size, total, renderMode, enableGhostCells, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback,
+    isLoading, columns, size, total, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback, resizeColumnsCallback,
+    numFrozenColumns,
   } = props;
 
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
@@ -117,7 +115,7 @@ const TableBody = (props) => {
       return;
     }
 
-    reorderColumnsCallback( Utils.reorderArray(columns, oldIndex, newIndex, length) )
+    reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
 
   return (
@@ -125,12 +123,14 @@ const TableBody = (props) => {
       <TableHeader />
       <Table
         numRows={(size <= total ? size : total)}
-        renderMode={renderMode}
+        numFrozenColumns={numFrozenColumns}
+        enableGhostCells
+        renderMode={RenderMode.BATCH_ON_UPDATE}
         enableColumnReordering={enableReordering}
         enableColumnResizing={enableResizing}
-        enableGhostCells={enableGhostCells}
         bodyContextMenuRenderer={renderContextMenu}
         onColumnsReordered={handleColumnsReordered}
+        onColumnWidthChanged={resizeColumnsCallback}
       >
         { columns.map(column => (
           <Column
@@ -146,29 +146,29 @@ const TableBody = (props) => {
 };
 
 TableBody.propTypes = {
+  isLoading: PropTypes.bool,
   size: PropTypes.number,
   total: PropTypes.number,
+  numFrozenColumns: PropTypes.number,
   columns: PropTypes.shape([]),
-  renderMode: PropTypes.string,
-  enableGhostCells: PropTypes.bool,
   enableReordering: PropTypes.bool,
   enableResizing: PropTypes.bool,
-  isLoading: PropTypes.bool,
   renderContextMenu: PropTypes.func,
   reorderColumnsCallback: PropTypes.func,
+  resizeColumnsCallback: PropTypes.func,
 };
 
 TableBody.defaultProps = {
+  isLoading: false,
   size: 0,
   total: 0,
+  numFrozenColumns: 0,
   columns: [],
-  renderMode: RenderMode.BATCH_ON_UPDATE,
-  enableGhostCells: true,
   enableReordering: true,
   enableResizing: true,
-  isLoading: false,
   renderContextMenu: () => {},
   reorderColumnsCallback: () => {},
+  resizeColumnsCallback: () => {},
 };
 
 export default TableBody;

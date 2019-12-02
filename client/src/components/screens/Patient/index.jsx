@@ -10,9 +10,7 @@ import {
 } from 'antd';
 import ResizableAntdTable from 'resizable-antd-table';
 
-import PatientNavigation from './components/PatientNavigation';
 import Header from '../../Header';
-import Navigation from '../../Navigation';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import DataList from '../../DataList';
@@ -52,7 +50,7 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      intl, patient, search, actions,
+      intl, patient, actions,
     } = this.props;
 
     const identifier = intl.formatMessage({ id: 'screen.patient.details.id' });
@@ -129,14 +127,6 @@ class PatientScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <Navigation />
-        <PatientNavigation
-          intl={intl}
-          patient={patient}
-          search={search}
-          navigateToPatientScreen={this.handleNavigationToPatientScreen}
-          navigateToPatientSearchScreen={this.handleNavigationToPatientSearchScreen}
-        />
         <Card className="entity">
           <PageHeader
             title={(
