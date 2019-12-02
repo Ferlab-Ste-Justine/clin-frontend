@@ -1,46 +1,18 @@
+import shortid from 'shortid';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography, Spin,
+  Badge, Button, Typography,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-
 import './style.scss';
 
-
-const TableHeader = (props) => {
-  const { label } = props;
-  return (<div>{label}</div>);
-};
-
-TableHeader.propTypes = {
-  label: PropTypes.string,
-};
-
-TableHeader.defaultProps = {
-  label: '',
-};
-
-const TableFooter = (props) => {
-  const { label } = props;
-  return (<div>{label}</div>);
-};
-
-TableFooter.propTypes = {
-  label: PropTypes.string,
-};
-
-TableFooter.defaultProps = {
-  label: '',
-};
-
-
 export const createCellRenderer = (type, getData, options = {}) => {
-  let valueRenderer = null;
   try {
+    let valueRenderer = null;
     switch (type) {
       default:
       case 'text':
@@ -71,8 +43,9 @@ export const createCellRenderer = (type, getData, options = {}) => {
             shape={options.shape}
             icon={options.icon}
             onClick={options.handler}
+            data-id={value}
           >
-            {value}
+            {options.label || value}
           </Button>
         );
         break;
@@ -93,7 +66,9 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
 
         return (
-          <Cell>{valueRenderer(value)}</Cell>
+          <Cell className="cellValue">
+            {valueRenderer(value)}
+          </Cell>
         );
       } catch (e) {
         return <Cell />;
@@ -104,12 +79,12 @@ export const createCellRenderer = (type, getData, options = {}) => {
   }
 };
 
-const TableBody = (props) => {
+const DataTable = (props) => {
   const {
-    isLoading, columns, size, total, enableReordering, enableResizing, renderContextMenu, reorderColumnsCallback, resizeColumnsCallback,
-    numFrozenColumns,
+    columns, size, total, enableReordering, enableResizing, renderContextMenuCallback, reorderColumnsCallback, resizeColumnCallback,
+    numFrozenColumns, enableGhostCells,
   } = props;
-
+  const rowsCount = size <= total ? size : total;
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
     if (oldIndex === newIndex) {
       return;
@@ -117,58 +92,55 @@ const TableBody = (props) => {
 
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
-
   return (
-    <Spin spinning={isLoading}>
-      <TableHeader />
-      <Table
-        numRows={(size <= total ? size : total)}
-        numFrozenColumns={numFrozenColumns}
-        enableGhostCells
-        renderMode={RenderMode.BATCH_ON_UPDATE}
-        enableColumnReordering={enableReordering}
-        enableColumnResizing={enableResizing}
-        bodyContextMenuRenderer={renderContextMenu}
-        onColumnsReordered={handleColumnsReordered}
-        onColumnWidthChanged={resizeColumnsCallback}
-      >
-        { columns.map(column => (
-          <Column
-            key={column.key}
-            name={column.label}
-            cellRenderer={column.renderer}
-          />
-        )) }
-      </Table>
-      <TableFooter />
-    </Spin>
+    <Table
+      key={shortid.generate()}
+      numRows={rowsCount}
+      numFrozenColumns={numFrozenColumns}
+      enableGhostCells={enableGhostCells}
+      renderMode={RenderMode.BATCH_ON_UPDATE}
+      enableColumnReordering={enableReordering}
+      enableColumnResizing={enableResizing}
+      bodyContextMenuRenderer={renderContextMenuCallback}
+      onColumnsReordered={handleColumnsReordered}
+      onColumnWidthChanged={resizeColumnCallback}
+      defaultRowHeight={36}
+    >
+      { columns.map(definition => (
+        <Column
+          id={definition.key}
+          name={definition.label}
+          cellRenderer={definition.renderer}
+        />
+      )) }
+    </Table>
   );
 };
 
-TableBody.propTypes = {
-  isLoading: PropTypes.bool,
+DataTable.propTypes = {
   size: PropTypes.number,
   total: PropTypes.number,
-  numFrozenColumns: PropTypes.number,
   columns: PropTypes.shape([]),
+  numFrozenColumns: PropTypes.number,
   enableReordering: PropTypes.bool,
   enableResizing: PropTypes.bool,
-  renderContextMenu: PropTypes.func,
+  enableGhostCells: PropTypes.bool,
+  renderContextMenuCallback: PropTypes.func,
   reorderColumnsCallback: PropTypes.func,
-  resizeColumnsCallback: PropTypes.func,
+  resizeColumnCallback: PropTypes.func,
 };
 
-TableBody.defaultProps = {
-  isLoading: false,
+DataTable.defaultProps = {
   size: 0,
   total: 0,
-  numFrozenColumns: 0,
   columns: [],
-  enableReordering: true,
-  enableResizing: true,
-  renderContextMenu: () => {},
+  numFrozenColumns: 0,
+  enableReordering: false,
+  enableResizing: false,
+  enableGhostCells: false,
+  renderContextMenuCallback: () => {},
   reorderColumnsCallback: () => {},
-  resizeColumnsCallback: () => {},
+  resizeColumnCallback: () => {},
 };
 
-export default TableBody;
+export default DataTable;
