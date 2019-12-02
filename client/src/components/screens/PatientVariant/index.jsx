@@ -50,7 +50,7 @@ class PatientVariantScreen extends React.Component {
     this.handleTabChange = this.handleTabChange.bind(this);
     this.handleColumnVisibilityChange = this.handleColumnVisibilityChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleSizeChange = this.handleSizeChange.bind(this);
+    this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.getData = this.getData.bind(this);
 
@@ -109,23 +109,23 @@ class PatientVariantScreen extends React.Component {
     actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
-  handlePageChange(next) {
+  handlePageChange(page) {
     const { variant } = this.props;
     const { activeQuery } = variant;
 
     this.setState({
-      page: next,
+      page,
     }, () => {
       this.handleQuerySelection(activeQuery)
     })
   }
 
-  handleSizeChange(current, next) {
+  handlePageSizeChange(size) {
     const { variant } = this.props;
     const { activeQuery } = variant;
 
     this.setState({
-      size: next,
+      size,
     }, () => {
       this.handleQuerySelection(activeQuery)
     })
@@ -377,7 +377,7 @@ class PatientVariantScreen extends React.Component {
                 total={total}
                 schema={this.state.columnPreset[VARIANT_TAB]}
                 pageChangeCallback={this.handlePageChange}
-                pageSizeChangeCallback={this.handleSizeChange}
+                pageSizeChangeCallback={this.handlePageSizeChange}
                 isExportable={false}
               />) }
             </Tabs.TabPane>
@@ -391,7 +391,7 @@ class PatientVariantScreen extends React.Component {
                 total={total}
                 schema={this.state.columnPreset[GENE_TAB]}
                 pageChangeCallback={this.handlePageChange}
-                pageSizeChangeCallback={this.handleSizeChange}
+                pageSizeChangeCallback={this.handlePageSizeChange}
                 isExportable={false}
               />) }
             </Tabs.TabPane>
