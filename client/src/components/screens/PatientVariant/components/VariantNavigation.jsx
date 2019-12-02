@@ -25,6 +25,7 @@ class VariantNavigation extends React.Component {
     super(props);
     this.state = {
       activeFilterId: null,
+      defaultOpenMenu: null,
       searchResults: [],
     };
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -60,26 +61,45 @@ class VariantNavigation extends React.Component {
                 }]
               }
             }
-
             return accumulator;
           }, {});
+
+
+          console.log('+ groupedResults     ' + JSON.stringify(Object.values(groupedResults).filter(group => group.matches.length > 0)))
+
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
           })
         })
       })
     }
-    /*else {
-      this.setState({
-        searchResults: [],
-      })
-    }*/
   }
 
-  handleNavigationSelection(value, option) {
+  handleNavigationSelection(datum) {
+    const selection = JSON.parse(datum);
     console.log('+ handleNavigationSelection');
-    console.log('+ value ' + JSON.stringify(value));
-    console.log('+ option ' + JSON.stringify(option));
+    console.log('+ selection ' + JSON.stringify(datum));
+
+    if (selection.type === "category") {
+      this.setState({
+        activeFilterId: selection.group,
+        defaultOpenMenu: selection.group,
+      });
+
+
+    } else if (selection.type === "filter") {
+      // this.handleFilterChange
+      // filter
+    }
+
+
+    /*
+
+"{\"group\":\"variant\",\"type\":\"category\",\"value\":\"Conséquence\"}"
+"{\"group\":\"transmission\",\"type\":\"filter\",\"key\":\"transmission\",\"value\":\"HOM\"}"
+     */
+
+
 
   }
 
@@ -95,24 +115,31 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterChange(filter) {
-    const { onEditCallback } = this.props;
-    if (onEditCallback) {
-      const { activeQuery, queries } = this.props;
-      const query = find(queries, { key: activeQuery })
-      if (query) {
+    try {
+      const { onEditCallback } = this.props;
+      if (onEditCallback) {
+        const { activeQuery, queries } = this.props;
+        const query = find(queries, { key: activeQuery })
+        if (query) {
           const updatedQuery = cloneDeep(query);
           let updatedInstructions = []
           if (!filter.remove) {
             let updated = false
             updatedInstructions = updatedQuery.instructions.map((instruction) => {
               if (instruction.data.id === filter.id) {
-                  updated = true
-                  return { type: 'filter', data: filter };
+                updated = true
+                return {
+                  type: 'filter',
+                  data: filter
+                };
               }
               return instruction;
             })
             if (!updated) {
-              updatedInstructions.push({ type: 'filter', data: filter })
+              updatedInstructions.push({
+                type: 'filter',
+                data: filter
+              })
             }
           } else {
             updatedInstructions = updatedQuery.instructions.filter((instruction) => {
@@ -124,7 +151,10 @@ class VariantNavigation extends React.Component {
           }
           updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
           onEditCallback(updatedQuery);
+        }
       }
+    } catch (e) {
+      console.log('+ e ' + JSON.stringify(e))
     }
   }
 
@@ -251,11 +281,11 @@ class VariantNavigation extends React.Component {
 
   render() {
     const { intl, schema } = this.props;
-    const { activeFilterId, searchResults } = this.state;
+    const { activeFilterId, searchResults, defaultOpenMenu } = this.state;
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
-          <AutoComplete.Option key={match.id} value={match.value}>
+          <AutoComplete.Option key={match.id} value={JSON.stringify({ group: group.id, type: group.type, id: match.id , value: match.value })}>
             {match.value} {match.count && (<Tag>{match.count}</Tag>)}
           </AutoComplete.Option>
         ))}
@@ -273,30 +303,16 @@ class VariantNavigation extends React.Component {
                 autoFocus
                 size="large"
                 dataSource={autocompletes}
+                placeholder="Recherche de filtres"
                 onSearch={this.handleNavigationSearch}
                 onSelect={this.handleNavigationSelection}
-                optionLabelProp="value"
-                placeholder="Recherche de filtres"
-              >
-                <Input prefix={<Icon type="search" />} />
-              </AutoComplete>
-              <AutoComplete
-                allowClear
-                autoFocus
-                optionLabelProp="value"
-                size="large"
-                dataSource={autocompletes}
-                onSearch={this.handleNavigationSearch}
-                onSelect={this.handleNavigationSelection}
-                onChange={() => {}}
-                placeholder="Recherche de filtres"
               >
                 <Input prefix={<Icon type="search" />} />
               </AutoComplete>
             )}
           />
         </Menu>
-        <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
+        <Menu key="category-navigator" defaultOpenKeys={[defaultOpenMenu]} mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;

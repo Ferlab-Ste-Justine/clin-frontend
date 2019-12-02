@@ -288,6 +288,9 @@ class PatientVariantScreen extends React.Component {
 
       return accumulator;
     }, [])
+
+    console.log('+ tokenizedSearchData ' + JSON.stringify(tokenizedSearchData))
+
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer)
 
