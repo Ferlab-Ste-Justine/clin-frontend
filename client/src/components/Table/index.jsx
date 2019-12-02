@@ -65,7 +65,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
 
         return (
-          <Cell>
+          <Cell className="cellValue">
             {valueRenderer(value)}
           </Cell>
         );
@@ -91,7 +91,6 @@ const DataTable = (props) => {
 
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
-
   return (
     <Table
       key={shortid.generate()}
@@ -104,6 +103,7 @@ const DataTable = (props) => {
       bodyContextMenuRenderer={renderContextMenuCallback}
       onColumnsReordered={handleColumnsReordered}
       onColumnWidthChanged={resizeColumnCallback}
+      defaultRowHeight={36}
     >
       { columns.map(definition => (
         <Column
