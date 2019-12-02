@@ -218,6 +218,12 @@ const fr = {
   'screen.patientvariant.results.table.omin': 'Omin',
   'screen.patientvariant.results.table.orphanet': 'Orphanet',
   'screen.patientvariant.results.table.ensemble': 'Ensemble',
+  'components.table.action.search': 'Rechercher',
+  'components.table.action.reset': 'Réinitialiser',
+  'components.table.action.display': 'Afficher',
+  'components.table.action.export': 'Exporter',
+  'components.table.action.columns': 'Columns',
+  'components.table.action.organize': 'Organizer',
 };
 
 export default fr;

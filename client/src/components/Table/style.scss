@@ -1,10 +1,13 @@
+@import '../../containers/App/variables.scss';
+@import '/../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
+@import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
+
 .bp3-table-container{
-border-bottom:1px solid #CDDDE8;
 }
 
 
 
-.bp3-table-container, .bp3-table-column-headers .bp3-table-header , .bp3-table-row-headers .bp3-table-header, .bp3-table-cell, .bp3-table-menu{
+.bp3-table-container, .bp3-table-column-headers .bp3-table-header , .bp3-table-row-headers .bp3-table-header, .bp3-table-cell, .bp3-table-menu, .bp3-table-quadrant-left .bp3-table-cell.bp3-table-last-in-row, .bp3-table-quadrant-top-left .bp3-table-header.bp3-table-last-in-row{
     box-shadow:none;
 
 }
@@ -19,6 +22,9 @@ border-bottom:1px solid #CDDDE8;
 
 .bp3-table-header-content{
     padding:0;
+}
+
+.bp3-table-quadrant-left .bp3-table-cell.bp3-table-last-in-row{
 }
 
 .bp3-table-cell.bp3-table-truncated-cell, .bp3-table-column-header-tr .bp3-table-header{
@@ -68,6 +74,10 @@ border-bottom:1px solid #CDDDE8;
      padding:0 10px;
 }
 
+.bp3-table-container.bp3-table-no-rows:focus{
+    outline:none;
+}
+
 .bp3-table-cell.bp3-table-truncated-cell, .bp3-table-selection-enabled.bp3-table-row-headers .bp3-table-header{
     display:flex;
     align-items:center;
@@ -77,17 +87,43 @@ border-bottom:1px solid #CDDDE8;
     border-right:1px solid #CDDDE8;
 }
 
-.CellValue{
-    height: 20px;
-    color: rgba(35, 55, 80, 0.78);
-    font-size: 14px;
-    font-family: Roboto;
-    font-weight: normal;
-    letter-spacing: 0.25px;
-    line-height: 20px;
+.cellValue{
+    span{
+        color: rgba(35, 55, 80, 0.78);
+        font-size: 14px;
+        font-family: Roboto;
+        font-weight: normal;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+
+        .ant-badge-status-default{
+            background-color:#b5b5b5;
+        }
+    }
+
+    .bp3-table-truncated-text.bp3-table-no-wrap-text{
+        display:flex;
+    }
+
+    .ant-btn{
+        padding:0;
+        height:auto;
+        font-size:inherit;
+
+        span{
+            color: $primary-blue;
+            font-size: 14px;
+            font-family: Roboto;
+            font-weight: normal;
+            letter-spacing: 0.25px;
+            line-height: 20px;
+        }
+    }
+
+    a.ant-btn{
+        line-height:0;
+    }
 }
-
-
 
 .ant-pagination-item-active{
     background-color:#E4F1F9;
@@ -100,4 +136,107 @@ border-bottom:1px solid #CDDDE8;
 
 .ant-pagination-item a , .ant-pagination-item-active a{
     color: rgba(35, 55, 80, 0.78);
+}
+
+.checkbox{
+    width:100%;
+
+   .ant-checkbox{
+     padding:4px 0;
+   }
+
+   .ant-checkbox-checked .ant-checkbox-inner{
+     background-color:#1d8bc6;
+     border:1px solid #1d8bc6;
+   }
+
+   .ant-checkbox-checked::after{
+    border:none;
+   }
+
+   .ant-checkbox-inner{
+     border:1px solid rgba(35, 55, 80, 0.54);
+     height:18px;
+     width:18px
+   }
+
+ .ant-checkbox-inner::after{
+   left:22%;
+ }
+
+}
+
+
+.columnFilter{
+
+      border-radius: 2px;
+      box-shadow: 0px 8px 10px 1px rgba(89, 121, 144, 0.14),
+      0px 3px 14px 2px rgba(89, 121, 144, 0.12),
+      0px 5px 5px -3px rgba(89, 121, 144, 0.2);
+      width: 200px;
+
+      .reinitialiser{
+        display:flex;
+        justify-content:space-between;
+        padding-bottom:8px;
+        svg{
+                            height: 20px;
+                            width: 20px;
+                  }
+      }
+
+      .reinitialiser:hover{
+        text-decoration:none;
+      }
+
+      .ant-card-body{
+       padding: 12px 0 0 0;
+       width:100%;
+      }
+
+      .ant-card-head{
+        padding:0;
+        min-height:44px;
+        display:flex;
+        .ant-card-head-title{
+          padding:0
+        }
+      }
+
+      a{
+        padding:0 8px;
+      }
+
+      label{
+        padding:0 8px;
+      }
+      label:hover{
+        background-color:#F7FBFD;
+      }
+
+      .ant-checkbox + span{
+        padding-left:0;
+      }
+
+      .ant-input{
+        font-size:14px;
+        border:none;
+      }
+      .ant-checkbox-wrapper{
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        align-items:center;
+
+
+      }
+      .ant-input-suffix{
+          color:rgba(35, 55, 80, 0.38);
+
+          svg{
+            height: 24px;
+            width: 24px;
+          }
+
+      }
 }

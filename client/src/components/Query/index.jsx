@@ -417,20 +417,6 @@ class Query extends React.Component {
         </Menu.Item>
         )
       }
-        {undoable && original && (
-        <Menu.Item key={QUERY_ACTION_UNDO_ALL}>
-          <Icon type="undo" />
-            {menuRevert}
-        </Menu.Item>
-        )
-      }
-        {editable && (
-        <Menu.Item key={QUERY_ACTION_VIEW_SQON}>
-          <Icon type={`eye${(viewableSqon ? '-invisible' : '')}`} />
-            {menuAdvancedEditor}
-        </Menu.Item>
-        )
-      }
         {removable && (
         <Menu.Item key={QUERY_ACTION_DELETE}>
           <Icon type="delete" />
