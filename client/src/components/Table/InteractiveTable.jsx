@@ -1,7 +1,8 @@
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Dropdown, Button, Checkbox, Popover, Card, Spin, Input,
+  Row, Col, Button, Checkbox, Popover, Card, Spin, Input,
 } from 'antd';
 import {
   cloneDeep, isEqual, filter, pullAll, findIndex, find,
@@ -43,6 +44,7 @@ class InteractiveTable extends React.Component {
     this.isResizable = this.isResizable.bind(this);
     this.isReorderable = this.isReorderable.bind(this);
     this.isExportable = this.isExportable.bind(this);
+    this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
 
     // @NOTE Initialize Component State
     this.state.orderedColumns = cloneDeep(props.schema);
@@ -84,6 +86,13 @@ class InteractiveTable extends React.Component {
         columnReordererIsActive: !columnReordererIsActive,
       });
     }
+  }
+
+  handleColumnsVisible() {
+    const { columnSelectorIsActive } = this.state;
+    this.setState({
+      columnSelectorIsActive: !columnSelectorIsActive,
+    });
   }
 
   handleResetColumnSelector() {
@@ -188,6 +197,40 @@ class InteractiveTable extends React.Component {
     const isSelectable = this.isSelectable();
     const isExportable = this.isExportable();
     const filteredColumns = orderedColumns.filter(column => visibleColumns.indexOf(column.label) !== -1);
+
+    const content = (
+      <Card
+        className="columnFilter"
+        title={(
+          <Input
+            className="SearchInput"
+              placeholder={intl.formatMessage({ id: 'components.table.action.search' })} suffix={<IconKit size={16} icon={ic_search} />} /* eslint-disable-line */
+            onChange={this.handleSearchColumnByQuery}
+            value={searchValue}
+          />
+          )}
+        bordered={false}
+      >
+        { !isEqual(orderedColumns.map(column => column.label), visibleColumns) && (
+          <Row>
+            <a onClick={this.handleResetColumnSelector}> { /* eslint-disable-line */ }
+              {intl.formatMessage({ id: 'components.table.action.reset' })} <IconKit size={16} icon={ic_replay} /> { /* eslint-disable-line */ }
+            </a>
+          </Row>
+        ) }
+        <Row>
+          <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className="checkbox" value={cloneDeep(visibleColumns)}>
+            { matchingColumns.map(key => (
+              <Row>
+                <Col>
+                  <Checkbox value={key}>{key}</Checkbox>
+                </Col>
+              </Row>
+            )) }
+          </Checkbox.Group>
+        </Row>
+      </Card>
+    );
     return (
       <Spin spinning={isLoading}>
         { (isReorderable || isSelectable || isExportable) && (
@@ -195,7 +238,7 @@ class InteractiveTable extends React.Component {
             <Row type="flex" justify="end">
               { isReorderable && (
                 <Col>
-                  <Button onClick={this.toggleColumnReorderer} className={`${style.btn} ${style.btnSec}`}>
+                  <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `activeButton ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                   <IconKit size={16} icon={ic_swap_horiz} /> { /* eslint-disable-line */ }
                     {intl.formatMessage({ id: 'components.table.action.organize' })}
                   </Button>
@@ -203,51 +246,18 @@ class InteractiveTable extends React.Component {
               ) }
               { isSelectable && (
                 <Col>
-                  <Dropdown
-                    overlay={(
-                      <Popover visible>
-                        <Card
-                          className="columnFilter"
-                          title={(
-                            <Input
-                              className="SearchInput"
-                              placeholder={intl.formatMessage({ id: 'components.table.action.search' })} suffix={<IconKit size={16} icon={ic_search} />} /* eslint-disable-line */
-                              onChange={this.handleSearchColumnByQuery}
-                              value={searchValue}
-                            />
-                          )}
-                          bordered={false}
-                        >
-                          { !isEqual(orderedColumns.map(column => column.label), visibleColumns) && (
-                          <Row>
-                            <a onClick={this.handleResetColumnSelector}> { /* eslint-disable-line */ }
-                              {intl.formatMessage({ id: 'components.table.action.reset' })} <IconKit size={16} icon={ic_replay} /> { /* eslint-disable-line */ }
-                            </a>
-                          </Row>
-                          ) }
-                          <Row>
-                            <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className="checkbox" value={cloneDeep(visibleColumns)}>
-                              { matchingColumns.map(key => (
-                                <Row>
-                                  <Col>
-                                    <Checkbox value={key}>{key}</Checkbox>
-                                  </Col>
-                                </Row>
-                              )) }
-                            </Checkbox.Group>
-                          </Row>
-                        </Card>
-                      </Popover>
-                    )}
-                    visible={columnSelectorIsActive}
-                    trigger={['click']}
-                    placement="bottomRight"
+                  <Popover
+                    trigger="click"
+                    content={content}
+                    className="columnPopover"
+                    placement="bottom"
+                    onVisibleChange={this.handleColumnsVisible}
                   >
-                    <Button onClick={this.toggleColumnSelector} className={`${style.btn} ${style.btnSec}`}>
-                      <IconKit size={16} icon={ic_view_column} /> { /* eslint-disable-line */ }
+                    <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `activeButton ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
+                          <IconKit size={16} icon={ic_view_column} /> { /* eslint-disable-line */ }
                       {intl.formatMessage({ id: 'components.table.action.display' })}
                     </Button>
-                  </Dropdown>
+                  </Popover>
                 </Col>
               ) }
               { isExportable && (
@@ -272,7 +282,6 @@ class InteractiveTable extends React.Component {
               resizeColumnsCallback={this.handleColumnResized}
               numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
-              numFrozenColumns={numFrozenColumns}
             />
           </Col>
         </Row>
@@ -310,7 +319,6 @@ InteractiveTable.propTypes = {
   resizeColumnCallback: PropTypes.func,
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
-  numFrozenColumns: PropTypes.number,
 };
 
 InteractiveTable.defaultProps = {
@@ -325,7 +333,6 @@ InteractiveTable.defaultProps = {
   resizeColumnCallback: () => {},
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},
-  numFrozenColumns: 0,
 };
 
 export default InteractiveTable;

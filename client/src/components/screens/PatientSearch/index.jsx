@@ -54,6 +54,7 @@ class PatientSearchScreen extends React.Component {
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
     this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
     this.getData = this.getData.bind(this)
+    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this)
 
     // @NOTE Initialize Component State
     const { intl } = props;
@@ -65,7 +66,7 @@ class PatientSearchScreen extends React.Component {
         "Category 2",
     ]
     this.columnPreset = [
-      { key: 'patientId', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' })},
+      { key: 'patientId', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('button', this.getData, { key: 'id' , handler: this.handleGoToPatientScreen})},
       { key: 'organization', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
       { key: 'firstName', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
       { key: 'lastName', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
@@ -133,6 +134,12 @@ class PatientSearchScreen extends React.Component {
     });
 
     csvExporter.generateCsv(data);
+  }
+
+  handleGoToPatientScreen(e){
+    const { actions } = this.props;
+    const value =  e.target.getAttribute('data-id')
+    actions.navigateToPatientScreen(value);
   }
 
   handleAutoCompleteChange(query) {
@@ -241,7 +248,7 @@ class PatientSearchScreen extends React.Component {
     const { intl, search } = this.props;
     const { patient } = search;
     const { total } = patient;
-    const { autoCompleteIsOpen, size, page, columnName, isFacetOpen,facet,
+    const { autoCompleteIsOpen, size, page, columnName, isFacetOpen, facet,
     } = this.state;
 
     const { Title } = Typography;
@@ -270,7 +277,7 @@ class PatientSearchScreen extends React.Component {
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
             <Col>
-              <Button className={`${style.btn} filter`} style={isFacetOpen ? { width: 280 } : { width: 'auto' }} onClick={this.handleOpenFacet}>
+              <Button disabled className={`${style.btn} filter`} style={isFacetOpen ? { width: 280 } : { width: 'auto' }} onClick={this.handleOpenFacet}>
                 <div>
                   <IconKit size={16} icon={ic_tune} />
                   Filtrer
@@ -292,7 +299,6 @@ class PatientSearchScreen extends React.Component {
                 dataSource={autoCompleteResults}
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
-                open={autoCompleteIsOpen}
                 onBlur={this.handleAutoCompleteClose}
               >
                 <Input prefix={<Icon type="search" />} onPressEnter={this.handleAutoCompletePressEnter} />
@@ -309,20 +315,7 @@ class PatientSearchScreen extends React.Component {
             { isFacetOpen && (
             <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
               {facet.map((column, index) => (
-                <Card bordered={false} className="category" title={this.getCardCategoryTitle(column, index)}>
-                  {
-                      this.isCategorieFacetOpen(index) && (
-                      <Checkbox.Group className="checkbox" defaultValue={columnName} >
-                        {columnName.map((name, index) => (
-                          <Row key={index}>
-                            <Col>
-                              <Checkbox value={name}>{name}</Checkbox>
-                            </Col>
-                          </Row>
-                        ))}
-                      </Checkbox.Group>
-                      )
-                   }
+                <Card key={index} bordered={false} className="category" title={this.getCardCategoryTitle(column, index)}>
                 </Card>
               ))
                  }
