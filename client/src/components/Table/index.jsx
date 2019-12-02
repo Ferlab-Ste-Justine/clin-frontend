@@ -43,8 +43,9 @@ export const createCellRenderer = (type, getData, options = {}) => {
             shape={options.shape}
             icon={options.icon}
             onClick={options.handler}
+            data-id={value}
           >
-            {value}
+            {options.label || value}
           </Button>
         );
         break;
