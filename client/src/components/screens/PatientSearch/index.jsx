@@ -65,7 +65,7 @@ class PatientSearchScreen extends React.Component {
         "Category 2",
     ]
     this.columnPreset = [
-      { key: 'patientId', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' }) },
+      { key: 'patientId', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('link', this.getData, { key: 'id' })},
       { key: 'organization', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
       { key: 'firstName', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
       { key: 'lastName', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
@@ -330,18 +330,20 @@ class PatientSearchScreen extends React.Component {
             </Col>
             )}
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
-              <InteractiveTable
-                key="patient-interactive-table"
-                intl={intl}
-                size={size}
-                page={page}
-                total={total}
-                schema={this.columnPreset}
-                pageChangeCallback={this.handlePageChange}
-                pageSizeChangeCallback={this.handlePageSizeChange}
-                exportCallback={this.exportToTsv}
-                numFrozenColumns={1}
-              />
+                <Card bordered={false} className="tablePatient">
+                  <InteractiveTable
+                    key="patient-interactive-table"
+                    intl={intl}
+                    size={size}
+                    page={page}
+                    total={total}
+                    schema={this.columnPreset}
+                    pageChangeCallback={this.handlePageChange}
+                    pageSizeChangeCallback={this.handlePageSizeChange}
+                    exportCallback={this.exportToTsv}
+                    numFrozenColumns={1}
+                  />
+                </Card>
             </Col>
           </Row>
         </Card>
