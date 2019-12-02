@@ -172,7 +172,7 @@ class PatientVariantScreen extends React.Component {
     actions.duplicateQuery(query.data, index);
 
     setTimeout(() => {
-      this.handleQuerySelection(query.key);
+      this.handleQuerySelection(query.data.key);
     }, 100)
   }
 
