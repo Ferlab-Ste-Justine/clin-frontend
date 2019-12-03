@@ -272,6 +272,7 @@ class PatientVariantScreen extends React.Component {
               id: group.id,
               type: group.type,
               label: group.label,
+              subid: datum.id,
               value: datum.value,
             })
           } else {
@@ -279,6 +280,7 @@ class PatientVariantScreen extends React.Component {
               id: group.id,
               type: group.type,
               label: group.label,
+              subid: datum.id,
               value: datum.value,
               count: datum.count,
             })
@@ -288,9 +290,6 @@ class PatientVariantScreen extends React.Component {
 
       return accumulator;
     }, [])
-
-    console.log('+ tokenizedSearchData ' + JSON.stringify(tokenizedSearchData))
-
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer)
 

@@ -24,8 +24,9 @@ class VariantNavigation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeFilterId: null,
-      defaultOpenMenu: null,
+      activeFilterId: 'variant',
+      selectedMenu: 'variant',
+      selectedSubMenu: 'variant_type',
       searchResults: [],
     };
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -43,29 +44,22 @@ class VariantNavigation extends React.Component {
       autocomplete.then(engine => {
         engine.search(query, searchResults => {
           const groupedResults = searchResults.reduce((accumulator, result) => {
-            if (accumulator[result.id]) {
-              accumulator[result.id].matches.push({
-                id: result.id,
-                value: result.value,
-                count: result.count || ''
-              })
-            } else {
+            if (!accumulator[result.id]) {
               accumulator[result.id] = {
                 id: result.id,
                 type: result.type,
                 label: result.label,
-                matches: [{
-                  id: result.id,
-                  value: result.value,
-                  count: result.count || ''
-                }]
+                matches: []
               }
             }
+            accumulator[result.id].matches.push({
+              id: result.id,
+              value: result.value,
+              subid: result.type === 'category' ? result.subid : null,
+              count: result.type === 'filter' ? result.count : null
+            })
             return accumulator;
           }, {});
-
-
-          console.log('+ groupedResults     ' + JSON.stringify(Object.values(groupedResults).filter(group => group.matches.length > 0)))
 
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
@@ -83,7 +77,8 @@ class VariantNavigation extends React.Component {
     if (selection.type === "category") {
       this.setState({
         activeFilterId: selection.group,
-        defaultOpenMenu: selection.group,
+        selectedMenu: 'variant',
+        selectedSubMenu: 'variant_type'
       });
 
 
@@ -161,6 +156,8 @@ class VariantNavigation extends React.Component {
   handleCategoryOpenChange(keys) {
     this.setState({
       activeFilterId: null,
+      selectedMenu: null,
+      selectedSubMenu: null,
     });
   }
 
@@ -281,11 +278,11 @@ class VariantNavigation extends React.Component {
 
   render() {
     const { intl, schema } = this.props;
-    const { activeFilterId, searchResults, defaultOpenMenu } = this.state;
+    const { activeFilterId, searchResults, selectedMenu, selectedSubMenu } = this.state;
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
-          <AutoComplete.Option key={match.id} value={JSON.stringify({ group: group.id, type: group.type, id: match.id , value: match.value })}>
+          <AutoComplete.Option key={match.id} value={JSON.stringify({ type: group.type, group: group.id, subgroup: match.subid, value: match.value })}>
             {match.value} {match.count && (<Tag>{match.count}</Tag>)}
           </AutoComplete.Option>
         ))}
@@ -302,6 +299,7 @@ class VariantNavigation extends React.Component {
                 allowClear
                 autoFocus
                 size="large"
+                optionLabelProp="key"
                 dataSource={autocompletes}
                 placeholder="Recherche de filtres"
                 onSearch={this.handleNavigationSearch}
@@ -312,7 +310,7 @@ class VariantNavigation extends React.Component {
             )}
           />
         </Menu>
-        <Menu key="category-navigator" defaultOpenKeys={[defaultOpenMenu]} mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
+        <Menu key="category-navigator" mode="horizontal" openKeys={[selectedMenu]} onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
@@ -322,12 +320,14 @@ class VariantNavigation extends React.Component {
               const filter = categoryData ? this.renderFilterType(categoryData) : null
 
               return (
-                <Menu.SubMenu key={id} title={<span>{label}</span>}>
+                <Menu.SubMenu openKeys={[selectedSubMenu]} key={id} forceRender={true} forceSubMenuRender={true} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (
                   <Menu.SubMenu
                     key={filter.id}
                     title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
                     onTitleClick={this.handleFilterSelection}
+                    forceRender={true}
+                    forceSubMenuRender={true}
                   />
                   ))}
                   { activeFilterId !== null && (
