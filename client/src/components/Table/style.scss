@@ -2,7 +2,6 @@
 @import '/../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
 @import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
 
-
 .bp3-table-container, .bp3-table-column-headers .bp3-table-header , .bp3-table-row-headers .bp3-table-header, .bp3-table-cell, .bp3-table-menu, .bp3-table-quadrant-left .bp3-table-cell.bp3-table-last-in-row, .bp3-table-quadrant-top-left .bp3-table-header.bp3-table-last-in-row{
     box-shadow:none;
 }
@@ -82,7 +81,6 @@
     border-right:1px solid #CDDDE8;
 }
 
-
 .ant-pagination-item-active{
     background-color:#E4F1F9;
 }
@@ -97,11 +95,9 @@
 }
 
 
-
 .ant-popover-inner-content{
     padding:0;
 }
-
 
 
 .activeButton{

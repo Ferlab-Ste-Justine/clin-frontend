@@ -9,7 +9,9 @@ import {
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import './style.scss';
+
 import styleTable from './style.module.scss';
+
 
 export const createCellRenderer = (type, getData, options = {}) => {
   try {

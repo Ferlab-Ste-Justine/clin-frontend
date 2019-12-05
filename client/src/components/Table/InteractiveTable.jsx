@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -46,7 +45,6 @@ class InteractiveTable extends React.Component {
     this.isReorderable = this.isReorderable.bind(this);
     this.isExportable = this.isExportable.bind(this);
     this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
-    this.ischeck = this.ischeck.bind(this)
 
     // @NOTE Initialize Component State
     this.state.orderedColumns = cloneDeep(props.schema);
@@ -131,10 +129,6 @@ class InteractiveTable extends React.Component {
         orderedColumns: reorderedColumns,
       });
     }
-  }
-
-  ischeck(check){
-    console.log('check', check)
   }
 
   toggleColumnSelector() {
@@ -225,6 +219,7 @@ class InteractiveTable extends React.Component {
           </Row>
         ) }
         <Row>
+
           <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className={`${style.checkbox} `} value={cloneDeep(visibleColumns)}>
             { matchingColumns.map(key => (
               <Row>
