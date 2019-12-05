@@ -9,6 +9,7 @@ import {
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import './style.scss';
+import styleTable from './style.module.scss';
 
 export const createCellRenderer = (type, getData, options = {}) => {
   try {
@@ -66,7 +67,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
 
         return (
-          <Cell className="cellValue">
+          <Cell className={styleTable.cellValue}>
             {valueRenderer(value)}
           </Cell>
         );

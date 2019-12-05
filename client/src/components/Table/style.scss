@@ -2,14 +2,9 @@
 @import '/../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
 @import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
 
-.bp3-table-container{
-}
-
-
 
 .bp3-table-container, .bp3-table-column-headers .bp3-table-header , .bp3-table-row-headers .bp3-table-header, .bp3-table-cell, .bp3-table-menu, .bp3-table-quadrant-left .bp3-table-cell.bp3-table-last-in-row, .bp3-table-quadrant-top-left .bp3-table-header.bp3-table-last-in-row{
     box-shadow:none;
-
 }
 
 .bp3-table-quadrant-left, .bp3-table-quadrant.bp3-table-quadrant-top-left, .bp3-table-menu{
@@ -87,45 +82,6 @@
     border-right:1px solid #CDDDE8;
 }
 
-.cellValue{
-    span{
-        color: rgba(35, 55, 80, 0.78);
-        font-size: 14px;
-        font-family: Roboto;
-        font-weight: normal;
-        letter-spacing: 0.25px;
-        line-height: 20px;
-
-        .ant-badge-status-default{
-            background-color:#b5b5b5;
-        }
-    }
-
-    .bp3-table-truncated-text.bp3-table-no-wrap-text{
-        display:flex;
-    }
-
-    .ant-btn{
-        padding:0;
-        height:auto;
-        font-size:inherit;
-        border:none;
-        background:none;
-
-        span{
-            color: $primary;
-            font-size: 14px;
-            font-family: Roboto;
-            font-weight: normal;
-            letter-spacing: 0.25px;
-            line-height: 20px;
-        }
-    }
-
-    a.ant-btn{
-        line-height:0;
-    }
-}
 
 .ant-pagination-item-active{
     background-color:#E4F1F9;
