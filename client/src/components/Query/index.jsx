@@ -385,8 +385,6 @@ class Query extends React.Component {
     const menuMaximize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.maximize' });
     const menuMinimize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.minimize' });
     const menuDuplicate = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
-    const menuRevert = intl.formatMessage({ id: 'screen.patientvariant.query.menu.revert' });
-    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientvariant.query.menu.advancedEditor' });
     const menuDelete = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
     const titleMetaIsPresent = this.hasTitle();
 

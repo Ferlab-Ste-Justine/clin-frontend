@@ -24,9 +24,8 @@ class VariantNavigation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeFilterId: 'variant',
-      selectedMenu: 'variant',
-      selectedSubMenu: 'variant_type',
+      activeFilterId: null,
+      searchSelection: {},
       searchResults: [],
     };
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -76,15 +75,20 @@ class VariantNavigation extends React.Component {
 
     if (selection.type === "category") {
       this.setState({
-        activeFilterId: selection.group,
-        selectedMenu: 'variant',
-        selectedSubMenu: 'variant_type'
-      });
-
-
+        activeFilterId: selection.subgroup,
+        searchSelection: {
+          category: selection.group,
+          filter: selection.subgroup,
+        }
+      })
     } else if (selection.type === "filter") {
-      // this.handleFilterChange
-      // filter
+      this.setState({
+        activeFilterId: selection.group,
+        searchSelection: {
+          category: selection.group,
+          filter: selection.group,
+        }
+      })
     }
 
 
@@ -101,6 +105,7 @@ class VariantNavigation extends React.Component {
   handleFilterSelection({ key }) {
     this.setState({
       activeFilterId: key,
+      searchSelection: {},
     });
   }
 
@@ -278,7 +283,7 @@ class VariantNavigation extends React.Component {
 
   render() {
     const { intl, schema } = this.props;
-    const { activeFilterId, searchResults, selectedMenu, selectedSubMenu } = this.state;
+    const { activeFilterId, searchResults, searchSelection } = this.state;
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
@@ -288,6 +293,23 @@ class VariantNavigation extends React.Component {
         ))}
       </AutoComplete.OptGroup>
     ))
+
+    console.log('+ activeFilterId ' + activeFilterId);
+    console.log('+ searchSelection ' + JSON.stringify(searchSelection));
+
+
+
+
+    /*
+    searchSelection: {
+      category: selection.group,
+        filter: selection.subgroup,
+    }
+    }*/
+
+
+
+
 
     return (
       <div className="variant-navigation">
@@ -310,24 +332,33 @@ class VariantNavigation extends React.Component {
             )}
           />
         </Menu>
-        <Menu key="category-navigator" mode="horizontal" openKeys={[selectedMenu]} onOpenChange={this.handleCategoryOpenChange}>
+        <Menu key="category-navigator" mode="horizontal" openKeys={[searchSelection.group, activeFilterId]} onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
               const categoryInfo = find(schema.categories, ['id', id]);
-              const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
+              let categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
+              if (!categoryData) {
+                find(categoryInfo.filters, ['id', searchSelection.filter]);
+              }
               const filter = categoryData ? this.renderFilterType(categoryData) : null
 
+              console.log(' + activeFilterId ' + activeFilterId)
+              console.log(' + id ' + id)
+              console.log(' + filter ' + JSON.stringify(filter))
+
+
+
               return (
-                <Menu.SubMenu openKeys={[selectedSubMenu]} key={id} forceRender={true} forceSubMenuRender={true} title={<span>{label}</span>}>
+                <Menu.SubMenu key={id} title={<span>{label}</span>}>
                   { activeFilterId === null && category.filters.map(filter => filter.search && (
                   <Menu.SubMenu
                     key={filter.id}
                     title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
                     onTitleClick={this.handleFilterSelection}
+                    isOpen={(searchSelection.category === id)}
                     forceRender={true}
-                    forceSubMenuRender={true}
                   />
                   ))}
                   { activeFilterId !== null && (

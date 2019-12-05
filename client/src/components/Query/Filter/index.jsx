@@ -332,6 +332,7 @@ Filter.defaultProps = {
     editable: false,
     selectable: false,
     removable: false,
+
   },
   onCancelCallback: () => {},
   onEditCallback: () => {},
