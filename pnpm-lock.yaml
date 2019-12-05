@@ -1,14 +1,14 @@
 dependencies:
   '@babel/core': 7.2.2
   '@babel/runtime': 7.7.4
-  '@blueprintjs/core': 3.21.0_react-dom@16.12.0+react@16.12.0
-  '@blueprintjs/table': 3.8.0_react-dom@16.12.0+react@16.12.0
-  '@clarketm/saga-monitor': 2.0.1_redux-saga@1.1.3
+  '@blueprintjs/core': 3.21.0
+  '@blueprintjs/table': 3.8.0
+  '@clarketm/saga-monitor': 2.0.1
   '@hapi/joi': 15.1.1
-  '@hot-loader/react-dom': 16.11.0_react@16.12.0
+  '@hot-loader/react-dom': 16.11.0
   '@svgr/webpack': 4.1.0
   animate-sass: 0.8.2
-  antd: 3.25.3_react-dom@16.12.0+react@16.12.0
+  antd: 3.25.3
   axios: 0.18.1
   babel-core: 7.0.0-bridge.0
   babel-eslint: 9.0.0
@@ -20,7 +20,7 @@ dependencies:
   bloodhound-js: 1.2.3
   case-sensitive-paths-webpack-plugin: 2.2.0
   clippyjs: 0.0.3
-  connected-react-router: 6.6.1_88169c422459cb3f744e205eed7a7dbc
+  connected-react-router: 6.6.1
   copy-to-clipboard: 3.2.0
   css-loader: 1.0.0
   dotenv: 6.0.0
@@ -66,28 +66,24 @@ dependencies:
   react: 16.12.0
   react-app-polyfill: 0.2.2
   react-dev-utils: 7.0.5
-  react-dom: 16.12.0_react@16.12.0
-  react-drag-sortable: 1.0.6_react-dom@16.12.0+react@16.12.0
-  react-hot-loader: 4.12.18_react-dom@16.12.0+react@16.12.0
-  react-icons-kit: 1.3.1_react@16.12.0
-  react-intl: 2.9.0_prop-types@15.7.2+react@16.12.0
-  react-intl-redux: 2.2.0_b7f75715e308070314afda3b88250837
-  react-redux: 6.0.1_react@16.12.0+redux@4.0.4
-  react-responsive: 6.1.2_react@16.12.0
-  react-router: 4.3.1_react@16.12.0
-  react-router-dom: 4.3.1_react@16.12.0
-  react-transition-group: 2.9.0_react-dom@16.12.0+react@16.12.0
+  react-dom: 16.12.0
+  react-drag-sortable: 1.0.6
+  react-hot-loader: 4.12.18
+  react-icons-kit: 1.3.1
+  react-intl: 2.9.0
+  react-intl-redux: 2.2.0
+  react-redux: 6.0.1
+  react-responsive: 6.1.2
+  react-router: 4.3.1
+  react-router-dom: 4.3.1
+  react-transition-group: 2.9.0
   redux: 4.0.4
   redux-mock-store: 1.5.3
   redux-saga: 1.1.3
-  redux-saga-router: 2.2.0_redux-saga@1.1.3
+  redux-saga-router: 2.2.0
   resizable-antd-table: 1.0.1
   resolve: 1.10.0
-<<<<<<< HEAD
-  sass-loader: 7.1.0_webpack@4.28.3
-=======
   sass-loader: 7.1.0
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
   shortid: 2.2.15
   store: 2.0.12
   style-loader: 0.23.1
@@ -107,18 +103,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-YKgNbG2dlzqMhA9NtI3/pbY16m3Yl/EeWBRa+lB1X1YaYxHrxNexiQYCLTWO/uDvAjLFMEDU+zR901waBtMtjQ==
-<<<<<<< HEAD
-  /@ant-design/create-react-context/0.2.4_prop-types@15.7.2+react@16.12.0:
-    dependencies:
-      gud: 1.0.0
-      prop-types: 15.7.2
-      react: 16.12.0
-=======
   /@ant-design/create-react-context/0.2.4_prop-types@15.7.2:
     dependencies:
       gud: 1.0.0
       prop-types: 15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       warning: 4.0.3
     dev: false
     peerDependencies:
@@ -126,19 +114,11 @@ packages:
       react: ^0.14.0 || ^15.0.0 || ^16.0.0
     resolution:
       integrity: sha512-8sw+/w6r+aEbd+OJ62ojoSE4zDt/3yfQydmbWFznoftjr8v/opOswGjM+/MU0rSaREbluqzOmZ6xdecHpSaS2w==
-<<<<<<< HEAD
-  /@ant-design/icons-react/2.0.1_38a7028f59ac471b92833fa7a37f0b13:
-=======
   /@ant-design/icons-react/2.0.1_@ant-design+icons@2.1.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       '@ant-design/colors': 3.2.2
       '@ant-design/icons': 2.1.1
       babel-runtime: 6.26.0
-<<<<<<< HEAD
-      react: 16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       '@ant-design/icons': ^2.0.0
@@ -559,6 +539,14 @@ packages:
       '@babel/core': ^7.0.0-0
     resolution:
       integrity: sha512-wuy6fiMe9y7HeZBWXYCGt2RGxZOj0BImZ9EyXJVnVGBKO/Br592rbR3rtIQn0eQhAk9vqaKP5n8tVqEFBQMfLg==
+  /@babel/plugin-syntax-object-rest-spread/7.7.4:
+    dependencies:
+      '@babel/helper-plugin-utils': 7.0.0
+    dev: false
+    peerDependencies:
+      '@babel/core': ^7.0.0-0
+    resolution:
+      integrity: sha512-mObR+r+KZq0XhRVS2BrBKBpr5jqrqzlPvS9C9vuOf5ilSwzloAl7RPWLrgKdWS6IreaVrjHxTjtyqFiOisaCwg==
   /@babel/plugin-syntax-object-rest-spread/7.7.4_@babel+core@7.2.2:
     dependencies:
       '@babel/core': 7.2.2
@@ -1216,7 +1204,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-cz5Ji23KCi4T+YIE/BolWosrJuSmoZeN1EFnRtBwF+KKLi8GG/Z2c2hOJJeCXPk4mwk4QFvTmwIodJowXgttRA==
-  /@blueprintjs/core/3.21.0_react-dom@16.12.0+react@16.12.0:
+  /@blueprintjs/core/3.21.0:
     dependencies:
       '@blueprintjs/icons': 3.12.0
       '@types/dom4': 2.0.1
@@ -1224,17 +1212,9 @@ packages:
       dom4: 2.1.5
       normalize.css: 8.0.1
       popper.js: 1.16.0
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-      react-lifecycles-compat: 3.0.4
-      react-popper: 1.3.6_react@16.12.0
-      react-transition-group: 2.9.0_react-dom@16.12.0+react@16.12.0
-=======
       react-lifecycles-compat: 3.0.4
       react-popper: 1.3.6
       react-transition-group: 2.9.0
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       resize-observer-polyfill: 1.5.1
       tslib: 1.9.3
     dev: false
@@ -1251,21 +1231,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ERIODstzjBzRIHNqAqyXu4gVsdLyvxAZ0Cp7Dr4+d5BdgDbZYzMYf9ll05daQPOBWaFjLh3lhCRhbfk6MXdD7A==
-<<<<<<< HEAD
-  /@blueprintjs/table/3.8.0_react-dom@16.12.0+react@16.12.0:
-    dependencies:
-      '@blueprintjs/core': 3.21.0_react-dom@16.12.0+react@16.12.0
-      classnames: 2.2.6
-      prop-types: 15.7.2
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
   /@blueprintjs/table/3.8.0:
     dependencies:
       '@blueprintjs/core': 3.21.0
       classnames: 2.2.6
       prop-types: 15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       react-lifecycles-compat: 3.0.4
       tslib: 1.9.3
     dev: false
@@ -1274,15 +1244,10 @@ packages:
       react-dom: ^15.3.0 || 16
     resolution:
       integrity: sha512-wqu4vwAOj0TUwf7UOqIMgnEY2wxP1I9B5YVumP/cbW4ro7VsaVRqD+VENyw4A/6FL2thTLzWgfTjvYO+h2Li+w==
-<<<<<<< HEAD
-  /@clarketm/saga-monitor/2.0.1_redux-saga@1.1.3:
-=======
   /@clarketm/saga-monitor/2.0.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       '@redux-saga/core': 1.1.3
       '@redux-saga/is': 1.1.2
-      redux-saga: 1.1.3
     dev: false
     peerDependencies:
       redux-saga: '>=1.0'
@@ -1331,12 +1296,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-tAag0jEcjwH+P2quUfipd7liWCNX2F8NvYjQp2wtInsZxnMlypdw0FtAOLxtvvkO+GSRRbmNi8m/5y42PQJYCQ==
-  /@hot-loader/react-dom/16.11.0_react@16.12.0:
+  /@hot-loader/react-dom/16.11.0:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       prop-types: 15.7.2
-      react: 16.12.0
       scheduler: 0.17.0
     dev: false
     peerDependencies:
@@ -2197,17 +2161,11 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-VT0ZI6kZRdTh8YyJw3SMbYm/u+NqfsAxEpWO0Pf9sq8/e94WxxOpPKx9FR1FlyCtOVDNOQ+8ntlqFxiRc+r5qA==
-  /antd/3.25.3_react-dom@16.12.0+react@16.12.0:
+  /antd/3.25.3:
     dependencies:
-<<<<<<< HEAD
-      '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2+react@16.12.0
-      '@ant-design/icons': 2.1.1
-      '@ant-design/icons-react': 2.0.1_38a7028f59ac471b92833fa7a37f0b13
-=======
       '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2
       '@ant-design/icons': 2.1.1
       '@ant-design/icons-react': 2.0.1_@ant-design+icons@2.1.1
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       '@types/react-slick': 0.23.4
       array-tree-filter: 2.1.0
       babel-runtime: 6.26.0
@@ -2221,44 +2179,22 @@ packages:
       omit.js: 1.0.2
       prop-types: 15.7.2
       raf: 3.4.1
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-calendar: 9.15.8_react-dom@16.12.0+react@16.12.0
-      rc-cascader: 0.17.5_react-dom@16.12.0+react@16.12.0
+      rc-animate: 2.10.2
+      rc-calendar: 9.15.8
+      rc-cascader: 0.17.5
       rc-checkbox: 2.1.8
-      rc-collapse: 1.11.7_react-dom@16.12.0+react@16.12.0
-      rc-dialog: 7.5.13_react-dom@16.12.0+react@16.12.0
-      rc-drawer: 3.0.2_react-dom@16.12.0+react@16.12.0
-      rc-dropdown: 2.4.1_react-dom@16.12.0+react@16.12.0
-      rc-editor-mention: 1.1.13_react-dom@16.12.0+react@16.12.0
-      rc-form: 2.4.11_75e41294fa833faf4530b305a6d9f4fe
-      rc-input-number: 4.5.1_react-dom@16.12.0+react@16.12.0
-      rc-mentions: 0.4.1_75e41294fa833faf4530b305a6d9f4fe
-      rc-menu: 7.5.3_react-dom@16.12.0+react@16.12.0
-      rc-notification: 3.3.1_react-dom@16.12.0+react@16.12.0
+      rc-collapse: 1.11.7
+      rc-dialog: 7.5.13
+      rc-drawer: 3.0.2
+      rc-dropdown: 2.4.1
+      rc-editor-mention: 1.1.13
+      rc-form: 2.4.11_prop-types@15.7.2
+      rc-input-number: 4.5.1
+      rc-mentions: 0.4.1_prop-types@15.7.2
+      rc-menu: 7.5.3
+      rc-notification: 3.3.1
       rc-pagination: 1.20.11
       rc-progress: 2.5.2
-<<<<<<< HEAD
-      rc-rate: 2.5.0_react-dom@16.12.0+react@16.12.0
-      rc-resize-observer: 0.1.3_react-dom@16.12.0+react@16.12.0
-      rc-select: 9.2.1_react-dom@16.12.0+react@16.12.0
-      rc-slider: 8.7.1_react-dom@16.12.0+react@16.12.0
-      rc-steps: 3.5.0
-      rc-switch: 1.9.0_react-dom@16.12.0+react@16.12.0
-      rc-table: 6.9.5_react-dom@16.12.0+react@16.12.0
-      rc-tabs: 9.7.0_react-dom@16.12.0+react@16.12.0
-      rc-time-picker: 3.7.2_react-dom@16.12.0+react@16.12.0
-      rc-tooltip: 3.7.3_react-dom@16.12.0+react@16.12.0
-      rc-tree: 2.1.3_react-dom@16.12.0+react@16.12.0
-      rc-tree-select: 2.9.1_react-dom@16.12.0+react@16.12.0
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-      rc-upload: 2.9.3
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-      react-lazy-load: 3.0.13_react-dom@16.12.0+react@16.12.0
-      react-lifecycles-compat: 3.0.4
-      react-slick: 0.25.2_react-dom@16.12.0+react@16.12.0
-=======
       rc-rate: 2.5.0
       rc-resize-observer: 0.1.3
       rc-select: 9.2.1
@@ -2277,7 +2213,6 @@ packages:
       react-lazy-load: 3.0.13
       react-lifecycles-compat: 3.0.4
       react-slick: 0.25.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       resize-observer-polyfill: 1.5.1
       shallowequal: 1.1.0
       warning: 4.0.3
@@ -3456,17 +3391,10 @@ packages:
       node: '>=0.8'
     resolution:
       integrity: sha512-e54B99q/OUoH64zYYRf3HBP5z24G38h5D3qXu23JGRoigpX5Ss4r9ZnDk3g0Z8uQC2x2lPaJ+UlWBc1ZWBWdLg==
-  /connected-react-router/6.6.1_88169c422459cb3f744e205eed7a7dbc:
+  /connected-react-router/6.6.1:
     dependencies:
       immutable: 3.8.2
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-      react-redux: 6.0.1_react@16.12.0+redux@4.0.4
-      react-router: 4.3.1_react@16.12.0
-      redux: 4.0.4
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       seamless-immutable: 7.1.4
     dev: false
     peerDependencies:
@@ -3626,18 +3554,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-M+/3Q6E6DLO6Yx3OwrWjwHBnvfXXYA7W+dFjt/ZDBemHO1DDZhsalX/NUtnTYclN6GfnBDRh4qRHjcDHmlJBJg==
-<<<<<<< HEAD
-  /create-react-context/0.3.0_prop-types@15.7.2+react@16.12.0:
-    dependencies:
-      gud: 1.0.0
-      prop-types: 15.7.2
-      react: 16.12.0
-=======
   /create-react-context/0.3.0_prop-types@15.7.2:
     dependencies:
       gud: 1.0.0
       prop-types: 15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       warning: 4.0.3
     dev: false
     peerDependencies:
@@ -4272,20 +4192,11 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-FlWbnhgjtwD+uNLUGHbMykMOYQaTivdHEmYwAKFjn6GKe/CqY0fNae93ZHTd20snh9ZLr8mTzIL9m0APQ1pjQg==
-<<<<<<< HEAD
-  /draft-js/0.10.5_react-dom@16.12.0+react@16.12.0:
-=======
   /draft-js/0.10.5:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       fbjs: 0.8.17
       immutable: 3.7.6
       object-assign: 4.1.1
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       react: ^0.14.0 || ^15.0.0-rc || ^16.0.0-rc || ^16.0.0
@@ -9497,32 +9408,28 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha512-4Oz8DUIwdvoa5qMJelxipzi/iJIi40O5cGV1wNYp5hvZP8ZN0T+jiNkL0QepXs+EsQ9XJ8ipEDoiH70ySUJP3Q==
-<<<<<<< HEAD
-  /rc-align/2.4.5_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-align/2.4.5:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       dom-align: 1.10.2
       prop-types: 15.7.2
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-util: 4.15.7
     dev: false
     resolution:
       integrity: sha512-nv9wYUYdfyfK+qskThf4BQUSIadeI/dCsfaMZfNEoxm9HwOIioQ+LyqmMK6jWHAZQgOzMLaqawhuBXlF63vgjw==
-  /rc-animate/2.10.2_react-dom@16.12.0+react@16.12.0:
+  /rc-animate/2.10.2:
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       css-animation: 1.6.1
       prop-types: 15.7.2
       raf: 3.4.1
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
       integrity: sha512-cE/A7piAzoWFSgUD69NmmMraqCeqVBa51UErod8NS3LUEqWfppSVagHfa0qHAlwPVPiIBg3emRONyny3eiH0Dg==
-  /rc-animate/3.0.0-rc.6_react-dom@16.12.0+react@16.12.0:
+  /rc-animate/3.0.0-rc.6:
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
@@ -9530,29 +9437,29 @@ packages:
       fbjs: 0.8.17
       prop-types: 15.7.2
       raf: 3.4.1
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
       integrity: sha512-oBLPpiT6Q4t6YvD/pkLcmofBP1p01TX0Otse8Q4+Mxt8J+VSDflLZGIgf62EwkvRwsQUkLPjZVFBsldnPKLzjg==
-  /rc-calendar/9.15.8_react-dom@16.12.0+react@16.12.0:
+  /rc-calendar/9.15.8:
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       moment: 2.24.0
       prop-types: 15.7.2
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-trigger: 2.6.5
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
       integrity: sha512-x3zVaZSRX7FkRNKw7nz3tutwrlIrU1aqMn5GtRUmlf84GnXLtd9fuuydxeNkFWfcHry3BPSto7+r9TK2al0h+g==
-  /rc-cascader/0.17.5_react-dom@16.12.0+react@16.12.0:
+  /rc-cascader/0.17.5:
     dependencies:
       array-tree-filter: 2.1.0
       prop-types: 15.7.2
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-trigger: 2.6.5
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       shallow-equal: 1.2.0
       warning: 4.0.3
@@ -9568,72 +9475,47 @@ packages:
     dev: false
     resolution:
       integrity: sha512-6qOgh0/by0nVNASx6LZnhRTy17Etcgav+IrI7kL9V9kcDZ/g7K14JFlqrtJ3NjDq/Kyn+BPI1st1XvbkhfaJeg==
-<<<<<<< HEAD
-  /rc-collapse/1.11.7_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-collapse/1.11.7:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       classnames: 2.2.6
       css-animation: 1.6.1
       prop-types: 15.7.2
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
+      rc-animate: 2.10.2
       react-is: 16.12.0
       react-lifecycles-compat: 3.0.4
       shallowequal: 1.1.0
     dev: false
     resolution:
       integrity: sha512-ge3EEzIFtrDGuPX4bxXdQqwb91JnPIdj3B+FU88yNOUeOroNuA2q9kVK+UatpQ1Eft5hNo/ICTDrVFi8+685ng==
-  /rc-dialog/7.5.13_react-dom@16.12.0+react@16.12.0:
+  /rc-dialog/7.5.13:
     dependencies:
       babel-runtime: 6.26.0
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-animate: 2.10.2
+      rc-util: 4.15.7
     dev: false
     resolution:
       integrity: sha512-tmubIipW/qoCmRlHHV8tpepDaFhuhk+SeSFSyRhNKW4mYgflsEYQmYWilyCJHy6UzKl84bSyFvJskhc1z1Hniw==
-  /rc-drawer/3.0.2_react-dom@16.12.0+react@16.12.0:
+  /rc-drawer/3.0.2:
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
     dev: false
     peerDependencies:
       react: '*'
     resolution:
       integrity: sha512-oPScGXB/8/ov9gEFLxPH8RBv/9jLTZboZtyF/GgrrnCAvbFwUxXdELH6n6XIowmuDKKvTGIMgZdnao0T46Yv3A==
-<<<<<<< HEAD
-  /rc-dropdown/2.4.1_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-dropdown/2.4.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       prop-types: 15.7.2
-<<<<<<< HEAD
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-=======
       rc-trigger: 2.6.5
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
       integrity: sha512-p0XYn0wrOpAZ2fUGE6YJ6U8JBNc5ASijznZ6dkojdaEfQJAeZtV9KMEewhxkVlxGSbbdXe10ptjBlTEW9vEwEg==
-<<<<<<< HEAD
-  /rc-editor-core/0.8.10_react-dom@16.12.0+react@16.12.0:
-    dependencies:
-      babel-runtime: 6.26.0
-      classnames: 2.2.6
-      draft-js: 0.10.5_react-dom@16.12.0+react@16.12.0
-      immutable: 3.8.2
-      lodash: 4.17.15
-      prop-types: 15.7.2
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
   /rc-editor-core/0.8.10:
     dependencies:
       babel-runtime: 6.26.0
@@ -9642,7 +9524,6 @@ packages:
       immutable: 3.8.2
       lodash: 4.17.15
       prop-types: 15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       setimmediate: 1.0.5
     dev: false
     peerDependencies:
@@ -9650,33 +9531,23 @@ packages:
       react-dom: '>=15.0.0'
     resolution:
       integrity: sha512-T3aHpeMCIYA1sdAI7ynHHjXy5fqp83uPlD68ovZ0oClTSc3tbHmyCxXlA+Ti4YgmcpCYv7avF6a+TIbAka53kw==
-<<<<<<< HEAD
-  /rc-editor-mention/1.1.13_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-editor-mention/1.1.13:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       dom-scroll-into-view: 1.2.1
-<<<<<<< HEAD
-      draft-js: 0.10.5_react-dom@16.12.0+react@16.12.0
-=======
       draft-js: 0.10.5
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       immutable: 3.7.6
       prop-types: 15.7.2
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-editor-core: 0.8.10_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
+      rc-animate: 2.10.2
+      rc-editor-core: 0.8.10
     dev: false
     peerDependencies:
       react: '>=15.x'
       react-dom: '>=15.x'
     resolution:
       integrity: sha512-3AOmGir91Fi2ogfRRaXLtqlNuIwQpvla7oUnGHS1+3eo7b+fUp5IlKcagqtwUBB5oDNofoySXkLBxzWvSYNp/Q==
-  /rc-form/2.4.11_75e41294fa833faf4530b305a6d9f4fe:
+  /rc-form/2.4.11_prop-types@15.7.2:
     dependencies:
       async-validator: 1.11.5
       babel-runtime: 6.26.0
@@ -9685,57 +9556,40 @@ packages:
       hoist-non-react-statics: 3.3.1
       lodash: 4.17.15
       prop-types: 15.7.2
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-util: 4.15.7
       warning: 4.0.3
     dev: false
     peerDependencies:
       prop-types: ^15.0
-      react: '*'
-      react-dom: '*'
     resolution:
       integrity: sha512-8BL+FNlFLTOY/A5X6tU35GQJLSIpsmqpwn/tFAYQTczXc4dMJ33ggtH248Cum8+LS0jLTsJKG2L4Qp+1CkY+sA==
-  /rc-hammerjs/0.6.9_react@16.12.0:
+  /rc-hammerjs/0.6.9:
     dependencies:
       babel-runtime: 6.26.0
       hammerjs: 2.0.8
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       react: ^0.14.3 || ^15.0.0 || ^16.0.0
     resolution:
       integrity: sha512-4llgWO3RgLyVbEqUdGsDfzUDqklRlQW5VEhE3x35IvhV+w//VPRG34SBavK3D2mD/UaLKaohgU41V4agiftC8g==
-<<<<<<< HEAD
-  /rc-input-number/4.5.1_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-input-number/4.5.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       prop-types: 15.7.2
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-util: 4.15.7
       rmc-feedback: 2.0.0
     dev: false
     resolution:
       integrity: sha512-grO7/Lau7iv3NyHVyCajE1LuGLqGkG1tEAAZSwm9M0esYfrwXVSip4qhb5sF+8g6ACsiI20sOVLIihXuhSoifA==
-<<<<<<< HEAD
-  /rc-mentions/0.4.1_75e41294fa833faf4530b305a6d9f4fe:
-    dependencies:
-      '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2+react@16.12.0
-=======
   /rc-mentions/0.4.1_prop-types@15.7.2:
     dependencies:
       '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       classnames: 2.2.6
-      rc-menu: 7.5.3_react-dom@16.12.0+react@16.12.0
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
+      rc-menu: 7.5.3
+      rc-trigger: 2.6.5
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
     dev: false
     peerDependencies:
@@ -9743,21 +9597,15 @@ packages:
       react: '*'
     resolution:
       integrity: sha512-XSJp6kcEPydUaM0I/gnxpXggiKgA5FjgFPKZCMQBDQJYUjXpQNyg5ogNkOJt1/4B2P7pwbYPZXgxP/30yZVahA==
-<<<<<<< HEAD
-  /rc-menu/7.5.3_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-menu/7.5.3:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       classnames: 2.2.6
       dom-scroll-into-view: 1.2.1
       mini-store: 2.0.0
       mutationobserver-shim: 0.3.3
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
+      rc-animate: 2.10.2
+      rc-trigger: 2.6.5
+      rc-util: 4.15.7
       resize-observer-polyfill: 1.5.1
       shallowequal: 1.1.0
     dev: false
@@ -9766,17 +9614,13 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-H/jUyGbJxZI/iuVdC6Iu9KHfz7tucoqK0Vn8ahDnv+ppc1PnKb4SkBbXn5LrmUyaj7thCBiaktBxVnUXSmNE2g==
-<<<<<<< HEAD
-  /rc-notification/3.3.1_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-notification/3.3.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       prop-types: 15.7.2
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-animate: 2.10.2
+      rc-util: 4.15.7
     dev: false
     resolution:
       integrity: sha512-U5+f4BmBVfMSf3OHSLyRagsJ74yKwlrQAtbbL5ijoA0F2C60BufwnOcHG18tVprd7iaIjzZt1TKMmQSYSvgrig==
@@ -9796,29 +9640,19 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ajI+MJkbBz9zYDuE9GQsY5gsyqPF7HFioZEDZ9Fmc+ebNZoiSeSJsTJImPFCg0dW/5WiRGUy2F69SX1aPtSJgA==
-<<<<<<< HEAD
-  /rc-rate/2.5.0_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-rate/2.5.0:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       classnames: 2.2.6
       prop-types: 15.7.2
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
       integrity: sha512-aXX5klRqbVZxvLghcKnLqqo7LvLVCHswEDteWsm5Gb7NBIPa1YKTcAbvb5SZ4Z4i4EeRoZaPwygRAWsQgGtbKw==
-<<<<<<< HEAD
-  /rc-resize-observer/0.1.3_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-resize-observer/0.1.3:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       classnames: 2.2.6
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
+      rc-util: 4.15.7
       resize-observer-polyfill: 1.5.1
     dev: false
     peerDependencies:
@@ -9826,11 +9660,7 @@ packages:
       react-dom: ^16.0.0
     resolution:
       integrity: sha512-uzOQEwx83xdQSFOkOAM7x7GHIQKYnrDV4dWxtCxyG1BS1pkfJ4EvDeMfsvAJHSYkQXVBu+sgRHGbRtLG3qiuUg==
-<<<<<<< HEAD
-  /rc-select/9.2.1_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-select/9.2.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
@@ -9838,26 +9668,22 @@ packages:
       dom-scroll-into-view: 1.2.1
       prop-types: 15.7.2
       raf: 3.4.1
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-menu: 7.5.3_react-dom@16.12.0+react@16.12.0
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-animate: 2.10.2
+      rc-menu: 7.5.3
+      rc-trigger: 2.6.5
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
     dev: false
     resolution:
       integrity: sha512-nW/Zr2OCgxN26OX8ff3xcO1wK0e1l5ixnEfyN15Rbdk7TNI/rIPJIjPCQAoihRpk9A2C/GH8pahjlvKV1Vj++g==
-<<<<<<< HEAD
-  /rc-slider/8.7.1_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-slider/8.7.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       prop-types: 15.7.2
-      rc-tooltip: 3.7.3_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-tooltip: 3.7.3
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       shallowequal: 1.1.0
       warning: 4.0.3
@@ -9873,19 +9699,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-2Vkkrpa7PZbg7qPsqTNzVDov4u78cmxofjjnIHiGB9+9rqKS8oTLPzbW2uiWDr3Lk+yGwh8rbpGO1E6VAgBCOg==
-<<<<<<< HEAD
-  /rc-switch/1.9.0_react-dom@16.12.0+react@16.12.0:
-    dependencies:
-      classnames: 2.2.6
-      prop-types: 15.7.2
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
   /rc-switch/1.9.0:
     dependencies:
       classnames: 2.2.6
       prop-types: 15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       react-lifecycles-compat: 3.0.4
     dev: false
     peerDependencies:
@@ -9893,20 +9710,14 @@ packages:
       react-dom: ^16.0.0
     resolution:
       integrity: sha512-Isas+egaK6qSk64jaEw4GgPStY4umYDbT7ZY93bZF1Af+b/JEsKsJdNOU2qG3WI0Z6tXo2DDq0kJCv8Yhu0zww==
-<<<<<<< HEAD
-  /rc-table/6.9.5_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-table/6.9.5:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       classnames: 2.2.6
       component-classes: 1.2.6
       lodash: 4.17.15
       mini-store: 2.0.0
       prop-types: 15.7.2
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       shallowequal: 1.1.0
     dev: false
@@ -9915,21 +9726,16 @@ packages:
       react-dom: ^16.0.0
     resolution:
       integrity: sha512-STL6387A/izVh6r9F1WDiIIZ0QeubCdTgIlzMeGTSl/bXhB0VqjAZEikvoijPoauTjJIkIzVuQEIDjOhAWbpkQ==
-  /rc-tabs/9.7.0_react-dom@16.12.0+react@16.12.0:
+  /rc-tabs/9.7.0:
     dependencies:
-<<<<<<< HEAD
-      '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2+react@16.12.0
-=======
       '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       babel-runtime: 6.26.0
       classnames: 2.2.6
       lodash: 4.17.15
       prop-types: 15.7.2
       raf: 3.4.1
-      rc-hammerjs: 0.6.9_react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
+      rc-hammerjs: 0.6.9
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       resize-observer-polyfill: 1.5.1
       warning: 4.0.3
@@ -9938,88 +9744,60 @@ packages:
       react: '>=15.0.0'
     resolution:
       integrity: sha512-kvmgp8/MfLzFZ06hWHignqomFQ5nF7BqKr5O1FfhE4VKsGrep52YSF/1MvS5oe0NPcI9XGNS2p751C5v6cYDpQ==
-  /rc-time-picker/3.7.2_react-dom@16.12.0+react@16.12.0:
+  /rc-time-picker/3.7.2:
     dependencies:
       classnames: 2.2.6
       moment: 2.24.0
       prop-types: 15.7.2
       raf: 3.4.1
-<<<<<<< HEAD
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-=======
       rc-trigger: 2.6.5
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
       integrity: sha512-UVWO9HXGyZoM4I2THlJsEAFcZQz+tYwdcpoHXCEFZsRLz9L2+7vV4EMp9Wa3UrtzMFEt83qSAX/90dCJeKl9sg==
-<<<<<<< HEAD
-  /rc-tooltip/3.7.3_react-dom@16.12.0+react@16.12.0:
-    dependencies:
-      babel-runtime: 6.26.0
-      prop-types: 15.7.2
-      rc-trigger: 2.6.5_react-dom@16.12.0+react@16.12.0
-=======
   /rc-tooltip/3.7.3:
     dependencies:
       babel-runtime: 6.26.0
       prop-types: 15.7.2
       rc-trigger: 2.6.5
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     resolution:
       integrity: sha512-dE2ibukxxkrde7wH9W8ozHKUO4aQnPZ6qBHtrTH9LoO836PjDdiaWO73fgPB05VfJs9FbZdmGPVEbXCeOP99Ww==
-<<<<<<< HEAD
-  /rc-tree-select/2.9.1_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-tree-select/2.9.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       classnames: 2.2.6
       dom-scroll-into-view: 1.2.1
       prop-types: 15.7.2
       raf: 3.4.1
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-tree: 2.0.0_react-dom@16.12.0+react@16.12.0
-      rc-trigger: 3.0.0-rc.3_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-animate: 2.10.2
+      rc-tree: 2.0.0
+      rc-trigger: 3.0.0-rc.3
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       shallowequal: 1.1.0
       warning: 4.0.3
     dev: false
     resolution:
       integrity: sha512-AfJQC1ZzaeH+Onmx84TtVLUL2guBZe7exA8XSfj1RRB1doDbYGTtybzpP3CEw/tuSftSRnz+iPt+iaxRTrgXRw==
-<<<<<<< HEAD
-  /rc-tree/2.0.0_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-tree/2.0.0:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       prop-types: 15.7.2
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-animate: 2.10.2
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       warning: 3.0.0
     dev: false
     resolution:
       integrity: sha512-DAT/jsbnFbHqG9Df9OaVG93CAVtTsJVnJiwKX+wqsG8TChpty3s6QX3zJZ+gBgjkq4ikLbu1kuFJtX63EKhSAA==
-<<<<<<< HEAD
-  /rc-tree/2.1.3_react-dom@16.12.0+react@16.12.0:
-    dependencies:
-      '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2+react@16.12.0
-=======
   /rc-tree/2.1.3:
     dependencies:
       '@ant-design/create-react-context': 0.2.4_prop-types@15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       classnames: 2.2.6
       prop-types: 15.7.2
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
+      rc-animate: 2.10.2
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
     dev: false
@@ -10028,35 +9806,27 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-COvV65spQ6omrHBUhHRKqKNL5+ddXjlS+qWZchaL9FFuQNvjM5pjp9RnmMWK4fJJ5kBhhpLneh6wh9Vh3kSMXQ==
-<<<<<<< HEAD
-  /rc-trigger/2.6.5_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-trigger/2.6.5:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       prop-types: 15.7.2
-      rc-align: 2.4.5_react-dom@16.12.0+react@16.12.0
-      rc-animate: 2.10.2_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-align: 2.4.5
+      rc-animate: 2.10.2
+      rc-util: 4.15.7
       react-lifecycles-compat: 3.0.4
     dev: false
     resolution:
       integrity: sha512-m6Cts9hLeZWsTvWnuMm7oElhf+03GOjOLfTuU0QmdB9ZrW7jR2IpI5rpNM7i9MvAAlMAmTx5Zr7g3uu/aMvZAw==
-<<<<<<< HEAD
-  /rc-trigger/3.0.0-rc.3_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-trigger/3.0.0-rc.3:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       babel-runtime: 6.26.0
       classnames: 2.2.6
       prop-types: 15.7.2
       raf: 3.4.1
-      rc-align: 2.4.5_react-dom@16.12.0+react@16.12.0
-      rc-animate: 3.0.0-rc.6_react-dom@16.12.0+react@16.12.0
-      rc-util: 4.15.7_react-dom@16.12.0+react@16.12.0
+      rc-align: 2.4.5
+      rc-animate: 3.0.0-rc.6
+      rc-util: 4.15.7
     dev: false
     resolution:
       integrity: sha512-4vB6cpxcUdm2qO5VtB9q1TZz0MoWm9BzFLvGknulphGrl1qI6uxUsPDCvqnmujdpDdAKGGfjxntFpA7RtAwkFQ==
@@ -10069,20 +9839,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-d4pThCff5vriqb2nPnEIoW2HnYgZ5aLtlNmSLGRnpQHWeXeIN/c3SzpEbA4uSj+PjX2T9ye9Utd0iLnWFhIDuQ==
-<<<<<<< HEAD
-  /rc-util/4.15.7_react-dom@16.12.0+react@16.12.0:
-=======
   /rc-util/4.15.7:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       add-dom-event-listener: 1.1.0
       babel-runtime: 6.26.0
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       react-lifecycles-compat: 3.0.4
       shallowequal: 1.1.0
     dev: false
@@ -10134,27 +9895,21 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-zJnqqb0x6gd63E3xoz5pXAxBPNaW75Hyz7GgQp0qPhMroBCRQtRvG67AoTZZY1z4yCYVJQZAfQJFdnea0Ujbug==
-  /react-dom/16.12.0_react@16.12.0:
+  /react-dom/16.12.0:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       prop-types: 15.7.2
-      react: 16.12.0
       scheduler: 0.18.0
     dev: false
     peerDependencies:
       react: ^16.0.0
     resolution:
       integrity: sha512-LMxFfAGrcS3kETtQaCkTKjMiifahaMySFDn71fZUNpPHZQEzmk/GiAeIT8JSOrHB23fnuCOMruL2a8NYlw+8Gw==
-  /react-drag-sortable/1.0.6_react-dom@16.12.0+react@16.12.0:
+  /react-drag-sortable/1.0.6:
     dependencies:
       interactjs: 1.7.2
       lodash: 4.17.15
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       react: ^0.14.0 || ^15.0.0
@@ -10165,18 +9920,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-X1Y+0jR47ImDVr54Ab6V9eGk0Hnu7fVWGeHQSOXHf/C2pF9c6uy3gef8QUeuUiWlNb0i08InPSE5a/KJzNzw1Q==
-  /react-hot-loader/4.12.18_react-dom@16.12.0+react@16.12.0:
+  /react-hot-loader/4.12.18:
     dependencies:
       fast-levenshtein: 2.0.6
       global: 4.4.0
       hoist-non-react-statics: 3.3.1
       loader-utils: 1.2.3
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       react-lifecycles-compat: 3.0.4
       shallowequal: 1.1.0
       source-map: 0.7.3
@@ -10189,45 +9939,31 @@ packages:
       react-dom: ^15.0.0 || ^16.0.0
     resolution:
       integrity: sha512-qYD0Qi9lIbg9jLyfmodfqvAQqCBsoPKxAhca8Nxvy2/2pO5Q9r2kM28jN0bbbSnhwK8dJ7FjsfVtXKOxMW+bqw==
-  /react-icons-kit/1.3.1_react@16.12.0:
+  /react-icons-kit/1.3.1:
     dependencies:
       camel-case: 3.0.0
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       react: '>=15'
     resolution:
       integrity: sha512-9Xy81M+Vgt5DO9qAL0jIazNmjelcKWn+uNvChDAMYvawm4yaIecr5I8i/jDEEHgQcEqHpB848AitvRKKNAoljA==
-  /react-intl-redux/2.2.0_b7f75715e308070314afda3b88250837:
+  /react-intl-redux/2.2.0:
     dependencies:
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react-intl: 2.9.0_prop-types@15.7.2+react@16.12.0
-      react-redux: 6.0.1_react@16.12.0+redux@4.0.4
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       react-intl: "^2.2.2 ||\_^3.0.0"
       react-redux: ^5.0.1 || ^6.0.0 || ^7.0.0
     resolution:
       integrity: sha512-coiNaVbc6Wy9S98oI3cohjsRRkBYu9O0Os0IRGcBVYfHek4u1i8VKXa3rVQM52UzOpCIchcmXMHvC8znLStuWg==
-  /react-intl/2.9.0_prop-types@15.7.2+react@16.12.0:
+  /react-intl/2.9.0:
     dependencies:
       hoist-non-react-statics: 3.3.1
       intl-format-cache: 2.2.9
       intl-messageformat: 2.2.0
       intl-relativeformat: 2.2.0
       invariant: 2.2.4
-<<<<<<< HEAD
-      prop-types: 15.7.2
-      react: 16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       prop-types: ^15.5.4
@@ -10238,21 +9974,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
-<<<<<<< HEAD
-  /react-lazy-load/3.0.13_react-dom@16.12.0+react@16.12.0:
-=======
   /react-lazy-load/3.0.13:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       eventlistener: 0.0.1
       lodash.debounce: 4.0.8
       lodash.throttle: 4.1.1
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     peerDependencies:
       react: ^0.14.0 || ^15.0.0-0 || ^16.0.0
@@ -10263,22 +9990,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
-<<<<<<< HEAD
-  /react-popper/1.3.6_react@16.12.0:
-    dependencies:
-      '@babel/runtime': 7.7.4
-      create-react-context: 0.3.0_prop-types@15.7.2+react@16.12.0
-      popper.js: 1.16.0
-      prop-types: 15.7.2
-      react: 16.12.0
-=======
   /react-popper/1.3.6:
     dependencies:
       '@babel/runtime': 7.7.4
       create-react-context: 0.3.0_prop-types@15.7.2
       popper.js: 1.16.0
       prop-types: 15.7.2
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       typed-styles: 0.0.7
       warning: 4.0.3
     dev: false
@@ -10286,39 +10003,25 @@ packages:
       react: 0.14.x || ^15.0.0 || ^16.0.0
     resolution:
       integrity: sha512-kLTfa9z8n+0jJvRVal9+vIuirg41rObg4Bbrvv/ZfsGPQDN9reyVVSxqnHF1ZNgXgV7x11PeUfd5ItF8DZnqhg==
-<<<<<<< HEAD
-  /react-redux/6.0.1_react@16.12.0+redux@4.0.4:
-=======
   /react-redux/6.0.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       '@babel/runtime': 7.7.4
       hoist-non-react-statics: 3.3.1
       invariant: 2.2.4
       loose-envify: 1.4.0
       prop-types: 15.7.2
-      react: 16.12.0
       react-is: 16.12.0
-      redux: 4.0.4
     dev: false
     peerDependencies:
       react: ^16.4.0-0
       redux: ^2.0.0 || ^3.0.0 || ^4.0.0-0
     resolution:
       integrity: sha512-T52I52Kxhbqy/6TEfBv85rQSDz6+Y28V/pf52vDWs1YRXG19mcFOGfHnY2HsNFHyhP+ST34Aih98fvt6tqwVcQ==
-<<<<<<< HEAD
-  /react-responsive/6.1.2_react@16.12.0:
-=======
   /react-responsive/6.1.2:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       hyphenate-style-name: 1.0.3
       matchmediaquery: 0.3.0
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dev: false
     engines:
       node: '>= 0.10'
@@ -10326,33 +10029,20 @@ packages:
       react: ^16.3.0
     resolution:
       integrity: sha512-AXentVC/kN3KED9zhzJv2pu4vZ0i6cSHdTtbCScVV1MT6F5KXaG2qs5D7WLmhdaOvmiMX8UfmS4ZSO+WPwDt4g==
-<<<<<<< HEAD
-  /react-router-dom/4.3.1_react@16.12.0:
-=======
   /react-router-dom/4.3.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       history: 4.10.1
       invariant: 2.2.4
       loose-envify: 1.4.0
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-      react-router: 4.3.1_react@16.12.0
-=======
       react-router: 4.3.1
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       warning: 4.0.3
     dev: false
     peerDependencies:
       react: '>=15'
     resolution:
       integrity: sha512-c/MlywfxDdCp7EnB7YfPMOfMD3tOtIjrQlj/CKfNMBxdmpJP8xcz5P/UAFn3JbnQCNUxsHyVVqllF9LhgVyFCA==
-<<<<<<< HEAD
-  /react-router/4.3.1_react@16.12.0:
-=======
   /react-router/4.3.1:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       history: 4.10.1
       hoist-non-react-statics: 2.5.5
@@ -10360,31 +10050,18 @@ packages:
       loose-envify: 1.4.0
       path-to-regexp: 1.8.0
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       warning: 4.0.3
     dev: false
     peerDependencies:
       react: '>=15'
     resolution:
       integrity: sha512-yrvL8AogDh2X42Dt9iknk4wF4V8bWREPirFfS9gLU1huk6qK41sg7Z/1S81jjTrGHxa3B8R3J6xIkDAA6CVarg==
-<<<<<<< HEAD
-  /react-slick/0.25.2_react-dom@16.12.0+react@16.12.0:
-=======
   /react-slick/0.25.2:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       classnames: 2.2.6
       enquire.js: 2.1.6
       json2mq: 0.2.0
       lodash.debounce: 4.0.8
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       resize-observer-polyfill: 1.5.1
     dev: false
     peerDependencies:
@@ -10392,20 +10069,11 @@ packages:
       react-dom: ^0.14.0 || ^15.0.1 || ^16.0.0
     resolution:
       integrity: sha512-8MNH/NFX/R7zF6W/w+FS5VXNyDusF+XDW1OU0SzODEU7wqYB+ZTGAiNJ++zVNAVqCAHdyCybScaUB+FCZOmBBw==
-<<<<<<< HEAD
-  /react-transition-group/2.9.0_react-dom@16.12.0+react@16.12.0:
-=======
   /react-transition-group/2.9.0:
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
     dependencies:
       dom-helpers: 3.4.0
       loose-envify: 1.4.0
       prop-types: 15.7.2
-<<<<<<< HEAD
-      react: 16.12.0
-      react-dom: 16.12.0_react@16.12.0
-=======
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       react-lifecycles-compat: 3.0.4
     dev: false
     peerDependencies:
@@ -10543,18 +10211,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ryhkkb/4D4CUGpAV2ln1GOY/uh51aczjcRz9k2L2bPx/Xja3c5pSGJJPyR25GNVRXtKIExScdAgFdiXp68GmJA==
-<<<<<<< HEAD
-  /redux-saga-router/2.2.0_redux-saga@1.1.3:
-    dependencies:
-      fsm-iterator: 1.1.0
-      history: 4.10.1
-      redux-saga: 1.1.3
-=======
   /redux-saga-router/2.2.0:
     dependencies:
       fsm-iterator: 1.1.0
       history: 4.10.1
->>>>>>> c29a9a8a7b1b04928530f66f575d13fee7751e94
       ruta3: 2.0.1
     dev: false
     peerDependencies:
