@@ -305,7 +305,7 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
             <Col>
-              <Button className={`${style.btnBlue} ${style.btn}`}>
+              <Button className={`${style.btnPrimary} ${style.btn}`}>
                 <IconKit size={16} icon={ic_add} />
                 Nouveau patient
               </Button>

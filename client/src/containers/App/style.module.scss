@@ -16,7 +16,7 @@
     }
 }
 
-.btnBlue{
+.btnPrimary{
     background-color:$blue-800;
     color:$light;
     span{
@@ -27,23 +27,23 @@
       font-weight: 500;
     }
 }
-.btnBlue:hover{
+.btnPrimary:hover{
     background-color:#2B84B8;
     color:$light;
 }
-.btnBlue:disabled,.btnBlue:disabled:hover {
-    background-color:#E5E7EA;
+.btnPrimary:disabled,.btnPrimary:disabled:hover {
+    background-color:$disabledColor;
     color: rgba(35, 55, 80, 0.38);
 }
-.btnBlue:focus{
+.btnPrimary:focus{
     background-color:#5199C4;
     color:$light;
 }
 
 
-.btnWhite{
+.btnSecondairy{
     background-color:$light;
-    color:$primary-blue;
+    color:$primary;
     span{
       text-transform: uppercase;
       letter-spacing: 1.25px;
@@ -52,16 +52,16 @@
       font-weight: 500;
     }
 }
-.btnWhite:hover{
+.btnSecondairy:hover{
     background-color:#F7FBFD;
-    color:$primary-blue;
+    color:$primary;
 }
 
-.btnWhite:disabled,.btnWhite:disabled:hover {
+.btnSecondairy:disabled,.btnWhite:disabled:hover {
     background-color:#E5E7EA;
 }
 
-.btnWhite:focus{
+.btnSecondairy:focus{
     background-color:#E4F1F9;
 }
 
@@ -70,7 +70,7 @@
 
 .btnSec{
     background-color:$light;
-    color:#233750;
+    color:$primary-dark;
     padding:4px;
     margin-left:12px;
     span{
@@ -91,15 +91,15 @@
     }
 }
 .btnSec:hover{
-    background-color:#E4F1F9;
-    color:#233750;
+    background-color:$primary-light;
+    color:$primary-dark;
 }
 .btnSec:disabled,.btnSec:disabled:hover {
-    background-color:$dark;
+    background-color:$background;
     color: rgba(35, 55, 80, 0.38);
 }
 .btnSec:focus{
-    background-color:#E4F1F9;
+    background-color:$primary-light;
     color:#233750;
 }
 
@@ -170,5 +170,52 @@
     }
 }
 
+.input:invalid {
+    input{
+        background:red;
+    }
+
+}
+
+
+.checkbox{
+    width:100%;
+
+    span:first-child{
+       padding:4px 0;
+
+       span{
+         height:18px;
+         width:18px;
+
+       }
+        &:after{
+         border:none;
+        }
+    }
+
+}
+
+.check{
+    span:first-child{
+        span{
+         background-color:#1d8bc6  ;
+         border:none ;
+         &:after{
+             left:25%;
+         }
+        }
+    }
+
+    &:hover{
+        span span{
+            border:none;
+
+            &:after{
+                left:25%;
+            }
+        }
+    }
+}
 
 

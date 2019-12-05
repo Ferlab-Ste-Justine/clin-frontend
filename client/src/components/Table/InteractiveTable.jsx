@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -16,6 +16,7 @@ import DataTablePagination from './Pagination';
 import DataTable from './index';
 
 import style from '../../containers/App/style.module.scss';
+import styleTable from './style.module.scss';
 import './style.scss';
 
 class InteractiveTable extends React.Component {
@@ -45,6 +46,7 @@ class InteractiveTable extends React.Component {
     this.isReorderable = this.isReorderable.bind(this);
     this.isExportable = this.isExportable.bind(this);
     this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
+    this.ischeck = this.ischeck.bind(this)
 
     // @NOTE Initialize Component State
     this.state.orderedColumns = cloneDeep(props.schema);
@@ -131,6 +133,10 @@ class InteractiveTable extends React.Component {
     }
   }
 
+  ischeck(check){
+    console.log('check', check)
+  }
+
   toggleColumnSelector() {
     if (this.isSelectable()) {
       const { columnSelectorIsActive } = this.state;
@@ -200,7 +206,7 @@ class InteractiveTable extends React.Component {
 
     const content = (
       <Card
-        className="columnFilter"
+        className={`${styleTable.columnFilter}`}
         title={(
           <Input
             className="SearchInput"
@@ -219,11 +225,11 @@ class InteractiveTable extends React.Component {
           </Row>
         ) }
         <Row>
-          <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className="checkbox" value={cloneDeep(visibleColumns)}>
+          <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className={`${style.checkbox} `} value={cloneDeep(visibleColumns)}>
             { matchingColumns.map(key => (
               <Row>
                 <Col>
-                  <Checkbox value={key}>{key}</Checkbox>
+                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{key}</Checkbox>
                 </Col>
               </Row>
             )) }
