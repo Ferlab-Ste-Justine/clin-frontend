@@ -54,7 +54,8 @@ class PatientSearchScreen extends React.Component {
     this.getCardCategoryTitle = this.getCardCategoryTitle.bind(this);
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
     this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
-    this.getData = this.getData.bind(this)
+    this.getData = this.getData.bind(this);
+    this.handleCopy = this.handleCopy.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this)
 
     // @NOTE Initialize Component State
@@ -119,6 +120,12 @@ class PatientSearchScreen extends React.Component {
   getData() {
     const { data } = this.state;
     return data
+  }
+
+  handleCopy(row, col) {
+    const data = this.getData();
+
+    return JSON.stringify(data[row]);
   }
 
   exportToTsv() {
@@ -338,6 +345,7 @@ class PatientSearchScreen extends React.Component {
                     exportCallback={this.exportToTsv}
                     numFrozenColumns={1}
                     isLoading={showSubloadingAnimation}
+                    copyCallback={this.handleCopy}
                   />
                 </Card>
             </Col>

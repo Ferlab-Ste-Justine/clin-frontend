@@ -212,7 +212,7 @@ class PatientVariantScreen extends React.Component {
   handleCopy(row, col) {
     const data = this.getData();
 
-    return data[row]
+    return JSON.stringify(data[row]);
   }
 
   getData() {
