@@ -187,7 +187,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      intl, size, page, total, isLoading, numFrozenColumns,
+      intl, size, page, total, isLoading, numFrozenColumns, copyCallback,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -282,6 +282,7 @@ class InteractiveTable extends React.Component {
               resizeColumnsCallback={this.handleColumnResized}
               numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
+              copyCallback={copyCallback}
             />
           </Col>
         </Row>
@@ -319,6 +320,7 @@ InteractiveTable.propTypes = {
   resizeColumnCallback: PropTypes.func,
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
+  copyCallback: PropTypes.func,
 };
 
 InteractiveTable.defaultProps = {
@@ -333,6 +335,7 @@ InteractiveTable.defaultProps = {
   resizeColumnCallback: () => {},
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},
+  copyCallback: () => {},
 };
 
 export default InteractiveTable;

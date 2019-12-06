@@ -71,7 +71,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
           </Cell>
         );
       } catch (e) {
-        return <Cell />;
+        return <Cell loading />;
       }
     };
   } catch (e) {
@@ -82,7 +82,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
 const DataTable = (props) => {
   const {
     columns, size, total, enableReordering, enableResizing, renderContextMenuCallback, reorderColumnsCallback, resizeColumnCallback,
-    numFrozenColumns, enableGhostCells,
+    numFrozenColumns, enableGhostCells, copyCallback,
   } = props;
   const rowsCount = size <= total ? size : total;
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
@@ -105,6 +105,7 @@ const DataTable = (props) => {
       onColumnsReordered={handleColumnsReordered}
       onColumnWidthChanged={resizeColumnCallback}
       defaultRowHeight={36}
+      getCellClipboardData={copyCallback}
     >
       { columns.map(definition => (
         <Column
@@ -128,6 +129,7 @@ DataTable.propTypes = {
   renderContextMenuCallback: PropTypes.func,
   reorderColumnsCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
+  copyCallback: PropTypes.func,
 };
 
 DataTable.defaultProps = {
@@ -141,6 +143,7 @@ DataTable.defaultProps = {
   renderContextMenuCallback: () => {},
   reorderColumnsCallback: () => {},
   resizeColumnCallback: () => {},
+  copyCallback: null,
 };
 
 export default DataTable;

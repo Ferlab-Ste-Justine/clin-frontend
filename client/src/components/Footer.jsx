@@ -44,13 +44,13 @@ const Footer = () => (
                 </li>
                 <li>
                   <IconKit size={16} icon={ic_location_on} />
-                  123 Rue Metcalf, Montreal QC, A1A 1A1
+                  3175 Chemin de la Côte-Sainte-Catherine, Montréal, QC H3T 1C5
                 </li>
               </ul>
             </nav>
           </Col>
           <Col>
-            <img className="logo" alt="Saint-Justine" src="/images/logo_CHUSJ.png" />
+            <img className="logo" alt="Saint-Justine" src="/assets/logos/chujs-white.svg" />
           </Col>
       </div>
     </Row>
@@ -64,7 +64,7 @@ const Footer = () => (
                 <li><a href="#">À propos</a></li>
               </ul>
             </nav>
-            <img className="logo" alt="Saint-Justine" src="/images/msss.png" />
+            <img className="logo" alt="Saint-Justine" src="/assets/logos/msssq.svg" />
         </div>
     </Row>
   </Layout.Footer>
