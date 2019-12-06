@@ -1,35 +1,33 @@
-@import '../../containers/App/variables.scss';
+@import './variables.scss';
 
 .columnFilter{
-     border-radius: 2px;
-     box-shadow: 0px 8px 10px 1px rgba(89, 121, 144, 0.14),
-     0px 3px 14px 2px rgba(89, 121, 144, 0.12),
-     0px 5px 5px -3px rgba(89, 121, 144, 0.2);
+     border-radius: $border-radius;
+     box-shadow:    0px 8px 10px 1px rgba(89, 121, 144, 0.14),
+                    0px 3px 14px 2px rgba(89, 121, 144, 0.12),
+                    0px 5px 5px -3px rgba(89, 121, 144, 0.2);
      width: 200px;
-
 
       & > div:first-child{
         padding:0;
         min-height:44px;
         display:flex;
-        display:flex;
         div div{
             padding:0;
 
             span{
-                    input{
-                            font-size:14px;
-                            border:none;
-                    }
+                input{
+                    font-size:$small-font;
+                    border:none;
+                }
 
-                    >span{
-                              color:rgba(35, 55, 80, 0.38);
+                >span{
+                  color:$icon-color;
 
-                              svg{
-                                height: 24px;
-                                width: 24px;
-                              }
-                    }
+                  svg{
+                    height: 24px;
+                    width: 24px;
+                  }
+                }
             }
         }
 
@@ -37,12 +35,12 @@
       }
 
      & > div:nth-child(2){
-               padding: 12px 0 0 0;
+               padding: $mediumSpacing 0 0 0;
                width:100%;
      }
 
        a{
-         padding:0 8px;
+         padding:0 $defaultSpacing;
          display: flex;
          justify-content: space-between;
 
@@ -56,31 +54,36 @@
          }
        }
 
-             label{
-               padding:0 8px;
-               display: flex;
-               flex-direction: row-reverse;
-               justify-content: space-between;
-               align-items:center;
+     label{
+       padding:0 $defaultSpacing;
+       display: flex;
+       flex-direction: row-reverse;
+       justify-content: space-between;
+       align-items:center;
 
-               & > span:nth-child(2){
-               padding-left:0;
-               }
+       & > span:nth-child(2){
+       padding-left:0;
+       }
 
-               &:hover{
-                background-color:#F7FBFD;
-               }
-             }
+       &:hover{
+        background-color:$light-hover;
+       }
+     }
 }
 
 .cellValue{
+
+    display:flex;
+    align-items:center;
+
+    div{
+        display:flex;
+    }
     span{
-        color: rgba(35, 55, 80, 0.78);
-        font-size: 14px;
-        font-family: Roboto;
-        font-weight: normal;
-        letter-spacing: 0.25px;
-        line-height: 20px;
+        color: $light-text;
+        font-size: $small-font;
+        font-family: $font;
+        letter-spacing: $small-letter-spacing;
 
         .ant-badge-status-default{
             background-color:#b5b5b5;
@@ -96,11 +99,9 @@
 
         span{
             color: $primary;
-            font-size: 14px;
-            font-family: Roboto;
-            font-weight: normal;
-            letter-spacing: 0.25px;
-            line-height: 20px;
+            font-size: $small-font;
+            font-family: $font;
+            letter-spacing:$small-letter-spacing;
         }
     }
 }

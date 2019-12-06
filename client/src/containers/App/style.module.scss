@@ -12,7 +12,7 @@
     justify-content:center;
     box-shadow:none;
     i{
-        margin-right: 8px;
+        margin-right: $defaultSpacing;
     }
 }
 
@@ -21,19 +21,18 @@
     color:$light;
     span{
       text-transform: uppercase;
-      letter-spacing: 1.25px;
-      line-height: 16px;
-      font-size: 14px;
-      font-weight: 500;
+      letter-spacing: $letter-spacing;
+      font-size: $small-font;
+      font-weight: $font-weight-medium;
     }
 }
 .btnPrimary:hover{
-    background-color:#2B84B8;
+    background-color:$primary-hover;
     color:$light;
 }
 .btnPrimary:disabled,.btnPrimary:disabled:hover {
     background-color:$disabledColor;
-    color: rgba(35, 55, 80, 0.38);
+    color: $primary-text-disabled;
 }
 .btnPrimary:focus{
     background-color:#5199C4;
@@ -41,28 +40,28 @@
 }
 
 
-.btnSecondairy{
+.btnSecondary{
     background-color:$light;
     color:$primary;
     span{
       text-transform: uppercase;
-      letter-spacing: 1.25px;
-      line-height: 16px;
-      font-size: 14px;
-      font-weight: 500;
+      letter-spacing: $letter-spacing;
+      line-height: $default-line-height;
+      font-size: $small-font;
+      font-weight: $font-weight-medium;
     }
 }
-.btnSecondairy:hover{
-    background-color:#F7FBFD;
+.btnSecondary:hover{
+    background-color:$light-hover;
     color:$primary;
 }
 
-.btnSecondairy:disabled,.btnWhite:disabled:hover {
-    background-color:#E5E7EA;
+.btnSecondary:disabled,.btnWhite:disabled:hover {
+    background-color:$disabledColor;
 }
 
-.btnSecondairy:focus{
-    background-color:#E4F1F9;
+.btnSecondary:focus{
+    background-color:$primary-light;
 }
 
 
@@ -71,18 +70,16 @@
 .btnSec{
     background-color:$light;
     color:$primary-dark;
-    padding:4px;
-    margin-left:12px;
+    padding:$smallSpacing;
+    margin-left:$mediumSpacing;
     span{
-        font-size: 14px;
-        font-family: Roboto;
-        font-weight: normal;
-        letter-spacing: 0.25px;
-        line-height: 20px;
+        font-size: $small-font;
+        font-family: $font;
+        letter-spacing: $small-letter-spacing;
     }
     i{
         color:rgba(35, 55, 80, 0.38);
-        margin-right:8px;
+        margin-right:$defaultSpacing;
         svg{
           height: 24px;
           width: 24px;
@@ -109,10 +106,10 @@
     border:none;
 
     input{
-        padding:12px 16px;
+        padding:$mediumSpacing 16px;
         font-family: $font;
         font-size: $medium-font;
-        letter-spacing: 0.15px;
+        letter-spacing: $small-letter-spacing;
         line-height: 24px;
         height: 24px;
 
@@ -182,7 +179,7 @@
     width:100%;
 
     span:first-child{
-       padding:4px 0;
+       padding:$smallSpacing 0;
 
        span{
          height:18px;

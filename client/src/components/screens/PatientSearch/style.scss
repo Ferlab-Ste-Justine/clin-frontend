@@ -91,7 +91,7 @@ div.ant-tag {
             }
 
             .ant-select-selection__placeholder{
-                color: rgba(35, 55, 80, 0.78);
+                color: $light-text;
             }
             i{
                 padding-right:8px;
@@ -99,7 +99,7 @@ div.ant-tag {
             }
 
             svg{
-              color:rgba(35, 55, 80, 0.38);
+              color:$primary-text-disabled;
               height: 16px;
               width: 16px;
             }
@@ -121,7 +121,7 @@ div.ant-tag {
             }
 
             .ant-checkbox-group{
-            border-top: 1px solid #E5E7EA;
+            border-top: 1px solid $disabledColor;
             padding-top:16px;
             width:100%;
             margin-top:16px;
@@ -159,7 +159,7 @@ div.ant-tag {
           margin-top:24px;
 
           .reorder{
-            background-color:#E4F1F9;
+            background-color:$primary-light;
           }
           .controls{
             margin-bottom:24px;

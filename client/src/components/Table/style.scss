@@ -11,14 +11,11 @@
 }
 
 .bp3-table-column-headers{
-    background-color:#e3ebf2;
+    background-color:$light-blue;
 }
 
 .bp3-table-header-content{
     padding:0;
-}
-
-.bp3-table-quadrant-left .bp3-table-cell.bp3-table-last-in-row{
 }
 
 .bp3-table-cell.bp3-table-truncated-cell, .bp3-table-column-header-tr .bp3-table-header{
@@ -72,14 +69,11 @@
     outline:none;
 }
 
-.bp3-table-cell.bp3-table-truncated-cell, .bp3-table-selection-enabled.bp3-table-row-headers .bp3-table-header{
-    display:flex;
-    align-items:center;
-    height:40px;
-}
 .bp3-table-selection-enabled.bp3-table-menu{
     border-right:1px solid #CDDDE8;
 }
+
+.bp3-table-row-headers-cells-container
 
 .ant-pagination-item-active{
     background-color:#E4F1F9;
@@ -91,7 +85,7 @@
 }
 
 .ant-pagination-item a , .ant-pagination-item-active a{
-    color: rgba(35, 55, 80, 0.78);
+    color: $light-text;
 }
 
 
@@ -101,5 +95,5 @@
 
 
 .activeButton{
-    background-color:#E4F1F9;
+    background-color:$primary-light;
 }
