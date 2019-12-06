@@ -50,7 +50,6 @@ line-height: 0;
 
     img.logo {
       height: 40px;
-      filter: drop-shadow(0px 0px 1px #222222);
     };
 
   .secondaryNav{
@@ -146,6 +145,11 @@ footer#footer {
         margin:0 auto;
         padding:0 24px;
 
+        .logo{
+          margin-top: -7px;
+          height:57px;
+        }
+
         .navTitle{
           font-family: $font;
           font-weight: 500;
@@ -155,7 +159,6 @@ footer#footer {
           margin-bottom:8px;
           display:block
         }
-
 
         ul{
           list-style-type:none;

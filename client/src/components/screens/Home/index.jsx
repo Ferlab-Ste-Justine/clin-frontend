@@ -30,18 +30,19 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
           handlePasswordRecovery={actions.recoverUser}
         />
         <div className="content">
-          <img className="logo" alt={title} src="/images/logo_CQGC_couleur.svg" />
+          <img className="logo" alt={title} src="/assets/logos/CQGC-color.svg" />
           <Paragraph>
             Le Centre québécois de génomique clinique offre une plateforme clinique de séquençage à haut débit pour le diagnostic moléculaire des patients québécois en partenariat avec les huit laboratoires du Réseau de diagnostic moléculaire du Québec.
           </Paragraph>
           <div className="partenaire">
-            <img height="25" alt="Centre universitaire de santé McGill" src="/images/mcgill.gif" />
-            <img height="45" alt="Centre hospitalier urbain de Montréal" src="/images/chum.png" />
-            <img height="45" alt="Hôpital général juif" src="/images/hgj.png" />
-            <img height="42" alt="CHU du Québec" src="/images/chu.png" />
-            <img height="40" alt="Hôpital Maisonneuve-Rosemont" src="/images/hmr.gif" />
-            <img height="35" alt="Institut de cardiologie de Montréal" src="/images/icm.png" />
-            <img height="50" alt="Centre hospitalier universitaire de Sherbrooke" src="/images/chus.gif" />
+            <img height="42" alt="Centre hospitalier universitaire mère-enfant CHU Sainte-Justine" src="/assets/logos/chujs-color.svg" />
+            <img height="75" alt="Centre hospitalier urbain de Montréal" src="/assets/chum.png" />
+            <img height="40" alt="Hôpital général juif" src="/assets/logos/hgj.svg" />
+            <img height="60" alt="CHU du Québec" src="/assets/chu.png" />
+            <img height="30" alt="Institut de cardiologie de Montréal" src="/assets/icm.png" />
+            <img height="45" alt="Centre hospitalier universitaire de Sherbrooke" src="/assets/chus.gif" />
+            <img height="35" alt="Hôpital Maisonneuve-Rosemont" src="/assets/hmr.gif" />
+            <img height="20" alt="Centre universitaire de santé McGill" src="/assets/logos/mcgill.svg" />
           </div>
         </div>
       </Card>
