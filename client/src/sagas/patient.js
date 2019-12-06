@@ -41,18 +41,17 @@ function* autoComplete(action) {
     }
     if (!isAutocomplete) {
       yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
+      yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     } else {
       yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
-      yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     }
   } catch (e) {
-    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
+    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
   }
 }
 
 function* search(action) {
-  yield put({ type: actions.START_SUBLOADING_ANIMATION });
   try {
     let response = null;
 
@@ -69,7 +68,6 @@ function* search(action) {
     yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
     yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
-  yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
 }
 
 function* watchPatientFetch() {
