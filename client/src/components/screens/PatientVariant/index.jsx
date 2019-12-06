@@ -51,6 +51,7 @@ class PatientVariantScreen extends React.Component {
     this.handleColumnVisibilityChange = this.handleColumnVisibilityChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
+    this.handleCopy = this.handleCopy.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.getData = this.getData.bind(this);
 
@@ -206,6 +207,12 @@ class PatientVariantScreen extends React.Component {
     this.setState({
       visibleColumns,
     });
+  }
+
+  handleCopy(row, col) {
+    const data = this.getData();
+
+    return data[row]
   }
 
   getData() {
@@ -376,6 +383,7 @@ class PatientVariantScreen extends React.Component {
                 page={page}
                 total={total}
                 schema={this.state.columnPreset[VARIANT_TAB]}
+                copyCallback={this.handleCopy}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handlePageSizeChange}
                 isExportable={false}
@@ -392,6 +400,7 @@ class PatientVariantScreen extends React.Component {
                 schema={this.state.columnPreset[GENE_TAB]}
                 pageChangeCallback={this.handlePageChange}
                 pageSizeChangeCallback={this.handlePageSizeChange}
+                copyCallback={this.handleCopy}
                 isExportable={false}
               />) }
             </Tabs.TabPane>

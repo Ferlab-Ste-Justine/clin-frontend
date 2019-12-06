@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Typography, Button, Checkbox,
+  Card, AutoComplete, Row, Col, Input, Icon, Typography, Button,
 } from 'antd';
 import { ExportToCsv } from 'export-to-csv';
 import { format } from 'util';
@@ -14,7 +14,7 @@ import {
   ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay, ic_keyboard_arrow_right, ic_keyboard_arrow_down, ic_close
 } from 'react-icons-kit/md';
 import {
-  cloneDeep, filter, pullAllBy, isEqual, find, findIndex,
+  cloneDeep, filter, pullAllBy, isEqual, find, findIndex, debounce,
 } from 'lodash';
 
 import './style.scss';
@@ -28,6 +28,7 @@ import InteractiveTable from '../../Table/InteractiveTable'
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
+import { appShape } from '../../../reducers/app';
 
 
 class PatientSearchScreen extends React.Component {
@@ -43,7 +44,7 @@ class PatientSearchScreen extends React.Component {
       facet:[],
       data: [],
     };
-    this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
+    this.handleAutoCompleteChange = debounce(this.handleAutoCompleteChange.bind(this), 250, { leading: true });
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
     this.handleAutoCompletePressEnter = this.handleAutoCompletePressEnter.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
@@ -245,10 +246,11 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    const { intl, search } = this.props;
+    const { app, intl, search } = this.props;
     const { patient } = search;
     const { total } = patient;
-    const { autoCompleteIsOpen, size, page, columnName, isFacetOpen, facet,
+    const { showSubloadingAnimation } = app;
+    const { size, page, isFacetOpen, facet,
     } = this.state;
 
     const { Title } = Typography;
@@ -335,6 +337,7 @@ class PatientSearchScreen extends React.Component {
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     exportCallback={this.exportToTsv}
                     numFrozenColumns={1}
+                    isLoading={showSubloadingAnimation}
                   />
                 </Card>
             </Col>
@@ -347,6 +350,7 @@ class PatientSearchScreen extends React.Component {
 }
 
 PatientSearchScreen.propTypes = {
+  app: PropTypes.shape(appShape).isRequired,
   intl: PropTypes.shape({}).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
@@ -361,6 +365,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
+  app: state.app,
   intl: state.intl,
   search: state.search,
 });

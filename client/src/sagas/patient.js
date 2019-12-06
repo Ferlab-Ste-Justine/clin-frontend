@@ -24,6 +24,11 @@ function* fetch(action) {
 
 function* autoComplete(action) {
   try {
+    const isAutocomplete = action.payload.type === 'partial';
+    if (!isAutocomplete) {
+      yield put({ type: actions.START_SUBLOADING_ANIMATION });
+    }
+
     const response = yield Api.getPatientsByAutoComplete(
       action.payload.type,
       action.payload.query,
@@ -34,13 +39,15 @@ function* autoComplete(action) {
     if (response.error) {
       throw new ApiError(response.error);
     }
-    yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
-    if (action.payload.type !== 'partial') {
+    if (!isAutocomplete) {
       yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
+    } else {
+      yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
+      yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     }
   } catch (e) {
+    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
-    yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
 
