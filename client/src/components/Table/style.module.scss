@@ -1,4 +1,172 @@
 @import './variables.scss';
+@import '/../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
+@import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
+
+
+.evenRow{
+    background:#F6F9FB;
+}
+
+.columnTable{
+
+    background:red;
+}
+.table{
+    /*.bp3-table-container*/
+    box-shadow:none;
+
+    & > div{
+        & > div:nth-child(1){
+            >div{
+                & > div:nth-child(2){
+                    & > div:nth-child(2){
+                       >div{
+                           >div{
+                               >div{
+                                   >div{
+                                    box-shadow:none;
+                                   }
+                               }
+                           }
+                       }
+                    }
+                }
+            }
+        }
+        & > div:nth-child(2){
+
+           & > div{
+                >div{
+                    & > div:nth-child(2){
+                    background-color:$light-blue;
+                       >div{
+                            >div{
+                                >div{
+                                    box-shadow:none;
+                                    border-right:1px solid #CDDDE8;
+                                    >div:first-child{
+                                    /*.bp3-table-column-name*/
+                                        color: #233750;
+                                        font-size: 14px;
+                                        font-family: Roboto;
+                                        font-weight: 500;
+                                        letter-spacing: 0.1px;
+                                        padding:5px 0;
+
+                                        >div:first-child{
+                                            right:0;
+                                            left:auto
+                                        }
+                                    }
+
+                                }
+                            }
+
+                       }
+
+                    }
+                }
+            }
+        }
+
+        & > div:nth-child(3){
+            & > div{
+
+                 & > div:nth-child(2){
+
+                     >div:nth-child(1){
+                          >div{
+                               >div{
+                                    >div{
+                                        display:flex;
+                                        align-items: center;
+                                        box-shadow:none;
+
+
+                                        &:nth-child(odd):before{
+                                        background:#FFFFFF;
+                                        }
+
+                                        &:nth-child(even):before{
+                                        background:#F6F9FB;
+                                        }
+
+                                        >div:first-child{
+                                        /*.bp3-table-row-name*/
+                                                color:#A5AFB9;
+                                                text-align:center;
+                                                min-width:32px;
+                                                font-family: Roboto;
+                                                font-size: 14px;
+                                                font-weight: normal;
+                                                height: 20px;
+                                                letter-spacing: 0.25px;
+                                                line-height: 20px;
+
+
+                                        }
+                                    }
+                               }
+                          }
+                     }
+                     >div:nth-child(2){
+                        >div{
+                            >div{
+                                >div{
+                                    >div{
+                                        border-right:3px solid #CDDDE8;
+                                        box-shadow:none;
+                                    }
+                                }
+                            }
+                        }
+                     }
+                 }
+            }
+        }
+
+        & > div:nth-child(4){
+           & > div{
+                >div{
+                    & > div:nth-child(1){
+                    /*.bp3-table-menu*/
+                        background-color:#e3ebf2;
+                        box-shadow:none;
+                    }
+
+                    & > div:nth-child(2){
+                    background-color:$light-blue;
+                       >div{
+                            >div{
+                                >div{
+                                    box-shadow:none;
+                                    border-left:1px solid #CDDDE8;
+                                    border-right:3px solid #CDDDE8;
+                                    >div:first-child{
+                                    /*.bp3-table-column-name  Frozen column*/
+                                        color: #233750;
+                                        font-size: 14px;
+                                        font-family: Roboto;
+                                        font-weight: 500;
+                                        letter-spacing: 0.1px;
+                                        padding:5px 0;
+                                        >div:first-child{
+                                            right:0;
+                                            left:auto
+                                        }
+                                    }
+
+                                }
+                            }
+
+                       }
+
+                    }
+                }
+            }
+        }
+    }
+}
 
 .columnFilter{
      border-radius: $border-radius;
@@ -72,7 +240,7 @@
 }
 
 .cellValue{
-
+    border-right:1px solid #CDDDE8;
     display:flex;
     align-items:center;
 
