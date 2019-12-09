@@ -66,12 +66,13 @@ const Header = ({
 }) => {
   const lang = intl.locale
   const title = intl.formatMessage({ id: 'header.title' });
-  const langText = intl.formatMessage({ id: `lang.${lang}.short`})
+  const langOpposite = lang === 'fr' ? 'en' : 'fr';
+  const langText = intl.formatMessage({ id: `lang.${langOpposite}.short`})
   return (
     <Layout.Header id="header">
       <Row type="flex" justify="space-between" align='middle'>
         <Col>
-          <img className="logo" alt={title} src="/images/logo_CQGC.svg" />
+          <img className="logo" alt={title} src="/assets/logos/cqgc-white.svg" />
         </Col>
         <div className="secondaryNav">
           {user.username !== null && (

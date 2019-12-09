@@ -109,6 +109,8 @@
         padding:0;
         height:auto;
         font-size:inherit;
+        border:none;
+        background:none;
 
         span{
             color: $primary-blue;
@@ -166,6 +168,10 @@
 
 }
 
+
+.ant-popover-inner-content{
+    padding:0;
+}
 
 .columnFilter{
 
@@ -239,4 +245,8 @@
           }
 
       }
+}
+
+.activeButton{
+    background-color:#E4F1F9;
 }
