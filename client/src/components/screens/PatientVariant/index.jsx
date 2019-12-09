@@ -407,8 +407,9 @@ class PatientVariantScreen extends React.Component {
               />) }
             </Tabs.TabPane>
           </Tabs>
-        <Footer />
+          <br />
         </Card>
+        <Footer />
       </Content>
     );
   }

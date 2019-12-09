@@ -86,20 +86,10 @@ class VariantNavigation extends React.Component {
         activeFilterId: selection.group,
         searchSelection: {
           category: selection.group,
-          filter: selection.group,
+          filter: selection.subgroup, // was group
         }
       })
     }
-
-
-    /*
-
-"{\"group\":\"variant\",\"type\":\"category\",\"value\":\"Conséquence\"}"
-"{\"group\":\"transmission\",\"type\":\"filter\",\"key\":\"transmission\",\"value\":\"HOM\"}"
-     */
-
-
-
   }
 
   handleFilterSelection({ key }) {
@@ -115,55 +105,56 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterChange(filter) {
-    try {
-      const { onEditCallback } = this.props;
-      if (onEditCallback) {
-        const { activeQuery, queries } = this.props;
-        const query = find(queries, { key: activeQuery })
-        if (query) {
-          const updatedQuery = cloneDeep(query);
-          let updatedInstructions = []
-          if (!filter.remove) {
-            let updated = false
-            updatedInstructions = updatedQuery.instructions.map((instruction) => {
-              if (instruction.data.id === filter.id) {
-                updated = true
-                return {
-                  type: 'filter',
-                  data: filter
-                };
-              }
-              return instruction;
-            })
-            if (!updated) {
-              updatedInstructions.push({
+    const { onEditCallback } = this.props;
+    if (onEditCallback) {
+      const { activeQuery, queries } = this.props;
+      const query = find(queries, { key: activeQuery })
+      if (query) {
+        const updatedQuery = cloneDeep(query);
+        let updatedInstructions = []
+        if (!filter.remove) {
+          let updated = false
+          updatedInstructions = updatedQuery.instructions.map((instruction) => {
+            if (instruction.data.id === filter.id) {
+              updated = true
+              return {
                 type: 'filter',
                 data: filter
-              })
+              };
             }
-          } else {
-            updatedInstructions = updatedQuery.instructions.filter((instruction) => {
-              if (instruction.data.id === filter.id) {
-                return false;
-              }
-              return true;
+            return instruction;
+          })
+          if (!updated) {
+            updatedInstructions.push({
+              type: 'filter',
+              data: filter
             })
           }
-          updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
-          onEditCallback(updatedQuery);
+        } else {
+          updatedInstructions = updatedQuery.instructions.filter((instruction) => {
+            if (instruction.data.id === filter.id) {
+              return false;
+            }
+            return true;
+          })
         }
+        updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
+        onEditCallback(updatedQuery);
       }
-    } catch (e) {
-      console.log('+ e ' + JSON.stringify(e))
     }
   }
 
   handleCategoryOpenChange(keys) {
-    this.setState({
-      activeFilterId: null,
-      selectedMenu: null,
-      selectedSubMenu: null,
-    });
+    const { searchSelection } = this.props;
+
+    if (!searchSelection || keys.indexOf(searchSelection.category) !== -1) {
+      this.setState({
+        activeFilterId: null,
+        selectedMenu: null,
+        selectedSubMenu: null,
+        searchSelection: {},
+      });
+    }
   }
 
   renderFilterType(categoryData){
@@ -294,22 +285,10 @@ class VariantNavigation extends React.Component {
       </AutoComplete.OptGroup>
     ))
 
-    console.log('+ activeFilterId ' + activeFilterId);
-    console.log('+ searchSelection ' + JSON.stringify(searchSelection));
-
-
-
-
-    /*
-    searchSelection: {
-      category: selection.group,
-        filter: selection.subgroup,
+    if (activeFilterId !== null) {
+      console.log('++ activeFilterId ' + activeFilterId);
+      console.log('++ searchSelection ' + JSON.stringify(searchSelection));
     }
-    }*/
-
-
-
-
 
     return (
       <div className="variant-navigation">
@@ -332,23 +311,31 @@ class VariantNavigation extends React.Component {
             )}
           />
         </Menu>
-        <Menu key="category-navigator" mode="horizontal" openKeys={[searchSelection.group, activeFilterId]} onOpenChange={this.handleCategoryOpenChange}>
+        <Menu key="category-navigator" mode="horizontal" openKeys={[searchSelection.category, searchSelection.filter, activeFilterId]} onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
               const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
               const categoryInfo = find(schema.categories, ['id', id]);
               let categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-              if (!categoryData) {
-                find(categoryInfo.filters, ['id', searchSelection.filter]);
+
+              if (categoryData) {
+                console.log('++ categoryData 1 ' + JSON.stringify(categoryData));
               }
+
+              if (!categoryData) {
+                categoryData = find(categoryInfo.filters, ['id', searchSelection.filter]);
+
+                if (categoryData) {
+                  console.log('++ categoryData 2 ' + JSON.stringify(categoryData));
+                }
+
+              }
+
+              console.log('===============')
+
               const filter = categoryData ? this.renderFilterType(categoryData) : null
-
-              console.log(' + activeFilterId ' + activeFilterId)
-              console.log(' + id ' + id)
-              console.log(' + filter ' + JSON.stringify(filter))
-
-
+              // { activeFilterId !== null && this.renderFilterType(categoryData) }
 
               return (
                 <Menu.SubMenu key={id} title={<span>{label}</span>}>
@@ -357,13 +344,9 @@ class VariantNavigation extends React.Component {
                     key={filter.id}
                     title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
                     onTitleClick={this.handleFilterSelection}
-                    isOpen={(searchSelection.category === id)}
-                    forceRender={true}
                   />
                   ))}
-                  { activeFilterId !== null && (
-                    filter
-                  )}
+                  { activeFilterId !== null && filter }
                 </Menu.SubMenu>
               );
             }
