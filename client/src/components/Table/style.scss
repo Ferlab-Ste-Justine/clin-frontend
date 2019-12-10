@@ -3,7 +3,9 @@
 @import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
 
 
-
+.bp3-table-column-name{
+    padding:5px 0;
+}
 
 .ant-pagination-item-active{
     background-color:#E4F1F9;
