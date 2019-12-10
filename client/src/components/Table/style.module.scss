@@ -4,12 +4,10 @@
 
 
 .evenRow{
-    background:#F6F9FB;
+    background:$row-even-Color;
 }
-
-.columnTable{
-
-    background:red;
+.activeButton{
+    background-color:$primary-light;
 }
 .table{
     /*.bp3-table-container*/
@@ -43,19 +41,21 @@
                             >div{
                                 >div{
                                     box-shadow:none;
-                                    border-right:1px solid #CDDDE8;
+                                    border-right:1px solid $table-separator;
                                     >div:first-child{
                                     /*.bp3-table-column-name*/
-                                        color: #233750;
+                                        color: $primary-dark;
                                         font-size: 14px;
-                                        font-family: Roboto;
-                                        font-weight: 500;
-                                        letter-spacing: 0.1px;
-                                        padding:5px 0;
+                                        font-family: $font;
+                                        font-weight: $font-weight-medium;
+                                        letter-spacing: $small-letter-spacing;
 
                                         >div:first-child{
                                             right:0;
                                             left:auto
+                                        }
+                                        >div:nth-child(2){
+                                            padding-left:10px;
                                         }
                                     }
 
@@ -88,7 +88,7 @@
                                         }
 
                                         &:nth-child(even):before{
-                                        background:#F6F9FB;
+                                        background:$row-even-Color;
                                         }
 
                                         >div:first-child{
@@ -96,12 +96,10 @@
                                                 color:#A5AFB9;
                                                 text-align:center;
                                                 min-width:32px;
-                                                font-family: Roboto;
-                                                font-size: 14px;
-                                                font-weight: normal;
+                                                font-family: $font;
+                                                font-size: $small-font;
                                                 height: 20px;
-                                                letter-spacing: 0.25px;
-                                                line-height: 20px;
+                                                letter-spacing: $small-letter-spacing;
 
 
                                         }
@@ -114,7 +112,7 @@
                             >div{
                                 >div{
                                     >div{
-                                        border-right:3px solid #CDDDE8;
+                                        border-right:3px solid $table-separator;
                                         box-shadow:none;
                                     }
                                 }
@@ -140,19 +138,21 @@
                             >div{
                                 >div{
                                     box-shadow:none;
-                                    border-left:1px solid #CDDDE8;
-                                    border-right:3px solid #CDDDE8;
+                                    border-left:1px solid $table-separator;
+                                    border-right:3px solid$table-separator;
                                     >div:first-child{
                                     /*.bp3-table-column-name  Frozen column*/
-                                        color: #233750;
+                                        color: $primary-dark;
                                         font-size: 14px;
-                                        font-family: Roboto;
-                                        font-weight: 500;
-                                        letter-spacing: 0.1px;
-                                        padding:5px 0;
+                                        font-family: $font;
+                                        font-weight: $font-weight-medium;
+                                        letter-spacing: $small-letter-spacing;
                                         >div:first-child{
                                             right:0;
                                             left:auto
+                                        }
+                                        >div:nth-child(2){
+                                            padding-left:10px;
                                         }
                                     }
 
@@ -240,7 +240,7 @@
 }
 
 .cellValue{
-    border-right:1px solid #CDDDE8;
+    border-right:1px solid $table-separator;
     display:flex;
     align-items:center;
 

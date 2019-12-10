@@ -16,7 +16,7 @@ import DataTable from './index';
 
 import style from '../../containers/App/style.module.scss';
 import styleTable from './style.module.scss';
-import './style.scss';
+
 
 class InteractiveTable extends React.Component {
   constructor(props) {
@@ -239,7 +239,7 @@ class InteractiveTable extends React.Component {
             <Row type="flex" justify="end">
               { isReorderable && (
                 <Col>
-                  <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `activeButton ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
+                  <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                   <IconKit size={16} icon={ic_swap_horiz} /> { /* eslint-disable-line */ }
                     {intl.formatMessage({ id: 'components.table.action.organize' })}
                   </Button>
@@ -250,11 +250,10 @@ class InteractiveTable extends React.Component {
                   <Popover
                     trigger="click"
                     content={content}
-                    className="columnPopover"
                     placement="bottom"
                     onVisibleChange={this.handleColumnsVisible}
                   >
-                    <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `activeButton ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
+                    <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                           <IconKit size={16} icon={ic_view_column} /> { /* eslint-disable-line */ }
                       {intl.formatMessage({ id: 'components.table.action.display' })}
                     </Button>
