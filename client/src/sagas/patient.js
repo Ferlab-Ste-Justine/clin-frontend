@@ -8,25 +8,22 @@ import Api, { ApiError } from '../helpers/api';
 
 function* fetch(action) {
   try {
-    yield put({ type: actions.START_SUBLOADING_ANIMATION });
     const patientResponse = yield Api.getPatientById(action.payload.uid);
     if (patientResponse.error) {
       throw new ApiError(patientResponse.error);
     }
     yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientResponse.payload.data });
-    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
-    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
 
 function* autoComplete(action) {
+  const isAutocomplete = action.payload.type === 'partial';
   try {
-    const isAutocomplete = action.payload.type === 'partial';
     if (!isAutocomplete) {
-      yield put({ type: actions.START_SUBLOADING_ANIMATION });
+      yield put({ type: actions.PATIENT_SEARCH_REQUESTED });
     }
 
     const response = yield Api.getPatientsByAutoComplete(
@@ -41,13 +38,14 @@ function* autoComplete(action) {
     }
     if (!isAutocomplete) {
       yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
-      yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     } else {
       yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
     }
   } catch (e) {
+    if (!isAutocomplete) {
+      yield put({ type: actions.PATIENT_SEARCH_FAILED });
+    }
     yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
-    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
   }
 }
 
