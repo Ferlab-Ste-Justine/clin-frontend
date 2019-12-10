@@ -23,7 +23,7 @@ function* autoComplete(action) {
   const isAutocomplete = action.payload.type === 'partial';
   try {
     if (!isAutocomplete) {
-      yield put({ type: actions.PATIENT_SEARCH_REQUESTED });
+      yield put({ type: actions.START_SUBLOADING_ANIMATION });
     }
 
     const response = yield Api.getPatientsByAutoComplete(
@@ -44,8 +44,9 @@ function* autoComplete(action) {
   } catch (e) {
     if (!isAutocomplete) {
       yield put({ type: actions.PATIENT_SEARCH_FAILED });
+    } else {
+      yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
     }
-    yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
   }
 }
 
