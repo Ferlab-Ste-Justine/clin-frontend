@@ -52,10 +52,36 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       break;
 
     case actions.START_LOADING_ANIMATION:
+    case actions.APP_FETCH_REQUESTED:
+    case actions.USER_LOGIN_REQUESTED:
+    case actions.USER_LOGOUT_REQUESTED:
+    case actions.USER_RECOVERY_REQUESTED:
+    case actions.ROUTER_NAVIGATION_REQUESTED:
+    case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED:
+    case actions.NAVIGATION_PATIENT_SCREEN_REQUESTED:
+    case actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED:
       draft.showLoadingAnimation = true;
       break;
 
     case actions.STOP_LOADING_ANIMATION:
+    case actions.APP_FETCH_SUCCEEDED:
+    case actions.APP_FETCH_FAILED:
+    case actions.APP_CHANGE_LANGUAGE_SUCCEEDED:
+    case actions.APP_CHANGE_LANGUAGE_FAILED:
+    case actions.ROUTER_NAVIGATION_SUCCEEDED:
+    case actions.ROUTER_NAVIGATION_FAILED:
+    case actions.USER_LOGIN_SUCCEEDED:
+    case actions.USER_LOGIN_FAILED:
+    case actions.USER_LOGOUT_SUCCEEDED:
+    case actions.USER_LOGOUT_FAILED:
+    case actions.USER_RECOVERY_SUCCEEDED:
+    case actions.USER_RECOVERY_FAILED:
+    case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED:
+    case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED:
+    case actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED:
+    case actions.NAVIGATION_PATIENT_SCREEN_FAILED:
+    case actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED:
+    case actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED:
       draft.showLoadingAnimation = false;
       if (window.agent) {
         const agentIdle = ['IdleScratch', 'IdleStretch', 'IdleTailWagA', 'IdleTailWagB', 'IdleTailWagC', 'IdleTailWagD', 'IdleTwitch', 'IdleYawn', 'IdleButterFly', 'IdleCleaning', 'IdleLegLick', 'GetArtsy'];
@@ -64,14 +90,30 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       break;
 
     case actions.START_SUBLOADING_ANIMATION:
+    case actions.USER_FETCH_REQUESTED:
+    case actions.PATIENT_SEARCH_REQUESTED:
+    case actions.PATIENT_FETCH_REQUESTED:
+    case actions.PATIENT_VARIANT_SEARCH_REQUESTED:
+    case actions.VARIANT_SCHEMA_REQUESTED:
       draft.showSubloadingAnimation = true;
       break;
 
     case actions.STOP_SUBLOADING_ANIMATION:
+    case actions.USER_FETCH_SUCCEEDED:
+    case actions.USER_FETCH_FAILED:
+    case actions.PATIENT_SEARCH_SUCCEEDED:
+    case actions.PATIENT_SEARCH_FAILED:
+    case actions.PATIENT_FETCH_SUCCEEDED:
+    case actions.PATIENT_FETCH_FAILED:
+    case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
+    case actions.PATIENT_VARIANT_SEARCH_FAILED:
+    case actions.VARIANT_SCHEMA_SUCCEEDED:
+    case actions.VARIANT_SCHEMA_FAILED:
       draft.showSubloadingAnimation = false;
       break;
 
     case actions.APP_CHANGE_LANGUAGE_REQUESTED:
+      draft.showLoadingAnimation = true;
       if (action.payload.language === 'fr') {
         draft.locale.lang = action.payload.language;
         draft.locale.antd = frFr;
