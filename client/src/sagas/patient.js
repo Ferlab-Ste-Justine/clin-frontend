@@ -8,16 +8,16 @@ import Api, { ApiError } from '../helpers/api';
 
 function* fetch(action) {
   try {
-    yield put({ type: actions.START_LOADING_ANIMATION });
+    yield put({ type: actions.START_SUBLOADING_ANIMATION });
     const patientResponse = yield Api.getPatientById(action.payload.uid);
     if (patientResponse.error) {
       throw new ApiError(patientResponse.error);
     }
     yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientResponse.payload.data });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
+    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
+    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
     yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
