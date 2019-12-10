@@ -6,7 +6,6 @@ import LocalStore from '../helpers/storage/local';
 
 
 function* navigate(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const { location } = action.payload;
     yield put(push(location));
@@ -15,11 +14,9 @@ function* navigate(action) {
   } catch (e) {
     yield put({ type: actions.ROUTER_NAVIGATION_FAILED, message: e.message });
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToPatientScreen(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const { uid } = action.payload;
     const location = `/patient/${uid}`;
@@ -32,11 +29,9 @@ function* navigateToPatientScreen(action) {
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED, message: e.message });
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToPatientVariantScreen(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const { uid } = action.payload;
     const location = `/patient/${uid}/variant`;
@@ -48,11 +43,9 @@ function* navigateToPatientVariantScreen(action) {
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED, message: e.message });
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToPatientSearchScreen(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const location = '/patient/search';
     if (action.payload.reload === true) {
@@ -66,11 +59,9 @@ function* navigateToPatientSearchScreen(action) {
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED });
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* navigateToLastKnownState() {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const screen = LocalStore.read(LocalStore.keys.lastScreen);
     const state = LocalStore.read(LocalStore.keys.lastScreenState);
@@ -83,7 +74,7 @@ function* navigateToLastKnownState() {
         break;
     }
   } catch (e) {
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
+    yield put({ type: actions.ROUTER_NAVIGATION_FAILED, message: e.message });
   }
 }
 

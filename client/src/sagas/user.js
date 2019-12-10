@@ -7,7 +7,6 @@ import LocalStore from '../helpers/storage/local';
 
 
 function* login(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const response = yield Api.login(action.payload.username, action.payload.password);
     if (response.error) {
@@ -20,13 +19,12 @@ function* login(action) {
     if (currentId === previousId) {
       yield put({ type: actions.USER_SESSION_RESTORE_LAST_KNOWN_STATE });
     } else {
-      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED, payload: { reload: true } });
+      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
     }
   } catch (e) {
     yield put({ type: actions.USER_LOGIN_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* logout() {
@@ -47,7 +45,6 @@ function* logout() {
 }
 
 function* recover(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
     yield put({ type: actions.USER_RECOVERY_SUCCEEDED, payload: action.payload });
@@ -56,11 +53,9 @@ function* recover(action) {
     yield put({ type: actions.USER_RECOVERY_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* fetch(action) {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
     yield put({ type: actions.USER_FETCH_SUCCEEDED, payload: action.payload });
@@ -69,7 +64,6 @@ function* fetch(action) {
     yield put({ type: actions.USER_FETCH_FAILED, payload: e });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* watchUserLogin() {

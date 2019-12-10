@@ -11,7 +11,6 @@ import Api, { ApiError } from '../helpers/api';
 
 
 function* fetchSchema() {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     const schemaResponse = yield Api.getVariantSchema();
     if (schemaResponse.error) {
@@ -22,11 +21,9 @@ function* fetchSchema() {
   } catch (e) {
     yield put({ type: actions.VARIANT_SCHEMA_FAILED, payload: e });
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* searchVariantsForPatient(action) {
-  yield put({ type: actions.START_SUBLOADING_ANIMATION });
   try {
     const {
       patient, statement, query, group, index, limit,
@@ -40,7 +37,6 @@ function* searchVariantsForPatient(action) {
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_SEARCH_FAILED, payload: e });
   }
-  yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
 }
 
 function* undo() {
@@ -57,7 +53,6 @@ function* undo() {
       index: 0,
       limit: 25,
     };
-    yield put({ type: actions.START_SUBLOADING_ANIMATION });
     yield put({ type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload });
   }
 }

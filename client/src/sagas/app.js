@@ -7,7 +7,6 @@ import locales from '../locales';
 
 
 function* loadApp() {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     yield put({ type: actions.APP_FETCH_SUCCEEDED });
     yield put({ type: actions.APP_CHANGE_LANGUAGE_REQUESTED, payload: { language: 'fr' } });
@@ -15,7 +14,6 @@ function* loadApp() {
     yield put({ type: actions.APP_FETCH_FAILED, message: e.message });
     yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* changeLanguage(action) {
