@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Col, Row, Tabs, PageHeader, Typography, Icon, Button,
+  Card, Col, Row, Tabs, PageHeader, Typography, Icon, Button, Spin,
 } from 'antd';
 import ResizableAntdTable from 'resizable-antd-table';
 
@@ -23,6 +23,7 @@ import {
   navigateToPatientScreen, navigateToPatientVariantScreen,
   navigateToPatientSearchScreen,
 } from '../../../actions/router';
+import { appShape } from '../../../reducers/app';
 
 
 class PatientScreen extends React.Component {
@@ -50,9 +51,10 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      intl, patient, actions,
+      app, intl, patient, actions,
     } = this.props;
 
+    const { showSubloadingAnimation } = app;
     const identifier = intl.formatMessage({ id: 'screen.patient.details.id' });
     const mrn = intl.formatMessage({ id: 'screen.patient.details.mrn' });
     const ramq = intl.formatMessage({ id: 'screen.patient.details.ramq' });
@@ -127,7 +129,8 @@ class PatientScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <Card className="entity">
+        <Spin spinning={showSubloadingAnimation}>
+          <Card className="entity">
           <PageHeader
             title={(
               <div>
@@ -142,7 +145,7 @@ class PatientScreen extends React.Component {
             extra={(
               <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientVariantScreen}>
                 <Button type="primary">
-                    Variant Interpreter
+                  Variant Interpreter
                 </Button>
               </a>
             )}
@@ -154,10 +157,10 @@ class PatientScreen extends React.Component {
               style={{ height: '100%' }}
               tab={(
                 <span>
-                  <Icon type="profile" />
+                    <Icon type="profile" />
                   {patientTab}
-                </span>
-                )}
+                  </span>
+              )}
             >
               <br />
               <Row type="flex" gutter={32}>
@@ -263,10 +266,10 @@ class PatientScreen extends React.Component {
               key="clinique"
               tab={(
                 <span>
-                  <Icon type="reconciliation" />
+                    <Icon type="reconciliation" />
                   {clinicalTab}
-                </span>
-                  )}
+                  </span>
+              )}
               style={{ height: '100%' }}
             >
               <br />
@@ -373,6 +376,7 @@ class PatientScreen extends React.Component {
             </Tabs.TabPane>
           </Tabs>
         </Card>
+        </Spin>
         <Footer />
       </Content>
     );
@@ -380,6 +384,7 @@ class PatientScreen extends React.Component {
 }
 
 PatientScreen.propTypes = {
+  app: PropTypes.shape(appShape).isRequired,
   intl: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
@@ -395,6 +400,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
+  app: state.app,
   intl: state.intl,
   patient: state.patient,
   search: state.search,
