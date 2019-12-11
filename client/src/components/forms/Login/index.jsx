@@ -141,7 +141,7 @@ class LoginForm extends React.Component {
                 htmlType="submit"
                 loading={submitLoadingState}
                 disabled={(forgotLoadingState || hasErrors(form.getFieldsError()))}
-                className={`${style.btnBlue} ${style.btn}`}
+                className={`${style.btnPrimary} ${style.btn}`}
               >
                 {submitButton}
               </Button>

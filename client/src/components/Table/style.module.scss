@@ -1,0 +1,276 @@
+@import './variables.scss';
+@import '/../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
+@import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
+
+
+.evenRow{
+    background:$row-even-Color;
+}
+.activeButton{
+    background-color:$primary-light;
+}
+.table{
+    /*.bp3-table-container*/
+    box-shadow:none;
+
+    & > div{
+        & > div:nth-child(1){
+            >div{
+                & > div:nth-child(2){
+                    & > div:nth-child(2){
+                       >div{
+                           >div{
+                               >div{
+                                   >div{
+                                    box-shadow:none;
+                                   }
+                               }
+                           }
+                       }
+                    }
+                }
+            }
+        }
+        & > div:nth-child(2){
+
+           & > div{
+                >div{
+                    & > div:nth-child(2){
+                    background-color:$light-blue;
+                       >div{
+                            >div{
+                                >div{
+                                    box-shadow:none;
+                                    border-right:1px solid $table-separator;
+                                    >div:first-child{
+                                    /*.bp3-table-column-name*/
+                                        color: $primary-dark;
+                                        font-size: 14px;
+                                        font-family: $font;
+                                        font-weight: $font-weight-medium;
+                                        letter-spacing: $small-letter-spacing;
+
+                                        >div:first-child{
+                                            right:0;
+                                            left:auto
+                                        }
+                                        >div:nth-child(2){
+                                            padding-left:10px;
+                                        }
+                                    }
+
+                                }
+                            }
+
+                       }
+
+                    }
+                }
+            }
+        }
+
+        & > div:nth-child(3){
+            & > div{
+
+                 & > div:nth-child(2){
+
+                     >div:nth-child(1){
+                          >div{
+                               >div{
+                                    >div{
+                                        display:flex;
+                                        align-items: center;
+                                        box-shadow:none;
+
+
+                                        &:nth-child(odd):before{
+                                        background:#FFFFFF;
+                                        }
+
+                                        &:nth-child(even):before{
+                                        background:$row-even-Color;
+                                        }
+
+                                        >div:first-child{
+                                        /*.bp3-table-row-name*/
+                                                color:#A5AFB9;
+                                                text-align:center;
+                                                min-width:32px;
+                                                font-family: $font;
+                                                font-size: $small-font;
+                                                height: 20px;
+                                                letter-spacing: $small-letter-spacing;
+
+
+                                        }
+                                    }
+                               }
+                          }
+                     }
+                     >div:nth-child(2){
+                        >div{
+                            >div{
+                                >div{
+                                    >div{
+                                        border-left:1px solid $table-separator;
+                                        border-right:3px solid $table-separator;
+                                        box-shadow:none;
+                                    }
+                                }
+                            }
+                        }
+                     }
+                 }
+            }
+        }
+
+        & > div:nth-child(4){
+           & > div{
+                >div{
+                    & > div:nth-child(1){
+                    /*.bp3-table-menu*/
+                        background-color:#e3ebf2;
+                        box-shadow:none;
+                    }
+
+                    & > div:nth-child(2){
+                    background-color:$light-blue;
+                       >div{
+                            >div{
+                                >div{
+                                    box-shadow:none;
+                                    border-left:1px solid $table-separator;
+                                    border-right:3px solid$table-separator;
+                                    >div:first-child{
+                                    /*.bp3-table-column-name  Frozen column*/
+                                        color: $primary-dark;
+                                        font-size: 14px;
+                                        font-family: $font;
+                                        font-weight: $font-weight-medium;
+                                        letter-spacing: $small-letter-spacing;
+                                        >div:first-child{
+                                            right:0;
+                                            left:auto
+                                        }
+                                        >div:nth-child(2){
+                                            padding-left:10px;
+                                        }
+                                    }
+
+                                }
+                            }
+
+                       }
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+.columnFilter{
+     border-radius: $border-radius;
+     box-shadow:    0px 8px 10px 1px rgba(89, 121, 144, 0.14),
+                    0px 3px 14px 2px rgba(89, 121, 144, 0.12),
+                    0px 5px 5px -3px rgba(89, 121, 144, 0.2);
+     width: 200px;
+
+      & > div:first-child{
+        padding:0;
+        min-height:44px;
+        display:flex;
+        div div{
+            padding:0;
+
+            span{
+                input{
+                    font-size:$small-font;
+                    border:none;
+                }
+
+                >span{
+                  color:$icon-color;
+
+                  svg{
+                    height: 24px;
+                    width: 24px;
+                  }
+                }
+            }
+        }
+
+
+      }
+
+     & > div:nth-child(2){
+               padding: $mediumSpacing 0 0 0;
+               width:100%;
+     }
+
+       a{
+         padding:0 $defaultSpacing;
+         display: flex;
+         justify-content: space-between;
+
+         svg {
+             height: 18px;
+             width: 18px;
+         }
+
+         &:hover{
+            text-decoration:none;
+         }
+       }
+
+     label{
+       padding:0 $defaultSpacing;
+       display: flex;
+       flex-direction: row-reverse;
+       justify-content: space-between;
+       align-items:center;
+
+       & > span:nth-child(2){
+       padding-left:0;
+       }
+
+       &:hover{
+        background-color:$light-hover;
+       }
+     }
+}
+
+.cellValue{
+    border-right:1px solid $table-separator;
+    display:flex;
+    align-items:center;
+
+    div{
+        display:flex;
+    }
+    span{
+        color: $light-text;
+        font-size: $small-font;
+        font-family: $font;
+        letter-spacing: $small-letter-spacing;
+
+        .ant-badge-status-default{
+            background-color:#b5b5b5;
+        }
+    }
+
+    button{
+        padding:0;
+        height:auto;
+        font-size:inherit;
+        border:none;
+        background:none;
+
+        span{
+            color: $primary;
+            font-size: $small-font;
+            font-family: $font;
+            letter-spacing:$small-letter-spacing;
+        }
+    }
+}

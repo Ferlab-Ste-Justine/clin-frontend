@@ -10,6 +10,9 @@ import {
 import { cloneDeep } from 'lodash';
 import './style.scss';
 
+import styleTable from './style.module.scss';
+
+
 export const createCellRenderer = (type, getData, options = {}) => {
   try {
     let valueRenderer = null;
@@ -66,7 +69,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
 
         return (
-          <Cell className="cellValue">
+          <Cell className={row % 2 !== 0 ? `${styleTable.cellValue} ${styleTable.evenRow}` : `${styleTable.cellValue}`}>
             {valueRenderer(value)}
           </Cell>
         );
@@ -106,6 +109,7 @@ const DataTable = (props) => {
       onColumnWidthChanged={resizeColumnCallback}
       defaultRowHeight={36}
       getCellClipboardData={copyCallback}
+      className={styleTable.table}
     >
       { columns.map(definition => (
         <Column

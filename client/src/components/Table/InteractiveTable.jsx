@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -16,7 +15,8 @@ import DataTablePagination from './Pagination';
 import DataTable from './index';
 
 import style from '../../containers/App/style.module.scss';
-import './style.scss';
+import styleTable from './style.module.scss';
+
 
 class InteractiveTable extends React.Component {
   constructor(props) {
@@ -200,7 +200,7 @@ class InteractiveTable extends React.Component {
 
     const content = (
       <Card
-        className="columnFilter"
+        className={`${styleTable.columnFilter}`}
         title={(
           <Input
             className="SearchInput"
@@ -219,11 +219,12 @@ class InteractiveTable extends React.Component {
           </Row>
         ) }
         <Row>
-          <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className="checkbox" value={cloneDeep(visibleColumns)}>
+
+          <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className={`${style.checkbox} `} value={cloneDeep(visibleColumns)}>
             { matchingColumns.map(key => (
               <Row>
                 <Col>
-                  <Checkbox value={key}>{key}</Checkbox>
+                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{key}</Checkbox>
                 </Col>
               </Row>
             )) }
@@ -238,7 +239,7 @@ class InteractiveTable extends React.Component {
             <Row type="flex" justify="end">
               { isReorderable && (
                 <Col>
-                  <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `activeButton ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
+                  <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                   <IconKit size={16} icon={ic_swap_horiz} /> { /* eslint-disable-line */ }
                     {intl.formatMessage({ id: 'components.table.action.organize' })}
                   </Button>
@@ -249,11 +250,10 @@ class InteractiveTable extends React.Component {
                   <Popover
                     trigger="click"
                     content={content}
-                    className="columnPopover"
                     placement="bottom"
                     onVisibleChange={this.handleColumnsVisible}
                   >
-                    <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `activeButton ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
+                    <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                           <IconKit size={16} icon={ic_view_column} /> { /* eslint-disable-line */ }
                       {intl.formatMessage({ id: 'components.table.action.display' })}
                     </Button>
