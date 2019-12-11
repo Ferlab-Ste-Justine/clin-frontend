@@ -37,10 +37,10 @@ $footer-font-color: #FFFFFF;
 }
 
 header#header {
-height: 80px;
+height: 56px;
 background: $primary-blue;
 border-radius: 0px;
-padding:20px 0 0 40px ;
+padding:12px 0 0 40px ;
 line-height: 0;
 
   h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
@@ -49,13 +49,14 @@ line-height: 0;
   }
 
     img.logo {
-      height: 40px;
+      height: 32px;
     };
 
   .secondaryNav{
       padding-left:56px;
       padding-right:40px;
       display:flex;
+      align-items: center;
       .userName{
           padding-right:24px
       }
@@ -66,7 +67,7 @@ line-height: 0;
         text-transform: uppercase;
         font-family: $font;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 12px;
         height: 16px;
 
           i{
@@ -74,12 +75,19 @@ line-height: 0;
             position:relative;
             top:-2px;
               svg{
-                width: 24px;
-                height: $icon-size;
+                width: 20px;
+                height: 20px;
               }
           };
       };
 
+      .ant-divider{
+        height:32px;
+        background-color:#FFFFFF;
+        opacity:54%;
+        margin:0 28px;
+
+      }
       a:hover{
         color:#ffffff;
         text-decoration:none;

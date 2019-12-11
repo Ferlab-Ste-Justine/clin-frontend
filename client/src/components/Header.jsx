@@ -5,10 +5,10 @@ import { injectIntl } from 'react-intl';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
-  Layout, Row, Col, Dropdown, Menu, Icon,
+  Layout, Row, Col, Dropdown, Menu, Icon, Divider
 } from 'antd';
 import IconKit from 'react-icons-kit';
-import { ic_translate, ic_account_circle, ic_location_searching } from 'react-icons-kit/md';
+import { ic_translate, ic_account_circle,  ic_supervisor_account } from 'react-icons-kit/md';
 import { Desktop, Tablet } from '../containers/Responsive';
 import { logoutUser } from '../actions/user';
 import { changeLanguage } from '../actions/app';
@@ -77,18 +77,23 @@ const Header = ({
         <div className="secondaryNav">
           {user.username !== null && (
             <>
-              <Col className="patientList">
-                  { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link" style={{ marginRight: 22 }}>
-                    <Desktop><IconKit size={16} icon={ic_location_searching} /></Desktop>
-                    {`Patients`}
-                  </a>
-              </Col>
+              <div className="navigation">
+                <Row type="flex" justify="space-between" align='middle'>
+                    <Col className="patientList">
+                        { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                        <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link" >
+                          <IconKit size={16} icon={ic_supervisor_account} />
+                          {`Patients`}
+                        </a>
+                    </Col>
+                    <Divider type="vertical" />
+                </Row>
+              </div>
               <Col className="userName">
                 <Dropdown overlay={userMenu(intl, actions)} trigger={['click']}>
                   { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                   <a className="ant-dropdown-link">
-                    <Desktop><IconKit size={16} icon={ic_account_circle} /></Desktop>
+                   <IconKit size={16} icon={ic_account_circle} />
                     {` ${user.firstName} `}
                   </a>
                 </Dropdown>
@@ -100,7 +105,7 @@ const Header = ({
             <Dropdown overlay={languageMenu(intl, actions)}  trigger={['click']}>
               { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="ant-dropdown-link">
-                <Desktop><IconKit size={16} icon={ic_translate} /></Desktop>
+                <IconKit size={16} icon={ic_translate} />
                 {langText}
               </a>
             </Dropdown>
