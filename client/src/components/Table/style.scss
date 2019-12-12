@@ -1,10 +1,18 @@
-@import '../../containers/App/variables.scss';
+@import './variables.scss';
 @import '/../../../../node_modules/@blueprintjs/core/src/blueprint.scss';
 @import '/../../../../node_modules/@blueprintjs/table/src/table.scss';
 
 
 .bp3-table-column-name{
     padding:5px 0;
+}
+
+.bp3-table-cell-ghost.bp3-table-cell-ledger-even {
+    background: #FFFFFF;
+}
+
+.bp3-table-cell-ghost{
+    border-right:1px solid $table-separator;
 }
 
 .ant-pagination-item-active{

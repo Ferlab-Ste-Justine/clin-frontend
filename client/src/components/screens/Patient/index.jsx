@@ -151,7 +151,7 @@ class PatientScreen extends React.Component {
             )}
           />
           <br />
-          <Tabs key={patient.details.id} defaultActiveKey="patient">
+          <Tabs key={patient.details.id} defaultActiveKey="patient" className="tabs">
             <Tabs.TabPane
               key="patient"
               style={{ height: '100%' }}
@@ -376,8 +376,9 @@ class PatientScreen extends React.Component {
             </Tabs.TabPane>
           </Tabs>
         </Card>
-        </Spin>
         <Footer />
+        </Spin>
+
       </Content>
     );
   }

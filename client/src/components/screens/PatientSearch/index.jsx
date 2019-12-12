@@ -285,7 +285,7 @@ class PatientSearchScreen extends React.Component {
             </Col>
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
-            <Col>
+            {/*<Col>
               <Button disabled className={`${style.btn} filter`} style={isFacetOpen ? { width: 280 } : { width: 'auto' }} onClick={this.handleOpenFacet}>
                 <div>
                   <IconKit size={16} icon={ic_tune} />
@@ -295,7 +295,7 @@ class PatientSearchScreen extends React.Component {
                      <IconKit size={16} icon={ic_close} />
                 )}
               </Button>
-            </Col>
+            </Col>*/}
             <Col className="autoSearch">
               <AutoComplete
                 size="large"
