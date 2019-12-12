@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select,
+  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select, Input
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty,
@@ -445,6 +445,65 @@ class Statement extends React.Component {
       <div className={styleStatement.statement}>
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
+            <div className="sqon-navigation">
+              <div style={{ marginBottom: 16 }}>
+                <Input
+                    addonBefore={(
+                        <Button
+                            type="default"
+                            icon="profile"
+                        />
+                    )}
+                    addonAfter={(
+                        <div>
+                          <Button
+                              type="default"
+                              icon="star"
+                          />
+                          <Button
+                              type="default"
+                              icon="plus-square"
+                          >
+                            Nouveau
+                          </Button>
+                          <Button
+                              type="default"
+                              icon="save"
+                          >
+                            Sauvegarder
+                          </Button>
+                          <Button
+                              type="default"
+                              icon="copy"
+                          >
+                            Dupliquer
+                          </Button>
+                          <Button
+                              type="default"
+                              icon="delete"
+                          >
+                            Effacer
+                          </Button>
+                          <Divider type="vertical" />
+                          <Button
+                              type="default"
+                              icon="share-alt"
+                          />
+                          <Divider type="vertical" />
+                          <Button
+                              type="default"
+                              icon="file-search"
+                          />
+                        </div>
+                    )}
+                />
+
+              </div>
+            </div>
+
+
+          </Row>
+          <Row type="flex" className={styleStatement.toolbar}>
             <Col span={24} align="start">
               { editable && (
                 <Tooltip title={combineSelectionToolTip}>
@@ -478,22 +537,7 @@ class Statement extends React.Component {
               ) }
             </Col>
           </Row>
-          <Row type="flex" className={styleStatement.toolbar}>
-            <Col span={12} align="start">
-              <Button>COLLAPSE</Button>
-              <span>Filtre Sans Nom</span>
-              <Button>EDIT</Button>
-            </Col>
-            <Col span={12} align="end">
-              <Button>FILTRE ACTION 1</Button>
-              <Button>FILTRE ACTION 2</Button>
-              <Button>FILTRE ACTION 3</Button>
-              <Divider type="vertical" />
-              <Select defaultValue={'uid'}>
-                <Select.Option value={'uid'}>Filtre 1</Select.Option>
-              </Select>
-            </Col>
-          </Row>
+
         </div>
         <div className={styleStatement.body}>
           {reorderable
