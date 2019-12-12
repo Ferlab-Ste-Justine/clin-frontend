@@ -376,8 +376,9 @@ class PatientScreen extends React.Component {
             </Tabs.TabPane>
           </Tabs>
         </Card>
-        </Spin>
         <Footer />
+        </Spin>
+
       </Content>
     );
   }
