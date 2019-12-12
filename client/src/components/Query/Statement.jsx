@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal,
+  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty,
@@ -19,6 +19,9 @@ import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
 } from './Subquery';
 import { createOperator } from './Operator';
+
+import styleStatement from './statement.module.scss';
+
 
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
@@ -399,13 +402,9 @@ class Statement extends React.Component {
       const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
 
       return [...accumulator, (
-        <div key={query.key} className={`query-container${(isChecked ? ' selected' : '')}${(isActive ? ' active' : '')}`}>
+        <div key={query.key}   d>
           <div
-            className="selector"
-            style={{
-              backgroundColor:
-                (highlightedQueries.indexOf(query.key) !== -1 ? convertIndexToColor(this.findQueryIndexForKey(query.key)) : ''),
-            }}
+            className={styleStatement.selector}
           >
             <Checkbox
               key={`selector-${query.key}`}
@@ -413,7 +412,6 @@ class Statement extends React.Component {
               checked={isChecked}
               onChange={this.handleCheckQuery}
             />
-            <div className="index">{convertIndexToLetter(index)}</div>
           </div>
           <Query
             key={query.key}
@@ -444,77 +442,76 @@ class Statement extends React.Component {
       )];
     }, []);
     return (
-      <div className="statement">
-        <div className="action-container">
-          <Tooltip title={`${!queriesAreAllChecked ? checkToolTip : unCheckToolTip} ${allText}`}>
-            <Checkbox
-              key="check-all"
-              className="selector"
-              indeterminate={queriesChecksAreIndeterminate}
-              onChange={this.handleCheckAllQueries}
-              checked={queriesAreAllChecked}
-            />
-          </Tooltip>
-          <div className="actions left">
-            { editable && (
-            <Tooltip title={combineSelectionToolTip}>
-              <Dropdown
-                disabled={(checkedQueriesCount < 2)}
-                trigger={['click']}
-                overlay={(
-                  <Menu onClick={this.handleCombine}>
-                    <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
-                      <IconKit size={24} icon={software_pathfinder_intersect} />
-                      {combineAnd}
-                    </Menu.Item>
-                    <Menu.Item key={SUBQUERY_TYPE_SUBTRACT}>
-                      <IconKit size={24} icon={software_pathfinder_subtract} />
-                      {combineAndNot}
-                    </Menu.Item>
-                    <Menu.Item key={SUBQUERY_TYPE_UNITE}>
-                      <IconKit size={24} icon={software_pathfinder_unite} />
-                      {combineOr}
-                    </Menu.Item>
-                  </Menu>
-                  )}
-              >
-                <Button icon="block">
-                  {combineText}
-                  {' '}
-                  <Icon type="caret-down" />
-                </Button>
-              </Dropdown>
-            </Tooltip>
-            ) }
-            { removable && (
-            <Tooltip title={deleteSelectionToolTip}>
-              <Button icon="delete" type="danger" disabled={(checkedQueriesCount < 1)} onClick={this.handleRemoveChecked}>{deleteText}</Button>
-            </Tooltip>
-            ) }
-          </div>
-          <div className="actions right">
-            <Tooltip title={newQueryText}>
-              <Button type="primary" onClick={this.handleNewQuery}>{newQueryText}</Button>
-            </Tooltip>
-            { undoable && (
-            <Tooltip title={undoToolTip}>
-              <Badge count={draftHistory.length}>
-                <Button icon="undo" shape="circle" disabled={(draftHistory.length < 1)} onClick={this.handleUndo} />
-              </Badge>
-            </Tooltip>
-            ) }
-          </div>
+      <div className={styleStatement.statement}>
+        <div className={styleStatement.header}>
+          <Row type="flex" className={styleStatement.toolbar}>
+            <Col span={24} align="start">
+              { editable && (
+                <Tooltip title={combineSelectionToolTip}>
+                  <Dropdown
+                    disabled={(checkedQueriesCount < 2)}
+                    trigger={['click']}
+                    overlay={(
+                      <Menu onClick={this.handleCombine}>
+                        <Menu.Item key={SUBQUERY_TYPE_INTERSECT}>
+                          <IconKit size={24} icon={software_pathfinder_intersect} />
+                          {combineAnd}
+                        </Menu.Item>
+                        <Menu.Item key={SUBQUERY_TYPE_SUBTRACT}>
+                          <IconKit size={24} icon={software_pathfinder_subtract} />
+                          {combineAndNot}
+                        </Menu.Item>
+                        <Menu.Item key={SUBQUERY_TYPE_UNITE}>
+                          <IconKit size={24} icon={software_pathfinder_unite} />
+                          {combineOr}
+                        </Menu.Item>
+                      </Menu>
+                    )}
+                  >
+                    <Button icon="block">
+                      {combineText}
+                      {' '}
+                      <Icon type="caret-down" />
+                    </Button>
+                  </Dropdown>
+                </Tooltip>
+              ) }
+            </Col>
+          </Row>
+          <Row type="flex" className={styleStatement.toolbar}>
+            <Col span={12} align="start">
+              <Button>COLLAPSE</Button>
+              <span>Filtre Sans Nom</span>
+              <Button>EDIT</Button>
+            </Col>
+            <Col span={12} align="end">
+              <Button>FILTRE ACTION 1</Button>
+              <Button>FILTRE ACTION 2</Button>
+              <Button>FILTRE ACTION 3</Button>
+              <Divider type="vertical" />
+              <Select defaultValue={'uid'}>
+                <Select.Option value={'uid'}>Filtre 1</Select.Option>
+              </Select>
+            </Col>
+          </Row>
         </div>
-        {reorderable
-          ? (
-            <DragSortableList
-              key="sortable"
-              type="vertical"
-              items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
-              onSort={this.handleReorder}
-            />
-          ) : queries
-        }
+        <div className={styleStatement.body}>
+          {reorderable
+            ? (
+              <DragSortableList
+                key="sortable"
+                type="vertical"
+                items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
+                onSort={this.handleReorder}
+              />
+            ) : queries
+          }
+        </div>
+        <div className={styleStatement.footer}>
+          <Tooltip title={newQueryText}>
+            <Button type="primary" onClick={this.handleNewQuery}>{newQueryText}</Button>
+          </Tooltip>
+        </div>
       </div>
     );
   }

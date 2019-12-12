@@ -1,0 +1,46 @@
+@import './variables.scss';
+
+.statement {
+
+  .header {
+    margin-bottom: 20px;
+    background-color: #EEEEEE;
+
+    .toolbar {
+
+    }
+
+
+  }
+
+  .body {
+
+    border: 1px solid red;
+
+    .draggable {
+      cursor: grab;
+    }
+
+    .placeholder {
+      opacity: 0.5;
+    }
+
+    .dragged {
+      cursor: grabbing;
+      width: 100%;
+      filter: invert(0.15);
+
+      > * {
+        transform: scale(0.66);
+      }
+    }
+
+  }
+
+  .footer {
+    margin-top: 20px;
+    background-color: #EEEEEE;
+
+  }
+
+}

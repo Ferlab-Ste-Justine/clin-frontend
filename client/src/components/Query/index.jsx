@@ -8,7 +8,6 @@ import {
 import copy from 'copy-to-clipboard';
 const Joi = require('@hapi/joi');
 
-import './style.scss';
 import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import SpecificFilter from './Filter/Specific';
@@ -19,6 +18,10 @@ import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator'
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
+
+// import './style.scss';
+import styleQuery from './query.module.scss';
+
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
