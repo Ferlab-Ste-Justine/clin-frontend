@@ -42,6 +42,8 @@
                                 >div{
                                     box-shadow:none;
                                     border-right:1px solid $table-separator;
+                                    background-color:$light-blue;
+                                    border-bottom: 1px solid #e3ebf2;
                                     >div:first-child{
                                     /*.bp3-table-column-name*/
                                         color: $primary-dark;

@@ -301,7 +301,7 @@ class PatientVariantScreen extends React.Component {
     return (
       <Content>
         <Header />
-        <Card>
+        <Card className="entity">
           <PageHeader
               title={(
                   <div>
@@ -323,90 +323,95 @@ class PatientVariantScreen extends React.Component {
               <Descriptions.Item label="Signes">Epilepsie ([HP93993]), Schizophrénie ([HP2772])</Descriptions.Item>
               <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
           </Descriptions>
-          <VariantNavigation
-              key="variant-navigation"
-              className="variant-navigation"
-              intl={intl}
-              schema={schema}
-              patient={patient}
-              queries={draftQueries}
-              activeQuery={activeQuery}
-              data={facets[activeQuery] || {}}
-              onEditCallback={this.handleQueryChange}
-              searchData={searchData}
-              autocomplete={autocomplete}
-          />
-          <br />
-          <br />
-          <Statement
-            key="variant-statement"
-            activeQuery={activeQuery}
-            data={draftQueries}
-            draftHistory={draftHistory}
-            original={originalQueries}
-            intl={intl}
-            matches={matches}
-            facets={facets}
-            target={patient}
-            categories={schema.categories}
-            options={{
-                copyable: true,
-                duplicatable: true,
-                editable: true,
-                removable: true,
-                reorderable: true,
-                selectable: true,
-                undoable: true,
-            }}
-            display={{
-                compoundOperators: true,
-            }}
-            onSelectCallback={this.handleQuerySelection}
-            onSortCallback={this.handleStatementSort}
-            onEditCallback={this.handleQueryChange}
-            onBatchEditCallback={this.handleQueriesChange}
-            onRemoveCallback={this.handleQueriesRemoval}
-            onDuplicateCallback={this.handleQueryDuplication}
-            onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
-            searchData={searchData}
-            externalData={patient}
-          />
-          <br/>
-          <br/>
-          <Tabs key="variant-interpreter-tabs" activeKey={currentTab} onChange={this.handleTabChange}>
-            <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
-              { currentTab === VARIANT_TAB && (<InteractiveTable
-                key="variant-interactive-table"
-                intl={intl}
-                isLoading={showSubloadingAnimation}
-                size={size}
-                page={page}
-                total={total}
-                schema={this.state.columnPreset[VARIANT_TAB]}
-                copyCallback={this.handleCopy}
-                pageChangeCallback={this.handlePageChange}
-                pageSizeChangeCallback={this.handlePageSizeChange}
-                isExportable={false}
-              />) }
-            </Tabs.TabPane>
-            <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
-              { currentTab === GENE_TAB && (<InteractiveTable
-                key="gene-interactive-table"
-                intl={intl}
-                isLoading={showSubloadingAnimation}
-                size={size}
-                page={page}
-                total={total}
-                schema={this.state.columnPreset[GENE_TAB]}
-                pageChangeCallback={this.handlePageChange}
-                pageSizeChangeCallback={this.handlePageSizeChange}
-                copyCallback={this.handleCopy}
-                isExportable={false}
-              />) }
-            </Tabs.TabPane>
-          </Tabs>
-        <Footer />
+
+          <Card className="Content">
+            <VariantNavigation
+                          key="variant-navigation"
+                          className="variant-navigation"
+                          intl={intl}
+                          schema={schema}
+                          patient={patient}
+                          queries={draftQueries}
+                          activeQuery={activeQuery}
+                          data={facets[activeQuery] || {}}
+                          onEditCallback={this.handleQueryChange}
+                          searchData={searchData}
+                          autocomplete={autocomplete}
+                      />
+                      <br />
+                      <br />
+                      <Statement
+                        key="variant-statement"
+                        activeQuery={activeQuery}
+                        data={draftQueries}
+                        draftHistory={draftHistory}
+                        original={originalQueries}
+                        intl={intl}
+                        matches={matches}
+                        facets={facets}
+                        target={patient}
+                        categories={schema.categories}
+                        options={{
+                            copyable: true,
+                            duplicatable: true,
+                            editable: true,
+                            removable: true,
+                            reorderable: true,
+                            selectable: true,
+                            undoable: true,
+                        }}
+                        display={{
+                            compoundOperators: true,
+                        }}
+                        onSelectCallback={this.handleQuerySelection}
+                        onSortCallback={this.handleStatementSort}
+                        onEditCallback={this.handleQueryChange}
+                        onBatchEditCallback={this.handleQueriesChange}
+                        onRemoveCallback={this.handleQueriesRemoval}
+                        onDuplicateCallback={this.handleQueryDuplication}
+                        onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
+                        searchData={searchData}
+                        externalData={patient}
+                      />
+                      <br/>
+                      <br/>
+                      <Tabs key="variant-interpreter-tabs" activeKey={currentTab} onChange={this.handleTabChange}>
+                        <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
+                          { currentTab === VARIANT_TAB && (<InteractiveTable
+                            key="variant-interactive-table"
+                            intl={intl}
+                            isLoading={showSubloadingAnimation}
+                            size={size}
+                            page={page}
+                            total={total}
+                            schema={this.state.columnPreset[VARIANT_TAB]}
+                            copyCallback={this.handleCopy}
+                            pageChangeCallback={this.handlePageChange}
+                            pageSizeChangeCallback={this.handlePageSizeChange}
+                            isExportable={false}
+                          />) }
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
+                          { currentTab === GENE_TAB && (<InteractiveTable
+                            key="gene-interactive-table"
+                            intl={intl}
+                            isLoading={showSubloadingAnimation}
+                            size={size}
+                            page={page}
+                            total={total}
+                            schema={this.state.columnPreset[GENE_TAB]}
+                            pageChangeCallback={this.handlePageChange}
+                            pageSizeChangeCallback={this.handlePageSizeChange}
+                            copyCallback={this.handleCopy}
+                            isExportable={false}
+                          />) }
+                        </Tabs.TabPane>
+                      </Tabs>
+          </Card>
+
+
         </Card>
+        <Footer />
       </Content>
     );
   }

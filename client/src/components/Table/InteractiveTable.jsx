@@ -283,6 +283,7 @@ class InteractiveTable extends React.Component {
               numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
               copyCallback={copyCallback}
+              enableGhostCells
             />
           </Col>
         </Row>

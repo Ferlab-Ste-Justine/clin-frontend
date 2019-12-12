@@ -1,0 +1,22 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1,
+    "workspacePrefix": null
+  },
+  "1 error pnpm": {
+    "message": {
+      "errno": 134,
+      "code": "ELIFECYCLE",
+      "pkgid": "clin-frontend@1.1.15",
+      "stage": "build",
+      "script": "node ./client/scripts/build.js",
+      "pkgname": "clin-frontend"
+    },
+    "err": {
+      "name": "Error",
+      "message": "clin-frontend@1.1.15 build: `node ./client/scripts/build.js`\nExit status 134",
+      "code": "ELIFECYCLE",
+      "stack": "Error: clin-frontend@1.1.15 build: `node ./client/scripts/build.js`\nExit status 134\n    at EventEmitter.proc.on (/usr/lib/node_modules/pnpm/lib/node_modules/@zkochan/npm-lifecycle/index.js:302:16)\n    at EventEmitter.emit (events.js:198:13)\n    at ChildProcess.<anonymous> (/usr/lib/node_modules/pnpm/lib/node_modules/@zkochan/npm-lifecycle/lib/spawn.js:55:14)\n    at ChildProcess.emit (events.js:198:13)\n    at maybeClose (internal/child_process.js:982:16)\n    at Process.ChildProcess._handle.onexit (internal/child_process.js:259:5)"
+    }
+  }
+}
