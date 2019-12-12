@@ -8,7 +8,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { IntlProvider } from 'react-intl-redux';
-import { Spin, Layout, LocaleProvider } from 'antd';
+import { Spin, Layout, ConfigProvider } from 'antd';
 
 import 'antd/dist/antd.less';
 import './style.scss';
@@ -57,7 +57,7 @@ export class App extends React.Component {
     return (
       <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
         <IntlProvider key="locale-intl">
-          <LocaleProvider key="locale-antd" locale={app.locale.antd}>
+          <ConfigProvider key="locale-antd" locale={app.locale.antd}>
             <Layout id="layout" key="layout">
               <ConnectedRouter key="connected-router" history={history}>
                 <Switch key="switch">
@@ -69,7 +69,7 @@ export class App extends React.Component {
                 </Switch>
               </ConnectedRouter>
             </Layout>
-          </LocaleProvider>
+          </ConfigProvider>
         </IntlProvider>
       </Spin>
     );
