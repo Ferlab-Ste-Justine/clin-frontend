@@ -22,7 +22,9 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 
 import Statement from '../../Query/Statement';
-import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement, searchVariants, commitHistory, undo } from '../../../actions/variant';
+import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
+  searchVariants, commitHistory,
+  getStatements, createStatement, updateStatement, deleteStatement, undo } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
@@ -53,6 +55,10 @@ class PatientVariantScreen extends React.Component {
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.handleCopy = this.handleCopy.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
+    this.handleGetStatements = this.handleGetStatements.bind(this);
+    this.handleCreateStatement = this.handleCreateStatement.bind(this);
+    this.handleUpdateStatement = this.handleUpdateStatement.bind(this);
+    this.handleDeleteStatement = this.handleDeleteStatement.bind(this);
     this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
@@ -102,7 +108,15 @@ class PatientVariantScreen extends React.Component {
   componentDidMount() {
     const { variant } = this.props;
     const { activeQuery } = variant;
-    this.handleQuerySelection(activeQuery);
+
+    // @TODO Load Statements using a redux action + saga watch
+    // Load your initial state from clin-proxy-api using this.props.actions.myAction
+
+    this.handleGetStatements();
+
+    // @NOTE - Not sure we need to do this here anymore bcuz of this.handletGetStatements() ?
+    // I think we need to select the default one onstartup - or the last one if there is no default
+    // this.handleQuerySelection(activeQuery);
   }
 
   handleNavigationToPatientScreen(e) {
@@ -213,6 +227,30 @@ class PatientVariantScreen extends React.Component {
     const data = this.getData();
 
     return JSON.stringify(data[row]);
+  }
+
+  handleGetStatements() {
+     const { actions } = this.props;
+
+     actions.getStatements();
+  }
+
+  handleCreateStatement() {
+    const { actions } = this.props;
+
+    actions.createStatement();
+  }
+
+  handleUpdateStatement() {
+    const { actions } = this.props;
+
+    actions.updateStatement();
+  }
+
+  handleDeleteStatement() {
+    const { actions } = this.props;
+
+    actions.deleteStatement();
   }
 
   getData() {
@@ -370,6 +408,10 @@ class PatientVariantScreen extends React.Component {
                         onRemoveCallback={this.handleQueriesRemoval}
                         onDuplicateCallback={this.handleQueryDuplication}
                         onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
+                        onGetStatementsCallback={this.handleGetStatements}
+                        onCreateStatementCallback={this.handleCreateStatement}
+                        onUpdateStatementCallback={this.handleUpdateStatement}
+                        onDeleteStatementCallback={this.handleDeleteStatement}
                         searchData={searchData}
                         externalData={patient}
                       />
@@ -438,6 +480,7 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
+    getStatements, createStatement, updateStatement, deleteStatement
   }, dispatch),
 });
 

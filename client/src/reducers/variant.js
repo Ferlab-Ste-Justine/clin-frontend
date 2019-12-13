@@ -133,6 +133,23 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       const lastVersion = draftHistory.pop();
       draft.draftQueries = lastVersion.draftQueries;
       draft.activeQuery = lastVersion.activeQuery;
+      break;
+
+    case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
+        console.log('+ Variant Reducer @ case PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED')
+        // draft.activeQuery = ?
+        // originalQueries ?
+        // draftQueries ?
+        // draftHistory ?
+        // @TODO Set initial activeQuery
+        break;
+
+    case actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED:
+        console.log('+ Variant Reducer @ case PATIENT_VARIANT_GET_STATEMENTS_FAILED')
+        break;
+
+
+
 
     default:
       break;

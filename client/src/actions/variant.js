@@ -70,3 +70,37 @@ export const commitHistory = version => ({
 export const undo = () => ({
   type: actions.PATIENT_VARIANT_UNDO,
 });
+
+
+export const getStatements = () => ({
+  type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
+});
+
+
+// TODO actions.PATIENT_VARIANT_CREATE_STATEMENT
+export const createStatement = (query, title, description) => ({
+  type: actions.PATIENT_VARIANT_CREATE_STATEMENTS_REQUESTED,
+  payload: {
+    query, title, description,
+  },
+});
+
+// TODO actions.PATIENT_VARIANT_UPDATE_STATEMENT
+export const updateStatement = (uid, query, title, description, isDefault) => ({
+  type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED,
+  payload: {
+    uid, query, title, description, isDefault,
+  },
+});
+
+
+// TODO actions.PATIENT_VARIANT_UPDATE_STATEMENT_MAKE_DEFAULT
+
+
+// TODO actions.PATIENT_VARIANT_DELETE_STATEMENT
+export const deleteStatement = uid => ({
+  type: actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED,
+  payload: {
+    uid,
+  },
+});

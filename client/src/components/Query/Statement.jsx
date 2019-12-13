@@ -77,6 +77,13 @@ class Statement extends React.Component {
     this.handleNewQuery = this.handleNewQuery.bind(this);
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
+    this.getStatements = this.getStatements.bind(this);
+    this.createStatement = this.createStatement.bind(this);
+    this.duplicateStatement = this.duplicateStatement.bind(this);
+    this.updateStatement = this.updateStatement.bind(this);
+    this.setStatementAsDefault = this.setStatementAsDefault.bind(this);
+    this.deleteStatement = this.deleteStatement.bind(this);
+
   }
 
   isCopyable() {
@@ -184,6 +191,29 @@ class Statement extends React.Component {
         this.confirmRemove([key]);
       }
     }
+  }
+
+  getStatements() {
+    this.props.onGetStatementsCallback();
+  }
+
+  createStatement() {
+    this.props.onCreateStatementCallback();
+  }
+
+  duplicateStatement() {
+    this.props.onCreateStatementCallback();
+  }
+
+  updateStatement() {
+    this.props.onUpdateStatementCallback();
+  }
+
+  setStatementAsDefault() {
+    this.props.onUpdateStatementCallback();
+  }
+  deleteStatement() {
+    this.props.onDeleteStatementCallback();
   }
 
   confirmRemove(keys) {
@@ -446,7 +476,6 @@ class Statement extends React.Component {
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
             <div className="sqon-navigation">
-              <div style={{ marginBottom: 16 }}>
                 <Input
                     addonBefore={(
                         <Button
@@ -459,28 +488,33 @@ class Statement extends React.Component {
                           <Button
                               type="default"
                               icon="star"
+                              onClick={this.setStatementAsDefault}
                           />
                           <Button
                               type="default"
                               icon="plus-square"
+                              onClick={this.createStatement}
                           >
                             Nouveau
                           </Button>
                           <Button
                               type="default"
                               icon="save"
+                              onClick={this.updateStatement}
                           >
                             Sauvegarder
                           </Button>
                           <Button
                               type="default"
                               icon="copy"
+                              onClick={this.duplicateStatement}
                           >
                             Dupliquer
                           </Button>
                           <Button
                               type="default"
                               icon="delete"
+                              onClick={this.deleteStatement}
                           >
                             Effacer
                           </Button>
@@ -493,15 +527,13 @@ class Statement extends React.Component {
                           <Button
                               type="default"
                               icon="file-search"
+                              onClick={this.getStatements}
                           />
                         </div>
                     )}
                 />
 
-              </div>
             </div>
-
-
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>
             <Col span={24} align="start">
@@ -574,6 +606,10 @@ Statement.propTypes = {
   onRemoveCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
   onDraftHistoryUndoCallback: PropTypes.func,
+  onGetStatementsCallback: PropTypes.func,
+  onCreateStatementCallback: PropTypes.func,
+  onUpdateStatementCallback: PropTypes.func,
+  onDeleteStatementCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -593,13 +629,18 @@ Statement.defaultProps = {
 
   target: {},
   externalData: {},
+
   onSelectCallback: () => {},
   onEditCallback: () => {},
   onBatchEditCallback: () => {},
   onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},
-  onDraftHistoryUndoCallback: () => {}
+  onDraftHistoryUndoCallback: () => {},
+  onGetStatementsCallback: () => {},
+  onCreateStatementCallback: () => {},
+  onUpdateStatementCallback: () => {},
+  onDeleteStatementCallback: () => {},
 };
 
 export default Statement;
