@@ -1,0 +1,56 @@
+@import './variables.scss';
+
+.tag{
+    height:40px;
+    display:flex;
+    align-items:center;
+
+    .insideTag{
+        height:32px;
+        display:flex;
+        align-items:center;
+        font-family: $font;
+        font-size: $little-font;
+        font-weight: $font-weight-medium;
+        letter-spacing: $small-letter-spacing;
+        color:rgba(35, 55, 80, 0.78);
+
+        &:hover{
+            opacity:1;
+        }
+    }
+
+    .operator{
+        color: rgba(35, 55, 80, 0.38);
+    }
+
+    &:hover{
+        opacity:1;
+    }
+
+    .closingIcon{
+        color: rgba(18, 90, 144, 0.38);
+
+        &:hover{
+            color:#125a90;
+            cursor:pointer;
+        }
+    }
+
+}
+
+
+
+.selectedTag{
+    .insideTag{
+        color:#125a90;
+         &:nth-child(3):hover {
+            text-decoration: underline;
+            cursor:pointer;
+        }
+    }
+
+    .operator{
+        color: rgba(18, 90, 144, 0.38);
+    }
+}

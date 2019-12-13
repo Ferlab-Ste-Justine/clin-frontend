@@ -8,6 +8,12 @@ import {
 import {
   cloneDeep,
 } from 'lodash';
+import IconKit from 'react-icons-kit';
+import {
+  ic_cancel, /* eslint-disable-line */
+} from 'react-icons-kit/md';
+
+import style from '../term.module.scss';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -198,9 +204,24 @@ class Filter extends React.Component {
   render() {
     const { allOptions, size, page } = this.state;
     const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable } = this.props;
-    const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
+    let titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
+    let operandText = ""
     const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
+    let values = []
+    if(data.type === "generic" || data.type === "specific"){
+        values = data.values
+        operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` });
+    }
+    else if(data.type === "numcomparison"){
+        values.push(data.value)
+        operandText = data.comparator;
+    }
+    else if(data.type ==="genericbool"){
+        values = data.values
+        operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.all` });
+    }
+
     const overlay = (
       <Popover
         visible={this.isOpened()}
@@ -274,22 +295,24 @@ class Filter extends React.Component {
         <Tag
           className="filter"
           visible={this.isVisible()}
-          closable={this.isRemovable()}
           onClose={this.handleClose}
-          color={(this.isOpened() || this.isSelected())? 'blue' : ''}
+          color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
           onClick={this.handleSelect}
+          className={(this.isOpened() || this.isSelected())? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
         >
-          <Popover
-            className="legend"
-            trigger="hover"
-            placement="topLeft"
-            content={content}
+          <Tag
+            color={(this.isOpened() || this.isSelected())? '#e2f5fc' : '#E9EFF5 '}
+            className={`${style.insideTag}`}
           >
-            { legend }
-          </Popover>
-          <span onClick={this.toggleMenu}>
-            { label }
-          </span>
+            { titleText }
+          </Tag>
+          <Tag
+            color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
+            className={`${style.insideTag} ${style.operator}`}
+          >
+            {operandText}
+          </Tag>
+
           { this.isEditable() && (
           <Dropdown
             trigger="click"
@@ -298,9 +321,22 @@ class Filter extends React.Component {
             visible={this.isOpened()}
             placement="bottomLeft"
           >
-            <Icon type="caret-down" onClick={this.toggleMenu} />
+            <Tag
+              onClick={this.toggleMenu}
+              color="#FFFFFF"
+              className={`${style.insideTag }`}
+            >
+                  {values.map((label, index) =>
+                  <>
+                  {index !==0 ? ' • '  : null
+                  }
+                  {label}
+                  </>
+                  )}
+            </Tag>
           </Dropdown>
           ) }
+          {this.isSelected()?  <IconKit  className={`${style.closingIcon}`}  onClick={this.handleClose}size={16} icon={ic_cancel} /> : null}
         </Tag>
       </span>
     );
