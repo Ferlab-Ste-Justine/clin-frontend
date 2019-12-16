@@ -112,11 +112,12 @@ class PatientVariantScreen extends React.Component {
     // @TODO Load Statements using a redux action + saga watch
     // Load your initial state from clin-proxy-api using this.props.actions.myAction
 
+    console.log(`+ before handleGetStatements, activeQuery=${JSON.stringify(activeQuery)}`)
     this.handleGetStatements();
-
+    console.log(`+ ## after handleGetStatements, activeQuery=${JSON.stringify(activeQuery)}`)
     // @NOTE - Not sure we need to do this here anymore bcuz of this.handletGetStatements() ?
-    // I think we need to select the default one onstartup - or the last one if there is no default
-    // this.handleQuerySelection(activeQuery);
+    // I think we need to select the default one on startup - or the last one if there is no default
+    //this.handleQuerySelection(activeQuery);
   }
 
   handleNavigationToPatientScreen(e) {
@@ -233,10 +234,13 @@ class PatientVariantScreen extends React.Component {
      const { actions } = this.props;
 
      actions.getStatements();
+
   }
 
   handleCreateStatement() {
     const { actions } = this.props;
+    const { variant } = this.props;
+    console.log(`+ handleCreateStatement in patientVariant with variant=${JSON.stringify(variant)}`)
 
     actions.createStatement();
   }
@@ -267,7 +271,7 @@ class PatientVariantScreen extends React.Component {
   render() {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
-    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery } = variant;
+    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery, currentStatement } = variant;
     const {
       size, page, currentTab,
     } = this.state;
@@ -381,6 +385,7 @@ class PatientVariantScreen extends React.Component {
                       <Statement
                         key="variant-statement"
                         activeQuery={activeQuery}
+                        currentStatement={currentStatement}
                         data={draftQueries}
                         draftHistory={draftHistory}
                         original={originalQueries}

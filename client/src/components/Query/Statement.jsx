@@ -33,7 +33,7 @@ export const convertIndexToColor = index => `#${[
 class Statement extends React.Component {
   constructor(props) {
     super(props);
-    const { data, display, original } = props;
+    const { data, display, original, currentStatement } = props;
     this.state = {
       original: cloneDeep(original),
       checkedQueries: [],
@@ -51,6 +51,7 @@ class Statement extends React.Component {
         undoable: null,
       },
     };
+    console.log(`+ statement constructor - currentStatement=${JSON.stringify(currentStatement)}`);
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
     this.isDuplicatable = this.isDuplicatable.bind(this);
@@ -198,6 +199,7 @@ class Statement extends React.Component {
   }
 
   createStatement() {
+
     this.props.onCreateStatementCallback();
   }
 
@@ -534,6 +536,9 @@ class Statement extends React.Component {
                 />
 
             </div>
+          </Row>
+          <Row>
+            <div><br/></div>
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>
             <Col span={24} align="start">

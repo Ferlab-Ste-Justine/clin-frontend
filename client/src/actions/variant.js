@@ -79,7 +79,7 @@ export const getStatements = () => ({
 
 // TODO actions.PATIENT_VARIANT_CREATE_STATEMENT
 export const createStatement = (query, title, description) => ({
-  type: actions.PATIENT_VARIANT_CREATE_STATEMENTS_REQUESTED,
+  type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
     query, title, description,
   },
