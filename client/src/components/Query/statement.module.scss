@@ -4,18 +4,22 @@
 
   .header {
     margin-bottom: 20px;
-    background-color: #EEEEEE;
 
     .toolbar {
 
     }
-
-
   }
 
   .body {
 
     border: 1px solid red;
+    display: flex;
+
+    .queryContainer {
+      .selector {
+
+      }
+    }
 
     .draggable {
       cursor: grab;
@@ -39,8 +43,6 @@
 
   .footer {
     margin-top: 20px;
-    background-color: #EEEEEE;
-
   }
 
 }

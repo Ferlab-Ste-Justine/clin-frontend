@@ -219,8 +219,12 @@ class Filter extends React.Component {
     }
     else if(data.type ==="genericbool"){
         values = data.values
-        operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.all` });
     }
+    else if(data.type ==="composite"){
+        values.push(data.value)
+        operandText=data.comparator;
+    }
+
 
     const overlay = (
       <Popover
@@ -306,13 +310,16 @@ class Filter extends React.Component {
           >
             { titleText }
           </Tag>
-          <Tag
-            color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
-            className={`${style.insideTag} ${style.operator}`}
-          >
-            {operandText}
-          </Tag>
+          {operandText ?
+              <Tag
+                color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
+                className={`${style.insideTag} ${style.operator}`}
+              >
+                {operandText}
+              </Tag>
 
+            : null
+          }
           { this.isEditable() && (
           <Dropdown
             trigger="click"
