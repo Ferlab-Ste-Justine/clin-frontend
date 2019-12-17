@@ -207,7 +207,7 @@ class Query extends React.Component {
     const { draft, onEditCallback } = this.props;
     if (title !== draft.title) {
       const serialized = this.serialize();
-      newDraft.data.title = title
+      serialized.data.title = title;
       onEditCallback(serialized);
     }
   }

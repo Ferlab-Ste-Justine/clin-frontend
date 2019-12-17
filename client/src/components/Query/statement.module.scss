@@ -81,16 +81,19 @@
       .queryContainer {
         display: flex;
         align-items: flex-start;
-        padding: 5px;
+        border: 1px solid transparent;
+        margin-bottom: 10px;
 
         .querySelector {
           margin-top: 3px;
-          margin-left: 5px;
         }
+
+        padding-left: 5px;
+        padding-right: 5px;
       }
 
       .dirtyContainer {
-
+        border-style: dashed;
       }
 
       .activeContainer {
@@ -102,7 +105,7 @@
       }
 
       .queryContents {
-
+        margin-right: 5px;
       }
 
       .draggable {

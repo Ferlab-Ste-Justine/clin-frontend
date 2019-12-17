@@ -9,9 +9,9 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: -4px;
 
     .title {
-      margin-left: 5px;
       font-family: $font;
       font-size: $little-font;
       font-weight: $font-weight-medium;
@@ -20,7 +20,6 @@
       >span>input {
         border: none;
         background-color: transparent;
-        margin-top: 1px;
       }
     }
 
@@ -45,7 +44,6 @@
     .count {
       display: flex;
       justify-content: flex-end;
-      margin-right: 10px;
       width: 100px;
       >span {
         background-color: $tag-background-color;
@@ -58,16 +56,21 @@
   }
 
   .instructions {
-
     display: flex;
-    margin-left: 10px;
+    flex-wrap: wrap;
+    background-color: #ffffff;
+
+    position: relative;
+    left: -21px;
+    margin-right: -26px;
+    margin-top: 5px;
+    padding-left: 4px;
 
     > * {
-      margin-top: 5px;
+      padding-top: 3px;
+      padding-bottom: 3px;
     }
-
   }
-
 
 }
 
