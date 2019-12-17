@@ -380,7 +380,6 @@ class Query extends React.Component {
           <div className={styleQuery.title}>
             <Input
               size="small"
-              allowClear
               placeholder="Add Title"
               defaultValue={draft.title}
               onBlur={this.handleTitleChange}
@@ -399,7 +398,9 @@ class Query extends React.Component {
               ) }
               */ }
             </div>
-          <div className={styleQuery.count}><span>{results}</span></div>
+          <div className={styleQuery.count}>
+            <span>{results.toLocaleString('en-US').replace(',', ' ')}</span>
+          </div>
         </div>
         <div className={styleQuery.instructions}>
           { draft.instructions.map((item, index) => {

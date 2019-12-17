@@ -86,6 +86,7 @@
 
         .querySelector {
           margin-top: 3px;
+          padding-right: 10px;
         }
 
         padding-top: 2px;
@@ -94,11 +95,11 @@
       }
 
       .dirtyContainer {
-        border: 1px dashed $tag-background-color;
-        border-left: 3px solid $tag-background-color;
       }
 
       .activeContainer {
+        border: 1px dashed $tag-background-color;
+        border-left: 3px solid $tag-background-color;
         background-color: $active-background-color;
       }
 
