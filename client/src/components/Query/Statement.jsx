@@ -14,6 +14,9 @@ import IconKit from 'react-icons-kit';
 import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
+import {
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_unfold_more
+} from 'react-icons-kit/md';
 import Query from './index';
 import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
@@ -445,14 +448,15 @@ class Statement extends React.Component {
       <div className={styleStatement.statement}>
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
-            <div className="sqon-navigation">
-              <div style={{ marginBottom: 16 }}>
+            <div className={styleStatement.navigation}>
+              <div >
                 <Input
                     addonBefore={(
                         <Button
                             type="default"
-                            icon="profile"
-                        />
+                        >
+                            <IconKit size={24} icon={ic_unfold_more} />
+                        </Button>
                     )}
                     addonAfter={(
                         <div>
@@ -460,45 +464,50 @@ class Statement extends React.Component {
                               type="default"
                               icon="star"
                           />
-                          <Button
-                              type="default"
-                              icon="plus-square"
-                          >
-                            Nouveau
-                          </Button>
-                          <Button
-                              type="default"
-                              icon="save"
-                          >
-                            Sauvegarder
-                          </Button>
-                          <Button
-                              type="default"
-                              icon="copy"
-                          >
-                            Dupliquer
-                          </Button>
-                          <Button
-                              type="default"
-                              icon="delete"
-                          >
-                            Effacer
-                          </Button>
-                          <Divider type="vertical" />
-                          <Button
-                              type="default"
-                              icon="share-alt"
-                          />
-                          <Divider type="vertical" />
-                          <Button
-                              type="default"
-                              icon="file-search"
-                          />
                         </div>
                     )}
                 />
-
+                <div>
+                  <Button
+                      type="default"
+                  >
+                    <IconKit size={20} icon={ic_note_add} />
+                    Nouveau
+                  </Button>
+                  <Button
+                      type="default"
+                  >
+                     <IconKit size={20} icon={ic_save} />
+                    Sauvegarder
+                  </Button>
+                  <Button
+                      type="default"
+                  >
+                    <IconKit size={20} icon={ic_content_copy} />
+                    Dupliquer
+                  </Button>
+                  <Button
+                      type="default"
+                  >
+                    <IconKit size={20} icon={ic_delete} />
+                    Effacer
+                  </Button>
+                  <Divider type="vertical" className={styleStatement.divider}/>
+                  <Button
+                      type="default"
+                  >
+                        <IconKit size={20} icon={ic_share} />
+                  </Button>
+                  <Divider type="vertical" className={styleStatement.divider} />
+                  <Button
+                      type="default"
+                  >
+                  <IconKit size={20} icon={ic_folder} />
+                  Mes filtres
+                  </Button>
+                </div>
               </div>
+              <Divider className={styleStatement.dividerHorizontal}/>
             </div>
 
 
