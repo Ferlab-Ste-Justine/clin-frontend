@@ -161,6 +161,8 @@ const en = {
   'screen.patientvariant.filter_transmission.description': 'This is a description',
   'screen.patientvariant.category_metric': 'Metrics',
   'screen.patientvariant.filter_value': 'Value',
+  'screen.patientvariant.statement.new': 'New',
+  'screen.patientvariant.statement.save': 'Save',
   'screen.patientvariant.statement.combine': 'Combine',
   'screen.patientvariant.statement.delete': 'Delete',
   'screen.patientvariant.statement.newQuery': 'New Query',

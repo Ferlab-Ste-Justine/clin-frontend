@@ -385,6 +385,8 @@ class Statement extends React.Component {
       editable, reorderable, removable, undoable,
     } = options;
     const checkedQueriesCount = checkedQueries.length;
+    const newText = intl.formatMessage({ id: 'screen.patientvariant.statement.new' });
+    const saveText = intl.formatMessage({ id: 'screen.patientvariant.statement.save' });
     const combineText = intl.formatMessage({ id: 'screen.patientvariant.statement.combine' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.statement.delete' });
     const newQueryText = intl.formatMessage({ id: 'screen.patientvariant.statement.newQuery' });
@@ -397,6 +399,7 @@ class Statement extends React.Component {
     const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });
     const deleteSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.deleteSelection' });
     const undoToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.undo' });
+    const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const queries = data.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === query.key;
@@ -469,25 +472,25 @@ class Statement extends React.Component {
                       type="default"
                   >
                     <IconKit size={20} icon={ic_note_add} />
-                    Nouveau
+                    {newText}
                   </Button>
                   <Button
                       type="default"
                   >
                      <IconKit size={20} icon={ic_save} />
-                    Sauvegarder
+                    {saveText}
                   </Button>
                   <Button
                       type="default"
                   >
                     <IconKit size={20} icon={ic_content_copy} />
-                    Dupliquer
+                    {duplicateText}
                   </Button>
                   <Button
                       type="default"
                   >
                     <IconKit size={20} icon={ic_delete} />
-                    Effacer
+                    {deleteText}
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider}/>
                   <Button
