@@ -6,7 +6,7 @@ import {
   Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select, Input
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty,
+  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -24,7 +24,7 @@ import {
 import { createOperator } from './Operator';
 
 import styleStatement from './statement.module.scss';
-
+import styleQuery from './query.module.scss';
 
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
@@ -401,13 +401,16 @@ class Statement extends React.Component {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === query.key;
       const initial = find(original, { key: query.key }) || null;
-      const subqueries = isActive ? filter(query.instructions, { type: INSTRUCTION_TYPE_SUBQUERY }) : [];
-      const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
+
+      const classNames = [styleStatement.queryContainer];
+      const isDirty = !isEqual(initial, query);
+      if (isDirty) { classNames.push(styleStatement.dirtyContainer) }
+      if (isActive) { classNames.push(styleStatement.activeContainer) } else { classNames.push(styleStatement.inactiveContainer) }
 
       return [...accumulator, (
-        <div className={styleStatement.queryContainer} key={query.key}>
+        <div className={classNames.join(' ')} key={query.key}>
           <Checkbox
-            className={styleStatement.selector}
+            className={styleStatement.querySelector}
             key={`selector-${query.key}`}
             value={query.key}
             checked={isChecked}
@@ -506,11 +509,10 @@ class Statement extends React.Component {
               </div>
               <Divider className={styleStatement.dividerHorizontal}/>
             </div>
-
-
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>
-            <Col span={24} align="start">
+            <div className={styleStatement.navigation}>
+              <div>
               { editable && (
                 <Tooltip title={combineSelectionToolTip}>
                   <Dropdown
@@ -541,7 +543,8 @@ class Statement extends React.Component {
                   </Dropdown>
                 </Tooltip>
               ) }
-            </Col>
+            </div>
+            </div>
           </Row>
 
         </div>

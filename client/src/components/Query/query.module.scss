@@ -1,5 +1,86 @@
 @import './variables.scss';
 
+.query {
+
+  width: 100%;
+
+  .toolbar {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      margin-left: 5px;
+      font-family: $font;
+      font-size: $little-font;
+      font-weight: $font-weight-medium;
+      letter-spacing: $small-letter-spacing;
+
+      >span>input {
+        border: none;
+        background-color: transparent;
+        margin-top: 1px;
+      }
+    }
+
+    .actions {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
+
+      .editTitle {
+
+      }
+
+      .duplicateQuery {
+
+      }
+
+      .deleteQuery {
+
+      }
+    }
+
+    .count {
+      display: flex;
+      justify-content: flex-end;
+      margin-right: 10px;
+      width: 100px;
+      >span {
+        background-color: $tag-background-color;
+        color: $tag-text-color;
+        border-radius: 2px;
+        padding: 1px 5px;
+      }
+    }
+
+  }
+
+  .instructions {
+
+    display: flex;
+    margin-left: 10px;
+
+    > * {
+      margin-top: 5px;
+    }
+
+  }
+
+
+}
+
+.dirtyQuery {
+}
+
+.activeQuery {
+  background-color: $active-background-color;
+}
+
+.inactiveQuery {
+  background-color: $inactive-background-color;
+}
 
 
 

@@ -19,16 +19,13 @@ import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery'
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
 
-// import './style.scss';
 import styleQuery from './query.module.scss';
-
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
 const QUERY_ACTION_DELETE = 'delete';
 const QUERY_ACTION_DUPLICATE = 'duplicate';
 const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
-const QUERY_ACTION_VIEW_SQON = 'view-sqon';
 const QUERY_ACTION_TITLE = 'title';
 
 export const sanitizeInstructions = (instructions) => {
@@ -111,7 +108,6 @@ class Query extends React.Component {
     this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
-    this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.hasTitle = this.hasTitle.bind(this);
   }
@@ -216,79 +212,6 @@ class Query extends React.Component {
     }
   }
 
-  handleAdvancedChange(e) {
-    const { options, display, draft } = this.props;
-    const { editable } = options;
-    if (editable) {
-      const {value} = e.target;
-      let rawQuery = draft;
-      try {
-        rawQuery = JSON.parse(value);
-        const QuerySchema = Joi.object().keys({
-          title: Joi.string(),
-          instructions: Joi.array().items(Joi.object().keys({
-            type: Joi.string().valid(INSTRUCTION_TYPE_FILTER, INSTRUCTION_TYPE_OPERATOR, INSTRUCTION_TYPE_SUBQUERY).required(),
-            //data: Joi.object()
-
-
-            /*
-            filter: Joi.string().when(
-              'type', {
-                is: INSTRUCTION_TYPE_FILTER,
-                then: Joi.object().keys({
-                  data: Joi.object().keys({
-                    id: Joi.string().required(),
-                    type: Joi.string().valid('generic', 'specific').required(),
-                    operand: Joi.string().valid('all', 'one', 'none').required(),
-                    values: Joi.array().items(Joi.string()).required(),
-                  }).required()
-                })
-              }),
-              */
-
-            /*
-                        operator: Joi.string().when(
-                          'type', {
-                            is: INSTRUCTION_TYPE_OPERATOR,
-                            then: Joi.object().keys({
-                              data: Joi.object().keys({
-                                type: Joi.string().valid(OPERATOR_TYPES).required()
-                              })
-                            })
-                        }),
-            */
-            /*
-            subquery: Joi.string().when(
-              'type', {
-                is: INSTRUCTION_TYPE_SUBQUERY,
-                then: Joi.object().keys({
-                  data: Joi.object().keys({
-                    type: Joi.string().valid('generic', 'specific').required(),
-                  }).required()
-                })
-              }),
-              */
-          }))
-        });
-
-      const validation = Joi.validate(rawQuery, QuerySchema);
-      display.viewableSqonIsValid = !validation.error;
-
-      } catch (e) {
-        display.viewableSqonIsValid = false;
-        console.log(e)
-      }
-
-      this.setState({
-        display,
-      }, () => {
-        if (this.props.onEditCallback) {
-          this.props.onEditCallback(rawQuery);
-        }
-      });
-    }
-  }
-
   json() {
     const { draft } = this.props;
     const sqon = this.sqon()
@@ -327,13 +250,6 @@ class Query extends React.Component {
         const sqon = JSON.stringify(this.sqon());
         copy(sqon);
         this.props.onCopyCallback(sqon);
-        break;
-      case QUERY_ACTION_VIEW_SQON:
-        const updatedDisplayViewSqon = {
-          ...display,
-          viewableSqon: !display.viewableSqon,
-        };
-        this.props.onDisplayCallback({ display: updatedDisplayViewSqon, index});
         break;
       case QUERY_ACTION_COMPOUND_OPERATORS:
         const updatedDisplayCompoundOperators = {
@@ -437,7 +353,7 @@ class Query extends React.Component {
       copyable, duplicatable, removable, undoable,
     } = options;
     const hasMenu = copyable || duplicatable || removable || undoable;
-    const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
+    const { compoundOperators } = display;
     const isDirty = !isEqual(original, draft);
     let operatorsHandler = null;
     if (compoundOperators) {
@@ -455,23 +371,38 @@ class Query extends React.Component {
       }
     }
 
-    const query = draft.instructions ? (
-      <div className={`query${(isDirty ? ' dirty' : '')}`} onClick={this.handleClick}>
-        {this.hasTitle()
-          && (
-          <Input
-            size="small"
-            className="title"
-            allowClear
-            placeholder="Add Title"
-            defaultValue={draft.title}
-            onBlur={this.handleTitleChange}
-            onPressEnter={this.handleTitleChange}
-          />
-          )
-        }
-        <div className="instructions">
-          { !viewableSqon && draft.instructions.map((item, index) => {
+    const classNames = [styleQuery.query];
+    if (isDirty) { classNames.push(styleQuery.dirtyQuery) }
+    if (active) { classNames.push(styleQuery.activeQuery) } else { classNames.push(styleQuery.inactiveQuery) }
+    return (
+      <div className={classNames.join(' ')} onClick={this.handleClick}>
+        <div className={styleQuery.toolbar}>
+          <div className={styleQuery.title}>
+            <Input
+              size="small"
+              allowClear
+              placeholder="Add Title"
+              defaultValue={draft.title}
+              onBlur={this.handleTitleChange}
+              onPressEnter={this.handleTitleChange}
+            />
+          </div>
+          <div className={styleQuery.actions}>
+            ACTIONS
+            { /*
+            <div className="actions">
+              { compoundOperators && ( operatorsHandler ) }
+              { hasMenu && (
+                <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
+                  <Icon type="more" />
+                </Dropdown>
+              ) }
+              */ }
+            </div>
+          <div className={styleQuery.count}><span>{results}</span></div>
+        </div>
+        <div className={styleQuery.instructions}>
+          { draft.instructions.map((item, index) => {
             switch (item.type) {
               case INSTRUCTION_TYPE_OPERATOR:
                 if (compoundOperators) {
@@ -614,26 +545,9 @@ class Query extends React.Component {
                 return null;
             }
           })}
-          { viewableSqon && (
-          <Input.TextArea
-            value={JSON.stringify(this.json())}
-            className={`no-drag${viewableSqonIsValid ? '' : ' invalid'}`}
-            rows={2}
-            onChange={this.handleAdvancedChange}
-          />
-          ) }
-        </div>
-        <div className="actions">
-          { compoundOperators && ( operatorsHandler ) }
-          { hasMenu && (
-          <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
-            <Icon type="more" />
-          </Dropdown>
-          ) }
         </div>
       </div>
-    ) : null;
-    return !!results ? <Badge className={( active ? 'active' : 'inactive' )} count={results} overflowCount={9999}>{query}</Badge> : query
+    );
   }
 }
 
