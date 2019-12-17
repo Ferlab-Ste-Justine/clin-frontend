@@ -405,17 +405,14 @@ class Statement extends React.Component {
       const highlightedQueries = subqueries.reduce((accumulator, subquery) => [...accumulator, subquery.data.query], []);
 
       return [...accumulator, (
-        <div key={query.key}   d>
-          <div
+        <div className={styleStatement.queryContainer} key={query.key}>
+          <Checkbox
             className={styleStatement.selector}
-          >
-            <Checkbox
-              key={`selector-${query.key}`}
-              value={query.key}
-              checked={isChecked}
-              onChange={this.handleCheckQuery}
-            />
-          </div>
+            key={`selector-${query.key}`}
+            value={query.key}
+            checked={isChecked}
+            onChange={this.handleCheckQuery}
+          />
           <Query
             key={query.key}
             original={initial}

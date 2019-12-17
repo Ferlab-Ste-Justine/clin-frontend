@@ -12,6 +12,8 @@ services:
       - "sshvolume:/etc/letsencrypt"
     ports:
       - 443:443
+    deploy:
+      replicas: 2
     networks:
       - proxy
     command: |
