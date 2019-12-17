@@ -28,7 +28,6 @@ function* searchVariantsForPatient(action) {
     const {
       patient, statement, query, group, index, limit,
     } = action.payload;
-    console.log(`+ statement=${JSON.stringify(statement)}`)
     const variantResponse = yield Api.searchVariantsForPatient(patient, statement, query, group, index, limit);
     if (variantResponse.error) {
       throw new ApiError(variantResponse.error);
@@ -87,27 +86,21 @@ function* watchDeleteStatement() {
 
 function* getStatements() {
   try {
-    console.log('+ Variant Saga getStatements Called :D')
     const statementResponse = yield Api.getStatements();
-    console.log(`+ getStatements call return ${JSON.stringify(statementResponse)}`)
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
-    const { activeQuery, draftQueries } = yield select(state => state.variant);
-    const { details } = yield select(state => state.patient);
-    //const query = find(draftQueries, { key: activeQuery });
-    console.log(`+ variant.draftQueries = ${JSON.stringify(draftQueries)}`)
-    yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: draftQueries });
-    //console.log(`+ query = ${JSON.stringify(query)}`)
+    const { draftQueries } = yield select(state => state.variant);
+
+    const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
+    yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: newActiveQueryKey } });
     if (draftQueries) {
+      const { details } = yield select(state => state.patient);
       const payload = {
         patient: details.id,
         statement: draftQueries,
-        query: draftQueries.key,
-        group: 'impact',
-        index: 0,
-        limit: 25,
+        query: newActiveQueryKey,
       };
       yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
     }
@@ -115,28 +108,6 @@ function* getStatements() {
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
   }
-
-
-
-  /*
-  try {
-    const statementResponse = yield Api.getStatements();
-    if (statementResponse.error) {
-      throw new ApiError(statementResponse.error);
-    }
-
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
-
-
-    yield put PATIENT_VARIANT_QUERY_SELECTION -> only sets in ui
-    yield put PATIENT_VARIANT_SEARCH_REQUESTED -> actually does the api call
-
-
-
-  } catch (e) {
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
-  }
-  */
 }
 
 function* createStatement(action) {

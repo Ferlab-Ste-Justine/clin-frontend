@@ -20,7 +20,7 @@ export const initialVariantState = {
   results: {},
   facets: {},
   statements: [],
-  currentStatement: {},
+  activeStatementId: null,
 };
 
 // @TODO
@@ -35,7 +35,7 @@ export const variantShape = {
   results: PropTypes.shape({}),
   facets: PropTypes.shape({}),
   statements: PropTypes.array,
-  currentStatement: PropTypes.shape({}),
+  activeStatementId: PropTypes.String,
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => {
@@ -141,35 +141,24 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
       case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
-        const {payload} = action
-        function isDefault(hit) {
-          return hit._source.isDefault === true;
-        }
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED')
-        console.log(`+ payload.data= ${JSON.stringify(payload)}`)
-        const {total, hits} = payload.data;
-        const qtyStatements = total
-        if (qtyStatements > 0) {
+        const { payload } = action
+        const { total, hits } = payload.data;
+        if (total > 0) {
           draft.statements = hits
-          console.log(`+ ${JSON.stringify(hits.find(isDefault))}`)
-          // draft.currentStatement = hits.find((hit) => hit._source.isDefault === true ? hit._source : {})
-          draft.currentStatement = draft.statements.find((hit) => hit._source.isDefault === true  ? hit._source : {});
-          if (draft.currentStatement) {
-            const query = JSON.parse(draft.currentStatement._source.query)
-            console.log(`+ query=${JSON.stringify(query)}`)
-            draft.originalQueries = query
-            draft.draftQueries = query
-            draft.activeQuery = query.key
-            draft.draftHistory = []
-            //draft.activeQuery = draft.currentStatement._source
+          const defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true  ? hit : {});
+          let activeStatement = null;
+          if (defaultStatement) {
+            activeStatement = defaultStatement
+          } else {
+            activeStatement = draft.statements[0]
           }
-        }
 
-        // draft.activeQuery = ?
-        // originalQueries ?
-        // draftQueries ?
-        // draftHistory ?
-        // @TODO Set initial activeQuery
+            const activeStatementQuery = JSON.parse(activeStatement._source.queries)
+            draft.activeStatementId = activeStatement._id
+            draft.originalQueries = activeStatementQuery
+            draft.draftQueries = activeStatementQuery
+            draft.draftHistory = activeStatementQuery
+          }
         break;
 
       case actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED:

@@ -271,10 +271,13 @@ class PatientVariantScreen extends React.Component {
   render() {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
-    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery, currentStatement } = variant;
+    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery, activeStatementId, statements } = variant;
     const {
       size, page, currentTab,
     } = this.state;
+
+    const activeStatement = statements.find(statement => statement._id === activeStatementId)._source ||  null
+
     const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
     const searchData = [];
     if (schema.categories) {
@@ -385,7 +388,7 @@ class PatientVariantScreen extends React.Component {
                       <Statement
                         key="variant-statement"
                         activeQuery={activeQuery}
-                        currentStatement={currentStatement}
+                        activeStatement={activeStatement}
                         data={draftQueries}
                         draftHistory={draftHistory}
                         original={originalQueries}

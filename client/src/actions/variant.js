@@ -93,10 +93,6 @@ export const updateStatement = (uid, query, title, description, isDefault) => ({
   },
 });
 
-
-// TODO actions.PATIENT_VARIANT_UPDATE_STATEMENT_MAKE_DEFAULT
-
-
 // TODO actions.PATIENT_VARIANT_DELETE_STATEMENT
 export const deleteStatement = uid => ({
   type: actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED,

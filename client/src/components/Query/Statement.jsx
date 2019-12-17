@@ -51,7 +51,6 @@ class Statement extends React.Component {
         undoable: null,
       },
     };
-    console.log(`+ statement constructor - currentStatement=${JSON.stringify(currentStatement)}`);
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
     this.isDuplicatable = this.isDuplicatable.bind(this);
@@ -407,7 +406,7 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory, searchData, target } = this.props;
+    const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory, searchData, target, activeStatement } = this.props;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -472,6 +471,7 @@ class Statement extends React.Component {
     }, []);
     return (
       <div className={styleStatement.statement}>
+        { JSON.stringify(activeStatement) }
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
             <div className="sqon-navigation">
@@ -598,6 +598,7 @@ class Statement extends React.Component {
 Statement.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
+  activeStatement: PropTypes.shape({}),
   externalData: PropTypes.shape({}),
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
