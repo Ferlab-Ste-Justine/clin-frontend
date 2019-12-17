@@ -218,6 +218,8 @@ const fr = {
   'screen.patientvariant.filter_extdb_pubmed': 'pubmed',
   'screen.patientvariant.filter_extdb_pubmed.description': 'pubmed',
   'screen.patientvariant.filter_value': 'Valeur',
+  'screen.patientvariant.statement.new': 'Nouveau',
+  'screen.patientvariant.statement.save': 'Sauvegarder',
   'screen.patientvariant.statement.combine': 'Combiner',
   'screen.patientvariant.statement.delete': 'Supprimer',
   'screen.patientvariant.statement.newQuery': 'Nouvelle requête',
