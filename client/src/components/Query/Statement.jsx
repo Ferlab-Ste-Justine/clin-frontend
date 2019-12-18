@@ -3,8 +3,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select, Input
+  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select, Input, Collapse
 } from 'antd';
+const { Option } = Select;
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty,
 } from 'lodash';
@@ -14,6 +15,9 @@ import IconKit from 'react-icons-kit';
 import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
+import {
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_unfold_more
+} from 'react-icons-kit/md';
 import Query from './index';
 import {
   INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT, createSubquery,
@@ -41,6 +45,8 @@ class Statement extends React.Component {
       queriesAreAllChecked: false,
       display: cloneDeep(data).map(() => ({ ...display })),
       visible: false,
+      expandIconPosition: 'left',
+      statementTitle: '',
       options: {
         copyable: null,
         duplicatable: null,
@@ -83,7 +89,9 @@ class Statement extends React.Component {
     this.updateStatement = this.updateStatement.bind(this);
     this.setStatementAsDefault = this.setStatementAsDefault.bind(this);
     this.deleteStatement = this.deleteStatement.bind(this);
-
+    this.selectStatement = this.selectStatement.bind(this);
+    this.onPositionChange = this.onPositionChange.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   isCopyable() {
@@ -198,8 +206,11 @@ class Statement extends React.Component {
   }
 
   createStatement() {
-
-    this.props.onCreateStatementCallback();
+    const newQuery = {
+      key: uuidv1(),
+      instructions: []
+    };
+    this.props.onCreateStatementCallback(newQuery);
   }
 
   duplicateStatement() {
@@ -207,14 +218,20 @@ class Statement extends React.Component {
   }
 
   updateStatement() {
-    this.props.onUpdateStatementCallback();
+    this.props.onUpdateStatementCallback(this.state.statementTitle, false);
   }
 
   setStatementAsDefault() {
-    this.props.onUpdateStatementCallback();
+    this.props.onUpdateStatementCallback(this.state.statementTitle, true);
   }
   deleteStatement() {
     this.props.onDeleteStatementCallback();
+  }
+
+  selectStatement(value) {
+    console.log(`+ value=${value}`);
+    this.props.onSelectStatementCallback(value);
+
   }
 
   confirmRemove(keys) {
@@ -405,8 +422,27 @@ class Statement extends React.Component {
     return findIndex(data, { key });
   }
 
+  onPositionChange(expandIconPosition) {
+    this.setState({ expandIconPosition });
+  };
+
+  onChange(e) {
+    const { value } = e.target;
+    console.log('+ value='+value);
+    this.setState({statementTitle:value})
+  }
+
+
   render() {
-    const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory, searchData, target, activeStatement } = this.props;
+    const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory,
+      searchData, target, activeStatementId, statements } = this.props;
+    const foundActiveStatement = statements.find(statement => statement._id === activeStatementId)
+    const activeStatement = foundActiveStatement ? foundActiveStatement._source : {}
+    const statementTitle = activeStatement.title ? activeStatement.title : ""
+    const { Panel } = Collapse;
+    const { Option } = Select;
+
+    const { expandIconPosition } = this.state;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -471,71 +507,99 @@ class Statement extends React.Component {
     }, []);
     return (
       <div className={styleStatement.statement}>
-        { JSON.stringify(activeStatement) }
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
-            <div className="sqon-navigation">
+            <div className={styleStatement.navigation}>
+              <div >
                 <Input
+                    id="statementTitle"
+
+                    placeHolder={statementTitle}
+                    onChange={this.onChange}
+
                     addonBefore={(
                         <Button
                             type="default"
-                            icon="profile"
-                        />
+                        >
+                            <IconKit size={24} icon={ic_unfold_more} />
+                        </Button>
                     )}
                     addonAfter={(
                         <div>
                           <Button
                               type="default"
-                              icon="star"
                               onClick={this.setStatementAsDefault}
-                          />
-                          <Button
-                              type="default"
-                              icon="plus-square"
-                              onClick={this.createStatement}
-                          >
-                            Nouveau
+                            >
+                            <Icon
+                                type="star"
+                                theme={activeStatement.isDefault  && activeStatement.isDefault === true ? 'filled' : 'outlined'}
+                            />
+
                           </Button>
-                          <Button
-                              type="default"
-                              icon="save"
-                              onClick={this.updateStatement}
-                          >
-                            Sauvegarder
-                          </Button>
-                          <Button
-                              type="default"
-                              icon="copy"
-                              onClick={this.duplicateStatement}
-                          >
-                            Dupliquer
-                          </Button>
-                          <Button
-                              type="default"
-                              icon="delete"
-                              onClick={this.deleteStatement}
-                          >
-                            Effacer
-                          </Button>
-                          <Divider type="vertical" />
-                          <Button
-                              type="default"
-                              icon="share-alt"
-                          />
-                          <Divider type="vertical" />
-                          <Button
-                              type="default"
-                              icon="file-search"
-                              onClick={this.getStatements}
-                          />
                         </div>
                     )}
                 />
+                <div>
+                  <Button
+                      type="default"
+                      onClick={this.createStatement}
+                  >
+                    <IconKit size={20} icon={ic_note_add} />
+                    Nouveau
+                  </Button>
+                  <Button
+                      type="default"
+                      onClick={this.updateStatement}
+                  >
+                     <IconKit size={20} icon={ic_save} />
+                    Sauvegarder
+                  </Button>
+                  <Button
+                      type="default"
+                  >
+                    <IconKit size={20} icon={ic_content_copy} />
+                    Dupliquer
+                  </Button>
+                  <Button
+                      type="default"
+                      onClick={this.deleteStatement}
+                  >
+                    <IconKit size={20} icon={ic_delete} />
+                    Effacer
+                  </Button>
+                  <Divider type="vertical" className={styleStatement.divider}/>
+                  <Button
+                      type="default"
+                      disabled={false}
+                  >
+                        <IconKit size={20} icon={ic_share} />
+                  </Button>
+                  <Divider type="vertical" className={styleStatement.divider} />
 
+                  <Button
+                      type="default"
+                  >
+                    <IconKit size={20} icon={ic_folder} />
+                  </Button>
+
+                  <Select
+                      placeholder="Mes filtres"
+                      style={{ width: 150 }}
+                      onChange={this.selectStatement}
+                    >
+                    { statements.map(statement => {
+                      return (
+                          <Option value={statement._id}>{statement._source.title}</Option>
+                      );
+                    }) }
+                  </Select>
+
+                </div>
+              </div>
+              <Divider className={styleStatement.dividerHorizontal}/>
             </div>
-          </Row>
-          <Row>
-            <div><br/></div>
+
+
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>
             <Col span={24} align="start">
@@ -598,7 +662,7 @@ class Statement extends React.Component {
 Statement.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
-  activeStatement: PropTypes.shape({}),
+  activeStatementId: PropTypes.string,
   externalData: PropTypes.shape({}),
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
@@ -613,6 +677,7 @@ Statement.propTypes = {
   onCreateStatementCallback: PropTypes.func,
   onUpdateStatementCallback: PropTypes.func,
   onDeleteStatementCallback: PropTypes.func,
+  onSelectStatementCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -644,6 +709,7 @@ Statement.defaultProps = {
   onCreateStatementCallback: () => {},
   onUpdateStatementCallback: () => {},
   onDeleteStatementCallback: () => {},
+  onSelectStatementCallback: () => {},
 };
 
 export default Statement;

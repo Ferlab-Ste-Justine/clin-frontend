@@ -24,7 +24,7 @@ import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
   searchVariants, commitHistory,
-  getStatements, createStatement, updateStatement, deleteStatement, undo } from '../../../actions/variant';
+  getStatements, createStatement, updateStatement, deleteStatement, undo, selectStatement } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
@@ -59,6 +59,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCreateStatement = this.handleCreateStatement.bind(this);
     this.handleUpdateStatement = this.handleUpdateStatement.bind(this);
     this.handleDeleteStatement = this.handleDeleteStatement.bind(this);
+    this.handleSelectStatement = this.handleSelectStatement.bind(this);
     this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
@@ -111,10 +112,7 @@ class PatientVariantScreen extends React.Component {
 
     // @TODO Load Statements using a redux action + saga watch
     // Load your initial state from clin-proxy-api using this.props.actions.myAction
-
-    console.log(`+ before handleGetStatements, activeQuery=${JSON.stringify(activeQuery)}`)
     this.handleGetStatements();
-    console.log(`+ ## after handleGetStatements, activeQuery=${JSON.stringify(activeQuery)}`)
     // @NOTE - Not sure we need to do this here anymore bcuz of this.handletGetStatements() ?
     // I think we need to select the default one on startup - or the last one if there is no default
     //this.handleQuerySelection(activeQuery);
@@ -237,24 +235,31 @@ class PatientVariantScreen extends React.Component {
 
   }
 
-  handleCreateStatement() {
+  handleCreateStatement(newQuery) {
     const { actions } = this.props;
     const { variant } = this.props;
     console.log(`+ handleCreateStatement in patientVariant with variant=${JSON.stringify(variant)}`)
 
-    actions.createStatement();
+    actions.createStatement(newQuery);
   }
 
-  handleUpdateStatement() {
+  handleUpdateStatement(title, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
-
-    actions.updateStatement();
+      console.log(`+ index handleUpdateStatement with actions=${JSON.stringify(actions)} and title=${title}`)
+    actions.updateStatement(title, switchCurrentStatementToDefault);
   }
 
   handleDeleteStatement() {
     const { actions } = this.props;
 
     actions.deleteStatement();
+  }
+
+  handleSelectStatement(value) {
+    const { actions } = this.props;
+    console.log(`+ index handleSelectStatement with actions=${JSON.stringify(actions)} and value=${value}`)
+
+    actions.selectStatement(value);
   }
 
   getData() {
@@ -276,7 +281,6 @@ class PatientVariantScreen extends React.Component {
       size, page, currentTab,
     } = this.state;
 
-    const activeStatement = statements.find(statement => statement._id === activeStatementId)._source ||  null
 
     const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
     const searchData = [];
@@ -388,7 +392,8 @@ class PatientVariantScreen extends React.Component {
                       <Statement
                         key="variant-statement"
                         activeQuery={activeQuery}
-                        activeStatement={activeStatement}
+                        activeStatementId={activeStatementId}
+                        statements={statements}
                         data={draftQueries}
                         draftHistory={draftHistory}
                         original={originalQueries}
@@ -420,6 +425,7 @@ class PatientVariantScreen extends React.Component {
                         onCreateStatementCallback={this.handleCreateStatement}
                         onUpdateStatementCallback={this.handleUpdateStatement}
                         onDeleteStatementCallback={this.handleDeleteStatement}
+                        onSelectStatementCallback={this.handleSelectStatement}
                         searchData={searchData}
                         externalData={patient}
                       />
@@ -488,7 +494,7 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
-    getStatements, createStatement, updateStatement, deleteStatement
+    getStatements, createStatement, updateStatement, deleteStatement, selectStatement,
   }, dispatch),
 });
 

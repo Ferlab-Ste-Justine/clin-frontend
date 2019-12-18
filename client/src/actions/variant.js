@@ -78,7 +78,7 @@ export const getStatements = () => ({
 
 
 // TODO actions.PATIENT_VARIANT_CREATE_STATEMENT
-export const createStatement = (query, title, description) => ({
+export const createStatement = (query, title = '', description = '') => ({
   type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
     query, title, description,
@@ -86,17 +86,22 @@ export const createStatement = (query, title, description) => ({
 });
 
 // TODO actions.PATIENT_VARIANT_UPDATE_STATEMENT
-export const updateStatement = (uid, query, title, description, isDefault) => ({
+export const updateStatement = (title, switchCurrentStatementToDefault) => ({
   type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED,
   payload: {
-    uid, query, title, description, isDefault,
+    title, switchCurrentStatementToDefault,
   },
 });
 
 // TODO actions.PATIENT_VARIANT_DELETE_STATEMENT
-export const deleteStatement = uid => ({
+export const deleteStatement = () => ({
   type: actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED,
+});
+
+// TODO actions.PATIENT_VARIANT_SELECT_STATEMENT
+export const selectStatement = id => ({
+  type: actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED,
   payload: {
-    uid,
+    id,
   },
 });
