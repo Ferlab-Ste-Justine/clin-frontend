@@ -16,14 +16,14 @@ import {
 export const initialPatientState = {
   details: {
     id: null,
-    birthDate: null,
+    birthDate: '',
     gender: null,
     mrn: null,
     ramq: null,
     ethnicity: null,
     proband: null,
-    firstName: null,
-    lastName: null,
+    firstName: '',
+    lastName: '',
   },
   family: {
     id: null,
