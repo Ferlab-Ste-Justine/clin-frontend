@@ -13,12 +13,15 @@
     margin-bottom: -4px;
 
     .title {
-      >input {
+
+      min-width: 150px;
+
+      >span>input {
         font-family: $font;
         font-size: $little-font;
         font-weight: $font-weight-medium;
         letter-spacing: $small-letter-spacing;
-
+        width: 250px;
         border: none;
         background-color: transparent;
 
@@ -26,24 +29,41 @@
           box-shadow: none;
         }
       }
+
+      .iconTitle {
+        height: 21px;
+        color: transparent;
+      }
+
+      &:hover {
+        .iconTitle {
+            color: $tag-active-background-color;
+        }
+      }
+    }
+
+    &:hover {
+      .icon {
+        color: rgba(18, 90, 144, 0.38);
+
+        &:hover {
+          color: $tag-active-background-color;
+        }
+      }
+    }
+
+    .icon {
+      height: 21px;
+      cursor: pointer;
+      color: transparent;
+      display: none;
+      margin-right: 10px;
     }
 
     .actions {
       display: flex;
       width: 100%;
       justify-content: flex-end;
-
-      .editTitle {
-
-      }
-
-      .duplicateQuery {
-
-      }
-
-      .deleteQuery {
-
-      }
     }
 
     .count {
@@ -55,8 +75,6 @@
         font-size: $little-font;
         font-weight: $font-weight-medium;
         letter-spacing: $small-letter-spacing;
-        background-color: $tag-background-color;
-        color: $tag-text-color;
         border-radius: 2px;
         padding: 1px 5px;
       }
@@ -88,13 +106,25 @@
 
 .activeQuery {
   background-color: $active-background-color;
+
+  .count {
+    >span {
+      background-color: $tag-active-background-color;
+      color: $tag-active-text-color;
+    }
+  }
 }
 
 .inactiveQuery {
   background-color: $inactive-background-color;
+
+  .count {
+    >span {
+      background-color: $tag-inactive-background-color;
+      color: $tag-inactive-text-color;
+    }
+  }
 }
-
-
 
 
 

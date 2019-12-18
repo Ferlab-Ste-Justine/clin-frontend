@@ -23,8 +23,8 @@ import {
 } from './Subquery';
 import { createOperator } from './Operator';
 
+import'./statement.scss';
 import styleStatement from './statement.module.scss';
-import styleQuery from './query.module.scss';
 
 export const convertIndexToLetter = index => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index);
 
@@ -390,6 +390,7 @@ class Statement extends React.Component {
     const {
       editable, reorderable, removable, undoable,
     } = options;
+
     const checkedQueriesCount = checkedQueries.length;
     const newText = intl.formatMessage({ id: 'screen.patientvariant.statement.new' });
     const saveText = intl.formatMessage({ id: 'screen.patientvariant.statement.save' });
@@ -414,6 +415,9 @@ class Statement extends React.Component {
       const isDirty = !isEqual(initial, query);
       if (isDirty) { classNames.push(styleStatement.dirtyContainer) }
       if (isActive) { classNames.push(styleStatement.activeContainer) } else { classNames.push(styleStatement.inactiveContainer) }
+      if (!query.title) {
+        query.title = `Requête ${(index+1)}`;
+      }
 
       return [...accumulator, (
         <div className={classNames.join(' ')} key={query.key}>
@@ -565,6 +569,7 @@ class Statement extends React.Component {
                 type="vertical"
                 items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
                 onSort={this.handleReorder}
+                className={styleStatement.draggableContainer}
               />
             ) : queries
           }

@@ -36,7 +36,7 @@ class Filter extends React.Component {
     this.state = {
       dataSet: null,
       visible: null,
-      selected: false,
+      selected: null,
       opened: null,
       allOptions: [],
       size: null,
@@ -59,10 +59,11 @@ class Filter extends React.Component {
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
 
     // @NOTE Initialize Component State
-    const { dataSet, autoOpen, visible, sortData } = props;
+    const { dataSet, autoOpen, autoSelect, visible, sortData } = props;
     this.state.dataSet = dataSet || [];
     this.state.opened = autoOpen;
     this.state.visible = visible;
+    this.state.selected = autoSelect;
     this.state.allOptions = cloneDeep(sortData);
     this.state.page = 1;
     this.state.size = 10;
@@ -297,7 +298,6 @@ class Filter extends React.Component {
     return (
       <span>
         <Tag
-          className="filter"
           visible={this.isVisible()}
           onClose={this.handleClose}
           color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
@@ -382,6 +382,7 @@ Filter.defaultProps = {
   onSelectCallback: () => {},
   label: '',
   autoOpen: false,
+  autoSelect: false,
   overlayOnly: false,
   visible: true,
   sortData:[]

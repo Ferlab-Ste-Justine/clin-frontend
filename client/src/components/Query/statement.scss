@@ -1,0 +1,13 @@
+.draggable {
+  cursor: grab;
+  width: 100%;
+}
+
+.placeholder {
+  opacity: 0.33;
+  margin-bottom: 5px;
+}
+
+.dragged {
+  cursor: grabbing;
+}
