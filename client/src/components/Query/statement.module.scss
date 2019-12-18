@@ -98,8 +98,8 @@
       }
 
       .activeContainer {
-        border: 1px dashed $tag-background-color;
-        border-left: 3px solid $tag-background-color;
+        border: 1px dashed $tag-active-background-color;
+        border-left: 3px solid $tag-active-background-color;
         background-color: $active-background-color;
       }
 
@@ -110,25 +110,6 @@
       .queryContents {
         margin-right: 5px;
       }
-
-      .draggable {
-        cursor: grab;
-      }
-
-      .placeholder {
-        opacity: 0.5;
-      }
-
-      .dragged {
-        cursor: grabbing;
-        width: 100%;
-        filter: invert(0.15);
-
-        > * {
-          transform: scale(0.66);
-        }
-      }
-
 
   }
 

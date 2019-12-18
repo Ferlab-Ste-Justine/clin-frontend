@@ -55,8 +55,6 @@
         font-size: $little-font;
         font-weight: $font-weight-medium;
         letter-spacing: $small-letter-spacing;
-        background-color: $tag-background-color;
-        color: $tag-text-color;
         border-radius: 2px;
         padding: 1px 5px;
       }
@@ -88,13 +86,25 @@
 
 .activeQuery {
   background-color: $active-background-color;
+
+  .count {
+    >span {
+      background-color: $tag-active-background-color;
+      color: $tag-active-text-color;
+    }
+  }
 }
 
 .inactiveQuery {
   background-color: $inactive-background-color;
+
+  .count {
+    >span {
+      background-color: $tag-inactive-background-color;
+      color: $tag-inactive-text-color;
+    }
+  }
 }
-
-
 
 
 

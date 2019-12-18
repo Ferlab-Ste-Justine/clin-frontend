@@ -352,9 +352,11 @@ class Query extends React.Component {
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
+
     const hasMenu = copyable || duplicatable || removable || undoable;
     const { compoundOperators } = display;
     const isDirty = !isEqual(original, draft);
+
     let operatorsHandler = null;
     if (compoundOperators) {
       const operator = find(draft.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
@@ -380,7 +382,6 @@ class Query extends React.Component {
           <div className={styleQuery.title}>
             <Input
               size="small"
-              placeholder="Add Title"
               defaultValue={draft.title}
               onBlur={this.handleTitleChange}
               onPressEnter={this.handleTitleChange}
@@ -437,6 +438,7 @@ class Query extends React.Component {
                         <GenericFilter
                             index={index}
                             options={options}
+                            autoSelect={active}
                             data={item.data}
                             dataSet={facets[item.data.id] || []}
                             config={categoryData.config && categoryData.config[categoryData.id]}
@@ -453,6 +455,7 @@ class Query extends React.Component {
                         <NumericalComparisonFilter
                            index={index}
                            options={options}
+                           autoSelect={active}
                            data={item.data}
                            dataSet={facets[item.data.id] || []}
                            intl={intl}
@@ -481,6 +484,7 @@ class Query extends React.Component {
                        <GenericBooleanFilter
                         index={index}
                         options={options}
+                        autoSelect={active}
                         data={item.data}
                         dataSet={allOption ? allOption : []}
                         intl={intl}
@@ -496,6 +500,7 @@ class Query extends React.Component {
                   <CompositeFilter
                     index={index}
                     options={options}
+                    autoSelect={active}
                     data={item.data}
                     dataSet={facets[item.data.id] || []}
                     intl={intl}
@@ -511,6 +516,7 @@ class Query extends React.Component {
                     <SpecificFilter
                       index={index}
                       options={options}
+                      autoSelect={active}
                       data={item.data}
                       dataSet={facets[item.data.id] || []}
                       externalDataSet={externalData}
