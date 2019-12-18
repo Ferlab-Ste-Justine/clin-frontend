@@ -14,10 +14,14 @@ import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
 import GenericBooleanFilter from './Filter/GenericBoolean'
-import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
-import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
+import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
+import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
 import {convertIndexToColor, convertIndexToLetter} from './Statement';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
+import IconKit from 'react-icons-kit';
+import {
+  ic_edit, ic_delete, ic_filter_none,
+} from 'react-icons-kit/md';
 
 import styleQuery from './query.module.scss';
 
@@ -105,7 +109,6 @@ class Query extends React.Component {
     this.serialize = this.serialize.bind(this);
     this.sqon = this.sqon.bind(this);
     this.json = this.json.bind(this);
-    this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -292,6 +295,7 @@ class Query extends React.Component {
     return draft.title !== undefined;
   }
 
+  /*
   createMenuComponent() {
     const { options, original, intl, display } = this.props;
     const {
@@ -346,6 +350,7 @@ class Query extends React.Component {
       </Menu>
     );
   }
+  */
 
   render() {
     const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
@@ -385,19 +390,13 @@ class Query extends React.Component {
               defaultValue={draft.title}
               onBlur={this.handleTitleChange}
               onPressEnter={this.handleTitleChange}
+              suffix={(copyable && (<IconKit icon={ic_edit} className={styleQuery.iconTitle}/>))}
             />
           </div>
+
           <div className={styleQuery.actions}>
-            ACTIONS
-            { /*
-            <div className="actions">
-              { compoundOperators && ( operatorsHandler ) }
-              { hasMenu && (
-                <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
-                  <Icon type="more" />
-                </Dropdown>
-              ) }
-              */ }
+            {copyable && (<IconKit icon={ic_filter_none} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }) }}/>)}
+            {removable && (<IconKit icon={ic_delete} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }) }}/>)}
             </div>
           <div className={styleQuery.count}>
             <span>{results.toLocaleString('en-US').replace(',', ' ')}</span>
