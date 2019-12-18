@@ -348,7 +348,7 @@ class Query extends React.Component {
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
+    const { active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
@@ -527,6 +527,7 @@ class Query extends React.Component {
 
               case INSTRUCTION_TYPE_SUBQUERY:
                 const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
+                const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null
                 return (
                   <Subquery
                     index={index}
@@ -534,8 +535,7 @@ class Query extends React.Component {
                     data={item.data}
                     intl={intl}
                     queryIndex={queryIndex}
-                    queryColor={active && queryIndex !== null ? convertIndexToColor(queryIndex) : null}
-                    queryTitle={queryIndex !== null ? convertIndexToLetter(queryIndex) : index }
+                    queryTitle={queryTitle}
                     onEditCallback={this.handleSubqueryChange}
                     onRemoveCallback={this.handleSubqueryRemoval}
                     onSelectCallback={onSelectCallback}

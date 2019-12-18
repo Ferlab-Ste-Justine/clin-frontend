@@ -274,5 +274,9 @@
             font-family: $font;
             letter-spacing:$small-letter-spacing;
         }
+
+        &:hover{
+            background:none;
+        }
     }
 }

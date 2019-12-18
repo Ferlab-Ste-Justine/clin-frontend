@@ -80,6 +80,7 @@ class Statement extends React.Component {
     this.handleNewQuery = this.handleNewQuery.bind(this);
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
+    this.findQueryTitle = this.findQueryTitle.bind(this)
   }
 
   isCopyable() {
@@ -377,6 +378,11 @@ class Statement extends React.Component {
     return findIndex(data, { key });
   }
 
+    findQueryTitle(key) {
+      const { data } = this.props;
+      return find(data, { key }).title;
+    }
+
   render() {
     const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory, searchData, target } = this.props;
     if (!data) return null;
@@ -404,7 +410,6 @@ class Statement extends React.Component {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === query.key;
       const initial = find(original, { key: query.key }) || null;
-
       const classNames = [styleStatement.queryContainer];
       const isDirty = !isEqual(initial, query);
       if (isDirty) { classNames.push(styleStatement.dirtyContainer) }
@@ -441,6 +446,7 @@ class Statement extends React.Component {
             onUndoCallback={this.handleUndo}
             onClickCallback={this.handleClick}
             findQueryIndexForKey={this.findQueryIndexForKey}
+            findQueryTitle={this.findQueryTitle}
             searchData={searchData}
             externalData={externalData}
           />
