@@ -298,7 +298,6 @@ class Filter extends React.Component {
     return (
       <span>
         <Tag
-          className="filter"
           visible={this.isVisible()}
           onClose={this.handleClose}
           color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
