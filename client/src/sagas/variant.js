@@ -120,7 +120,7 @@ function* createStatement(action) {
     try {
         // yield api...
         // query, title, description,
-        const queries = action.payload.query
+        const queries = [].push(action.payload.query)
         const title = action.payload.title
         const description = action.payload.description
         const statementResponse = yield Api.createStatement(queries,title,description)

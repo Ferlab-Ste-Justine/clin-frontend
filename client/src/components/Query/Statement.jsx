@@ -211,7 +211,7 @@ class Statement extends React.Component {
       key: uuidv1(),
       instructions: []
     };
-    //this.props.onCreateStatementCallback(newQuery);
+    this.props.onCreateStatementCallback(newQuery);
   }
 
   duplicateStatement() {
