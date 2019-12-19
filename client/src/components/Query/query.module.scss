@@ -10,7 +10,7 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: -4px;
+    margin-bottom: -2px;
 
     .title {
 
@@ -70,6 +70,7 @@
       display: flex;
       justify-content: flex-end;
       width: 120px;
+      margin-right: 3px;
       >span {
         font-family: $font;
         font-size: $little-font;
@@ -86,10 +87,6 @@
     display: flex;
     flex-wrap: wrap;
     background-color: #ffffff;
-
-    position: relative;
-    left: -31px;
-    margin-right: -36px;
     margin-top: 5px;
     padding-left: 4px;
 

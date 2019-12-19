@@ -83,6 +83,7 @@
         align-items: flex-start;
         border: 1px solid transparent;
         margin-bottom: 10px;
+        border-radius: 2px;
 
         .querySelector {
           margin-top: 3px;
@@ -91,14 +92,12 @@
 
         padding-top: 2px;
         padding-left: 5px;
-        padding-right: 5px;
       }
 
       .dirtyContainer {
       }
 
       .activeContainer {
-        border: 1px dashed $tag-active-background-color;
         border-left: 3px solid $tag-active-background-color;
         background-color: $active-background-color;
       }
