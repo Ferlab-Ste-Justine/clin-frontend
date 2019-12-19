@@ -147,18 +147,13 @@ function* updateStatement(action) {
         const title = action.payload.title ? action.payload.title : activeStatement._source.title
         const description = activeStatement._source.description
         const isDefault = action.payload.switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
-        //const newTitle = action.payload.title
-
-
         const statementResponse = yield Api.updateStatement(uid, queries, title, description, isDefault);
+
         if (statementResponse.error) {
             throw new ApiError(statementResponse.error);
         }
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: {} });
-        if (isDefault == true) {
-            yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
-        }
-
+        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
     } catch (e) {
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     }
