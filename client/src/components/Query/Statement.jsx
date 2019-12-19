@@ -521,6 +521,7 @@ class Statement extends React.Component {
         </div>
       )];
     }, []);
+
     return (
       <div className={styleStatement.statement}>
         <div className={styleStatement.header}>
@@ -599,13 +600,14 @@ class Statement extends React.Component {
                   </Button>
 
                   <Select
+                    key="statement-list"
                       placeholder="Mes filtres"
                       style={{ width: 150 }}
                       onChange={this.selectStatement}
                     >
-                    { statements.map(statement => {
+                    { statements.map(statementOptions => {
                       return (
-                          <Option value={statement._id}>{statement._source.title}</Option>
+                          <Option value={statementOptions._id}>{statementOptions._source.title}</Option>
                       );
                     }) }
                   </Select>
