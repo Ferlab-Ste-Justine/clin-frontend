@@ -549,9 +549,8 @@ class Statement extends React.Component {
                             >
                             <Icon
                                 type="star"
-                                theme={activeStatement.isDefault  && activeStatement.isDefault === true ? 'filled' : 'outlined'}
+                                theme={activeStatement.isDefault ? 'filled' : 'outlined'}
                             />
-
                           </Button>
                         </div>
                     )}
@@ -607,7 +606,14 @@ class Statement extends React.Component {
                     >
                     { statements.map(statementOptions => {
                       return (
-                          <Option value={statementOptions._id}>{statementOptions._source.title}</Option>
+                          <Option value={statementOptions._id}>
+                            {statementOptions._source.isDefault && (<Icon
+                              type="star"
+                              theme="filled"
+                              style={{ marginRight: 5 }}
+                            />)}
+                            {statementOptions._source.title}
+                          </Option>
                       );
                     }) }
                   </Select>
