@@ -14,7 +14,7 @@
 
     .title {
 
-      min-width: 150px;
+      min-width: 120px;
 
       >span>input {
         font-family: $font;
@@ -31,29 +31,29 @@
       }
 
       .iconTitle {
-        height: 21px;
+        height: $icon-size;
         color: transparent;
       }
 
       &:hover {
         .iconTitle {
-            color: $tag-active-background-color;
+            color: $icon-color-hover;
         }
       }
     }
 
     &:hover {
       .icon {
-        color: rgba(18, 90, 144, 0.38);
+        color: $icon-color;
 
         &:hover {
-          color: $tag-active-background-color;
+          color: $icon-color-hover;
         }
       }
     }
 
     .icon {
-      height: 21px;
+      height: $icon-size;
       cursor: pointer;
       color: transparent;
       display: none;
@@ -69,7 +69,7 @@
     .count {
       display: flex;
       justify-content: flex-end;
-      width: 100px;
+      width: 120px;
       >span {
         font-family: $font;
         font-size: $little-font;
@@ -125,225 +125,3 @@
     }
   }
 }
-
-
-
-
-/*
-.statement {
-  .draggable {
-    cursor: grab;
-  }
-
-  .placeholder {
-    opacity: 0.5;
-  }
-
-  .dragged {
-    cursor: grabbing;
-    width: 100%;
-    filter: invert(0.15);
-    > * {
-      transform: scale(0.66);
-    }
-  }
-}
-
-.selector {
-  min-width: 30px;
-}
-
-div.action-container {
-  display: flex;
-  align-items: center;
-  margin-left: 7px;
-
-  .ant-badge-count {
-    background-color: #0e5a8a;
-  }
-
-  .actions {
-    display: flex;
-    align-items: center;
-    &.left {
-      button {
-        margin-right: 10px;
-      }
-    }
-    &.right {
-      margin-left: auto;
-      button {
-        margin-left: 10px;
-      }
-    }
-  }
-}
-
-div.query-container {
-  display: flex;
-  margin-top: 1em;
-  padding-right: 2em;
-  width: auto;
-  height: auto;
-
-  .selector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 4px;
-    background-color: #EEEEEE;
-    border: 1px solid #BBBBBB;
-    border-right-color: #DDDDDD;
-    .index {
-      font-size: 14px;
-      font-weight: bold;
-    }
-  }
-
-  .ant-badge {
-    width: 100%;
-    height: auto;
-    .ant-badge-count {
-      background-color: #BBBBBB;
-    }
-  }
-
-  &.selected {
-    .query {
-      background-color: #EEEEEE;
-    }
-  }
-
-  &.active {
-    background-color: transparent;
-    margin-right: 0;
-    .query {
-      background-color: aliceblue;
-      .ant-input {
-        border:1px solid #d9d9d9;
-      }
-    }
-    .selector {
-      background-color: aliceblue;
-    }
-    .ant-badge {
-      margin-right: 0;
-      .ant-badge-count {
-        background-color: #0e5a8a;
-      }
-    }
-  }
-  > * {
-    margin-top: 5px;
-  }
-}
-
-.operator {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #095797;
-  color:white;
-  min-width: 75px;
-  height: 20px;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.ant-tag.filter, .ant-tag.subquery {
-  display: flex;
-  align-items: center;
-  padding: 6px 8px;
-  font-size: inherit;
-  color: #000000;
-  cursor: pointer;
-  .legend {
-    padding-right: 6px;
-  }
-  .anticon-caret-down {
-    padding-left: 4px;
-  }
-}
-
-div.query {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 5px;
-  min-height: 45px;
-  justify-content: space-between;
-  border: 1px solid #AAAAAA;
-  border-left: none;
-  width: 100%;
-
-  &.dirty {
-    border: 1px dashed #AAAAAA;
-    border-left: none;
-  }
-
-  .title {
-    margin-bottom: 2px;
-  }
-
-  .instructions {
-    display: flex;
-    align-items: center;
-    max-width: 85%;
-    width: 100%;
-    flex-wrap: wrap;
-    > * {
-      margin-top: 2px;
-      margin-bottom: 2px;
-    }
-  }
-
-  .actions {
-    display: flex;
-    align-items: center;
-    .anticon-more {
-      cursor: pointer;
-      font-size: 20px;
-    }
-  }
-}
-
-.filterCard{
-
-  .ant-card-body{
-    min-height:46em;
-    display:flex;
-    flex-direction:column;
-  }
-
-  .ant-checkbox-group{
-    display:flex;
-    flex-direction:column
-  }
-
-  .ant-checkbox-group-item{
-    margin-top:5px;
-  }
-
-  .ant-tag{
-    width:auto;
-    padding:2px 5px;
-    font-size:11px;
-    width:55px;
-    text-align:right;
-    float: right
-
-  }
-
-  .ant-checkbox-group-item {
-    margin-right: 0;
-  }
-}
-
-.ant-checkbox-group-item
-.consequence{
-  color:#E88367;
-}
-
-.ant-tooltip{
-  max-width:350px
-}
-*/
