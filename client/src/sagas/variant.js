@@ -3,7 +3,7 @@
 import {
   all, put, takeLatest, select,
 } from 'redux-saga/effects';
-import { find } from 'lodash';
+import { find, cloneDeep } from 'lodash';
 
 
 import * as actions from '../actions/type';
@@ -80,6 +80,10 @@ function* watchUpdateStatement() {
   yield takeLatest(actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED, updateStatement);
 }
 
+function* watchDuplicateStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_REQUESTED, duplicateStatement);
+}
+
 function* watchDeleteStatement() {
   yield takeLatest(actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED, deleteStatement);
 }
@@ -134,36 +138,54 @@ function* createStatement(action) {
 
 function* updateStatement(action) {
     try {
-
-
-         console.log('+ updateStatement with statementKey ' + JSON.stringify(action.payload))
-
-
-
         const statementKey = action.payload.id
         const {draftQueries, statements} = yield select(state => state.variant);
         const activeStatement = statements.find((hit) => hit._id === statementKey);
-
-
         if (!activeStatement) {
           throw new Error('Statement not found');
         }
-
 
         const title = action.payload.title ? action.payload.title : activeStatement._source.title
         const description = activeStatement._source.description
         const isDefault = action.payload.switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
         const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
-
         if (statementResponse.error) {
             throw new ApiError(statementResponse.error);
         }
+
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: {} });
         yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
     } catch (e) {
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     }
 }
+
+
+function* duplicateStatement(action) {
+  try {
+    const statementKey = action.payload.id
+    const { statements} = yield select(state => state.variant);
+    const activeStatement = statements.find((hit) => hit._id === statementKey);
+    if (!activeStatement) {
+      throw new Error('Statement not found');
+    }
+
+    const statementResponse = yield Api.createStatement(
+      activeStatement._source.queries,
+      `${activeStatement._source.title} Copy` ,
+      `${activeStatement._source.description}`
+    );
+    if (statementResponse.error) {
+      throw new ApiError(statementResponse.error);
+    }
+
+    yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: {} });
+    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+  } catch (e) {
+    yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
+  }
+}
+
 
 function* deleteStatement(action) {
     try {
@@ -209,6 +231,7 @@ export default function* watchedVariantSagas() {
     watchGetStatements(),
     watchCreateStatement(),
     watchUpdateStatement(),
+    watchDuplicateStatement(),
     watchDeleteStatement(),
     watchSelectStatement(),
   ]);

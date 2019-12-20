@@ -279,6 +279,8 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab,
     } = this.state;
+
+
     const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
     const searchData = [];
     if (schema.categories) {
