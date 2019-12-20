@@ -37,7 +37,7 @@ export const convertIndexToColor = index => `#${[
 class Statement extends React.Component {
   constructor(props) {
     super(props);
-    const { data, display, original } = props;
+    const { data, display, original, currentStatement } = props;
     this.state = {
       original: cloneDeep(original),
       checkedQueries: [],
@@ -47,6 +47,8 @@ class Statement extends React.Component {
       visible: false,
       expandIconPosition: 'left',
       statementTitle: '',
+      saveTitleModalInputValue: '',
+      saveTitleModalVisible: false,
       options: {
         copyable: null,
         duplicatable: null,
@@ -86,6 +88,7 @@ class Statement extends React.Component {
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.findQueryTitle = this.findQueryTitle.bind(this)
     this.getStatements = this.getStatements.bind(this);
+    this.onModalSaveTitleInputChange = this.onModalSaveTitleInputChange.bind(this);
     this.createStatement = this.createStatement.bind(this);
     this.duplicateStatement = this.duplicateStatement.bind(this);
     this.updateStatement = this.updateStatement.bind(this);
@@ -96,6 +99,8 @@ class Statement extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.onFocus=this.onFocus.bind(this)
     this.onBlur=this.onBlur.bind(this)
+    this.handleCancelModal = this.handleCancelModal(this);
+
   }
 
   isCopyable() {
@@ -208,13 +213,10 @@ class Statement extends React.Component {
   getStatements() {
     this.props.onGetStatementsCallback();
   }
-
   createStatement() {
-    const newStatement = [{
-      key: uuidv1(),
-      instructions: []
-    }];
-    this.props.onCreateStatementCallback(newStatement);
+    this.setState({
+        saveTitleModalVisible: true
+    })
   }
 
   duplicateStatement(e) {
@@ -423,6 +425,14 @@ class Statement extends React.Component {
     });
   }
 
+
+  handleCancelModal() {
+    this.setState({
+      saveTitleModalVisible : false,
+      //saveTitleModalConfirmLoading: false,
+    });
+  };
+
   confirmRemoveChecked() {
     const { checkedQueries } = this.state;
     const { onRemoveCallback } = this.props;
@@ -478,6 +488,10 @@ class Statement extends React.Component {
    this.setState({ selectIsOpen:false });
   }
 
+  onModalSaveTitleInputChange(e) {
+    const { value } = e.target;
+    this.setState({saveTitleModalInputValue:value})
+  }
 
   render() {
     const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory,
@@ -490,7 +504,9 @@ class Statement extends React.Component {
 
     const { expandIconPosition, selectIsOpen } = this.state;
     if (!data) return null;
-    const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
+    const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
+      saveTitleModalVisible, saveTitleModalConfirmLoading,
+    } = this.state;
     const {
       editable, reorderable, removable, duplicatable,
     } = options;
@@ -506,6 +522,14 @@ class Statement extends React.Component {
     const combineAndNot = intl.formatMessage({ id: 'screen.patientvariant.statement.andnot' });
     const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });;
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
+
+    const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.title' });
+    const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
+    const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputLabel' });
+    const modalTitleSaveInputPlaceHolder = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' });
+    const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
+    const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
+
     const queries = data.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === query.key;
@@ -557,12 +581,53 @@ class Statement extends React.Component {
       )];
     }, []);
 
+    // antd Modal have a strange binding with their button
+    // need to declare them here
+    const handleSaveTitleModalCancel = () => {
+      this.setState({
+        saveTitleModalVisible: false
+      })
+    };
+
+    const handleSaveTitleModalOk = () => {
+        const newStatement = {
+            description: this.state.saveTitleModalInputValue,
+            title: this.state.saveTitleModalInputValue,
+            queries : [{
+                key: uuidv1(),
+                instructions: []
+            }]
+        };
+        this.setState({
+            saveTitleModalVisible: false
+        }, this.props.onCreateStatementCallback(newStatement))
+    };
+
     return (
       <div className={styleStatement.statement}>
+        <Modal
+            title={modalTitleSaveTitle}
+            okText={modalTitleSaveOk}
+            cancelText={modalTitleSaveCancel}
+            visible={saveTitleModalVisible}
+            onCancel={handleSaveTitleModalCancel}
+            onOk={handleSaveTitleModalOk}
+            zIndex={99999}
+
+        >
+          <h2>{modalTitleSaveContent}</h2>
+          {modalTitleSaveInputLabel}<br/>
+          <Input
+              placeholder={modalTitleSaveInputPlaceHolder}
+              onChange={this.onModalSaveTitleInputChange}
+
+          />
+
+        </Modal>
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
-              <div >
+              <div>
                 <Input
                     id="statementTitle"
                     placeHolder={statementTitle}

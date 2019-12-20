@@ -142,11 +142,17 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
       case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
         const { payload } = action
-        const { total, hits } = payload.data;
+        const { newKey, response } = payload;
+        const { hits , total } = response.data;
 
         if (total > 0) {
-          draft.statements = hits
-          const defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
+          draft.statements = hits.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
+          let defaultStatement = null;
+          if (newKey) {
+            defaultStatement = draft.statements.find((hit) => hit._id === newKey );
+          } else {
+            defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
+          }
           let activeStatement = null;
           if (defaultStatement) {
             activeStatement = defaultStatement

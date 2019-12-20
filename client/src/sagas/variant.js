@@ -92,13 +92,17 @@ function* watchSelectStatement() {
     yield takeLatest(actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, selectStatement);
 }
 
-function* getStatements() {
+function* getStatements(action) {
   try {
     const statementResponse = yield Api.getStatements();
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
+    const payload = {
+        newKey: action.payload.newKey,
+        response: statementResponse.payload.data,
+    };
+    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload });
     const { draftQueries } = yield select(state => state.variant);
 
     const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
@@ -120,16 +124,16 @@ function* getStatements() {
 
 function* createStatement(action) {
     try {
-        const queries = action.payload.queries
-        const title = action.payload.title
-        const description = action.payload.description
+        const queries = action.payload.newStatement.queries
+        const title = action.payload.newStatement.title
+        const description = action.payload.newStatement.description
         const statementResponse = yield Api.createStatement(queries, title, description)
         if (statementResponse.error) {
             throw new ApiError(statementResponse.error);
         }
 
-        yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: action.payload });
-        yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+        const newKey = statementResponse.payload.data.data.id
+        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { newKey } });
     } catch (e) {
         yield put({type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e});
     }
