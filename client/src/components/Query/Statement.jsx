@@ -56,6 +56,7 @@ class Statement extends React.Component {
         selectable: null,
         undoable: null,
       },
+      selectIsOpen:false,
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -93,6 +94,8 @@ class Statement extends React.Component {
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.onFocus=this.onFocus.bind(this)
+    this.onBlur=this.onBlur.bind(this)
   }
 
   isCopyable() {
@@ -468,6 +471,13 @@ class Statement extends React.Component {
     this.setState({statementTitle:value})
   }
 
+  onFocus() {
+   this.setState({ selectIsOpen:true });
+  }
+  onBlur() {
+   this.setState({ selectIsOpen:false });
+  }
+
 
   render() {
     const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory,
@@ -478,7 +488,7 @@ class Statement extends React.Component {
     const { Panel } = Collapse;
     const { Option } = Select;
 
-    const { expandIconPosition } = this.state;
+    const { expandIconPosition, selectIsOpen } = this.state;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
@@ -571,6 +581,7 @@ class Statement extends React.Component {
                               onClick={this.setStatementAsDefault}
                             >
                             <Icon
+                                className={styleStatement.star}
                                 type="star"
                                 theme={activeStatement.isDefault ? 'filled' : 'outlined'}
                             />
@@ -618,7 +629,7 @@ class Statement extends React.Component {
                   <Button
                       type="default"
                   >
-                    <IconKit size={20} icon={ic_folder} />
+                    <IconKit className={selectIsOpen ? styleStatement.openSelect : null}size={20} icon={ic_folder} />
                   </Button>
 
                   <Select
@@ -626,6 +637,8 @@ class Statement extends React.Component {
                       placeholder="Mes filtres"
                       style={{ width: 250 }}
                       onChange={this.selectStatement}
+                      onFocus={this.onFocus}
+                      onBlur={this.onBlur}
                     >
                     { statements.map(statementOptions => {
                       return (

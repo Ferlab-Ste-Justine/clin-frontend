@@ -42,6 +42,8 @@
         width:168px;
       }
 
+
+
       button{
         border:none;
         box-shadow:none;
@@ -59,15 +61,24 @@
           color: rgba(35, 55, 80, 0.38);
         }
 
+        .openSelect{
+            color:#1d8bc6;
+        }
+
+
         &:after{
           animation: 0s !important;
         }
 
         &:hover{
           color:#1d8bc6;
-          i{
+          i:not(.star){
             color:#1d8bc6;
           }
+
+        .star{
+          color:#f8a335;
+        }
         }
       }
     }
