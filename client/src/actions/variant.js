@@ -72,14 +72,17 @@ export const undo = () => ({
 });
 
 
-export const getStatements = () => ({
+export const getStatements = (newKey = '') => ({
   type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
+  payload: {
+    newKey,
+  },
 });
 
-export const createStatement = (queries, title = '', description = '') => ({
+export const createStatement = newStatement => ({
   type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
-    queries, title, description,
+    newStatement,
   },
 });
 

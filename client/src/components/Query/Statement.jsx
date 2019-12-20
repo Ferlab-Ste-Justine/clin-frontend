@@ -49,7 +49,6 @@ class Statement extends React.Component {
       statementTitle: '',
       saveTitleModalInputValue: '',
       saveTitleModalVisible: false,
-      saveTitleModalConfirmLoading: false,
       options: {
         copyable: null,
         duplicatable: null,
@@ -211,14 +210,10 @@ class Statement extends React.Component {
   getStatements() {
     this.props.onGetStatementsCallback();
   }
-
-
   createStatement() {
-    const newStatement = [{
-      key: uuidv1(),
-      instructions: []
-    }];
-    this.props.onCreateStatementCallback(newStatement);
+    this.setState({
+        saveTitleModalVisible: true
+    })
   }
 
   duplicateStatement(e) {
@@ -429,7 +424,6 @@ class Statement extends React.Component {
 
 
   handleCancelModal() {
-    console.log(`+ cancel=`)
     this.setState({
       saveTitleModalVisible : false,
       //saveTitleModalConfirmLoading: false,
@@ -579,29 +573,25 @@ class Statement extends React.Component {
 
     // antd Modal have a strange binding with their button
     // need to declare them here
-    const handleSaveTitleModalCancel = (event) => {
-
+    const handleSaveTitleModalCancel = () => {
       this.setState({
         saveTitleModalVisible: false
       })
-    }
+    };
 
-    const handleSaveTitleModalOk = (event) => {
-      console.log(`+ saveTitleModalInputValue=${this.state.saveTitleModalInputValue}`)
-      const newStatement = {
-        key: uuidv1(),
-        instructions: []
-      };
-      //this.props.onCreateStatementCallback(newStatement);
-      // popup the savetitledialog and close it
-      this.setState({
-        saveTitleModalVisible : true,
-      });
-      //  this.props.onCreateStatementCallback(newQuery);
-      this.setState({
-        saveTitleModalVisible: false
-      }, this.props.onCreateStatementCallback())
-    }
+    const handleSaveTitleModalOk = () => {
+        const newStatement = {
+            description: this.state.saveTitleModalInputValue,
+            title: this.state.saveTitleModalInputValue,
+            queries : [{
+                key: uuidv1(),
+                instructions: []
+            }]
+        };
+        this.setState({
+            saveTitleModalVisible: false
+        }, this.props.onCreateStatementCallback(newStatement))
+    };
 
     return (
       <div className={styleStatement.statement}>
@@ -618,7 +608,7 @@ class Statement extends React.Component {
           <h2>{modalTitleSaveContent}</h2>
           {modalTitleSaveInputLabel}<br/>
           <Input
-              placeHolder={modalTitleSaveInputPlaceHolder}
+              placeholder={modalTitleSaveInputPlaceHolder}
               onChange={this.onModalSaveTitleInputChange}
 
           />
