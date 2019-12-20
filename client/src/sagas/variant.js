@@ -120,7 +120,7 @@ function* getStatements() {
 
 function* createStatement(action) {
     try {
-        const queries = [].push(action.payload.query)
+        const queries = action.payload.queries
         const title = action.payload.title
         const description = action.payload.description
         const statementResponse = yield Api.createStatement(queries, title, description)
@@ -160,7 +160,6 @@ function* updateStatement(action) {
     }
 }
 
-
 function* duplicateStatement(action) {
   try {
     const statementKey = action.payload.id
@@ -171,7 +170,7 @@ function* duplicateStatement(action) {
     }
 
     const statementResponse = yield Api.createStatement(
-      activeStatement._source.queries,
+      JSON.parse(activeStatement._source.queries) || [],
       `${activeStatement._source.title} Copy` ,
       `${activeStatement._source.description}`
     );
@@ -185,7 +184,6 @@ function* duplicateStatement(action) {
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
   }
 }
-
 
 function* deleteStatement(action) {
     try {
