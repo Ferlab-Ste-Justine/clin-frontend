@@ -243,9 +243,6 @@ class PatientVariantScreen extends React.Component {
 
   handleUpdateStatement(id, title, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
-
-    console.log('+ INDEC>JSX ' + id)
-
     actions.updateStatement(id, title, switchCurrentStatementToDefault);
   }
 
@@ -282,7 +279,6 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab,
     } = this.state;
-
     const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
     const searchData = [];
     if (schema.categories) {

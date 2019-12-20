@@ -37,7 +37,7 @@ export const convertIndexToColor = index => `#${[
 class Statement extends React.Component {
   constructor(props) {
     super(props);
-    const { data, display, original, currentStatement } = props;
+    const { data, display, original } = props;
     this.state = {
       original: cloneDeep(original),
       checkedQueries: [],
@@ -214,7 +214,8 @@ class Statement extends React.Component {
     this.props.onCreateStatementCallback(newStatement);
   }
 
-  duplicateStatement(id = null) {
+  duplicateStatement(e) {
+    let id =  e.target ? e.target.getAttribute('data-id') : null
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -223,21 +224,18 @@ class Statement extends React.Component {
     this.props.onDuplicateStatementCallback(id);
   }
 
-  updateStatement(id = null) {
-    let newid = ''
+  updateStatement(e) {
+    let id =  e.target ? e.target.getAttribute('data-id') : null
     if (!id) {
       const { activeStatementId } = this.props;
-      newid = activeStatementId
-    } else {
-      newid = id
+      id = activeStatementId
     }
 
-    console.log(`+ newid=${newid}`)
-
-    this.props.onUpdateStatementCallback(newid, this.state.statementTitle, false);
+    this.props.onUpdateStatementCallback(id, this.state.statementTitle, false);
   }
 
-  setStatementAsDefault(id = null) {
+  setStatementAsDefault(e) {
+    let id =  e.target ? e.target.getAttribute('data-id') : null
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -246,7 +244,8 @@ class Statement extends React.Component {
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, true);
   }
 
-  deleteStatement(id = null) {
+  deleteStatement(e) {
+    let id =  e.target ? e.target.getAttribute('data-id') : null
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -255,7 +254,8 @@ class Statement extends React.Component {
     this.props.onDeleteStatementCallback(id);
   }
 
-  selectStatement(id = null) {
+  selectStatement(e) {
+    let id =  e.target ? e.target.getAttribute('data-id') : null
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -463,7 +463,6 @@ class Statement extends React.Component {
 
   onChange(e) {
     const { value } = e.target;
-    console.log('+ value='+value);
     this.setState({statementTitle:value})
   }
 
@@ -476,9 +475,6 @@ class Statement extends React.Component {
     const statementTitle = activeStatement.title ? activeStatement.title : ""
     const { Panel } = Collapse;
     const { Option } = Select;
-
-    console.log('+ CACACACA ' + activeStatementId)
-
 
     const { expandIconPosition } = this.state;
     if (!data) return null;
