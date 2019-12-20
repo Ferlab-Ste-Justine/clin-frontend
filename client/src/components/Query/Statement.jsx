@@ -220,7 +220,7 @@ class Statement extends React.Component {
   }
 
   duplicateStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : e
+    let id =  e.target ? e.target.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -231,7 +231,7 @@ class Statement extends React.Component {
   }
 
   updateStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : e
+    let id =  e.target ? e.target.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -241,7 +241,7 @@ class Statement extends React.Component {
   }
 
   setStatementAsDefault(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : e
+    let id =  e.target ? e.target.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -251,7 +251,7 @@ class Statement extends React.Component {
   }
 
   deleteStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : e
+    let id =  e.target ? e.target.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -262,7 +262,7 @@ class Statement extends React.Component {
   }
 
   selectStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : e
+    let id =  e.target ? e.target.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -717,13 +717,13 @@ class Statement extends React.Component {
                             <IconKit size={20}
                               icon={ic_content_copy}
                               style={{ marginLeft: 10 }}
-                              dataId={statementOptions._id}
+                              dataid={statementOptions._id}
                               onClick={this.duplicateStatement}
                             />
                             <IconKit size={20}
                               icon={ic_delete}
                               style={{ marginLeft: 10 }}
-                              dataId={statementOptions._id}
+                              dataid={statementOptions._id}
                               onClick={this.deleteStatement}
                             />
                           </Option>
