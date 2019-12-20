@@ -215,7 +215,7 @@ class Statement extends React.Component {
   }
 
   duplicateStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : null
+    let id =  e.target ? e.target.getAttribute('value') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -225,7 +225,7 @@ class Statement extends React.Component {
   }
 
   updateStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : null
+    let id =  e.target ? e.target.getAttribute('value') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -235,7 +235,7 @@ class Statement extends React.Component {
   }
 
   setStatementAsDefault(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : null
+    let id =  e.target ? e.target.getAttribute('value') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -245,7 +245,7 @@ class Statement extends React.Component {
   }
 
   deleteStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : null
+    let id =  e.target ? e.target.getAttribute('value') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -255,7 +255,7 @@ class Statement extends React.Component {
   }
 
   selectStatement(e) {
-    let id =  e.target ? e.target.getAttribute('data-id') : null
+    let id =  e.target ? e.target.getAttribute('value') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -452,10 +452,10 @@ class Statement extends React.Component {
     return findIndex(data, { key });
   }
 
-    findQueryTitle(key) {
-      const { data } = this.props;
-      return find(data, { key }).title;
-    }
+  findQueryTitle(key) {
+    const { data } = this.props;
+    return find(data, { key }).title;
+  }
 
   onPositionChange(expandIconPosition) {
     this.setState({ expandIconPosition });
@@ -480,7 +480,7 @@ class Statement extends React.Component {
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
     const {
-      editable, reorderable, removable, undoable,
+      editable, reorderable, removable, duplicatable,
     } = options;
 
     const checkedQueriesCount = checkedQueries.length;
@@ -553,10 +553,8 @@ class Statement extends React.Component {
               <div >
                 <Input
                     id="statementTitle"
-
                     placeHolder={statementTitle}
                     onChange={this.onChange}
-
                     addonBefore={(
                         <Button
                             type="default"
@@ -624,18 +622,28 @@ class Statement extends React.Component {
                   <Select
                     key="statement-list"
                       placeholder="Mes filtres"
-                      style={{ width: 150 }}
+                      style={{ width: 250 }}
                       onChange={this.selectStatement}
                     >
                     { statements.map(statementOptions => {
                       return (
                           <Option value={statementOptions._id}>
-                            {statementOptions._source.isDefault && (<Icon
+                            {editable && statementOptions._source.isDefault && (<Icon
                               type="star"
                               theme="filled"
-                              style={{ marginRight: 5 }}
+                              style={{ marginRight: 10 }}
                             />)}
                             {statementOptions._source.title}
+                            {duplicatable && (<Icon
+                              theme="filled"
+                              icon={ic_content_copy}
+                              style={{ marginLeft: 10 }}
+                            />)}
+                            {removable && (<Icon
+                              theme="filled"
+                              icon={ic_delete}
+                              style={{ marginLeft: 10 }}
+                            />)}
                           </Option>
                       );
                     }) }

@@ -123,7 +123,7 @@ function* createStatement(action) {
         const queries = [].push(action.payload.query)
         const title = action.payload.title
         const description = action.payload.description
-        const statementResponse = yield Api.createStatement(queries,title,description)
+        const statementResponse = yield Api.createStatement(queries, title, description)
         if (statementResponse.error) {
             throw new ApiError(statementResponse.error);
         }
