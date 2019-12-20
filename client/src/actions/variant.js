@@ -76,10 +76,10 @@ export const getStatements = () => ({
   type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
 });
 
-export const createStatement = (query, title = '', description = '') => ({
+export const createStatement = (queries, title = '', description = '') => ({
   type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
-    query, title, description,
+    queries, title, description,
   },
 });
 

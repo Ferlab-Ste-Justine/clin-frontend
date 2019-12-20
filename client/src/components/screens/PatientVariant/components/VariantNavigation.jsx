@@ -11,7 +11,7 @@ import {
   Menu, Input, AutoComplete, Icon, Tag,
 } from 'antd';
 
-import GenericFilter from '../../../Query/Filter/Generic';
+import GenericFilter, { FILTER_OPERAND_TYPE_ONE } from '../../../Query/Filter/Generic';
 import SpecificFilter from '../../../Query/Filter/Specific';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
 import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
@@ -139,7 +139,7 @@ class VariantNavigation extends React.Component {
     const { activeFilterId } = this.state;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
-    const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : 'all' )
+    const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : FILTER_OPERAND_TYPE_ONE)
 
     switch (categoryData.type) {
         case FILTER_TYPE_GENERIC:

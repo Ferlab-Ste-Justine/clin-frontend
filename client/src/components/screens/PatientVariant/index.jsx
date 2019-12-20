@@ -24,7 +24,7 @@ import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
   searchVariants, commitHistory,
-  getStatements, createStatement, updateStatement, deleteStatement, undo, selectStatement } from '../../../actions/variant';
+  getStatements, createStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement, } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
@@ -494,7 +494,7 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
-    getStatements, createStatement, updateStatement, deleteStatement, selectStatement,
+    getStatements, createStatement, updateStatement, deleteStatement, selectStatement, duplicateStatement,
   }, dispatch),
 });
 

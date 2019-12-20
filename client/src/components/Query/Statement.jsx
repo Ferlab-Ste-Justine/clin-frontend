@@ -214,30 +214,26 @@ class Statement extends React.Component {
 
 
   createStatement() {
-    const newStatement = {
+    const newStatement = [{
       key: uuidv1(),
       instructions: []
-    };
-    //this.props.onCreateStatementCallback(newStatement);
-    // popup the savetitledialog and close it
-    this.setState({
-      saveTitleModalVisible : true,
-    });
-    //  this.props.onCreateStatementCallback(newQuery);
+    }];
+    this.props.onCreateStatementCallback(newStatement);
   }
 
   duplicateStatement(e) {
-    let id =  e.target ? e.target.getAttribute('value') : e
+    let id =  e.target ? e.target.getAttribute('data-id') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
 
+    if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onDuplicateStatementCallback(id);
   }
 
   updateStatement(e) {
-    let id =  e.target ? e.target.getAttribute('value') : e
+    let id =  e.target ? e.target.getAttribute('data-id') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -247,7 +243,7 @@ class Statement extends React.Component {
   }
 
   setStatementAsDefault(e) {
-    let id =  e.target ? e.target.getAttribute('value') : e
+    let id =  e.target ? e.target.getAttribute('data-id') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -257,17 +253,18 @@ class Statement extends React.Component {
   }
 
   deleteStatement(e) {
-    let id =  e.target ? e.target.getAttribute('value') : e
+    let id =  e.target ? e.target.getAttribute('data-id') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
 
+    if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onDeleteStatementCallback(id);
   }
 
   selectStatement(e) {
-    let id =  e.target ? e.target.getAttribute('value') : e
+    let id =  e.target ? e.target.getAttribute('data-id') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -673,6 +670,7 @@ class Statement extends React.Component {
                   </Button>
                   <Button
                       type="default"
+                      onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
                     {duplicateText}
@@ -692,7 +690,6 @@ class Statement extends React.Component {
                         <IconKit size={20} icon={ic_share} />
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider} />
-
                   <Button
                       type="default"
                   >
@@ -708,22 +705,24 @@ class Statement extends React.Component {
                     { statements.map(statementOptions => {
                       return (
                           <Option value={statementOptions._id}>
-                            {editable && statementOptions._source.isDefault && (<Icon
+                            {statementOptions._source.isDefault && (<Icon
                               type="star"
                               theme="filled"
                               style={{ marginRight: 10 }}
                             />)}
                             {statementOptions._source.title}
-                            {duplicatable && (<Icon
-                              theme="filled"
+                            <IconKit size={20}
                               icon={ic_content_copy}
                               style={{ marginLeft: 10 }}
-                            />)}
-                            {removable && (<Icon
-                              theme="filled"
+                              dataId={statementOptions._id}
+                              onClick={this.duplicateStatement}
+                            />
+                            <IconKit size={20}
                               icon={ic_delete}
                               style={{ marginLeft: 10 }}
-                            />)}
+                              dataId={statementOptions._id}
+                              onClick={this.deleteStatement}
+                            />
                           </Option>
                       );
                     }) }
