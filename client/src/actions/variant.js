@@ -76,8 +76,6 @@ export const getStatements = () => ({
   type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
 });
 
-
-// TODO actions.PATIENT_VARIANT_CREATE_STATEMENT
 export const createStatement = (query, title = '', description = '') => ({
   type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
@@ -85,22 +83,31 @@ export const createStatement = (query, title = '', description = '') => ({
   },
 });
 
-// TODO actions.PATIENT_VARIANT_UPDATE_STATEMENT
-export const updateStatement = (title, switchCurrentStatementToDefault) => ({
+export const updateStatement = (id, title, switchCurrentStatementToDefault) => ({
   type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED,
   payload: {
-    title, switchCurrentStatementToDefault,
+    id,
+    title,
+    switchCurrentStatementToDefault,
   },
 });
 
-// TODO actions.PATIENT_VARIANT_DELETE_STATEMENT
-export const deleteStatement = () => ({
+export const deleteStatement = id => ({
   type: actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED,
+  payload: {
+    id,
+  },
 });
 
-// TODO actions.PATIENT_VARIANT_SELECT_STATEMENT
 export const selectStatement = id => ({
   type: actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED,
+  payload: {
+    id,
+  },
+});
+
+export const duplicateStatement = id => ({
+  type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_REQUESTED,
   payload: {
     id,
   },

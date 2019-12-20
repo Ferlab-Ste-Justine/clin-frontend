@@ -115,11 +115,7 @@ function* getStatements() {
 }
 
 function* createStatement(action) {
-    console.log('+ Variant Saga createStatements Called :D')
-    console.log(`+ action=${JSON.stringify(action)}`)
     try {
-        // yield api...
-        // query, title, description,
         const queries = [].push(action.payload.query)
         const title = action.payload.title
         const description = action.payload.description
@@ -129,7 +125,7 @@ function* createStatement(action) {
         }
 
         yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: action.payload });
-        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+        yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
     } catch (e) {
         yield put({type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e});
     }
@@ -137,17 +133,27 @@ function* createStatement(action) {
 }
 
 function* updateStatement(action) {
-    console.log('+ Variant Saga updateStatement Called :D with action=' + JSON.stringify(action))
     try {
-        const {draftQueries} = yield select(state => state.variant);
-        const {activeStatementId, statements} = yield select(state => state.variant);
-        const activeStatement = statements.find((hit) => hit._id === activeStatementId);
-        const uid = activeStatementId
-        const queries = draftQueries
+
+
+         console.log('+ updateStatement with statementKey ' + JSON.stringify(action.payload))
+
+
+
+        const statementKey = action.payload.id
+        const {draftQueries, statements} = yield select(state => state.variant);
+        const activeStatement = statements.find((hit) => hit._id === statementKey);
+
+
+        if (!activeStatement) {
+          throw new Error('Statement not found');
+        }
+
+
         const title = action.payload.title ? action.payload.title : activeStatement._source.title
         const description = activeStatement._source.description
         const isDefault = action.payload.switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
-        const statementResponse = yield Api.updateStatement(uid, queries, title, description, isDefault);
+        const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
 
         if (statementResponse.error) {
             throw new ApiError(statementResponse.error);
@@ -159,35 +165,24 @@ function* updateStatement(action) {
     }
 }
 
-function* deleteStatement() {
+function* deleteStatement(action) {
     try {
-        console.log('+ Variant Saga deleteStatement Called :D')
-        const {activeStatementId} = yield select(state => state.variant);
-        //const activeStatement = statements.find((hit) => hit._id === activeStatementId);
-        //const uid = activeStatementId
-        console.log('+ Api.deleteStatement'+activeStatementId)
-
-        const statementResponse = yield Api.deleteStatement(activeStatementId);
-        if (statementResponse.error) {
-            throw new ApiError(statementResponse.error);
-        }
-        yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {} });
-        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+      const statementKey = action.payload.id;
+      const statementResponse = yield Api.deleteStatement(statementKey);
+      if (statementResponse.error) {
+          throw new ApiError(statementResponse.error);
+      }
+      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {} });
+      yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
     } catch (e) {
         yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
     }
-
-
 }
 
 function* selectStatement(action) {
     try {
-        console.log('+ Variant Saga selectStatement Called :D with action=' + JSON.stringify(action))
-        //action.id is the new id
-        const newActiveStatementKey = action.payload.id
-        console.log(`+ newActiveQueryKey=${newActiveStatementKey}`)
-        // change active statement
-        yield put({type: actions.PATIENT_VARIANT_STATEMENT_SELECTION, payload: {key: newActiveStatementKey}});
+        const statementKey = action.payload.id
+        yield put({type: actions.PATIENT_VARIANT_STATEMENT_SELECTION, payload: {key: statementKey}});
         const {draftQueries} = yield select(state => state.variant);
         const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
         yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: newActiveQueryKey } });
@@ -204,9 +199,8 @@ function* selectStatement(action) {
     } catch (e) {
         yield put({ type: actions.PATIENT_VARIANT_SELECT_STATEMENT_FAILED, payload: e });
     }
-
-
 }
+
 export default function* watchedVariantSagas() {
   yield all([
     watchVariantSchemaFetch(),

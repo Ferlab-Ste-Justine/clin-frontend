@@ -60,6 +60,7 @@ class PatientVariantScreen extends React.Component {
     this.handleUpdateStatement = this.handleUpdateStatement.bind(this);
     this.handleDeleteStatement = this.handleDeleteStatement.bind(this);
     this.handleSelectStatement = this.handleSelectStatement.bind(this);
+    this.handleDuplicateStatement = this.handleDuplicateStatement.bind(this);
     this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
@@ -235,31 +236,32 @@ class PatientVariantScreen extends React.Component {
 
   }
 
-  handleCreateStatement(newQuery) {
+  handleCreateStatement(statement) {
     const { actions } = this.props;
-    const { variant } = this.props;
-    console.log(`+ handleCreateStatement in patientVariant with variant=${JSON.stringify(variant)}`)
-
-    actions.createStatement(newQuery);
+    actions.createStatement(statement);
   }
 
-  handleUpdateStatement(title, switchCurrentStatementToDefault = false) {
+  handleUpdateStatement(id, title, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
-      console.log(`+ index handleUpdateStatement with actions=${JSON.stringify(actions)} and title=${title}`)
-    actions.updateStatement(title, switchCurrentStatementToDefault);
+
+    console.log('+ INDEC>JSX ' + id)
+
+    actions.updateStatement(id, title, switchCurrentStatementToDefault);
   }
 
-  handleDeleteStatement() {
+  handleDeleteStatement(id) {
     const { actions } = this.props;
-
-    actions.deleteStatement();
+    actions.deleteStatement(id);
   }
 
-  handleSelectStatement(value) {
+  handleDuplicateStatement(id) {
     const { actions } = this.props;
-    console.log(`+ index handleSelectStatement with actions=${JSON.stringify(actions)} and value=${value}`)
+    actions.duplicateStatement(id);
+  }
 
-    actions.selectStatement(value);
+  handleSelectStatement(id) {
+    const { actions } = this.props;
+    actions.selectStatement(id);
   }
 
   getData() {
@@ -280,7 +282,6 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab,
     } = this.state;
-
 
     const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
     const searchData = [];
@@ -426,6 +427,7 @@ class PatientVariantScreen extends React.Component {
                         onUpdateStatementCallback={this.handleUpdateStatement}
                         onDeleteStatementCallback={this.handleDeleteStatement}
                         onSelectStatementCallback={this.handleSelectStatement}
+                        onDuplicateStatementCallback={this.handleDuplicateStatement}
                         searchData={searchData}
                         externalData={patient}
                       />

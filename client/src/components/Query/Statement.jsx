@@ -207,32 +207,61 @@ class Statement extends React.Component {
   }
 
   createStatement() {
-    const newQuery = {
+    const newStatement = {
       key: uuidv1(),
       instructions: []
     };
-    this.props.onCreateStatementCallback(newQuery);
+    this.props.onCreateStatementCallback(newStatement);
   }
 
-  duplicateStatement() {
-    this.props.onCreateStatementCallback();
+  duplicateStatement(id = null) {
+    if (!id) {
+      const { activeStatementId } = this.props;
+      id = activeStatementId
+    }
+
+    this.props.onDuplicateStatementCallback(id);
   }
 
-  updateStatement() {
-    this.props.onUpdateStatementCallback(this.state.statementTitle, false);
+  updateStatement(id = null) {
+    let newid = ''
+    if (!id) {
+      const { activeStatementId } = this.props;
+      newid = activeStatementId
+    } else {
+      newid = id
+    }
+
+    console.log(`+ newid=${newid}`)
+
+    this.props.onUpdateStatementCallback(newid, this.state.statementTitle, false);
   }
 
-  setStatementAsDefault() {
-    this.props.onUpdateStatementCallback(this.state.statementTitle, true);
-  }
-  deleteStatement() {
-    this.props.onDeleteStatementCallback();
+  setStatementAsDefault(id = null) {
+    if (!id) {
+      const { activeStatementId } = this.props;
+      id = activeStatementId
+    }
+
+    this.props.onUpdateStatementCallback(id, this.state.statementTitle, true);
   }
 
-  selectStatement(value) {
-    console.log(`+ value=${value}`);
-    this.props.onSelectStatementCallback(value);
+  deleteStatement(id = null) {
+    if (!id) {
+      const { activeStatementId } = this.props;
+      id = activeStatementId
+    }
 
+    this.props.onDeleteStatementCallback(id);
+  }
+
+  selectStatement(id = null) {
+    if (!id) {
+      const { activeStatementId } = this.props;
+      id = activeStatementId
+    }
+
+    this.props.onSelectStatementCallback(id);
   }
 
   confirmRemove(keys) {
@@ -448,6 +477,9 @@ class Statement extends React.Component {
     const { Panel } = Collapse;
     const { Option } = Select;
 
+    console.log('+ CACACACA ' + activeStatementId)
+
+
     const { expandIconPosition } = this.state;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked } = this.state;
@@ -464,12 +496,7 @@ class Statement extends React.Component {
     const combineAnd = intl.formatMessage({ id: 'screen.patientvariant.statement.and' });
     const combineOr = intl.formatMessage({ id: 'screen.patientvariant.statement.or' });
     const combineAndNot = intl.formatMessage({ id: 'screen.patientvariant.statement.andnot' });
-    const checkToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.check' });
-    const unCheckToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.uncheck' });
-    const allText = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.all' });
-    const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });
-    const deleteSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.deleteSelection' });
-    const undoToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.undo' });
+    const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });;
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const queries = data.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
@@ -703,6 +730,7 @@ Statement.propTypes = {
   onUpdateStatementCallback: PropTypes.func,
   onDeleteStatementCallback: PropTypes.func,
   onSelectStatementCallback: PropTypes.func,
+  onDuplicateStatementCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -735,6 +763,7 @@ Statement.defaultProps = {
   onUpdateStatementCallback: () => {},
   onDeleteStatementCallback: () => {},
   onSelectStatementCallback: () => {},
+  onDuplicateStatementCallback: () => {},
 };
 
 export default Statement;

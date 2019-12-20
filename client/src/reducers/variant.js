@@ -147,15 +147,12 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         if (total > 0) {
           draft.statements = hits
           const defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
-          //const defaultStatement = draft.statements.find(checkDefault)
-          console.log(`+ defaultStatement=${JSON.stringify(defaultStatement)}`)
           let activeStatement = null;
           if (defaultStatement) {
             activeStatement = defaultStatement
           } else {
             activeStatement = draft.statements[0]
           }
-          console.log(`+ activeStatement=${JSON.stringify(activeStatement)}`)
           const activeStatementQuery = JSON.parse(activeStatement._source.queries)
           draft.activeStatementId = activeStatement._id
           draft.originalQueries = activeStatementQuery
@@ -164,93 +161,23 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         }
         break;
 
-      case actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_GET_STATEMENTS_FAILED')
-        break;
-
-
-      case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED')
-        // draft.activeQuery = ?
-        // originalQueries ?
-        // draftQueries ?
-        // draftHistory ?
-        // @TODO Set initial activeQuery
-        break;
-
-      case actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_CREATE_STATEMENTS_FAILED')
-        break;
-
-      case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_UPDATE_STATEMENTS_SUCCEEDED')
-        // draft.activeQuery = ?
-        // originalQueries ?
-        // draftQueries ?
-        // draftHistory ?
-        // @TODO Set initial activeQuery
-        break;
-
-      case actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_UPDATE_STATEMENTS_FAILED')
-        break;
-
-      case actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_DELETE_STATEMENTS_SUCCEEDED')
-        // draft.activeQuery = ?
-        // originalQueries ?
-        // draftQueries ?
-        // draftHistory ?
-        // @TODO Set initial activeQuery
-        break;
-
-      case actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_DELETE_STATEMENTS_FAILED')
-        break;
-
-    case actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED')
-        // draft.activeQuery = ?
-        // originalQueries ?
-        // draftQueries ?
-        // draftHistory ?
-        // @TODO Set initial activeQuery
-        break;
-
-    case actions.PATIENT_VARIANT_SELECT_STATEMENT_FAILED:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_SELECT_STATEMENT_FAILED')
-        break;
-
     case actions.PATIENT_VARIANT_STATEMENT_SELECTION:
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_STATEMENT_SELECTION with action='+JSON.stringify(action))
-        //const statements =
-        //draft.statements = hits
         const activeStatement = state.statements.find((hit) => hit._id === action.payload.key );
-        //const defaultStatement = draft.statements.find(checkDefault)
-        console.log(`+ newSelectedStatement=${JSON.stringify(activeStatement)}`)
         const activeStatementQuery = JSON.parse(activeStatement._source.queries)
         draft.activeStatementId = activeStatement._id
         draft.originalQueries = activeStatementQuery
         draft.draftQueries = activeStatementQuery
         draft.draftHistory = activeStatementQuery
-
         break;
 
-    case actions.PATIENT_VARIANT_STATEMENT_UPDATE:
-        const newTotal = state.statements.length
-        console.log('+ Variant Reducer @ case PATIENT_VARIANT_STATEMENT_UPDATE with action='+JSON.stringify(action))
-        //const statements =
-        //draft.statements = hits
-        const activeStatement2 = state.statements.find((hit) => hit._id === action.payload.key );
-        //const defaultStatement = draft.statements.find(checkDefault)
-        console.log(`+ newSelectedStatement=${JSON.stringify(activeStatement)}`)
-        const activeStatementQuery2 = JSON.parse(activeStatement._source.queries)
-        draft.activeStatementId = activeStatement2._id
-        draft.originalQueries = activeStatementQuery2
-        draft.draftQueries = activeStatementQuery2
-        draft.draftHistory = activeStatementQuery2
-
-        break;
+    case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
+      const newActiveStatement = state.statements.find((hit) => hit._id === action.payload.key );
+      const newActiveStatementQuery = JSON.parse(activeStatement._source.queries)
+      draft.activeStatementId = newActiveStatement._id
+      draft.originalQueries = newActiveStatementQuery
+      draft.draftQueries = newActiveStatementQuery
+      draft.draftHistory = newActiveStatementQuery
+      break;
 
       default:
         break;
