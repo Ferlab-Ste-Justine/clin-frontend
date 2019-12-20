@@ -124,6 +124,13 @@ class Filter extends React.Component {
       const { editor, onEditCallback, data, type, index } = this.props;
       const { id } = data;
       let instruction = { id, type, index };
+
+      this.setState({
+        opened: false,
+      }, () => {
+        onEditCallback(instruction);
+      });
+
       if (type === FILTER_TYPE_GENERIC) {
         instruction.values = editor.props.children[4].props.children.props.children.props.value;
         instruction.operand = editor.props.children[0].props.children.props.children.props.value;
@@ -154,11 +161,7 @@ class Filter extends React.Component {
         }
       }
 
-      this.setState({
-        opened: false,
-      }, () => {
-        onEditCallback(instruction);
-      });
+
    }
   }
 
@@ -203,8 +206,8 @@ class Filter extends React.Component {
   }
 
   render() {
-    const { allOptions, size, page } = this.state;
-    const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable } = this.props;
+    const { allOptions, size, page, selected } = this.state;
+    const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable, autoSelect } = this.props;
     let titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
     let operandText = ""
@@ -300,19 +303,18 @@ class Filter extends React.Component {
         <Tag
           visible={this.isVisible()}
           onClose={this.handleClose}
-          color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
-          onClick={this.handleSelect}
-          className={(this.isOpened() || this.isSelected())? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
+          color={autoSelect? '#b5e6f7' : '#d1deea'}
+          className={autoSelect? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
         >
           <Tag
-            color={(this.isOpened() || this.isSelected())? '#e2f5fc' : '#E9EFF5 '}
+            color={autoSelect? '#e2f5fc' : '#E9EFF5 '}
             className={`${style.insideTag}`}
           >
             { titleText }
           </Tag>
           {operandText ?
               <Tag
-                color={(this.isOpened() || this.isSelected())? '#b5e6f7' : '#d1deea'}
+                color={autoSelect? '#b5e6f7' : '#d1deea'}
                 className={`${style.insideTag} ${style.operator}`}
               >
                 {operandText}
@@ -343,7 +345,7 @@ class Filter extends React.Component {
             </Tag>
           </Dropdown>
           ) }
-          {this.isSelected()?  <IconKit  className={`${style.closingIcon}`}  onClick={this.handleClose}size={16} icon={ic_cancel} /> : null}
+          {autoSelect?  <IconKit  className={`${style.closingIcon}`}  onClick={this.handleClose}size={16} icon={ic_cancel} /> : null}
         </Tag>
       </span>
     );
