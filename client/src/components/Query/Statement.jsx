@@ -505,7 +505,7 @@ class Statement extends React.Component {
     const { expandIconPosition, selectIsOpen } = this.state;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
-      saveTitleModalVisible, saveTitleModalConfirmLoading,
+      saveTitleModalVisible, saveTitleModalConfirmLoading, saveTitleModalInputValue,
     } = this.state;
     const {
       editable, reorderable, removable, duplicatable,
@@ -611,6 +611,7 @@ class Statement extends React.Component {
     if (activeStatementIsEmpty) {
       activeStatementCanBeSaved = false;
     }
+    activeStatementCanBeSaved = data.title !== saveTitleModalInputValue
 
     return (
       <div className={styleStatement.statement}>
