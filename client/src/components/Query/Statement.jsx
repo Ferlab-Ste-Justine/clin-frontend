@@ -673,6 +673,7 @@ class Statement extends React.Component {
                   </Button>
                   <Button
                       type="default"
+                      disabled={true}
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
@@ -688,7 +689,7 @@ class Statement extends React.Component {
                   <Divider type="vertical" className={styleStatement.divider}/>
                   <Button
                       type="default"
-                      disabled={false}
+                      disabled={true}
                   >
                         <IconKit size={20} icon={ic_share} />
                   </Button>
