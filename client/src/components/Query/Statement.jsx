@@ -527,6 +527,8 @@ class Statement extends React.Component {
     const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
     const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputLabel' });
     const modalTitleSaveInputPlaceHolder = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' });
+    const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' });
+
     const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
 
@@ -620,7 +622,7 @@ class Statement extends React.Component {
           <Input
               placeholder={modalTitleSaveInputPlaceHolder}
               onChange={this.onModalSaveTitleInputChange}
-
+              defaultValue={modalTitleSaveInputDefault}
           />
 
         </Modal>
@@ -671,6 +673,7 @@ class Statement extends React.Component {
                   </Button>
                   <Button
                       type="default"
+                      disabled={true}
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
@@ -686,7 +689,7 @@ class Statement extends React.Component {
                   <Divider type="vertical" className={styleStatement.divider}/>
                   <Button
                       type="default"
-                      disabled={false}
+                      disabled={true}
                   >
                         <IconKit size={20} icon={ic_share} />
                   </Button>
