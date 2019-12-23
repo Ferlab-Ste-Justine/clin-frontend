@@ -7,7 +7,7 @@ import {
 } from 'antd';
 const { Option } = Select;
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual,
+  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -497,7 +497,7 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { activeQuery, data, externalData, options, intl, facets, matches, categories, draftHistory,
+    const { activeQuery, data, externalData, options, intl, facets, matches, categories,
       searchData, target, activeStatementId, statements } = this.props;
     const foundActiveStatement = statements.find(statement => statement._id === activeStatementId)
     const activeStatement = foundActiveStatement ? foundActiveStatement._source : {}
@@ -531,17 +531,18 @@ class Statement extends React.Component {
     const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputLabel' });
     const modalTitleSaveInputPlaceHolder = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' });
     const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' });
-
     const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
 
+    let activeStatementCanBeSaved = false;
     const queries = data.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === query.key;
       const initial = find(original, { key: query.key }) || null;
       const classNames = [styleStatement.queryContainer];
       const isDirty = !isEqual(initial, query);
-      if (isDirty) { classNames.push(styleStatement.dirtyContainer) }
+
+      if (isDirty) { classNames.push(styleStatement.dirtyContainer); activeStatementCanBeSaved = true; }
       if (isActive) { classNames.push(styleStatement.activeContainer) } else { classNames.push(styleStatement.inactiveContainer) }
       if (!query.title) {
         query.title = `Requête ${(index+1)}`;
@@ -608,6 +609,12 @@ class Statement extends React.Component {
         }, this.props.onCreateStatementCallback(newStatement))
     };
 
+    const activeStatementIsEmpty = every(data, (datum) => { return datum.instructions.length === 0 } )
+    const activeStatementCanBeDeleted = !data.lastUpdatedOn;
+    if (activeStatementIsEmpty) {
+      activeStatementCanBeSaved = false;
+    }
+
     return (
       <div className={styleStatement.statement}>
         <Modal
@@ -663,6 +670,7 @@ class Statement extends React.Component {
                 <div>
                   <Button
                       type="default"
+                      disabled={activeStatementIsEmpty}
                       onClick={this.createStatement}
                   >
                     <IconKit size={20} icon={ic_note_add} />
@@ -670,14 +678,15 @@ class Statement extends React.Component {
                   </Button>
                   <Button
                       type="default"
+                      disabled={!activeStatementCanBeSaved}
                       onClick={this.updateStatement}
                   >
                      <IconKit size={20} icon={ic_save} />
                     {saveText}
                   </Button>
                   <Button
-                      type="default"
-                      disabled={true}
+                      type="disabled"
+                      disabled={true} // @TODO
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
@@ -685,6 +694,7 @@ class Statement extends React.Component {
                   </Button>
                   <Button
                       type="default"
+                      disabled={!activeStatementCanBeDeleted}
                       onClick={this.deleteStatement}
                   >
                     <IconKit size={20} icon={ic_delete} />
@@ -692,8 +702,8 @@ class Statement extends React.Component {
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider}/>
                   <Button
-                      type="default"
-                      disabled={true}
+                    type="disabled"
+                    disabled={true} // @TODO
                   >
                         <IconKit size={20} icon={ic_share} />
                   </Button>
