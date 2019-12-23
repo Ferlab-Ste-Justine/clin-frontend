@@ -263,12 +263,19 @@ class Statement extends React.Component {
   }
 
   selectStatement(e) {
-    let id =  e.target ? e.target.getAttribute('dataid') : e
+
+    console.log('+ ICICCC ?')
+
+
+    let  id = e.target ? e.target.getAttribute('dataid') : e
+
+    console.log(`+ id1=${id}`)
+
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
-
+    console.log(`+ id2=${id}`)
     this.props.onSelectStatementCallback(id);
   }
 
@@ -619,6 +626,10 @@ class Statement extends React.Component {
       activeStatementCanBeSaved = false;
     }
 
+    const contextSelectStatement = ({ key }) => {
+      this.selectStatement(key)
+    }
+
     return (
       <div className={styleStatement.statement}>
         <Modal
@@ -755,9 +766,9 @@ class Statement extends React.Component {
                       trigger={['click']}
                       placement={'bottomLeft'}
                       style={{ width: 250 }}
-                      disabled={!(statements && statements.length > 0)}
+                      //disabled={!(statements && statements.length > 0)}
                       overlay={ (statements && statements.length > 0 ? (
-                        <Menu>
+                        <Menu onClick={contextSelectStatement}>
                           {
                             statements.map(statementOptions => (
                                 <Menu.Item key={statementOptions._id}>
@@ -771,15 +782,14 @@ class Statement extends React.Component {
                                            icon={ic_content_copy}
                                            style={{ marginLeft: 10 }}
                                            dataid={statementOptions._id}
-                                           onClick={this.duplicateStatement}
+                                           //onClick={this.duplicateStatement}
                                   />
                                   <IconKit size={20}
                                            icon={ic_delete}
                                            style={{ marginLeft: 10 }}
                                            dataid={statementOptions._id}
-                                           onClick={this.deleteStatement}
+                                           //onClick={this.deleteStatement}
                                   />
-
                                 </Menu.Item>))
                           }
                           </Menu>) : (
