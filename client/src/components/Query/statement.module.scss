@@ -75,10 +75,19 @@
           i:not(.star){
             color:#1d8bc6;
           }
-
         .star{
           color:#f8a335;
         }
+
+
+          &:disabled {
+            color: rgba(35, 55, 80, 0.78);
+            i{
+              color: rgba(35, 55, 80, 0.78);
+            }
+          }
+
+
         }
       }
     }
