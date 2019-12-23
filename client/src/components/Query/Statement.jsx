@@ -479,6 +479,9 @@ class Statement extends React.Component {
   onChange(e) {
     const { value } = e.target;
     this.setState({statementTitle:value})
+    console.log(value)
+    const length =value.length -( value.length *0.2)
+    e.target.style.width = length + "ch";
   }
 
   onFocus() {
@@ -502,7 +505,7 @@ class Statement extends React.Component {
     const { Panel } = Collapse;
     const { Option } = Select;
 
-    const { expandIconPosition, selectIsOpen } = this.state;
+    const { expandIconPosition, selectIsOpen, titleWidth } = this.state;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
       saveTitleModalVisible, saveTitleModalConfirmLoading,
@@ -634,6 +637,7 @@ class Statement extends React.Component {
                     id="statementTitle"
                     placeHolder={statementTitle}
                     onChange={this.onChange}
+                    autocomplete="off"
                     addonBefore={(
                         <Button
                             type="default"

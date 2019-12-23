@@ -39,7 +39,21 @@
       }
 
       input{
-        width:168px;
+        width:75px;
+        border:none;
+        background-color:white !important;
+        padding:0 !important;
+        min-width: 75px;
+
+        color: rgb(35, 55, 80);
+        font-family: $font;
+        font-size: $small-font;
+        font-weight: $font-weight-medium;
+        letter-spacing: 0.1px;
+        line-height: 24px;
+        &:focus{
+            box-shadow:none;
+        }
       }
 
 
