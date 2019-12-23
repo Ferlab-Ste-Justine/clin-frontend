@@ -527,6 +527,8 @@ class Statement extends React.Component {
     const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
     const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputLabel' });
     const modalTitleSaveInputPlaceHolder = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' });
+    const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' });
+
     const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
 
@@ -620,7 +622,7 @@ class Statement extends React.Component {
           <Input
               placeholder={modalTitleSaveInputPlaceHolder}
               onChange={this.onModalSaveTitleInputChange}
-
+              defaultValue={modalTitleSaveInputDefault}
           />
 
         </Modal>
