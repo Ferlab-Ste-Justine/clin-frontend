@@ -223,6 +223,7 @@ const fr = {
   'screen.patientvariant.statement.combine': 'Combiner',
   'screen.patientvariant.statement.delete': 'Supprimer',
   'screen.patientvariant.statement.newQuery': 'Nouvelle requête',
+  'screen.patientvariant.statement.myFilter': 'Mes filtres',
   'screen.patientvariant.statement.tooltip.check': 'Cocher',
   'screen.patientvariant.statement.tooltip.uncheck': 'Décocher',
   'screen.patientvariant.statement.tooltip.all': 'Tout',

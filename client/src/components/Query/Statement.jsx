@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select, Input, Collapse
+  Menu, Button, Checkbox, Tooltip, Badge, Dropdown, Icon, Modal, Row, Col, Divider, Select, Input, Collapse, message,
 } from 'antd';
 const { Option } = Select;
 import {
@@ -99,7 +99,8 @@ class Statement extends React.Component {
     this.onChange = this.onChange.bind(this);
     this.onFocus=this.onFocus.bind(this)
     this.onBlur=this.onBlur.bind(this)
-    this.handleCancelModal = this.handleCancelModal(this);
+    this.handleCancelModal = this.handleCancelModal.bind(this);
+    this.mySuperFunction = this.mySuperFunction.bind(this);
 
   }
 
@@ -493,6 +494,11 @@ class Statement extends React.Component {
     this.setState({saveTitleModalInputValue:value})
   }
 
+  mySuperFunction(e) {
+    console.log(`+ superfuction called`);
+  }
+
+
   render() {
     const { activeQuery, data, externalData, options, intl, facets, matches, categories,
       searchData, target, activeStatementId, statements } = this.props;
@@ -517,6 +523,7 @@ class Statement extends React.Component {
     const combineText = intl.formatMessage({ id: 'screen.patientvariant.statement.combine' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.statement.delete' });
     const newQueryText = intl.formatMessage({ id: 'screen.patientvariant.statement.newQuery' });
+    const myFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.myFilter' });
     const combineAnd = intl.formatMessage({ id: 'screen.patientvariant.statement.and' });
     const combineOr = intl.formatMessage({ id: 'screen.patientvariant.statement.or' });
     const combineAndNot = intl.formatMessage({ id: 'screen.patientvariant.statement.andnot' });
@@ -704,45 +711,83 @@ class Statement extends React.Component {
                         <IconKit size={20} icon={ic_share} />
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider} />
-                  <Button
-                      type="default"
-                  >
-                    <IconKit className={selectIsOpen ? styleStatement.openSelect : null}size={20} icon={ic_folder} />
-                  </Button>
+                  {/*<Button*/}
+                  {/*    type="default"*/}
+                  {/*>*/}
+                  {/*  <IconKit className={selectIsOpen ? styleStatement.openSelect : null}size={20}  />*/}
+                  {/*</Button>*/}
 
-                  <Select
-                    key="statement-list"
-                      placeholder="Mes filtres"
+                  {/*<Select*/}
+                  {/*  key="statement-list"*/}
+                  {/*    placeholder="Mes filtres"*/}
+                  {/*    style={{ width: 250 }}*/}
+                  {/*    onChange={this.selectStatement}*/}
+                  {/*    onFocus={this.onFocus}*/}
+                  {/*    onBlur={this.onBlur}*/}
+                  {/*  >*/}
+                  {/*  { statements.map(statementOptions => {*/}
+                  {/*    return (*/}
+                  {/*        <Option value={statementOptions._id}>*/}
+                  {/*          {statementOptions._source.isDefault && (<Icon*/}
+                  {/*            type="star"*/}
+                  {/*            theme="filled"*/}
+                  {/*            style={{ marginRight: 10 }}*/}
+                  {/*          />)}*/}
+                  {/*          {statementOptions._source.title}*/}
+                  {/*          <IconKit size={20}*/}
+                  {/*            icon={ic_content_copy}*/}
+                  {/*            style={{ marginLeft: 10 }}*/}
+                  {/*            dataid={statementOptions._id}*/}
+                  {/*            onClick={this.duplicateStatement}*/}
+                  {/*          />*/}
+                  {/*          <IconKit size={20}*/}
+                  {/*            icon={ic_delete}*/}
+                  {/*            style={{ marginLeft: 10 }}*/}
+                  {/*            dataid={statementOptions._id}*/}
+                  {/*            onClick={this.deleteStatement}*/}
+                  {/*          />*/}
+                  {/*        </Option>*/}
+                  {/*    );*/}
+                  {/*  }) }*/}
+                  {/*</Select>*/}
+                  <Dropdown.Button
+                      icon={(<><IconKit className={selectIsOpen ? styleStatement.openSelect : null} icon={ic_folder} size={20}/>{myFilterText}</>)}
+                      trigger={['click']}
+                      placement={'bottomLeft'}
                       style={{ width: 250 }}
-                      onChange={this.selectStatement}
-                      onFocus={this.onFocus}
-                      onBlur={this.onBlur}
-                    >
-                    { statements.map(statementOptions => {
-                      return (
-                          <Option value={statementOptions._id}>
-                            {statementOptions._source.isDefault && (<Icon
-                              type="star"
-                              theme="filled"
-                              style={{ marginRight: 10 }}
-                            />)}
-                            {statementOptions._source.title}
-                            <IconKit size={20}
-                              icon={ic_content_copy}
-                              style={{ marginLeft: 10 }}
-                              dataid={statementOptions._id}
-                              onClick={this.duplicateStatement}
-                            />
-                            <IconKit size={20}
-                              icon={ic_delete}
-                              style={{ marginLeft: 10 }}
-                              dataid={statementOptions._id}
-                              onClick={this.deleteStatement}
-                            />
-                          </Option>
-                      );
-                    }) }
-                  </Select>
+                      disabled={!(statements && statements.length > 0)}
+                      overlay={ (statements && statements.length > 0 ? (
+                        <Menu>
+                          {
+                            statements.map(statementOptions => (
+                                <Menu.Item key={statementOptions._id}>
+                                  {statementOptions._source.isDefault && (<Icon
+                                      type="star"
+                                      theme="filled"
+                                      style={{ marginRight: 10 }}
+                                  />)}
+                                  {statementOptions._source.title}
+                                  <IconKit size={20}
+                                           icon={ic_content_copy}
+                                           style={{ marginLeft: 10 }}
+                                           dataid={statementOptions._id}
+                                           onClick={this.duplicateStatement}
+                                  />
+                                  <IconKit size={20}
+                                           icon={ic_delete}
+                                           style={{ marginLeft: 10 }}
+                                           dataid={statementOptions._id}
+                                           onClick={this.deleteStatement}
+                                  />
+
+                                </Menu.Item>))
+                          }
+                          </Menu>) : (
+                        <Menu/>
+                      ))
+                  }
+                  >
+                  </Dropdown.Button>
 
                 </div>
               </div>
