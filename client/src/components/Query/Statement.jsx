@@ -646,7 +646,7 @@ class Statement extends React.Component {
                               onClick={this.setStatementAsDefault}
                             >
                             <Icon
-                                className={styleStatement.star}
+                                className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
                                 type="star"
                                 theme={activeStatement.isDefault ? 'filled' : 'outlined'}
                             />

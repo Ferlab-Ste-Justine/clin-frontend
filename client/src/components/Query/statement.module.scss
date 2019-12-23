@@ -55,10 +55,14 @@
         letter-spacing: $small-letter-spacing;
         display: flex;
         align-items: center;
-
+        transition:none;
         i{
           padding-right:4px;
           color: rgba(35, 55, 80, 0.38);
+        }
+
+        .starFilled{
+          color:#f8a335;
         }
 
         .openSelect{

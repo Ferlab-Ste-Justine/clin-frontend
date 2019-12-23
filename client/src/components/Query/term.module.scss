@@ -1,12 +1,13 @@
 @import './variables.scss';
 
 .tag{
-    height:40px;
     display:flex;
     align-items:center;
+    padding: 0 6px;
+    margin: 0 2px;
+    border-radius: 2px;
 
     .insideTag{
-        height:32px;
         display:flex;
         align-items:center;
         font-family: $font;

@@ -19,9 +19,8 @@
         font-size: $little-font;
         font-weight: $font-weight-medium;
         letter-spacing: $small-letter-spacing;
-        width: 250px;
         border: none;
-        min-width: 100px;
+        min-width: 50px;
         background-color: transparent;
 
         &:focus {
