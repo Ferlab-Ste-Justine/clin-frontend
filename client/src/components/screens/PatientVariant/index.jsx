@@ -280,7 +280,7 @@ class PatientVariantScreen extends React.Component {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
     const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery,
-      activeStatementId, originalStatements, draftStatements } = variant;
+      activeStatementId, statements } = variant;
     const {
       size, page, currentTab,
     } = this.state;
@@ -397,8 +397,7 @@ class PatientVariantScreen extends React.Component {
                         key="variant-statement"
                         activeQuery={activeQuery}
                         activeStatementId={activeStatementId}
-                        statements={originalStatements}
-                        draftStatements={draftStatements}
+                        statements={statements}
                         data={draftQueries}
                         draftHistory={draftHistory}
                         original={originalQueries}
