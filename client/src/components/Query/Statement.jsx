@@ -479,9 +479,6 @@ class Statement extends React.Component {
   onChange(e) {
     const { value } = e.target;
     this.setState({statementTitle:value})
-    console.log(value)
-    const length =value.length -( value.length *0.2)
-    e.target.style.width = length + "ch";
   }
 
   onFocus() {
@@ -551,7 +548,8 @@ class Statement extends React.Component {
       return [...accumulator, (
         <div className={classNames.join(' ')} key={query.key}>
           <Checkbox
-            className={styleStatement.querySelector}
+            className={isChecked ?  `${styleStatement.check} ${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}` : `${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}`}
+
             key={`selector-${query.key}`}
             value={query.key}
             checked={isChecked}

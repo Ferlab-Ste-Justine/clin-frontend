@@ -402,6 +402,12 @@ class Query extends React.Component {
             <span>{results.toLocaleString('en-US').replace(',', ' ')}</span>
           </div>
         </div>
+        {draft.instructions.length===0 ?
+            <div className={styleQuery.emptyQuery}>
+                Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête
+            </div>
+
+         :
         <div className={styleQuery.instructions}>
           { draft.instructions.map((item, index) => {
             switch (item.type) {
@@ -552,6 +558,7 @@ class Query extends React.Component {
             }
           })}
         </div>
+        }
       </div>
     );
   }
