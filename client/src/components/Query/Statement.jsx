@@ -215,8 +215,9 @@ class Statement extends React.Component {
     this.props.onGetStatementsCallback();
   }
   createStatement() {
+
     const newStatement = {
-      id: uuidv1(),
+      id: 'draft',
       description: this.state.saveTitleModalInputValue,
       title: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' }),
       queries : [{
@@ -224,10 +225,7 @@ class Statement extends React.Component {
         instructions: []
       }]
     };
-    // this.setState({
-    //     saveTitleModalVisible: true,
-    //     saveTitleModalInputValue: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' })
-    // })
+    this.props.onCreateStatementCallback(newStatement)
 
   }
 
@@ -536,7 +534,7 @@ class Statement extends React.Component {
     const {
       editable, reorderable, removable, duplicatable,
     } = options;
-
+    const activeStatementIsDraft = activeStatementId === 'draft' ? true : false
     const checkedQueriesCount = checkedQueries.length;
     const newText = intl.formatMessage({ id: 'screen.patientvariant.statement.new' });
     const saveText = intl.formatMessage({ id: 'screen.patientvariant.statement.save' });
@@ -560,17 +558,17 @@ class Statement extends React.Component {
 
     let activeStatementCanBeSaved = false;
     const queries = data.reduce((accumulator, query, index) => {
-      const isChecked = checkedQueries.indexOf(query.key) !== -1;
-      const isActive = activeQuery === query.key;
-      const initial = find(original, { key: query.key }) || null;
-      const classNames = [styleStatement.queryContainer];
-      const isDirty = !isEqual(initial, query);
+    const isChecked = checkedQueries.indexOf(query.key) !== -1;
+    const isActive = activeQuery === query.key;
+    const initial = find(original, { key: query.key }) || null;
+    const classNames = [styleStatement.queryContainer];
+    const isDirty = !isEqual(initial, query);
 
-      if (isDirty) { classNames.push(styleStatement.dirtyContainer); activeStatementCanBeSaved = true; }
-      if (isActive) { classNames.push(styleStatement.activeContainer) } else { classNames.push(styleStatement.inactiveContainer) }
-      if (!query.title) {
-        query.title = `Requête ${(index+1)}`;
-      }
+    if (isDirty) { classNames.push(styleStatement.dirtyContainer); activeStatementCanBeSaved = true; }
+    if (isActive) { classNames.push(styleStatement.activeContainer) } else { classNames.push(styleStatement.inactiveContainer) }
+    if (!query.title) {
+      query.title = `Requête ${(index+1)}`;
+    }
 
       return [...accumulator, (
         <div className={classNames.join(' ')} key={query.key}>
@@ -633,10 +631,10 @@ class Statement extends React.Component {
         }, this.props.onCreateStatementCallback(newStatement))
     };
 
-    const activeStatementIsEmpty = every(data, (datum) => { return datum.instructions.length === 0 } )
+
     const activeStatementCanBeDeleted = !data.lastUpdatedOn;
-    if (activeStatementIsEmpty) {
-      activeStatementCanBeSaved = false;
+    if (activeStatementIsDraft) {
+      activeStatementCanBeSaved = true;
     }
 
     const contextSelectStatement = ({ key }) => {
@@ -698,7 +696,7 @@ class Statement extends React.Component {
                 <div>
                   <Button
                       type="default"
-                      disabled={activeStatementIsEmpty}
+                      disabled={activeStatementIsDraft}
                       onClick={this.createStatement}
                   >
                     <IconKit size={20} icon={ic_note_add} />
@@ -714,7 +712,7 @@ class Statement extends React.Component {
                   </Button>
                   <Button
                       type="default"
-                      disabled={activeStatementIsEmpty}
+                      disabled={activeStatementIsDraft}
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />

@@ -127,15 +127,19 @@ function* createStatement(action) {
         const queries = action.payload.newStatement.queries
         const title = action.payload.newStatement.title
         const description = action.payload.newStatement.description
+        const newStatement = action.payload.newStatement
+      console.log(`+ saga createStatement - newStatement=${JSON.stringify(newStatement)}`)
+
         // const statementResponse = yield Api.createStatement(queries, title, description)
         // if (statementResponse.error) {
         //     throw new ApiError(statementResponse.error);
         // }
 
         //const newKey = statementResponse.payload.data.data.id
-        const newKey = 'newKey' + title
+        //const newKey = 'newKey' + title
         //yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { newKey } });
-        yield put ( {type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { newKey } });
+        yield put ( {type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { newStatement } });
+
     } catch (e) {
         yield put({type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e});
     }

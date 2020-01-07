@@ -178,7 +178,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
       const newActiveStatement = state.statements.find((hit) => hit._id === action.payload.key );
-      console.log(newActiveStatement)
+
 
       const newActiveStatementQuery = JSON.parse(newActiveStatement._source.queries)
       draft.activeStatementId = newActiveStatement._id
@@ -189,6 +189,24 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
         const { newStatement } = payload;
+      console.log(`+ reducer actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED  - newStatement=${JSON.stringify(newStatement)}`)
+        const newDraftStatement = {
+          _id: newStatement.id,
+          _source: {
+            isDefault: false,
+            description: newStatement.description,
+            title: newStatement.title,
+            queries: JSON.stringify(newStatement.queries),
+
+          }
+        };
+        draft.statements = state.statements;
+        draft.statements.push(newDraftStatement)
+        draft.activeStatementId = newStatement.id;
+        const draftActiveStatementQuery = JSON.parse(newDraftStatement._source.queries)
+      draft.originalQueries = draftActiveStatementQuery
+      draft.draftQueries = draftActiveStatementQuery
+      draft.draftHistory = draftActiveStatementQuery
         break;
 
       default:
