@@ -25,6 +25,7 @@ class VariantNavigation extends React.Component {
     super(props);
     this.state = {
       activeFilterId: null,
+      searchSelection: {},
       searchResults: [],
     };
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -42,50 +43,41 @@ class VariantNavigation extends React.Component {
       autocomplete.then(engine => {
         engine.search(query, searchResults => {
           const groupedResults = searchResults.reduce((accumulator, result) => {
-            if (accumulator[result.id]) {
-              accumulator[result.id].matches.push({
-                id: result.id,
-                value: result.value,
-                count: result.count || ''
-              })
-            } else {
+            if (!accumulator[result.id]) {
               accumulator[result.id] = {
                 id: result.id,
                 type: result.type,
                 label: result.label,
-                matches: [{
-                  id: result.id,
-                  value: result.value,
-                  count: result.count || ''
-                }]
+                matches: []
               }
             }
-
+            accumulator[result.id].matches.push(result)
             return accumulator;
           }, {});
+
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
           })
         })
       })
     }
-    /*else {
-      this.setState({
-        searchResults: [],
-      })
-    }*/
   }
 
-  handleNavigationSelection(value, option) {
-    console.log('+ handleNavigationSelection');
-    console.log('+ value ' + JSON.stringify(value));
-    console.log('+ option ' + JSON.stringify(option));
-
+  handleNavigationSelection(datum) {
+    const selection = JSON.parse(datum);
+    this.setState({
+      activeFilterId: null,
+      searchSelection: {
+        category: selection.id,
+        filter: selection.subid,
+      }
+    })
   }
 
   handleFilterSelection({ key }) {
     this.setState({
       activeFilterId: key,
+      searchSelection: {},
     });
   }
 
@@ -100,43 +92,51 @@ class VariantNavigation extends React.Component {
       const { activeQuery, queries } = this.props;
       const query = find(queries, { key: activeQuery })
       if (query) {
-          const updatedQuery = cloneDeep(query);
-          let updatedInstructions = []
-          if (!filter.remove) {
-            let updated = false
-            updatedInstructions = updatedQuery.instructions.map((instruction) => {
-              if (instruction.data.id === filter.id) {
-                  updated = true
-                  return { type: 'filter', data: filter };
-              }
-              return instruction;
-            })
-            if (!updated) {
-              updatedInstructions.push({ type: 'filter', data: filter })
+        const updatedQuery = cloneDeep(query);
+        let updatedInstructions = []
+        if (!filter.remove) {
+          let updated = false
+          updatedInstructions = updatedQuery.instructions.map((instruction) => {
+            if (instruction.data.id === filter.id) {
+              updated = true
+              return {
+                type: 'filter',
+                data: filter
+              };
             }
-          } else {
-            updatedInstructions = updatedQuery.instructions.filter((instruction) => {
-              if (instruction.data.id === filter.id) {
-                return false;
-              }
-              return true;
+            return instruction;
+          })
+          if (!updated) {
+            updatedInstructions.push({
+              type: 'filter',
+              data: filter
             })
           }
-          updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
-          onEditCallback(updatedQuery);
+        } else {
+          updatedInstructions = updatedQuery.instructions.filter((instruction) => {
+            if (instruction.data.id === filter.id) {
+              return false;
+            }
+            return true;
+          })
+        }
+        updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
+        onEditCallback(updatedQuery);
       }
     }
   }
 
-  handleCategoryOpenChange(keys) {
-    this.setState({
-      activeFilterId: null,
-    });
+  handleCategoryOpenChange() {
+      this.setState({
+        activeFilterId: null,
+        searchSelection: {},
+      });
   }
 
   renderFilterType(categoryData){
     const { intl, activeQuery, queries, data, searchData, patient } = this.props;
-    const { activeFilterId } = this.state;
+    const { searchSelection } = this.state;
+    const activeFilterId = searchSelection.filter ? searchSelection.filter : this.state.activeFilterId;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
     const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : FILTER_OPERAND_TYPE_ONE)
@@ -251,63 +251,92 @@ class VariantNavigation extends React.Component {
 
   render() {
     const { intl, schema } = this.props;
-    const { activeFilterId, searchResults } = this.state;
+    const { activeFilterId, searchResults, searchSelection } = this.state;
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
-          <AutoComplete.Option key={match.id} group={group} value={match.value}>
+          <AutoComplete.Option key={match.id} value={JSON.stringify(match)}>
             {match.value} {match.count && (<Tag>{match.count}</Tag>)}
           </AutoComplete.Option>
         ))}
       </AutoComplete.OptGroup>
     ))
 
-    return (
-      <div className="variant-navigation">
-        <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
-          <Menu.SubMenu
+    const generateMenuComponent = (searchSelection, children) => {
+      if (!searchSelection.category || !searchSelection.filter) {
+        return (<Menu
+            key="navigation-menu"
+                  mode="horizontal"
+                  onOpenChange={this.handleCategoryOpenChange}
+        ><Menu.SubMenu
             key="search"
             title={(
               <AutoComplete
                 allowClear
                 autoFocus
                 optionLabelProp="value"
+                size="large"
                 dataSource={autocompletes}
                 onSearch={this.handleNavigationSearch}
-                // onSelect={this.handleNavigationSelection}
-                // onChange={() => {}}
+                onSelect={this.handleNavigationSelection}
                 placeholder="Recherche de filtres"
               >
                 <Input prefix={<Icon type="search" />} />
               </AutoComplete>
             )}
           />
-          {schema.categories && schema.categories.map((category) => {
-            if (category.filters && category.filters.length > 0) {
-              const { id } = category;
-              const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
-              const categoryInfo = find(schema.categories, ['id', id]);
-              const categoryData = find(categoryInfo.filters, ['id', activeFilterId]);
-              const filter = categoryData ? this.renderFilterType(categoryData) : null
+          {children}</Menu>)
+      }
+        return (<Menu
+          key="navigation-menu-selection"
+                      mode="horizontal"
+                      onOpenChange={this.handleCategoryOpenChange}
+                      openKeys={[searchSelection.category]}
+                      selectedKeys={[searchSelection.filter]}
+        ><Menu.SubMenu
+          key="search"
+          title={(
+            <AutoComplete
+              allowClear
+              autoFocus
+              optionLabelProp="value"
+              size="large"
+              dataSource={autocompletes}
+              onSearch={this.handleNavigationSearch}
+              onSelect={this.handleNavigationSelection}
+              placeholder="Recherche de filtres"
+            >
+              <Input prefix={<Icon type="search" />} />
+            </AutoComplete>
+          )}
+        />
+        {children}</Menu>)
+    }
 
-              return (
-                <Menu.SubMenu key={id} title={<span>{label}</span>}>
-                  { activeFilterId === null && category.filters.map(filter => filter.search && (
-                  <Menu.SubMenu
-                    key={filter.id}
-                    title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
-                    onTitleClick={this.handleFilterSelection}
-                  />
-                  ))}
-                  { activeFilterId !== null && (
-                    filter
-                  )}
-                </Menu.SubMenu>
-              );
-            }
-            return null;
-          })}
-        </Menu>
+    return (
+      <div className="variant-navigation">
+        {generateMenuComponent(searchSelection, schema.categories ? schema.categories.map((category) => {
+           if (category.filters && category.filters.length > 0) {
+             const { id } = category;
+             const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
+             const categoryInfo = find(schema.categories, ['id', ( searchSelection.category || id)]);
+             const categoryData = find(categoryInfo.filters, ['id', (searchSelection.filter || activeFilterId)]);
+             const filter = categoryData ? this.renderFilterType(categoryData) : null
+             return (
+               <Menu.SubMenu key={id} title={<span>{label}</span>}>
+                 { activeFilterId === null && !searchSelection.category && category.filters.map(filter => filter.search && (
+                   <Menu.SubMenu
+                     key={filter.id}
+                     title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
+                     onTitleClick={this.handleFilterSelection}
+                   />
+                 ))}
+                 { filter }
+               </Menu.SubMenu>
+             );
+           }
+           return null;
+         }) : null )}
       </div>
     );
   }
