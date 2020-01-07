@@ -252,9 +252,6 @@ class VariantNavigation extends React.Component {
   render() {
     const { intl, schema } = this.props;
     const { activeFilterId, searchResults } = this.state;
-
-
-
     const autocompletes = searchResults.map(group => (
       <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
         { group.matches.map((match) => (
@@ -267,7 +264,7 @@ class VariantNavigation extends React.Component {
 
     return (
       <div className="variant-navigation">
-        <Menu key="category-search" mode="horizontal">
+        <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
           <Menu.SubMenu
             key="search"
             title={(
@@ -275,19 +272,16 @@ class VariantNavigation extends React.Component {
                 allowClear
                 autoFocus
                 optionLabelProp="value"
-                size="large"
                 dataSource={autocompletes}
                 onSearch={this.handleNavigationSearch}
-                onSelect={this.handleNavigationSelection}
-                onChange={() => {}}
+                // onSelect={this.handleNavigationSelection}
+                // onChange={() => {}}
                 placeholder="Recherche de filtres"
               >
                 <Input prefix={<Icon type="search" />} />
               </AutoComplete>
             )}
           />
-        </Menu>
-        <Menu key="category-navigator" mode="horizontal" onOpenChange={this.handleCategoryOpenChange}>
           {schema.categories && schema.categories.map((category) => {
             if (category.filters && category.filters.length > 0) {
               const { id } = category;
