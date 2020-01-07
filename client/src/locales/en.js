@@ -271,7 +271,7 @@ const en = {
   'screen.patientvariant.statementTitleSave.modal.ok': 'SAVE',
   'screen.patientvariant.statementTitleSave.modal.cancel': 'CANCEL',
   'screen.patientvariant.statementTitleSave.modal.inputLabel': 'Enter your new title',
-  'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder': 'ex: Rare variants',
+  'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder': 'untitled',
   'screen.patientvariant.statementTitleSave.modal.inputDefault': 'New Filter (rename)',
   'components.table.action.search': 'Search',
   'components.table.action.reset': 'Reset',

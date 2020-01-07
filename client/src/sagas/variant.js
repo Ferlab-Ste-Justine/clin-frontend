@@ -127,13 +127,15 @@ function* createStatement(action) {
         const queries = action.payload.newStatement.queries
         const title = action.payload.newStatement.title
         const description = action.payload.newStatement.description
-        const statementResponse = yield Api.createStatement(queries, title, description)
-        if (statementResponse.error) {
-            throw new ApiError(statementResponse.error);
-        }
+        // const statementResponse = yield Api.createStatement(queries, title, description)
+        // if (statementResponse.error) {
+        //     throw new ApiError(statementResponse.error);
+        // }
 
-        const newKey = statementResponse.payload.data.data.id
-        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { newKey } });
+        //const newKey = statementResponse.payload.data.data.id
+        const newKey = 'newKey' + title
+        //yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { newKey } });
+        yield put ( {type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { newKey } });
     } catch (e) {
         yield put({type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e});
     }
@@ -148,17 +150,23 @@ function* updateStatement(action) {
         if (!activeStatement) {
           throw new Error('Statement not found');
         }
-
+        console.log(`+ activeStatement=${JSON.stringify(activeStatement)}`)
         const title = action.payload.title ? action.payload.title : activeStatement._source.title
         const description = activeStatement._source.description
-        const isDefault = action.payload.switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
+        const switchCurrentStatementToDefault = action.payload.switchCurrentStatementToDefault
+        const isDefault = switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
         const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
+        console.log(`+ ${JSON.stringify(statementResponse)}`)
         if (statementResponse.error) {
             throw new ApiError(statementResponse.error);
         }
 
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: {} });
-        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
+        if (switchCurrentStatementToDefault) {
+            // update all statements since there is a previous one that are no longer default
+            yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+        }
+
     } catch (e) {
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     }
@@ -167,7 +175,7 @@ function* updateStatement(action) {
 function* duplicateStatement(action) {
   try {
     const statementKey = action.payload.id
-    const { statements} = yield select(state => state.variant);
+    const { statements } = yield select(state => state.variant);
     const activeStatement = statements.find((hit) => hit._id === statementKey);
     if (!activeStatement) {
       throw new Error('Statement not found');

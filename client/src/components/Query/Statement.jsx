@@ -215,13 +215,27 @@ class Statement extends React.Component {
     this.props.onGetStatementsCallback();
   }
   createStatement() {
-    this.setState({
-        saveTitleModalVisible: true
-    })
+    const newStatement = {
+      id: uuidv1(),
+      description: this.state.saveTitleModalInputValue,
+      title: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' }),
+      queries : [{
+        key: uuidv1(),
+        instructions: []
+      }]
+    };
+    // this.setState({
+    //     saveTitleModalVisible: true,
+    //     saveTitleModalInputValue: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' })
+    // })
+
   }
 
   duplicateStatement(e) {
     let id =  e.target ? e.target.getAttribute('dataid') : e
+    let id2 =  e.currentTarget ? e.currentTarget.getAttribute('dataid') : e
+    console.log(`+ id=${id}`)
+    console.log(`+ id2=${id2}`)
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -237,22 +251,23 @@ class Statement extends React.Component {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
-
+    if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, false);
   }
 
   setStatementAsDefault(e) {
-    let id =  e.target ? e.target.getAttribute('dataid') : e
+    let id =  e.currentTarget ? e.currentTarget.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
 
+    if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, true);
   }
 
   deleteStatement(e) {
-    let id =  e.target ? e.target.getAttribute('dataid') : e
+    let id =  e.currentTarget ? e.currentTarget.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -264,9 +279,7 @@ class Statement extends React.Component {
 
   selectStatement(e) {
 
-    console.log('+ ICICCC ?')
-
-
+    //console.log('+ ICICCC ?')
     let  id = e.target ? e.target.getAttribute('dataid') : e
 
     console.log(`+ id1=${id}`)
@@ -645,9 +658,10 @@ class Statement extends React.Component {
           <h2>{modalTitleSaveContent}</h2>
           {modalTitleSaveInputLabel}<br/>
           <Input
-              placeholder={modalTitleSaveInputPlaceHolder}
+              // placeholder={modalTitleSaveInputPlaceHolder}
               onChange={this.onModalSaveTitleInputChange}
               defaultValue={modalTitleSaveInputDefault}
+              value={this.state.saveTitleModalInputValue}
           />
 
         </Modal>
@@ -657,8 +671,8 @@ class Statement extends React.Component {
               <div>
                 <Input
                     id="statementTitle"
-                    placeHolder={statementTitle}
-                    onChange={this.onChange}
+                    value={statementTitle}
+                    // onChange={this.onChange}
                     addonBefore={(
                         <Button
                             type="default"
@@ -699,8 +713,8 @@ class Statement extends React.Component {
                     {saveText}
                   </Button>
                   <Button
-                      type="disabled"
-                      disabled={true} // @TODO
+                      type="default"
+                      disabled={activeStatementIsEmpty}
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
@@ -722,45 +736,7 @@ class Statement extends React.Component {
                         <IconKit size={20} icon={ic_share} />
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider} />
-                  {/*<Button*/}
-                  {/*    type="default"*/}
-                  {/*>*/}
-                  {/*  <IconKit className={selectIsOpen ? styleStatement.openSelect : null}size={20}  />*/}
-                  {/*</Button>*/}
 
-                  {/*<Select*/}
-                  {/*  key="statement-list"*/}
-                  {/*    placeholder="Mes filtres"*/}
-                  {/*    style={{ width: 250 }}*/}
-                  {/*    onChange={this.selectStatement}*/}
-                  {/*    onFocus={this.onFocus}*/}
-                  {/*    onBlur={this.onBlur}*/}
-                  {/*  >*/}
-                  {/*  { statements.map(statementOptions => {*/}
-                  {/*    return (*/}
-                  {/*        <Option value={statementOptions._id}>*/}
-                  {/*          {statementOptions._source.isDefault && (<Icon*/}
-                  {/*            type="star"*/}
-                  {/*            theme="filled"*/}
-                  {/*            style={{ marginRight: 10 }}*/}
-                  {/*          />)}*/}
-                  {/*          {statementOptions._source.title}*/}
-                  {/*          <IconKit size={20}*/}
-                  {/*            icon={ic_content_copy}*/}
-                  {/*            style={{ marginLeft: 10 }}*/}
-                  {/*            dataid={statementOptions._id}*/}
-                  {/*            onClick={this.duplicateStatement}*/}
-                  {/*          />*/}
-                  {/*          <IconKit size={20}*/}
-                  {/*            icon={ic_delete}*/}
-                  {/*            style={{ marginLeft: 10 }}*/}
-                  {/*            dataid={statementOptions._id}*/}
-                  {/*            onClick={this.deleteStatement}*/}
-                  {/*          />*/}
-                  {/*        </Option>*/}
-                  {/*    );*/}
-                  {/*  }) }*/}
-                  {/*</Select>*/}
                   <Dropdown.Button
                       icon={(<><IconKit className={selectIsOpen ? styleStatement.openSelect : null} icon={ic_folder} size={20}/>{myFilterText}</>)}
                       trigger={['click']}
@@ -772,11 +748,7 @@ class Statement extends React.Component {
                           {
                             statements.map(statementOptions => (
                                 <Menu.Item key={statementOptions._id}>
-                                  {statementOptions._source.isDefault && (<Icon
-                                      type="star"
-                                      theme="filled"
-                                      style={{ marginRight: 10 }}
-                                  />)}
+
                                   {statementOptions._source.title}
                                   <IconKit size={20}
                                            icon={ic_content_copy}
@@ -788,8 +760,17 @@ class Statement extends React.Component {
                                            icon={ic_delete}
                                            style={{ marginLeft: 10 }}
                                            dataid={statementOptions._id}
-                                           //onClick={this.deleteStatement}
+                                           onClick={this.deleteStatement}
                                   />
+                                  { (<Icon
+                                      type="star"
+                                      style={{ marginRight: 10, marginLeft: 20 }}
+                                      className={statementOptions._source.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
+                                      theme={statementOptions._source.isDefault ? 'filled' : 'outlined'}
+                                      dataid={statementOptions._id}
+                                      onClick={this.setStatementAsDefault}
+                                  />)}
+
                                 </Menu.Item>))
                           }
                           </Menu>) : (

@@ -19,7 +19,8 @@ export const initialVariantState = {
   matches: {},
   results: {},
   facets: {},
-  statements: [],
+  originalStatements: [],
+  draftStatements: [],
   activeStatementId: null,
 };
 
@@ -34,14 +35,15 @@ export const variantShape = {
   matches: PropTypes.shape({}),
   results: PropTypes.shape({}),
   facets: PropTypes.shape({}),
-  statements: PropTypes.array,
+  originalStatements: PropTypes.array,
+  draftStatements: PropTypes.array,
   activeStatementId: PropTypes.String,
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => {
   return produce(state, (draft) => {
     const {draftQueries, draftHistory} = draft;
-
+    const { payload } = action
     switch (action.type) {
       case actions.USER_LOGOUT_SUCCEEDED:
       case actions.USER_SESSION_HAS_EXPIRED:
@@ -141,23 +143,23 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
       case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
-        const { payload } = action
+
         const { newKey, response } = payload;
         const { hits , total } = response.data;
 
         if (total > 0) {
-          draft.statements = hits.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
+          draft.originalStatements = hits.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
           let defaultStatement = null;
           if (newKey) {
-            defaultStatement = draft.statements.find((hit) => hit._id === newKey );
+            defaultStatement = draft.originalStatements.find((hit) => hit._id === newKey );
           } else {
-            defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
+            defaultStatement = draft.originalStatements.find((hit) => hit._source.isDefault === true );
           }
           let activeStatement = null;
           if (defaultStatement) {
             activeStatement = defaultStatement
           } else {
-            activeStatement = draft.statements[0]
+            activeStatement = draft.originalStatements[0]
           }
           const activeStatementQuery = JSON.parse(activeStatement._source.queries)
           draft.activeStatementId = activeStatement._id
@@ -168,7 +170,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
     case actions.PATIENT_VARIANT_STATEMENT_SELECTION:
-        const activeStatement = state.statements.find((hit) => hit._id === action.payload.key );
+        const activeStatement = state.originalStatements.find((hit) => hit._id === action.payload.key );
         const activeStatementQuery = JSON.parse(activeStatement._source.queries)
         draft.activeStatementId = activeStatement._id
         draft.originalQueries = activeStatementQuery
@@ -177,13 +179,19 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-      const newActiveStatement = state.statements.find((hit) => hit._id === action.payload.key );
-      const newActiveStatementQuery = JSON.parse(activeStatement._source.queries)
+      const newActiveStatement = state.originalStatements.find((hit) => hit._id === action.payload.key );
+      console.log(newActiveStatement)
+
+      const newActiveStatementQuery = JSON.parse(newActiveStatement._source.queries)
       draft.activeStatementId = newActiveStatement._id
       draft.originalQueries = newActiveStatementQuery
       draft.draftQueries = newActiveStatementQuery
       draft.draftHistory = newActiveStatementQuery
       break;
+
+    case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
+        const { newStatement } = payload;
+        break;
 
       default:
         break;

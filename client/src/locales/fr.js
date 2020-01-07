@@ -281,7 +281,7 @@ const fr = {
   'screen.patientvariant.statementTitleSave.modal.ok': 'ENREGISTRER',
   'screen.patientvariant.statementTitleSave.modal.cancel': 'ANNULER',
   'screen.patientvariant.statementTitleSave.modal.inputLabel': 'Ajouter votre titre',
-  'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder': 'ex: variants rare',
+  'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder': 'sans titre',
   'screen.patientvariant.statementTitleSave.modal.inputDefault': 'Nouveau Filtre (renommer)',
   'components.table.action.search': 'Rechercher',
   'components.table.action.reset': 'Réinitialiser',
