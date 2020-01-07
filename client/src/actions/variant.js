@@ -80,7 +80,7 @@ export const getStatements = (newKey = '') => ({
 });
 
 export const createStatement = newStatement => ({
-  type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
+  type: actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
   payload: {
     newStatement,
   },

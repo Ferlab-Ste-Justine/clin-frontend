@@ -72,10 +72,6 @@ function* watchGetStatements() {
   yield takeLatest(actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, getStatements);
 }
 
-function* watchCreateStatement() {
-  yield takeLatest(actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED, createStatement);
-}
-
 function* watchUpdateStatement() {
   yield takeLatest(actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED, updateStatement);
 }
@@ -122,30 +118,6 @@ function* getStatements(action) {
   }
 }
 
-function* createStatement(action) {
-    try {
-        const queries = action.payload.newStatement.queries
-        const title = action.payload.newStatement.title
-        const description = action.payload.newStatement.description
-        const newStatement = action.payload.newStatement
-      console.log(`+ saga createStatement - newStatement=${JSON.stringify(newStatement)}`)
-
-        // const statementResponse = yield Api.createStatement(queries, title, description)
-        // if (statementResponse.error) {
-        //     throw new ApiError(statementResponse.error);
-        // }
-
-        //const newKey = statementResponse.payload.data.data.id
-        //const newKey = 'newKey' + title
-        //yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { newKey } });
-        yield put ( {type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { newStatement } });
-
-    } catch (e) {
-        yield put({type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e});
-    }
-
-}
-
 function* updateStatement(action) {
     try {
         const statementKey = action.payload.id
@@ -162,13 +134,13 @@ function* updateStatement(action) {
         const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
         console.log(`+ ${JSON.stringify(statementResponse)}`)
         if (statementResponse.error) {
-            throw new ApiError(statementResponse.error);
+          throw new ApiError(statementResponse.error);
         }
 
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
         if (switchCurrentStatementToDefault) {
-            // update all statements since there is a previous one that are no longer default
-            yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+          // update all statements since there is a previous one that are no longer default
+          yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
         }
 
     } catch (e) {
@@ -223,13 +195,13 @@ function* selectStatement(action) {
         const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
         yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: newActiveQueryKey } });
         if (draftQueries) {
-            const {details} = yield select(state => state.patient);
-            const payload = {
-                patient: details.id,
-                statement: draftQueries,
-                query: newActiveQueryKey,
-            };
-            yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
+          const {details} = yield select(state => state.patient);
+          const payload = {
+              patient: details.id,
+              statement: draftQueries,
+              query: newActiveQueryKey,
+          };
+          yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
         }
 
     } catch (e) {
@@ -243,7 +215,6 @@ export default function* watchedVariantSagas() {
     watchVariantSearch(),
     watchUndo(),
     watchGetStatements(),
-    watchCreateStatement(),
     watchUpdateStatement(),
     watchDuplicateStatement(),
     watchDeleteStatement(),
