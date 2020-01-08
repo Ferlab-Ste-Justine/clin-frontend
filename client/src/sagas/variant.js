@@ -120,31 +120,36 @@ function* getStatements(action) {
 
 function* updateStatement(action) {
     try {
-        const statementKey = action.payload.id
-        const {draftQueries, statements} = yield select(state => state.variant);
-        const activeStatement = statements.find((hit) => hit._id === statementKey);
-        if (!activeStatement) {
-          throw new Error('Statement not found');
-        }
-        console.log(`+ activeStatement=${JSON.stringify(activeStatement)}`)
-        const title = action.payload.title ? action.payload.title : activeStatement._source.title
-        const description = activeStatement._source.description
-        const switchCurrentStatementToDefault = action.payload.switchCurrentStatementToDefault
-        const isDefault = switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
-        const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
-        console.log(`+ ${JSON.stringify(statementResponse)}`)
-        if (statementResponse.error) {
-          throw new ApiError(statementResponse.error);
-        }
+      const statementKey = action.payload.id
+      const {draftQueries, statements} = yield select(state => state.variant);
+      const activeStatement = statements.find((hit) => hit._id === statementKey);
+      if (!activeStatement) {
+        throw new Error('Statement not found');
+      }
+      console.log(`+ activeStatement=${JSON.stringify(activeStatement)}`)
+      const title = action.payload.title ? action.payload.title : activeStatement._source.title
+      const description = activeStatement._source.description
+      const switchCurrentStatementToDefault = action.payload.switchCurrentStatementToDefault
+      const isDefault = switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
+      let statementResponse
+      if (statementKey === 'draft') {
+        statementResponse = yield Api.createStatement(draftQueries, title, description);
+      } else {
+        statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
+      }
+      console.log(`+ ${JSON.stringify(statementResponse)}`)
+      if (statementResponse.error) {
+        throw new ApiError(statementResponse.error);
+      }
 
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
-        if (switchCurrentStatementToDefault) {
-          // update all statements since there is a previous one that are no longer default
-          yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
-        }
+      yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
+      if (switchCurrentStatementToDefault) {
+        // update all statements since there is a previous one that are no longer default
+        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+      }
 
     } catch (e) {
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
+      yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     }
 }
 

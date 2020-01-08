@@ -245,9 +245,9 @@ class Statement extends React.Component {
 
   updateStatement(e) {
     let id =  e.target ? e.target.getAttribute('dataid') : e
+    console.log(`+ id=${id}`)
     if (!id) {
-      const { activeStatementId } = this.props;
-      id = activeStatementId
+      id = this.props.activeStatementId
     }
     if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, false);
@@ -631,8 +631,8 @@ class Statement extends React.Component {
         }, this.props.onCreateStatementCallback(newStatement))
     };
 
-
-    const activeStatementCanBeDeleted = !data.lastUpdatedOn;
+    //const activeStatementCanBeDeleted = !data.lastUpdatedOn
+    const activeStatementCanBeDeleted =  !activeStatementIsDraft ;
     if (activeStatementIsDraft) {
       activeStatementCanBeSaved = true;
     }
