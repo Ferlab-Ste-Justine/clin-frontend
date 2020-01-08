@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import {
-  all, put, takeLatest, select,
+  all, put, takeLatest, select, race, call,
 } from 'redux-saga/effects';
 import { find, cloneDeep } from 'lodash';
 
@@ -144,8 +144,7 @@ function* updateStatement(action) {
         // since key is empty the reducer will do nothing but the sequence of action will be maintained
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
         // update all statements since there is a previous one that are no longer default
-        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
-
+        yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
       } else {
         yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
       }
@@ -174,7 +173,7 @@ function* createStatement(action) {
 
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
     // update all statements since there is a previous one that have different key
-    yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { keyForStatementSelectionInsteadOfTheDefaultOne: newKey } });
+    yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne: newKey } });
 
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
@@ -201,7 +200,7 @@ function* duplicateStatement(action) {
     }
     // @TODO
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: {} });
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+    yield call(getAndSelectStatement, { payload: { } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
   }
@@ -215,9 +214,9 @@ function* deleteStatement(action) {
           throw new ApiError(statementResponse.error);
       }
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {}  });
-      yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+      yield call(getAndSelectStatement, { payload: {} });
     } catch (e) {
-        yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
+      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
     }
 }
 
@@ -244,7 +243,7 @@ function* selectStatement(action) {
 }
 
 export default function* watchedVariantSagas() {
-  yield all([
+  yield race([
     watchVariantSchemaFetch(),
     watchVariantSearch(),
     watchUndo(),
