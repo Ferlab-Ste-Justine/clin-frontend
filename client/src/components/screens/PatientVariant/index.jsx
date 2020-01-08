@@ -496,7 +496,8 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
-    getAndSelectStatement, createDraftStatement, createStatement, updateStatement, deleteStatement, selectStatement, duplicateStatement, saveStatement,
+    getAndSelectStatement, createDraftStatement, createStatement, updateStatement, deleteStatement, selectStatement,
+    duplicateStatement,
   }, dispatch),
 });
 
