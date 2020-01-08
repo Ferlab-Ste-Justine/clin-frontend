@@ -142,14 +142,14 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
       case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
 
-        const { newKey, response } = payload;
+        const { keyForStatementSelectionInsteadOfTheDefaultOne, response } = payload;
         const { hits , total } = response.data;
 
         if (total > 0) {
           draft.statements = hits.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
           let defaultStatement = null;
-          if (newKey) {
-            defaultStatement = draft.statements.find((hit) => hit._id === newKey );
+          if (keyForStatementSelectionInsteadOfTheDefaultOne) {
+            defaultStatement = draft.statements.find((hit) => hit._id === keyForStatementSelectionInsteadOfTheDefaultOne );
           } else {
             defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
           }
@@ -177,14 +177,15 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-      const newActiveStatement = state.statements.find((hit) => hit._id === action.payload.key );
-
-
-      const newActiveStatementQuery = JSON.parse(newActiveStatement._source.queries)
-      draft.activeStatementId = newActiveStatement._id
-      draft.originalQueries = newActiveStatementQuery
-      draft.draftQueries = newActiveStatementQuery
-      draft.draftHistory = newActiveStatementQuery
+    case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
+      if (action.payload.key) {
+        const newActiveStatement = state.statements.find((hit) => hit._id === action.payload.key );
+        const newActiveStatementQuery = JSON.parse(newActiveStatement._source.queries)
+        draft.activeStatementId = newActiveStatement._id
+        draft.originalQueries = newActiveStatementQuery
+        draft.draftQueries = newActiveStatementQuery
+        draft.draftHistory = newActiveStatementQuery
+      }
       break;
 
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:

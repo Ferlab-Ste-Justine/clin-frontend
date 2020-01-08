@@ -100,7 +100,6 @@ class Statement extends React.Component {
     this.onFocus=this.onFocus.bind(this)
     this.onBlur=this.onBlur.bind(this)
     this.handleCancelModal = this.handleCancelModal.bind(this);
-    this.mySuperFunction = this.mySuperFunction.bind(this);
 
   }
 
@@ -511,11 +510,6 @@ class Statement extends React.Component {
     const { value } = e.target;
     this.setState({saveTitleModalInputValue:value})
   }
-
-  mySuperFunction(e) {
-    console.log(`+ superfuction called`);
-  }
-
 
   render() {
     const { activeQuery, data, externalData, options, intl, facets, matches, categories,

@@ -24,7 +24,8 @@ import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
   searchVariants, commitHistory,
-  getStatements, createStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement, } from '../../../actions/variant';
+  getAndSelectStatement, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
+  createStatement, } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
@@ -225,26 +226,26 @@ class PatientVariantScreen extends React.Component {
 
   handleCopy(row, col) {
     const data = this.getData();
-
     return JSON.stringify(data[row]);
   }
 
   handleGetStatements() {
      const { actions } = this.props;
-
-     actions.getStatements();
-
+     actions.getAndSelectStatement();
   }
 
   handleCreateStatement(newStatement) {
     const { actions } = this.props;
-
-    actions.createStatement(newStatement);
+    actions.createDraftStatement(newStatement);
   }
 
   handleUpdateStatement(id, title, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
-    actions.updateStatement(id, title, switchCurrentStatementToDefault);
+    if (id === 'draft') {
+      actions.createStatement(id, title, switchCurrentStatementToDefault);
+    } else {
+      actions.updateStatement(id, title, switchCurrentStatementToDefault);
+    }
   }
 
   handleDeleteStatement(id) {
@@ -269,7 +270,6 @@ class PatientVariantScreen extends React.Component {
 
       return results[activeQuery]
     }
-
     return [];
   }
 
@@ -496,7 +496,7 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
-    getStatements, createStatement, updateStatement, deleteStatement, selectStatement, duplicateStatement,
+    getAndSelectStatement, createDraftStatement, createStatement, updateStatement, deleteStatement, selectStatement, duplicateStatement, saveStatement,
   }, dispatch),
 });
 
