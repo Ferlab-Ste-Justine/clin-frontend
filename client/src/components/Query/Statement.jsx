@@ -231,8 +231,7 @@ class Statement extends React.Component {
   duplicateStatement(e) {
     let id =  e.target ? e.target.getAttribute('dataid') : e
     let id2 =  e.currentTarget ? e.currentTarget.getAttribute('dataid') : e
-    console.log(`+ id=${id}`)
-    console.log(`+ id2=${id2}`)
+
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
@@ -244,7 +243,6 @@ class Statement extends React.Component {
 
   updateStatement(e) {
     let id =  e.target ? e.target.getAttribute('dataid') : e
-    console.log(`+ id=${id}`)
     if (!id) {
       id = this.props.activeStatementId
     }
@@ -275,17 +273,11 @@ class Statement extends React.Component {
   }
 
   selectStatement(e) {
-
-    //console.log('+ ICICCC ?')
     let  id = e.target ? e.target.getAttribute('dataid') : e
-
-    console.log(`+ id1=${id}`)
-
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
-    console.log(`+ id2=${id}`)
     this.props.onSelectStatementCallback(id);
   }
 
@@ -520,10 +512,10 @@ class Statement extends React.Component {
     const { Panel } = Collapse;
     const { Option } = Select;
 
-    const { expandIconPosition, selectIsOpen } = this.state;
+    const { expandIconPosition, selectIsOpen, titleWidth } = this.state;
     if (!data) return null;
     const { display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
-      saveTitleModalVisible, saveTitleModalConfirmLoading,
+      saveTitleModalVisible, saveTitleModalConfirmLoading, saveTitleModalInputValue,
     } = this.state;
     const {
       editable, reorderable, removable, duplicatable,
@@ -567,7 +559,7 @@ class Statement extends React.Component {
       return [...accumulator, (
         <div className={classNames.join(' ')} key={query.key}>
           <Checkbox
-            className={styleStatement.querySelector}
+            className={isChecked ?  `${styleStatement.check} ${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}` : `${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}`}
             key={`selector-${query.key}`}
             value={query.key}
             checked={isChecked}
@@ -634,6 +626,7 @@ class Statement extends React.Component {
     const contextSelectStatement = ({ key }) => {
       this.selectStatement(key)
     }
+    activeStatementCanBeSaved = data.title !== saveTitleModalInputValue
 
     return (
       <div className={styleStatement.statement}>
@@ -663,6 +656,9 @@ class Statement extends React.Component {
               <div>
                 <Input
                     id="statementTitle"
+                    placeHolder={statementTitle}
+                    onChange={this.onChange}
+                    autocomplete="off"
                     value={statementTitle}
                     // onChange={this.onChange}
                     addonBefore={(

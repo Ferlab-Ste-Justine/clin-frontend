@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader, Tabs, Button,
 } from 'antd';
-import { cloneDeep, find, flatten } from 'lodash';
+import { cloneDeep, find, flatten, map } from 'lodash';
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -281,18 +281,19 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab,
     } = this.state;
-
-
     const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
     const searchData = [];
+    const reverseCategories = {}
     if (schema.categories) {
       schema.categories.forEach((category) => {
         searchData.push({
           id: category.id,
+          subid: null,
           type: 'category',
           label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
           data: category.filters ? category.filters.reduce((accumulator, filter) => {
             const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
+              reverseCategories[facet.id] = category.id
               return {
                 id: facet.id,
                 value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
@@ -304,11 +305,13 @@ class PatientVariantScreen extends React.Component {
         })
       })
     }
+
     if (facets[activeQuery]) {
       Object.keys(facets[activeQuery])
         .forEach((key) => {
           searchData.push({
-            id: key,
+            id: reverseCategories[key],
+            subid: key,
             type: 'filter',
             label: intl.formatMessage({ id: `screen.patientvariant.filter_${key}` }),
             data: facets[activeQuery][key].map((value) => {
@@ -321,30 +324,24 @@ class PatientVariantScreen extends React.Component {
           })
         })
     }
+
     const tokenizedSearchData = searchData.reduce((accumulator, group) => {
       if (group.data) {
         group.data.forEach(datum => {
-          if (group.type === 'category') {
-            accumulator.push({
-              id: group.id,
-              type: group.type,
-              label: group.label,
-              value: datum.value,
-            })
-          } else {
-            accumulator.push({
-              id: group.id,
-              type: group.type,
-              label: group.label,
-              value: datum.value,
-              count: datum.count,
-            })
-          }
+          accumulator.push({
+            id: group.id,
+            subid: group.subid || datum.id,
+            type: group.type,
+            label: group.label,
+            value: datum.value,
+            count: datum.count || null
+          })
         })
       }
 
       return accumulator;
     }, [])
+
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer)
 

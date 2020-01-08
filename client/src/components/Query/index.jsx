@@ -308,8 +308,6 @@ class Query extends React.Component {
     const menuMaximize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.maximize' });
     const menuMinimize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.minimize' });
     const menuDuplicate = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
-    const menuRevert = intl.formatMessage({ id: 'screen.patientvariant.query.menu.revert' });
-    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientvariant.query.menu.advancedEditor' });
     const menuDelete = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
     const titleMetaIsPresent = this.hasTitle();
 
@@ -402,6 +400,11 @@ class Query extends React.Component {
             <span>{results.toLocaleString('en-US').replace(',', ' ')}</span>
           </div>
         </div>
+        {draft.instructions.length===0 ?
+            <div className={styleQuery.emptyQuery}>
+                Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête
+            </div>
+         :
         <div className={styleQuery.instructions}>
           { draft.instructions.map((item, index) => {
             switch (item.type) {
@@ -466,19 +469,18 @@ class Query extends React.Component {
                        />
                     );
                 }else if(type === FILTER_TYPE_GENERICBOOL) {
-
                   const categoryInfo =find(categories, ['id', category]);
                   const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
-
                   const allOption = []
                   Object.keys(categoryData.search).map((keyName) => {
-                      const data = find(searchData, ['id', keyName])
-                      if (data && data.data[0]) {
-                        const count = data.data[0].count
-                        allOption.push({value:keyName , count:count})
-                      }
+                    const datum = facets[keyName]
+                    if (datum && datum[0]) {
+                      allOption.push({
+                        value: keyName,
+                        count: datum[0].count
+                      })
                     }
-                  )
+                  })
                    return (
                        <GenericBooleanFilter
                         index={index}
@@ -552,6 +554,7 @@ class Query extends React.Component {
             }
           })}
         </div>
+        }
       </div>
     );
   }

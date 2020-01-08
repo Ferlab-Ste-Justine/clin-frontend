@@ -5,12 +5,12 @@
   width: 100%;
 
   .toolbar {
-
+    background-color: $active-background-color;
     display: flex;
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: -2px;
+    height:26px;
 
     .title {
 
@@ -73,14 +73,13 @@
       display: flex;
       justify-content: flex-end;
       width: 120px;
-      margin-right: 3px;
+      margin-right: 12px;
       >span {
         font-family: $font;
         font-size: $little-font;
-        font-weight: $font-weight-medium;
         letter-spacing: $small-letter-spacing;
         border-radius: 2px;
-        padding: 1px 5px;
+        padding: 0 5px;
       }
     }
 
@@ -89,8 +88,7 @@
   .instructions {
     display: flex;
     flex-wrap: wrap;
-    background-color: #ffffff;
-    margin-top: 5px;
+    margin: 8px 0;
     padding-left: 4px;
 
     > * {
@@ -104,10 +102,7 @@
 .dirtyQuery {
 }
 
-.activeQuery {
-  background-color: $active-background-color;
-
-  .count {
+.activeQuery {  .count {
     >span {
       background-color: $tag-active-background-color;
       color: $tag-active-text-color;
@@ -116,12 +111,20 @@
 }
 
 .inactiveQuery {
-  background-color: $inactive-background-color;
-
   .count {
     >span {
       background-color: $tag-inactive-background-color;
       color: $tag-inactive-text-color;
     }
   }
+}
+
+.emptyQuery{
+color: rgb(229, 107, 26);
+font-family:$font;
+font-size: $little-font;
+font-weight: 500;
+letter-spacing:$small-letter-spacing;
+margin: 8px 0;
+
 }
