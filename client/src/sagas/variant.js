@@ -163,11 +163,9 @@ function* createStatement(action) {
     if (!activeStatement) {
       throw new Error('Statement not found');
     }
-    console.log(`+ activeStatement=${JSON.stringify(activeStatement)}`)
     const title = action.payload.title ? action.payload.title : activeStatement._source.title
     const description = activeStatement._source.description
     const statementResponse = yield Api.createStatement(draftQueries, title, description);
-    console.log(`+ statementResponse=${JSON.stringify(statementResponse)}`)
     const newKey = statementResponse.payload.data.data.id
 
     if (statementResponse.error) {
@@ -216,7 +214,7 @@ function* deleteStatement(action) {
       if (statementResponse.error) {
           throw new ApiError(statementResponse.error);
       }
-      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {} });
+      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {}  });
       yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
     } catch (e) {
         yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });

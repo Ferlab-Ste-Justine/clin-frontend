@@ -1,7 +1,7 @@
 /* eslint-disable  */
 import PropTypes from 'prop-types';
 import {produce} from 'immer';
-import {cloneDeep, findIndex, isEqual, last} from 'lodash';
+import {cloneDeep, findIndex, isEqual, last, remove} from 'lodash';
 import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
@@ -185,8 +185,16 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         draft.originalQueries = newActiveStatementQuery
         draft.draftQueries = newActiveStatementQuery
         draft.draftHistory = newActiveStatementQuery
+      } else {
+        draft.activeStatementId = null
+        draft.statements = []
       }
       break;
+
+      case actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED:
+        draft.activeStatementId = null
+        draft.statements = []
+        break;
 
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
       const { newStatement } = payload;
