@@ -404,7 +404,6 @@ class Query extends React.Component {
             <div className={styleQuery.emptyQuery}>
                 Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête
             </div>
-
          :
         <div className={styleQuery.instructions}>
           { draft.instructions.map((item, index) => {
@@ -470,19 +469,18 @@ class Query extends React.Component {
                        />
                     );
                 }else if(type === FILTER_TYPE_GENERICBOOL) {
-
                   const categoryInfo =find(categories, ['id', category]);
                   const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
-
                   const allOption = []
                   Object.keys(categoryData.search).map((keyName) => {
-                      const data = find(searchData, ['id', keyName])
-                      if (data && data.data[0]) {
-                        const count = data.data[0].count
-                        allOption.push({value:keyName , count:count})
-                      }
+                    const datum = facets[keyName]
+                    if (datum && datum[0]) {
+                      allOption.push({
+                        value: keyName,
+                        count: datum[0].count
+                      })
                     }
-                  )
+                  })
                    return (
                        <GenericBooleanFilter
                         index={index}
