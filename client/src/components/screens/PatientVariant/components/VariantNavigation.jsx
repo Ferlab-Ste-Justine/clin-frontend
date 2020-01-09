@@ -202,10 +202,9 @@ class VariantNavigation extends React.Component {
             case FILTER_TYPE_GENERICBOOL:
               const allOption = []
               Object.keys(categoryData.search).map((keyName) => {
-                  const data = find(searchData, ['id', keyName])
-                  if (data && data.data[0]) {
-                    const count = data.data[0].count
-                    allOption.push({value:keyName , count:count})
+                  const datum = data[keyName]
+                  if (datum && datum[0]) {
+                    allOption.push({value:keyName , count: datum[0].count})
                   }
                 }
               )
