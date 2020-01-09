@@ -224,6 +224,7 @@ class Statement extends React.Component {
         instructions: []
       }]
     };
+    this.setState({statementTitle: ''})
     this.props.onCreateDraftStatementCallback(newStatement)
     this.handleNewQuery(this,newStatement.queries[0])
 
@@ -231,11 +232,11 @@ class Statement extends React.Component {
   }
 
   duplicateStatement(e) {
-    let id =  e.target ? e.target.getAttribute('dataid') : e
-    let id2 =  e.currentTarget ? e.currentTarget.getAttribute('dataid') : e
+    let id =  e.currentTarget ? e.currentTarget.getAttribute('dataid') : e
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
+      this.setState({statementTitle: ''})
     }
 
     if (e.stopPropagation) { e.stopPropagation(); }
@@ -246,6 +247,7 @@ class Statement extends React.Component {
     let id =  e.target ? e.target.getAttribute('dataid') : e
     if (!id) {
       id = this.props.activeStatementId
+      this.setState({statementTitle: ''})
     }
     if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, false);
@@ -256,6 +258,7 @@ class Statement extends React.Component {
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
+      this.setState({statementTitle: ''})
     }
 
     if (e.stopPropagation) { e.stopPropagation(); }
@@ -267,6 +270,7 @@ class Statement extends React.Component {
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
+      this.setState({statementTitle: ''})
     }
 
     if (e.stopPropagation) { e.stopPropagation(); }
@@ -279,6 +283,7 @@ class Statement extends React.Component {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
+    this.setState({statementTitle: ''})
     this.props.onSelectStatementCallback(id);
   }
 
@@ -465,7 +470,6 @@ class Statement extends React.Component {
       key: uuidv1(),
       instructions: []
     };
-    console.log(`+ newQuery=${JSON.stringify(newQuery)}`)
     const newDisplay = cloneDeep(this.props.display);
     display.push(newDisplay);
     this.setState({
@@ -512,9 +516,6 @@ class Statement extends React.Component {
     const foundActiveStatement = statements.find(statement => statement._id === activeStatementId)
     const activeStatement = foundActiveStatement ? foundActiveStatement._source : {}
     const statementsToDisplay = statements.filter(statement => statement._id != activeStatementId)
-    // remove(statementsToDisplay, function(e) {
-    //   return e._id == activeStatementId
-    // });
     const statementTitle = activeStatement.title ? activeStatement.title : ""
     const { Panel } = Collapse;
     const { Option } = Select;
@@ -631,6 +632,7 @@ class Statement extends React.Component {
     }
 
     const contextSelectStatement = ({ key }) => {
+
       this.selectStatement(key)
     }
     activeStatementCanBeSaved = data.title !== saveTitleModalInputValue
@@ -663,11 +665,9 @@ class Statement extends React.Component {
               <div>
                 <Input
                     id="statementTitle"
-                    placeHolder={statementTitle}
                     onChange={this.onChange}
                     autocomplete="off"
-                    value={statementTitle}
-                    // onChange={this.onChange}
+                    value={(this.state.statementTitle ? this.state.statementTitle: statementTitle)}
                     addonBefore={(
                         <Button
                             type="default"
@@ -711,11 +711,10 @@ class Statement extends React.Component {
                     {saveText}
                   </Button>
                   <Button
-                      type="disabled"
+                      type="default"
                       className={styleStatement.button}
                       type="default"
-                      //disabled={activeStatementIsDraft}
-                      disabled={true} // @TODO
+                      disabled={activeStatementIsDraft}
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
@@ -758,7 +757,7 @@ class Statement extends React.Component {
                                            icon={ic_content_copy}
                                            style={{ marginLeft: 10 }}
                                            dataid={statementOptions._id}
-                                           //onClick={this.duplicateStatement}
+                                           onClick={this.duplicateStatement}
                                   />
                                   <IconKit size={20}
                                            icon={ic_delete}
