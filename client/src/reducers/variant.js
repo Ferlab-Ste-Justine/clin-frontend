@@ -1,7 +1,7 @@
 /* eslint-disable  */
 import PropTypes from 'prop-types';
 import {produce} from 'immer';
-import {cloneDeep, findIndex, isEqual, last, remove} from 'lodash';
+import {cloneDeep, findIndex, isEqual, last, remove } from 'lodash';
 import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
@@ -42,6 +42,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
   return produce(state, (draft) => {
     const {draftQueries, draftHistory} = draft;
     const { payload } = action
+
     switch (action.type) {
       case actions.USER_LOGOUT_SUCCEEDED:
       case actions.USER_SESSION_HAS_EXPIRED:
@@ -147,37 +148,50 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
         if (total > 0) {
           draft.statements = hits.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
-          let defaultStatement = null;
-          if (keyForStatementSelectionInsteadOfTheDefaultOne) {
-            defaultStatement = draft.statements.find((hit) => hit._id === keyForStatementSelectionInsteadOfTheDefaultOne );
-          } else {
-            defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
-          }
-          let activeStatement = null;
-          if (defaultStatement) {
-            activeStatement = defaultStatement
-          } else {
-            activeStatement = draft.statements[0]
-          }
-          const activeStatementQuery = JSON.parse(activeStatement._source.queries)
-          draft.activeStatementId = activeStatement._id
-          draft.originalQueries = activeStatementQuery
-          draft.draftQueries = activeStatementQuery
-          draft.draftHistory = activeStatementQuery
+          // let defaultStatement = null;
+          // if (keyForStatementSelectionInsteadOfTheDefaultOne) {
+          //   defaultStatement = draft.statements.find((hit) => hit._id === keyForStatementSelectionInsteadOfTheDefaultOne );
+          // } else {
+          //   defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
+          // }
+          // let activeStatement = null;
+          // if (defaultStatement) {
+          //   activeStatement = defaultStatement
+          // } else {
+          //   activeStatement = draft.statements[0]
+          // }
+          // const activeStatementQuery = JSON.parse(activeStatement._source.queries)
+          // draft.activeStatementId = activeStatement._id
+          // draft.originalQueries = activeStatementQuery
+          // draft.draftQueries = activeStatementQuery
+          // draft.draftHistory = activeStatementQuery
+        } else {
+          draft.statements = []
         }
         break;
 
     case actions.PATIENT_VARIANT_STATEMENT_SELECTION:
-        const activeStatement = state.statements.find((hit) => hit._id === action.payload.key );
-        const activeStatementQuery = JSON.parse(activeStatement._source.queries)
-        draft.activeStatementId = activeStatement._id
-        draft.originalQueries = activeStatementQuery
-        draft.draftQueries = activeStatementQuery
-        draft.draftHistory = activeStatementQuery
-        break;
+      let defaultStatement
+
+      if (action.payload.key) {
+        defaultStatement = state.statements.find((hit) => hit._id === action.payload.key );
+      } else {
+        defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
+      }
+      let activeStatement = null;
+      if (defaultStatement) {
+        activeStatement = defaultStatement
+      } else {
+        activeStatement = draft.statements[0]
+      }
+      const activeStatementQuery = JSON.parse(activeStatement._source.queries)
+      draft.activeStatementId = activeStatement._id
+      draft.originalQueries = activeStatementQuery
+      draft.draftQueries = activeStatementQuery
+      draft.draftHistory = activeStatementQuery
+      break;
 
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-    case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
       if (action.payload.key) {
         const newActiveStatement = state.statements.find((hit) => hit._id === action.payload.key );
         const newActiveStatementQuery = JSON.parse(newActiveStatement._source.queries)
@@ -186,8 +200,28 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         draft.draftQueries = newActiveStatementQuery
         draft.draftHistory = newActiveStatementQuery
       } else {
-        draft.activeStatementId = null
         draft.statements = []
+        draft.activeStatementId = null
+      }
+      break;
+
+    case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
+      if (action.payload.statementKeyToUpdate && action.payload.newKey) {
+        draft.statements = state.statements
+        console.log(`+ draft.statements=${JSON.stringify(draft.statements)}`)
+        // update the key // from 'draft' to ES _id
+        const index = findIndex(draft.statements, { _id: action.payload.statementKeyToUpdate})
+        console.log(`+ index=${index}`)
+        let oldStatementToReplace = draft.statements.find((hit) => hit._id === action.payload.statementKeyToUpdate );
+        console.log(`+ oldStatementToReplace=${JSON.stringify(oldStatementToReplace)}`)
+        oldStatementToReplace._id = action.payload.newKey
+        draft.statements.splice(index, 1, oldStatementToReplace)
+        console.log(`+ draft.statements=${JSON.stringify(draft.statements)}`)
+        draft.activeStatementId = action.payload.newKey
+        const activeStatementQuery = JSON.parse(oldStatementToReplace._source.queries)
+        draft.originalQueries = activeStatementQuery
+        draft.draftQueries = activeStatementQuery
+        draft.draftHistory = activeStatementQuery
       }
       break;
 
@@ -197,7 +231,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         remove(draft.statements, function(e) {
           return e._id == statementKeyToRemove
         });
-        console.log(`+ draft.statements=${JSON.stringify(draft.statements)}`)
+
         if (draft.statements.length > 0 ) {
           draft.statements = draft.statements.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
           const defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );

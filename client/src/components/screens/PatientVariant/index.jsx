@@ -57,7 +57,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCopy = this.handleCopy.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.handleGetStatements = this.handleGetStatements.bind(this);
-    this.handleCreateStatement = this.handleCreateStatement.bind(this);
+    this.handleCreateDraftStatement = this.handleCreateDraftStatement.bind(this);
     this.handleUpdateStatement = this.handleUpdateStatement.bind(this);
     this.handleDeleteStatement = this.handleDeleteStatement.bind(this);
     this.handleSelectStatement = this.handleSelectStatement.bind(this);
@@ -234,7 +234,7 @@ class PatientVariantScreen extends React.Component {
      actions.getAndSelectStatement();
   }
 
-  handleCreateStatement(newStatement) {
+  handleCreateDraftStatement(newStatement) {
     const { actions } = this.props;
     actions.createDraftStatement(newStatement);
   }
@@ -420,7 +420,7 @@ class PatientVariantScreen extends React.Component {
                         onDuplicateCallback={this.handleQueryDuplication}
                         onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
                         onGetStatementsCallback={this.handleGetStatements}
-                        onCreateStatementCallback={this.handleCreateStatement}
+                        onCreateDraftStatementCallback={this.handleCreateDraftStatement}
                         onUpdateStatementCallback={this.handleUpdateStatement}
                         onDeleteStatementCallback={this.handleDeleteStatement}
                         onSelectStatementCallback={this.handleSelectStatement}

@@ -103,6 +103,9 @@ function* getAndSelectStatement(action) {
         response: statementResponse.payload.data,
     };
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload });
+    yield call(selectStatement, { payload: { id: action.payload.keyForStatementSelectionInsteadOfTheDefaultOne } });
+
+    /*
     const { draftQueries } = yield select(state => state.variant);
 
     const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
@@ -115,7 +118,7 @@ function* getAndSelectStatement(action) {
         query: newActiveQueryKey,
       };
       yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
-    }
+    }*/
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
   }
@@ -123,6 +126,7 @@ function* getAndSelectStatement(action) {
 
 function* updateStatement(action) {
     try {
+
       const statementKey = action.payload.id
       const {draftQueries, statements} = yield select(state => state.variant);
       const activeStatement = statements.find((hit) => hit._id === statementKey);
@@ -135,20 +139,21 @@ function* updateStatement(action) {
       const switchCurrentStatementToDefault = action.payload.switchCurrentStatementToDefault
       const isDefault = switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
       const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
-      console.log(`+ ${JSON.stringify(statementResponse)}`)
+      // console.log(`+ ${JSON.stringify(statementResponse)}`)
       if (statementResponse.error) {
         throw new ApiError(statementResponse.error);
       }
 
-      if (switchCurrentStatementToDefault) {
-        // since key is empty the reducer will do nothing but the sequence of action will be maintained
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
-        // update all statements since there is a previous one that are no longer default
-        yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
-      } else {
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
-      }
+      // if (switchCurrentStatementToDefault) {
+      //   // since key is empty the reducer will do nothing but the sequence of action will be maintained
 
+      //   // update all statements since there is a previous one that are no longer default
+
+      // } else {
+      //   yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
+      // }
+        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
+        yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
     } catch (e) {
       yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     }
@@ -171,12 +176,11 @@ function* createStatement(action) {
       throw new ApiError(statementResponse.error);
     }
 
-    yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
-    // update all statements since there is a previous one that have different key
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,  payload: { keyForStatementSelectionInsteadOfTheDefaultOne: newKey } });
+    yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { newKey, statementKeyToUpdate: statementKey } });
 
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
+    yield call(getAndSelectStatement, { payload: { } });
   }
 }
 

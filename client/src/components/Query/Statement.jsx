@@ -7,7 +7,7 @@ import {
 } from 'antd';
 const { Option } = Select;
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every,
+  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every, remove,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -89,7 +89,7 @@ class Statement extends React.Component {
     this.findQueryTitle = this.findQueryTitle.bind(this)
     this.getStatements = this.getStatements.bind(this);
     this.onModalSaveTitleInputChange = this.onModalSaveTitleInputChange.bind(this);
-    this.createStatement = this.createStatement.bind(this);
+    this.createDraftStatement = this.createDraftStatement.bind(this);
     this.duplicateStatement = this.duplicateStatement.bind(this);
     this.updateStatement = this.updateStatement.bind(this);
     this.setStatementAsDefault = this.setStatementAsDefault.bind(this);
@@ -213,7 +213,7 @@ class Statement extends React.Component {
   getStatements() {
     this.props.onGetStatementsCallback();
   }
-  createStatement() {
+  createDraftStatement() {
 
     const newStatement = {
       id: 'draft',
@@ -224,7 +224,9 @@ class Statement extends React.Component {
         instructions: []
       }]
     };
-    this.props.onCreateStatementCallback(newStatement)
+    this.props.onCreateDraftStatementCallback(newStatement)
+    this.handleNewQuery(this,newStatement.queries[0])
+
 
   }
 
@@ -456,13 +458,15 @@ class Statement extends React.Component {
     });
   }
 
-  handleNewQuery() {
+  handleNewQuery(event, query= '') {
     const { onEditCallback } = this.props;
     const { display } = this.state;
-    const newQuery = {
+
+    const newQuery = query ? query : {
       key: uuidv1(),
       instructions: []
     };
+    console.log(`+ newQuery=${JSON.stringify(newQuery)}`)
     const newDisplay = cloneDeep(this.props.display);
     display.push(newDisplay);
     this.setState({
@@ -508,6 +512,10 @@ class Statement extends React.Component {
       searchData, target, activeStatementId, statements } = this.props;
     const foundActiveStatement = statements.find(statement => statement._id === activeStatementId)
     const activeStatement = foundActiveStatement ? foundActiveStatement._source : {}
+    const statementsToDisplay = statements.filter(statement => statement._id != activeStatementId)
+    // remove(statementsToDisplay, function(e) {
+    //   return e._id == activeStatementId
+    // });
     const statementTitle = activeStatement.title ? activeStatement.title : ""
     const { Panel } = Collapse;
     const { Option } = Select;
@@ -614,7 +622,7 @@ class Statement extends React.Component {
         };
         this.setState({
             saveTitleModalVisible: false
-        }, this.props.onCreateStatementCallback(newStatement))
+        }, this.props.onCreateDraftStatementCallback(newStatement))
     };
 
     //const activeStatementCanBeDeleted = !data.lastUpdatedOn
@@ -687,7 +695,7 @@ class Statement extends React.Component {
                   <Button
                       type="default"
                       disabled={activeStatementIsDraft}
-                      onClick={this.createStatement}
+                      onClick={this.createDraftStatement}
                   >
                     <IconKit size={20} icon={ic_note_add} />
                     {newText}
@@ -734,7 +742,7 @@ class Statement extends React.Component {
                       overlay={ (statements && statements.length > 0 ? (
                         <Menu onClick={contextSelectStatement}>
                           {
-                            statements.map(statementOptions => (
+                            statementsToDisplay.map(statementOptions => (
                                 <Menu.Item key={statementOptions._id}>
 
                                   {statementOptions._source.title}
@@ -849,7 +857,7 @@ Statement.propTypes = {
   onDuplicateCallback: PropTypes.func,
   onDraftHistoryUndoCallback: PropTypes.func,
   onGetStatementsCallback: PropTypes.func,
-  onCreateStatementCallback: PropTypes.func,
+  onCreateDraftStatementCallback: PropTypes.func,
   onUpdateStatementCallback: PropTypes.func,
   onDeleteStatementCallback: PropTypes.func,
   onSelectStatementCallback: PropTypes.func,
@@ -882,7 +890,7 @@ Statement.defaultProps = {
   onDuplicateCallback: () => {},
   onDraftHistoryUndoCallback: () => {},
   onGetStatementsCallback: () => {},
-  onCreateStatementCallback: () => {},
+  onCreateDraftStatementCallback: () => {},
   onUpdateStatementCallback: () => {},
   onDeleteStatementCallback: () => {},
   onSelectStatementCallback: () => {},
