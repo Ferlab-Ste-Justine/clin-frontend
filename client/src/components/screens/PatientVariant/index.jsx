@@ -407,9 +407,6 @@ class PatientVariantScreen extends React.Component {
                             selectable: true,
                             undoable: true,
                         }}
-                        display={{
-                            compoundOperators: true,
-                        }}
                         onSelectCallback={this.handleQuerySelection}
                         onSortCallback={this.handleStatementSort}
                         onEditCallback={this.handleQueryChange}
