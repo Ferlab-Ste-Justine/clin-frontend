@@ -800,7 +800,7 @@ class Statement extends React.Component {
                           Intersection
                         </Button>
                     </Menu.Item>
-                    <Menu.Item key={SUBQUERY_TYPE_SUBTRACT} disabled={checkedQueriesCount<2 ? true : false}>
+                    <Menu.Item key={SUBQUERY_TYPE_UNITE} disabled={checkedQueriesCount<2 ? true : false}>
                         <Button
                           className={`${styleStatement.button} ${styleStatement.combineBtn}` }
                           disabled={checkedQueriesCount<2 ? true : false}
@@ -811,7 +811,7 @@ class Statement extends React.Component {
                           Union
                         </Button>
                     </Menu.Item>
-                    <Menu.Item key={SUBQUERY_TYPE_UNITE} disabled={checkedQueriesCount<2 ? true : false}>
+                    <Menu.Item key={SUBQUERY_TYPE_SUBTRACT} disabled={checkedQueriesCount<2 ? true : false}>
                         <Button
                             className={`${styleStatement.button} ${styleStatement.combineBtn}` }
                             disabled={checkedQueriesCount<2 ? true : false}
