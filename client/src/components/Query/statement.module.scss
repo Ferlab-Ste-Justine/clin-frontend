@@ -56,9 +56,18 @@
         }
       }
 
+              .star{
+                color:#f8a335;
+              }
 
+    }
 
-      button{
+    .toolbar {
+    }
+  }
+
+  .button{
+
         border:none;
         box-shadow:none;
         padding: 0 6px;
@@ -72,7 +81,9 @@
         transition:none;
         i{
           padding-right:4px;
-          color: rgba(35, 55, 80, 0.38);
+          color: $color-disable;
+
+
         }
 
         .starFilled{
@@ -80,7 +91,7 @@
         }
 
         .openSelect{
-            color:#1d8bc6;
+            color:#125a90;
         }
 
 
@@ -89,29 +100,67 @@
         }
 
         &:hover{
-          color:#1d8bc6;
+          color:#125a90;
           i:not(.star){
-            color:#1d8bc6;
+            color:#125a90;
           }
-        .star{
-          color:#f8a335;
-        }
-
 
           &:disabled {
-            color: rgba(35, 55, 80, 0.78);
+            color: $color-disable;
             i{
-              color: rgba(35, 55, 80, 0.78);
+              color: $color-disable;
             }
           }
-
-
+        }
+      &:disabled {
+        background-color:#ffffff;
+        color:$color-disable;
+        i{
+            opacity:$disable-opacity;
         }
       }
-    }
 
-    .toolbar {
-    }
+  }
+  .menuCombine{
+        border:none;
+         li{
+            border:none;
+            padding:0;
+            &:hover{
+            border:none;
+            }
+            button{
+                svg{
+                 width:24px;
+                 height:24px;
+                 margin-right:8px;
+                 path{
+                     fill:$color-disable;
+                 }
+                }
+                &:hover{
+                border:none;
+                  path{
+                      fill:#1b7ab2;
+                  }
+
+                    &:disabled {
+                      color: $color-disable;
+                      path{
+                        fill: $color-disable;
+                      }
+                    }
+                }
+
+                  &:disabled {
+                    svg{
+                        opacity:$disable-opacity;
+                    }
+                  }
+            }
+
+         }
+
   }
 
   .body {
@@ -131,7 +180,7 @@
           span{
             background:none;
             span{
-                border:2px solid rgba(35, 55, 80, 0.38);
+                border:2px solid $color-disable;
             }
           }
         }

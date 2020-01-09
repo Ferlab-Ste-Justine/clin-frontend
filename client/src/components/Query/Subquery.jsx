@@ -138,7 +138,7 @@ class Subquery extends React.Component {
   }
 
   render() {
-    const { queryIndex, queryTitle } = this.props;
+    const { queryIndex, queryTitle, autoSelect } = this.props;
     if (queryIndex === -1) {
       this.handleClose();
       return null;
@@ -148,9 +148,8 @@ class Subquery extends React.Component {
         <Tag
           visible={this.isVisible()}
           onClose={this.handleClose}
-          className={`${style.tag} `}
-          color={this.isSelected() ? '#b5e6f7' : '#d1deea'}
-          onClick={this.handleSelect}
+          className={autoSelect? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
+          color={autoSelect ? '#b5e6f7' : '#d1deea'}
         >
           <Tag
             color="#FFFFFF"
@@ -159,7 +158,7 @@ class Subquery extends React.Component {
             { queryTitle }
 
           </Tag>
-          {this.isSelected() ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} /> : null}
+          {autoSelect ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} /> : null}
         </Tag>
       </span>
     );

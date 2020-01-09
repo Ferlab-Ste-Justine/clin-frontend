@@ -543,6 +543,7 @@ class Query extends React.Component {
                     options={options}
                     data={item.data}
                     intl={intl}
+                    autoSelect={active}
                     queryIndex={queryIndex}
                     queryTitle={queryTitle}
                     onEditCallback={this.handleSubqueryChange}
