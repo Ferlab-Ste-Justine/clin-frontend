@@ -2,9 +2,13 @@ import { flatten } from 'lodash';
 
 const Bloodhound = require('bloodhound-js');
 
-export const tokenizeObjectByKeys = (keys = ['label', 'value']) => (datum) => {
+export const tokenizeObjectByKeys = (keys = ['value']) => (datum) => {
   const tokens = [];
-  keys.forEach(key => tokens.push(Bloodhound.tokenizers.whitespace(datum[key])));
+  keys.forEach((key) => {
+    if (datum[key].length > 2) {
+      tokens.push(Bloodhound.tokenizers.whitespace(datum[key].replace(/((?![\w:]).)/g, ' ')));
+    }
+  });
 
   return flatten(tokens);
 };

@@ -28,11 +28,12 @@ class VariantNavigation extends React.Component {
       searchSelection: {},
       searchResults: [],
     };
+    this.searchQuery = '';
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
     this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
-    this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 250, { leading: true });
+    this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 300, { leading: true });
     this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
   }
@@ -54,20 +55,16 @@ class VariantNavigation extends React.Component {
             accumulator[result.id].matches.push(result)
             return accumulator;
           }, {});
+          this.searchQuery = query;
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
-            searchSelection: {
-              value: query
-            }
           })
         })
       })
-    } else {
+    } else if (this.searchQuery !== query) {
+      this.searchQuery = query;
       this.setState({
         searchResults: [],
-        searchSelection: {
-          value: query
-        }
       })
     }
   }
@@ -304,9 +301,11 @@ class VariantNavigation extends React.Component {
         </AutoComplete.OptGroup>
       )
     })
-    autocompletes.unshift((<AutoComplete.Option key="count" disabled>
-      <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
-    </AutoComplete.Option>))
+    if (this.searchQuery !== '') {
+      autocompletes.unshift((<AutoComplete.Option key="count" disabled>
+        <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
+      </AutoComplete.Option>))
+    }
 
     const generateMenuComponent = (searchSelection, children) => {
       if (!searchSelection.category || !searchSelection.filter) {
@@ -316,14 +315,13 @@ class VariantNavigation extends React.Component {
         ><Menu.SubMenu
             title={(
               <AutoComplete
+                key="autocompleter"
                 allowClear
                 autoFocus
-                optionLabelProp="value"
                 size="large"
                 dataSource={autocompletes}
                 onSearch={this.handleNavigationSearch}
                 onSelect={this.handleNavigationSelection}
-                value={searchSelection.value}
                 placeholder="Recherche de filtres"
               >
                 <Input prefix={<Icon type="search"/>}/>
@@ -340,6 +338,7 @@ class VariantNavigation extends React.Component {
         ><Menu.SubMenu
           title={(
             <AutoComplete
+              key="autocompleter"
               allowClear
               autoFocus
               optionLabelProp="value"
