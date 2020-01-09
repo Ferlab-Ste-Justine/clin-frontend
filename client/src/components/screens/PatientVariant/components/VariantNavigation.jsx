@@ -33,16 +33,17 @@ class VariantNavigation extends React.Component {
     this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
-    this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 300, { leading: true });
+    this.handleNavigationSearch = this.handleNavigationSearch.bind(this);
     this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
   }
 
   handleNavigationSearch(query) {
-    if (query && query.length > 1) {
+    if (query && query.length > 2) {
+      this.searchQuery = query;
       const { autocomplete } = this.props
       autocomplete.then(engine => {
-        engine.search(query, searchResults => {
+        engine.search(query, debounce(searchResults => {
           const groupedResults = searchResults.reduce((accumulator, result) => {
             if (!accumulator[result.id]) {
               accumulator[result.id] = {
@@ -55,11 +56,10 @@ class VariantNavigation extends React.Component {
             accumulator[result.id].matches.push(result)
             return accumulator;
           }, {});
-          this.searchQuery = query;
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
           })
-        })
+        }, 750, { leading: true }))
       })
     } else if (this.searchQuery !== query) {
       this.searchQuery = query;
@@ -70,6 +70,7 @@ class VariantNavigation extends React.Component {
   }
 
   handleNavigationSelection(datum) {
+    this.searchQuery = '';
     const selection = JSON.parse(datum)
     if (selection.type !== 'filter') {
       this.setState({
@@ -323,6 +324,7 @@ class VariantNavigation extends React.Component {
                 onSearch={this.handleNavigationSearch}
                 onSelect={this.handleNavigationSelection}
                 placeholder="Recherche de filtres"
+                value={this.searchQuery}
               >
                 <Input prefix={<Icon type="search"/>}/>
               </AutoComplete>
@@ -347,7 +349,7 @@ class VariantNavigation extends React.Component {
               onSearch={this.handleNavigationSearch}
               onSelect={this.handleNavigationSelection}
               placeholder="Recherche de filtres"
-              value=""
+              value={this.searchQuery}
             >
               <Input prefix={<Icon type="search" />}/>
             </AutoComplete>
