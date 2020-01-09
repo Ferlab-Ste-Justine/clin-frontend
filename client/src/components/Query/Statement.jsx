@@ -739,20 +739,15 @@ class Statement extends React.Component {
                         <IconKit size={20} icon={ic_share} />
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider} />
-                  <Button
-                      type="default"
-                      className={styleStatement.button}
-                  >
-                    <IconKit className={selectIsOpen ? styleStatement.openSelect : null}size={20} icon={ic_folder} />
-                  </Button>
 
                   <Dropdown.Button
+                      className={styleStatement.button}
                       icon={(<><IconKit className={selectIsOpen ? styleStatement.openSelect : null} icon={ic_folder} size={20}/>{myFilterText}</>)}
                       trigger={['click']}
                       placement={'bottomLeft'}
                       style={{ width: 250 }}
-                      //disabled={!(statements && statements.length > 0)}
-                      overlay={ (statements && statements.length > 0 ? (
+                      disabled={ (statementsToDisplay.length == 0) }
+                      overlay={ (statementsToDisplay && statementsToDisplay.length > 0 ? (
                         <Menu onClick={contextSelectStatement}>
                           {
                             statementsToDisplay.map(statementOptions => (
@@ -782,9 +777,7 @@ class Statement extends React.Component {
 
                                 </Menu.Item>))
                           }
-                          </Menu>) : (
-                        <Menu/>
-                      ))
+                          </Menu>):(<></>))
                   }
                   >
                   </Dropdown.Button>
