@@ -105,20 +105,6 @@ function* getAndSelectStatement(action) {
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload });
     yield call(selectStatement, { payload: { id: action.payload.keyForStatementSelectionInsteadOfTheDefaultOne } });
 
-    /*
-    const { draftQueries } = yield select(state => state.variant);
-
-    const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
-    yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: newActiveQueryKey } });
-    if (draftQueries) {
-      const { details } = yield select(state => state.patient);
-      const payload = {
-        patient: details.id,
-        statement: draftQueries,
-        query: newActiveQueryKey,
-      };
-      yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
-    }*/
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
   }
@@ -133,27 +119,19 @@ function* updateStatement(action) {
       if (!activeStatement) {
         throw new Error('Statement not found');
       }
-      console.log(`+ activeStatement=${JSON.stringify(activeStatement)}`)
+
       const title = action.payload.title ? action.payload.title : activeStatement._source.title
       const description = activeStatement._source.description
       const switchCurrentStatementToDefault = action.payload.switchCurrentStatementToDefault
       const isDefault = switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
       const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
-      // console.log(`+ ${JSON.stringify(statementResponse)}`)
+
       if (statementResponse.error) {
         throw new ApiError(statementResponse.error);
       }
 
-      // if (switchCurrentStatementToDefault) {
-      //   // since key is empty the reducer will do nothing but the sequence of action will be maintained
-
-      //   // update all statements since there is a previous one that are no longer default
-
-      // } else {
-      //   yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: statementKey } });
-      // }
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
-        yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
+      yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
+      yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
     } catch (e) {
       yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     }
@@ -180,7 +158,6 @@ function* createStatement(action) {
 
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
-    yield call(getAndSelectStatement, { payload: { } });
   }
 }
 
@@ -188,23 +165,21 @@ function* createStatement(action) {
 function* duplicateStatement(action) {
   try {
     const statementKey = action.payload.id
-    const { statements } = yield select(state => state.variant);
-    const activeStatement = statements.find((hit) => hit._id === statementKey);
-    if (!activeStatement) {
+    const {draftQueries, statements} = yield select(state => state.variant);
+    let statementToDuplicate = statements.find((hit) => hit._id === statementKey);
+    if (!statementToDuplicate) {
       throw new Error('Statement not found');
     }
 
-    const statementResponse = yield Api.createStatement(
-      JSON.parse(activeStatement._source.queries) || [],
-      `${activeStatement._source.title} Copy` ,
-      `${activeStatement._source.description}`
-    );
-    if (statementResponse.error) {
-      throw new ApiError(statementResponse.error);
-    }
-    // @TODO
-    yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: {} });
-    yield call(getAndSelectStatement, { payload: { } });
+    const newStatement = {
+      id: 'draft',
+      description: statementToDuplicate._source.description,
+      title: 'DUP-' + statementToDuplicate._source.title,
+      queries : draftQueries,
+    };
+
+    yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { newStatement } });
+    //yield call(selectStatement, { payload: { id: newStatement.id } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
   }
@@ -218,9 +193,7 @@ function* deleteStatement(action) {
           throw new ApiError(statementResponse.error);
       }
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {statementKeyToRemove: statementKey}  });
-      // yield delay(100)
-      // yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,  payload: { statementKeyToRemove: statementKey } });
-      //yield call(getAndSelectStatement, { payload: {} });
+
     } catch (e) {
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
     }

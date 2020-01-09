@@ -208,15 +208,15 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
       if (action.payload.statementKeyToUpdate && action.payload.newKey) {
         draft.statements = state.statements
-        console.log(`+ draft.statements=${JSON.stringify(draft.statements)}`)
+
         // update the key // from 'draft' to ES _id
         const index = findIndex(draft.statements, { _id: action.payload.statementKeyToUpdate})
-        console.log(`+ index=${index}`)
+
         let oldStatementToReplace = draft.statements.find((hit) => hit._id === action.payload.statementKeyToUpdate );
-        console.log(`+ oldStatementToReplace=${JSON.stringify(oldStatementToReplace)}`)
+
         oldStatementToReplace._id = action.payload.newKey
         draft.statements.splice(index, 1, oldStatementToReplace)
-        console.log(`+ draft.statements=${JSON.stringify(draft.statements)}`)
+
         draft.activeStatementId = action.payload.newKey
         const activeStatementQuery = JSON.parse(oldStatementToReplace._source.queries)
         draft.originalQueries = activeStatementQuery
@@ -251,18 +251,19 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         }
         break;
 
+    case actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED:
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
       const { newStatement } = payload;
-        const newDraftStatement = {
-          _id: newStatement.id,
-          _source: {
-            isDefault: false,
-            description: newStatement.description,
-            title: newStatement.title,
-            queries: JSON.stringify(newStatement.queries),
+      const newDraftStatement = {
+        _id: newStatement.id,
+        _source: {
+          isDefault: false,
+          description: newStatement.description,
+          title: newStatement.title,
+          queries: JSON.stringify(newStatement.queries),
 
-          }
-        };
+        }
+      };
       draft.statements = state.statements;
       draft.statements.push(newDraftStatement)
       draft.activeStatementId = newStatement.id;
