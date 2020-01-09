@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import {
-  all, put, takeLatest, select, race, call,
+  all, put, takeLatest, select, race, call, delay,
 } from 'redux-saga/effects';
 import { find, cloneDeep } from 'lodash';
 
@@ -173,7 +173,7 @@ function* createStatement(action) {
 
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
     // update all statements since there is a previous one that have different key
-    yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne: newKey } });
+    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,  payload: { keyForStatementSelectionInsteadOfTheDefaultOne: newKey } });
 
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
@@ -213,8 +213,10 @@ function* deleteStatement(action) {
       if (statementResponse.error) {
           throw new ApiError(statementResponse.error);
       }
-      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {}  });
-      yield call(getAndSelectStatement, { payload: {} });
+      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {statementKeyToRemove: statementKey}  });
+      // yield delay(100)
+      // yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,  payload: { statementKeyToRemove: statementKey } });
+      //yield call(getAndSelectStatement, { payload: {} });
     } catch (e) {
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
     }
@@ -243,15 +245,15 @@ function* selectStatement(action) {
 }
 
 export default function* watchedVariantSagas() {
-  yield race([
+  yield all([
     watchVariantSchemaFetch(),
     watchVariantSearch(),
     watchUndo(),
-    watchGetAndSelectStatement(),
     watchUpdateStatement(),
     watchDuplicateStatement(),
     watchDeleteStatement(),
     watchSelectStatement(),
     watchCreateStatement(),
+    watchGetAndSelectStatement(),
   ]);
 }

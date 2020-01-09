@@ -192,8 +192,29 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
       case actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED:
-        draft.activeStatementId = null
-        draft.statements = []
+        const {statementKeyToRemove} = action.payload
+        draft.statements = state.statements
+        remove(draft.statements, function(e) {
+          return e._id == statementKeyToRemove
+        });
+        console.log(`+ draft.statements=${JSON.stringify(draft.statements)}`)
+        if (draft.statements.length > 0 ) {
+          draft.statements = draft.statements.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
+          const defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
+          let activeStatement = null;
+          if (defaultStatement) {
+            activeStatement = defaultStatement
+          } else {
+            activeStatement = draft.statements[0]
+          }
+          const activeStatementQuery = JSON.parse(activeStatement._source.queries)
+          draft.activeStatementId = activeStatement._id
+          draft.originalQueries = activeStatementQuery
+          draft.draftQueries = activeStatementQuery
+          draft.draftHistory = activeStatementQuery
+        } else {
+          draft.activeStatementId = null
+        }
         break;
 
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:

@@ -5,7 +5,6 @@ const errorCallback = error => ({ error });
 
 axios.defaults.withCredentials = true;
 axios.defaults.crossdomain = true;
-axios.defaults.headers.common['Cache-Control'] = 'no-cache';
 
 const login = (username, password) => axios.post(`${window.CLIN.authServiceApiUrl}`, {
   username,
