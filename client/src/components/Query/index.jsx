@@ -409,9 +409,6 @@ class Query extends React.Component {
           { draft.instructions.map((item, index) => {
             switch (item.type) {
               case INSTRUCTION_TYPE_OPERATOR:
-                if (compoundOperators) {
-                  return null;
-                }
                 return (
                   <Operator
                     index={index}
