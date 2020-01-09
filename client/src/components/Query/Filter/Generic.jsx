@@ -18,6 +18,8 @@ import {FILTER_TYPE_GENERIC} from './index';
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
 export const FILTER_OPERAND_TYPE_NONE = 'none';
+export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
+
 
 class GenericFilter extends React.Component {
   constructor(props) {
@@ -60,6 +62,15 @@ class GenericFilter extends React.Component {
         pullAllBy(allOptions, cloneDeep(sorted), 'value');
         allOptions.unshift(...sorted);
       }
+    }
+  }
+
+  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
+    return {
+      id,
+      type: FILTER_TYPE_GENERIC,
+      operand,
+      values,
     }
   }
 
