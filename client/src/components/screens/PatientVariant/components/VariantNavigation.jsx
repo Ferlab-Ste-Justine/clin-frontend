@@ -8,10 +8,10 @@ import {
 } from 'lodash';
 
 import {
-  Menu, Input, AutoComplete, Icon, Tag,
+  Menu, Input, AutoComplete, Icon, Tag, Typography, Col, Row,
 } from 'antd';
 
-import GenericFilter, { FILTER_OPERAND_TYPE_ONE } from '../../../Query/Filter/Generic';
+import GenericFilter, { FILTER_OPERAND_TYPE_DEFAULT } from '../../../Query/Filter/Generic';
 import SpecificFilter from '../../../Query/Filter/Specific';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
 import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
@@ -32,7 +32,7 @@ class VariantNavigation extends React.Component {
     this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
-    this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 500, { leading: true });
+    this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 250, { leading: true });
     this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
   }
@@ -54,24 +54,57 @@ class VariantNavigation extends React.Component {
             accumulator[result.id].matches.push(result)
             return accumulator;
           }, {});
-
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
+            searchSelection: {
+              value: query
+            }
           })
         })
+      })
+    } else {
+      this.setState({
+        searchResults: [],
+        searchSelection: {
+          value: query
+        }
       })
     }
   }
 
   handleNavigationSelection(datum) {
-    const selection = JSON.parse(datum);
-    this.setState({
-      activeFilterId: null,
-      searchSelection: {
-        category: selection.id,
-        filter: selection.subid,
-      }
-    })
+    const selection = JSON.parse(datum)
+    if (selection.type !== 'filter') {
+      this.setState({
+        activeFilterId: null,
+        searchSelection: {
+          category: selection.id,
+          filter: selection.subid,
+        },
+        searchResults: [],
+      })
+    } else {
+      const { activeQuery, queries } = this.props;
+      this.setState({
+        activeFilterId: null,
+        searchSelection: {},
+        searchResults: [],
+      }, () => {
+        const query = find(queries, { key: activeQuery })
+        let filter = null
+        if (query) {
+          filter = find(query.instructions, (instruction) => instruction.data.id === selection.subid)
+        }
+        if (!filter) {
+          filter = GenericFilter.structFromArgs(selection.subid, [selection.value])
+        } else {
+          if (filter.data.values.indexOf(selection.value) === -1) {
+            filter.data.values.push(selection.value)
+          }
+        }
+        this.handleFilterChange(filter);
+      })
+    }
   }
 
   handleFilterSelection({ key }) {
@@ -139,7 +172,7 @@ class VariantNavigation extends React.Component {
     const activeFilterId = searchSelection.filter ? searchSelection.filter : this.state.activeFilterId;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
-    const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : FILTER_OPERAND_TYPE_ONE)
+    const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : FILTER_OPERAND_TYPE_DEFAULT)
 
     switch (categoryData.type) {
         case FILTER_TYPE_GENERIC:
@@ -251,24 +284,36 @@ class VariantNavigation extends React.Component {
   render() {
     const { intl, schema } = this.props;
     const { activeFilterId, searchResults, searchSelection } = this.state;
-    const autocompletes = searchResults.map(group => (
-      <AutoComplete.OptGroup key={group.id} label={(<span>{group.label}</span>)}>
-        { group.matches.map((match) => (
-          <AutoComplete.Option key={match.id} value={JSON.stringify(match)}>
-            {match.value} {match.count && (<Tag>{match.count}</Tag>)}
-          </AutoComplete.Option>
-        ))}
-      </AutoComplete.OptGroup>
-    ))
+    let autocompletesCount = 0;
+    const autocompletes = searchResults.map(group => {
+      autocompletesCount += group.matches.length;
+      return (
+        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong>{group.label}</Typography.Text>)}>
+          {group.matches.map((match) => (
+            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} style={{ maxHeight: 31 }} >
+              <Col span={18}>
+                <Typography.Text style={{ maxWidth: 210 }} ellipsis>
+                  {match.value}
+                </Typography.Text>
+              </Col>
+              <Col span={6} justify="end" align="end" style={{ minWidth: 50 }}>
+                {match.count && (<Tag>{match.count}</Tag>)}
+              </Col>
+            </AutoComplete.Option>
+          ))}
+        </AutoComplete.OptGroup>
+      )
+    })
+    autocompletes.unshift((<AutoComplete.Option key="count" disabled>
+      <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
+    </AutoComplete.Option>))
 
     const generateMenuComponent = (searchSelection, children) => {
       if (!searchSelection.category || !searchSelection.filter) {
         return (<Menu
-            key="navigation-menu"
                   mode="horizontal"
                   onOpenChange={this.handleCategoryOpenChange}
         ><Menu.SubMenu
-            key="search"
             title={(
               <AutoComplete
                 allowClear
@@ -278,22 +323,21 @@ class VariantNavigation extends React.Component {
                 dataSource={autocompletes}
                 onSearch={this.handleNavigationSearch}
                 onSelect={this.handleNavigationSelection}
+                value={searchSelection.value}
                 placeholder="Recherche de filtres"
               >
-                <Input prefix={<Icon type="search" />} />
+                <Input prefix={<Icon type="search"/>}/>
               </AutoComplete>
             )}
           />
           {children}</Menu>)
       }
         return (<Menu
-          key="navigation-menu-selection"
                       mode="horizontal"
                       onOpenChange={this.handleCategoryOpenChange}
                       openKeys={[searchSelection.category]}
                       selectedKeys={[searchSelection.filter]}
         ><Menu.SubMenu
-          key="search"
           title={(
             <AutoComplete
               allowClear
@@ -304,8 +348,9 @@ class VariantNavigation extends React.Component {
               onSearch={this.handleNavigationSearch}
               onSelect={this.handleNavigationSelection}
               placeholder="Recherche de filtres"
+              value=""
             >
-              <Input prefix={<Icon type="search" />} />
+              <Input prefix={<Icon type="search" />}/>
             </AutoComplete>
           )}
         />
