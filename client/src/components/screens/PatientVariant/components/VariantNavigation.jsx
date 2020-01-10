@@ -302,7 +302,7 @@ class VariantNavigation extends React.Component {
         </AutoComplete.OptGroup>
       )
     })
-    if (this.searchQuery !== '') {
+    if (autocompletesCount > 0) {
       autocompletes.unshift((<AutoComplete.Option key="count" disabled>
         <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
       </AutoComplete.Option>))
