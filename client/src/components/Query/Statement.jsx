@@ -668,13 +668,6 @@ class Statement extends React.Component {
                     onChange={this.onChange}
                     autocomplete="off"
                     value={(this.state.statementTitle ? this.state.statementTitle: statementTitle)}
-                    addonBefore={(
-                        <Button
-                            type="default"
-                        >
-                            <IconKit size={24} icon={ic_unfold_more} />
-                        </Button>
-                    )}
                     addonAfter={(
                         <div>
                           <Button
