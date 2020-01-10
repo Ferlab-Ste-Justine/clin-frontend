@@ -365,12 +365,12 @@ class PatientVariantScreen extends React.Component {
                 </a>
               )}
           />
-          <Descriptions title="Patient [PT93993], Masculin, Proband, Affecté" layout="horizontal" column={1}>
-              <Descriptions.Item label="Famille">[FA09383], Mère: [PT3983883] (Non affecté), Père: [PT4736] (Non affecté)</Descriptions.Item>
-              <Descriptions.Item label="Signes">Epilepsie ([HP93993]), Schizophrénie ([HP2772])</Descriptions.Item>
-              <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
-          </Descriptions>
-
+          { patient.details.id && (
+          <Descriptions title={`Patient [${patient.details.id}], ${patient.details.gender}, ${patient.details.proband}`} layout="horizontal" column={1}>
+              <Descriptions.Item label="Famille">[{patient.family.id}], Mère: [{patient.family.members.mother}], Père: [{patient.family.members.father}]</Descriptions.Item>
+              <Descriptions.Item label="Signes">{patient.ontology.map(hpo => { return `${hpo.term} (${hpo.code})`; }).join(', ')}</Descriptions.Item>
+              <Descriptions.Item label="Indication(s)">{patient.observations.map(o => { return o.note; }).join(', ')}</Descriptions.Item>
+          </Descriptions>) }
           <Card className="Content">
             <VariantNavigation
                           key="variant-navigation"
