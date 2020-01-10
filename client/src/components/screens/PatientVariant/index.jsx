@@ -41,6 +41,7 @@ class PatientVariantScreen extends React.Component {
       currentTab: VARIANT_TAB,
       page: 1,
       size: 25,
+      queriesHaveChanges: false,
     };
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
@@ -201,6 +202,9 @@ class PatientVariantScreen extends React.Component {
   handleCommitHistory() {
     const { actions, variant } = this.props;
     const { draftQueries } = variant;
+    this.setState({
+      queriesHaveChanges: true,
+    });
     actions.commitHistory(draftQueries);
   }
 
@@ -232,6 +236,9 @@ class PatientVariantScreen extends React.Component {
   handleGetStatements() {
      const { actions } = this.props;
      actions.getAndSelectStatement();
+    this.setState({
+      queriesHaveChanges: false,
+    });
   }
 
   handleCreateDraftStatement(newStatement) {
@@ -241,6 +248,9 @@ class PatientVariantScreen extends React.Component {
 
   handleUpdateStatement(id, title, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
+    this.setState({
+      queriesHaveChanges: false,
+    });
     if (id === 'draft') {
       actions.createStatement(id, title, switchCurrentStatementToDefault);
     } else {
@@ -250,16 +260,25 @@ class PatientVariantScreen extends React.Component {
 
   handleDeleteStatement(id) {
     const { actions } = this.props;
+    this.setState({
+      queriesHaveChanges: false,
+    });
     actions.deleteStatement(id);
   }
 
   handleDuplicateStatement(id) {
     const { actions } = this.props;
+    this.setState({
+      queriesHaveChanges: false,
+    });
     actions.duplicateStatement(id);
   }
 
   handleSelectStatement(id) {
     const { actions } = this.props;
+    this.setState({
+      queriesHaveChanges: false,
+    });
     actions.selectStatement(id);
   }
 
@@ -400,6 +419,7 @@ class PatientVariantScreen extends React.Component {
                         facets={facets}
                         target={patient}
                         categories={schema.categories}
+                        queriesHaveChanges={this.state.queriesHaveChanges}
                         options={{
                             copyable: true,
                             duplicatable: true,

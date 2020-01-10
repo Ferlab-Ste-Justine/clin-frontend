@@ -46,9 +46,11 @@ class Statement extends React.Component {
       display: cloneDeep(data).map(() => ({ ...display })),
       visible: false,
       expandIconPosition: 'left',
-      statementTitle: '',
+      statementTitle: null,
       saveTitleModalInputValue: '',
       saveTitleModalVisible: false,
+      statementVisualClueText: '',
+      originalTitle: '',
       options: {
         copyable: null,
         duplicatable: null,
@@ -96,10 +98,11 @@ class Statement extends React.Component {
     this.deleteStatement = this.deleteStatement.bind(this);
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
-    this.onChange = this.onChange.bind(this);
+    this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
     this.onFocus=this.onFocus.bind(this)
     this.onBlur=this.onBlur.bind(this)
     this.handleCancelModal = this.handleCancelModal.bind(this);
+    this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
 
   }
 
@@ -177,6 +180,18 @@ class Statement extends React.Component {
     });
   }
 
+  showConfirmForDestructiveStatementAction(title, content, okText = 'Ok', cancelText = 'Cancel', funcToCallBack) {
+    Modal.confirm({
+      title,
+      content,
+      okText,
+      cancelText,
+      onOk() {funcToCallBack()},
+      onCancel() {},
+    });
+  }
+
+
   handleDuplicate(query) {
     if (this.isDuplicatable()) {
       const { onDuplicateCallback } = this.props;
@@ -189,6 +204,7 @@ class Statement extends React.Component {
       displayClone.splice(index, 0, howDisplayed);
       this.setState({
         display: displayClone,
+        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         onDuplicateCallback(clone, index);
       });
@@ -224,9 +240,27 @@ class Statement extends React.Component {
         instructions: []
       }]
     };
-    this.setState({statementTitle: ''})
-    this.props.onCreateDraftStatementCallback(newStatement)
-    this.handleNewQuery(this,newStatement.queries[0])
+
+    const  callbackCreateDraft = () => {
+      this.setState({
+          statementTitle: null,
+          statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
+        }
+      );
+      this.props.onCreateDraftStatementCallback(newStatement)
+      this.handleNewQuery(this,newStatement.queries[0])
+    };
+
+    if (this.state.statementVisualClueText) {
+      this.showConfirmForDestructiveStatementAction(
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.content' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.cancel' }),
+        callbackCreateDraft)
+    } else {
+      callbackCreateDraft()
+    }
 
 
   }
@@ -236,19 +270,43 @@ class Statement extends React.Component {
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
-      this.setState({statementTitle: ''})
+    }
+    const callbackDuplicate = () => {
+
+      this.setState({
+          statementTitle: null,
+          statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
+        }
+      );
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+      this.props.onDuplicateStatementCallback(id);
+
+    };
+    if (this.state.statementVisualClueText) {
+      this.showConfirmForDestructiveStatementAction(
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.content' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.cancel' }),
+        callbackDuplicate)
+    } else {
+      callbackDuplicate()
     }
 
-    if (e.stopPropagation) { e.stopPropagation(); }
-    this.props.onDuplicateStatementCallback(id);
   }
 
   updateStatement(e) {
     let id =  e.target ? e.target.getAttribute('dataid') : e
     if (!id) {
       id = this.props.activeStatementId
-      this.setState({statementTitle: ''})
     }
+    this.setState({
+      statementTitle: null,
+      statementVisualClueText: '',
+      }
+    );
     if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, false);
   }
@@ -258,9 +316,11 @@ class Statement extends React.Component {
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
-      this.setState({statementTitle: ''})
+      // only reset title if setting the currently selected one to default
+      this.setState({
+        statementVisualClueText: '',
+      });
     }
-
     if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, true);
   }
@@ -270,7 +330,10 @@ class Statement extends React.Component {
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId
-      this.setState({statementTitle: ''})
+      this.setState({
+        statementTitle: null,
+        statementVisualClueText: '',
+      });
     }
 
     if (e.stopPropagation) { e.stopPropagation(); }
@@ -283,8 +346,24 @@ class Statement extends React.Component {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
-    this.setState({statementTitle: ''})
-    this.props.onSelectStatementCallback(id);
+    const callbackSelect = () => {
+      this.setState({
+        statementTitle: null,
+        statementVisualClueText: '',
+      });
+      this.props.onSelectStatementCallback(id);
+    };
+    if (this.state.statementVisualClueText) {
+      this.showConfirmForDestructiveStatementAction(
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.cancel' }),
+        callbackSelect)
+    } else {
+      callbackSelect()
+    }
+
   }
 
   confirmRemove(keys) {
@@ -300,6 +379,7 @@ class Statement extends React.Component {
       const sortedDisplay = sortedIndices.map(sortedIndice => display[sortedIndice]);
       this.setState({
         display: sortedDisplay,
+        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         onSortCallback(sortedData)
       });
@@ -370,6 +450,7 @@ class Statement extends React.Component {
       this.setState({
         checkedQueries: [],
         display,
+        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         onBatchEditCallback(newDraft, newSubquery);
       });
@@ -457,6 +538,7 @@ class Statement extends React.Component {
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
+      statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
     }, () => {
       onRemoveCallback(keysToRemove);
     });
@@ -474,6 +556,7 @@ class Statement extends React.Component {
     display.push(newDisplay);
     this.setState({
       display,
+      statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
     }, () => {
       onEditCallback(newQuery)
     });
@@ -493,9 +576,13 @@ class Statement extends React.Component {
     this.setState({ expandIconPosition });
   };
 
-  onChange(e) {
+  onStatementTitleChange(e) {
     const { value } = e.target;
-    this.setState({statementTitle:value})
+    this.setState({
+      statementTitle: value,
+      statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
+      }
+    );
   }
 
   onFocus() {
@@ -512,11 +599,11 @@ class Statement extends React.Component {
 
   render() {
     const { activeQuery, data, externalData, options, intl, facets, matches, categories,
-      searchData, target, activeStatementId, statements } = this.props;
+      searchData, target, activeStatementId, statements, queriesHaveChanges, } = this.props;
     const foundActiveStatement = statements.find(statement => statement._id === activeStatementId)
     const activeStatement = foundActiveStatement ? foundActiveStatement._source : {}
     const statementsToDisplay = statements.filter(statement => statement._id != activeStatementId)
-    const statementTitle = activeStatement.title ? activeStatement.title : ""
+    const statementTitle = activeStatement.title ? activeStatement.title : ''
     const { Panel } = Collapse;
     const { Option } = Select;
 
@@ -552,55 +639,55 @@ class Statement extends React.Component {
 
     let activeStatementCanBeSaved = false;
     const queries = data.reduce((accumulator, query, index) => {
-    const isChecked = checkedQueries.indexOf(query.key) !== -1;
-    const isActive = activeQuery === query.key;
-    const initial = find(original, { key: query.key }) || null;
-    const classNames = [styleStatement.queryContainer];
-    const isDirty = !isEqual(initial, query);
+      const isChecked = checkedQueries.indexOf(query.key) !== -1;
+      const isActive = activeQuery === query.key;
+      const initial = find(original, { key: query.key }) || null;
+      const classNames = [styleStatement.queryContainer];
+      const isDirty = !isEqual(initial, query);
 
-    if (isDirty) { classNames.push(styleStatement.dirtyContainer); activeStatementCanBeSaved = true; }
-    if (isActive) { classNames.push(styleStatement.activeContainer) } else { classNames.push(styleStatement.inactiveContainer) }
-    if (!query.title) {
-      query.title = `Requête ${(index+1)}`;
-    }
+      if (isDirty) { classNames.push(styleStatement.dirtyContainer); activeStatementCanBeSaved = true; }
+      if (isActive) { classNames.push(styleStatement.activeContainer) } else { classNames.push(styleStatement.inactiveContainer) }
+      if (!query.title) {
+        query.title = `Requête ${(index+1)}`;
+      }
 
-      return [...accumulator, (
-        <div className={classNames.join(' ')} key={query.key}>
-          <Checkbox
-            className={isChecked ?  `${styleStatement.check} ${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}` : `${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}`}
-            key={`selector-${query.key}`}
-            value={query.key}
-            checked={isChecked}
-            onChange={this.handleCheckQuery}
-          />
-          <Query
-            key={query.key}
-            original={initial}
-            draft={query}
-            display={display[index]}
-            options={options}
-            index={index}
-            active={isActive}
-            results={(matches[query.key] ? matches[query.key] : 0)}
-            intl={intl}
-            facets={(facets[query.key] ? facets[query.key] : {})}
-            target={target}
-            categories= {categories}
-            onCopyCallback={this.handleCopy}
-            onEditCallback={this.handleEdit}
-            onDisplayCallback={this.handleDisplay}
-            onDuplicateCallback={this.handleDuplicate}
-            onRemoveCallback={this.handleRemove}
-            onSelectCallback={this.handleSelect}
-            onUndoCallback={this.handleUndo}
-            onClickCallback={this.handleClick}
-            findQueryIndexForKey={this.findQueryIndexForKey}
-            findQueryTitle={this.findQueryTitle}
-            searchData={searchData}
-            externalData={externalData}
-          />
-        </div>
-      )];
+        return [...accumulator, (
+          <div className={classNames.join(' ')} key={query.key}>
+            <Checkbox
+              className={isChecked ?  `${styleStatement.check} ${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}` : `${styleStatement.querySelector} ${!isActive ? styleStatement.unActiveCheck : null}`}
+              key={`selector-${query.key}`}
+              value={query.key}
+              checked={isChecked}
+              onChange={this.handleCheckQuery}
+            />
+            <Query
+              key={query.key}
+              original={initial}
+              draft={query}
+              display={display[index]}
+              options={options}
+              index={index}
+              active={isActive}
+              results={(matches[query.key] ? matches[query.key] : 0)}
+              intl={intl}
+              facets={(facets[query.key] ? facets[query.key] : {})}
+              target={target}
+              categories= {categories}
+              onCopyCallback={this.handleCopy}
+              onEditCallback={this.handleEdit}
+              onDisplayCallback={this.handleDisplay}
+              onDuplicateCallback={this.handleDuplicate}
+              onRemoveCallback={this.handleRemove}
+              onSelectCallback={this.handleSelect}
+              onUndoCallback={this.handleUndo}
+              onClickCallback={this.handleClick}
+              findQueryIndexForKey={this.findQueryIndexForKey}
+              findQueryTitle={this.findQueryTitle}
+              searchData={searchData}
+              externalData={externalData}
+            />
+          </div>
+        )];
     }, []);
 
     // antd Modal have a strange binding with their button
@@ -626,7 +713,7 @@ class Statement extends React.Component {
     };
 
     //const activeStatementCanBeDeleted = !data.lastUpdatedOn
-    const activeStatementCanBeDeleted =  !activeStatementIsDraft ;
+    const activeStatementCanBeDeleted =  !(activeStatementIsDraft || activeStatementId == null)  ;
     if (activeStatementIsDraft) {
       activeStatementCanBeSaved = true;
     }
@@ -635,7 +722,7 @@ class Statement extends React.Component {
 
       this.selectStatement(key)
     }
-    activeStatementCanBeSaved = data.title !== saveTitleModalInputValue
+    activeStatementCanBeSaved = activeStatementCanBeSaved && (activeStatementId != null)
 
     return (
       <div className={styleStatement.statement}>
@@ -661,13 +748,19 @@ class Statement extends React.Component {
         </Modal>
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
+            <div>{( queriesHaveChanges ?
+              this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }) :
+              this.state.statementVisualClueText)}</div>
+          </Row>
+          <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
               <div>
                 <Input
                     id="statementTitle"
-                    onChange={this.onChange}
+                    onChange={this.onStatementTitleChange}
                     autocomplete="off"
-                    value={(this.state.statementTitle ? this.state.statementTitle: statementTitle)}
+                    value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle)}
+                    disabled={activeStatementId == null}
                     addonBefore={(
                         <Button
                             type="default"
@@ -681,6 +774,7 @@ class Statement extends React.Component {
                               type="default"
                               className={styleStatement.button}
                               onClick={this.setStatementAsDefault}
+                              disabled={activeStatementId == null}
                             >
                             <Icon
                                 className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
@@ -714,7 +808,7 @@ class Statement extends React.Component {
                       type="default"
                       className={styleStatement.button}
                       type="default"
-                      disabled={activeStatementIsDraft}
+                      disabled={activeStatementIsDraft || activeStatementId == null}
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />

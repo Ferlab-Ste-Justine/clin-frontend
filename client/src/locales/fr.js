@@ -283,6 +283,22 @@ const fr = {
   'screen.patientvariant.statementTitleSave.modal.inputLabel': 'Ajouter votre titre',
   'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder': 'sans titre',
   'screen.patientvariant.statementTitleSave.modal.inputDefault': 'Nouveau Filtre (renommer)',
+  'screen.patientvariant.statementVisualClue.modification.text': 'Vous avez des modifications non enregistrées',
+  'screen.patientvariant.statementConfirmDraft.modal.title': 'Créer un nouveau filtre?',
+  'screen.patientvariant.statementConfirmDraft.modal.content': 'Vous êtes sur le point de créer un nouveau filtre; '
+  + 'toutes modifications sera perdues',
+  'screen.patientvariant.statementConfirmDraft.modal.ok': 'CRÉER',
+  'screen.patientvariant.statementConfirmDraft.modal.cancel': 'ANNULER',
+  'screen.patientvariant.statementConfirmDuplicate.modal.title': 'Dupliquer un nouveau filtre?',
+  'screen.patientvariant.statementConfirmDuplicate.modal.content': 'Vous êtes sur le point de dupliquer le filtre en cours; '
+  + 'toutes modifications sera transférées dans le nouveau filtre dupliqué',
+  'screen.patientvariant.statementConfirmDuplicate.modal.ok': 'DUPLIQUER',
+  'screen.patientvariant.statementConfirmDuplicate.modal.cancel': 'ANNULER',
+  'screen.patientvariant.statementConfirmSelect.modal.title': 'Appliquer un nouveau filtre?',
+  'screen.patientvariant.statementConfirmSelect.modal.content': 'Vous êtes sur le point de changer de filtre; '
+    + 'toutes modifications sera perdues',
+  'screen.patientvariant.statementConfirmSelect.modal.ok': 'APPLIQUER',
+  'screen.patientvariant.statementConfirmSelect.modal.cancel': 'ANNULER',
   'components.table.action.search': 'Rechercher',
   'components.table.action.reset': 'Réinitialiser',
   'components.table.action.display': 'Afficher',

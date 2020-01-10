@@ -273,6 +273,22 @@ const en = {
   'screen.patientvariant.statementTitleSave.modal.inputLabel': 'Enter your new title',
   'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder': 'untitled',
   'screen.patientvariant.statementTitleSave.modal.inputDefault': 'New Filter (rename)',
+  'screen.patientvariant.statementVisualClue.modification.text': 'you have unsaved changes',
+  'screen.patientvariant.statementConfirmDraft.modal.title': 'Create a new Draft statement?',
+  'screen.patientvariant.statementConfirmDraft.modal.content': 'You\'re about to create a new statement; '
+   + 'these unsaved changes will be lost',
+  'screen.patientvariant.statementConfirmDraft.modal.ok': 'CREATE NEW DRAFT',
+  'screen.patientvariant.statementConfirmDraft.modal.cancel': 'CANCEL',
+  'screen.patientvariant.statementConfirmDuplicate.modal.title': 'Create a new duplicate statement?',
+  'screen.patientvariant.statementConfirmDuplicate.modal.content': 'You\'re about to duplicate a statement that '
+   + 'contain unsaved changes; these unsaved changes will be transferred to the new duplicate statement',
+  'screen.patientvariant.statementConfirmDuplicate.modal.ok': 'DUPLICATE',
+  'screen.patientvariant.statementConfirmDuplicate.modal.cancel': 'CANCEL',
+  'screen.patientvariant.statementConfirmSelect.modal.title': 'Load another statement?',
+  'screen.patientvariant.statementConfirmSelect.modal.content': 'You\'re about to load another statement; '
+    + 'you currently have unsaved changes that will be lost',
+  'screen.patientvariant.statementConfirmSelect.modal.ok': 'LOAD',
+  'screen.patientvariant.statementConfirmSelect.modal.cancel': 'CANCEL',
   'components.table.action.search': 'Search',
   'components.table.action.reset': 'Reset',
   'components.table.action.display': 'Display',
