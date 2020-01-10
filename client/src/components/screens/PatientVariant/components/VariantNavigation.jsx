@@ -18,6 +18,7 @@ import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
 import CompositeFilter from '../../../Query/Filter/Composite';
 import { sanitizeInstructions } from '../../../Query/index';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from '../../../Query/Filter/index'
+import { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPE_AND_NOT } from '../../../Query/Operator';
 
 
 class VariantNavigation extends React.Component {
@@ -138,10 +139,17 @@ class VariantNavigation extends React.Component {
             return instruction;
           })
           if (!updated) {
-            updatedInstructions.push({
-              type: 'filter',
-              data: filter
+            // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
+            const { draft } = this.props;
+            const andNotOperator = find(updatedQuery.instructions, instruction => {
+              return (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT)
             })
+            if (!andNotOperator) {
+              updatedInstructions.push({
+                type: 'filter',
+                data: filter
+              })
+            }
           }
         } else {
           updatedInstructions = updatedQuery.instructions.filter((instruction) => {
@@ -302,7 +310,7 @@ class VariantNavigation extends React.Component {
         </AutoComplete.OptGroup>
       )
     })
-    if (this.searchQuery !== '') {
+    if (autocompletesCount > 0) {
       autocompletes.unshift((<AutoComplete.Option key="count" disabled>
         <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
       </AutoComplete.Option>))
