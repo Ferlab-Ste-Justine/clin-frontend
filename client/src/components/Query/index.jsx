@@ -14,7 +14,12 @@ import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
 import GenericBooleanFilter from './Filter/GenericBoolean'
-import Operator, { createOperatorInstruction, INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPE_DEFAULT } from './Operator';
+import Operator, {
+  createOperatorInstruction,
+  INSTRUCTION_TYPE_OPERATOR,
+  OPERATOR_TYPE_AND_NOT,
+  OPERATOR_TYPE_DEFAULT
+} from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
 import IconKit from 'react-icons-kit';
@@ -117,7 +122,13 @@ class Query extends React.Component {
   }
 
   addInstruction(instruction) {
-      const { draft, display, index, onEditCallback } = this.props;
+    // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
+    const { draft } = this.props;
+    const andNotOperator = find(draft.instructions, instruction => {
+      return (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT)
+    })
+    if (!andNotOperator) {
+      const { display, index, onEditCallback } = this.props;
       const newDraft = cloneDeep(draft)
       newDraft.instructions.push(instruction);
       newDraft.instructions = sanitizeInstructions(newDraft.instructions);
@@ -126,6 +137,7 @@ class Query extends React.Component {
         display,
         index
       });
+    }
   }
 
   replaceInstruction(instruction) {
