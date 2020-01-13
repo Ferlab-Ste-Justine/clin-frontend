@@ -13,8 +13,10 @@
     .title {
     display:flex;
     align-items:center;
+    width:auto;
 
       input {
+        padding:0;
         font-family: $font;
         font-size: $little-font;
         font-weight: $font-weight-medium;
@@ -22,6 +24,7 @@
         background-color: transparent;
         border:1px solid transparent;
         border-radius:$default-radius;
+        width:60px;
 
         &:focus {
           box-shadow: none;

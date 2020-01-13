@@ -251,8 +251,21 @@ class Query extends React.Component {
 
   onChange(e){
     const { value } = e.target;
-    const length =value.length -( value.length)
-    e.target.style.width = length + "ch";
+    const length =(value.length)
+    const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|" ]
+    let numberOfSmallLetter=0;
+    let numberOfNormalLetter=0;
+    const map = Array.prototype.map
+    map.call(value, eachLetter => {
+        if(smallLetter.includes(eachLetter)){
+            numberOfSmallLetter=numberOfSmallLetter+1;
+        }
+        else{
+            numberOfNormalLetter=numberOfNormalLetter+1;
+        }
+    })
+    const width = (numberOfNormalLetter*0.9) + (numberOfSmallLetter*0.7)
+    e.target.style.width = `calc(6px + ${width}ch)`;
   }
 
   handleFocus(){
@@ -384,6 +397,7 @@ class Query extends React.Component {
               onBlur={this.handleTitleChange}
               onFocus={this.onFocus}
               onPressEnter={this.handleTitleChange}
+              onChange={this.onChange}
               className="titleInput"
             />
 
