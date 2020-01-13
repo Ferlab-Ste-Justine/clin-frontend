@@ -239,7 +239,6 @@ class Statement extends React.Component {
         instructions: [],
       }],
     };
-    this.handleNewQuery(this, newStatement.queries[0]);
 
     const  callbackCreateDraft = () => {
       this.setState({
@@ -251,7 +250,7 @@ class Statement extends React.Component {
       this.handleNewQuery(this,newStatement.queries[0])
     };
 
-    if (this.state.statementVisualClueText) {
+    if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.content' }),
@@ -271,6 +270,7 @@ class Statement extends React.Component {
       const { activeStatementId } = this.props;
       id = activeStatementId
     }
+    if (e.stopPropagation) { e.stopPropagation(); }
     const callbackDuplicate = () => {
 
       this.setState({
@@ -278,13 +278,9 @@ class Statement extends React.Component {
           statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
         }
       );
-      if (e.stopPropagation) {
-        e.stopPropagation();
-      }
       this.props.onDuplicateStatementCallback(id);
-
     };
-    if (this.state.statementVisualClueText) {
+    if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.content' }),
@@ -302,27 +298,43 @@ class Statement extends React.Component {
     if (!id) {
       id = this.props.activeStatementId
     }
+
+    if (e.stopPropagation) { e.stopPropagation(); }
     this.setState({
-      statementTitle: null,
-      statementVisualClueText: '',
+        statementTitle: null,
+        statementVisualClueText: '',
       }
     );
-    if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, false);
   }
 
   setStatementAsDefault(e) {
+    let destructiveOperation = true;
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
+      destructiveOperation = false
       const { activeStatementId } = this.props;
       id = activeStatementId
       // only reset title if setting the currently selected one to default
-      this.setState({
-        statementVisualClueText: '',
-      });
     }
+    const callbackSetStatementAsDefault = () => {
+      this.setState({
+          statementVisualClueText: '',
+        }
+      );
+      this.props.onUpdateStatementCallback(id, this.state.statementTitle, true);
+    };
     if (e.stopPropagation) { e.stopPropagation(); }
-    this.props.onUpdateStatementCallback(id, this.state.statementTitle, true);
+    if (destructiveOperation && (this.state.statementVisualClueText || this.props.queriesHaveChanges)) {
+      this.showConfirmForDestructiveStatementAction(
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.content' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.cancel' }),
+        callbackSetStatementAsDefault)
+    } else {
+      callbackSetStatementAsDefault()
+    }
   }
 
   deleteStatement(e) {
@@ -353,7 +365,7 @@ class Statement extends React.Component {
       });
       this.props.onSelectStatementCallback(id);
     };
-    if (this.state.statementVisualClueText) {
+    if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
