@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep, isEqual, find, isNull, filter } from 'lodash';
 import {
-  Input
+  Dropdown, Icon, Menu, Input, Badge,Tooltip
 } from 'antd';
 import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
@@ -103,6 +103,11 @@ const sanitizeFilters = instructions => instructions;
 class Query extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      onFocus:false,
+      title:null
+    };
     this.addInstruction = this.addInstruction.bind(this);
     this.replaceInstruction = this.replaceInstruction.bind(this);
     this.removeInstruction = this.removeInstruction.bind(this);
@@ -119,6 +124,9 @@ class Query extends React.Component {
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.hasTitle = this.hasTitle.bind(this);
+    this.onFocus= this.onFocus.bind(this)
+    this.handleFocus=this.handleFocus.bind(this)
+    this.onChange=this.onChange.bind(this)
   }
 
   addInstruction(instruction) {
@@ -223,13 +231,33 @@ class Query extends React.Component {
   }
 
   handleTitleChange(e) {
-    const title = e.target.value;
+    let title = e.target.value;
     const { draft, onEditCallback } = this.props;
+    e.target.blur()
     if (title !== draft.title) {
       const serialized = this.serialize();
       serialized.data.title = title;
       onEditCallback(serialized);
     }
+    this.setState({onFocus:false})
+  }
+
+  onFocus(e){
+      const{onFocus} = this.state
+      e.target.select()
+      this.setState({onFocus:true})
+
+  }
+
+  onChange(e){
+    const { value } = e.target;
+    const length =value.length -( value.length)
+    e.target.style.width = length + "ch";
+  }
+
+  handleFocus(){
+    const input = document.querySelector(".titleInput")
+    input.focus()
   }
 
   json() {
@@ -317,29 +345,70 @@ class Query extends React.Component {
     const {
       copyable, duplicatable, removable, undoable,
     } = options;
+    const {onFocus, title} = this.state
+    const hasMenu = copyable || duplicatable || removable || undoable;
+    const { compoundOperators } = display;
     const isDirty = !isEqual(original, draft);
+
+    const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
+    const deleteText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
+    const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
+
+    let operatorsHandler = null;
+    if (compoundOperators) {
+      const operator = find(draft.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
+      if (operator) {
+        operatorsHandler = (
+          <Operator
+            key={operator.key}
+            options={options}
+            data={operator.data}
+            intl={intl}
+            onEditCallback={this.handleOperatorChange}
+          />
+        );
+      }
+    }
     const classNames = [styleQuery.query];
     if (isDirty) { classNames.push(styleQuery.dirtyQuery) }
     if (active) { classNames.push(styleQuery.activeQuery) } else { classNames.push(styleQuery.inactiveQuery) }
     return (
       <div className={classNames.join(' ')} onClick={this.handleClick}>
         <div className={styleQuery.toolbar}>
-          <div className={styleQuery.title}>
+          <Tooltip title={editTitleText}>
+              <div className={styleQuery.title}>
+
             <Input
               size="small"
               defaultValue={draft.title}
               onBlur={this.handleTitleChange}
+              onFocus={this.onFocus}
               onPressEnter={this.handleTitleChange}
-              suffix={(copyable && (<IconKit icon={ic_edit} className={styleQuery.iconTitle}/>))}
+              className="titleInput"
             />
-          </div>
 
+
+            <IconKit
+                icon={ic_edit}
+                size={14}
+                className={`${styleQuery.iconTitle} ${styleQuery.icon} ${onFocus ? `${styleQuery.focusIcon}` : null}`}
+                onClick={this.handleFocus}
+            />
+
+              </div>
+          </Tooltip>
           <div className={styleQuery.actions}>
-            {copyable && (<IconKit icon={ic_filter_none} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }) }}/>)}
-            {removable && (<IconKit icon={ic_delete} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }) }}/>)}
+            {copyable && (
+                <Tooltip title={duplicateText}>
+                    <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }) }}/>
+                </Tooltip>)}
+            {removable && (
+                <Tooltip title={deleteText}>
+                    <IconKit icon={ic_delete} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }) }}/>
+                </Tooltip>)}
             </div>
           <div className={styleQuery.count}>
-            <span>{results.toLocaleString('en-US').replace(',', ' ')}</span>
+            <span>{results.toLocaleString('en-US').replace(',', "\u00a0")}</span>
           </div>
         </div>
         {draft.instructions.length===0 ?
