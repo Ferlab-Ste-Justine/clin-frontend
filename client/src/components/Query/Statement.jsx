@@ -19,7 +19,7 @@ import {
 } from 'react-icons-kit/md';
 import Query from './index';
 import {
-  createSubqueryInstruction,
+  createSubqueryInstruction, INSTRUCTION_TYPE_SUBQUERY,
 } from './Subquery';
 import {
   createOperatorInstruction, getSvgPathFromOperatorType, OPERATOR_TYPE_AND, OPERATOR_TYPE_OR, OPERATOR_TYPE_AND_NOT,
