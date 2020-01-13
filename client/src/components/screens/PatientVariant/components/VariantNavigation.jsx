@@ -18,6 +18,7 @@ import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
 import CompositeFilter from '../../../Query/Filter/Composite';
 import { sanitizeInstructions } from '../../../Query/index';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from '../../../Query/Filter/index'
+import { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPE_AND_NOT } from '../../../Query/Operator';
 
 
 class VariantNavigation extends React.Component {
@@ -28,20 +29,22 @@ class VariantNavigation extends React.Component {
       searchSelection: {},
       searchResults: [],
     };
+    this.searchQuery = '';
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
     this.handleCategoryOpenChange = this.handleCategoryOpenChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
     this.handleFilterRemove = this.handleFilterRemove.bind(this);
-    this.handleNavigationSearch = debounce(this.handleNavigationSearch.bind(this), 250, { leading: true });
+    this.handleNavigationSearch = this.handleNavigationSearch.bind(this);
     this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
   }
 
   handleNavigationSearch(query) {
-    if (query && query.length > 1) {
+    if (query && query.length > 2) {
+      this.searchQuery = query;
       const { autocomplete } = this.props
       autocomplete.then(engine => {
-        engine.search(query, searchResults => {
+        engine.search(query, debounce(searchResults => {
           const groupedResults = searchResults.reduce((accumulator, result) => {
             if (!accumulator[result.id]) {
               accumulator[result.id] = {
@@ -56,23 +59,19 @@ class VariantNavigation extends React.Component {
           }, {});
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
-            searchSelection: {
-              value: query
-            }
           })
-        })
+        }, 750, { leading: true }))
       })
-    } else {
+    } else if (this.searchQuery !== query) {
+      this.searchQuery = query;
       this.setState({
         searchResults: [],
-        searchSelection: {
-          value: query
-        }
       })
     }
   }
 
   handleNavigationSelection(datum) {
+    this.searchQuery = '';
     const selection = JSON.parse(datum)
     if (selection.type !== 'filter') {
       this.setState({
@@ -140,10 +139,17 @@ class VariantNavigation extends React.Component {
             return instruction;
           })
           if (!updated) {
-            updatedInstructions.push({
-              type: 'filter',
-              data: filter
+            // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
+            const { draft } = this.props;
+            const andNotOperator = find(updatedQuery.instructions, instruction => {
+              return (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT)
             })
+            if (!andNotOperator) {
+              updatedInstructions.push({
+                type: 'filter',
+                data: filter
+              })
+            }
           }
         } else {
           updatedInstructions = updatedQuery.instructions.filter((instruction) => {
@@ -304,9 +310,11 @@ class VariantNavigation extends React.Component {
         </AutoComplete.OptGroup>
       )
     })
-    autocompletes.unshift((<AutoComplete.Option key="count" disabled>
-      <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
-    </AutoComplete.Option>))
+    if (autocompletesCount > 0) {
+      autocompletes.unshift((<AutoComplete.Option key="count" disabled>
+        <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
+      </AutoComplete.Option>))
+    }
 
     const generateMenuComponent = (searchSelection, children) => {
       if (!searchSelection.category || !searchSelection.filter) {
@@ -316,15 +324,15 @@ class VariantNavigation extends React.Component {
         ><Menu.SubMenu
             title={(
               <AutoComplete
+                key="autocompleter"
                 allowClear
                 autoFocus
-                optionLabelProp="value"
                 size="large"
                 dataSource={autocompletes}
                 onSearch={this.handleNavigationSearch}
                 onSelect={this.handleNavigationSelection}
-                value={searchSelection.value}
                 placeholder="Recherche de filtres"
+                value={this.searchQuery}
               >
                 <Input prefix={<Icon type="search"/>}/>
               </AutoComplete>
@@ -340,6 +348,7 @@ class VariantNavigation extends React.Component {
         ><Menu.SubMenu
           title={(
             <AutoComplete
+              key="autocompleter"
               allowClear
               autoFocus
               optionLabelProp="value"
@@ -348,7 +357,7 @@ class VariantNavigation extends React.Component {
               onSearch={this.handleNavigationSearch}
               onSelect={this.handleNavigationSelection}
               placeholder="Recherche de filtres"
-              value=""
+              value={this.searchQuery}
             >
               <Input prefix={<Icon type="search" />}/>
             </AutoComplete>

@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import {
-  all, put, takeLatest, select,
+  all, put, takeLatest, select, race, call, delay,
 } from 'redux-saga/effects';
 import { find, cloneDeep } from 'lodash';
 
@@ -68,16 +68,16 @@ function* watchUndo() {
   yield takeLatest(actions.PATIENT_VARIANT_UNDO, undo);
 }
 
-function* watchGetStatements() {
-  yield takeLatest(actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, getStatements);
-}
-
-function* watchCreateStatement() {
-  yield takeLatest(actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED, createStatement);
+function* watchGetAndSelectStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, getAndSelectStatement);
 }
 
 function* watchUpdateStatement() {
   yield takeLatest(actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED, updateStatement);
+}
+
+function* watchCreateStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED, createStatement);
 }
 
 function* watchDuplicateStatement() {
@@ -92,98 +92,94 @@ function* watchSelectStatement() {
     yield takeLatest(actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, selectStatement);
 }
 
-function* getStatements(action) {
+function* getAndSelectStatement(action) {
   try {
     const statementResponse = yield Api.getStatements();
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
     const payload = {
-        newKey: action.payload.newKey,
+        keyForStatementSelectionInsteadOfTheDefaultOne: action.payload.keyForStatementSelectionInsteadOfTheDefaultOne,
         response: statementResponse.payload.data,
     };
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload });
-    const { draftQueries } = yield select(state => state.variant);
-
-    const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
-    yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: newActiveQueryKey } });
-    if (draftQueries) {
-      const { details } = yield select(state => state.patient);
-      const payload = {
-        patient: details.id,
-        statement: draftQueries,
-        query: newActiveQueryKey,
-      };
-      yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
-    }
+    yield call(selectStatement, { payload: { id: action.payload.keyForStatementSelectionInsteadOfTheDefaultOne } });
 
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
   }
 }
 
-function* createStatement(action) {
-    try {
-        const queries = action.payload.newStatement.queries
-        const title = action.payload.newStatement.title
-        const description = action.payload.newStatement.description
-        const statementResponse = yield Api.createStatement(queries, title, description)
-        if (statementResponse.error) {
-            throw new ApiError(statementResponse.error);
-        }
-
-        const newKey = statementResponse.payload.data.data.id
-        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { newKey } });
-    } catch (e) {
-        yield put({type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e});
-    }
-
-}
-
 function* updateStatement(action) {
     try {
-        const statementKey = action.payload.id
-        const {draftQueries, statements} = yield select(state => state.variant);
-        const activeStatement = statements.find((hit) => hit._id === statementKey);
-        if (!activeStatement) {
-          throw new Error('Statement not found');
-        }
 
-        const title = action.payload.title ? action.payload.title : activeStatement._source.title
-        const description = activeStatement._source.description
-        const isDefault = action.payload.switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
-        const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
-        if (statementResponse.error) {
-            throw new ApiError(statementResponse.error);
-        }
+      const statementKey = action.payload.id
+      const {draftQueries, statements} = yield select(state => state.variant);
+      const activeStatement = statements.find((hit) => hit._id === statementKey);
+      if (!activeStatement) {
+        throw new Error('Statement not found');
+      }
 
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: {} });
-        yield put ( {type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+      const title = action.payload.title ? action.payload.title : activeStatement._source.title
+      const description = activeStatement._source.description
+      const switchCurrentStatementToDefault = action.payload.switchCurrentStatementToDefault
+      const isDefault = switchCurrentStatementToDefault ? true : activeStatement._source.isDefault
+      const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
+
+      if (statementResponse.error) {
+        throw new ApiError(statementResponse.error);
+      }
+
+      yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
+      yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
     } catch (e) {
-        yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
+      yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     }
 }
 
-function* duplicateStatement(action) {
+function* createStatement(action) {
   try {
     const statementKey = action.payload.id
-    const { statements} = yield select(state => state.variant);
+    const {draftQueries, statements} = yield select(state => state.variant);
     const activeStatement = statements.find((hit) => hit._id === statementKey);
     if (!activeStatement) {
       throw new Error('Statement not found');
     }
+    const title = action.payload.title ? action.payload.title : activeStatement._source.title
+    const description = activeStatement._source.description
+    const statementResponse = yield Api.createStatement(draftQueries, title, description);
+    const newKey = statementResponse.payload.data.data.id
 
-    const statementResponse = yield Api.createStatement(
-      JSON.parse(activeStatement._source.queries) || [],
-      `${activeStatement._source.title} Copy` ,
-      `${activeStatement._source.description}`
-    );
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
 
-    yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: {} });
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+    yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: { newKey, statementKeyToUpdate: statementKey } });
+
+  } catch (e) {
+    yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
+  }
+}
+
+
+function* duplicateStatement(action) {
+  try {
+    const statementKey = action.payload.id
+    const {draftQueries, statements} = yield select(state => state.variant);
+    let statementToDuplicate = statements.find((hit) => hit._id === statementKey);
+    if (!statementToDuplicate) {
+      throw new Error('Statement not found');
+    }
+
+    const newStatement = {
+      id: 'draft',
+      description: statementToDuplicate._source.description,
+      title: 'DUP-' + statementToDuplicate._source.title,
+      queries : draftQueries,
+    };
+
+    yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { newStatement } });
+    //yield call(selectStatement, { payload: { id: newStatement.id } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
   }
@@ -196,10 +192,10 @@ function* deleteStatement(action) {
       if (statementResponse.error) {
           throw new ApiError(statementResponse.error);
       }
-      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {} });
-      yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: {} });
+      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {statementKeyToRemove: statementKey}  });
+
     } catch (e) {
-        yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
+      yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
     }
 }
 
@@ -211,13 +207,13 @@ function* selectStatement(action) {
         const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
         yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: newActiveQueryKey } });
         if (draftQueries) {
-            const {details} = yield select(state => state.patient);
-            const payload = {
-                patient: details.id,
-                statement: draftQueries,
-                query: newActiveQueryKey,
-            };
-            yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
+          const {details} = yield select(state => state.patient);
+          const payload = {
+              patient: details.id,
+              statement: draftQueries,
+              query: newActiveQueryKey,
+          };
+          yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
         }
 
     } catch (e) {
@@ -230,11 +226,11 @@ export default function* watchedVariantSagas() {
     watchVariantSchemaFetch(),
     watchVariantSearch(),
     watchUndo(),
-    watchGetStatements(),
-    watchCreateStatement(),
     watchUpdateStatement(),
     watchDuplicateStatement(),
     watchDeleteStatement(),
     watchSelectStatement(),
+    watchCreateStatement(),
+    watchGetAndSelectStatement(),
   ]);
 }

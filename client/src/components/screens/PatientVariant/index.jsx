@@ -24,7 +24,8 @@ import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
   searchVariants, commitHistory,
-  getStatements, createStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement, } from '../../../actions/variant';
+  getAndSelectStatement, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
+  createStatement, } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
@@ -40,6 +41,7 @@ class PatientVariantScreen extends React.Component {
       currentTab: VARIANT_TAB,
       page: 1,
       size: 25,
+      queriesHaveChanges: false,
     };
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
@@ -56,7 +58,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCopy = this.handleCopy.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.handleGetStatements = this.handleGetStatements.bind(this);
-    this.handleCreateStatement = this.handleCreateStatement.bind(this);
+    this.handleCreateDraftStatement = this.handleCreateDraftStatement.bind(this);
     this.handleUpdateStatement = this.handleUpdateStatement.bind(this);
     this.handleDeleteStatement = this.handleDeleteStatement.bind(this);
     this.handleSelectStatement = this.handleSelectStatement.bind(this);
@@ -155,8 +157,8 @@ class PatientVariantScreen extends React.Component {
 
   handleQueryChange(query) {
     const { actions } = this.props;
-    actions.replaceQuery(query.data || query);
     this.handleCommitHistory();
+    actions.replaceQuery(query.data || query);
     setTimeout(() => {
       this.handleQuerySelection(query.key || query.data.key);
     }, 100)
@@ -200,6 +202,9 @@ class PatientVariantScreen extends React.Component {
   handleCommitHistory() {
     const { actions, variant } = this.props;
     const { draftQueries } = variant;
+    this.setState({
+      queriesHaveChanges: true,
+    });
     actions.commitHistory(draftQueries);
   }
 
@@ -225,39 +230,55 @@ class PatientVariantScreen extends React.Component {
 
   handleCopy(row, col) {
     const data = this.getData();
-
     return JSON.stringify(data[row]);
   }
 
   handleGetStatements() {
      const { actions } = this.props;
-
-     actions.getStatements();
-
+     actions.getAndSelectStatement();
+    this.setState({
+      queriesHaveChanges: false,
+    });
   }
 
-  handleCreateStatement(newStatement) {
+  handleCreateDraftStatement(newStatement) {
     const { actions } = this.props;
-    actions.createStatement(newStatement);
+    actions.createDraftStatement(newStatement);
   }
 
   handleUpdateStatement(id, title, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
-    actions.updateStatement(id, title, switchCurrentStatementToDefault);
+    this.setState({
+      queriesHaveChanges: false,
+    });
+    if (id === 'draft') {
+      actions.createStatement(id, title, switchCurrentStatementToDefault);
+    } else {
+      actions.updateStatement(id, title, switchCurrentStatementToDefault);
+    }
   }
 
   handleDeleteStatement(id) {
     const { actions } = this.props;
+    this.setState({
+      queriesHaveChanges: false,
+    });
     actions.deleteStatement(id);
   }
 
   handleDuplicateStatement(id) {
     const { actions } = this.props;
+    this.setState({
+      queriesHaveChanges: false,
+    });
     actions.duplicateStatement(id);
   }
 
   handleSelectStatement(id) {
     const { actions } = this.props;
+    this.setState({
+      queriesHaveChanges: false,
+    });
     actions.selectStatement(id);
   }
 
@@ -268,14 +289,14 @@ class PatientVariantScreen extends React.Component {
 
       return results[activeQuery]
     }
-
     return [];
   }
 
   render() {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
-    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery, activeStatementId, statements } = variant;
+    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery,
+      activeStatementId, statements } = variant;
     const {
       size, page, currentTab,
     } = this.state;
@@ -363,12 +384,12 @@ class PatientVariantScreen extends React.Component {
                 </a>
               )}
           />
-          <Descriptions title="Patient [PT93993], Masculin, Proband, Affecté" layout="horizontal" column={1}>
-              <Descriptions.Item label="Famille">[FA09383], Mère: [PT3983883] (Non affecté), Père: [PT4736] (Non affecté)</Descriptions.Item>
-              <Descriptions.Item label="Signes">Epilepsie ([HP93993]), Schizophrénie ([HP2772])</Descriptions.Item>
-              <Descriptions.Item label="Indication(s)">Anomalies neuro-psychiatriques</Descriptions.Item>
-          </Descriptions>
-
+          { patient.details.id && (
+          <Descriptions title={`Patient [${patient.details.id}], ${patient.details.gender}, ${patient.details.proband}`} layout="horizontal" column={1}>
+              <Descriptions.Item label="Famille">[{patient.family.id}], Mère: [{patient.family.members.mother}], Père: [{patient.family.members.father}]</Descriptions.Item>
+              <Descriptions.Item label="Signes">{patient.ontology.map(hpo => { return `${hpo.term} (${hpo.code})`; }).join(', ')}</Descriptions.Item>
+              <Descriptions.Item label="Indication(s)">{patient.observations.map(o => { return o.note; }).join(', ')}</Descriptions.Item>
+          </Descriptions>) }
           <Card className="Content">
             <VariantNavigation
                           key="variant-navigation"
@@ -398,6 +419,7 @@ class PatientVariantScreen extends React.Component {
                         facets={facets}
                         target={patient}
                         categories={schema.categories}
+                        queriesHaveChanges={this.state.queriesHaveChanges}
                         options={{
                             copyable: true,
                             duplicatable: true,
@@ -415,7 +437,7 @@ class PatientVariantScreen extends React.Component {
                         onDuplicateCallback={this.handleQueryDuplication}
                         onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
                         onGetStatementsCallback={this.handleGetStatements}
-                        onCreateStatementCallback={this.handleCreateStatement}
+                        onCreateDraftStatementCallback={this.handleCreateDraftStatement}
                         onUpdateStatementCallback={this.handleUpdateStatement}
                         onDeleteStatementCallback={this.handleDeleteStatement}
                         onSelectStatementCallback={this.handleSelectStatement}
@@ -488,7 +510,8 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
-    getStatements, createStatement, updateStatement, deleteStatement, selectStatement, duplicateStatement,
+    getAndSelectStatement, createDraftStatement, createStatement, updateStatement, deleteStatement, selectStatement,
+    duplicateStatement,
   }, dispatch),
 });
 

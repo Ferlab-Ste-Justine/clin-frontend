@@ -72,15 +72,15 @@ export const undo = () => ({
 });
 
 
-export const getStatements = (newKey = '') => ({
+export const getAndSelectStatement = (keyForStatementSelectionInsteadOfTheDefaultOne = '') => ({
   type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
   payload: {
-    newKey,
+    keyForStatementSelectionInsteadOfTheDefaultOne,
   },
 });
 
-export const createStatement = newStatement => ({
-  type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
+export const createDraftStatement = newStatement => ({
+  type: actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
   payload: {
     newStatement,
   },
@@ -88,6 +88,15 @@ export const createStatement = newStatement => ({
 
 export const updateStatement = (id, title, switchCurrentStatementToDefault) => ({
   type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED,
+  payload: {
+    id,
+    title,
+    switchCurrentStatementToDefault,
+  },
+});
+
+export const createStatement = (id, title, switchCurrentStatementToDefault) => ({
+  type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
     id,
     title,

@@ -1,12 +1,12 @@
 /* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { cloneDeep, isEqual, find, isNull } from 'lodash';
+import { cloneDeep, isEqual, find, isNull, filter } from 'lodash';
 import {
   Dropdown, Icon, Menu, Input, Badge,Tooltip
 } from 'antd';
+import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
-const Joi = require('@hapi/joi');
 
 import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
@@ -14,9 +14,13 @@ import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
 import GenericBooleanFilter from './Filter/GenericBoolean'
-import Operator, { INSTRUCTION_TYPE_OPERATOR } from './Operator';
+import Operator, {
+  createOperatorInstruction,
+  INSTRUCTION_TYPE_OPERATOR,
+  OPERATOR_TYPE_AND_NOT,
+  OPERATOR_TYPE_DEFAULT
+} from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
-import {convertIndexToColor, convertIndexToLetter} from './Statement';
 import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
 import IconKit from 'react-icons-kit';
 import {
@@ -64,16 +68,15 @@ const sanitizeOperators = (instructions) => {
     sanitizedInstructions.pop();
   }
 
-  // @No subsequent filters or subqueries without an operator
+  const operator = find( sanitizedInstructions, {'type': INSTRUCTION_TYPE_OPERATOR} )
+  const operatorType = operator ? operator.data.type : OPERATOR_TYPE_DEFAULT;
+  // @NOTE No subsequent filters or subqueries without an operator
   for(let i in sanitizedInstructions){
-    const defaultOperator = {data:{type:"and"} ,
-                             type:INSTRUCTION_TYPE_OPERATOR }
-    const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator
     const next = Number(i)+1
     if(next < sanitizedInstructions.length){
         if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
             if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
-                sanitizedInstructions.splice(next, 0, operator);
+                sanitizedInstructions.splice(next, 0, createOperatorInstruction(operatorType));
             }
         }
     }
@@ -83,7 +86,10 @@ const sanitizeOperators = (instructions) => {
 };
 
 const sanitizeSubqueries = (instructions) => {
-  if (instructions.length === 1 && instructions[0].type === INSTRUCTION_TYPE_SUBQUERY) {
+  const subqueries = find( instructions, {'type': INSTRUCTION_TYPE_SUBQUERY} )
+
+  // @NOTE No single subqueries
+  if (subqueries && subqueries.length === 1) {
     instructions.shift();
   }
 
@@ -124,7 +130,13 @@ class Query extends React.Component {
   }
 
   addInstruction(instruction) {
-      const { draft, display, index, onEditCallback } = this.props;
+    // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
+    const { draft } = this.props;
+    const andNotOperator = find(draft.instructions, instruction => {
+      return (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT)
+    })
+    if (!andNotOperator) {
+      const { display, index, onEditCallback } = this.props;
       const newDraft = cloneDeep(draft)
       newDraft.instructions.push(instruction);
       newDraft.instructions = sanitizeInstructions(newDraft.instructions);
@@ -133,6 +145,7 @@ class Query extends React.Component {
         display,
         index
       });
+    }
   }
 
   replaceInstruction(instruction) {
@@ -190,18 +203,22 @@ class Query extends React.Component {
 
   // @NOTE All operators within a query must have the same type
   handleOperatorChange(operator) {
-    const { draft, onEditCallback } = this.props;
-    const instructions = draft.instructions.map((datum) => {
+    const { draft, display, index, onEditCallback } = this.props;
+    const updatedDraft = cloneDeep(draft)
+    updatedDraft.instructions = updatedDraft.instructions.map((datum) => {
       if (datum.type === INSTRUCTION_TYPE_OPERATOR) {
         datum.data.type = operator.data.type;
       }
+
       return datum;
     });
-    const updatedDraft = {
-      ...draft,
-      instructions
-    }
-    onEditCallback(updatedDraft);
+
+    updatedDraft.instructions = sanitizeInstructions(updatedDraft.instructions);
+    onEditCallback({
+      data: updatedDraft,
+      display,
+      index
+    });
   }
 
   handleSubqueryChange(subquery) {
@@ -323,63 +340,6 @@ class Query extends React.Component {
     return draft.title !== undefined;
   }
 
-  /*
-  createMenuComponent() {
-    const { options, original, intl, display } = this.props;
-    const {
-      copyable, duplicatable, editable, removable, undoable,
-    } = options;
-    const { compoundOperators, viewableSqon } = display;
-    const menuAdd = intl.formatMessage({ id: 'screen.patientvariant.query.menu.add' });
-    const menuRemove = intl.formatMessage({ id: 'screen.patientvariant.query.menu.remove' });
-    const menuCopy = intl.formatMessage({ id: 'screen.patientvariant.query.menu.copy' });
-    const menuMaximize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.maximize' });
-    const menuMinimize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.minimize' });
-    const menuDuplicate = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
-    const menuDelete = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
-    const titleMetaIsPresent = this.hasTitle();
-
-    return (
-      <Menu onClick={this.handleMenuSelection}>
-        {editable && (
-        <Menu.Item key={QUERY_ACTION_TITLE}>
-          <Icon type={`file${(titleMetaIsPresent ? '' : '-text')}`} />
-          {(titleMetaIsPresent ? menuRemove : menuAdd)}
-        </Menu.Item>
-        )
-      }
-        {copyable && (
-        <Menu.Item key={QUERY_ACTION_COPY}>
-          <Icon type="font-size" />
-            {menuCopy}
-        </Menu.Item>
-        )
-      }
-        <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
-          <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle`} />
-          {(compoundOperators ? menuMaximize : menuMinimize)}
-        </Menu.Item>
-        {duplicatable && (
-        <Menu.Item key={QUERY_ACTION_DUPLICATE}>
-          <Icon type="file-add" />
-            {menuDuplicate}
-        </Menu.Item>
-        )
-      }
-        {removable && (
-        <Menu.Item key={QUERY_ACTION_DELETE}>
-          <Icon type="delete" />
-            {menuDelete}
-        </Menu.Item>
-        )
-      }
-      </Menu>
-    );
-  }
-  */
-
-
-
   render() {
     const { active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
     const {
@@ -409,7 +369,6 @@ class Query extends React.Component {
         );
       }
     }
-
     const classNames = [styleQuery.query];
     if (isDirty) { classNames.push(styleQuery.dirtyQuery) }
     if (active) { classNames.push(styleQuery.activeQuery) } else { classNames.push(styleQuery.inactiveQuery) }
@@ -461,9 +420,6 @@ class Query extends React.Component {
           { draft.instructions.map((item, index) => {
             switch (item.type) {
               case INSTRUCTION_TYPE_OPERATOR:
-                if (compoundOperators) {
-                  return null;
-                }
                 return (
                   <Operator
                     index={index}
@@ -471,7 +427,7 @@ class Query extends React.Component {
                     data={item.data}
                     intl={intl}
                     onEditCallback={this.handleOperatorChange}
-                    key={index}
+                    key={uuidv1()}
                   />
                 );
               case INSTRUCTION_TYPE_FILTER:
