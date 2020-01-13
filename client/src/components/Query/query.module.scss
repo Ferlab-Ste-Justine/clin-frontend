@@ -7,72 +7,59 @@
   .toolbar {
     background-color: $active-background-color;
     display: flex;
-    width: 100%;
-    justify-content: space-between;
     align-items: center;
     height:26px;
 
     .title {
+    display:flex;
+    align-items:center;
 
-      >span>input {
+      input {
         font-family: $font;
         font-size: $little-font;
         font-weight: $font-weight-medium;
         letter-spacing: $small-letter-spacing;
-        border: none;
-        min-width: 50px;
         background-color: transparent;
+        border:1px solid transparent;
+        border-radius:$default-radius;
 
         &:focus {
           box-shadow: none;
+          border:2px solid $tag-active-background-color;
+          border-right-width:2px !important;
+          &:hover{
+              border:2px solid $tag-active-background-color;
+          }
+        }
+        &:hover{
+            border:1px solid $color-disable;
         }
       }
 
-      &:hover {
-        .iconTitle {
-            color: $icon-color-hover;
-        }
-      }
     }
-
-    .iconTitle {
-      color: transparent;
-    }
-
-
-    &:hover {
-
-      .iconTitle {
-        color: $icon-color;
-      }
-
-      .icon {
-        color: $icon-color;
-
-        &:hover {
-          color: $icon-color-hover;
-        }
-      }
-    }
-
     .icon {
-      height: $icon-size;
+      display:flex !important;
       cursor: pointer;
-      color: transparent;
-      display: none;
-      margin-right: 10px;
+      margin-right: 8px;
+      color:$color-disable;
+
+      &:hover{
+        color:#1B7AB2;
+      }
+    }
+
+    .focusIcon{
+    color:#1d8bc6;
     }
 
     .actions {
       display: flex;
-      width: 100%;
-      justify-content: flex-end;
+      margin-left: auto;
     }
 
     .count {
       display: flex;
       justify-content: flex-end;
-      width: 120px;
       margin-right: 12px;
       >span {
         font-family: $font;
@@ -128,3 +115,8 @@ letter-spacing:$small-letter-spacing;
 margin: 8px 0;
 
 }
+
+.tooltip{
+}
+
+

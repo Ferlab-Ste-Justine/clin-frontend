@@ -237,6 +237,7 @@ const fr = {
   'screen.patientvariant.statement.modal.ok': 'Oui',
   'screen.patientvariant.statement.modal.cancel': 'Non',
   'screen.patientvariant.query.menu.add': 'Ajouter le titre',
+  'screen.patientvariant.query.menu.editTitle': 'Modifier le titre',
   'screen.patientvariant.query.menu.remove': 'Supprimer le titre',
   'screen.patientvariant.query.menu.copy': 'Copier la requête',
   'screen.patientvariant.query.menu.maximize': 'Maximiser la vue',
