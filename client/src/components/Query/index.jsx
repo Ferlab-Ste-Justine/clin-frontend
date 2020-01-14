@@ -252,7 +252,7 @@ class Query extends React.Component {
   onChange(e){
     const { value } = e.target;
     const length =(value.length)
-    const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|" ]
+    const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|", "I" ]
     let numberOfSmallLetter=0;
     let numberOfNormalLetter=0;
     const map = Array.prototype.map
@@ -269,7 +269,8 @@ class Query extends React.Component {
   }
 
   handleFocus(){
-    const input = document.querySelector(".titleInput")
+    const { draft } = this.props;
+    const input = document.querySelector(`.title-${draft.key}`)
     input.focus()
   }
 
@@ -398,7 +399,7 @@ class Query extends React.Component {
               onFocus={this.onFocus}
               onPressEnter={this.handleTitleChange}
               onChange={this.onChange}
-              className="titleInput"
+              className={`title-${draft.key}`}
             />
 
 
