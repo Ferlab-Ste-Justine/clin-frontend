@@ -127,6 +127,7 @@ class Query extends React.Component {
     this.onFocus= this.onFocus.bind(this)
     this.handleFocus=this.handleFocus.bind(this)
     this.onChange=this.onChange.bind(this)
+    this.getTitleWidth = this.getTitleWidth.bind(this)
   }
 
   addInstruction(instruction) {
@@ -252,19 +253,8 @@ class Query extends React.Component {
   onChange(e){
     const { value } = e.target;
     const length =(value.length)
-    const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|", "I" ]
-    let numberOfSmallLetter=0;
-    let numberOfNormalLetter=0;
-    const map = Array.prototype.map
-    map.call(value, eachLetter => {
-        if(smallLetter.includes(eachLetter)){
-            numberOfSmallLetter=numberOfSmallLetter+1;
-        }
-        else{
-            numberOfNormalLetter=numberOfNormalLetter+1;
-        }
-    })
-    const width = (numberOfNormalLetter*0.9) + (numberOfSmallLetter*0.7)
+    const width = this.getTitleWidth(value)
+
     e.target.style.width = `calc(6px + ${width}ch)`;
   }
 
@@ -353,6 +343,24 @@ class Query extends React.Component {
     const { draft } = this.props;
     return draft.title !== undefined;
   }
+  getTitleWidth(value){
+
+    const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|", "I" ]
+    let numberOfSmallLetter=0;
+    let numberOfNormalLetter=0;
+    const map = Array.prototype.map
+    map.call(value, eachLetter => {
+        if(smallLetter.includes(eachLetter)){
+            numberOfSmallLetter=numberOfSmallLetter+1;
+        }
+        else{
+            numberOfNormalLetter=numberOfNormalLetter+1;
+        }
+    })
+    const width = (numberOfNormalLetter*0.9) + (numberOfSmallLetter*0.6)
+    return width
+  }
+
 
   render() {
     const { active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
@@ -367,6 +375,9 @@ class Query extends React.Component {
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
     const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
+
+    const width = this.getTitleWidth(draft.title)
+    console.log(width)
 
     let operatorsHandler = null;
     if (compoundOperators) {
@@ -392,23 +403,24 @@ class Query extends React.Component {
           <Tooltip title={editTitleText}>
               <div className={styleQuery.title}>
 
-            <Input
-              size="small"
-              defaultValue={draft.title}
-              onBlur={this.handleTitleChange}
-              onFocus={this.onFocus}
-              onPressEnter={this.handleTitleChange}
-              onChange={this.onChange}
-              className={`title-${draft.key}`}
-            />
+                    <Input
+                      size="small"
+                      defaultValue={draft.title}
+                      onBlur={this.handleTitleChange}
+                      onFocus={this.onFocus}
+                      onPressEnter={this.handleTitleChange}
+                      onChange={this.onChange}
+                      className={`title-${draft.key}`}
+                      style={{width:`calc(6px + ${width}ch)`}}
+                    />
 
 
-            <IconKit
-                icon={ic_edit}
-                size={14}
-                className={`${styleQuery.iconTitle} ${styleQuery.icon} ${onFocus ? `${styleQuery.focusIcon}` : null}`}
-                onClick={this.handleFocus}
-            />
+                    <IconKit
+                        icon={ic_edit}
+                        size={14}
+                        className={`${styleQuery.iconTitle} ${styleQuery.icon} ${onFocus ? `${styleQuery.focusIcon}` : null}`}
+                        onClick={this.handleFocus}
+                    />
 
               </div>
           </Tooltip>
