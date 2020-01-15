@@ -131,7 +131,6 @@ function* getAndSelectStatement(action) {
 
 function* updateStatement(action) {
     try {
-
       const statementKey = action.payload.id
       const {draftQueries, statements} = yield select(state => state.variant);
       const activeStatement = statements.find((hit) => hit._id === statementKey);
@@ -146,10 +145,12 @@ function* updateStatement(action) {
       const statementResponse = yield Api.updateStatement(statementKey, draftQueries, title, description, isDefault);
 
       if (statementResponse.error) {
+        yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not saved.' } });
         throw new ApiError(statementResponse.error);
       }
 
       yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: { key: '' } });
+      yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter saved.' } });
       yield call(getAndSelectStatement, { payload: { keyForStatementSelectionInsteadOfTheDefaultOne : statementKey } });
     } catch (e) {
       yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
@@ -198,7 +199,6 @@ function* duplicateStatement(action) {
     };
 
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { newStatement } });
-    //yield call(selectStatement, { payload: { id: newStatement.id } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
   }
@@ -212,9 +212,10 @@ function* deleteStatement(action) {
           throw new ApiError(statementResponse.error);
       }
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {statementKeyToRemove: statementKey}  });
-
+      yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter removed.' } });
     } catch (e) {
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
+      yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not removed.' } });
     }
 }
 
