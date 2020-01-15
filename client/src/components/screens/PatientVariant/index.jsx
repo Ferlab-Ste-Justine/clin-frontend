@@ -25,7 +25,7 @@ import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
   searchVariants, commitHistory,
   getAndSelectStatement, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
-  createStatement, } from '../../../actions/variant';
+  createStatement, countVariants } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
@@ -110,15 +110,7 @@ class PatientVariantScreen extends React.Component {
   }
 
   componentDidMount() {
-    const { variant } = this.props;
-    const { activeQuery } = variant;
-
-    // @TODO Load Statements using a redux action + saga watch
-    // Load your initial state from clin-proxy-api using this.props.actions.myAction
     this.handleGetStatements();
-    // @NOTE - Not sure we need to do this here anymore bcuz of this.handletGetStatements() ?
-    // I think we need to select the default one on startup - or the last one if there is no default
-    //this.handleQuerySelection(activeQuery);
   }
 
   handleNavigationToPatientScreen(e) {
@@ -234,8 +226,8 @@ class PatientVariantScreen extends React.Component {
   }
 
   handleGetStatements() {
-     const { actions } = this.props;
-     actions.getAndSelectStatement();
+    const { actions } = this.props;
+    actions.getAndSelectStatement();
     this.setState({
       queriesHaveChanges: false,
     });
@@ -296,7 +288,7 @@ class PatientVariantScreen extends React.Component {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
     const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery,
-      activeStatementId, statements } = variant;
+      activeStatementId, activeStatementTotals, statements } = variant;
     const {
       size, page, currentTab,
     } = this.state;
@@ -410,12 +402,12 @@ class PatientVariantScreen extends React.Component {
                         key="variant-statement"
                         activeQuery={activeQuery}
                         activeStatementId={activeStatementId}
+                        activeStatementTotals={activeStatementTotals}
                         statements={statements}
                         data={draftQueries}
                         draftHistory={draftHistory}
                         original={originalQueries}
                         intl={intl}
-                        matches={matches}
                         facets={facets}
                         target={patient}
                         categories={schema.categories}
@@ -507,6 +499,7 @@ const mapDispatchToProps = dispatch => ({
     duplicateQuery,
     sortStatement,
     searchVariants,
+    countVariants,
     commitHistory,
     undo,
     navigateToPatientScreen,

@@ -60,6 +60,15 @@ export const searchVariants = (patient, statement, query, group = null, index = 
   },
 });
 
+export const countVariants = (patient, statement, queries) => ({
+  type: actions.PATIENT_VARIANT_COUNT_REQUESTED,
+  payload: {
+    patient,
+    statement,
+    queries,
+  },
+});
+
 export const commitHistory = version => ({
   type: actions.PATIENT_VARIANT_COMMIT_HISTORY,
   payload: {

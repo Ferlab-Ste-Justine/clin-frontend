@@ -38,6 +38,21 @@ function* searchVariantsForPatient(action) {
   }
 }
 
+function* countVariantsForPatient(action) {
+  try {
+    const {
+      patient, statement, queries,
+    } = action.payload;
+    const variantResponse = yield Api.countVariantsForPatient(patient, statement, queries);
+    if (variantResponse.error) {
+      throw new ApiError(variantResponse.error);
+    }
+    yield put({ type: actions.PATIENT_VARIANT_COUNT_SUCCEEDED, payload: variantResponse.payload.data });
+  } catch (e) {
+    yield put({ type: actions.PATIENT_VARIANT_COUNT_FAILED, payload: e });
+  }
+}
+
 function* undo() {
   const { activeQuery, draftQueries } = yield select(state => state.variant);
   const { details } = yield select(state => state.patient);
@@ -62,6 +77,10 @@ function* watchVariantSchemaFetch() {
 
 function* watchVariantSearch() {
   yield takeLatest(actions.PATIENT_VARIANT_SEARCH_REQUESTED, searchVariantsForPatient);
+}
+
+function* watchVariantsCount() {
+  yield takeLatest(actions.PATIENT_VARIANT_COUNT_REQUESTED, countVariantsForPatient);
 }
 
 function* watchUndo() {
@@ -202,18 +221,22 @@ function* deleteStatement(action) {
 function* selectStatement(action) {
     try {
         const statementKey = action.payload.id
-        yield put({type: actions.PATIENT_VARIANT_STATEMENT_SELECTION, payload: {key: statementKey}});
+        yield put({type: actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED, payload: {key: statementKey}});
         const {draftQueries} = yield select(state => state.variant);
         const newActiveQueryKey = draftQueries[(draftQueries.length - 1)].key
         yield put( { type: actions.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: newActiveQueryKey } });
         if (draftQueries) {
           const {details} = yield select(state => state.patient);
-          const payload = {
-              patient: details.id,
-              statement: draftQueries,
-              query: newActiveQueryKey,
-          };
-          yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload});
+          yield put({type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload: {
+            patient: details.id,
+            statement: draftQueries,
+            query: newActiveQueryKey,
+          }});
+          yield put({type: actions.PATIENT_VARIANT_COUNT_REQUESTED, payload: {
+            patient: details.id,
+            statement: draftQueries,
+            queries: draftQueries.map(draftQuery => draftQuery.key),
+          }});
         }
 
     } catch (e) {
@@ -225,6 +248,7 @@ export default function* watchedVariantSagas() {
   yield all([
     watchVariantSchemaFetch(),
     watchVariantSearch(),
+    watchVariantsCount(),
     watchUndo(),
     watchUpdateStatement(),
     watchDuplicateStatement(),

@@ -244,7 +244,7 @@ class Statement extends React.Component {
       }],
     };
 
-    const  callbackCreateDraft = () => {
+    const callbackCreateDraft = () => {
       this.setState({
           statementTitle: null,
           statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
@@ -658,8 +658,8 @@ class Statement extends React.Component {
       }
 
   render() {
-    const { activeQuery, data, externalData, options, intl, facets, matches, categories,
-      searchData, target, activeStatementId, statements, queriesHaveChanges, } = this.props;
+    const { activeQuery, data, externalData, options, intl, facets, categories,
+      searchData, target, activeStatementId, activeStatementTotals, statements, queriesHaveChanges, } = this.props;
     const foundActiveStatement = statements.find(statement => statement._id === activeStatementId)
     const activeStatement = foundActiveStatement ? foundActiveStatement._source : {}
     const statementsToDisplay = statements.filter(statement => statement._id != activeStatementId)
@@ -734,7 +734,7 @@ class Statement extends React.Component {
             options={options}
             index={index}
             active={isActive}
-            results={(matches[query.key] ? matches[query.key] : 0)}
+            results={(activeStatementTotals[query.key] ? activeStatementTotals[query.key] : 0)}
             intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
             target={target}
@@ -1033,6 +1033,7 @@ Statement.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
   activeStatementId: PropTypes.string,
+  activeStatementTotals: PropTypes.shape({}),
   externalData: PropTypes.shape({}),
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
@@ -1065,10 +1066,10 @@ Statement.defaultProps = {
     selectable: true,
     undoable: true,
   },
-
+  activeStatementId: '',
+  activeStatementTotals: {},
   target: {},
   externalData: {},
-
   onSelectCallback: () => {},
   onEditCallback: () => {},
   onBatchEditCallback: () => {},

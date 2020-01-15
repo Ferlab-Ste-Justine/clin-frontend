@@ -11,7 +11,6 @@ import './style.scss';
 import style from '../../../containers/App/style.module.scss'
 
 
-
 const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 class LoginForm extends React.Component {
