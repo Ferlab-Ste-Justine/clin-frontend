@@ -227,6 +227,17 @@ function* deleteStatement(action) {
       }
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: {statementKeyToRemove: statementKey}  });
       yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter removed.' } });
+      const newStatement = {
+        id: 'draft',
+        description: '',
+        title: '',
+        queries: [{
+          key: uuidv1(),
+          instructions: [],
+        }],
+      }
+      yield put({ type: actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT, payload: { statement: newStatement }});
+      yield call(selectStatement, { payload: { id: 'draft' } });
     } catch (e) {
       yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
       yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not removed.' } });
