@@ -21,6 +21,7 @@ export const initialVariantState = {
   facets: {},
   statements: [],
   activeStatementId: null,
+  activeStatementTotals: {},
 };
 
 // @TODO
@@ -36,6 +37,7 @@ export const variantShape = {
   facets: PropTypes.shape({}),
   statements: PropTypes.array,
   activeStatementId: PropTypes.String,
+  activeStatementTotals: PropTypes.array,
 };
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => {
@@ -81,6 +83,15 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         draft.facets[action.payload.data.query] = {}
         draft.matches[action.payload.data.query] = {}
         draft.results[action.payload.data.query] = {}
+        break;
+
+      case actions.PATIENT_VARIANT_COUNT_SUCCEEDED:
+        draft.activeStatementTotals = action.payload.data.total;
+        break;
+
+      case actions.PATIENT_VARIANT_COUNT_FAILED:
+      case actions.PATIENT_VARIANT_COUNT_REQUESTED:
+        draft.activeStatementTotals = {};
         break;
 
       case actions.PATIENT_VARIANT_QUERY_REMOVAL:
@@ -142,35 +153,17 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
       case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
-
-        const { keyForStatementSelectionInsteadOfTheDefaultOne, response } = payload;
+        const { response } = payload;
         const { hits , total } = response.data;
 
         if (total > 0) {
           draft.statements = hits.sort(function(a, b){return a._source.isDefault == true ? 1 : 0})
-          // let defaultStatement = null;
-          // if (keyForStatementSelectionInsteadOfTheDefaultOne) {
-          //   defaultStatement = draft.statements.find((hit) => hit._id === keyForStatementSelectionInsteadOfTheDefaultOne );
-          // } else {
-          //   defaultStatement = draft.statements.find((hit) => hit._source.isDefault === true );
-          // }
-          // let activeStatement = null;
-          // if (defaultStatement) {
-          //   activeStatement = defaultStatement
-          // } else {
-          //   activeStatement = draft.statements[0]
-          // }
-          // const activeStatementQuery = JSON.parse(activeStatement._source.queries)
-          // draft.activeStatementId = activeStatement._id
-          // draft.originalQueries = activeStatementQuery
-          // draft.draftQueries = activeStatementQuery
-          // draft.draftHistory = activeStatementQuery
         } else {
           draft.statements = []
         }
         break;
 
-    case actions.PATIENT_VARIANT_STATEMENT_SELECTION:
+    case actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED:
       let defaultStatement
 
       if (action.payload.key) {

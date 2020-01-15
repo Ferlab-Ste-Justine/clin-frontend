@@ -66,13 +66,18 @@ const searchVariantsForPatient = (patient, statement, query, group, page, size) 
   .then(successCallback)
   .catch(errorCallback);
 
+const countVariantsForPatient = (patient, statement, queries) => axios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
+  patient,
+  statement,
+  queries,
+})
+  .then(successCallback)
+  .catch(errorCallback);
 
-// TODO getStatements
 const getStatements = () => axios.get(`${window.CLIN.metaServiceApiUrl}/statement`, {})
   .then(successCallback)
   .catch(errorCallback);
 
-// TODO createStatement
 const createStatement = (queries, title, description = '') => axios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
   queries,
   title,
@@ -83,7 +88,6 @@ const createStatement = (queries, title, description = '') => axios.post(`${wind
   .then(successCallback)
   .catch(errorCallback);
 
-// TODO updateStatements
 const updateStatement = (uid, queries, title, description = '', isDefault = false) => axios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
   uid,
   queries,
@@ -95,7 +99,6 @@ const updateStatement = (uid, queries, title, description = '', isDefault = fals
   .then(successCallback)
   .catch(errorCallback);
 
-// TODO deleteStatement
 const deleteStatement = uid => axios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
   data: { uid },
 })
@@ -110,6 +113,7 @@ export default {
   searchPatients,
   getVariantSchema,
   searchVariantsForPatient,
+  countVariantsForPatient,
   getStatements,
   createStatement,
   updateStatement,
