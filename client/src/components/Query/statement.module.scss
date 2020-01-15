@@ -38,29 +38,64 @@
         height:2px;
       }
 
-      input{
-        width:75px;
-        border:none;
-        background-color:white !important;
-        padding:0 !important;
-        min-width: 75px;
+      .title{
+          display:flex;
+          align-items:center;
+          div{
+            display:flex;
+            align-items:center;
+          }
+          input{
+                  border:1px solid transparent;
+                  padding:0 4px;
+                  background-color:white !important;
+                  color: rgb(35, 55, 80);
+                  font-family: $font;
+                  font-size: $small-font;
+                  font-weight: $font-weight-medium;
+                  letter-spacing: 0.1px;
+                  line-height: 24px;
+                  border-radius:2px;
+                    &:focus {
+                      box-shadow: none;
+                      border:2px solid $tag-active-background-color;
+                      border-right-width:2px !important;
 
-        color: rgb(35, 55, 80);
-        font-family: $font;
-        font-size: $small-font;
-        font-weight: $font-weight-medium;
-        letter-spacing: 0.1px;
-        line-height: 24px;
-        &:focus{
-            box-shadow:none;
-        }
+                      &:hover{
+                          border:2px solid $tag-active-background-color;
+                      }
+                    }
+                    &:hover{
+                        border:1px solid $color-disable;
+                    }
+
+
+           }
+
+                .star{
+                  color:#f8a335;
+                }
+
+          }
+
+              .icon {
+                display:flex !important;
+                cursor: pointer;
+                margin-right: 8px;
+                color:$color-disable;
+                opacity:0.7;
+
+                &:hover{
+                  opacity:1;
+                  color:#1B7AB2;
+                }
+              }
+                  .focusIcon{
+                  color:#1d8bc6;
+                  }
       }
 
-              .star{
-                color:#f8a335;
-              }
 
-    }
 
     .toolbar {
     }

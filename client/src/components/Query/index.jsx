@@ -255,7 +255,7 @@ class Query extends React.Component {
     const length =(value.length)
     const width = this.getTitleWidth(value)
 
-    e.target.style.width = `calc(6px + ${width}ch)`;
+    e.target.style.width = `calc(13px + ${width}ch)`;
   }
 
   handleFocus(){
@@ -346,18 +346,28 @@ class Query extends React.Component {
   getTitleWidth(value){
 
     const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|", "I" ]
+    const largeLetter = ["o","A","G","H", "K","Z","X","V","C", "B", "N",  "Q", "R","S","T","Y", "U", "P","D","d", "E"]
+    const extraLargeLetter =["W", "w","m" , "M","O",]
     let numberOfSmallLetter=0;
+    let numberOfLargeLetter=0;
     let numberOfNormalLetter=0;
+    let numberofExtraLargeLetter=0;
     const map = Array.prototype.map
     map.call(value, eachLetter => {
         if(smallLetter.includes(eachLetter)){
             numberOfSmallLetter=numberOfSmallLetter+1;
         }
+        else if(largeLetter.includes(eachLetter)){
+            numberOfLargeLetter=numberOfLargeLetter+1;
+        }
+        else if(extraLargeLetter.includes(eachLetter)){
+            numberofExtraLargeLetter =numberofExtraLargeLetter +1;
+        }
         else{
             numberOfNormalLetter=numberOfNormalLetter+1;
         }
     })
-    const width = (numberOfNormalLetter*0.9) + (numberOfSmallLetter*0.6)
+    const width = (numberOfNormalLetter*1.1) + (numberOfSmallLetter*0.7) + (numberOfLargeLetter*1.3) + (numberofExtraLargeLetter*1.7)
     return width
   }
 
@@ -377,7 +387,6 @@ class Query extends React.Component {
     const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
 
     const width = this.getTitleWidth(draft.title)
-    console.log(width)
 
     let operatorsHandler = null;
     if (compoundOperators) {
@@ -411,7 +420,7 @@ class Query extends React.Component {
                       onPressEnter={this.handleTitleChange}
                       onChange={this.onChange}
                       className={`title-${draft.key}`}
-                      style={{width:`calc(6px + ${width}ch)`}}
+                      style={{width:`calc(13px + ${width}ch)`}}
                     />
 
 
