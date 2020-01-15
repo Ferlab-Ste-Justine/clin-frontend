@@ -15,7 +15,7 @@ import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
 import {
-  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_unfold_more,
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_unfold_more, ic_edit
 } from 'react-icons-kit/md';
 import Query from './index';
 import {
@@ -58,6 +58,7 @@ class Statement extends React.Component {
         undoable: null,
       },
       selectIsOpen: false,
+      onFocus:false,
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -98,10 +99,13 @@ class Statement extends React.Component {
     this.onFocus = this.onFocus.bind(this);
     this.onBlur = this.onBlur.bind(this);
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
-    this.onFocus=this.onFocus.bind(this)
-    this.onBlur=this.onBlur.bind(this)
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
+    this.getTitleWidth = this.getTitleWidth.bind(this)
+    this.handleFocus =this.handleFocus.bind(this)
+    this.onFocusTitle=this.onFocusTitle.bind(this)
+    this.onBlurTitle = this.onBlurTitle.bind(this);
+
 
   }
 
@@ -586,6 +590,10 @@ class Statement extends React.Component {
 
   onStatementTitleChange(e) {
     const { value } = e.target;
+    const width = this.getTitleWidth(value)
+
+    e.target.style.width = `calc(13px + ${width}ch)`;
+
     this.setState({
       statementTitle: value,
       statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
@@ -598,13 +606,56 @@ class Statement extends React.Component {
   }
 
   onBlur() {
-    this.setState({ selectIsOpen: false });
+    this.setState({ onFocus: false });
   }
 
   onModalSaveTitleInputChange(e) {
     const { value } = e.target;
     this.setState({ saveTitleModalInputValue: value });
   }
+
+    getTitleWidth(value){
+
+      const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|", "I" ]
+      const largeLetter = ["o","A","G","H", "K","Z","X","V","C", "B", "N",  "Q", "R","S","T","Y", "U", "P","D","d", "E"]
+      const extraLargeLetter =["W", "w","m" , "M","O",]
+      let numberOfSmallLetter=0;
+      let numberOfLargeLetter=0;
+      let numberOfNormalLetter=0;
+      let numberofExtraLargeLetter=0;
+      const map = Array.prototype.map
+      map.call(value, eachLetter => {
+          if(smallLetter.includes(eachLetter)){
+              numberOfSmallLetter=numberOfSmallLetter+1;
+          }
+          else if(largeLetter.includes(eachLetter)){
+              numberOfLargeLetter=numberOfLargeLetter+1;
+          }
+          else if(extraLargeLetter.includes(eachLetter)){
+              numberofExtraLargeLetter =numberofExtraLargeLetter +1;
+          }
+          else{
+              numberOfNormalLetter=numberOfNormalLetter+1;
+          }
+      })
+      const width = (numberOfNormalLetter*1.1) + (numberOfSmallLetter*0.6) + (numberOfLargeLetter*1.3) + (numberofExtraLargeLetter*1.7)
+      return width
+    }
+
+    handleFocus(){
+        const input = document.querySelector("#statementTitle")
+        input.focus()
+    }
+
+      onFocusTitle(e){
+          const{onFocus} = this.state
+          e.target.select()
+          this.setState({onFocus:true})
+
+      }
+      onBlurTitle(e){
+      this.setState({onFocus:false})
+      }
 
   render() {
     const { activeQuery, data, externalData, options, intl, facets, matches, categories,
@@ -620,7 +671,7 @@ class Statement extends React.Component {
     if (!data) return null;
     const {
       display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
-      saveTitleModalVisible, saveTitleModalConfirmLoading, saveTitleModalInputValue,
+      saveTitleModalVisible, saveTitleModalConfirmLoading, saveTitleModalInputValue, onFocus
     } = this.state;
     const {
       editable, reorderable, removable, duplicatable,
@@ -638,6 +689,7 @@ class Statement extends React.Component {
     const combineAndNot = intl.formatMessage({ id: 'screen.patientvariant.statement.andnot' });
     const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
+    const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
 
     const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.title' });
     const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
@@ -646,7 +698,7 @@ class Statement extends React.Component {
     const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' });
     const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
-
+    const width = this.getTitleWidth((this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle))
     let activeStatementCanBeSaved = false;
     let containsEmptyQueries = false;
     const queries = data.reduce((accumulator, query, index) => {
@@ -770,29 +822,47 @@ class Statement extends React.Component {
           <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
               <div>
-                <Input
-                    id="statementTitle"
-                    onChange={this.onStatementTitleChange}
-                    autocomplete="off"
-                    value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle)}
-                    disabled={activeStatementId == null}
-                    addonAfter={(
-                        <div>
-                          <Button
-                              type="default"
-                              className={styleStatement.button}
-                              onClick={this.setStatementAsDefault}
-                              disabled={activeStatementId == null}
-                            >
-                            <Icon
-                                className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
-                                type="star"
-                                theme={activeStatement.isDefault ? 'filled' : 'outlined'}
-                            />
-                          </Button>
-                        </div>
-                    )}
-                />
+                <div  className={styleStatement.title}>
+                      <Tooltip title={editTitleText}>
+                          <div>
+
+                                <Input
+                                    id="statementTitle"
+                                    onChange={this.onStatementTitleChange}
+                                    onFocus={this.onFocusTitle}
+                                    onBlur={this.onBlurTitle}
+                                    onPressEnter={this.onStatementTitleChange}
+                                    autocomplete="off"
+                                    value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle)}
+                                    disabled={activeStatementId == null}
+                                    style={{width:`calc(13px + ${width}ch)`}}
+                                />
+
+
+                                <IconKit
+                                    icon={ic_edit}
+                                    size={18}
+                                    onClick={this.handleFocus}
+                                    className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
+
+                                />
+
+
+                          </div>
+                      </Tooltip>
+                      <Button
+                          type="default"
+                          className={styleStatement.button}
+                          onClick={this.setStatementAsDefault}
+                          disabled={activeStatementId == null}
+                        >
+                        <Icon
+                            className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
+                            type="star"
+                            theme={activeStatement.isDefault ? 'filled' : 'outlined'}
+                        />
+                      </Button>
+                </div>
                 <div>
                   <Button
                     type="default"
@@ -848,7 +918,7 @@ class Statement extends React.Component {
                         <IconKit className={selectIsOpen ? styleStatement.openSelect : null} icon={ic_folder} size={20} />
                         {myFilterText}
                       </>
-)}
+                    )}
                     trigger={['click']}
                     placement="bottomLeft"
                     style={{ width: 250 }}
