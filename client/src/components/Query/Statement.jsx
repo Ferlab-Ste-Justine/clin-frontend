@@ -247,10 +247,13 @@ class Statement extends React.Component {
       this.setState({
           statementTitle: null,
           statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
+        }, () => {
+          this.props.onCreateDraftStatementCallback(newStatement)
+          setTimeout(() => {
+            this.handleNewQuery(null, newStatement.queries[0])
+          }, 100)
         }
       );
-      this.props.onCreateDraftStatementCallback(newStatement)
-      this.handleNewQuery(this,newStatement.queries[0])
     };
 
     if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
@@ -263,8 +266,6 @@ class Statement extends React.Component {
     } else {
       callbackCreateDraft()
     }
-
-
   }
 
   duplicateStatement(e) {
@@ -382,6 +383,7 @@ class Statement extends React.Component {
 
   confirmRemove(keys) {
     this.props.onRemoveCallback(keys);
+    this.createDraftStatement()
   }
 
   handleReorder(sorted) {
@@ -554,7 +556,7 @@ class Statement extends React.Component {
     });
   }
 
-  handleNewQuery(event, query = '') {
+  handleNewQuery(event, query = null) {
     const { onEditCallback } = this.props;
     const { display } = this.state;
 

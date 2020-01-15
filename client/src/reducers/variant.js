@@ -240,24 +240,20 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED:
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
-      const { newStatement } = payload;
       const newDraftStatement = {
-        _id: newStatement.id,
+        _id: payload.statement.id,
         _source: {
           isDefault: false,
-          description: newStatement.description,
-          title: newStatement.title,
-          queries: JSON.stringify(newStatement.queries),
-
+          description: payload.statement.description,
+          title: payload.statement.title,
+          queries: JSON.stringify(payload.statement.queries),
         }
       };
-      draft.statements = state.statements;
       draft.statements.push(newDraftStatement)
-      draft.activeStatementId = newStatement.id;
-      const draftActiveStatementQuery = JSON.parse(newDraftStatement._source.queries)
-      draft.originalQueries = draftActiveStatementQuery
-      draft.draftQueries = draftActiveStatementQuery
-      draft.draftHistory = draftActiveStatementQuery
+      draft.activeStatementId = payload.statement.id
+      draft.originalQueries = payload.statement.queries
+      draft.draftQueries = payload.statement.queries
+      draft.draftHistory = payload.statement.queries
       break;
 
     default:
