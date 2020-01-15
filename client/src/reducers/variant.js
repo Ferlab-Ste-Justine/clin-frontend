@@ -16,7 +16,6 @@ export const initialVariantState = {
   originalQueries: [],
   draftQueries: [],
   draftHistory: [],
-  matches: {},
   results: {},
   facets: {},
   statements: [],
@@ -32,7 +31,6 @@ export const variantShape = {
   originalQueries: PropTypes.array,
   draftQueries: PropTypes.array,
   draftHistory: PropTypes.array,
-  matches: PropTypes.shape({}),
   results: PropTypes.shape({}),
   facets: PropTypes.shape({}),
   statements: PropTypes.array,
@@ -74,24 +72,20 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
       case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
-        draft.matches[action.payload.data.query] = action.payload.data.total;
         draft.facets[action.payload.data.query] = action.payload.data.facets;
         draft.results[action.payload.data.query] = action.payload.data.hits;
+        draft.activeStatementTotals[action.payload.data.query] = action.payload.data.total
         break;
 
       case actions.PATIENT_VARIANT_SEARCH_FAILED:
         draft.facets[action.payload.data.query] = {}
-        draft.matches[action.payload.data.query] = {}
         draft.results[action.payload.data.query] = {}
         break;
 
       case actions.PATIENT_VARIANT_COUNT_SUCCEEDED:
-        draft.activeStatementTotals = action.payload.data.total;
-        break;
-
-      case actions.PATIENT_VARIANT_COUNT_FAILED:
-      case actions.PATIENT_VARIANT_COUNT_REQUESTED:
-        draft.activeStatementTotals = {};
+        Object.keys(action.payload.data.total).forEach((key) => {
+          draft.activeStatementTotals[key] = action.payload.data.total[key]
+        });
         break;
 
       case actions.PATIENT_VARIANT_QUERY_REMOVAL:

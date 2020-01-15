@@ -190,7 +190,6 @@ class Statement extends React.Component {
     });
   }
 
-
   handleDuplicate(query) {
     if (this.isDuplicatable()) {
       const { onDuplicateCallback } = this.props;
@@ -375,7 +374,6 @@ class Statement extends React.Component {
     } else {
       callbackSelect()
     }
-
   }
 
   confirmRemove(keys) {
@@ -682,7 +680,7 @@ class Statement extends React.Component {
             options={options}
             index={index}
             active={isActive}
-            results={(activeStatementTotals[query.key] ? activeStatementTotals[query.key] : 0)}
+            results={(activeStatementTotals[query.key] ? activeStatementTotals[query.key] : null)}
             intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
             target={target}
