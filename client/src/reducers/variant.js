@@ -16,7 +16,6 @@ export const initialVariantState = {
   originalQueries: [],
   draftQueries: [],
   draftHistory: [],
-  matches: {},
   results: {},
   facets: {},
   statements: [],
@@ -32,7 +31,6 @@ export const variantShape = {
   originalQueries: PropTypes.array,
   draftQueries: PropTypes.array,
   draftHistory: PropTypes.array,
-  matches: PropTypes.shape({}),
   results: PropTypes.shape({}),
   facets: PropTypes.shape({}),
   statements: PropTypes.array,
@@ -74,24 +72,20 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         break;
 
       case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
-        draft.matches[action.payload.data.query] = action.payload.data.total;
         draft.facets[action.payload.data.query] = action.payload.data.facets;
         draft.results[action.payload.data.query] = action.payload.data.hits;
+        draft.activeStatementTotals[action.payload.data.query] = action.payload.data.total
         break;
 
       case actions.PATIENT_VARIANT_SEARCH_FAILED:
         draft.facets[action.payload.data.query] = {}
-        draft.matches[action.payload.data.query] = {}
         draft.results[action.payload.data.query] = {}
         break;
 
       case actions.PATIENT_VARIANT_COUNT_SUCCEEDED:
-        draft.activeStatementTotals = action.payload.data.total;
-        break;
-
-      case actions.PATIENT_VARIANT_COUNT_FAILED:
-      case actions.PATIENT_VARIANT_COUNT_REQUESTED:
-        draft.activeStatementTotals = {};
+        Object.keys(action.payload.data.total).forEach((key) => {
+          draft.activeStatementTotals[key] = action.payload.data.total[key]
+        });
         break;
 
       case actions.PATIENT_VARIANT_QUERY_REMOVAL:
@@ -246,24 +240,20 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED:
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
-      const { newStatement } = payload;
       const newDraftStatement = {
-        _id: newStatement.id,
+        _id: payload.statement.id,
         _source: {
           isDefault: false,
-          description: newStatement.description,
-          title: newStatement.title,
-          queries: JSON.stringify(newStatement.queries),
-
+          description: payload.statement.description,
+          title: payload.statement.title,
+          queries: JSON.stringify(payload.statement.queries),
         }
       };
-      draft.statements = state.statements;
       draft.statements.push(newDraftStatement)
-      draft.activeStatementId = newStatement.id;
-      const draftActiveStatementQuery = JSON.parse(newDraftStatement._source.queries)
-      draft.originalQueries = draftActiveStatementQuery
-      draft.draftQueries = draftActiveStatementQuery
-      draft.draftHistory = draftActiveStatementQuery
+      draft.activeStatementId = payload.statement.id
+      draft.originalQueries = payload.statement.queries
+      draft.draftQueries = payload.statement.queries
+      draft.draftHistory = payload.statement.queries
       break;
 
     default:

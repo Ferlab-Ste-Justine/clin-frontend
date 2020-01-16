@@ -193,7 +193,6 @@ class Statement extends React.Component {
     });
   }
 
-
   handleDuplicate(query) {
     if (this.isDuplicatable()) {
       const { onDuplicateCallback } = this.props;
@@ -247,10 +246,13 @@ class Statement extends React.Component {
       this.setState({
           statementTitle: null,
           statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
+        }, () => {
+          this.props.onCreateDraftStatementCallback(newStatement)
+          setTimeout(() => {
+            this.handleNewQuery(null, newStatement.queries[0])
+          }, 100)
         }
       );
-      this.props.onCreateDraftStatementCallback(newStatement)
-      this.handleNewQuery(this,newStatement.queries[0])
     };
 
     if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
@@ -263,8 +265,6 @@ class Statement extends React.Component {
     } else {
       callbackCreateDraft()
     }
-
-
   }
 
   duplicateStatement(e) {
@@ -378,11 +378,11 @@ class Statement extends React.Component {
     } else {
       callbackSelect()
     }
-
   }
 
   confirmRemove(keys) {
     this.props.onRemoveCallback(keys);
+    this.createDraftStatement()
   }
 
   handleReorder(sorted) {
@@ -555,7 +555,7 @@ class Statement extends React.Component {
     });
   }
 
-  handleNewQuery(event, query = '') {
+  handleNewQuery(event, query = null) {
     const { onEditCallback } = this.props;
     const { display } = this.state;
 
@@ -734,7 +734,7 @@ class Statement extends React.Component {
             options={options}
             index={index}
             active={isActive}
-            results={(activeStatementTotals[query.key] ? activeStatementTotals[query.key] : 0)}
+            results={(activeStatementTotals[query.key] ? activeStatementTotals[query.key] : null)}
             intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
             target={target}

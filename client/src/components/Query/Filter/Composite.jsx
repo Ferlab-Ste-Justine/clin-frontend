@@ -8,13 +8,11 @@ import {
   cloneDeep, orderBy, pullAllBy, filter,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import Filter, { FILTER_TYPE_COMPOSITE, FILTER_TYPE_GENERICBOOL } from './index';
+import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN, FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, FILTER_COMPARATOR_TYPE_LOWER_THAN, FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
 
-
-export const EMPTY_COMPOSITE_FILTER_INSTRUCTION = { instructions: [] };
 const SCORE_SELECTION = '_score_';
 
 
@@ -35,6 +33,25 @@ class CompositeFilter extends React.Component {
     // @NOTE Initialize Component State
     const { data } = props;
     this.state.draft = cloneDeep(data);
+  }
+
+  static qualityCompositionStructFromArgs(value) {
+    return { value }
+  }
+
+  static numericalCompositionStructFromArgs(comparator, value) {
+    return {
+      comparator,
+      value
+    }
+  }
+
+  static structFromArgs(id, composition = {}) {
+    return {
+      id,
+      type: FILTER_TYPE_COMPOSITE,
+      ...composition
+    }
   }
 
   getLabel() {

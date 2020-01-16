@@ -81,17 +81,14 @@ export const undo = () => ({
 });
 
 
-export const getAndSelectStatement = (keyForStatementSelectionInsteadOfTheDefaultOne = '') => ({
+export const getAndSelectStatement = () => ({
   type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
-  payload: {
-    keyForStatementSelectionInsteadOfTheDefaultOne,
-  },
 });
 
-export const createDraftStatement = newStatement => ({
+export const createDraftStatement = statement => ({
   type: actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
   payload: {
-    newStatement,
+    statement,
   },
 });
 

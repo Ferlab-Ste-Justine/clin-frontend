@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader, Tabs, Button,
 } from 'antd';
-import { cloneDeep, find, flatten, map } from 'lodash';
+import { cloneDeep, find, flatten, map, filter } from 'lodash';
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -152,7 +152,20 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     actions.replaceQuery(query.data || query);
     setTimeout(() => {
-      this.handleQuerySelection(query.key || query.data.key);
+      const queryKey = query.key || query.data.key
+      this.handleQuerySelection(queryKey);
+      const { patient, variant } = this.props;
+      const subqueryKeys = variant.draftQueries.reduce((accumulator, draftQuery) => {
+        draftQuery.instructions.forEach(instruction => {
+          if (instruction.type === 'subquery' && instruction.data.query === queryKey) {
+            accumulator.push(draftQuery.key);
+          }
+        })
+        return accumulator;
+      }, []);
+      if (subqueryKeys.length > 0) {
+        actions.countVariants(patient.details.id, variant.draftQueries, subqueryKeys);
+      }
     }, 100)
   }
 
@@ -287,12 +300,12 @@ class PatientVariantScreen extends React.Component {
   render() {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
-    const { draftQueries, draftHistory, originalQueries, matches, facets, schema, activeQuery,
-      activeStatementId, activeStatementTotals, statements } = variant;
+    const { draftQueries, draftHistory, originalQueries, facets, schema, activeQuery,
+      activeStatementId, activeStatementTotals, results, statements } = variant;
     const {
       size, page, currentTab,
     } = this.state;
-    const total = currentTab === VARIANT_TAB ? matches[activeQuery] : [];
+    const total = currentTab === VARIANT_TAB ? activeStatementTotals[activeQuery] : [];
     const searchData = [];
     const reverseCategories = {}
     if (schema.categories) {
