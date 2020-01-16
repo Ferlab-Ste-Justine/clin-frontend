@@ -139,7 +139,7 @@
         &:hover{
           color:#125a90;
           i:not(.star){
-            color:#125a90;
+            color:#1b7ab2;
           }
                   .starOutlined{
                       color:#f8a335;
@@ -345,5 +345,31 @@
         }
     }
 
+
+  }
+
+  .tooltip{
+
+    >div {
+        >div:nth-child(1){
+            &:before{
+                background:#233750;
+            }
+        }
+
+        >div:nth-child(2){
+            background:#233750;
+            border-radius:$default-radius;
+            min-height: 0px;
+            padding: 4px 8px;
+
+            color: rgb(255, 255, 255);
+            font-family: $font;
+            font-size: $little-font;
+            letter-spacing: 0.4px;
+            text-align: center;
+        }
+
+    }
 
   }

@@ -312,6 +312,7 @@ class Statement extends React.Component {
   }
 
   setStatementAsDefault(e) {
+    console.log("coucou")
     let destructiveOperation = true;
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
@@ -690,6 +691,7 @@ class Statement extends React.Component {
     const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
+    const defaultFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.defaultFilter' });
 
     const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.title' });
     const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
@@ -823,7 +825,7 @@ class Statement extends React.Component {
             <div className={styleStatement.navigation}>
               <div>
                 <div  className={styleStatement.title}>
-                      <Tooltip title={editTitleText}>
+                      <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                           <div>
 
                                 <Input
@@ -850,18 +852,22 @@ class Statement extends React.Component {
 
                           </div>
                       </Tooltip>
+                      <Tooltip overlayClassName={styleStatement.tooltip} title={defaultFilterText}>
                       <Button
                           type="default"
                           className={styleStatement.button}
                           onClick={this.setStatementAsDefault}
                           disabled={activeStatementId == null}
                         >
+
                         <Icon
                             className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
                             type="star"
                             theme={activeStatement.isDefault ? 'filled' : 'outlined'}
                         />
+
                       </Button>
+                      </Tooltip>
                 </div>
                 <div>
                   <Button
