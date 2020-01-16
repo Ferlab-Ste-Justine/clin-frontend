@@ -94,11 +94,35 @@ class VariantNavigation extends React.Component {
         if (query) {
           filter = find(query.instructions, (instruction) => instruction.data.id === selection.subid)
         }
+        const { schema } = this.props;
+        const category = find(schema.categories, ['id', selection.id])
+        const filterDefinition = find(category.filters, ['id', selection.subid]);
+        const filterType = filterDefinition.type;
         if (!filter) {
-          filter = GenericFilter.structFromArgs(selection.subid, [selection.value])
+          switch (filterType) {
+            case FILTER_TYPE_GENERIC:
+              filter = GenericFilter.structFromArgs(selection.subid, [selection.value])
+              break;
+            case FILTER_TYPE_COMPOSITE:
+              filter = CompositeFilter.structFromArgs(selection.subid,
+                CompositeFilter.qualityCompositionStructFromArgs(selection.value)
+              )
+              break;
+            default: break;
+          }
         } else {
-          if (filter.data.values.indexOf(selection.value) === -1) {
-            filter.data.values.push(selection.value)
+          switch (filterType) {
+            case FILTER_TYPE_GENERIC:
+              if (filter.data.values.indexOf(selection.value) === -1) {
+                filter.data.values.push(selection.value)
+              }
+              break;
+            case FILTER_TYPE_COMPOSITE:
+              filter = CompositeFilter.structFromArgs(selection.subid,
+                CompositeFilter.qualityCompositionStructFromArgs(selection.value)
+              )
+              break;
+            default: break;
           }
         }
         this.handleFilterChange(filter);
