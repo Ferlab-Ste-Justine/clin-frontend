@@ -57,7 +57,7 @@ class Statement extends React.Component {
         selectable: null,
         undoable: null,
       },
-      selectIsOpen: false,
+      dropDownIsOpen: false,
       onFocus:false,
     };
     this.isCopyable = this.isCopyable.bind(this);
@@ -96,16 +96,15 @@ class Statement extends React.Component {
     this.deleteStatement = this.deleteStatement.bind(this);
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
-    this.onFocus = this.onFocus.bind(this);
-    this.onBlur = this.onBlur.bind(this);
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
-    this.getTitleWidth = this.getTitleWidth.bind(this)
+    this.getTitleWidth = this.getTitleWidth.bind(this);
     this.handleFocus =this.handleFocus.bind(this)
     this.onFocusTitle=this.onFocusTitle.bind(this)
     this.onBlurTitle = this.onBlurTitle.bind(this);
-
+    this.onBlurDropdown= this.onBlurDropdown.bind(this)
+    this.handleFocusDropdown = this.handleFocusDropdown.bind(this)
 
   }
 
@@ -601,14 +600,6 @@ class Statement extends React.Component {
     );
   }
 
-  onFocus() {
-    this.setState({ selectIsOpen: true });
-  }
-
-  onBlur() {
-    this.setState({ onFocus: false });
-  }
-
   onModalSaveTitleInputChange(e) {
     const { value } = e.target;
     this.setState({ saveTitleModalInputValue: value });
@@ -657,6 +648,15 @@ class Statement extends React.Component {
       this.setState({onFocus:false})
       }
 
+      onBlurDropdown(e){
+      this.setState({dropDownIsOpen:false})
+      }
+
+      handleFocusDropdown(e){
+      const{dropDownIsOpen} = this.state
+      this.setState({dropDownIsOpen:!dropDownIsOpen})
+      }
+
   render() {
     const { activeQuery, data, externalData, options, intl, facets, categories,
       searchData, target, activeStatementId, activeStatementTotals, statements, queriesHaveChanges, } = this.props;
@@ -667,7 +667,7 @@ class Statement extends React.Component {
     const { Panel } = Collapse;
     const { Option } = Select;
 
-    const { expandIconPosition, selectIsOpen, titleWidth } = this.state;
+    const { expandIconPosition, dropDownIsOpen, titleWidth } = this.state;
     if (!data) return null;
     const {
       display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
@@ -857,7 +857,7 @@ class Statement extends React.Component {
                           disabled={activeStatementId == null}
                         >
                         <Icon
-                            className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
+                            className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
                             type="star"
                             theme={activeStatement.isDefault ? 'filled' : 'outlined'}
                         />
@@ -911,60 +911,66 @@ class Statement extends React.Component {
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider} />
 
-                  <Dropdown.Button
-                    className={styleStatement.button}
-                    icon={(
-                      <>
-                        <IconKit className={selectIsOpen ? styleStatement.openSelect : null} icon={ic_folder} size={20} />
-                        {myFilterText}
-                      </>
-                    )}
-                    trigger={['click']}
-                    placement="bottomLeft"
-                    style={{ width: 250 }}
-                    disabled={(statementsToDisplay.length == 0)}
-                    overlay={(statementsToDisplay && statementsToDisplay.length > 0 ? (
-                      <Menu onClick={contextSelectStatement}>
-                        {
-                            statementsToDisplay.map(statementOptions => (
-                              <Menu.Item key={statementOptions._id}>
-                                {statementOptions._source.title}
-                                <IconKit
-                                  size={20}
-                                  icon={ic_content_copy}
-                                  style={{ marginLeft: 10 }}
-                                  dataid={statementOptions._id}
-                                  onClick={this.duplicateStatement}
-                                />
-                                <IconKit
-                                  size={20}
-                                  icon={ic_delete}
-                                  style={{ marginLeft: 10 }}
-                                  dataid={statementOptions._id}
-                                  onClick={this.deleteStatement}
-                                />
-                                { (<Icon
-                                  type="star"
-                                  style={{ marginRight: 10, marginLeft: 20 }}
-                                  className={statementOptions._source.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
-                                  theme={statementOptions._source.isDefault ? 'filled' : 'outlined'}
-                                  dataid={statementOptions._id}
-                                  onClick={this.setStatementAsDefault}
-                                />)}
 
-                              </Menu.Item>
-                            ))
-                          }
-                      </Menu>
-                    ) : (<></>))
-                  }
-                  >
-                  </Dropdown.Button>
+                      <Dropdown
+                        trigger={['click']}
+                        className={`${styleStatement.button} ${dropDownIsOpen ? `${styleStatement.buttonActive}` : null}`}
+                        disabled={(statementsToDisplay.length == 0)}
+                        onBlur= {this.onBlurDropdown}
+                        onClick={this.handleFocusDropdown}
+                        overlayClassName={styleStatement.dropdown}
+                        overlay={(statementsToDisplay && statementsToDisplay.length > 0 ? (
+                                                              <Menu onClick={contextSelectStatement}>
+                                                                {
+                                                                    statementsToDisplay.map(statementOptions => (
+                                                                      <Menu.Item key={statementOptions._id}>
+                                                                        {statementOptions._source.title}
+                                                                        <div className={styleStatement.dropdownNavigation}>
+                                                                            <IconKit
+                                                                              size={20}
+                                                                              icon={ic_content_copy}
+                                                                              dataid={statementOptions._id}
+                                                                              className={styleStatement.displayOnHover}
+                                                                              onClick={this.duplicateStatement}
+                                                                            />
+                                                                            <IconKit
+                                                                              size={20}
+                                                                              icon={ic_delete}
+                                                                              dataid={statementOptions._id}
+                                                                              className={styleStatement.displayOnHover}
+                                                                              onClick={this.deleteStatement}
+                                                                            />
+                                                                            { (<Icon
+                                                                              type="star"
+                                                                              size={20}
+                                                                              className={statementOptions._source.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
+                                                                              theme={statementOptions._source.isDefault ? 'filled' : 'outlined'}
+                                                                              dataid={statementOptions._id}
+                                                                              onClick={this.setStatementAsDefault}
+                                                                            />)}
+                                                                        </div>
+                                                                      </Menu.Item>
+                                                                    ))
+                                                                  }
+                                                              </Menu>
+                                                            ) : (<></>))
+                                                          }>
+                        <Button>
+                            <IconKit
+                              size={20}
+                              icon={ic_folder}
+                              onClick={this.duplicateStatement}
+
+                            />
+                          {myFilterText}
+                        </Button>
+                      </Dropdown>
 
                 </div>
               </div>
-              <Divider className={styleStatement.dividerHorizontal} />
+
             </div>
+            <Divider className={styleStatement.dividerHorizontal} />
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>
             <Menu onClick={this.handleCombine} mode="horizontal" className={styleStatement.menuCombine}>
