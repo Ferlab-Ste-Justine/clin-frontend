@@ -7,136 +7,96 @@ import {
   cloneDeep, orderBy, pullAllBy, filter,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import Filter from './index';
-import {FILTER_TYPE_NUMERICAL_COMPARISON} from './index';
+import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
 
 export const FILTER_COMPARATOR_TYPE_GREATER_THAN = '>';
 export const FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL = '>=';
 export const FILTER_COMPARATOR_TYPE_LOWER_THAN = '<';
 export const FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL = '<=';
+export const FILTER_COMPARATOR_TYPE_DEFAULT = FILTER_COMPARATOR_TYPE_GREATER_THAN
 
 class NumericalComparisonFilter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      draft: null,
-      selection: [],
-      size: null,
-      page: null,
+      draft: null
     };
     this.getEditor = this.getEditor.bind(this);
-    this.getLabel = this.getLabel.bind(this);
-    this.getPopoverContent = this.getPopoverContent.bind(this);
-    this.getPopoverLegend = this.getPopoverLegend.bind(this);
+    this.getEditorValues = this.getEditorValues.bind(this);
+    this.getEditorLabels = this.getEditorLabels.bind(this);
     this.handleComparatorChange = this.handleComparatorChange.bind(this)
     this.handleValueChange=this.handleValueChange.bind(this)
 
     // @NOTE Initialize Component State
     const { data } = props;
     this.state.draft = cloneDeep(data);
-    this.state.selection = data.values ? cloneDeep(data.values) : [];
-    this.state.page = 1;
-    this.state.size = 10;
   }
 
-  componentDidMount() {
-    const { dataSet } = this.props;
-    const { selection } = this.state;
-    if (selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
-      const sorted = orderBy(value, ['count'], ['desc']);
-      pullAllBy(dataSet, cloneDeep(sorted), 'value');
-      dataSet.unshift(...sorted);
+  static structFromArgs(id, values = [{ comparator: FILTER_COMPARATOR_TYPE_DEFAULT, value: 0 }]) {
+    return {
+      id,
+      type: FILTER_TYPE_NUMERICAL_COMPARISON,
+      values,
     }
-  }
-
-  getLabel() {
-    const { data } = this.props;
-    const { value } = data;
-    return JSON.stringify(value);
-  }
-
-  getPopoverLegend() {
-    const { data } = this.props;
-    const { comparator } = data;
-    return (<span>{comparator}</span>);
-  }
-
-  getPopoverContent() {
-    const { intl, data, category } = this.props;
-    const { Text } = Typography;
-    const titleText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
-    const descriptionText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
-    const categoryText = category ? intl.formatMessage({ id: `screen.patientvariant.category_${category}` }) : null;
-
-    return (
-      <div>
-        <Row type="flex" justify="space-between" gutter={32}>
-          <Col>
-            <Text strong>{titleText}</Text>
-          </Col>
-          <Col>
-            <Text>{categoryText}</Text>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Text>{descriptionText}</Text>
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col>
-            <Text>{data.comparator} {data.value}</Text>
-          </Col>
-        </Row>
-      </div>
-    );
   }
 
   getEditor() {
     const { intl } = this.props;
     const { draft } = this.state;
-    const { comparator, value } = draft;
     const typeGt = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.gt' });
     const typeGte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.gte' });
     const typeLt = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lt' });
     const typeLte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lte' });
     const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter.numerical.value' });
-    return (
-      <>
-        <Row>
-          <Col span={24}>
-            <Radio.Group size="small" type="primary" value={comparator} onChange={this.handleComparatorChange}>
-              <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Radio.Button>
-              <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Radio.Button>
-              <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Radio.Button>
-              <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL}>{typeLte}</Radio.Button>
-            </Radio.Group>
-          </Col>
-        </Row>
-        <br />
-        <Row type="flex" align="middle">
-          <Col>
-            {valueText}
-          </Col>
-          <Col>
-            <InputNumber onChange={this.handleValueChange} defaultValue={value} step={0.1} />
-          </Col>
-        </Row>
-      </>
-    );
+    return {
+      getData: this.getEditorValues,
+      getText: this.getEditorLabels,
+      contents: draft.values ? draft.values.map((datum, index) => (
+        <>
+          <Row>
+            <Col span={24}>
+              <Radio.Group size="small" type="primary" dataindex={index} value={datum.comparator} onChange={this.handleComparatorChange}>
+                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Radio.Button>
+                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Radio.Button>
+                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Radio.Button>
+                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL}>{typeLte}</Radio.Button>
+              </Radio.Group>
+            </Col>
+          </Row>
+          <br />
+          <Row type="flex" align="middle">
+            <Col>
+              {valueText}
+            </Col>
+            <Col>
+              <InputNumber onChange={this.handleValueChange} defaultValue={datum.value} step={0.1} />
+            </Col>
+          </Row>
+        </>
+      )) : null
+    }
+  }
+
+  getEditorValues() {
+    return this.state.draft;
+  }
+
+  getEditorLabels() {
+    return {
+      operation: this.state.draft.values[0].comparator,
+      target: this.state.draft.values[0].value
+    }
   }
 
   handleComparatorChange(e){
-        const { draft } = this.state;
-        draft.comparator = e.target.value;
-        this.setState({ draft });
+      const { draft } = this.state;
+      draft.values[0].comparator = e.target.value
+      this.setState({ draft });
   }
 
   handleValueChange(value){
       const { draft } = this.state;
-      draft.value = value;
+      draft.values[0].value = value;
       this.setState({ draft });
   }
 
@@ -145,11 +105,9 @@ class NumericalComparisonFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_NUMERICAL_COMPARISON}
-        searchable = {false}
+        searchable={false}
+        sortData={[]}
         editor={this.getEditor()}
-        label={this.getLabel()}
-        legend={this.getPopoverLegend()}
-        content={this.getPopoverContent()}
       />
     );
   }
@@ -157,8 +115,7 @@ class NumericalComparisonFilter extends React.Component {
 
 NumericalComparisonFilter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
-  data: PropTypes.shape({}).isRequired,
-  dataSet: PropTypes.array.isRequired,
+  data: PropTypes.shape({}).isRequired
 };
 
 // NumericalComparisonFilter.defaultProps = {};

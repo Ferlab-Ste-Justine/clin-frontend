@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Select, Input, Collapse,
+  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every, remove,
@@ -15,7 +15,7 @@ import {
   software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
 } from 'react-icons-kit/linea';
 import {
-  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_unfold_more, ic_edit
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_unfold_more, ic_edit,
 } from 'react-icons-kit/md';
 import Query from './index';
 import {
@@ -58,7 +58,7 @@ class Statement extends React.Component {
         undoable: null,
       },
       selectIsOpen: false,
-      onFocus:false,
+      onFocus: false,
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -101,12 +101,10 @@ class Statement extends React.Component {
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
-    this.getTitleWidth = this.getTitleWidth.bind(this)
-    this.handleFocus =this.handleFocus.bind(this)
-    this.onFocusTitle=this.onFocusTitle.bind(this)
+    this.getTitleWidth = this.getTitleWidth.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.onFocusTitle = this.onFocusTitle.bind(this);
     this.onBlurTitle = this.onBlurTitle.bind(this);
-
-
   }
 
   isCopyable() {
@@ -189,7 +187,7 @@ class Statement extends React.Component {
       content,
       okText,
       cancelText,
-      onOk() {funcToCallBack()},
+      onOk() { funcToCallBack(); },
       onCancel() {},
     });
   }
@@ -245,15 +243,14 @@ class Statement extends React.Component {
 
     const callbackCreateDraft = () => {
       this.setState({
-          statementTitle: null,
-          statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
-        }, () => {
-          this.props.onCreateDraftStatementCallback(newStatement)
-          setTimeout(() => {
-            this.handleNewQuery(null, newStatement.queries[0])
-          }, 100)
-        }
-      );
+        statementTitle: null,
+        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
+      }, () => {
+        this.props.onCreateDraftStatementCallback(newStatement);
+        setTimeout(() => {
+          this.handleNewQuery(null, newStatement.queries[0]);
+        }, 100);
+      });
     };
 
     if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
@@ -262,9 +259,10 @@ class Statement extends React.Component {
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.content' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.ok' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.cancel' }),
-        callbackCreateDraft)
+        callbackCreateDraft,
+      );
     } else {
-      callbackCreateDraft()
+      callbackCreateDraft();
     }
   }
 
@@ -272,16 +270,14 @@ class Statement extends React.Component {
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
       const { activeStatementId } = this.props;
-      id = activeStatementId
+      id = activeStatementId;
     }
     if (e.stopPropagation) { e.stopPropagation(); }
     const callbackDuplicate = () => {
-
       this.setState({
-          statementTitle: null,
-          statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
-        }
-      );
+        statementTitle: null,
+        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
+      });
       this.props.onDuplicateStatementCallback(id);
     };
     if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
@@ -290,43 +286,37 @@ class Statement extends React.Component {
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.content' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.ok' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.cancel' }),
-        callbackDuplicate)
+        callbackDuplicate,
+      );
     } else {
-      callbackDuplicate()
+      callbackDuplicate();
     }
-
   }
 
   updateStatement(e) {
     let id = e.target ? e.target.getAttribute('dataid') : e;
     if (!id) {
-      id = this.props.activeStatementId
+      id = this.props.activeStatementId;
     }
 
     if (e.stopPropagation) { e.stopPropagation(); }
-    this.setState({
-        statementTitle: null,
-        statementVisualClueText: '',
-      }
-    );
-    this.props.onUpdateStatementCallback(id, this.state.statementTitle, false);
+    this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', false);
   }
 
   setStatementAsDefault(e) {
     let destructiveOperation = true;
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
-      destructiveOperation = false
+      destructiveOperation = false;
       const { activeStatementId } = this.props;
-      id = activeStatementId
+      id = activeStatementId;
       // only reset title if setting the currently selected one to default
     }
     const callbackSetStatementAsDefault = () => {
       this.setState({
-          statementVisualClueText: '',
-        }
-      );
-      this.props.onUpdateStatementCallback(id, this.state.statementTitle, true);
+        statementVisualClueText: '',
+      });
+      this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', true);
     };
     if (e.stopPropagation) { e.stopPropagation(); }
     if (destructiveOperation && (this.state.statementVisualClueText || this.props.queriesHaveChanges)) {
@@ -335,9 +325,10 @@ class Statement extends React.Component {
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.content' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.ok' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.cancel' }),
-        callbackSetStatementAsDefault)
+        callbackSetStatementAsDefault,
+      );
     } else {
-      callbackSetStatementAsDefault()
+      callbackSetStatementAsDefault();
     }
   }
 
@@ -345,7 +336,7 @@ class Statement extends React.Component {
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
       const { activeStatementId } = this.props;
-      id = activeStatementId
+      id = activeStatementId;
       this.setState({
         statementTitle: null,
         statementVisualClueText: '',
@@ -375,15 +366,16 @@ class Statement extends React.Component {
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.ok' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.cancel' }),
-        callbackSelect)
+        callbackSelect,
+      );
     } else {
-      callbackSelect()
+      callbackSelect();
     }
   }
 
   confirmRemove(keys) {
     this.props.onRemoveCallback(keys);
-    this.createDraftStatement()
+    this.createDraftStatement();
   }
 
   handleReorder(sorted) {
@@ -590,15 +582,14 @@ class Statement extends React.Component {
 
   onStatementTitleChange(e) {
     const { value } = e.target;
-    const width = this.getTitleWidth(value)
+    const width = this.getTitleWidth(value);
 
     e.target.style.width = `calc(13px + ${width}ch)`;
 
     this.setState({
       statementTitle: value,
       statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
-      }
-    );
+    });
   }
 
   onFocus() {
@@ -614,93 +605,97 @@ class Statement extends React.Component {
     this.setState({ saveTitleModalInputValue: value });
   }
 
-    getTitleWidth(value){
-
-      const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|", "I" ]
-      const largeLetter = ["o","A","G","H", "K","Z","X","V","C", "B", "N",  "Q", "R","S","T","Y", "U", "P","D","d", "E"]
-      const extraLargeLetter =["W", "w","m" , "M","O",]
-      let numberOfSmallLetter=0;
-      let numberOfLargeLetter=0;
-      let numberOfNormalLetter=0;
-      let numberofExtraLargeLetter=0;
-      const map = Array.prototype.map
-      map.call(value, eachLetter => {
-          if(smallLetter.includes(eachLetter)){
-              numberOfSmallLetter=numberOfSmallLetter+1;
-          }
-          else if(largeLetter.includes(eachLetter)){
-              numberOfLargeLetter=numberOfLargeLetter+1;
-          }
-          else if(extraLargeLetter.includes(eachLetter)){
-              numberofExtraLargeLetter =numberofExtraLargeLetter +1;
-          }
-          else{
-              numberOfNormalLetter=numberOfNormalLetter+1;
-          }
-      })
-      const width = (numberOfNormalLetter*1.1) + (numberOfSmallLetter*0.6) + (numberOfLargeLetter*1.3) + (numberofExtraLargeLetter*1.7)
-      return width
-    }
-
-    handleFocus(){
-        const input = document.querySelector("#statementTitle")
-        input.focus()
-    }
-
-      onFocusTitle(e){
-          const{onFocus} = this.state
-          e.target.select()
-          this.setState({onFocus:true})
-
+  getTitleWidth(value) {
+    const smallLetter = ['i', 'l', 't', 'j', ';', ':', ',', '.', '(', ')', '{', '}', '|', 'I'];
+    const largeLetter = ['o', 'A', 'G', 'H', 'K', 'Z', 'X', 'V', 'C', 'B', 'N', 'Q', 'R', 'S', 'T', 'Y', 'U', 'P', 'D', 'd', 'E'];
+    const extraLargeLetter = ['W', 'w', 'm', 'M', 'O'];
+    let numberOfSmallLetter = 0;
+    let numberOfLargeLetter = 0;
+    let numberOfNormalLetter = 0;
+    let numberofExtraLargeLetter = 0;
+    const map = Array.prototype.map;
+    map.call(value, (eachLetter) => {
+      if (smallLetter.includes(eachLetter)) {
+        numberOfSmallLetter += 1;
+      } else if (largeLetter.includes(eachLetter)) {
+        numberOfLargeLetter += 1;
+      } else if (extraLargeLetter.includes(eachLetter)) {
+        numberofExtraLargeLetter += 1;
+      } else {
+        numberOfNormalLetter += 1;
       }
-      onBlurTitle(e){
-      this.setState({onFocus:false})
-      }
+    });
+    const width = (numberOfNormalLetter * 1.1) + (numberOfSmallLetter * 0.6) + (numberOfLargeLetter * 1.3) + (numberofExtraLargeLetter * 1.7);
+    return width;
+  }
+
+  handleFocus() {
+    const input = document.querySelector('#statementTitle');
+    input.focus();
+  }
+
+  onFocusTitle(e) {
+    const { onFocus } = this.state;
+    e.target.select();
+    this.setState({ onFocus: true });
+  }
+
+  onBlurTitle(e) {
+    this.setState({ onFocus: false });
+  }
 
   render() {
-    const { activeQuery, data, externalData, options, intl, facets, categories,
-      searchData, target, activeStatementId, activeStatementTotals, statements, queriesHaveChanges, } = this.props;
-    const foundActiveStatement = statements.find(statement => statement._id === activeStatementId)
-    const activeStatement = foundActiveStatement ? foundActiveStatement._source : {}
-    const statementsToDisplay = statements.filter(statement => statement._id != activeStatementId)
-    const statementTitle = activeStatement.title ? activeStatement.title : ''
-    const { Panel } = Collapse;
-    const { Option } = Select;
+    const { data, activeStatementId, statements } = this.props;
+    const activeStatement = statements[activeStatementId];
+    if (!data || !activeStatement) return null;
 
-    const { expandIconPosition, selectIsOpen, titleWidth } = this.state;
-    if (!data) return null;
     const {
-      display, original, checkedQueries, queriesChecksAreIndeterminate, queriesAreAllChecked,
-      saveTitleModalVisible, saveTitleModalConfirmLoading, saveTitleModalInputValue, onFocus
+      activeQuery, externalData, options, intl, facets, categories, searchData, target, activeStatementTotals, queriesHaveChanges,
+    } = this.props;
+    const {
+      display, original, checkedQueries, saveTitleModalVisible, onFocus,
     } = this.state;
     const {
       editable, reorderable, removable, duplicatable,
     } = options;
+
+
+    const inactiveStatementKeys = Object.keys(statements).filter(key => key !== activeStatementId);
+    const statementTitle = activeStatement ? activeStatement.title : '';
+    const { selectIsOpen } = this.state;
+
+
+    /*
+                            activeQuery={activeQuery}
+                        activeStatementId={activeStatementId}
+                        activeStatementTotals={activeStatementTotals}
+                        statements={statements}
+                        data={draftQueries}
+                        draftHistory={draftHistory}
+                        original={originalQueries}
+     */
+
+
     const activeStatementIsDraft = activeStatementId === 'draft';
     const checkedQueriesCount = checkedQueries.length;
     const newText = intl.formatMessage({ id: 'screen.patientvariant.statement.new' });
     const saveText = intl.formatMessage({ id: 'screen.patientvariant.statement.save' });
-    const combineText = intl.formatMessage({ id: 'screen.patientvariant.statement.combine' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.statement.delete' });
     const newQueryText = intl.formatMessage({ id: 'screen.patientvariant.statement.newQuery' });
     const myFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.myFilter' });
-    const combineAnd = intl.formatMessage({ id: 'screen.patientvariant.statement.and' });
-    const combineOr = intl.formatMessage({ id: 'screen.patientvariant.statement.or' });
-    const combineAndNot = intl.formatMessage({ id: 'screen.patientvariant.statement.andnot' });
-    const combineSelectionToolTip = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.combineSelection' });
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
-
     const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.title' });
     const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
     const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputLabel' });
-    const modalTitleSaveInputPlaceHolder = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' });
     const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' });
     const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
-    const width = this.getTitleWidth((this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle))
+    const width = this.getTitleWidth(statementTitle);
+
     let activeStatementCanBeSaved = false;
     let containsEmptyQueries = false;
+
     const queries = data.reduce((accumulator, query, index) => {
       const isChecked = checkedQueries.indexOf(query.key) !== -1;
       const isActive = activeQuery === query.key;
@@ -708,7 +703,7 @@ class Statement extends React.Component {
       const classNames = [styleStatement.queryContainer];
       const isDirty = !isEqual(initial, query);
       if (!containsEmptyQueries) {
-        containsEmptyQueries = query.instructions.length < 1
+        containsEmptyQueries = query.instructions.length < 1;
       }
 
       if (isDirty) { classNames.push(styleStatement.dirtyContainer); activeStatementCanBeSaved = true; }
@@ -778,7 +773,6 @@ class Statement extends React.Component {
       }, this.props.onCreateDraftStatementCallback(newStatement));
     };
 
-    // const activeStatementCanBeDeleted = !data.lastUpdatedOn
     const activeStatementCanBeDeleted = !activeStatementIsDraft;
     if (activeStatementIsDraft) {
       activeStatementCanBeSaved = true;
@@ -787,8 +781,7 @@ class Statement extends React.Component {
     const contextSelectStatement = ({ key }) => {
       this.selectStatement(key);
     };
-    //activeStatementCanBeSaved = data.title !== saveTitleModalInputValue;
-    activeStatementCanBeSaved = activeStatementCanBeSaved && (activeStatementId != null)
+    activeStatementCanBeSaved = activeStatementCanBeSaved && (activeStatementId != null);
 
     return (
       <div className={styleStatement.statement}>
@@ -815,58 +808,57 @@ class Statement extends React.Component {
         </Modal>
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
-            <div>{( queriesHaveChanges ?
-              this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }) :
-              this.state.statementVisualClueText)}</div>
+            <div>
+              {(queriesHaveChanges
+                ? this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' })
+                : this.state.statementVisualClueText)}
+            </div>
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
               <div>
-                <div  className={styleStatement.title}>
-                      <Tooltip title={editTitleText}>
-                          <div>
+                <div className={styleStatement.title}>
+                  <Tooltip title={editTitleText}>
+                    <div>
 
-                                <Input
-                                    id="statementTitle"
-                                    onChange={this.onStatementTitleChange}
-                                    onFocus={this.onFocusTitle}
-                                    onBlur={this.onBlurTitle}
-                                    onPressEnter={this.onStatementTitleChange}
-                                    autocomplete="off"
-                                    value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle)}
-                                    disabled={activeStatementId == null}
-                                    style={{width:`calc(13px + ${width}ch)`}}
-                                />
-
-
-                                <IconKit
-                                    icon={ic_edit}
-                                    size={18}
-                                    onClick={this.handleFocus}
-                                    className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
-
-                                />
+                      <Input
+                        id="statementTitle"
+                        onChange={this.onStatementTitleChange}
+                        onFocus={this.onFocusTitle}
+                        onBlur={this.onBlurTitle}
+                        onPressEnter={this.onStatementTitleChange}
+                        autocomplete="off"
+                        value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle : statementTitle)}
+                        disabled={activeStatementId == null}
+                        style={{ width: `calc(13px + ${width}ch)` }}
+                      />
 
 
-                          </div>
-                      </Tooltip>
-                      <Button
-                          type="default"
-                          className={styleStatement.button}
-                          onClick={this.setStatementAsDefault}
-                          disabled={activeStatementId == null}
-                        >
-                        <Icon
-                            className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
-                            type="star"
-                            theme={activeStatement.isDefault ? 'filled' : 'outlined'}
-                        />
-                      </Button>
+                      <IconKit
+                        icon={ic_edit}
+                        size={18}
+                        onClick={this.handleFocus}
+                        className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
+                      />
+
+                    </div>
+                  </Tooltip>
+                  <Button
+                    type="default"
+                    className={styleStatement.button}
+                    onClick={this.setStatementAsDefault}
+                    disabled={activeStatementId == null}
+                  >
+                    <Icon
+                      className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
+                      type="star"
+                      theme={activeStatement.isDefault ? 'filled' : 'outlined'}
+                    />
+                  </Button>
                 </div>
                 <div>
                   <Button
                     type="default"
-                    disabled={activeStatementIsDraft}
                     onClick={this.createDraftStatement}
                     className={styleStatement.button}
                   >
@@ -883,11 +875,11 @@ class Statement extends React.Component {
                     {saveText}
                   </Button>
                   <Button
-                      type="default"
-                      className={styleStatement.button}
-                      type="default"
-                      disabled={activeStatementIsDraft || activeStatementId == null}
-                      onClick={this.duplicateStatement}
+                    type="default"
+                    className={styleStatement.button}
+                    type="default"
+                    disabled={activeStatementIsDraft || activeStatementId == null}
+                    onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
                     {duplicateText}
@@ -922,38 +914,38 @@ class Statement extends React.Component {
                     trigger={['click']}
                     placement="bottomLeft"
                     style={{ width: 250 }}
-                    disabled={(statementsToDisplay.length == 0)}
-                    overlay={(statementsToDisplay && statementsToDisplay.length > 0 ? (
+                    disabled={(inactiveStatementKeys.length === 0)}
+                    overlay={(inactiveStatementKeys.length !== 0 ? (
                       <Menu onClick={contextSelectStatement}>
                         {
-                            statementsToDisplay.map(statementOptions => (
-                              <Menu.Item key={statementOptions._id}>
-                                {statementOptions._source.title}
-                                <IconKit
-                                  size={20}
-                                  icon={ic_content_copy}
-                                  style={{ marginLeft: 10 }}
-                                  dataid={statementOptions._id}
-                                  onClick={this.duplicateStatement}
-                                />
-                                <IconKit
-                                  size={20}
-                                  icon={ic_delete}
-                                  style={{ marginLeft: 10 }}
-                                  dataid={statementOptions._id}
-                                  onClick={this.deleteStatement}
-                                />
-                                { (<Icon
-                                  type="star"
-                                  style={{ marginRight: 10, marginLeft: 20 }}
-                                  className={statementOptions._source.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
-                                  theme={statementOptions._source.isDefault ? 'filled' : 'outlined'}
-                                  dataid={statementOptions._id}
-                                  onClick={this.setStatementAsDefault}
-                                />)}
+                          inactiveStatementKeys.map(inactiveStatementKey => (
+                            <Menu.Item key={inactiveStatementKey}>
+                              {statements[inactiveStatementKey].title}
+                              <IconKit
+                                size={20}
+                                icon={ic_content_copy}
+                                style={{ marginLeft: 10 }}
+                                dataid={inactiveStatementKey}
+                                onClick={this.duplicateStatement}
+                              />
+                              <IconKit
+                                size={20}
+                                icon={ic_delete}
+                                style={{ marginLeft: 10 }}
+                                dataid={inactiveStatementKey}
+                                onClick={this.deleteStatement}
+                              />
+                              { (<Icon
+                                type="star"
+                                style={{ marginRight: 10, marginLeft: 20 }}
+                                className={statements[inactiveStatementKey].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
+                                theme={statements[inactiveStatementKey].isDefault ? 'filled' : 'outlined'}
+                                dataid={inactiveStatementKey}
+                                onClick={this.setStatementAsDefault}
+                              />)}
 
-                              </Menu.Item>
-                            ))
+                            </Menu.Item>
+                          ))
                           }
                       </Menu>
                     ) : (<></>))

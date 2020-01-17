@@ -245,6 +245,7 @@ class VariantNavigation extends React.Component {
                 />
               );
             case FILTER_TYPE_NUMERICAL_COMPARISON:
+              // @TODO Refactor other filters according to this structure
               return (
                 <NumericalComparisonFilter
                   overlayOnly
@@ -255,7 +256,7 @@ class VariantNavigation extends React.Component {
                     removable: false,
                   }}
                   intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, comparator: ">", value: 0 , type:NumericalComparisonFilter})}
+                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : NumericalComparisonFilter.structFromArgs(activeFilterId))}
                   dataSet={data[activeFilterId] ? data[activeFilterId] : []}
                   onEditCallback={this.handleFilterChange}
                   onRemoveCallback={this.handleFilterRemove}

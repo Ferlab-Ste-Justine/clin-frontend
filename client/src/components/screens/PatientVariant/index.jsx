@@ -24,7 +24,7 @@ import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
   searchVariants, commitHistory,
-  getAndSelectStatement, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
+  getStatements, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
   createStatement, countVariants } from '../../../actions/variant';
 import { navigateToPatientScreen } from '../../../actions/router';
 
@@ -240,7 +240,7 @@ class PatientVariantScreen extends React.Component {
 
   handleGetStatements() {
     const { actions } = this.props;
-    actions.getAndSelectStatement();
+    actions.getStatements();
     this.setState({
       queriesHaveChanges: false,
     });
@@ -251,15 +251,16 @@ class PatientVariantScreen extends React.Component {
     actions.createDraftStatement(newStatement);
   }
 
-  handleUpdateStatement(id, title, switchCurrentStatementToDefault = false) {
+  handleUpdateStatement(id, title, description, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
     this.setState({
       queriesHaveChanges: false,
     });
+    const { statements } = this.props.variant;
     if (id === 'draft') {
-      actions.createStatement(id, title, switchCurrentStatementToDefault);
+      actions.createStatement(id, title, description, statements[id].queries, switchCurrentStatementToDefault);
     } else {
-      actions.updateStatement(id, title, switchCurrentStatementToDefault);
+      actions.updateStatement(id, title, description, statements[id].queries, switchCurrentStatementToDefault);
     }
   }
 
@@ -516,7 +517,7 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
-    getAndSelectStatement, createDraftStatement, createStatement, updateStatement, deleteStatement, selectStatement,
+    getStatements, createDraftStatement, createStatement, updateStatement, deleteStatement, selectStatement,
     duplicateStatement,
   }, dispatch),
 });

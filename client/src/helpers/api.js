@@ -78,23 +78,21 @@ const getStatements = () => axios.get(`${window.CLIN.metaServiceApiUrl}/statemen
   .then(successCallback)
   .catch(errorCallback);
 
-const createStatement = (queries, title, description = '') => axios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
-  queries,
+const createStatement = (title = '', description = '', queries = [], isDefault = false) => axios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
   title,
   description,
-  isDefault: false,
-
+  queries,
+  isDefault,
 })
   .then(successCallback)
   .catch(errorCallback);
 
-const updateStatement = (uid, queries, title, description = '', isDefault = false) => axios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const updateStatement = (uid, title = '', description = '', queries, isDefault = false) => axios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
   uid,
-  queries,
   title,
   description,
+  queries,
   isDefault,
-
 })
   .then(successCallback)
   .catch(errorCallback);

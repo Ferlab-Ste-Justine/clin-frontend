@@ -144,8 +144,11 @@ class Filter extends React.Component {
           this.handleClose(true);
         }
       } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
-        instruction.comparator = editor.props.children[0].props.children.props.children.props.value;
-        instruction.value = editor.props.children[2].props.children[1].props.children.props.defaultValue;
+
+        const data = editor.getData()
+        instruction.values = data.values;
+
+
       } else if (type === FILTER_TYPE_GENERICBOOL) {
         instruction.values = editor.props.children[2].props.children.props.children.props.value
       } else if (type === FILTER_TYPE_COMPOSITE) {
@@ -210,6 +213,7 @@ class Filter extends React.Component {
     const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable, autoSelect } = this.props;
     let titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
     const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
+
     let operandText = ""
     const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
     let values = []
@@ -218,8 +222,10 @@ class Filter extends React.Component {
         operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` });
     }
     else if(data.type === "numcomparison"){
-        values.push(data.value)
-        operandText = data.comparator;
+        // @TODO Refactor other filters according to this structure
+        const editorLabels = editor.getText()
+        operandText = editorLabels.operation
+        values.push(editorLabels.target)
     }
     else if(data.type ==="genericbool"){
         values = data.values
@@ -228,7 +234,6 @@ class Filter extends React.Component {
         values.push(data.value)
         operandText=data.comparator;
     }
-
 
     const overlay = (
       <Popover
@@ -240,20 +245,19 @@ class Filter extends React.Component {
           <br />
           {searchable && (
                <>
-               <Row>
-                 <Input
-                   allowClear
-                   placeholder={filterSearch}
-                   size="small"
-                   onChange={this.handleSearchByQuery}
-                 />
-               </Row>
-               <br/>
+                 <Row>
+                   <Input
+                     allowClear
+                     placeholder={filterSearch}
+                     size="small"
+                     onChange={this.handleSearchByQuery}
+                   />
+                 </Row>
+                 <br/>
                </>
-          )
-          }
-          { editor }
-          { allOptions  && (
+          )}
+          { editor.contents || editor }
+          { allOptions && (
                 allOptions.length >= size
                   ? (
                     <Row style={{ marginTop: 'auto' }}>
@@ -377,7 +381,6 @@ Filter.defaultProps = {
     editable: false,
     selectable: false,
     removable: false,
-
   },
   onCancelCallback: () => {},
   onEditCallback: () => {},

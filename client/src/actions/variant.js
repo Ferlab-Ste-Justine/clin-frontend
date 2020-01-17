@@ -81,7 +81,7 @@ export const undo = () => ({
 });
 
 
-export const getAndSelectStatement = () => ({
+export const getStatements = () => ({
   type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
 });
 
@@ -92,20 +92,24 @@ export const createDraftStatement = statement => ({
   },
 });
 
-export const updateStatement = (id, title, switchCurrentStatementToDefault) => ({
+export const updateStatement = (id, title, description, queries, switchCurrentStatementToDefault) => ({
   type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED,
   payload: {
     id,
     title,
+    description,
+    queries,
     switchCurrentStatementToDefault,
   },
 });
 
-export const createStatement = (id, title, switchCurrentStatementToDefault) => ({
+export const createStatement = (id, title, description, queries, switchCurrentStatementToDefault) => ({
   type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
     id,
     title,
+    description,
+    queries,
     switchCurrentStatementToDefault,
   },
 });
