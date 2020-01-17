@@ -72,9 +72,6 @@
 
            }
 
-                .star{
-                  color:#f8a335;
-                }
 
           }
 
@@ -116,14 +113,19 @@
         transition:none;
         i{
           padding-right:4px;
+
           color: $color-disable;
 
 
         }
+          i:not(.star){
+           padding-bottom: 2px;
+          }
 
         .starFilled{
           color:#f8a335;
         }
+
 
         .openSelect{
             color:#125a90;
@@ -137,8 +139,11 @@
         &:hover{
           color:#125a90;
           i:not(.star){
-            color:#125a90;
+            color:#1b7ab2;
           }
+                  .starOutlined{
+                      color:#f8a335;
+                  }
 
           &:disabled {
             color: $color-disable;
@@ -155,6 +160,13 @@
         }
       }
 
+  }
+
+  .buttonActive{
+      color:#125a90;
+      i{
+        color:#125a90;
+      }
   }
   .menuCombine{
         border:none;
@@ -266,3 +278,98 @@
   }
 
 }
+
+  .dropdown{
+    ul{
+        border-radius:0;
+
+        li{
+            display:flex;
+            justify-content:space-between;
+            color: rgb(35, 55, 80);
+            font-size: $small-font;
+            font-family: $font;
+            letter-spacing:$small-letter-spacing;
+
+
+            .displayOnHover{
+                opacity:0;
+            }
+
+            &:hover{
+                .displayOnHover{
+                    opacity:1;
+                }
+            }
+
+            .dropdownNavigation{
+                display: flex;
+                align-items: center;
+
+
+
+                i{
+                    color:rgba(35, 55, 80, 0.38);
+                    display:flex;
+                    align-items:center;
+                    margin-left:8px;
+                }
+
+                i:not(.star){
+                    &:hover{
+                        color:#125a90;
+                    }
+                }
+
+                .star{
+                        width:20px;
+                        height:20px;
+                        svg{
+                        width:15px;
+                        height:15px;
+                        }
+                }
+
+                .starOutlined{
+                    &:hover{
+                    color:#f8a335;
+                    }
+
+                }
+
+                .starFilled{
+                  color:#f8a335;
+                }
+
+            }
+        }
+    }
+
+
+  }
+
+  .tooltip{
+
+    >div {
+        >div:nth-child(1){
+            &:before{
+                background:#233750;
+            }
+        }
+
+        >div:nth-child(2){
+            background:#233750;
+            border-radius:$default-radius;
+            min-height: 0px;
+            padding: 4px 8px;
+
+            color: rgb(255, 255, 255);
+            font-family: $font;
+            font-size: $little-font;
+            letter-spacing: 0.4px;
+            text-align: center;
+        }
+
+    }
+
+  }

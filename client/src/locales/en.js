@@ -182,6 +182,7 @@ const en = {
   'screen.patientvariant.statement.modal.cancel': 'No',
   'screen.patientvariant.query.menu.add': 'Add Title',
   'screen.patientvariant.query.menu.editTitle': 'Edit Title',
+  'screen.patientvariant.query.menu.defaultFilter': 'Default filter',
   'screen.patientvariant.query.menu.remove': 'Remove Title',
   'screen.patientvariant.query.menu.copy': 'Copy SQON',
   'screen.patientvariant.query.menu.maximize': 'Maximize View',

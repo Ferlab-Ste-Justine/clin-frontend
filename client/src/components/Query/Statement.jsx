@@ -57,8 +57,8 @@ class Statement extends React.Component {
         selectable: null,
         undoable: null,
       },
-      selectIsOpen: false,
-      onFocus: false,
+      dropDownIsOpen: false,
+      onFocus:false,
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -96,15 +96,16 @@ class Statement extends React.Component {
     this.deleteStatement = this.deleteStatement.bind(this);
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
-    this.onFocus = this.onFocus.bind(this);
-    this.onBlur = this.onBlur.bind(this);
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
     this.getTitleWidth = this.getTitleWidth.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.onFocusTitle = this.onFocusTitle.bind(this);
+    this.handleFocus =this.handleFocus.bind(this)
+    this.onFocusTitle=this.onFocusTitle.bind(this)
     this.onBlurTitle = this.onBlurTitle.bind(this);
+    this.onBlurDropdown= this.onBlurDropdown.bind(this)
+    this.handleFocusDropdown = this.handleFocusDropdown.bind(this)
+
   }
 
   isCopyable() {
@@ -592,14 +593,6 @@ class Statement extends React.Component {
     });
   }
 
-  onFocus() {
-    this.setState({ selectIsOpen: true });
-  }
-
-  onBlur() {
-    this.setState({ onFocus: false });
-  }
-
   onModalSaveTitleInputChange(e) {
     const { value } = e.target;
     this.setState({ saveTitleModalInputValue: value });
@@ -644,11 +637,22 @@ class Statement extends React.Component {
     this.setState({ onFocus: false });
   }
 
+  onBlurDropdown(e){
+    this.setState({dropDownIsOpen:false})
+  }
+
+  handleFocusDropdown(e){
+    const{dropDownIsOpen} = this.state
+    this.setState({dropDownIsOpen:!dropDownIsOpen})
+  }
+
   render() {
     const { data, activeStatementId, statements } = this.props;
     const activeStatement = statements[activeStatementId];
     if (!data || !activeStatement) return null;
 
+    const { dropDownIsOpen } = this.state;
+    if (!data) return null;
     const {
       activeQuery, externalData, options, intl, facets, categories, searchData, target, activeStatementTotals, queriesHaveChanges,
     } = this.props;
@@ -685,6 +689,8 @@ class Statement extends React.Component {
     const myFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.myFilter' });
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
+    const defaultFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.defaultFilter' });
+
     const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.title' });
     const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
     const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputLabel' });
@@ -817,44 +823,50 @@ class Statement extends React.Component {
           <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
               <div>
-                <div className={styleStatement.title}>
-                  <Tooltip title={editTitleText}>
-                    <div>
+                <div  className={styleStatement.title}>
+                      <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
+                          <div>
 
-                      <Input
-                        id="statementTitle"
-                        onChange={this.onStatementTitleChange}
-                        onFocus={this.onFocusTitle}
-                        onBlur={this.onBlurTitle}
-                        onPressEnter={this.onStatementTitleChange}
-                        autocomplete="off"
-                        value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle : statementTitle)}
-                        disabled={activeStatementId == null}
-                        style={{ width: `calc(13px + ${width}ch)` }}
-                      />
+                                <Input
+                                    id="statementTitle"
+                                    onChange={this.onStatementTitleChange}
+                                    onFocus={this.onFocusTitle}
+                                    onBlur={this.onBlurTitle}
+                                    onPressEnter={this.onStatementTitleChange}
+                                    autocomplete="off"
+                                    value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle)}
+                                    disabled={activeStatementId == null}
+                                    style={{width:`calc(13px + ${width}ch)`}}
+                                />
 
 
-                      <IconKit
-                        icon={ic_edit}
-                        size={18}
-                        onClick={this.handleFocus}
-                        className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
-                      />
+                                <IconKit
+                                    icon={ic_edit}
+                                    size={18}
+                                    onClick={this.handleFocus}
+                                    className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
 
-                    </div>
-                  </Tooltip>
-                  <Button
-                    type="default"
-                    className={styleStatement.button}
-                    onClick={this.setStatementAsDefault}
-                    disabled={activeStatementId == null}
-                  >
-                    <Icon
-                      className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
-                      type="star"
-                      theme={activeStatement.isDefault ? 'filled' : 'outlined'}
-                    />
-                  </Button>
+                                />
+
+
+                          </div>
+                      </Tooltip>
+                      <Tooltip overlayClassName={styleStatement.tooltip} title={defaultFilterText}>
+                      <Button
+                          type="default"
+                          className={styleStatement.button}
+                          onClick={this.setStatementAsDefault}
+                          disabled={activeStatementId == null}
+                        >
+
+                        <Icon
+                            className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
+                            type="star"
+                            theme={activeStatement.isDefault ? 'filled' : 'outlined'}
+                        />
+
+                      </Button>
+                      </Tooltip>
                 </div>
                 <div>
                   <Button
@@ -875,11 +887,10 @@ class Statement extends React.Component {
                     {saveText}
                   </Button>
                   <Button
-                    type="default"
-                    className={styleStatement.button}
-                    type="default"
-                    disabled={activeStatementIsDraft || activeStatementId == null}
-                    onClick={this.duplicateStatement}
+                      type="default"
+                      className={styleStatement.button}
+                      disabled={activeStatementIsDraft || activeStatementId == null}
+                      onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
                     {duplicateText}
@@ -903,60 +914,66 @@ class Statement extends React.Component {
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider} />
 
-                  <Dropdown.Button
-                    className={styleStatement.button}
-                    icon={(
-                      <>
-                        <IconKit className={selectIsOpen ? styleStatement.openSelect : null} icon={ic_folder} size={20} />
-                        {myFilterText}
-                      </>
-                    )}
-                    trigger={['click']}
-                    placement="bottomLeft"
-                    style={{ width: 250 }}
-                    disabled={(inactiveStatementKeys.length === 0)}
-                    overlay={(inactiveStatementKeys.length !== 0 ? (
-                      <Menu onClick={contextSelectStatement}>
-                        {
-                          inactiveStatementKeys.map(inactiveStatementKey => (
-                            <Menu.Item key={inactiveStatementKey}>
-                              {statements[inactiveStatementKey].title}
-                              <IconKit
-                                size={20}
-                                icon={ic_content_copy}
-                                style={{ marginLeft: 10 }}
-                                dataid={inactiveStatementKey}
-                                onClick={this.duplicateStatement}
-                              />
-                              <IconKit
-                                size={20}
-                                icon={ic_delete}
-                                style={{ marginLeft: 10 }}
-                                dataid={inactiveStatementKey}
-                                onClick={this.deleteStatement}
-                              />
-                              { (<Icon
-                                type="star"
-                                style={{ marginRight: 10, marginLeft: 20 }}
-                                className={statements[inactiveStatementKey].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.star}`}
-                                theme={statements[inactiveStatementKey].isDefault ? 'filled' : 'outlined'}
-                                dataid={inactiveStatementKey}
-                                onClick={this.setStatementAsDefault}
-                              />)}
 
-                            </Menu.Item>
-                          ))
-                          }
-                      </Menu>
-                    ) : (<></>))
-                  }
-                  >
-                  </Dropdown.Button>
+                      <Dropdown
+                        trigger={['click']}
+                        className={`${styleStatement.button} ${dropDownIsOpen ? `${styleStatement.buttonActive}` : null}`}
+                        disabled={(inactiveStatementKeys.length == 0)}
+                        onBlur= {this.onBlurDropdown}
+                        onClick={this.handleFocusDropdown}
+                        overlayClassName={styleStatement.dropdown}
+                        overlay={(inactiveStatementKeys.length > 0 ? (
+                                                              <Menu onClick={contextSelectStatement}>
+                                                                {
+                                                                  inactiveStatementKeys.map(key => (
+                                                                      <Menu.Item key={statements[key].uid}>
+                                                                        {statements[key].title}
+                                                                        <div className={styleStatement.dropdownNavigation}>
+                                                                            <IconKit
+                                                                              size={20}
+                                                                              icon={ic_content_copy}
+                                                                              dataid={statements[key].uid}
+                                                                              className={styleStatement.displayOnHover}
+                                                                              onClick={this.duplicateStatement}
+                                                                            />
+                                                                            <IconKit
+                                                                              size={20}
+                                                                              icon={ic_delete}
+                                                                              dataid={statements[key].uid}
+                                                                              className={styleStatement.displayOnHover}
+                                                                              onClick={this.deleteStatement}
+                                                                            />
+                                                                            { (<Icon
+                                                                              type="star"
+                                                                              size={20}
+                                                                              className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
+                                                                              theme={statements[key].isDefault ? 'filled' : 'outlined'}
+                                                                              dataid={statements[key].uid}
+                                                                              onClick={this.setStatementAsDefault}
+                                                                            />)}
+                                                                        </div>
+                                                                      </Menu.Item>
+                                                                    ))
+                                                                  }
+                                                              </Menu>
+                                                            ) : (<></>))
+                                                          }>
+                        <Button>
+                            <IconKit
+                              size={20}
+                              icon={ic_folder}
+                              onClick={this.duplicateStatement}
+
+                            />
+                          {myFilterText}
+                        </Button>
+                      </Dropdown>
 
                 </div>
               </div>
-              <Divider className={styleStatement.dividerHorizontal} />
+
             </div>
+            <Divider className={styleStatement.dividerHorizontal} />
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>
             <Menu onClick={this.handleCombine} mode="horizontal" className={styleStatement.menuCombine}>
