@@ -216,11 +216,7 @@ class Statement extends React.Component {
     if (this.isRemovable()) {
       const subqueryKeys = this.getSubqueryKeys([key]);
       if (!isEmpty(subqueryKeys)) {
-        const subqueryKeysToDelete = [
-          ...subqueryKeys,
-          key,
-        ];
-        this.showDeleteConfirm(subqueryKeysToDelete);
+        this.showDeleteConfirm([key]);
       } else {
         this.confirmRemove([key]);
       }
@@ -493,11 +489,7 @@ class Statement extends React.Component {
       const { checkedQueries } = this.state;
       const subqueryKeys = this.getSubqueryKeys(checkedQueries);
       if (!isEmpty(subqueryKeys)) {
-        const subqueryKeysToDelete = [
-          ...subqueryKeys,
-          ...checkedQueries,
-        ];
-        this.showDeleteConfirm(subqueryKeysToDelete);
+        this.showDeleteConfirm(checkedQueries);
       } else {
         this.confirmRemoveChecked();
       }
@@ -570,7 +562,8 @@ class Statement extends React.Component {
 
   findQueryTitle(key) {
     const { data } = this.props;
-    return find(data, { key }).title;
+    const query = find(data, { key })
+    return (query ? query.title : '')
   }
 
   onPositionChange(expandIconPosition) {
@@ -810,7 +803,7 @@ class Statement extends React.Component {
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
             <div>
-              {!isEqual(this.props.data, this.props.original)
+              {(!isEqual(this.props.data, this.props.original) && !containsEmptyQueries)
                 ? this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' })
                 : this.state.statementVisualClueText}
             </div>

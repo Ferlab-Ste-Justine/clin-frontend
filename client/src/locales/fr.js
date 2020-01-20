@@ -238,7 +238,7 @@ const fr = {
   'screen.patientvariant.statement.or': 'Ou',
   'screen.patientvariant.statement.andnot': 'Exclure',
   'screen.patientvariant.statement.modal.title': 'Êtes-vous sûr de vouloir supprimer cette requête?',
-  'screen.patientvariant.statement.modal.content': 'Cette requête est utilisée dans une sous-requête',
+  'screen.patientvariant.statement.modal.content': 'Certaines requêtes combinées seront affectées',
   'screen.patientvariant.statement.modal.ok': 'Oui',
   'screen.patientvariant.statement.modal.cancel': 'Non',
   'screen.patientvariant.query.menu.add': 'Ajouter le titre',

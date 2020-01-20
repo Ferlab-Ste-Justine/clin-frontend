@@ -180,7 +180,7 @@ const en = {
   'screen.patientvariant.statement.or': 'Or',
   'screen.patientvariant.statement.andnot': 'And Not',
   'screen.patientvariant.statement.modal.title': 'Are you sure you want to delete this query?',
-  'screen.patientvariant.statement.modal.content': 'This query is used in a subquery.',
+  'screen.patientvariant.statement.modal.content': 'Some queries will also be affected.',
   'screen.patientvariant.statement.modal.ok': 'Yes',
   'screen.patientvariant.statement.modal.cancel': 'No',
   'screen.patientvariant.query.menu.add': 'Add Title',
