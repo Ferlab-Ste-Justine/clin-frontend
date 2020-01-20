@@ -200,7 +200,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         )
         if (defaultStatementId) {
           draft.activeStatementId = defaultStatementId
-          draft.activeQuery = tail(draft.statements[defaultStatementId].queries).key || null
+          draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null
         } else {
           draft.activeStatementId = DRAFT_STATEMENT_UID;
           draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement();
@@ -217,7 +217,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         statementKey => draft.statements[statementKey].isDefault === true
       )
       draft.activeStatementId = statementId;
-      draft.activeQuery = tail(draft.statements[statementId].queries).key;
+      draft.activeQuery = last(draft.statements[statementId].queries).key;
       draft.originalQueries = draft.statements[statementId].queries;
       draft.draftQueries = draft.statements[statementId].queries;
       draft.draftHistory = [];
@@ -228,7 +228,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.activeStatementId = action.payload.data.uid;
       draft.statements[action.payload.data.uid] = action.payload.data;
       draft.statements[action.payload.data.uid].queries = typeof action.payload.data.queries === 'string' ? JSON.parse(action.payload.data.queries) : action.payload.data.queries
-      draft.activeQuery = tail(draft.statements[action.payload.data.uid].queries).key;
+      draft.activeQuery = last(draft.statements[action.payload.data.uid].queries).key;
       draft.originalQueries = cloneDeep(draft.statements[action.payload.data.uid].queries)
       draft.draftQueries = cloneDeep(draft.statements[action.payload.data.uid].queries)
       draft.draftHistory = [];

@@ -173,6 +173,10 @@ function* createStatement(action) {
     const title = action.payload.title ? action.payload.title : '';
     const description = action.payload.description ? action.payload.description : '';
     const statementResponse = yield Api.createStatement(title, description, draftQueries);
+
+    console.log('+ createStatement statementResponse ' + JSON.stringify(statementResponse))
+
+
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
