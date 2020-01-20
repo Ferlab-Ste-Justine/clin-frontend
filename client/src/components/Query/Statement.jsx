@@ -1029,9 +1029,7 @@ class Statement extends React.Component {
           }
         </div>
         <div className={styleStatement.footer}>
-          <Tooltip title={newQueryText}>
-            <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery}>{newQueryText}</Button>
-          </Tooltip>
+          <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery}>{newQueryText}</Button>
         </div>
       </div>
     );
