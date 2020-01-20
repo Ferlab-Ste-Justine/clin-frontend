@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Descriptions, Typography, PageHeader, Tabs, Button,
+  Card, Descriptions, Typography, PageHeader, Tabs, Button,Tag, Row, Col, Dropdown, Menu
 } from 'antd';
 import { cloneDeep, find, flatten, map, filter } from 'lodash';
 
@@ -29,6 +29,13 @@ import { fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, du
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
+import style from './style.module.scss';
+
+import IconKit from 'react-icons-kit';
+import {venus, mars} from 'react-icons-kit/fa'
+import {
+  ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down
+} from 'react-icons-kit/md';
 
 
 const VARIANT_TAB = 'VARIANTS'
@@ -306,6 +313,10 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab,
     } = this.state;
+    const familyText = intl.formatMessage({ id: 'screen.patientvariant.header.family' });
+    const motherText = intl.formatMessage({ id: 'screen.patientvariant.header.family.mother' });
+    const fatherText = intl.formatMessage({ id: 'screen.patientvariant.header.family.father' });
+
     const total = currentTab === VARIANT_TAB ? activeStatementTotals[activeQuery] : [];
     const searchData = [];
     const reverseCategories = {}
@@ -369,6 +380,26 @@ class PatientVariantScreen extends React.Component {
 
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer)
+    const familyMenu = (
+      <Menu>
+          <Menu.ItemGroup title={familyText} className={style.menuGroup}>
+            {patient.family.members["mother"] !="" ?
+                <Menu.Item>
+                    <a href="#" data-patient-id={patient.family.members.mother} onClick={this.handleNavigationToPatientScreen}>
+                        {motherText} [{patient.family.members.mother}]
+                    </a>
+                </Menu.Item>
+                : null}
+            {patient.family.members["father"] !="" ?
+                <Menu.Item>
+                   <a href="#" data-patient-id={patient.family.members.father} onClick={this.handleNavigationToPatientScreen}>
+                        {fatherText} [{patient.family.members.father}]
+                   </a>
+                </Menu.Item>
+                 : null}
+          </Menu.ItemGroup>
+      </Menu>
+    );
 
     return (
       <Content>
@@ -391,11 +422,45 @@ class PatientVariantScreen extends React.Component {
               )}
           />
           { patient.details.id && (
-          <Descriptions title={`Patient [${patient.details.id}], ${patient.details.gender}, ${patient.details.proband}`} layout="horizontal" column={1}>
-              <Descriptions.Item label="Famille">[{patient.family.id}], Mère: [{patient.family.members.mother}], Père: [{patient.family.members.father}]</Descriptions.Item>
-              <Descriptions.Item label="Signes">{patient.ontology.map(hpo => { return `${hpo.term} (${hpo.code})`; }).join(', ')}</Descriptions.Item>
-              <Descriptions.Item label="Indication(s)">{patient.observations.map(o => { return o.note; }).join(', ')}</Descriptions.Item>
-          </Descriptions>) }
+          <div className={style.patientInfo}>
+            <Row className={style.descriptionTitle} type="flex" align="middle">
+                <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
+                  <Button >
+                    {patient.details.lastName},{patient.details.firstName}
+                  </Button>
+                </a>
+                <IconKit className={style.gender}  icon={patient.details.gender === "male" ? mars : venus} />
+                <Tag className={style.tag}>{patient.details.proband}</Tag>
+                { patient.family.members["mother"] != ""  || patient.family.members["father"] != ""?
+                    <Dropdown overlay={familyMenu} overlayClassName={style.familyDropdown}>
+                      <Tag className={style.tag}>
+                        {familyText} <IconKit size={16} icon={ic_arrow_drop_down} />
+                      </Tag>
+                    </Dropdown> :
+
+                    null
+                }
+
+            </Row>
+            <Row  type="flex" className={style.descriptionPatient}>
+              <Col><IconKit size={16} icon={ic_assignment_ind} /> {patient.details.mrn}</Col>
+              <Col><IconKit size={16} icon={ic_location_city} /> {patient.organization.name}</Col>
+              <Col><IconKit size={16} icon={ic_folder_shared} /> {patient.details.ramq}</Col>
+            </Row>
+            <Row  type="flex"   align="middle"className={style.descriptionOntoloy}>
+                <IconKit size={16} icon={ic_assignment_turned_in} />
+                HPO:
+                {patient.ontology.map( ontology =>(
+                    <Button>
+                     {ontology.term}
+                     <IconKit className={style.iconLink} size={14} icon={ic_launch} />
+                     </Button>
+                  ))
+                }
+            </Row>
+          </div>
+
+            ) }
           <Card className="Content">
             <VariantNavigation
                           key="variant-navigation"
