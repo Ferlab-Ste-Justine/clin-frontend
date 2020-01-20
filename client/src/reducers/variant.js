@@ -99,17 +99,27 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
-      draft.draftQueries = draftQueries.filter(query => !action.payload.keys.find(key => key === query.key));
-      draft.activeQuery = draft.draftQueries.find(query => query.key === draft.activeQuery) ? draft.activeQuery : draft.draftQueries[0].key;
+      if (draft.draftQueries.length > 1) {
+        draft.draftQueries = draft.draftQueries.filter(query => action.payload.keys.indexOf(query.key) !== -1);
+        draft.activeQuery = draft.draftQueries[(draft.draftQueries.length - 1)].key;
+      } else {
+        const newStatement = createDraftStatement();
+        draft.statements[draft.activeStatementId].queries = newStatement.queries;
+        draft.activeQuery = newStatement.queries[0].key;
+        draft.draftQueries = newStatement.queries;
+        draft.draftHistory = [];
+      }
       break;
 
     case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
-      const keyToDuplicate = action.payload.query.key;
-      const indexToInsertAt = action.payload.index || draft.draftQueries.length;
-      const indexToDuplicate = findIndex(draft.draftQueries, { key: keyToDuplicate });
-      if (indexToDuplicate) {
-        draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
-        draft.activeQuery = action.payload.query.key;
+      if (action.payload.query) {
+        const keyToDuplicate = action.payload.query.key;
+        const indexToInsertAt = action.payload.index || draft.draftQueries.length;
+        const indexToDuplicate = findIndex(draft.draftQueries, { key: keyToDuplicate });
+        if (indexToDuplicate) {
+          draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
+          draft.activeQuery = action.payload.query.key;
+        }
       }
       break;
 

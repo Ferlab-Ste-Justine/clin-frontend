@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader, Tabs, Button,
 } from 'antd';
-import { cloneDeep, find, flatten, map, filter } from 'lodash';
+import { cloneDeep, find, flatten, map, filter, isEqual } from 'lodash';
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -41,7 +41,6 @@ class PatientVariantScreen extends React.Component {
       currentTab: VARIANT_TAB,
       page: 1,
       size: 25,
-      queriesHaveChanges: false,
     };
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
@@ -207,9 +206,6 @@ class PatientVariantScreen extends React.Component {
   handleCommitHistory() {
     const { actions, variant } = this.props;
     const { draftQueries } = variant;
-    this.setState({
-      queriesHaveChanges: true,
-    });
     actions.commitHistory(draftQueries);
   }
 
@@ -241,9 +237,6 @@ class PatientVariantScreen extends React.Component {
   handleGetStatements() {
     const { actions } = this.props;
     actions.getStatements();
-    this.setState({
-      queriesHaveChanges: false,
-    });
   }
 
   handleCreateDraftStatement(newStatement) {
@@ -253,9 +246,6 @@ class PatientVariantScreen extends React.Component {
 
   handleUpdateStatement(id, title, description, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
-    this.setState({
-      queriesHaveChanges: false,
-    });
     const { statements } = this.props.variant;
     if (id === 'draft') {
       actions.createStatement(id, title, description, statements[id].queries, switchCurrentStatementToDefault);
@@ -266,25 +256,16 @@ class PatientVariantScreen extends React.Component {
 
   handleDeleteStatement(id) {
     const { actions } = this.props;
-    this.setState({
-      queriesHaveChanges: false,
-    });
     actions.deleteStatement(id);
   }
 
   handleDuplicateStatement(id) {
     const { actions } = this.props;
-    this.setState({
-      queriesHaveChanges: false,
-    });
     actions.duplicateStatement(id);
   }
 
   handleSelectStatement(id) {
     const { actions } = this.props;
-    this.setState({
-      queriesHaveChanges: false,
-    });
     actions.selectStatement(id);
   }
 
@@ -302,7 +283,7 @@ class PatientVariantScreen extends React.Component {
     const { intl, app, variant, patient } = this.props;
     const { showSubloadingAnimation } = app;
     const { draftQueries, draftHistory, originalQueries, facets, schema, activeQuery,
-      activeStatementId, activeStatementTotals, results, statements } = variant;
+      activeStatementId, activeStatementTotals, statements } = variant;
     const {
       size, page, currentTab,
     } = this.state;
@@ -425,7 +406,6 @@ class PatientVariantScreen extends React.Component {
                         facets={facets}
                         target={patient}
                         categories={schema.categories}
-                        queriesHaveChanges={this.state.queriesHaveChanges}
                         options={{
                             copyable: true,
                             duplicatable: true,
