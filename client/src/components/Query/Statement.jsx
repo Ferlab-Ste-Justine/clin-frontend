@@ -248,9 +248,6 @@ class Statement extends React.Component {
         statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         this.props.onCreateDraftStatementCallback(newStatement);
-        setTimeout(() => {
-          this.handleNewQuery(null, newStatement.queries[0]);
-        }, 100);
       });
     };
 
