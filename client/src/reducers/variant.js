@@ -169,9 +169,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
       if (action.payload.data.total < 1) {
         draft.activeStatementId = DRAFT_STATEMENT_UID;
-        draft.statements = {}
         draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement();
-        draft.activeQuery = draft.statements.queries[0].key;
+        draft.activeQuery = draft.statements[DRAFT_STATEMENT_UID].queries[0].key;
         draft.originalQueries = [];
         draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
         draft.draftHistory = [];
