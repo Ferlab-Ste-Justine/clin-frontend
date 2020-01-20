@@ -22,7 +22,7 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
-      draft = Object.assign({}, initialUserState);
+      draft.username = null;
       break;
 
     case actions.USER_LOGIN_SUCCEEDED:
