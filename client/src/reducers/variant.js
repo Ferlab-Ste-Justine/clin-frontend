@@ -225,12 +225,18 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-      draft.activeStatementId = action.payload.data.uid;
-      draft.statements[action.payload.data.uid] = action.payload.data;
-      draft.statements[action.payload.data.uid].queries = typeof action.payload.data.queries === 'string' ? JSON.parse(action.payload.data.queries) : action.payload.data.queries
-      draft.activeQuery = last(draft.statements[action.payload.data.uid].queries).key;
-      draft.originalQueries = cloneDeep(draft.statements[action.payload.data.uid].queries)
-      draft.draftQueries = cloneDeep(draft.statements[action.payload.data.uid].queries)
+      const updatedStatement = {
+        uid: action.payload.data.uid,
+        title: action.payload.data.title,
+        description: action.payload.data.description,
+        queries: JSON.parse(action.payload.data.queries),
+        isDefault: action.payload.data.isDefault,
+      };
+      draft.activeStatementId = updatedStatement.uid;
+      draft.statements[updatedStatement.uid] = updatedStatement;
+      draft.activeQuery = last(updatedStatement.queries).key;
+      draft.originalQueries = cloneDeep(updatedStatement.queries)
+      draft.draftQueries = cloneDeep(updatedStatement.queries)
       draft.draftHistory = [];
       break;
 

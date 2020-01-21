@@ -159,6 +159,10 @@ function* updateStatement(action) {
       throw new ApiError(statementResponse.error);
     }
 
+
+    console.log('+ statementResponse ' + JSON.stringify(statementResponse))
+
+
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter saved.' } });
   } catch (e) {
