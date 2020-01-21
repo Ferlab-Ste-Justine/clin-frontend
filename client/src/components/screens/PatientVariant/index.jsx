@@ -251,13 +251,16 @@ class PatientVariantScreen extends React.Component {
     actions.createDraftStatement(newStatement);
   }
 
-  handleUpdateStatement(id, title, description, switchCurrentStatementToDefault = false) {
+  handleUpdateStatement(id, title, description, queries = null, switchCurrentStatementToDefault = false) {
     const { actions } = this.props;
     const { statements } = this.props.variant;
+    if (!queries) {
+      queries = statements[id].queries
+    }
     if (id === 'draft') {
-      actions.createStatement(id, title, description, statements[id].queries, switchCurrentStatementToDefault);
+      actions.createStatement(id, title, description, queries, switchCurrentStatementToDefault);
     } else {
-      actions.updateStatement(id, title, description, statements[id].queries, switchCurrentStatementToDefault);
+      actions.updateStatement(id, title, description, queries, switchCurrentStatementToDefault);
     }
   }
 

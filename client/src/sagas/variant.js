@@ -172,11 +172,7 @@ function* createStatement(action) {
 
     const title = action.payload.title ? action.payload.title : '';
     const description = action.payload.description ? action.payload.description : '';
-    const statementResponse = yield Api.createStatement(title, description, draftQueries);
-
-    console.log('+ createStatement statementResponse ' + JSON.stringify(statementResponse))
-
-
+    const statementResponse = yield Api.createStatement(title, description, draftQueries, false);
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
@@ -195,7 +191,7 @@ function* duplicateStatement(action) {
       throw new Error('Statement not found');
     }
 
-    statement.title = statementToDuplicate.title;
+    statement.title = `${statementToDuplicate.title} COPIE`;
     statement.queries = draftQueries;
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { statement } });
 

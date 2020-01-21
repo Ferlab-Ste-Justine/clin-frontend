@@ -42,7 +42,7 @@ export const variantShape = {
 };
 
 export const DRAFT_STATEMENT_UID = 'draft';
-const createDraftStatement = (title = 'Draft', description = '', queries = null) => ({
+const createDraftStatement = (title = 'Filtre sans titre', description = '', queries = null) => ({
   uid: DRAFT_STATEMENT_UID,
   title,
   description,
