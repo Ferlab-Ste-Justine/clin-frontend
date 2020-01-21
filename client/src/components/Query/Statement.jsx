@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input,
+  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input,Popconfirm
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every, remove,
@@ -97,6 +97,7 @@ class Statement extends React.Component {
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
+    this.onStatementTitleChangeEnter =this.onStatementTitleChangeEnter.bind(this)
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
     this.getTitleWidth = this.getTitleWidth.bind(this);
@@ -582,6 +583,12 @@ class Statement extends React.Component {
     });
   }
 
+  onStatementTitleChangeEnter(e){
+    e.target.blur()
+
+    this.onStatementTitleChange(e)
+  }
+
   onModalSaveTitleInputChange(e) {
     const { value } = e.target;
     this.setState({ saveTitleModalInputValue: value });
@@ -872,7 +879,7 @@ class Statement extends React.Component {
                                     onChange={this.onStatementTitleChange}
                                     onFocus={this.onFocusTitle}
                                     onBlur={this.onBlurTitle}
-                                    onPressEnter={this.onStatementTitleChange}
+                                    onPressEnter={this.onStatementTitleChangeEnter}
                                     autocomplete="off"
                                     value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle)}
                                     disabled={activeStatementId == null}
@@ -935,15 +942,27 @@ class Statement extends React.Component {
                     <IconKit size={20} icon={ic_content_copy} />
                     {duplicateText}
                   </Button>
-                  <Button
-                    type="default"
-                    disabled={!activeStatementCanBeDeleted}
-                    onClick={this.deleteStatement}
-                    className={styleStatement.button}
-                  >
-                    <IconKit size={20} icon={ic_delete} />
-                    {deleteText}
-                  </Button>
+                      <Button
+                          type="default"
+                          disabled={!activeStatementCanBeDeleted}
+                          className={styleStatement.button}
+                      >
+                          <Popconfirm
+                            title="Vous perdrez toutes les modifications non enregistrées."
+                            okText={deleteText}
+                            cancelText="Annuler"
+                            onConfirm={this.deleteStatement}
+                            icon={null}
+                            overlayClassName={styleStatement.popconfirm}
+                          >
+                              <a>
+                                <IconKit size={20} icon={ic_delete} />
+                                {deleteText}
+                              </a>
+                          </Popconfirm>
+                      </Button>
+
+
                   <Divider type="vertical" className={styleStatement.divider} />
                   <Button
                     type="disabled"
