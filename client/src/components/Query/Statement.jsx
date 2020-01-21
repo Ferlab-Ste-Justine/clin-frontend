@@ -294,8 +294,8 @@ class Statement extends React.Component {
       id = this.props.activeStatementId;
     }
 
-    this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', false);
-    e.stopPropagation();
+    this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', this.props.data, false);
+    if (e.stopPropagation) { e.stopPropagation(); }
   }
 
   setStatementAsDefault(e) {
@@ -307,11 +307,12 @@ class Statement extends React.Component {
       id = activeStatementId;
       // only reset title if setting the currently selected one to default
     }
+    const title = this.state.statementTitle ? this.state.statementTitle : this.props.statements[id].title;
     const callbackSetStatementAsDefault = () => {
       this.setState({
         statementVisualClueText: '',
       });
-      this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', true);
+      this.props.onUpdateStatementCallback(id, title, '', null, true);
     };
     if (destructiveOperation && (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original))) {
       this.showConfirmForDestructiveStatementAction(
@@ -324,7 +325,7 @@ class Statement extends React.Component {
     } else {
       callbackSetStatementAsDefault();
     }
-    e.stopPropagation();
+    if (e.stopPropagation) { e.stopPropagation(); }
   }
 
   deleteStatement(e) {
@@ -712,8 +713,8 @@ class Statement extends React.Component {
     } = options;
 
 
-    const inactiveStatementKeys = Object.keys(statements).filter(key => key !== activeStatementId);
-    const statementTitle = activeStatement ? activeStatement.title : '';
+    const inactiveStatementKeys = Object.keys(statements).filter(key => (key !== 'draft' && key !== activeStatementId));
+    const statementTitle = this.state.statementTitle ? this.state.statementTitle : activeStatement.title;
     const { selectIsOpen } = this.state;
 
 
@@ -881,7 +882,7 @@ class Statement extends React.Component {
                                     onBlur={this.onBlurTitle}
                                     onPressEnter={this.onStatementTitleChangeEnter}
                                     autocomplete="off"
-                                    value={(this.state.statementTitle || this.state.statementTitle === '' ? this.state.statementTitle: statementTitle)}
+                                    value={statementTitle}
                                     disabled={activeStatementId == null}
                                     style={{width:`calc(13px + ${width}ch)`}}
                                 />
@@ -898,6 +899,7 @@ class Statement extends React.Component {
 
                           </div>
                       </Tooltip>
+                      {activeStatementId !== 'draft' && (
                       <Tooltip overlayClassName={styleStatement.tooltip} title={defaultFilterText}>
                       <Button
                           type="default"
@@ -913,12 +915,13 @@ class Statement extends React.Component {
                         />
 
                       </Button>
-                      </Tooltip>
+                      </Tooltip>)}
                 </div>
                 <div>
                   <Button
                     type="default"
                     onClick={this.createDraftStatement}
+                    disabled={(activeStatementIsDraft && containsEmptyQueries)}
                     className={styleStatement.button}
                   >
                     <IconKit size={20} icon={ic_note_add} />
