@@ -255,7 +255,7 @@ class Query extends React.Component {
     const length =(value.length)
     const width = this.getTitleWidth(value)
 
-    e.target.style.width = `calc(13px + ${width}ch)`;
+    e.target.style.width = `calc(15px + ${width}ch)`;
   }
 
   handleFocus(){
@@ -344,31 +344,80 @@ class Query extends React.Component {
     return draft.title !== undefined;
   }
   getTitleWidth(value){
+    const x0 = ['i', 'l', 'j', ';', ',', '|', ' ' ];
+    const x1 = ['t', 'I', ':', '.','[',']' , '-', '/','!' , '"' ];
+    const x2 = ['r', 'f','(', ')',  '{', '}' ]
+    const x3 = ['v' , 'x' , 'y' ,'z' ,'_' ,'*','»', '«']
+    const x4 = ['c', 'k' , 's' ]
+    const x5 = ['g', 'p', 'q', 'b', 'd', 'h' , 'n', 'u','û', 'ù' ,'ü', 'o', 'ô', 'ö', 'E','Ê', 'É', 'È', 'Ë' ,'J','+','=', '$','1','2','3', '4', '5', '6', '7' , '8', '9', '0']
+    const x6 = ['T', 'S' , 'Y','Z']
+    const x7 = ['K',  'X', 'B', 'R', 'P' , '&', '#'];
+    const x8 = ['U','Ù', 'Ü','Û', 'V','C' ,'D'];
+    const x9 = ['A'];
+    const x10 = ['G','O', 'Q' ];
+    const x11 = ['H', 'N' ];
+    const x12 = [ 'w','%'];
+    const x13 = [ 'm', 'M'];
+    const x14 = ['W'];
 
-    const smallLetter = ["i","l","t","j",";", ":", ",", ".", "(", ")","{", "}", "|", "I" ]
-    const largeLetter = ["o","A","G","H", "K","Z","X","V","C", "B", "N",  "Q", "R","S","T","Y", "U", "P","D","d", "E"]
-    const extraLargeLetter =["W", "w","m" , "M","O",]
-    let numberOfSmallLetter=0;
-    let numberOfLargeLetter=0;
-    let numberOfNormalLetter=0;
-    let numberofExtraLargeLetter=0;
-    const map = Array.prototype.map
-    map.call(value, eachLetter => {
-        if(smallLetter.includes(eachLetter)){
-            numberOfSmallLetter=numberOfSmallLetter+1;
-        }
-        else if(largeLetter.includes(eachLetter)){
-            numberOfLargeLetter=numberOfLargeLetter+1;
-        }
-        else if(extraLargeLetter.includes(eachLetter)){
-            numberofExtraLargeLetter =numberofExtraLargeLetter +1;
-        }
-        else{
-            numberOfNormalLetter=numberOfNormalLetter+1;
-        }
-    })
-    const width = (numberOfNormalLetter*1.1) + (numberOfSmallLetter*0.7) + (numberOfLargeLetter*1.3) + (numberofExtraLargeLetter*1.7)
-    return width
+    let numberOf_X0_Letter =0
+    let numberOf_X1_Letter =0
+    let numberOf_X2_Letter =0
+    let numberOf_X3_Letter =0
+    let numberOf_X4_Letter = 0;
+    let numberOf_X_Letter = 0;
+    let numberOf_X5_Letter =0;
+    let numberOf_X6_Letter = 0;
+    let numberOf_X7_Letter = 0;
+    let numberOf_X8_Letter = 0;
+    let numberOf_X9_Letter = 0;
+    let numberOf_X10_Letter = 0;
+    let numberOf_X11_Letter = 0;
+    let numberOf_X12_Letter = 0;
+    let numberOf_X13_Letter = 0;
+    let numberOf_X14_Letter = 0;
+
+    const map = Array.prototype.map;
+    map.call(value, (eachLetter) => {
+      if (x0.includes(eachLetter)) {
+        numberOf_X0_Letter += 1;
+      } else if (x1.includes(eachLetter)) {
+        numberOf_X1_Letter += 1;
+      } else if(x2.includes(eachLetter) ){
+        numberOf_X2_Letter +=1;
+      }else if(x3.includes(eachLetter) ){
+        numberOf_X3_Letter +=1;
+      }else if(x4.includes(eachLetter)){
+        numberOf_X4_Letter += 1 ;
+      } else if(x5.includes(eachLetter)){
+        numberOf_X5_Letter += 1;
+      } else if (x6.includes(eachLetter)) {
+        numberOf_X6_Letter += 1;
+      } else if (x7.includes(eachLetter)) {
+        numberOf_X7_Letter += 1;
+      }else if (x8.includes(eachLetter)) {
+        numberOf_X8_Letter += 1;
+      }else if (x9.includes(eachLetter)) {
+        numberOf_X9_Letter += 1;
+      }else if (x10.includes(eachLetter)) {
+        numberOf_X10_Letter += 1;
+      }else if (x11.includes(eachLetter)) {
+        numberOf_X11_Letter += 1;
+      }else if (x12.includes(eachLetter)) {
+        numberOf_X12_Letter += 1;
+      }else if (x13.includes(eachLetter)) {
+        numberOf_X13_Letter += 1;
+      } else if (x14.includes(eachLetter)) {
+        numberOf_X14_Letter += 1;
+      } else {
+        numberOf_X_Letter += 1;
+      }
+    });
+    const width =   (numberOf_X0_Letter *0.47) + (numberOf_X1_Letter *0.6) + (numberOf_X2_Letter * 0.64) + (numberOf_X3_Letter * 0.90) + (numberOf_X4_Letter * 0.94) +
+                    (numberOf_X_Letter * 0.98) + (numberOf_X5_Letter * 1.02) + (numberOf_X6_Letter * 1.1) + (numberOf_X7_Letter * 1.14) + (numberOf_X8_Letter * 1.17)+ (numberOf_X9_Letter * 1.20) +
+                    (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33) + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
+    return width;
+
   }
 
 
@@ -420,7 +469,7 @@ class Query extends React.Component {
                       onPressEnter={this.handleTitleChange}
                       onChange={this.onChange}
                       className={`title-${draft.key}`}
-                      style={{width:`calc(13px + ${width}ch)`}}
+                      style={{width:`calc(14px + ${width}ch)`}}
                     />
 
 
