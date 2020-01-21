@@ -912,6 +912,7 @@ class Statement extends React.Component {
                   <Button
                     type="default"
                     onClick={this.createDraftStatement}
+                    disabled={containsEmptyQueries}
                     className={styleStatement.button}
                   >
                     <IconKit size={20} icon={ic_note_add} />
