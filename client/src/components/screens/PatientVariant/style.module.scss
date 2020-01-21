@@ -35,15 +35,14 @@
             }
 
         }
-        .gender{
+        .genderIcon{
                 width:24px;
                 height:24px;
-                padding:3px 6px;
                 margin:0 8px;
-                svg{
-                    width: 12px;
-                    height: 18px;
+                path{
+                fill:rgba(35, 55, 80, 0.54);
                 }
+
         }
 
         .tag{
@@ -65,6 +64,17 @@
 
             &:hover{
             background:rgba(29, 139, 198,0.25);
+            color: #125a90;
+            cursor:pointer;
+            opacity:1;
+            }
+        }
+
+        .tagProban{
+            &:hover{
+            background:rgba(29, 139, 198,0.15);
+            color: #125a90;
+            cursor: default;
             }
         }
     }
@@ -117,7 +127,7 @@
     }
 
     i:not(.iconLink){
-        color:rgba(35, 55, 80, 0.54);
+        color:rgba(35, 55, 80, 0.38);
         margin-right:4px;
         margin-top:-1px;
     }

@@ -297,6 +297,8 @@ class PatientVariantScreen extends React.Component {
     const familyText = intl.formatMessage({ id: 'screen.patientvariant.header.family' });
     const motherText = intl.formatMessage({ id: 'screen.patientvariant.header.family.mother' });
     const fatherText = intl.formatMessage({ id: 'screen.patientvariant.header.family.father' });
+    const genderFemaleIcon = (<path id="gender_female_24px-a" d="M12,3 C15.3137085,3 18,5.6862915 18,9 C18,11.97 15.84,14.44 13,14.92 L13,17 L15,17 L15,19 L13,19 L13,21 L11,21 L11,19 L9,19 L9,17 L11,17 L11,14.92 C8.16,14.44 6,11.97 6,9 C6,5.6862915 8.6862915,3 12,3 M12,5 C9.790861,5 8,6.790861 8,9 C8,11.209139 9.790861,13 12,13 C14.209139,13 16,11.209139 16,9 C16,6.790861 14.209139,5 12,5 Z"/>)
+    const genderMaleIcon = (  <path id="gender_mael_24px-a" d="M9,9 C10.29,9 11.5,9.41 12.47,10.11 L17.58,5 L13,5 L13,3 L21,3 L21,11 L19,11 L19,6.41 L13.89,11.5 C14.59,12.5 15,13.7 15,15 C15,18.3137085 12.3137085,21 9,21 C5.6862915,21 3,18.3137085 3,15 C3,11.6862915 5.6862915,9 9,9 M9,11 C6.790861,11 5,12.790861 5,15 C5,17.209139 6.790861,19 9,19 C11.209139,19 13,17.209139 13,15 C13,12.790861 11.209139,11 9,11 Z"/>)
 
     const total = currentTab === VARIANT_TAB ? activeStatementTotals[activeQuery] : [];
     const searchData = [];
@@ -387,14 +389,7 @@ class PatientVariantScreen extends React.Component {
         <Header />
         <Card className="entity">
           <PageHeader
-              title={(
-                  <div>
-                    <Typography.Title level={2}>
-                      Recherche de variants
-                    </Typography.Title>
-                  </div>
-              )}
-              extra={(
+               extra={(
                 <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
                   <Button type="primary">
                     Patient Details
@@ -407,11 +402,14 @@ class PatientVariantScreen extends React.Component {
             <Row className={style.descriptionTitle} type="flex" align="middle">
                 <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
                   <Button >
-                    {patient.details.lastName},{patient.details.firstName}
+                    {patient.details.lastName}, {patient.details.firstName}
                   </Button>
                 </a>
-                <IconKit className={style.gender}  icon={patient.details.gender === "male" ? mars : venus} />
-                <Tag className={style.tag}>{patient.details.proband}</Tag>
+                <svg className={style.genderIcon}>
+                    {patient.details.gender === "male" ? genderMaleIcon : genderFemaleIcon} />
+                </svg>
+
+                <Tag className={`${style.tag} ${style.tagProban}`}>{patient.details.proband}</Tag>
                 { patient.family.members["mother"] != ""  || patient.family.members["father"] != ""?
                     <Dropdown overlay={familyMenu} overlayClassName={style.familyDropdown}>
                       <Tag className={style.tag}>
