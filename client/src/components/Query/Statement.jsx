@@ -216,11 +216,7 @@ class Statement extends React.Component {
     if (this.isRemovable()) {
       const subqueryKeys = this.getSubqueryKeys([key]);
       if (!isEmpty(subqueryKeys)) {
-        const subqueryKeysToDelete = [
-          ...subqueryKeys,
-          key,
-        ];
-        this.showDeleteConfirm(subqueryKeysToDelete);
+        this.showDeleteConfirm([key]);
       } else {
         this.confirmRemove([key]);
       }
@@ -248,13 +244,10 @@ class Statement extends React.Component {
         statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         this.props.onCreateDraftStatementCallback(newStatement);
-        setTimeout(() => {
-          this.handleNewQuery(null, newStatement.queries[0]);
-        }, 100);
       });
     };
 
-    if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
+    if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original)) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.content' }),
@@ -281,7 +274,7 @@ class Statement extends React.Component {
       });
       this.props.onDuplicateStatementCallback(id);
     };
-    if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
+    if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original) ) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.content' }),
@@ -300,8 +293,8 @@ class Statement extends React.Component {
       id = this.props.activeStatementId;
     }
 
-    if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', false);
+    e.stopPropagation();
   }
 
   setStatementAsDefault(e) {
@@ -319,8 +312,7 @@ class Statement extends React.Component {
       });
       this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', true);
     };
-    if (e.stopPropagation) { e.stopPropagation(); }
-    if (destructiveOperation && (this.state.statementVisualClueText || this.props.queriesHaveChanges)) {
+    if (destructiveOperation && (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original))) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.content' }),
@@ -331,6 +323,7 @@ class Statement extends React.Component {
     } else {
       callbackSetStatementAsDefault();
     }
+    e.stopPropagation();
   }
 
   deleteStatement(e) {
@@ -344,8 +337,8 @@ class Statement extends React.Component {
       });
     }
 
-    if (e.stopPropagation) { e.stopPropagation(); }
     this.props.onDeleteStatementCallback(id);
+    e.stopPropagation();
   }
 
   selectStatement(e) {
@@ -361,7 +354,7 @@ class Statement extends React.Component {
       });
       this.props.onSelectStatementCallback(id);
     };
-    if (this.state.statementVisualClueText || this.props.queriesHaveChanges) {
+    if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original)) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
@@ -376,7 +369,6 @@ class Statement extends React.Component {
 
   confirmRemove(keys) {
     this.props.onRemoveCallback(keys);
-    this.createDraftStatement();
   }
 
   handleReorder(sorted) {
@@ -497,11 +489,7 @@ class Statement extends React.Component {
       const { checkedQueries } = this.state;
       const subqueryKeys = this.getSubqueryKeys(checkedQueries);
       if (!isEmpty(subqueryKeys)) {
-        const subqueryKeysToDelete = [
-          ...subqueryKeys,
-          ...checkedQueries,
-        ];
-        this.showDeleteConfirm(subqueryKeysToDelete);
+        this.showDeleteConfirm(checkedQueries);
       } else {
         this.confirmRemoveChecked();
       }
@@ -574,7 +562,8 @@ class Statement extends React.Component {
 
   findQueryTitle(key) {
     const { data } = this.props;
-    return find(data, { key }).title;
+    const query = find(data, { key })
+    return (query ? query.title : '')
   }
 
   onPositionChange(expandIconPosition) {
@@ -706,7 +695,7 @@ class Statement extends React.Component {
     const { dropDownIsOpen } = this.state;
     if (!data) return null;
     const {
-      activeQuery, externalData, options, intl, facets, categories, searchData, target, activeStatementTotals, queriesHaveChanges,
+      activeQuery, externalData, options, intl, facets, categories, searchData, target, activeStatementTotals,
     } = this.props;
     const {
       display, original, checkedQueries, saveTitleModalVisible, onFocus,
@@ -857,7 +846,6 @@ class Statement extends React.Component {
           {modalTitleSaveInputLabel}
           <br />
           <Input
-              // placeholder={modalTitleSaveInputPlaceHolder}
             onChange={this.onModalSaveTitleInputChange}
             defaultValue={modalTitleSaveInputDefault}
             value={this.state.saveTitleModalInputValue}
@@ -867,9 +855,9 @@ class Statement extends React.Component {
         <div className={styleStatement.header}>
           <Row type="flex" className={styleStatement.toolbar}>
             <div>
-              {(queriesHaveChanges
+              {(!isEqual(this.props.data, this.props.original) && !containsEmptyQueries)
                 ? this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' })
-                : this.state.statementVisualClueText)}
+                : this.state.statementVisualClueText}
             </div>
           </Row>
           <Row type="flex" className={styleStatement.toolbar}>

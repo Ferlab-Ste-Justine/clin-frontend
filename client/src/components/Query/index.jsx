@@ -480,6 +480,9 @@ class Query extends React.Component {
                 if(type === FILTER_TYPE_GENERIC){
                     const categoryInfo = find(categories, ['id', category]);
                     const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+
+                    console.log('+ FILTER_TYPE_GENERIC facet data ' + JSON.stringify())
+
                     return (
                         <GenericFilter
                             index={index}
@@ -493,7 +496,7 @@ class Query extends React.Component {
                             onEditCallback={this.handleFilterChange}
                             onRemoveCallback={this.handleFilterRemoval}
                             onSelectCallback={onSelectCallback}
-                            key={index}
+                            key={uuidv1()}
                           />
                     );
                 }else if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
@@ -509,7 +512,7 @@ class Query extends React.Component {
                            onEditCallback={this.handleFilterChange}
                            onRemoveCallback={this.handleFilterRemoval}
                            onSelectCallback={onSelectCallback}
-                           key={index}
+                           key={uuidv1()}
                        />
                     );
                 }else if(type === FILTER_TYPE_GENERICBOOL) {
@@ -537,7 +540,7 @@ class Query extends React.Component {
                         onEditCallback={this.handleFilterChange}
                         onRemoveCallback={this.handleFilterRemoval}
                         onSelectCallback={onSelectCallback}
-                        key={index}
+                        key={uuidv1()}
                       />
                    );
               } else if (type === FILTER_TYPE_COMPOSITE) {
@@ -553,7 +556,7 @@ class Query extends React.Component {
                     onEditCallback={this.handleFilterChange}
                     onRemoveCallback={this.handleFilterRemoval}
                     onSelectCallback={onSelectCallback}
-                    key={index}
+                    key={uuidv1()}
                   />
                 );
               } else if (type === FILTER_TYPE_SPECIFIC) {
@@ -570,7 +573,7 @@ class Query extends React.Component {
                       onEditCallback={this.handleFilterChange}
                       onRemoveCallback={this.handleFilterRemoval}
                       onSelectCallback={onSelectCallback}
-                      key={index}
+                      key={uuidv1()}
                     />
                   );
               }
@@ -591,7 +594,7 @@ class Query extends React.Component {
                     onEditCallback={this.handleSubqueryChange}
                     onRemoveCallback={this.handleSubqueryRemoval}
                     onSelectCallback={onSelectCallback}
-                    key={index}
+                    key={uuidv1()}
                   />
                 );
               default:

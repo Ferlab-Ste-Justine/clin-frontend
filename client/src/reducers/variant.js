@@ -2,12 +2,13 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import {
-  cloneDeep, findIndex, isEqual, last, remove,
+  cloneDeep, findIndex, isEqual, last, remove, head,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
+import { INSTRUCTION_TYPE_SUBQUERY } from '../components/Query/Subquery';
 
 const MAX_REVISIONS = 10;
 
@@ -99,17 +100,36 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
-      draft.draftQueries = draftQueries.filter(query => !action.payload.keys.find(key => key === query.key));
-      draft.activeQuery = draft.draftQueries.find(query => query.key === draft.activeQuery) ? draft.activeQuery : draft.draftQueries[0].key;
+      if (draft.draftQueries.length > 1) {
+        draft.draftQueries = draft.draftQueries.filter(query => action.payload.keys.indexOf(query.key) === -1);
+        // @NOTE Remove matching subquery instructions
+        const filteredDrafts = draft.draftQueries.map(draftQuery => {
+          const filteredInstructions = draftQuery.instructions.filter(instruction => {
+            return !Boolean(instruction.type === INSTRUCTION_TYPE_SUBQUERY && action.payload.keys.indexOf(instruction.data.query) !== -1)
+          })
+          draftQuery.instructions = filteredInstructions
+          return draftQuery;
+        })
+        draft.draftQueries = filteredDrafts
+        draft.activeQuery = last(draft.draftQueries).key;
+      } else {
+        const newStatement = createDraftStatement();
+        draft.statements[draft.activeStatementId].queries = newStatement.queries;
+        draft.activeQuery = head(newStatement.queries).key;
+        draft.draftQueries = newStatement.queries;
+        draft.draftHistory = [];
+      }
       break;
 
     case actions.PATIENT_VARIANT_QUERY_DUPLICATION:
-      const keyToDuplicate = action.payload.query.key;
-      const indexToInsertAt = action.payload.index || draft.draftQueries.length;
-      const indexToDuplicate = findIndex(draft.draftQueries, { key: keyToDuplicate });
-      if (indexToDuplicate) {
-        draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
-        draft.activeQuery = action.payload.query.key;
+      if (action.payload.query) {
+        const keyToDuplicate = action.payload.query.key;
+        const indexToInsertAt = action.payload.index || draft.draftQueries.length;
+        const indexToDuplicate = findIndex(draft.draftQueries, { key: keyToDuplicate });
+        if (indexToDuplicate) {
+          draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
+          draft.activeQuery = action.payload.query.key;
+        }
       }
       break;
 
@@ -159,9 +179,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
       if (action.payload.data.total < 1) {
         draft.activeStatementId = DRAFT_STATEMENT_UID;
-        draft.statements = {}
         draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement();
-        draft.activeQuery = draft.statements.queries[0].key;
+        draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
         draft.originalQueries = [];
         draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
         draft.draftHistory = [];
@@ -181,11 +200,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         )
         if (defaultStatementId) {
           draft.activeStatementId = defaultStatementId
-          draft.activeQuery = draft.statements[defaultStatementId].queries[(draft.statements[defaultStatementId].queries.length - 1)].key || null
+          draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null
         } else {
           draft.activeStatementId = DRAFT_STATEMENT_UID;
           draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement();
-          draft.activeQuery = draft.statements[DRAFT_STATEMENT_UID].queries[0].key;
+          draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
           draft.originalQueries = [];
           draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
           draft.draftHistory = [];
@@ -198,7 +217,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         statementKey => draft.statements[statementKey].isDefault === true
       )
       draft.activeStatementId = statementId;
-      draft.activeQuery = draft.statements[statementId].queries[draft.statements[statementId].queries.length - 1].key;
+      draft.activeQuery = last(draft.statements[statementId].queries).key;
       draft.originalQueries = draft.statements[statementId].queries;
       draft.draftQueries = draft.statements[statementId].queries;
       draft.draftHistory = [];
@@ -209,7 +228,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.activeStatementId = action.payload.data.uid;
       draft.statements[action.payload.data.uid] = action.payload.data;
       draft.statements[action.payload.data.uid].queries = typeof action.payload.data.queries === 'string' ? JSON.parse(action.payload.data.queries) : action.payload.data.queries
-      draft.activeQuery = draft.statements[action.payload.data.uid].queries[draft.statements[action.payload.data.uid].queries.length - 1].key;
+      draft.activeQuery = last(draft.statements[action.payload.data.uid].queries).key;
       draft.originalQueries = cloneDeep(draft.statements[action.payload.data.uid].queries)
       draft.draftQueries = cloneDeep(draft.statements[action.payload.data.uid].queries)
       draft.draftHistory = [];
@@ -234,7 +253,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED:
       draft.activeStatementId = DRAFT_STATEMENT_UID;
       draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement()
-      draft.activeQuery = draft.statements[DRAFT_STATEMENT_UID].queries[0].key;
+      draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
       draft.originalQueries = [];
       draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
       draft.draftHistory = [];
