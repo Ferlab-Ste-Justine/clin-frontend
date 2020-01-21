@@ -159,10 +159,6 @@ function* updateStatement(action) {
       throw new ApiError(statementResponse.error);
     }
 
-
-    console.log('+ statementResponse ' + JSON.stringify(statementResponse))
-
-
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter saved.' } });
   } catch (e) {
@@ -190,12 +186,12 @@ function* createStatement(action) {
 function* duplicateStatement(action) {
   try {
     const { draftQueries, statements } = yield select(state => state.variant);
-    const statement = cloneDeep(statements[statementKey]);
+    const statement = cloneDeep(statements[action.payload.id]);
     if (!statement) {
       throw new Error('Statement not found');
     }
 
-    statement.title = `${statementToDuplicate.title} COPIE`;
+    statement.title = `${statement.title} COPIE`;
     statement.queries = draftQueries;
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { statement } });
 

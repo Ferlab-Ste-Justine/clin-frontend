@@ -256,7 +256,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED:
       delete draft.statements[action.payload.uid]
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
-    case actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED:
       draft.activeStatementId = DRAFT_STATEMENT_UID;
       draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement()
       draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;

@@ -249,6 +249,7 @@ class PatientVariantScreen extends React.Component {
   handleCreateDraftStatement(newStatement) {
     const { actions } = this.props;
     actions.createDraftStatement(newStatement);
+    actions.selectStatement('draft');
   }
 
   handleUpdateStatement(id, title, description, queries = null, switchCurrentStatementToDefault = false) {
