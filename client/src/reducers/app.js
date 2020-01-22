@@ -94,6 +94,7 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
     case actions.PATIENT_SEARCH_REQUESTED:
     case actions.PATIENT_FETCH_REQUESTED:
     case actions.PATIENT_VARIANT_SEARCH_REQUESTED:
+    case actions.PATIENT_VARIANT_COUNT_REQUESTED:
     case actions.VARIANT_SCHEMA_REQUESTED:
       draft.showSubloadingAnimation = true;
       break;
@@ -107,6 +108,8 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
     case actions.PATIENT_FETCH_FAILED:
     case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
     case actions.PATIENT_VARIANT_SEARCH_FAILED:
+    case actions.PATIENT_VARIANT_COUNT_SUCCEEDED:
+    case actions.PATIENT_VARIANT_COUNT_FAILED:
     case actions.VARIANT_SCHEMA_SUCCEEDED:
     case actions.VARIANT_SCHEMA_FAILED:
       draft.showSubloadingAnimation = false;

@@ -201,6 +201,9 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         if (defaultStatementId) {
           draft.activeStatementId = defaultStatementId
           draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null
+          draft.originalQueries = draft.statements[defaultStatementId].queries;
+          draft.draftQueries = draft.statements[defaultStatementId].queries;
+          draft.draftHistory = [];
         } else {
           draft.activeStatementId = DRAFT_STATEMENT_UID;
           draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement();

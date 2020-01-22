@@ -112,7 +112,7 @@ function* watchSelectStatement() {
   yield takeLatest(actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, selectStatement);
 }
 
-function* getStatements() {
+function* getStatements(action) {
   try {
     const statementResponse = yield Api.getStatements();
     if (statementResponse.error) {
@@ -120,6 +120,9 @@ function* getStatements() {
     }
 
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
+    if (action.payload && action.payload.id) {
+      yield put({ type: actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, payload: { id: action.payload.id } });
+    }
 
     const { details } = yield select(state => state.patient);
     const { statements, activeStatementId, activeQuery } = yield select(state => state.variant);
@@ -161,7 +164,7 @@ function* updateStatement(action) {
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter saved.' } });
     if (isDefault) {
-      yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED });
+      yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { id: statementKey } });
     }
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
