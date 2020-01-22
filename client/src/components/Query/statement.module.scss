@@ -290,6 +290,7 @@
 
         li{
             display:flex;
+
             justify-content:space-between;
             color: rgb(35, 55, 80);
             font-size: $small-font;
@@ -307,10 +308,15 @@
                 }
             }
 
+            .dropdownTitle{
+                width:100%;
+            margin-right:24px;
+            }
+
             .dropdownNavigation{
                 display: flex;
                 align-items: center;
-                margin-left:24px;
+
 
 
                 i{
@@ -380,6 +386,7 @@
   }
 
   .popconfirm{
+    z-index:10000;
     width:308px;
       >div{
         >div:nth-child(2){

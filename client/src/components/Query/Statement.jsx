@@ -59,6 +59,8 @@ class Statement extends React.Component {
       },
       dropDownIsOpen: false,
       onFocus:false,
+      popConfirmDropDownNewIsOpen:false,
+      popConfirmDropDownIsOpen:false,
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -106,6 +108,9 @@ class Statement extends React.Component {
     this.onBlurTitle = this.onBlurTitle.bind(this);
     this.onBlurDropdown= this.onBlurDropdown.bind(this)
     this.handleFocusDropdown = this.handleFocusDropdown.bind(this)
+    this.deleteDropDown = this.deleteDropDown.bind(this)
+    this.onCancel= this.onCancel.bind(this)
+    this.test = this.test.bind(this)
 
   }
 
@@ -344,29 +349,40 @@ class Statement extends React.Component {
   }
 
   selectStatement(e) {
+    console.log("bedon")
+    console.log("e", e)
     let id = e.target ? e.target.getAttribute('dataid') : e;
+    console.log("id", id)
+    const {popConfirmDropDownIsOpen, popConfirmDropDownNewIsOpen} = this.state
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
     }
     const callbackSelect = () => {
+      console.log("callBacSelect")
       this.setState({
         statementTitle: null,
         statementVisualClueText: '',
       });
       this.props.onSelectStatementCallback(id);
     };
-    if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original)) {
-      this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.cancel' }),
-        callbackSelect,
-      );
-    } else {
-      callbackSelect();
+    console.log("popConfirmDropDownIsOpen", popConfirmDropDownIsOpen)
+    if(popConfirmDropDownIsOpen === false){
+        if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original)) {
+          this.showConfirmForDestructiveStatementAction(
+            this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.title' }),
+            this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
+            this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.ok' }),
+            this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.cancel' }),
+            callbackSelect,
+          );
+        } else {
+          callbackSelect();
+        }
     }
+
+
+
   }
 
   confirmRemove(keys) {
@@ -692,7 +708,20 @@ class Statement extends React.Component {
 
   handleFocusDropdown(e){
     const{dropDownIsOpen} = this.state
+    console.log("coucou1")
     this.setState({dropDownIsOpen:!dropDownIsOpen})
+  }
+
+  deleteDropDown(e){
+    console.log("coucou2")
+  this.setState({popConfirmDropDownIsOpen:true})
+  }
+
+  onCancel(e){
+  this.setState({popConfirmDropDownIsOpen:false})
+  }
+  test(){
+    console.log("Patate")
   }
 
   render() {
@@ -700,7 +729,7 @@ class Statement extends React.Component {
     const activeStatement = statements[activeStatementId];
     if (!data || !activeStatement) return null;
 
-    const { dropDownIsOpen } = this.state;
+    const { dropDownIsOpen, popConfirmDropDownIsOpen } = this.state;
     if (!data) return null;
     const {
       activeQuery, externalData, options, intl, facets, categories, searchData, target, activeStatementTotals,
@@ -834,6 +863,7 @@ class Statement extends React.Component {
     }
 
     const contextSelectStatement = ({ key }) => {
+      console.log("key", key)
       this.selectStatement(key);
     };
     activeStatementCanBeSaved = activeStatementCanBeSaved && (activeStatementId != null);
@@ -983,38 +1013,71 @@ class Statement extends React.Component {
                         disabled={(inactiveStatementKeys.length == 0)}
                         onBlur= {this.onBlurDropdown}
                         onClick={this.handleFocusDropdown}
+                        visible={true}
                         overlayClassName={styleStatement.dropdown}
                         overlay={(inactiveStatementKeys.length > 0 ? (
-                                                              <Menu onClick={contextSelectStatement}>
+
+                                                              <Menu >
                                                                 {
                                                                   inactiveStatementKeys.map(key => (
-                                                                      <Menu.Item key={statements[key].uid}>
-                                                                        {statements[key].title}
-                                                                        <div className={styleStatement.dropdownNavigation}>
-                                                                            <IconKit
-                                                                              size={20}
-                                                                              icon={ic_content_copy}
-                                                                              dataid={statements[key].uid}
-                                                                              className={styleStatement.displayOnHover}
-                                                                              onClick={this.duplicateStatement}
-                                                                            />
-                                                                            <IconKit
-                                                                              size={20}
-                                                                              icon={ic_delete}
-                                                                              dataid={statements[key].uid}
-                                                                              className={styleStatement.displayOnHover}
-                                                                              onClick={this.deleteStatement}
-                                                                            />
-                                                                            { (<Icon
-                                                                              type="star"
-                                                                              size={20}
-                                                                              className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
-                                                                              theme={statements[key].isDefault ? 'filled' : 'outlined'}
-                                                                              dataid={statements[key].uid}
-                                                                              onClick={this.setStatementAsDefault}
-                                                                            />)}
-                                                                        </div>
-                                                                      </Menu.Item>
+
+                                                                          <Menu.Item key={statements[key].uid}>
+                                                                              {this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original) ?
+                                                                                <Popconfirm
+                                                                                  title="Vous perdrez toutes les modifications non enregistrées."
+                                                                                  okText="Nouveau"
+                                                                                  cancelText="Annuler"
+                                                                                  onConfirm={this.selectStatement}
+                                                                                  onCancel={this.onCancel}
+                                                                                  icon={null}
+                                                                                  overlayClassName={styleStatement.popconfirm}
+                                                                                  dataid={statements[key].uid}
+                                                                                >
+                                                                                  <div className={styleStatement.dropdownTitle} >
+                                                                                  {statements[key].title}
+                                                                                  </div>
+                                                                                  </Popconfirm>
+                                                                                  :null
+                                                                              }
+
+                                                                                <div className={styleStatement.dropdownNavigation}>
+                                                                                    <IconKit
+                                                                                      size={20}
+                                                                                      icon={ic_content_copy}
+                                                                                      dataid={statements[key].uid}
+                                                                                      className={styleStatement.displayOnHover}
+                                                                                      onClick={this.duplicateStatement}
+                                                                                    />
+                                                                                    <Popconfirm
+                                                                                      title="Vous perdrez toutes les modifications non enregistrées."
+                                                                                      placement="topRight"
+                                                                                      okText={deleteText}
+                                                                                      cancelText="Annuler"
+                                                                                      onConfirm={this.deleteStatement}
+                                                                                      onCancel={this.onCancel}
+                                                                                      icon={null}
+                                                                                      overlayClassName={styleStatement.popconfirm}
+                                                                                    >
+                                                                                        <IconKit
+                                                                                          size={20}
+                                                                                          icon={ic_delete}
+                                                                                          dataid={statements[key].uid}
+                                                                                          className={styleStatement.displayOnHover}
+                                                                                          onClick={this.deleteDropDown}
+                                                                                        />
+                                                                                    </Popconfirm>
+                                                                                    { (<Icon
+                                                                                      type="star"
+                                                                                      size={20}
+                                                                                      className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
+                                                                                      theme={statements[key].isDefault ? 'filled' : 'outlined'}
+                                                                                      dataid={statements[key].uid}
+                                                                                      onClick={this.setStatementAsDefault}
+                                                                                    />)}
+                                                                                </div>
+
+                                                                          </Menu.Item>
+
                                                                     ))
                                                                   }
                                                               </Menu>
