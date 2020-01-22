@@ -160,7 +160,9 @@ function* updateStatement(action) {
 
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter saved.' } });
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED });
+    if (isDefault) {
+      yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED });
+    }
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not saved.' } });
