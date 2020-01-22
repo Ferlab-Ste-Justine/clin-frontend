@@ -9,6 +9,8 @@ import uuidv1 from 'uuid/v1';
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 import { INSTRUCTION_TYPE_SUBQUERY } from '../components/Query/Subquery';
+import { sanitizeInstructions } from '../components/Query/index';
+
 
 const MAX_REVISIONS = 10;
 
@@ -107,7 +109,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
           const filteredInstructions = draftQuery.instructions.filter(instruction => {
             return !Boolean(instruction.type === INSTRUCTION_TYPE_SUBQUERY && action.payload.keys.indexOf(instruction.data.query) !== -1)
           })
-          draftQuery.instructions = filteredInstructions
+          draftQuery.instructions = sanitizeInstructions(filteredInstructions)
           return draftQuery;
         })
         draft.draftQueries = filteredDrafts
