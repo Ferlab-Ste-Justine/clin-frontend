@@ -6,7 +6,7 @@ import {
   Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input,Popconfirm
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every, remove,
+  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every, remove, first,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
@@ -67,6 +67,7 @@ class Statement extends React.Component {
     this.isReorderable = this.isReorderable.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
     this.isUndoable = this.isUndoable.bind(this);
+    this.isDirty = this.isDirty.bind(this);
     this.handleCopy = this.handleCopy.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
     this.handleDisplay = this.handleDisplay.bind(this);
@@ -151,6 +152,17 @@ class Statement extends React.Component {
     return undoable === true;
   }
 
+  isDirty() {
+    const activeStatement = this.props.statements[this.props.activeStatementId];
+    const activeStatementHasSingleEmptyQuery = this.props.data.length === 1 && this.props.data[0].instructions.length === 0
+    const statementIsDraft = !activeStatement || this.props.activeStatementId === 'draft';
+
+    const titleHasChanges = this.state.statementTitle !== null && this.state.statementTitle !== activeStatement.title
+    const queriesHaveChanges = statementIsDraft ? !activeStatementHasSingleEmptyQuery : !isEqual(this.props.data, this.props.original)
+
+    return (titleHasChanges === true) || (queriesHaveChanges === true)
+  }
+
   handleCopy() {
     if (this.isCopyable()) {
       return true;
@@ -229,26 +241,16 @@ class Statement extends React.Component {
   }
 
   createDraftStatement() {
-    const newStatement = {
-      id: 'draft',
-      description: this.state.saveTitleModalInputValue,
-      title: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputPlaceHolder' }),
-      queries: [{
-        key: uuidv1(),
-        instructions: [],
-      }],
-    };
-
     const callbackCreateDraft = () => {
       this.setState({
         statementTitle: null,
         statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
-        this.props.onCreateDraftStatementCallback(newStatement);
+        this.props.onCreateDraftStatementCallback();
       });
     };
 
-    if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original)) {
+    if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.content' }),
@@ -275,7 +277,7 @@ class Statement extends React.Component {
       });
       this.props.onDuplicateStatementCallback(id);
     };
-    if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original) ) {
+    if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.content' }),
@@ -307,14 +309,14 @@ class Statement extends React.Component {
       id = activeStatementId;
       // only reset title if setting the currently selected one to default
     }
-    const title = this.state.statementTitle ? this.state.statementTitle : this.props.statements[id].title;
+    const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
     const callbackSetStatementAsDefault = () => {
       this.setState({
         statementVisualClueText: '',
       });
       this.props.onUpdateStatementCallback(id, title, '', null, true);
     };
-    if (destructiveOperation && (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original))) {
+    if (destructiveOperation || this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.content' }),
@@ -356,7 +358,7 @@ class Statement extends React.Component {
       });
       this.props.onSelectStatementCallback(id);
     };
-    if (this.state.statementVisualClueText || !isEqual(this.props.data, this.props.original)) {
+    if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
@@ -709,26 +711,12 @@ class Statement extends React.Component {
       display, original, checkedQueries, saveTitleModalVisible, onFocus,
     } = this.state;
     const {
-      editable, reorderable, removable, duplicatable,
+      reorderable
     } = options;
 
 
     const inactiveStatementKeys = Object.keys(statements).filter(key => (key !== 'draft' && key !== activeStatementId));
-    const statementTitle = this.state.statementTitle ? this.state.statementTitle : activeStatement.title;
-    const { selectIsOpen } = this.state;
-
-
-    /*
-                            activeQuery={activeQuery}
-                        activeStatementId={activeStatementId}
-                        activeStatementTotals={activeStatementTotals}
-                        statements={statements}
-                        data={draftQueries}
-                        draftHistory={draftHistory}
-                        original={originalQueries}
-     */
-
-
+    const statementTitle = this.state.statementTitle !== null ? this.state.statementTitle : activeStatement.title;
     const activeStatementIsDraft = activeStatementId === 'draft';
     const checkedQueriesCount = checkedQueries.length;
     const newText = intl.formatMessage({ id: 'screen.patientvariant.statement.new' });
@@ -861,13 +849,13 @@ class Statement extends React.Component {
 
         </Modal>
         <div className={styleStatement.header}>
-          <Row type="flex" className={styleStatement.toolbar}>
-            <div>
-              {(!isEqual(this.props.data, this.props.original) && !containsEmptyQueries)
-                ? this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' })
-                : this.state.statementVisualClueText}
-            </div>
-          </Row>
+          {this.isDirty() && (
+            <Row type="flex" className={styleStatement.toolbar}>
+              <div>
+                { this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' })}
+              </div>
+            </Row>
+          )}
           <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
               <div>
@@ -975,8 +963,6 @@ class Statement extends React.Component {
                     <IconKit size={20} icon={ic_share} />
                   </Button>
                   <Divider type="vertical" className={styleStatement.divider} />
-
-
                       <Dropdown
                         trigger={['click']}
                         className={`${styleStatement.button} ${dropDownIsOpen ? `${styleStatement.buttonActive}` : null}`}
