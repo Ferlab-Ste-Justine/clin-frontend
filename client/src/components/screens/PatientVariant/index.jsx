@@ -274,6 +274,7 @@ class PatientVariantScreen extends React.Component {
   handleDeleteStatement(id) {
     const { actions } = this.props;
     actions.deleteStatement(id);
+    this.handleCreateDraftStatement();
   }
 
   handleDuplicateStatement(id) {

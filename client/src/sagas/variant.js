@@ -237,8 +237,6 @@ function* deleteStatement(action) {
     }
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: { uid: action.payload.id } });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter removed.' } });
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED });
-
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not removed.' } });

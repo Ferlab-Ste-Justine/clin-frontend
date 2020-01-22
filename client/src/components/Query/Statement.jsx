@@ -316,7 +316,8 @@ class Statement extends React.Component {
       id = this.props.activeStatementId;
     }
 
-    this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', this.props.data, false);
+    const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
+    this.props.onUpdateStatementCallback(id, title, '', this.props.data, false);
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
