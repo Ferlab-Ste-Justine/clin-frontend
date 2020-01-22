@@ -430,7 +430,7 @@ class PatientVariantScreen extends React.Component {
               <Col><IconKit size={16} icon={ic_location_city} /> {patient.organization.name}</Col>
               <Col><IconKit size={16} icon={ic_folder_shared} /> {patient.details.ramq}</Col>
             </Row>
-            <Row  type="flex"   align="middle"className={style.descriptionOntoloy}>
+            <Row  type="flex" align="middle" className={style.descriptionOntoloy}>
                 <IconKit size={16} icon={ic_assignment_turned_in} />
                 HPO:
                 {patient.ontology.map( ontology =>(

@@ -112,7 +112,7 @@ function* watchSelectStatement() {
   yield takeLatest(actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, selectStatement);
 }
 
-function* getStatements() {
+function* getStatements(action) {
   try {
     const statementResponse = yield Api.getStatements();
     if (statementResponse.error) {
@@ -120,6 +120,9 @@ function* getStatements() {
     }
 
     yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
+    if (action.payload && action.payload.id) {
+      yield put({ type: actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, payload: { id: action.payload.id } });
+    }
 
     const { details } = yield select(state => state.patient);
     const { statements, activeStatementId, activeQuery } = yield select(state => state.variant);
@@ -155,14 +158,17 @@ function* updateStatement(action) {
     const isDefault = action.payload.switchCurrentStatementToDefault ? true : statements[activeStatementId].isDefault;
     const statementResponse = yield Api.updateStatement(statementKey, (title ? title : ''), (description ? description : ''), draftQueries, isDefault);
     if (statementResponse.error) {
-      yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not saved.' } });
       throw new ApiError(statementResponse.error);
     }
 
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter saved.' } });
+    if (isDefault) {
+      yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { id: statementKey } });
+    }
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not saved.' } });
   }
 }
 
@@ -178,8 +184,11 @@ function* createStatement(action) {
     }
 
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter created.' } });
+    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { id: statementResponse.payload.data.data.uid } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter could not be created.' } });
   }
 }
 
@@ -194,6 +203,7 @@ function* duplicateStatement(action) {
     statement.title = `${statement.title} COPIE`;
     statement.queries = draftQueries;
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { statement } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter duplicated.' } });
 
     const { details } = yield select(state => state.patient);
     const { activeQuery } = yield select(state => state.variant);
@@ -202,7 +212,7 @@ function* duplicateStatement(action) {
       type: actions.PATIENT_VARIANT_COUNT_REQUESTED,
       payload: {
         patient: details.id,
-        statement,
+        statement: statement.queries,
         queries: statement.queries.map(query => query.key),
       },
     });
@@ -210,12 +220,10 @@ function* duplicateStatement(action) {
       type: actions.PATIENT_VARIANT_SEARCH_REQUESTED,
       payload: {
         patient: details.id,
-        statement,
+        statement: statement.queries,
         query: activeQuery,
       },
     });
-
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter duplicated.' } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
   }
@@ -229,6 +237,8 @@ function* deleteStatement(action) {
     }
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: { uid: action.payload.id } });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter removed.' } });
+    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED });
+
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not removed.' } });
@@ -247,7 +257,7 @@ function* selectStatement(action) {
       type: actions.PATIENT_VARIANT_COUNT_REQUESTED,
       payload: {
         patient: details.id,
-        statement: statements[activeStatementId],
+        statement: statements[activeStatementId].queries,
         queries: statements[activeStatementId].queries.map(query => query.key),
       },
     });
