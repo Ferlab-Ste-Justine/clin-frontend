@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Descriptions, Typography, PageHeader, Tabs, Button,Tag, Row, Col, Dropdown, Menu
 } from 'antd';
-import { cloneDeep, find, flatten, map, filter, isEqual } from 'lodash';
+import { cloneDeep, find, flatten, map, filter, isEqual, last } from 'lodash';
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -192,6 +192,14 @@ class PatientVariantScreen extends React.Component {
     const { actions } = this.props;
     this.handleCommitHistory();
     actions.removeQuery(keys);
+    setTimeout(() => {
+      const { variant, patient } = this.props;
+      const { draftQueries } = variant;
+      const remainingQueries = cloneDeep(draftQueries).filter(draftQuery => draftQuery.key.indexOf(keys) === -1)
+      if (remainingQueries.length > 0) {
+        actions.countVariants(patient.details.id, remainingQueries, remainingQueries.map(remainingQuery => remainingQuery.key))
+      }
+    }, 100)
   }
 
   handleQueryDuplication(query, index) {
