@@ -194,9 +194,8 @@ class PatientVariantScreen extends React.Component {
     setTimeout(() => {
       const { variant, patient } = this.props;
       const { draftQueries } = variant;
-      const remainingQueries = cloneDeep(draftQueries).filter(draftQuery => draftQuery.key.indexOf(keys) === -1)
-      if (remainingQueries.length > 0) {
-        actions.countVariants(patient.details.id, remainingQueries, remainingQueries.map(remainingQuery => remainingQuery.key))
+      if (draftQueries.length > 0) {
+        actions.countVariants(patient.details.id, draftQueries, draftQueries.map(draftQueries => draftQueries.key))
       }
     }, 100)
   }
