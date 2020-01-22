@@ -529,9 +529,6 @@ class Query extends React.Component {
                 if(type === FILTER_TYPE_GENERIC){
                     const categoryInfo = find(categories, ['id', category]);
                     const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
-
-                    console.log('+ FILTER_TYPE_GENERIC facet data ' + JSON.stringify())
-
                     return (
                         <GenericFilter
                             index={index}

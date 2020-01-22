@@ -70,6 +70,7 @@ class Statement extends React.Component {
     this.isSelectable = this.isSelectable.bind(this);
     this.isUndoable = this.isUndoable.bind(this);
     this.isDirty = this.isDirty.bind(this);
+    this.actionIsDisabled = this.actionIsDisabled.bind(this);
     this.handleCopy = this.handleCopy.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
     this.handleDisplay = this.handleDisplay.bind(this);
@@ -166,6 +167,25 @@ class Statement extends React.Component {
     const queriesHaveChanges = statementIsDraft ? !activeStatementHasSingleEmptyQuery : !isEqual(this.props.data, this.props.original)
 
     return (titleHasChanges === true) || (queriesHaveChanges === true)
+  }
+
+  actionIsDisabled(action) {
+    const activeStatement = this.props.statements[this.props.activeStatementId];
+    const statementIsDraft = !activeStatement || this.props.activeStatementId === 'draft';
+    switch (action) {
+      case 'new':
+        return (statementIsDraft && (this.props.data.length === 1 && this.props.data[0].instructions.length === 0))
+      case 'save':
+        return !this.isDirty()
+      case 'duplicate':
+        return statementIsDraft;
+      case 'delete':
+        return statementIsDraft;
+      case 'share':
+        return true
+    }
+
+    return false;
   }
 
   handleCopy() {
@@ -306,13 +326,10 @@ class Statement extends React.Component {
   }
 
   setStatementAsDefault(e) {
-    let destructiveOperation = true;
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
-      destructiveOperation = false;
       const { activeStatementId } = this.props;
       id = activeStatementId;
-      // only reset title if setting the currently selected one to default
     }
     const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
     const callbackSetStatementAsDefault = () => {
@@ -321,7 +338,7 @@ class Statement extends React.Component {
       });
       this.props.onUpdateStatementCallback(id, title, '', null, true);
     };
-    if (destructiveOperation || this.isDirty()) {
+    if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.title' }),
         this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.content' }),
@@ -741,10 +758,8 @@ class Statement extends React.Component {
       reorderable
     } = options;
 
-
     const inactiveStatementKeys = Object.keys(statements).filter(key => (key !== 'draft' && key !== activeStatementId));
     const statementTitle = this.state.statementTitle !== null ? this.state.statementTitle : activeStatement.title;
-    const activeStatementIsDraft = activeStatementId === 'draft';
     const checkedQueriesCount = checkedQueries.length;
     const newText = intl.formatMessage({ id: 'screen.patientvariant.statement.new' });
     const saveText = intl.formatMessage({ id: 'screen.patientvariant.statement.save' });
@@ -763,7 +778,6 @@ class Statement extends React.Component {
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
     const width = this.getTitleWidth(statementTitle);
 
-    let activeStatementCanBeSaved = false;
     let containsEmptyQueries = false;
 
     const queries = data.reduce((accumulator, query, index) => {
@@ -776,7 +790,7 @@ class Statement extends React.Component {
         containsEmptyQueries = query.instructions.length < 1;
       }
 
-      if (isDirty) { classNames.push(styleStatement.dirtyContainer); activeStatementCanBeSaved = true; }
+      if (isDirty) { classNames.push(styleStatement.dirtyContainer); }
       if (isActive) { classNames.push(styleStatement.activeContainer); } else { classNames.push(styleStatement.inactiveContainer); }
       if (!query.title) {
         query.title = `Requête ${(index + 1)}`;
@@ -843,16 +857,10 @@ class Statement extends React.Component {
       }, this.props.onCreateDraftStatementCallback(newStatement));
     };
 
-    const activeStatementCanBeDeleted = !activeStatementIsDraft;
-    if (activeStatementIsDraft) {
-      activeStatementCanBeSaved = true;
-    }
-
     const contextSelectStatement = ({ key }) => {
       console.log("key", key)
       this.selectStatement(key);
     };
-    activeStatementCanBeSaved = activeStatementCanBeSaved && (activeStatementId != null);
 
     return (
       <div className={styleStatement.statement}>
@@ -937,7 +945,7 @@ class Statement extends React.Component {
                   <Button
                     type="default"
                     onClick={this.createDraftStatement}
-                    disabled={(activeStatementIsDraft && containsEmptyQueries)}
+                    disabled={this.actionIsDisabled('new')}
                     className={styleStatement.button}
                   >
                     <IconKit size={20} icon={ic_note_add} />
@@ -945,7 +953,7 @@ class Statement extends React.Component {
                   </Button>
                   <Button
                     type="default"
-                    disabled={!activeStatementCanBeSaved}
+                    disabled={this.actionIsDisabled('save')}
                     onClick={this.updateStatement}
                     className={styleStatement.button}
                   >
@@ -955,7 +963,7 @@ class Statement extends React.Component {
                   <Button
                       type="default"
                       className={styleStatement.button}
-                      disabled={activeStatementIsDraft || activeStatementId == null}
+                      disabled={this.actionIsDisabled('duplicate')}
                       onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
@@ -963,7 +971,7 @@ class Statement extends React.Component {
                   </Button>
                       <Button
                           type="default"
-                          disabled={!activeStatementCanBeDeleted}
+                          disabled={this.actionIsDisabled('delete')}
                           className={styleStatement.button}
                       >
                           <Popconfirm
@@ -986,7 +994,7 @@ class Statement extends React.Component {
                   <Button
                     type="disabled"
                     className={styleStatement.button}
-                    disabled // @TODO
+                    disabled={this.actionIsDisabled('share')}
                   >
                     <IconKit size={20} icon={ic_share} />
                   </Button>
