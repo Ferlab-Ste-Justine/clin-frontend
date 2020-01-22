@@ -185,7 +185,7 @@ function* createStatement(action) {
 
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter created.' } });
-    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED });
+    yield put({ type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, payload: { id: statementResponse.payload.data.uid } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter could not be created.' } });
