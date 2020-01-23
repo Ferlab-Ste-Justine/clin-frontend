@@ -103,8 +103,13 @@ class VariantNavigation extends React.Component {
         if (!filter) {
           switch (filterType) {
             case FILTER_TYPE_GENERIC:
-            case FILTER_TYPE_SPECIFIC:
               filter = GenericFilter.structFromArgs(selection.subid, [selection.value]);
+              break;
+            case FILTER_TYPE_GENERICBOOL:
+              filter = GenericBooleanFilter.structFromArgs(selection.subid, [selection.value]);
+              break;
+            case FILTER_TYPE_SPECIFIC:
+              filter = SpecificFilter.structFromArgs(selection.subid, [selection.value]);
               break;
             case FILTER_TYPE_COMPOSITE:
               filter = CompositeFilter.structFromArgs(selection.subid,
@@ -115,6 +120,7 @@ class VariantNavigation extends React.Component {
         } else {
           switch (filterType) {
             case FILTER_TYPE_GENERIC:
+            case FILTER_TYPE_GENERICBOOL:
             case FILTER_TYPE_SPECIFIC:
               if (filter.data.values.indexOf(selection.value) === -1) {
                 filter.data.values.push(selection.value);
@@ -149,10 +155,10 @@ class VariantNavigation extends React.Component {
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
       const query = find(queries, { key: activeQuery });
-      if (query) {
+      if (filter && query) {
         const updatedQuery = cloneDeep(query);
         let updatedInstructions = [];
-        if (!filter || !filter.remove) {
+        if (!filter.remove) {
           let updated = false;
           updatedInstructions = updatedQuery.instructions.map((instruction) => {
             if (instruction.data.id === filter.id) {
@@ -245,7 +251,6 @@ class VariantNavigation extends React.Component {
           />
         );
       case FILTER_TYPE_NUMERICAL_COMPARISON:
-        // @TODO Refactor other filters according to this structure
         return (
           <NumericalComparisonFilter
             overlayOnly

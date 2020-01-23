@@ -196,9 +196,9 @@ class SpecificFilter extends Filter {
   }
 
   getEditorLabels() {
-    const { data } = this.props;
+    const { data, intl } = this.props;
     return {
-      action: data.operand,
+      action: intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` }),
       targets: data.values,
     };
   }
