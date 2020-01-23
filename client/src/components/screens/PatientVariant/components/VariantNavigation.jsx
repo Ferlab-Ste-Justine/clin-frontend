@@ -16,8 +16,10 @@ import SpecificFilter from '../../../Query/Filter/Specific';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
 import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
 import CompositeFilter from '../../../Query/Filter/Composite';
-import { sanitizeInstructions } from '../../../Query/index';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from '../../../Query/Filter/index'
+import { sanitizeInstructions } from '../../../Query/helpers/query';
+import {
+  FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC,
+} from '../../../Query/Filter/index';
 import { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPE_AND_NOT } from '../../../Query/Operator';
 
 
@@ -42,37 +44,37 @@ class VariantNavigation extends React.Component {
   handleNavigationSearch(query) {
     if (query && query.length > 2) {
       this.searchQuery = query;
-      const { autocomplete } = this.props
-      autocomplete.then(engine => {
-        engine.search(query, debounce(searchResults => {
+      const { autocomplete } = this.props;
+      autocomplete.then((engine) => {
+        engine.search(query, debounce((searchResults) => {
           const groupedResults = searchResults.reduce((accumulator, result) => {
             if (!accumulator[result.id]) {
               accumulator[result.id] = {
                 id: result.id,
                 type: result.type,
                 label: result.label,
-                matches: []
-              }
+                matches: [],
+              };
             }
-            accumulator[result.id].matches.push(result)
+            accumulator[result.id].matches.push(result);
             return accumulator;
           }, {});
           this.setState({
             searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
-          })
-        }, 750, { leading: true }))
-      })
+          });
+        }, 750, { leading: true }));
+      });
     } else if (this.searchQuery !== query) {
       this.searchQuery = query;
       this.setState({
         searchResults: [],
-      })
+      });
     }
   }
 
   handleNavigationSelection(datum) {
     this.searchQuery = '';
-    const selection = JSON.parse(datum)
+    const selection = JSON.parse(datum);
     if (selection.type !== 'filter') {
       this.setState({
         activeFilterId: null,
@@ -81,7 +83,7 @@ class VariantNavigation extends React.Component {
           filter: selection.subid,
         },
         searchResults: [],
-      })
+      });
     } else {
       const { activeQuery, queries } = this.props;
       this.setState({
@@ -89,44 +91,44 @@ class VariantNavigation extends React.Component {
         searchSelection: {},
         searchResults: [],
       }, () => {
-        const query = find(queries, { key: activeQuery })
-        let filter = null
+        const query = find(queries, { key: activeQuery });
+        let filter = null;
         if (query) {
-          filter = find(query.instructions, (instruction) => instruction.data.id === selection.subid)
+          filter = find(query.instructions, instruction => instruction.data.id === selection.subid);
         }
         const { schema } = this.props;
-        const category = find(schema.categories, ['id', selection.id])
+        const category = find(schema.categories, ['id', selection.id]);
         const filterDefinition = find(category.filters, ['id', selection.subid]);
         const filterType = filterDefinition.type;
         if (!filter) {
           switch (filterType) {
             case FILTER_TYPE_GENERIC:
-              filter = GenericFilter.structFromArgs(selection.subid, [selection.value])
+            case FILTER_TYPE_SPECIFIC:
+              filter = GenericFilter.structFromArgs(selection.subid, [selection.value]);
               break;
             case FILTER_TYPE_COMPOSITE:
               filter = CompositeFilter.structFromArgs(selection.subid,
-                CompositeFilter.qualityCompositionStructFromArgs(selection.value)
-              )
+                CompositeFilter.qualityCompositionStructFromArgs(selection.value));
               break;
             default: break;
           }
         } else {
           switch (filterType) {
             case FILTER_TYPE_GENERIC:
+            case FILTER_TYPE_SPECIFIC:
               if (filter.data.values.indexOf(selection.value) === -1) {
-                filter.data.values.push(selection.value)
+                filter.data.values.push(selection.value);
               }
               break;
             case FILTER_TYPE_COMPOSITE:
               filter = CompositeFilter.structFromArgs(selection.subid,
-                CompositeFilter.qualityCompositionStructFromArgs(selection.value)
-              )
+                CompositeFilter.qualityCompositionStructFromArgs(selection.value));
               break;
             default: break;
           }
         }
         this.handleFilterChange(filter);
-      })
+      });
     }
   }
 
@@ -138,41 +140,37 @@ class VariantNavigation extends React.Component {
   }
 
   handleFilterRemove(filter) {
-    filter.remove = true
-    this.handleFilterChange(filter)
+    filter.remove = true;
+    this.handleFilterChange(filter);
   }
 
   handleFilterChange(filter) {
     const { onEditCallback } = this.props;
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
-      const query = find(queries, { key: activeQuery })
+      const query = find(queries, { key: activeQuery });
       if (query) {
         const updatedQuery = cloneDeep(query);
-        let updatedInstructions = []
-        if (!filter.remove) {
-          let updated = false
+        let updatedInstructions = [];
+        if (!filter || !filter.remove) {
+          let updated = false;
           updatedInstructions = updatedQuery.instructions.map((instruction) => {
             if (instruction.data.id === filter.id) {
-              updated = true
+              updated = true;
               return {
                 type: 'filter',
-                data: filter
+                data: filter,
               };
             }
             return instruction;
-          })
+          });
           if (!updated) {
-            // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
-            const { draft } = this.props;
-            const andNotOperator = find(updatedQuery.instructions, instruction => {
-              return (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT)
-            })
+            const andNotOperator = find(updatedQuery.instructions, instruction => (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
             if (!andNotOperator) {
               updatedInstructions.push({
                 type: 'filter',
-                data: filter
-              })
+                data: filter,
+              });
             }
           }
         } else {
@@ -181,7 +179,7 @@ class VariantNavigation extends React.Component {
               return false;
             }
             return true;
-          })
+          });
         }
         updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
         onEditCallback(updatedQuery);
@@ -190,125 +188,126 @@ class VariantNavigation extends React.Component {
   }
 
   handleCategoryOpenChange() {
-      this.setState({
-        activeFilterId: null,
-        searchSelection: {},
-      });
+    this.setState({
+      activeFilterId: null,
+      searchSelection: {},
+    });
   }
 
-  renderFilterType(categoryData){
-    const { intl, activeQuery, queries, data, searchData, patient } = this.props;
+  renderFilterType(categoryData) {
+    const {
+      intl, activeQuery, queries, data, searchData, patient,
+    } = this.props;
     const { searchSelection } = this.state;
     const activeFilterId = searchSelection.filter ? searchSelection.filter : this.state.activeFilterId;
     const activeQueryData = find(queries, { key: activeQuery });
     const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === activeFilterId) : null;
-    const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : FILTER_OPERAND_TYPE_DEFAULT)
+    const defaultOperand = (categoryData.config && categoryData.config[categoryData.id].operands ? categoryData.config[categoryData.id].operands[0] : FILTER_OPERAND_TYPE_DEFAULT);
 
     switch (categoryData.type) {
-        case FILTER_TYPE_GENERIC:
-            return (
-              <GenericFilter
-                overlayOnly
-                autoOpen
-                options={{
-                  editable: true,
-                  selectable: false,
-                  removable: false,
-                }}
-                intl={intl}
-                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand})}
-                dataSet={data[activeFilterId] ? data[activeFilterId] : []}
-                config={categoryData.config && categoryData.config[categoryData.id]}
-                onEditCallback={this.handleFilterChange}
-                onRemoveCallback={this.handleFilterRemove}
-                onCancelCallback={this.handleCategoryOpenChange}
-              />
-            );
-            case FILTER_TYPE_SPECIFIC:
-              return (
-                <SpecificFilter
-                  overlayOnly
-                  autoOpen
-                  options={{
-                    editable: true,
-                    selectable: false,
-                    removable: false,
-                  }}
-                  intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand})}
-                  dataSet={data[activeFilterId] ? data[activeFilterId] : []}
-                  externalDataSet={patient}
-                  config={categoryData.config && categoryData.config[categoryData.id]}
-                  onEditCallback={this.handleFilterChange}
-                  onRemoveCallback={this.handleFilterRemove}
-                  onCancelCallback={this.handleCategoryOpenChange}
-                />
-              );
-            case FILTER_TYPE_NUMERICAL_COMPARISON:
-              // @TODO Refactor other filters according to this structure
-              return (
-                <NumericalComparisonFilter
-                  overlayOnly
-                  autoOpen
-                  options={{
-                    editable: true,
-                    selectable: false,
-                    removable: false,
-                  }}
-                  intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : NumericalComparisonFilter.structFromArgs(activeFilterId))}
-                  dataSet={data[activeFilterId] ? data[activeFilterId] : []}
-                  onEditCallback={this.handleFilterChange}
-                  onRemoveCallback={this.handleFilterRemove}
-                  onCancelCallback={this.handleCategoryOpenChange}
-                />
-              );
-            case FILTER_TYPE_GENERICBOOL:
-              const allOption = []
-              Object.keys(categoryData.search).map((keyName) => {
-                  const datum = data[keyName]
-                  if (datum && datum[0]) {
-                    allOption.push({value:keyName , count: datum[0].count})
-                  }
-                }
-              )
-              return (
-                <GenericBooleanFilter
-                  overlayOnly
-                  autoOpen
-                  options={{
-                    editable: true,
-                    selectable: false,
-                    removable: false,
-                  }}
-                  intl={intl}
-                  data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type:FILTER_TYPE_GENERICBOOL})}
-                  dataSet={allOption ? allOption : []}
-                  onEditCallback={this.handleFilterChange}
-                  onRemoveCallback={this.handleFilterRemove}
-                  onCancelCallback={this.handleCategoryOpenChange}
-                />
-              );
-          case FILTER_TYPE_COMPOSITE:
-            return (
-              <CompositeFilter
-                overlayOnly
-                autoOpen
-                options={{
-                  editable: true,
-                  selectable: false,
-                  removable: false,
-                }}
-                intl={intl}
-                data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
-                  id: activeFilterId, comparator: '>'
-                })}
-                dataSet={data[activeFilterId] ? data[activeFilterId] : []}
-                onEditCallback={this.handleFilterChange}
-                onRemoveCallback={this.handleFilterRemove}
-                onCancelCallback={this.handleCategoryOpenChange}
-              />
-            );
+      case FILTER_TYPE_GENERIC:
+        return (
+          <GenericFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand })}
+            dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+            config={categoryData.config && categoryData.config[categoryData.id]}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
+      case FILTER_TYPE_SPECIFIC:
+        return (
+          <SpecificFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand })}
+            dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+            externalDataSet={patient}
+            config={categoryData.config && categoryData.config[categoryData.id]}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
+      case FILTER_TYPE_NUMERICAL_COMPARISON:
+        // @TODO Refactor other filters according to this structure
+        return (
+          <NumericalComparisonFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : NumericalComparisonFilter.structFromArgs(activeFilterId))}
+            dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
+      case FILTER_TYPE_GENERICBOOL:
+        const allOption = [];
+        Object.keys(categoryData.search).map((keyName) => {
+          const datum = data[keyName];
+          if (datum && datum[0]) {
+            allOption.push({ value: keyName, count: datum[0].count });
+          }
+        });
+        return (
+          <GenericBooleanFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type: FILTER_TYPE_GENERICBOOL })}
+            dataSet={allOption || []}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
+      case FILTER_TYPE_COMPOSITE:
+        return (
+          <CompositeFilter
+            overlayOnly
+            autoOpen
+            options={{
+              editable: true,
+              selectable: false,
+              removable: false,
+            }}
+            intl={intl}
+            data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
+              id: activeFilterId, comparator: '>',
+            })}
+            dataSet={data[activeFilterId] ? data[activeFilterId] : []}
+            onEditCallback={this.handleFilterChange}
+            onRemoveCallback={this.handleFilterRemove}
+            onCancelCallback={this.handleCategoryOpenChange}
+          />
+        );
     }
   }
 
@@ -316,12 +315,12 @@ class VariantNavigation extends React.Component {
     const { intl, schema } = this.props;
     const { activeFilterId, searchResults, searchSelection } = this.state;
     let autocompletesCount = 0;
-    const autocompletes = searchResults.map(group => {
+    const autocompletes = searchResults.map((group) => {
       autocompletesCount += group.matches.length;
       return (
         <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong>{group.label}</Typography.Text>)}>
-          {group.matches.map((match) => (
-            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} style={{ maxHeight: 31 }} >
+          {group.matches.map(match => (
+            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} style={{ maxHeight: 31 }}>
               <Col span={18}>
                 <Typography.Text style={{ maxWidth: 210 }} ellipsis>
                   {match.value}
@@ -333,25 +332,60 @@ class VariantNavigation extends React.Component {
             </AutoComplete.Option>
           ))}
         </AutoComplete.OptGroup>
-      )
-    })
+      );
+    });
     if (autocompletesCount > 0) {
       autocompletes.unshift((<AutoComplete.Option key="count" disabled>
-        <Typography.Text underline>{autocompletesCount} result(s)</Typography.Text>
-      </AutoComplete.Option>))
+        <Typography.Text underline>
+          {autocompletesCount}
+          {' '}
+result(s)
+        </Typography.Text>
+      </AutoComplete.Option>));
     }
 
     const generateMenuComponent = (searchSelection, children) => {
       if (!searchSelection.category || !searchSelection.filter) {
-        return (<Menu
-                  mode="horizontal"
-                  onOpenChange={this.handleCategoryOpenChange}
-        ><Menu.SubMenu
+        return (
+          <Menu
+            mode="horizontal"
+            onOpenChange={this.handleCategoryOpenChange}
+          >
+            <Menu.SubMenu
+              title={(
+                <AutoComplete
+                  key="autocompleter"
+                  allowClear
+                  autoFocus
+                  size="large"
+                  dataSource={autocompletes}
+                  onSearch={this.handleNavigationSearch}
+                  onSelect={this.handleNavigationSelection}
+                  placeholder="Recherche de filtres"
+                  value={this.searchQuery}
+                >
+                  <Input prefix={<Icon type="search" />} />
+                </AutoComplete>
+            )}
+            />
+            {children}
+          </Menu>
+        );
+      }
+      return (
+        <Menu
+          mode="horizontal"
+          onOpenChange={this.handleCategoryOpenChange}
+          openKeys={[searchSelection.category]}
+          selectedKeys={[searchSelection.filter]}
+        >
+          <Menu.SubMenu
             title={(
               <AutoComplete
                 key="autocompleter"
                 allowClear
                 autoFocus
+                optionLabelProp="value"
                 size="large"
                 dataSource={autocompletes}
                 onSearch={this.handleNavigationSearch}
@@ -359,62 +393,39 @@ class VariantNavigation extends React.Component {
                 placeholder="Recherche de filtres"
                 value={this.searchQuery}
               >
-                <Input prefix={<Icon type="search"/>}/>
+                <Input prefix={<Icon type="search" />} />
               </AutoComplete>
-            )}
-          />
-          {children}</Menu>)
-      }
-        return (<Menu
-                      mode="horizontal"
-                      onOpenChange={this.handleCategoryOpenChange}
-                      openKeys={[searchSelection.category]}
-                      selectedKeys={[searchSelection.filter]}
-        ><Menu.SubMenu
-          title={(
-            <AutoComplete
-              key="autocompleter"
-              allowClear
-              autoFocus
-              optionLabelProp="value"
-              size="large"
-              dataSource={autocompletes}
-              onSearch={this.handleNavigationSearch}
-              onSelect={this.handleNavigationSelection}
-              placeholder="Recherche de filtres"
-              value={this.searchQuery}
-            >
-              <Input prefix={<Icon type="search" />}/>
-            </AutoComplete>
           )}
-        />
-        {children}</Menu>)
-    }
+          />
+          {children}
+        </Menu>
+      );
+    };
 
     return (
       <div className="variant-navigation">
         {generateMenuComponent(searchSelection, schema.categories ? schema.categories.map((category) => {
-           if (category.filters && category.filters.length > 0) {
-             const { id } = category;
-             const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
-             const categoryInfo = find(schema.categories, ['id', ( searchSelection.category || id)]);
-             const categoryData = find(categoryInfo.filters, ['id', (searchSelection.filter || activeFilterId)]);
-             const filter = categoryData ? this.renderFilterType(categoryData) : null
-             return (
-               <Menu.SubMenu key={id} title={<span>{label}</span>}>
-                 { activeFilterId === null && !searchSelection.category && category.filters.map(filter => filter.search && (
-                   <Menu.SubMenu
-                     key={filter.id}
-                     title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
-                     onTitleClick={this.handleFilterSelection}
-                   />
-                 ))}
-                 { filter }
-               </Menu.SubMenu>
-             );
-           }
-           return null;
-         }) : null )}
+          if (category.filters && category.filters.length > 0) {
+            const { id } = category;
+            const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
+            const categoryInfo = find(schema.categories, ['id', (searchSelection.category || id)]);
+            const categoryData = find(categoryInfo.filters, ['id', (searchSelection.filter || activeFilterId)]);
+            const filter = categoryData ? this.renderFilterType(categoryData) : null;
+            return (
+              <Menu.SubMenu key={id} title={<span>{label}</span>}>
+                { activeFilterId === null && !searchSelection.category && category.filters.map(filter => filter.search && (
+                <Menu.SubMenu
+                  key={filter.id}
+                  title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
+                  onTitleClick={this.handleFilterSelection}
+                />
+                ))}
+                { filter }
+              </Menu.SubMenu>
+            );
+          }
+          return null;
+        }) : null)}
       </div>
     );
   }

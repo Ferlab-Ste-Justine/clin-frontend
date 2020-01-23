@@ -1,9 +1,11 @@
+/* eslint-disable camelcase */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Menu, Dropdown,
 } from 'antd';
-import style from './term.module.scss';
+import style from './styles/term.module.scss';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';

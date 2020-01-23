@@ -6,16 +6,13 @@ import {
   Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input,Popconfirm, Popover
 } from 'antd';
 import {
-  cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every, remove, first,
+  cloneDeep, find, findIndex, pull, isEmpty, isEqual,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
 import IconKit from 'react-icons-kit';
 import {
-  software_pathfinder_intersect, software_pathfinder_unite, software_pathfinder_subtract,
-} from 'react-icons-kit/linea';
-import {
-  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_unfold_more, ic_edit,
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_edit,
 } from 'react-icons-kit/md';
 import Query from './index';
 import {
@@ -24,9 +21,9 @@ import {
 import {
   createOperatorInstruction, getSvgPathFromOperatorType, OPERATOR_TYPE_AND, OPERATOR_TYPE_OR, OPERATOR_TYPE_AND_NOT,
 } from './Operator';
-
-import './statement.scss';
-import styleStatement from './statement.module.scss';
+import { calculateTitleWidth } from './helpers/query';
+import './styles/statement.scss';
+import styleStatement from './styles/statement.module.scss';
 
 
 class Statement extends React.Component {
@@ -101,12 +98,11 @@ class Statement extends React.Component {
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
-    this.onStatementTitleChangeEnter =this.onStatementTitleChangeEnter.bind(this)
+    this.onStatementTitleChangeEnter = this.onStatementTitleChangeEnter.bind(this);
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
-    this.getTitleWidth = this.getTitleWidth.bind(this);
-    this.handleFocus =this.handleFocus.bind(this)
-    this.onFocusTitle=this.onFocusTitle.bind(this)
+    this.handleFocus = this.handleFocus.bind(this);
+    this.onFocusTitle = this.onFocusTitle.bind(this);
     this.onBlurTitle = this.onBlurTitle.bind(this);
     this.onBlurDropdown= this.onBlurDropdown.bind(this)
     this.handleFocusDropdown = this.handleFocusDropdown.bind(this)
@@ -114,7 +110,6 @@ class Statement extends React.Component {
     this.onCancel= this.onCancel.bind(this)
     this.toggleMenu = this.toggleMenu.bind(this)
     this.isDropdownOpen = this.isDropdownOpen.bind(this)
-
   }
 
   isCopyable() {
@@ -161,13 +156,13 @@ class Statement extends React.Component {
 
   isDirty() {
     const activeStatement = this.props.statements[this.props.activeStatementId];
-    const activeStatementHasSingleEmptyQuery = this.props.data.length === 1 && this.props.data[0].instructions.length === 0
+    const activeStatementHasSingleEmptyQuery = this.props.data.length === 1 && this.props.data[0].instructions.length === 0;
     const statementIsDraft = !activeStatement || this.props.activeStatementId === 'draft';
 
-    const titleHasChanges = this.state.statementTitle !== null && this.state.statementTitle !== activeStatement.title
-    const queriesHaveChanges = statementIsDraft ? !activeStatementHasSingleEmptyQuery : !isEqual(this.props.data, this.props.original)
+    const titleHasChanges = this.state.statementTitle !== null && this.state.statementTitle !== activeStatement.title;
+    const queriesHaveChanges = statementIsDraft ? !activeStatementHasSingleEmptyQuery : !isEqual(this.props.data, this.props.original);
 
-    return (titleHasChanges === true) || (queriesHaveChanges === true)
+    return (titleHasChanges === true) || (queriesHaveChanges === true);
   }
 
   actionIsDisabled(action) {
@@ -175,15 +170,15 @@ class Statement extends React.Component {
     const statementIsDraft = !activeStatement || this.props.activeStatementId === 'draft';
     switch (action) {
       case 'new':
-        return (statementIsDraft && (this.props.data.length === 1 && this.props.data[0].instructions.length === 0))
+        return (statementIsDraft && (this.props.data.length === 1 && this.props.data[0].instructions.length === 0));
       case 'save':
-        return !this.isDirty()
+        return !this.isDirty();
       case 'duplicate':
         return statementIsDraft;
       case 'delete':
         return statementIsDraft;
       case 'share':
-        return true
+        return true;
     }
 
     return false;
@@ -595,8 +590,8 @@ class Statement extends React.Component {
 
   findQueryTitle(key) {
     const { data } = this.props;
-    const query = find(data, { key })
-    return (query ? query.title : '')
+    const query = find(data, { key });
+    return (query ? query.title : '');
   }
 
   onPositionChange(expandIconPosition) {
@@ -605,7 +600,7 @@ class Statement extends React.Component {
 
   onStatementTitleChange(e) {
     const { value } = e.target;
-    const width = this.getTitleWidth(value);
+    const width = calculateTitleWidth(value);
 
     e.target.style.width = `calc(13px + ${width}ch)`;
 
@@ -615,91 +610,15 @@ class Statement extends React.Component {
     });
   }
 
-  onStatementTitleChangeEnter(e){
-    e.target.blur()
+  onStatementTitleChangeEnter(e) {
+    e.target.blur();
 
-    this.onStatementTitleChange(e)
+    this.onStatementTitleChange(e);
   }
 
   onModalSaveTitleInputChange(e) {
     const { value } = e.target;
     this.setState({ saveTitleModalInputValue: value });
-  }
-
-  getTitleWidth(value) {
-    const x0 = ['i', 'l', 'j', ';', ',', '|', ' ' ];
-    const x1 = ['t', 'I', ':', '.','[',']' , '-', '/','!' , '"' ];
-    const x2 = ['r', 'f','(', ')',  '{', '}' ]
-    const x3 = ['v' , 'x' , 'y' ,'z' ,'_' ,'*','»', '«']
-    const x4 = ['c', 'k' , 's' ]
-    const x5 = ['g', 'p', 'q', 'b', 'd', 'h' , 'n', 'u','û', 'ù' ,'ü', 'o', 'ô', 'ö', 'E','Ê', 'É', 'È', 'Ë' ,'J','+','=', '$','1','2','3', '4', '5', '6', '7' , '8', '9', '0']
-    const x6 = ['T', 'S' , 'Y','Z']
-    const x7 = ['K',  'X', 'B', 'R', 'P' , '&', '#'];
-    const x8 = ['U','Ù', 'Ü','Û', 'V','C' ,'D'];
-    const x9 = ['A'];
-    const x10 = ['G','O', 'Q' ];
-    const x11 = ['H', 'N' ];
-    const x12 = [ 'w','%'];
-    const x13 = [ 'm', 'M'];
-    const x14 = ['W'];
-
-    let numberOf_X0_Letter =0
-    let numberOf_X1_Letter =0
-    let numberOf_X2_Letter =0
-    let numberOf_X3_Letter =0
-    let numberOf_X4_Letter = 0;
-    let numberOf_X_Letter = 0;
-    let numberOf_X5_Letter =0;
-    let numberOf_X6_Letter = 0;
-    let numberOf_X7_Letter = 0;
-    let numberOf_X8_Letter = 0;
-    let numberOf_X9_Letter = 0;
-    let numberOf_X10_Letter = 0;
-    let numberOf_X11_Letter = 0;
-    let numberOf_X12_Letter = 0;
-    let numberOf_X13_Letter = 0;
-    let numberOf_X14_Letter = 0;
-
-    const map = Array.prototype.map;
-    map.call(value, (eachLetter) => {
-      if (x0.includes(eachLetter)) {
-        numberOf_X0_Letter += 1;
-      } else if (x1.includes(eachLetter)) {
-        numberOf_X1_Letter += 1;
-      } else if(x2.includes(eachLetter) ){
-        numberOf_X2_Letter +=1;
-      }else if(x3.includes(eachLetter) ){
-        numberOf_X3_Letter +=1;
-      }else if(x4.includes(eachLetter)){
-        numberOf_X4_Letter += 1 ;
-      } else if(x5.includes(eachLetter)){
-        numberOf_X5_Letter += 1;
-      } else if (x6.includes(eachLetter)) {
-        numberOf_X6_Letter += 1;
-      } else if (x7.includes(eachLetter)) {
-        numberOf_X7_Letter += 1;
-      }else if (x8.includes(eachLetter)) {
-        numberOf_X8_Letter += 1;
-      }else if (x9.includes(eachLetter)) {
-        numberOf_X9_Letter += 1;
-      }else if (x10.includes(eachLetter)) {
-        numberOf_X10_Letter += 1;
-      }else if (x11.includes(eachLetter)) {
-        numberOf_X11_Letter += 1;
-      }else if (x12.includes(eachLetter)) {
-        numberOf_X12_Letter += 1;
-      }else if (x13.includes(eachLetter)) {
-        numberOf_X13_Letter += 1;
-      } else if (x14.includes(eachLetter)) {
-        numberOf_X14_Letter += 1;
-      } else {
-        numberOf_X_Letter += 1;
-      }
-    });
-    const width =   (numberOf_X0_Letter *0.47) + (numberOf_X1_Letter *0.6) + (numberOf_X2_Letter * 0.64) + (numberOf_X3_Letter * 0.90) + (numberOf_X4_Letter * 0.94) +
-                    (numberOf_X_Letter * 0.98) + (numberOf_X5_Letter * 1.02) + (numberOf_X6_Letter * 1.1) + (numberOf_X7_Letter * 1.14) + (numberOf_X8_Letter * 1.17)+ (numberOf_X9_Letter * 1.20) +
-                    (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33) + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
-    return width;
   }
 
   handleFocus() {
@@ -708,7 +627,6 @@ class Statement extends React.Component {
   }
 
   onFocusTitle(e) {
-    const { onFocus } = this.state;
     e.target.select();
     this.setState({ onFocus: true });
   }
@@ -761,7 +679,7 @@ class Statement extends React.Component {
       display, original, checkedQueries, saveTitleModalVisible, onFocus,
     } = this.state;
     const {
-      reorderable
+      reorderable,
     } = options;
 
     const inactiveStatementKeys = Object.keys(statements).filter(key => (key !== 'draft' && key !== activeStatementId));
@@ -782,7 +700,7 @@ class Statement extends React.Component {
     const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' });
     const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
-    const width = this.getTitleWidth(statementTitle);
+    const width = calculateTitleWidth(statementTitle);
 
     let containsEmptyQueries = false;
 
@@ -899,51 +817,51 @@ class Statement extends React.Component {
           <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
               <div>
-                <div  className={styleStatement.title}>
-                      <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
-                          <div>
+                <div className={styleStatement.title}>
+                  <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
+                    <div>
 
-                                <Input
-                                    id="statementTitle"
-                                    onChange={this.onStatementTitleChange}
-                                    onFocus={this.onFocusTitle}
-                                    onBlur={this.onBlurTitle}
-                                    onPressEnter={this.onStatementTitleChangeEnter}
-                                    autocomplete="off"
-                                    value={statementTitle}
-                                    disabled={activeStatementId == null}
-                                    style={{width:`calc(13px + ${width}ch)`}}
-                                />
-
-
-                                <IconKit
-                                    icon={ic_edit}
-                                    size={18}
-                                    onClick={this.handleFocus}
-                                    className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
-
-                                />
+                      <Input
+                        id="statementTitle"
+                        onChange={this.onStatementTitleChange}
+                        onFocus={this.onFocusTitle}
+                        onBlur={this.onBlurTitle}
+                        onPressEnter={this.onStatementTitleChangeEnter}
+                        autocomplete="off"
+                        value={statementTitle}
+                        disabled={activeStatementId == null}
+                        style={{ width: `calc(13px + ${width}ch)` }}
+                      />
 
 
-                          </div>
-                      </Tooltip>
-                      {activeStatementId !== 'draft' && (
-                      <Tooltip overlayClassName={styleStatement.tooltip} title={defaultFilterText}>
-                      <Button
-                          type="default"
-                          className={styleStatement.button}
-                          onClick={this.setStatementAsDefault}
-                          disabled={activeStatementId == null}
-                        >
+                      <IconKit
+                        icon={ic_edit}
+                        size={18}
+                        onClick={this.handleFocus}
+                        className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
+                      />
 
-                        <Icon
-                            className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
-                            type="star"
-                            theme={activeStatement.isDefault ? 'filled' : 'outlined'}
-                        />
 
-                      </Button>
-                      </Tooltip>)}
+                    </div>
+                  </Tooltip>
+                  {activeStatementId !== 'draft' && (
+                  <Tooltip overlayClassName={styleStatement.tooltip} title={defaultFilterText}>
+                    <Button
+                      type="default"
+                      className={styleStatement.button}
+                      onClick={this.setStatementAsDefault}
+                      disabled={activeStatementId == null}
+                    >
+
+                      <Icon
+                        className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
+                        type="star"
+                        theme={activeStatement.isDefault ? 'filled' : 'outlined'}
+                      />
+
+                    </Button>
+                  </Tooltip>
+                  )}
                 </div>
                 <div>
                   <Button
@@ -965,33 +883,33 @@ class Statement extends React.Component {
                     {saveText}
                   </Button>
                   <Button
-                      type="default"
-                      className={styleStatement.button}
-                      disabled={this.actionIsDisabled('duplicate')}
-                      onClick={this.duplicateStatement}
+                    type="default"
+                    className={styleStatement.button}
+                    disabled={this.actionIsDisabled('duplicate')}
+                    onClick={this.duplicateStatement}
                   >
                     <IconKit size={20} icon={ic_content_copy} />
                     {duplicateText}
                   </Button>
-                      <Button
-                          type="default"
-                          disabled={this.actionIsDisabled('delete')}
-                          className={styleStatement.button}
-                      >
-                          <Popconfirm
-                            title="Vous perdrez toutes les modifications non enregistrées."
-                            okText={deleteText}
-                            cancelText="Annuler"
-                            onConfirm={this.deleteStatement}
-                            icon={null}
-                            overlayClassName={styleStatement.popconfirm}
-                          >
-                              <a>
-                                <IconKit size={20} icon={ic_delete} />
-                                {deleteText}
-                              </a>
-                          </Popconfirm>
-                      </Button>
+                  <Button
+                    type="default"
+                    disabled={this.actionIsDisabled('delete')}
+                    className={styleStatement.button}
+                  >
+                    <Popconfirm
+                      title="Vous perdrez toutes les modifications non enregistrées."
+                      okText={deleteText}
+                      cancelText="Annuler"
+                      onConfirm={this.deleteStatement}
+                      icon={null}
+                      overlayClassName={styleStatement.popconfirm}
+                    >
+                      <a>
+                        <IconKit size={20} icon={ic_delete} />
+                        {deleteText}
+                      </a>
+                    </Popconfirm>
+                  </Button>
 
 
                   <Divider type="vertical" className={styleStatement.divider} />
@@ -1074,19 +992,19 @@ class Statement extends React.Component {
 
                                                                     ))
                                                                   }
-                                                              </Menu>
-                                                            ) : (<></>))
-                                                          }>
-                        <Button>
-                            <IconKit
-                              size={20}
-                              icon={ic_folder}
-                              onClick={this.duplicateStatement}
-
-                            />
-                          {myFilterText}
-                        </Button>
-                      </Dropdown>
+                                                                      </Menu>
+                                                                    ) : (<></>))
+                                                                    }
+                  >
+                    <Button>
+                      <IconKit
+                        size={20}
+                        icon={ic_folder}
+                        onClick={this.duplicateStatement}
+                      />
+                      {myFilterText}
+                    </Button>
+                  </Dropdown>
 
                 </div>
               </div>

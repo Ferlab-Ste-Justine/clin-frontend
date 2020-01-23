@@ -9,7 +9,7 @@ import uuidv1 from 'uuid/v1';
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct';
 import { INSTRUCTION_TYPE_SUBQUERY } from '../components/Query/Subquery';
-import { sanitizeInstructions } from '../components/Query/index';
+import { sanitizeInstructions } from '../components/Query/helpers/query';
 
 
 const MAX_REVISIONS = 10;
