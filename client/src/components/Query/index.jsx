@@ -1,31 +1,35 @@
 /* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { cloneDeep, isEqual, find, isNull, filter } from 'lodash';
 import {
-  Dropdown, Icon, Menu, Input, Badge,Tooltip
+  cloneDeep, isEqual, find, isNull, filter,
+} from 'lodash';
+import {
+  Input, Tooltip,
 } from 'antd';
 import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
 
+import IconKit from 'react-icons-kit';
+import {
+  ic_edit, ic_delete, ic_filter_none,
+} from 'react-icons-kit/md';
 import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
-import GenericBooleanFilter from './Filter/GenericBoolean'
+import GenericBooleanFilter from './Filter/GenericBoolean';
 import Operator, {
   createOperatorInstruction,
   INSTRUCTION_TYPE_OPERATOR,
   OPERATOR_TYPE_AND_NOT,
-  OPERATOR_TYPE_DEFAULT
+  OPERATOR_TYPE_DEFAULT,
 } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
-import IconKit from 'react-icons-kit';
 import {
-  ic_edit, ic_delete, ic_filter_none,
-} from 'react-icons-kit/md';
+  FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC,
+} from './Filter/index';
 
 import styleQuery from './query.module.scss';
 
@@ -37,11 +41,11 @@ const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
 const QUERY_ACTION_TITLE = 'title';
 
 export const sanitizeInstructions = (instructions) => {
-    instructions = sanitizeSubqueries(instructions);
-    instructions = sanitizeFilters(instructions);
-    instructions = sanitizeOperators(instructions);
-    return instructions;
-}
+  instructions = sanitizeSubqueries(instructions);
+  instructions = sanitizeFilters(instructions);
+  instructions = sanitizeOperators(instructions);
+  return instructions;
+};
 
 const sanitizeOperators = (instructions) => {
   // @NOTE No subsequent operators
@@ -59,7 +63,7 @@ const sanitizeOperators = (instructions) => {
 
   // @NOTE No prefix operator
   if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
-      sanitizedInstructions.shift();
+    sanitizedInstructions.shift();
   }
 
   // @NOTE No suffix operator
@@ -68,17 +72,17 @@ const sanitizeOperators = (instructions) => {
     sanitizedInstructions.pop();
   }
 
-  const operator = find( sanitizedInstructions, {'type': INSTRUCTION_TYPE_OPERATOR} )
+  const operator = find(sanitizedInstructions, { type: INSTRUCTION_TYPE_OPERATOR });
   const operatorType = operator ? operator.data.type : OPERATOR_TYPE_DEFAULT;
   // @NOTE No subsequent filters or subqueries without an operator
-  for(let i in sanitizedInstructions){
-    const next = Number(i)+1
-    if(next < sanitizedInstructions.length){
-        if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
-            if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
-                sanitizedInstructions.splice(next, 0, createOperatorInstruction(operatorType));
-            }
+  for (const i in sanitizedInstructions) {
+    const next = Number(i) + 1;
+    if (next < sanitizedInstructions.length) {
+      if (sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY) {
+        if (sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY) {
+          sanitizedInstructions.splice(next, 0, createOperatorInstruction(operatorType));
         }
+      }
     }
   }
 
@@ -86,7 +90,7 @@ const sanitizeOperators = (instructions) => {
 };
 
 const sanitizeSubqueries = (instructions) => {
-  const subqueries = find( instructions, {'type': INSTRUCTION_TYPE_SUBQUERY} )
+  const subqueries = find(instructions, { type: INSTRUCTION_TYPE_SUBQUERY });
 
   // @NOTE No single subqueries
   if (subqueries && subqueries.length === 1) {
@@ -105,8 +109,8 @@ class Query extends React.Component {
     super(props);
 
     this.state = {
-      onFocus:false,
-      title:null
+      onFocus: false,
+      title: null,
     };
     this.addInstruction = this.addInstruction.bind(this);
     this.replaceInstruction = this.replaceInstruction.bind(this);
@@ -124,34 +128,34 @@ class Query extends React.Component {
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.hasTitle = this.hasTitle.bind(this);
-    this.onFocus= this.onFocus.bind(this)
-    this.handleFocus=this.handleFocus.bind(this)
-    this.onChange=this.onChange.bind(this)
-    this.getTitleWidth = this.getTitleWidth.bind(this)
+    this.onFocus = this.onFocus.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.getTitleWidth = this.getTitleWidth.bind(this);
   }
 
   addInstruction(instruction) {
     // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
     const { draft } = this.props;
-    const andNotOperator = find(draft.instructions, instruction => {
-      return (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT)
-    })
+    const andNotOperator = find(draft.instructions, instruction => (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
     if (!andNotOperator) {
       const { display, index, onEditCallback } = this.props;
-      const newDraft = cloneDeep(draft)
+      const newDraft = cloneDeep(draft);
       newDraft.instructions.push(instruction);
       newDraft.instructions = sanitizeInstructions(newDraft.instructions);
       onEditCallback({
         data: newDraft,
         display,
-        index
+        index,
       });
     }
   }
 
   replaceInstruction(instruction) {
-    const { draft, display, index, onEditCallback } = this.props;
-    const newDraft = cloneDeep(draft)
+    const {
+      draft, display, index, onEditCallback,
+    } = this.props;
+    const newDraft = cloneDeep(draft);
     const instructionIndex = instruction.index;
 
     newDraft.instructions[instructionIndex] = instruction;
@@ -159,13 +163,15 @@ class Query extends React.Component {
     onEditCallback({
       data: newDraft,
       display,
-      index
+      index,
     });
   }
 
   removeInstruction(instruction) {
-    const { draft, display, index, onEditCallback } = this.props;
-    const newDraft = cloneDeep(draft)
+    const {
+      draft, display, index, onEditCallback,
+    } = this.props;
+    const newDraft = cloneDeep(draft);
     const instructionIndex = instruction.index;
 
     newDraft.instructions.splice(instructionIndex, 1);
@@ -173,7 +179,7 @@ class Query extends React.Component {
     onEditCallback({
       data: newDraft,
       display,
-      index
+      index,
     });
   }
 
@@ -192,20 +198,22 @@ class Query extends React.Component {
   handleFilterChange(filter) {
     const instruction = {
       type: INSTRUCTION_TYPE_FILTER,
-      data: filter
+      data: filter,
     };
     if (!isNull(filter.index)) {
-      instruction.index = filter.index
+      instruction.index = filter.index;
       this.replaceInstruction(instruction);
     } else {
-      this.addInstruction(instruction)
+      this.addInstruction(instruction);
     }
   }
 
   // @NOTE All operators within a query must have the same type
   handleOperatorChange(operator) {
-    const { draft, display, index, onEditCallback } = this.props;
-    const updatedDraft = cloneDeep(draft)
+    const {
+      draft, display, index, onEditCallback,
+    } = this.props;
+    const updatedDraft = cloneDeep(draft);
     updatedDraft.instructions = updatedDraft.instructions.map((datum) => {
       if (datum.type === INSTRUCTION_TYPE_OPERATOR) {
         datum.data.type = operator.data.type;
@@ -218,7 +226,7 @@ class Query extends React.Component {
     onEditCallback({
       data: updatedDraft,
       display,
-      index
+      index,
     });
   }
 
@@ -232,41 +240,40 @@ class Query extends React.Component {
   }
 
   handleTitleChange(e) {
-    let title = e.target.value;
+    const title = e.target.value;
     const { draft, onEditCallback } = this.props;
-    e.target.blur()
+    e.target.blur();
     if (title !== draft.title) {
       const serialized = this.serialize();
       serialized.data.title = title;
       onEditCallback(serialized);
     }
-    this.setState({onFocus:false})
+    this.setState({ onFocus: false });
   }
 
-  onFocus(e){
-      const{onFocus} = this.state
-      e.target.select()
-      this.setState({onFocus:true})
-
+  onFocus(e) {
+    const { onFocus } = this.state;
+    e.target.select();
+    this.setState({ onFocus: true });
   }
 
-  onChange(e){
+  onChange(e) {
     const { value } = e.target;
-    const length =(value.length)
-    const width = this.getTitleWidth(value)
+    const length = (value.length);
+    const width = this.getTitleWidth(value);
 
     e.target.style.width = `calc(15px + ${width}ch)`;
   }
 
-  handleFocus(){
+  handleFocus() {
     const { draft } = this.props;
-    const input = document.querySelector(`.title-${draft.key}`)
-    input.focus()
+    const input = document.querySelector(`.title-${draft.key}`);
+    input.focus();
   }
 
   json() {
     const { draft } = this.props;
-    const sqon = this.sqon()
+    const sqon = this.sqon();
     return { ...draft, instructions: sqon };
   }
 
@@ -343,30 +350,31 @@ class Query extends React.Component {
     const { draft } = this.props;
     return draft.title !== undefined;
   }
-  getTitleWidth(value){
-    const x0 = ['i', 'l', 'j', ';', ',', '|', ' ' ];
-    const x1 = ['t', 'I', ':', '.','[',']' , '-', '/','!' , '"' ];
-    const x2 = ['r', 'f','(', ')',  '{', '}' ]
-    const x3 = ['v' , 'x' , 'y' ,'z' ,'_' ,'*','»', '«']
-    const x4 = ['c', 'k' , 's' ]
-    const x5 = ['g', 'p', 'q', 'b', 'd', 'h' , 'n', 'u','û', 'ù' ,'ü', 'o', 'ô', 'ö', 'E','Ê', 'É', 'È', 'Ë' ,'J','+','=', '$','1','2','3', '4', '5', '6', '7' , '8', '9', '0']
-    const x6 = ['T', 'S' , 'Y','Z']
-    const x7 = ['K',  'X', 'B', 'R', 'P' , '&', '#'];
-    const x8 = ['U','Ù', 'Ü','Û', 'V','C' ,'D'];
+
+  getTitleWidth(value) {
+    const x0 = ['i', 'l', 'j', ';', ',', '|', ' '];
+    const x1 = ['t', 'I', ':', '.', '[', ']', '-', '/', '!', '"'];
+    const x2 = ['r', 'f', '(', ')', '{', '}'];
+    const x3 = ['v', 'x', 'y', 'z', '_', '*', '»', '«'];
+    const x4 = ['c', 'k', 's'];
+    const x5 = ['g', 'p', 'q', 'b', 'd', 'h', 'n', 'u', 'û', 'ù', 'ü', 'o', 'ô', 'ö', 'E', 'Ê', 'É', 'È', 'Ë', 'J', '+', '=', '$', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+    const x6 = ['T', 'S', 'Y', 'Z'];
+    const x7 = ['K', 'X', 'B', 'R', 'P', '&', '#'];
+    const x8 = ['U', 'Ù', 'Ü', 'Û', 'V', 'C', 'D'];
     const x9 = ['A'];
-    const x10 = ['G','O', 'Q' ];
-    const x11 = ['H', 'N' ];
-    const x12 = [ 'w','%'];
-    const x13 = [ 'm', 'M'];
+    const x10 = ['G', 'O', 'Q'];
+    const x11 = ['H', 'N'];
+    const x12 = ['w', '%'];
+    const x13 = ['m', 'M'];
     const x14 = ['W'];
 
-    let numberOf_X0_Letter =0
-    let numberOf_X1_Letter =0
-    let numberOf_X2_Letter =0
-    let numberOf_X3_Letter =0
+    let numberOf_X0_Letter = 0;
+    let numberOf_X1_Letter = 0;
+    let numberOf_X2_Letter = 0;
+    let numberOf_X3_Letter = 0;
     let numberOf_X4_Letter = 0;
     let numberOf_X_Letter = 0;
-    let numberOf_X5_Letter =0;
+    let numberOf_X5_Letter = 0;
     let numberOf_X6_Letter = 0;
     let numberOf_X7_Letter = 0;
     let numberOf_X8_Letter = 0;
@@ -383,29 +391,29 @@ class Query extends React.Component {
         numberOf_X0_Letter += 1;
       } else if (x1.includes(eachLetter)) {
         numberOf_X1_Letter += 1;
-      } else if(x2.includes(eachLetter) ){
-        numberOf_X2_Letter +=1;
-      }else if(x3.includes(eachLetter) ){
-        numberOf_X3_Letter +=1;
-      }else if(x4.includes(eachLetter)){
-        numberOf_X4_Letter += 1 ;
-      } else if(x5.includes(eachLetter)){
+      } else if (x2.includes(eachLetter)) {
+        numberOf_X2_Letter += 1;
+      } else if (x3.includes(eachLetter)) {
+        numberOf_X3_Letter += 1;
+      } else if (x4.includes(eachLetter)) {
+        numberOf_X4_Letter += 1;
+      } else if (x5.includes(eachLetter)) {
         numberOf_X5_Letter += 1;
       } else if (x6.includes(eachLetter)) {
         numberOf_X6_Letter += 1;
       } else if (x7.includes(eachLetter)) {
         numberOf_X7_Letter += 1;
-      }else if (x8.includes(eachLetter)) {
+      } else if (x8.includes(eachLetter)) {
         numberOf_X8_Letter += 1;
-      }else if (x9.includes(eachLetter)) {
+      } else if (x9.includes(eachLetter)) {
         numberOf_X9_Letter += 1;
-      }else if (x10.includes(eachLetter)) {
+      } else if (x10.includes(eachLetter)) {
         numberOf_X10_Letter += 1;
-      }else if (x11.includes(eachLetter)) {
+      } else if (x11.includes(eachLetter)) {
         numberOf_X11_Letter += 1;
-      }else if (x12.includes(eachLetter)) {
+      } else if (x12.includes(eachLetter)) {
         numberOf_X12_Letter += 1;
-      }else if (x13.includes(eachLetter)) {
+      } else if (x13.includes(eachLetter)) {
         numberOf_X13_Letter += 1;
       } else if (x14.includes(eachLetter)) {
         numberOf_X14_Letter += 1;
@@ -413,241 +421,227 @@ class Query extends React.Component {
         numberOf_X_Letter += 1;
       }
     });
-    const width =   (numberOf_X0_Letter *0.47) + (numberOf_X1_Letter *0.6) + (numberOf_X2_Letter * 0.64) + (numberOf_X3_Letter * 0.90) + (numberOf_X4_Letter * 0.94) +
-                    (numberOf_X_Letter * 0.98) + (numberOf_X5_Letter * 1.02) + (numberOf_X6_Letter * 1.1) + (numberOf_X7_Letter * 1.14) + (numberOf_X8_Letter * 1.17)+ (numberOf_X9_Letter * 1.20) +
-                    (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33) + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
+    const width = (numberOf_X0_Letter * 0.47) + (numberOf_X1_Letter * 0.6) + (numberOf_X2_Letter * 0.64) + (numberOf_X3_Letter * 0.90) + (numberOf_X4_Letter * 0.94)
+                    + (numberOf_X_Letter * 0.98) + (numberOf_X5_Letter * 1.02) + (numberOf_X6_Letter * 1.1) + (numberOf_X7_Letter * 1.14) + (numberOf_X8_Letter * 1.17) + (numberOf_X9_Letter * 1.20)
+                    + (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33) + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
     return width;
-
   }
 
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
     const {
-      copyable, duplicatable, removable, undoable,
+      active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, intl, facets, categories, draft, externalData,
+    } = this.props;
+    const {
+      copyable, removable,
     } = options;
-    const {onFocus, title} = this.state
-    const hasMenu = copyable || duplicatable || removable || undoable;
-    const { compoundOperators } = display;
+    const { onFocus } = this.state;
     const isDirty = !isEqual(original, draft);
 
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
     const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
-
-    const width = this.getTitleWidth(draft.title)
-
-    let operatorsHandler = null;
-    if (compoundOperators) {
-      const operator = find(draft.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
-      if (operator) {
-        operatorsHandler = (
-          <Operator
-            key={operator.key}
-            options={options}
-            data={operator.data}
-            intl={intl}
-            onEditCallback={this.handleOperatorChange}
-          />
-        );
-      }
-    }
+    const width = draft.title ? this.getTitleWidth(draft.title) : 0;
     const classNames = [styleQuery.query];
-    if (isDirty) { classNames.push(styleQuery.dirtyQuery) }
-    if (active) { classNames.push(styleQuery.activeQuery) } else { classNames.push(styleQuery.inactiveQuery) }
+
+    if (isDirty) { classNames.push(styleQuery.dirtyQuery); }
+    if (active) { classNames.push(styleQuery.activeQuery); } else { classNames.push(styleQuery.inactiveQuery); }
     return (
       <div className={classNames.join(' ')} onClick={this.handleClick}>
         <div className={styleQuery.toolbar}>
           <Tooltip title={editTitleText}>
-              <div className={styleQuery.title}>
-
-                    <Input
-                      size="small"
-                      defaultValue={draft.title}
-                      onBlur={this.handleTitleChange}
-                      onFocus={this.onFocus}
-                      onPressEnter={this.handleTitleChange}
-                      onChange={this.onChange}
-                      className={`title-${draft.key}`}
-                      style={{width:`calc(14px + ${width}ch)`}}
-                    />
-
-
-                    <IconKit
-                        icon={ic_edit}
-                        size={14}
-                        className={`${styleQuery.iconTitle} ${styleQuery.icon} ${onFocus ? `${styleQuery.focusIcon}` : null}`}
-                        onClick={this.handleFocus}
-                    />
-
-              </div>
+            <div className={styleQuery.title}>
+              <Input
+                size="small"
+                defaultValue={draft.title}
+                onBlur={this.handleTitleChange}
+                onFocus={this.onFocus}
+                onPressEnter={this.handleTitleChange}
+                onChange={this.onChange}
+                className={`title-${draft.key}`}
+                style={{ width: `calc(14px + ${width}ch)` }}
+              />
+              <IconKit
+                icon={ic_edit}
+                size={14}
+                className={`${styleQuery.iconTitle} ${styleQuery.icon} ${onFocus ? `${styleQuery.focusIcon}` : null}`}
+                onClick={this.handleFocus}
+              />
+            </div>
           </Tooltip>
           <div className={styleQuery.actions}>
             {copyable && (
-                <Tooltip title={duplicateText}>
-                    <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }) }}/>
-                </Tooltip>)}
+            <Tooltip title={duplicateText}>
+              <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }} />
+            </Tooltip>
+            )}
             {removable && (
-                <Tooltip title={deleteText}>
-                    <IconKit icon={ic_delete} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }) }}/>
-                </Tooltip>)}
-            </div>
+            <Tooltip title={deleteText}>
+              <IconKit icon={ic_delete} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }} />
+            </Tooltip>
+            )}
+          </div>
           <div className={styleQuery.count}>
-            { results && (<span>{results.toLocaleString('en-US').replace(',', "\u00a0")}</span>) }
+            { results && (<span>{results.toLocaleString('en-US').replace(',', '\u00a0')}</span>) }
           </div>
         </div>
-        {draft.instructions.length===0 ?
+        {draft.instructions.length === 0
+          ? (
             <div className={styleQuery.emptyQuery}>
                 Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête
             </div>
-         :
-        <div className={styleQuery.instructions}>
-          { draft.instructions.map((item, index) => {
-            switch (item.type) {
-              case INSTRUCTION_TYPE_OPERATOR:
-                return (
-                  <Operator
-                    index={index}
-                    options={options}
-                    data={item.data}
-                    intl={intl}
-                    onEditCallback={this.handleOperatorChange}
-                    key={uuidv1()}
-                  />
-                );
-              case INSTRUCTION_TYPE_FILTER:
-                let category = null
-                let type = null
-                categories.map((x, index) => {
-                    const value = find(x.filters, ['id', item.data.id]  );
-                    if(value){
-                        category = x.id
-                        type = value.type
-                    }
-                })
-
-                if(type === FILTER_TYPE_GENERIC){
-                    const categoryInfo = find(categories, ['id', category]);
-                    const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+          )
+          : (
+            <div className={styleQuery.instructions}>
+              { draft.instructions.map((item, index) => {
+                switch (item.type) {
+                  case INSTRUCTION_TYPE_OPERATOR:
                     return (
-                        <GenericFilter
-                            index={index}
-                            options={options}
-                            autoSelect={active}
-                            data={item.data}
-                            dataSet={facets[item.data.id] || []}
-                            config={categoryData.config && categoryData.config[categoryData.id]}
-                            intl={intl}
-                            category={category}
-                            onEditCallback={this.handleFilterChange}
-                            onRemoveCallback={this.handleFilterRemoval}
-                            onSelectCallback={onSelectCallback}
-                            key={uuidv1()}
-                          />
-                    );
-                }else if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
-                    return (
-                        <NumericalComparisonFilter
-                           index={index}
-                           options={options}
-                           autoSelect={active}
-                           data={item.data}
-                           dataSet={facets[item.data.id] || []}
-                           intl={intl}
-                           category={category}
-                           onEditCallback={this.handleFilterChange}
-                           onRemoveCallback={this.handleFilterRemoval}
-                           onSelectCallback={onSelectCallback}
-                           key={uuidv1()}
-                       />
-                    );
-                }else if(type === FILTER_TYPE_GENERICBOOL) {
-                  const categoryInfo =find(categories, ['id', category]);
-                  const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
-                  const allOption = []
-                  Object.keys(categoryData.search).map((keyName) => {
-                    const datum = facets[keyName]
-                    if (datum && datum[0]) {
-                      allOption.push({
-                        value: keyName,
-                        count: datum[0].count
-                      })
-                    }
-                  })
-                   return (
-                       <GenericBooleanFilter
+                      <Operator
                         index={index}
                         options={options}
-                        autoSelect={active}
                         data={item.data}
-                        dataSet={allOption ? allOption : []}
                         intl={intl}
-                        category={category}
-                        onEditCallback={this.handleFilterChange}
-                        onRemoveCallback={this.handleFilterRemoval}
+                        onEditCallback={this.handleOperatorChange}
+                        key={uuidv1()}
+                      />
+                    );
+                  case INSTRUCTION_TYPE_FILTER:
+                    let category = null;
+                    let type = null;
+                    categories.map((x, index) => {
+                      const value = find(x.filters, ['id', item.data.id]);
+                      if (value) {
+                        category = x.id;
+                        type = value.type;
+                      }
+                    });
+                    if (type === FILTER_TYPE_GENERIC) {
+                      const categoryInfo = find(categories, ['id', category]);
+                      const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+                      return (
+                        <GenericFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          config={categoryData.config && categoryData.config[categoryData.id]}
+                          intl={intl}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
+                      return (
+                        <NumericalComparisonFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          intl={intl}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_GENERICBOOL) {
+                      const categoryInfo = find(categories, ['id', category]);
+                      const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+                      const allOption = [];
+                      Object.keys(categoryData.search).map((keyName) => {
+                        const datum = facets[keyName];
+                        if (datum && datum[0]) {
+                          allOption.push({
+                            value: keyName,
+                            count: datum[0].count,
+                          });
+                        }
+                      });
+                      return (
+                        <GenericBooleanFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={allOption || []}
+                          intl={intl}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_COMPOSITE) {
+                      return (
+                        <CompositeFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          intl={intl}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_SPECIFIC) {
+                      const categoryInfo = find(categories, ['id', category]);
+                      const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+                      return (
+                        <SpecificFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          config={categoryData.config && categoryData.config[categoryData.id]}
+                          intl={intl}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          externalDataSet={externalData}
+                          key={uuidv1()}
+                        />
+                      );
+                    }
+                    break;
+
+                  case INSTRUCTION_TYPE_SUBQUERY:
+                    const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
+                    const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null;
+                    return (
+                      <Subquery
+                        index={index}
+                        options={options}
+                        data={item.data}
+                        intl={intl}
+                        autoSelect={active}
+                        queryIndex={queryIndex}
+                        queryTitle={queryTitle}
+                        onEditCallback={this.handleSubqueryChange}
+                        onRemoveCallback={this.handleSubqueryRemoval}
                         onSelectCallback={onSelectCallback}
                         key={uuidv1()}
                       />
-                   );
-              } else if (type === FILTER_TYPE_COMPOSITE) {
-                return (
-                  <CompositeFilter
-                    index={index}
-                    options={options}
-                    autoSelect={active}
-                    data={item.data}
-                    dataSet={facets[item.data.id] || []}
-                    intl={intl}
-                    category={category}
-                    onEditCallback={this.handleFilterChange}
-                    onRemoveCallback={this.handleFilterRemoval}
-                    onSelectCallback={onSelectCallback}
-                    key={uuidv1()}
-                  />
-                );
-              } else if (type === FILTER_TYPE_SPECIFIC) {
-                  return (
-                    <SpecificFilter
-                      index={index}
-                      options={options}
-                      autoSelect={active}
-                      data={item.data}
-                      dataSet={facets[item.data.id] || []}
-                      externalDataSet={externalData}
-                      intl={intl}
-                      category={category}
-                      onEditCallback={this.handleFilterChange}
-                      onRemoveCallback={this.handleFilterRemoval}
-                      onSelectCallback={onSelectCallback}
-                      key={uuidv1()}
-                    />
-                  );
-              }
-              break;
-
-              case INSTRUCTION_TYPE_SUBQUERY:
-                const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
-                const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null
-                return (
-                  <Subquery
-                    index={index}
-                    options={options}
-                    data={item.data}
-                    intl={intl}
-                    autoSelect={active}
-                    queryIndex={queryIndex}
-                    queryTitle={queryTitle}
-                    onEditCallback={this.handleSubqueryChange}
-                    onRemoveCallback={this.handleSubqueryRemoval}
-                    onSelectCallback={onSelectCallback}
-                    key={uuidv1()}
-                  />
-                );
-              default:
-                return null;
-            }
-          })}
-        </div>
+                    );
+                  default:
+                    return null;
+                }
+              })}
+            </div>
+          )
         }
       </div>
     );
@@ -675,7 +669,7 @@ Query.propTypes = {
 };
 
 Query.defaultProps = {
-  original : [],
+  original: [],
   display: {
     compoundOperators: false,
     viewableSqon: false,

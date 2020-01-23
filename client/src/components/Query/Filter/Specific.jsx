@@ -1,149 +1,92 @@
 /* eslint-disable */
+
 import React from 'react';
 import {
-  Typography, Row, Col, Checkbox, Radio, Input, Tag, Tooltip,
+  Row, Col, Checkbox, Radio, Tag, Tooltip,
 } from 'antd';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
 } from 'lodash';
-import IconKit from 'react-icons-kit';
 import {
   empty, one, full,
 } from 'react-icons-kit/entypo';
 import PropTypes from 'prop-types';
 
 import Filter, { FILTER_TYPE_SPECIFIC } from './index';
-import { FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_NONE, FILTER_OPERAND_TYPE_ONE } from './Generic';
+import {
+  FILTER_OPERAND_TYPE_ALL,
+  FILTER_OPERAND_TYPE_DEFAULT,
+  FILTER_OPERAND_TYPE_NONE,
+  FILTER_OPERAND_TYPE_ONE,
+} from './Generic';
 
-const SELECTOR_ALL = 'all'
-const SELECTOR_INTERSECTION = 'intersection'
-const SELECTOR_DIFFERENCE = 'difference'
-const SELECTORS = [SELECTOR_ALL, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE]
+const SELECTOR_ALL = 'all';
+const SELECTOR_INTERSECTION = 'intersection';
+const SELECTOR_DIFFERENCE = 'difference';
+const SELECTOR_DEFAULT = SELECTOR_ALL;
+const SELECTORS = [SELECTOR_ALL, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
 
 class SpecificFilter extends Filter {
+  constructor(props) {
+    super(props);
+    this.state = {
+      draft: null,
+      selection: [],
+      selector: null,
+      indeterminate: false,
+      size: null,
+      page: null,
+      allOptions: null,
+    };
+    this.getEditor = this.getEditor.bind(this);
+    this.getEditorLabels = this.getEditorLabels.bind(this);
+    this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
+    this.getEditorInstruction = this.getEditorInstruction.bind(this);
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
+    this.handleOperandChange = this.handleOperandChange.bind(this);
+    this.handleSelectorChange = this.handleSelectorChange.bind(this);
+    this.handleSelectionChange = this.handleSelectionChange.bind(this);
+    this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
 
-    constructor(props) {
-      super(props);
-      this.state = {
-        draft: null,
-        selection: [],
-        selector: null,
-        indeterminate: false,
-        size: null,
-        page: null,
-        allOptions: null,
-      };
-      this.getEditor = this.getEditor.bind(this);
-      this.getLabel = this.getLabel.bind(this);
-      this.getPopoverContent = this.getPopoverContent.bind(this);
-      this.getPopoverLegend = this.getPopoverLegend.bind(this);
-      this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
-      this.handleOperandChange = this.handleOperandChange.bind(this);
-      this.handleSelectorChange = this.handleSelectorChange.bind(this);
-      this.handleSelectionChange = this.handleSelectionChange.bind(this);
-      this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
-      this.handlePageChange = this.handlePageChange.bind(this);
+    // @NOTE Initialize Component State
+    const { data, dataSet } = props;
 
-      // @NOTE Initialize Component State
-      const { data, dataSet } = props;
+    this.state.draft = cloneDeep(data);
+    this.state.selector = SELECTOR_DEFAULT;
+    this.state.selection = data.values ? cloneDeep(data.values) : [];
+    this.state.page = 1;
+    this.state.size = 10;
+    this.state.allOptions = cloneDeep(dataSet);
 
-      this.state.draft = cloneDeep(data);
-      this.state.selector = SELECTOR_ALL;
-      this.state.selection = data.values ? cloneDeep(data.values) : [];
-      this.state.page = 1;
-      this.state.size = 10;
-      this.state.allOptions = cloneDeep(dataSet);
-
-      const { selection, allOptions } = this.state;
-      if (selection.length > 0) {
-        const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
-        if (value.length === 0) {
-          const selectedValue = [];
-          selection.map(x => selectedValue.push({ value: x, count: 0 }));
-          allOptions.unshift(...selectedValue);
-        } else {
-          const sorted = orderBy(value, ['count'], ['desc']);
-          pullAllBy(allOptions, cloneDeep(sorted), 'value');
-          allOptions.unshift(...sorted);
-        }
+    const { selection, allOptions } = this.state;
+    if (selection.length > 0) {
+      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
+      if (value.length === 0) {
+        const selectedValue = [];
+        selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        allOptions.unshift(...selectedValue);
+      } else {
+        const sorted = orderBy(value, ['count'], ['desc']);
+        pullAllBy(allOptions, cloneDeep(sorted), 'value');
+        allOptions.unshift(...sorted);
       }
     }
-
-  getLabel() {
-    const { data } = this.props;
-    const { values } = data;
-    return JSON.stringify(values);
   }
 
-  getPopoverLegend() {
-    const { data } = this.props;
-    const { operand } = data;
-    switch (operand) {
-      default:
-      case FILTER_OPERAND_TYPE_ALL:
-        return (<IconKit size={16} icon={full} />);
-      case FILTER_OPERAND_TYPE_ONE:
-        return (<IconKit size={16} icon={one} />);
-      case FILTER_OPERAND_TYPE_NONE:
-        return (<IconKit size={16} icon={empty} />);
-    }
-  }
-
-  getPopoverContent() {
-    const { intl, data, category } = this.props;
-    const { Text } = Typography;
-
-    const titleText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
-    const descriptionText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
-    const operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` });
-    const categoryText = category ? intl.formatMessage({ id: `screen.patientvariant.category_${category}` }) : null;
-    const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter_value' });
-    const valueList = data.values ? data.values.map((x, index) => <li key={index}>{x}</li>) : null;
-
-    return (
-      <div>
-        <Row type="flex" justify="space-between" gutter={32}>
-          <Col>
-            <Text strong>{titleText}</Text>
-          </Col>
-          <Col>
-            <Text>{categoryText}</Text>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Text>{descriptionText}</Text>
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col>
-            <Text>{operandText}</Text>
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col>
-            {valueText}
-            {' '}
-            :
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <ul>
-              {valueList}
-            </ul>
-          </Col>
-        </Row>
-      </div>
-    );
+  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
+    return {
+      id,
+      type: FILTER_TYPE_SPECIFIC,
+      operand,
+      values,
+    };
   }
 
   handleSearchByQuery(values) {
     const { dataSet } = this.props;
     const allOptions = cloneDeep(dataSet);
-    const search = values.toLowerCase()
+    const search = values.toLowerCase();
     const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
     pullAllBy(allOptions, cloneDeep(toRemove), 'value');
@@ -169,21 +112,21 @@ class SpecificFilter extends Filter {
     } else {
       const { dataSet, externalDataSet } = this.props;
       const { selector } = this.state;
-      const externalOntology = externalDataSet.ontology.map(ontology => ontology.code)
+      const externalOntology = externalDataSet.ontology.map(ontology => ontology.code);
       let options = [];
       let indeterminate = false;
       switch (selector) {
         default:
         case SELECTOR_ALL:
-          options = dataSet
+          options = dataSet;
           break;
         case SELECTOR_INTERSECTION:
           indeterminate = true;
-          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) !== -1)
+          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) !== -1);
           break;
         case SELECTOR_DIFFERENCE:
           indeterminate = true;
-          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) === -1)
+          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) === -1);
           break;
       }
 
@@ -196,6 +139,7 @@ class SpecificFilter extends Filter {
 
   handleSelectionChange(values) {
     const { dataSet } = this.props;
+    const { draft } = this.state;
     const {
       selection, allOptions, page, size,
     } = this.state;
@@ -211,8 +155,11 @@ class SpecificFilter extends Filter {
         values.includes(x.value) ? selection.push(x.value) : null;
       }
     });
+    draft.values = selection;
+
     this.setState({
       selection,
+      draft,
       indeterminate: (!(values.length === dataSet.length) && values.length > 0),
     });
   }
@@ -234,10 +181,32 @@ class SpecificFilter extends Filter {
     }
   }
 
+  getEditorDraftInstruction() {
+    const { draft } = this.state;
+    const { id, operand, values } = draft;
+
+    return SpecificFilter.structFromArgs(id, values, operand);
+  }
+
+  getEditorInstruction() {
+    const { data } = this.props;
+    const { id, operand, values } = data;
+
+    return SpecificFilter.structFromArgs(id, values, operand);
+  }
+
+  getEditorLabels() {
+    const { data } = this.props;
+    return {
+      action: data.operand,
+      targets: data.values,
+    };
+  }
+
   getEditor() {
     const { intl, config, renderCustomDataSelector } = this.props;
     const {
-      draft, selection, selector, size, page, allOptions, indeterminate
+      draft, selection, selector, size, page, allOptions, indeterminate,
     } = this.state;
     const { operand } = draft;
     const allSelected = allOptions ? selection.length === allOptions.length : false;
@@ -270,7 +239,7 @@ class SpecificFilter extends Filter {
       this.handleSelectorChange,
       this.handleCheckAllSelections,
       [
-        { label: selectorIntersection, value: SELECTOR_INTERSECTION},
+        { label: selectorIntersection, value: SELECTOR_INTERSECTION },
         { label: selectorDifference, value: SELECTOR_DIFFERENCE },
         { label: selectorAll, value: SELECTOR_ALL },
       ],
@@ -278,68 +247,73 @@ class SpecificFilter extends Filter {
       allSelected ? selectNone : selectAll,
       allSelected,
       indeterminate,
-    )
-
-    return (
-      <>
-        <Row>
-          <Col span={24}>
-            <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
-              {config.operands.map(configOperand => (
-                <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
-                  {intl.formatMessage({ id: `screen.patientvariant.filter.operand.${configOperand}` })}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Col>
-        </Row>
-        { customDataSelector }
-        <br />
-        <Row>
-          <Col span={24}>
-            <Checkbox.Group
-              options={options}
-              value={selection}
-              onChange={this.handleSelectionChange}
-            />
-          </Col>
-        </Row>
-      </>
     );
+
+    return {
+      getLabels: this.getEditorLabels,
+      getDraftInstruction: this.getEditorDraftInstruction,
+      getInstruction: this.getEditorInstruction,
+      contents: (
+        <>
+          <Row>
+            <Col span={24}>
+              <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
+                {config.operands.map(configOperand => (
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
+                    {intl.formatMessage({ id: `screen.patientvariant.filter.operand.${configOperand}` })}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+            </Col>
+          </Row>
+          { customDataSelector }
+          <br />
+          <Row>
+            <Col span={24}>
+              <Checkbox.Group
+                options={options}
+                value={selection}
+                onChange={this.handleSelectionChange}
+              />
+            </Col>
+          </Row>
+        </>
+      ),
+    };
   }
+
   render() {
     const { allOptions } = this.state;
     return (
       <Filter
         {...this.props}
         type={FILTER_TYPE_SPECIFIC}
-        searchable={true}
         editor={this.getEditor()}
-        label={this.getLabel()}
-        legend={this.getPopoverLegend()}
-        content={this.getPopoverContent()}
+        searchable={true}
+        onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
-        onSearchCallback = {this.handleSearchByQuery}
         sortData={allOptions}
       />
     );
   }
 }
+
 SpecificFilter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
-  externalDataSet: PropTypes.shape({}).isRequired,
   category: PropTypes.string,
   config: PropTypes.shape({}).isRequired,
+  externalDataSet: PropTypes.shape({}).isRequired,
   renderCustomDataSelector: PropTypes.shape.func,
 };
+
 SpecificFilter.defaultProps = {
   renderCustomDataSelector: (onChangeCallback, onCheckAllCallback, values, selector, checkboxLabel, checkboxIsChecked, checkboxIsIndeterminate = false) => (
-    //@NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
+    // @NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
     <>
       <br />
-      <Row style={{ display: 'flex', alignItems: 'center' }} >
+      <Row style={{ display: 'flex', alignItems: 'center' }}>
         <Col span={6}>
           <Checkbox
             key="specific-selector-check-all"
@@ -364,7 +338,8 @@ SpecificFilter.defaultProps = {
   ),
   category: '',
   config: {
-    operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE]
+    operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE],
   },
 };
+
 export default SpecificFilter;

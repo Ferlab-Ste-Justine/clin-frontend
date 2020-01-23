@@ -33,9 +33,9 @@ class GenericFilter extends React.Component {
       allOptions: null,
     };
     this.getEditor = this.getEditor.bind(this);
-    this.getLabel = this.getLabel.bind(this);
-    this.getPopoverContent = this.getPopoverContent.bind(this);
-    this.getPopoverLegend = this.getPopoverLegend.bind(this);
+    this.getEditorLabels = this.getEditorLabels.bind(this);
+    this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
+    this.getEditorInstruction = this.getEditorInstruction.bind(this);
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
     this.handleOperandChange = this.handleOperandChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
@@ -74,77 +74,27 @@ class GenericFilter extends React.Component {
     }
   }
 
-  getLabel() {
-    const { data } = this.props;
-    const { values } = data;
-    return JSON.stringify(values);
+  getEditorDraftInstruction() {
+    const { draft } = this.state;
+    const { id, operand, values } = draft;
+
+    return GenericFilter.structFromArgs(id, values, operand);
   }
 
-  getPopoverLegend() {
+  getEditorInstruction() {
     const { data } = this.props;
-    const { operand } = data;
-    switch (operand) {
-      default:
-      case FILTER_OPERAND_TYPE_ALL:
-        return (<IconKit size={16} icon={full} />);
-      case FILTER_OPERAND_TYPE_ONE:
-        return (<IconKit size={16} icon={one} />);
-      case FILTER_OPERAND_TYPE_NONE:
-        return (<IconKit size={16} icon={empty} />);
+    const { id, operand, values } = data;
+
+    return GenericFilter.structFromArgs(id, values, operand);
+  }
+
+  getEditorLabels() {
+    const { data } = this.props;
+    return {
+      action: data.operand,
+      targets: data.values
     }
   }
-
-  getPopoverContent() {
-    const { intl, data, category } = this.props;
-    const { Text } = Typography;
-
-    const titleText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
-    const descriptionText = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
-    const operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` });
-    const categoryText = category ? intl.formatMessage({ id: `screen.patientvariant.category_${category}` }) : null;
-    const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter_value' });
-    const valueList = data.values ? data.values.map((x, index) => <li key={index}>{x}</li>) : null;
-
-    return (
-      <div>
-        <Row type="flex" justify="space-between" gutter={32}>
-          <Col>
-            <Text strong>{titleText}</Text>
-          </Col>
-          <Col>
-            <Text>{categoryText}</Text>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Text>{descriptionText}</Text>
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col>
-            <Text>{operandText}</Text>
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col>
-            {valueText}
-            {' '}
-:
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <ul>
-              {valueList}
-            </ul>
-          </Col>
-        </Row>
-      </div>
-    );
-  }
-
 
   getEditor() {
     const { intl, config } = this.props;
@@ -176,7 +126,11 @@ class GenericFilter extends React.Component {
       };
     });
 
-    return (
+    return {
+      getLabels: this.getEditorLabels,
+      getDraftInstruction: this.getEditorDraftInstruction,
+      getInstruction: this.getEditorInstruction,
+      contents: (
       <>
         <Row>
           <Col span={24}>
@@ -211,7 +165,7 @@ class GenericFilter extends React.Component {
           </Col>
         </Row>
       </>
-    );
+    )};
   }
 
   handleSearchByQuery(values) {
@@ -267,6 +221,7 @@ class GenericFilter extends React.Component {
         values.includes(x.value) ? selection.push(x.value) : null;
       }
     });
+
     this.setState({
       selection,
       indeterminate: (!(values.length === dataSet.length) && values.length > 0),
@@ -289,13 +244,10 @@ class GenericFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_GENERIC}
-        searchable={true}
         editor={this.getEditor()}
-        label={this.getLabel()}
-        legend={this.getPopoverLegend()}
-        content={this.getPopoverContent()}
+        searchable={true}
+        onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
-        onSearchCallback = {this.handleSearchByQuery}
         sortData={allOptions}
       />
     );
