@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input,Popconfirm
+  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input,Popconfirm, Popover
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, pullAllBy, filter, isEmpty, isEqual, every, remove, first,
@@ -112,7 +112,8 @@ class Statement extends React.Component {
     this.handleFocusDropdown = this.handleFocusDropdown.bind(this)
     this.deleteDropDown = this.deleteDropDown.bind(this)
     this.onCancel= this.onCancel.bind(this)
-    this.test = this.test.bind(this)
+    this.toggleMenu = this.toggleMenu.bind(this)
+    this.isDropdownOpen = this.isDropdownOpen.bind(this)
 
   }
 
@@ -321,8 +322,7 @@ class Statement extends React.Component {
       id = this.props.activeStatementId;
     }
 
-    const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
-    this.props.onUpdateStatementCallback(id, title, '', this.props.data, false);
+    this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', this.props.data, false);
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
@@ -353,37 +353,34 @@ class Statement extends React.Component {
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
-  deleteStatement(e) {
-    let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
-    console.log("id", id)
+  deleteStatement(value) {
+    let id = value.currentTarget ? value.currentTarget.getAttribute('dataid') : value;
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
       this.setState({
         statementTitle: null,
         statementVisualClueText: '',
+        dropDownIsOpen:false,
       });
     }
 
     this.props.onDeleteStatementCallback(id);
-    e.stopPropagation();
+    value.currentTarget ?value.stopPropagation() : null ;
   }
 
-  selectStatement(e) {
-    console.log("bedon")
-    console.log("e", e)
-    let id = e.target ? e.target.getAttribute('dataid') : e;
-    console.log("id", id)
+  selectStatement(value) {
+    let id = value;
     const {popConfirmDropDownIsOpen, popConfirmDropDownNewIsOpen} = this.state
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
     }
     const callbackSelect = () => {
-      console.log("callBacSelect")
       this.setState({
         statementTitle: null,
         statementVisualClueText: '',
+        dropDownIsOpen:false
       });
       this.props.onSelectStatementCallback(id);
     };
@@ -721,26 +718,34 @@ class Statement extends React.Component {
   }
 
   onBlurDropdown(e){
-    this.setState({dropDownIsOpen:false})
   }
 
   handleFocusDropdown(e){
     const{dropDownIsOpen} = this.state
-    console.log("coucou1")
-    this.setState({dropDownIsOpen:!dropDownIsOpen})
   }
 
   deleteDropDown(e){
-    console.log("coucou2")
-  this.setState({popConfirmDropDownIsOpen:true})
+  this.setState({   popConfirmDropDownIsOpen:true,
+                })
   }
 
   onCancel(e){
-  this.setState({popConfirmDropDownIsOpen:false})
+    let dropdown = document.querySelector(".filterDropdown")
+    dropdown.focus()
+
+    this.setState({popConfirmDropDownIsOpen:false})
   }
-  test(){
-    console.log("Patate")
+
+  toggleMenu(){
+  this.setState({dropDownIsOpen: !this.isDropdownOpen()})
+
   }
+
+    isDropdownOpen() {
+      const { dropDownIsOpen } = this.state;
+      return dropDownIsOpen === true;
+    }
+
 
   render() {
     const { data, activeStatementId, statements } = this.props;
@@ -859,10 +864,8 @@ class Statement extends React.Component {
     };
 
     const contextSelectStatement = ({ key }) => {
-      console.log("key", key)
-      this.selectStatement(key);
+      this.setState({dropDownIsOpen:true})
     };
-
     return (
       <div className={styleStatement.statement}>
         <Modal
@@ -1002,14 +1005,12 @@ class Statement extends React.Component {
                   <Divider type="vertical" className={styleStatement.divider} />
                       <Dropdown
                         trigger={['click']}
-                        className={`${styleStatement.button} ${dropDownIsOpen ? `${styleStatement.buttonActive}` : null}`}
+                        className={`${styleStatement.button} ${dropDownIsOpen ? `${styleStatement.buttonActive}` : null} filterDropdown `}
                         disabled={(inactiveStatementKeys.length == 0)}
-                        onBlur= {this.onBlurDropdown}
-                        onClick={this.handleFocusDropdown}
-                        visible={true}
-                        overlayClassName={styleStatement.dropdown}
+                        visible={this.isDropdownOpen()}
+                        onVisibleChange={this.toggleMenu}
+                        overlayClassName={`${styleStatement.dropdown} `}
                         overlay={(inactiveStatementKeys.length > 0 ? (
-
                                                               <Menu >
                                                                 {
                                                                   inactiveStatementKeys.map(key => (
@@ -1020,10 +1021,10 @@ class Statement extends React.Component {
                                                                                   title="Vous perdrez toutes les modifications non enregistrées."
                                                                                   okText="Nouveau"
                                                                                   cancelText="Annuler"
-                                                                                  onConfirm={this.selectStatement}
+                                                                                  onConfirm={() => this.selectStatement(statements[key].uid)}
                                                                                   onCancel={this.onCancel}
                                                                                   icon={null}
-                                                                                  overlayClassName={styleStatement.popconfirm}
+                                                                                  overlayClassName={`${styleStatement.popconfirm} patate ${key}`}
                                                                                   dataid={statements[key].uid}
                                                                                 >
                                                                                   <div className={styleStatement.dropdownTitle} >
@@ -1046,7 +1047,7 @@ class Statement extends React.Component {
                                                                                       placement="topRight"
                                                                                       okText={deleteText}
                                                                                       cancelText="Annuler"
-                                                                                      onConfirm={this.deleteStatement}
+                                                                                      onConfirm={() => this.deleteStatement(statements[key].uid)}
                                                                                       onCancel={this.onCancel}
                                                                                       icon={null}
                                                                                       overlayClassName={styleStatement.popconfirm}
