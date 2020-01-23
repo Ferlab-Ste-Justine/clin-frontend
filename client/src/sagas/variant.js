@@ -121,6 +121,7 @@ function* watchRefreshCount() {
 
 function* watchRefreshResults() {
   yield takeLatest([
+    actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
     actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED,
     actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED,
     actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
