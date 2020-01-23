@@ -218,6 +218,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED:
+      delete draft.statements['draft']
       const statementId = action.payload.uid ? action.payload.uid : Object.keys(draft.statements).find(
         statementKey => draft.statements[statementKey].isDefault === true
       )
@@ -230,6 +231,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
+      delete draft.statements['draft']
       const updatedStatement = {
         uid: action.payload.data.uid,
         title: action.payload.data.title,
@@ -239,7 +241,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       };
       draft.activeStatementId = updatedStatement.uid;
       draft.statements[updatedStatement.uid] = updatedStatement;
-      draft.activeQuery = last(updatedStatement.queries).key;
       draft.originalQueries = cloneDeep(updatedStatement.queries)
       draft.draftQueries = cloneDeep(updatedStatement.queries)
       draft.draftHistory = [];
