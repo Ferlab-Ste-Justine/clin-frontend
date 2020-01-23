@@ -4,41 +4,40 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Row, Col, Checkbox,Tooltip, Tag
+  Row, Col, Checkbox, Tooltip, Tag,
 } from 'antd';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
 } from 'lodash';
-import Filter from './index';
-import {FILTER_TYPE_GENERICBOOL} from './index'
+import Filter, { FILTER_TYPE_GENERIC } from './index';
+import { FILTER_TYPE_GENERICBOOL } from './index';
 
 class GenericBooleanFilter extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
-          draft: null,
-          selection: [],
-          indeterminate: false,
-          size: null,
-          page: null,
-          allOptions: null,
+      draft: null,
+      selection: [],
+      indeterminate: false,
+      size: null,
+      page: null,
+      allOptions: null,
     };
 
     this.getEditor = this.getEditor.bind(this);
-    this.getLabel = this.getLabel.bind(this);
-    this.getPopoverContent = this.getPopoverContent.bind(this);
-    this.getPopoverLegend = this.getPopoverLegend.bind(this);
-    this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this)
-    this.handleSelectionChange = this.handleSelectionChange.bind(this)
-    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
+    this.getEditorLabels = this.getEditorLabels.bind(this);
+    this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
+    this.getEditorInstruction = this.getEditorInstruction.bind(this);
+    this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
+    this.handleSelectionChange = this.handleSelectionChange.bind(this);
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
 
     // @NOTE Initialize Component State
     const { data, dataSet } = props;
 
     this.state.draft = cloneDeep(data);
     this.state.selection = data.values ? cloneDeep(data.values) : [];
-    this.state.allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc'])
+    this.state.allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
     this.state.page = 1;
     this.state.size = 10;
 
@@ -54,83 +53,97 @@ class GenericBooleanFilter extends React.Component {
         this.state.allOptions.unshift(...sorted);
       }
     }
+  }
 
-
-}
-      getPopoverLegend() {
-
-      }
-
-      getLabel() {
-        const { data } = this.props;
-        const { values } = data;
-        return JSON.stringify(values);
-      }
-
-      getPopoverContent() {
-          const { data } = this.props;
-          const { operand } = data;
-          return (
-              <div>
-                  popover
-              </div>
-          );
-      }
-
-    getEditor() {
-        const { intl } = this.props;
-        const {
-          selection, size, page, allOptions,
-        } = this.state;
-        const allSelected = allOptions ? selection.length === allOptions.length : false;
-        const minValue = size * (page - 1);
-        const maxValue = size * page;
-
-        const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
-        const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
-
-        const options = allOptions.slice(minValue, maxValue).map((option) => {
-          const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
-          return {
-            label: (
-              <span>
-                <Tooltip title={option.value}>
-                  {value}
-                </Tooltip>
-                <Tag>{option.count}</Tag>
-              </span>
-            ),
-            value: option.value,
-          };
-        });
-
-        return (
-            <>
-                <Row>
-                  <Checkbox
-                    key="check-all"
-                    className="selector"
-                    indeterminate={(!allSelected && selection.length > 0)}
-                    onChange={this.handleCheckAllSelections}
-                    checked={allSelected}
-                  />
-                  {(!allSelected ? selectAll : selectNone)}
-                </Row>
-                <br />
-                <Row>
-                  <Col span={24}>
-                    <Checkbox.Group
-                      options={options}
-                      value={selection}
-                      onChange={this.handleSelectionChange}
-                    />
-                  </Col>
-                </Row>
-            </>
-        );
+  static structFromArgs(id, values = []) {
+    return {
+      id,
+      type: FILTER_TYPE_GENERICBOOL,
+      values,
     }
+  }
 
-    handleCheckAllSelections(e) {
+  getEditorDraftInstruction() {
+    const { draft } = this.state;
+    const { id, values } = draft;
+
+    return GenericBooleanFilter.structFromArgs(id, values);
+  }
+
+  getEditorInstruction() {
+    const { data } = this.props;
+    const { id, values } = data;
+
+    return GenericBooleanFilter.structFromArgs(id, values);
+  }
+
+  getEditorLabels() {
+    const { data } = this.props;
+    return {
+      action: null,
+      targets: data.values
+    }
+  }
+
+  getEditor() {
+    const { intl } = this.props;
+    const {
+      selection, size, page, allOptions,
+    } = this.state;
+    const allSelected = allOptions ? selection.length === allOptions.length : false;
+    const minValue = size * (page - 1);
+    const maxValue = size * page;
+
+    const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
+    const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
+
+    const options = allOptions.slice(minValue, maxValue).map((option) => {
+      const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
+      return {
+        label: (
+          <span>
+            <Tooltip title={option.value}>
+              {value}
+            </Tooltip>
+            <Tag>{option.count}</Tag>
+          </span>
+        ),
+        value: option.value,
+      };
+    });
+
+    return {
+      getLabels: this.getEditorLabels,
+      getDraftInstruction: this.getEditorDraftInstruction,
+      getInstruction: this.getEditorInstruction,
+      contents: (
+        <>
+        <Row>
+          <Checkbox
+            key="check-all"
+            className="selector"
+            indeterminate={(!allSelected && selection.length > 0)}
+            onChange={this.handleCheckAllSelections}
+            checked={allSelected}
+          />
+          {(!allSelected ? selectAll : selectNone)}
+        </Row>
+        <br />
+        <Row>
+          <Col span={24}>
+            <Checkbox.Group
+              options={options}
+              value={selection}
+              onChange={this.handleSelectionChange}
+            />
+          </Col>
+        </Row>
+        </>
+      )
+    };
+  }
+
+  handleCheckAllSelections(e) {
     const { target } = e;
     if (!target.checked) {
       this.setState({
@@ -145,57 +158,54 @@ class GenericBooleanFilter extends React.Component {
         indeterminate: false,
       });
     }
-    }
+  }
 
-    handleSearchByQuery(values) {
-      const { dataSet } = this.props;
-      const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc'])
-      const search = values
-      const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
+  handleSearchByQuery(values) {
+    const { dataSet } = this.props;
+    const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
+    const search = values;
+    const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
-      pullAllBy(allOptions, cloneDeep(toRemove), 'value');
-      this.setState({
-        allOptions,
-      });
-    }
+    pullAllBy(allOptions, cloneDeep(toRemove), 'value');
+    this.setState({
+      allOptions,
+    });
+  }
 
-    handleSelectionChange(values) {
-      const { dataSet } = this.props;
-      const {
-        selection, allOptions, page, size,
-      } = this.state;
+  handleSelectionChange(values) {
+    const { dataSet } = this.props;
+    const {
+      selection, allOptions, page, size,
+    } = this.state;
 
-      const minValue = size * (page - 1);
-      const maxValue = size * page;
-      const options = allOptions.slice(minValue, maxValue);
+    const minValue = size * (page - 1);
+    const maxValue = size * page;
+    const options = allOptions.slice(minValue, maxValue);
 
-      options.map((x) => {
-        if (selection.includes(x.value)) {
-          !values.includes(x.value) ? pull(selection, x.value) : null;
-        } else {
-          values.includes(x.value) ? selection.push(x.value) : null;
-        }
-      });
-      this.setState({
-        selection,
-        indeterminate: (!(values.length === dataSet.length) && values.length > 0),
-      });
-    }
+    options.map((x) => {
+      if (selection.includes(x.value)) {
+        !values.includes(x.value) ? pull(selection, x.value) : null;
+      } else {
+        values.includes(x.value) ? selection.push(x.value) : null;
+      }
+    });
+    this.setState({
+      selection,
+      indeterminate: (!(values.length === dataSet.length) && values.length > 0),
+    });
+  }
 
-    render() {
-        return <Filter
-            {...this.props}
-            type={FILTER_TYPE_GENERICBOOL}
-            searchable = {true}
-            editor={this.getEditor()}
-            label={this.getLabel()}
-            legend={this.getPopoverLegend()}
-            content={this.getPopoverContent()}
-            onSearchCallback = {this.handleSearchByQuery}
-        />;
-    }
-
-
+  render() {
+    return (
+      <Filter
+        {...this.props}
+        type={FILTER_TYPE_GENERICBOOL}
+        editor={this.getEditor()}
+        searchable
+        onSearchCallback={this.handleSearchByQuery}
+      />
+    );
+  }
 }
 
 GenericBooleanFilter.propTypes = {

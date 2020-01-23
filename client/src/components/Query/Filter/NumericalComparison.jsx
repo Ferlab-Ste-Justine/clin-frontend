@@ -22,8 +22,9 @@ class NumericalComparisonFilter extends React.Component {
       draft: null
     };
     this.getEditor = this.getEditor.bind(this);
-    this.getEditorValues = this.getEditorValues.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
+    this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
+    this.getEditorInstruction = this.getEditorInstruction.bind(this);
     this.handleComparatorChange = this.handleComparatorChange.bind(this)
     this.handleValueChange=this.handleValueChange.bind(this)
 
@@ -49,8 +50,9 @@ class NumericalComparisonFilter extends React.Component {
     const typeLte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lte' });
     const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter.numerical.value' });
     return {
-      getData: this.getEditorValues,
-      getText: this.getEditorLabels,
+      getLabels: this.getEditorLabels,
+      getDraftInstruction: this.getEditorDraftInstruction,
+      getInstruction: this.getEditorInstruction,
       contents: draft.values ? draft.values.map((datum, index) => (
         <>
           <Row>
@@ -69,7 +71,7 @@ class NumericalComparisonFilter extends React.Component {
               {valueText}
             </Col>
             <Col>
-              <InputNumber onChange={this.handleValueChange} defaultValue={datum.value} step={0.1} />
+              <InputNumber onChange={this.handleValueChange} defaultValue={datum.value} step={1} />
             </Col>
           </Row>
         </>
@@ -77,27 +79,38 @@ class NumericalComparisonFilter extends React.Component {
     }
   }
 
-  getEditorValues() {
-    return this.state.draft;
+  getEditorDraftInstruction() {
+    const { draft } = this.state;
+    const { id, values } = draft;
+
+    return NumericalComparisonFilter.structFromArgs(id, values);
+  }
+
+  getEditorInstruction() {
+    const { data } = this.props;
+    const { id, values } = data;
+
+    return NumericalComparisonFilter.structFromArgs(id, values);
   }
 
   getEditorLabels() {
+    const { data } = this.props;
     return {
-      operation: this.state.draft.values[0].comparator,
-      target: this.state.draft.values[0].value
+      action: data.values[0].comparator,
+      targets: [ data.values[0].value ]
     }
   }
 
   handleComparatorChange(e){
-      const { draft } = this.state;
-      draft.values[0].comparator = e.target.value
-      this.setState({ draft });
+    const { draft } = this.state;
+    draft.values[0].comparator = e.target.value
+    this.setState({ draft });
   }
 
   handleValueChange(value){
-      const { draft } = this.state;
-      draft.values[0].value = value;
-      this.setState({ draft });
+    const { draft } = this.state;
+    draft.values[0].value = value;
+    this.setState({ draft });
   }
 
   render() {
@@ -105,8 +118,6 @@ class NumericalComparisonFilter extends React.Component {
       <Filter
         {...this.props}
         type={FILTER_TYPE_NUMERICAL_COMPARISON}
-        searchable={false}
-        sortData={[]}
         editor={this.getEditor()}
       />
     );

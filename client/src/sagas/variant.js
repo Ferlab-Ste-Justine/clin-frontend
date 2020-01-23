@@ -236,6 +236,27 @@ function* deleteStatement(action) {
       throw new ApiError(statementResponse.error);
     }
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: { uid: action.payload.id } });
+
+    const { details } = yield select(state => state.patient);
+    const { statements, activeStatementId, activeQuery } = yield select(state => state.variant);
+
+    yield put({
+      type: actions.PATIENT_VARIANT_COUNT_REQUESTED,
+      payload: {
+        patient: details.id,
+        statement: statements[activeStatementId].queries,
+        queries: statements[activeStatementId].queries.map(query => query.key),
+      },
+    });
+    yield put({
+      type: actions.PATIENT_VARIANT_SEARCH_REQUESTED,
+      payload: {
+        patient: details.id,
+        statement: statements[activeStatementId].queries,
+        query: activeQuery,
+      },
+    });
+
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter removed.' } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });

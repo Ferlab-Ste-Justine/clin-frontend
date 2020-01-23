@@ -3,10 +3,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,Input
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination, Input,
 } from 'antd';
 import {
-  cloneDeep,
+  cloneDeep, isArray,
 } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
@@ -56,10 +56,12 @@ class Filter extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
 
     // @NOTE Initialize Component State
-    const { dataSet, autoOpen, autoSelect, visible, sortData } = props;
+    const {
+      dataSet, autoOpen, autoSelect, visible, sortData,
+    } = props;
     this.state.dataSet = dataSet || [];
     this.state.opened = autoOpen;
     this.state.visible = visible;
@@ -118,54 +120,23 @@ class Filter extends React.Component {
     }
   }
 
-  // @NOTE Refactor this; logic should be moved within the class for the selected filter type
   handleApply() {
     if (this.isEditable()) {
-      const { editor, onEditCallback, data, type, index } = this.props;
-      const { id } = data;
-      let instruction = { id, type, index };
+      const {
+        editor, onEditCallback, index,
+      } = this.props;
+      const instruction = editor.getDraftInstruction();
+      instruction.index = index
 
       this.setState({
         opened: false,
       }, () => {
         onEditCallback(instruction);
+        if (instruction.values && instruction.values.length === 0) {
+          this.handleClose(true);
+        }
       });
-
-      if (type === FILTER_TYPE_GENERIC) {
-        instruction.values = editor.props.children[4].props.children.props.children.props.value;
-        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
-        if (instruction.values.length === 0) {
-          this.handleClose(true);
-        }
-      } else if (type === FILTER_TYPE_SPECIFIC) {
-        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
-        instruction.values = editor.props.children[3].props.children.props.children.props.value;
-        if (instruction.values.length === 0) {
-          this.handleClose(true);
-        }
-      } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
-
-        const data = editor.getData()
-        instruction.values = data.values;
-
-
-      } else if (type === FILTER_TYPE_GENERICBOOL) {
-        instruction.values = editor.props.children[2].props.children.props.children.props.value
-      } else if (type === FILTER_TYPE_COMPOSITE) {
-        const quality = editor.props.children.props.children[1] ? editor.props.children.props.children[1].props.children.props.value : null;
-        const comparator = editor.props.children.props.children[2] ? editor.props.children.props.children[2].props.children.props.value : null;
-        const score = editor.props.children.props.children[3] ? editor.props.children.props.children[3].props.children.props.value : null;
-        if (comparator) {
-          instruction.comparator = comparator;
-          instruction.value = score;
-        } else {
-          delete instruction.comparator;
-          instruction.value = quality;
-        }
-      }
-
-
-   }
+    }
   }
 
   handleCancel() {
@@ -202,21 +173,36 @@ class Filter extends React.Component {
     });
   }
 
-  handleSearchByQuery(value){
-      const { onSearchCallback } = this.props;
-      const search = value.target.value
-      onSearchCallback(search);
+  handleSearchByQuery(value) {
+    const { onSearchCallback } = this.props;
+    const search = value.target.value;
+    onSearchCallback(search);
   }
 
   render() {
-    const { allOptions, size, page, selected } = this.state;
-    const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable, autoSelect } = this.props;
-    let titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
-    const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
-
-    let operandText = ""
+    const { allOptions, size, page } = this.state;
+    const {
+      data, intl, overlayOnly, editor, dataSet, searchable, autoSelect,
+    } = this.props;
+    const filterLabel = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
+    const filterDescription = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
     const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
-    let values = []
+
+    console.log(' + editor.getInstruction() ' + JSON.stringify(editor.getInstruction()))
+
+    const editorLabels = editor.getLabels();
+    const actionLabel = editorLabels.action;
+    const actionTargets = editorLabels.targets;
+
+    console.log(' + editorLabels ' + JSON.stringify(editorLabels))
+
+    //const operandText = editorLabels.action;
+    //const  = editorLabels.target;
+
+
+    /*
+    let operandText = ""
+
     if(data.type === "generic" || data.type === "specific"){
         values = data.values
         operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` });
@@ -230,52 +216,47 @@ class Filter extends React.Component {
     else if(data.type ==="genericbool"){
         values = data.values
     }
-    else if(data.type ==="composite"){
-        values.push(data.value)
-        operandText=data.comparator;
-    }
-
+*/
     const overlay = (
       <Popover
         visible={this.isOpened()}
       >
         <Card className="filterCard">
-          <Typography.Title level={4}>{titleText}</Typography.Title>
-          <Typography>{descriptionText}</Typography>
+          <Typography.Title level={4}>{filterLabel}</Typography.Title>
+          <Typography>{filterDescription}</Typography>
           <br />
           {searchable && (
-               <>
-                 <Row>
-                   <Input
-                     allowClear
-                     placeholder={filterSearch}
-                     size="small"
-                     onChange={this.handleSearchByQuery}
-                   />
-                 </Row>
-                 <br/>
-               </>
+          <>
+            <Row>
+              <Input
+                allowClear
+                placeholder={filterSearch}
+                size="small"
+                onChange={this.handleSearchByQuery}
+              />
+            </Row>
+            <br />
+          </>
           )}
-          { editor.contents || editor }
+          { editor.contents }
           { allOptions && (
-                allOptions.length >= size
-                  ? (
-                    <Row style={{ marginTop: 'auto' }}>
-                      <br />
-                      <Col align="end" span={24}>
-                        <Pagination
-                          total={allOptions.length}
-                          pageSize={size}
-                          current={page}
-                          pageSizeOptions={['10', '25', '50', '100']}
-                          onChange={this.handlePageChange}
-                        />
-                      </Col>
-                    </Row>
-                  ) : null
+            allOptions.length >= size
+              ? (
+                <Row style={{ marginTop: 'auto' }}>
+                  <br />
+                  <Col align="end" span={24}>
+                    <Pagination
+                      total={allOptions.length}
+                      pageSize={size}
+                      current={page}
+                      pageSizeOptions={['10', '25', '50', '100']}
+                      onChange={this.handlePageChange}
+                    />
+                  </Col>
+                </Row>
+              ) : null
           )
           }
-
           <br />
           <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
             <Col>
@@ -307,49 +288,43 @@ class Filter extends React.Component {
         <Tag
           visible={this.isVisible()}
           onClose={this.handleClose}
-          color={autoSelect? '#b5e6f7' : '#d1deea'}
-          className={autoSelect? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
+          color={autoSelect ? '#b5e6f7' : '#d1deea'}
+          className={autoSelect ? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
         >
           <Tag
-            color={autoSelect? '#e2f5fc' : '#E9EFF5 '}
+            color={autoSelect ? '#e2f5fc' : '#E9EFF5 '}
             className={`${style.insideTag}`}
           >
-            { titleText }
+            { filterLabel }
           </Tag>
-          {operandText ?
-              <Tag
-                color={autoSelect? '#b5e6f7' : '#d1deea'}
-                className={`${style.insideTag} ${style.operator}`}
-              >
-                {operandText}
-              </Tag>
-
-            : null
-          }
-          { this.isEditable() && (
-          <Dropdown
-            trigger="click"
-            onVisibleChange={this.toggleMenu}
-            overlay={overlay}
-            visible={this.isOpened()}
-            placement="bottomLeft"
+          <Tag
+            color={autoSelect ? '#b5e6f7' : '#d1deea'}
+            className={`${style.insideTag} ${style.operator}`}
           >
-            <Tag
-              onClick={this.toggleMenu}
-              color="#FFFFFF"
-              className={`${style.insideTag }`}
+            { actionLabel }
+          </Tag>
+          { this.isEditable() && (
+            <Dropdown
+              trigger="click"
+              onVisibleChange={this.toggleMenu}
+              overlay={overlay}
+              visible={this.isOpened()}
+              placement="bottomLeft"
             >
-                  {values.map((label, index) =>
+              <Tag
+                onClick={this.toggleMenu}
+                color="#FFFFFF"
+                className={`${style.insideTag}`}
+              >
+                {actionTargets.map((target, index) => (
                   <>
-                  {index !==0 ? ' • '  : null
-                  }
-                  {label}
+                    {index !== 0 ? ' • ' : null } {target}
                   </>
-                  )}
-            </Tag>
-          </Dropdown>
+                ))}
+              </Tag>
+            </Dropdown>
           ) }
-          {autoSelect?  <IconKit  className={`${style.closingIcon}`}  onClick={this.handleClose}size={16} icon={ic_cancel} /> : null}
+          {autoSelect ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} /> : null}
         </Tag>
       </span>
     );
@@ -360,7 +335,7 @@ Filter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
-  type:PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -373,6 +348,8 @@ Filter.propTypes = {
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
+  searchable: PropTypes.bool,
+  sortable: PropTypes.bool,
   sortData: PropTypes.array,
 };
 
@@ -391,7 +368,9 @@ Filter.defaultProps = {
   autoSelect: false,
   overlayOnly: false,
   visible: true,
-  sortData:[]
+  searchable: false,
+  sortable: false,
+  sortData: [],
 };
 
 export default Filter;
