@@ -3,17 +3,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination, Input,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Pagination, Input,
 } from 'antd';
 import {
-  cloneDeep, isArray,
+  cloneDeep,
 } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
   ic_cancel, /* eslint-disable-line */
 } from 'react-icons-kit/md';
 
-import style from '../term.module.scss';
+import style from '../styles/term.module.scss';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -187,36 +187,9 @@ class Filter extends React.Component {
     const filterLabel = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
     const filterDescription = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
     const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
-
-    console.log(' + editor.getInstruction() ' + JSON.stringify(editor.getInstruction()))
-
     const editorLabels = editor.getLabels();
     const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
-
-    console.log(' + editorLabels ' + JSON.stringify(editorLabels))
-
-    //const operandText = editorLabels.action;
-    //const  = editorLabels.target;
-
-
-    /*
-    let operandText = ""
-
-    if(data.type === "generic" || data.type === "specific"){
-        values = data.values
-        operandText = intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` });
-    }
-    else if(data.type === "numcomparison"){
-        // @TODO Refactor other filters according to this structure
-        const editorLabels = editor.getText()
-        operandText = editorLabels.operation
-        values.push(editorLabels.target)
-    }
-    else if(data.type ==="genericbool"){
-        values = data.values
-    }
-*/
     const overlay = (
       <Popover
         visible={this.isOpened()}
@@ -335,22 +308,20 @@ Filter.propTypes = {
   intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
-  type: PropTypes.string.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
-  label: PropTypes.string,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
   searchable: PropTypes.bool,
-  sortable: PropTypes.bool,
   sortData: PropTypes.array,
+  autoSelect: PropTypes.bool,
 };
 
 Filter.defaultProps = {
@@ -363,13 +334,11 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
-  label: '',
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,
   visible: true,
   searchable: false,
-  sortable: false,
   sortData: [],
 };
 

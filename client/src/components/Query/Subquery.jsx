@@ -1,15 +1,15 @@
-/* eslint-disable */
+/* eslint-disable camelcase */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Tag,
 } from 'antd';
 import IconKit from 'react-icons-kit';
-import { ic_cancel } from 'react-icons-kit/md'; /* eslint-disable-line */
-import style from './term.module.scss';
+import { ic_cancel } from 'react-icons-kit/md';
+import style from './styles/term.module.scss';
 
 export const INSTRUCTION_TYPE_SUBQUERY = 'subquery';
-
 
 class Subquery extends React.Component {
   static structFromArgs(query) {
@@ -102,7 +102,10 @@ class Subquery extends React.Component {
           >
             { queryTitle }
           </Tag>
-          {autoSelect ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} /> : null}
+          {autoSelect
+            ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
+            : null
+          }
         </Tag>
       </span>
     );
