@@ -230,13 +230,6 @@ class PatientVariantScreen extends React.Component {
     const { actions } = this.props;
     this.handleCommitHistory();
     actions.removeQuery(keys);
-    setTimeout(() => {
-      const { variant, patient } = this.props;
-      const { draftQueries } = variant;
-      if (draftQueries.length > 0) {
-        actions.countVariants(patient.details.id, draftQueries, draftQueries.map(draftQueries => draftQueries.key));
-      }
-    }, 100);
   }
 
   handleQueryDuplication(query, index) {
@@ -312,7 +305,6 @@ class PatientVariantScreen extends React.Component {
   handleDeleteStatement(id) {
     const { actions } = this.props;
     actions.deleteStatement(id);
-    this.handleCreateDraftStatement();
   }
 
   handleDuplicateStatement(id) {
