@@ -298,6 +298,7 @@ class Query extends React.Component {
     } = options;
     const { onFocus } = this.state;
     const isDirty = !isEqual(original, draft);
+    const isEmpty = !draft.instructions || draft.instructions.length === 0
 
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
@@ -331,7 +332,7 @@ class Query extends React.Component {
             </div>
           </Tooltip>
           <div className={styleQuery.actions}>
-            {copyable && (
+            {copyable && !isEmpty && (
             <Tooltip title={duplicateText}>
               <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }} />
             </Tooltip>

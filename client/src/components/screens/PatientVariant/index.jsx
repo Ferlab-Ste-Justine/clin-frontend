@@ -185,45 +185,20 @@ class PatientVariantScreen extends React.Component {
   }
 
   handleQuerySelection(key) {
-    const { actions, variant, patient } = this.props;
-    const { draftQueries } = variant;
+    const { actions } = this.props;
     actions.selectQuery(key);
-    actions.searchVariants(patient.details.id, draftQueries, key, 'impact', 0, this.state.size);
   }
 
   handleQueryChange(query) {
     const { actions } = this.props;
     this.handleCommitHistory();
     actions.replaceQuery(query.data || query);
-    setTimeout(() => {
-      const queryKey = query.key || query.data.key;
-      this.handleQuerySelection(queryKey);
-      const { patient, variant } = this.props;
-      const subqueryKeys = variant.draftQueries.reduce((accumulator, draftQuery) => {
-        draftQuery.instructions.forEach((instruction) => {
-          if (instruction.type === 'subquery' && instruction.data.query === queryKey) {
-            accumulator.push(draftQuery.key);
-          }
-        });
-        return accumulator;
-      }, []);
-      if (subqueryKeys.length > 0) {
-        actions.countVariants(patient.details.id, variant.draftQueries, subqueryKeys);
-      }
-    }, 100);
   }
 
   handleQueriesChange(queries, activeQuery) {
     const { actions } = this.props;
     this.handleCommitHistory();
     actions.replaceQueries(queries);
-    setTimeout(() => {
-      if (activeQuery) {
-        this.handleQuerySelection((activeQuery.key || activeQuery.data.key));
-      } else if (queries.length === 1) {
-        this.handleQuerySelection(queries[0].key);
-      }
-    }, 100);
   }
 
   handleQueriesRemoval(keys) {
