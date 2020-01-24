@@ -262,7 +262,7 @@ class Statement extends React.Component {
         statementTitle: null,
       }, () => {
         const statement = {
-          title: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.title' })
+          title: this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.input.title.default' })
         }
         this.props.onCreateDraftStatementCallback(statement);
       });
@@ -270,10 +270,10 @@ class Statement extends React.Component {
 
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.content' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.cancel' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.body' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.cancel' }),
         callbackCreateDraft,
       );
     } else {
@@ -296,10 +296,10 @@ class Statement extends React.Component {
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.content' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDuplicate.modal.cancel' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.body' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.button.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.button.cancel' }),
         callbackDuplicate,
       );
     } else {
@@ -329,10 +329,10 @@ class Statement extends React.Component {
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.content' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmLoss.modal.cancel' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.body' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.cancel' }),
         callbackSetStatementAsDefault,
       );
     } else {
@@ -753,9 +753,6 @@ class Statement extends React.Component {
       }, this.props.onCreateDraftStatementCallback(newStatement));
     };
 
-    const contextSelectStatement = ({ key }) => {
-      this.setState({ dropDownIsOpen: true });
-    };
     return (
       <div className={styleStatement.statement}>
         <Modal
@@ -774,7 +771,7 @@ class Statement extends React.Component {
           <Input
             onChange={this.onModalSaveTitleInputChange}
             defaultValue={modalTitleSaveInputDefault}
-            value={this.state.saveTitleModalInputValue}
+            value={statementTitle}
           />
 
         </Modal>
