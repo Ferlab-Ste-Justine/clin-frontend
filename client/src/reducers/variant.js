@@ -263,9 +263,13 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       delete draft.statements[action.payload.uid]
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
       draft.activeStatementId = DRAFT_STATEMENT_UID;
-      draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(
-        payload.statement.title,
-      )
+      if (payload.statement) {
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(
+          payload.statement.title
+        )
+      } else {
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre')
+      }
       draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
       draft.originalQueries = [];
       draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
