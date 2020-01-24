@@ -212,12 +212,12 @@ class Statement extends React.Component {
     });
   }
 
-  showConfirmForDestructiveStatementAction(title, content, funcToCallBack) {
+  showConfirmForDestructiveStatementAction(title, content, okText, cancelText, funcToCallBack) {
     Modal.confirm({
       title,
       content,
-      okText: this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.ok' }),
-      cancelText: this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.cancel' }),
+      okText,
+      cancelText,
       onOk() { funcToCallBack(); },
       onCancel() {},
     });
