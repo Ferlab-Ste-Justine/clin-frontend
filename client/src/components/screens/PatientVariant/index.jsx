@@ -381,6 +381,7 @@ class PatientVariantScreen extends React.Component {
 
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
+    const completName = `${patient.details.lastName}, ${patient.details.firstName}`
     const familyMenu = (
       <Menu>
         <Menu.ItemGroup title={familyText} className={style.menuGroup}>
@@ -432,9 +433,7 @@ class PatientVariantScreen extends React.Component {
             <Row className={style.descriptionTitle} type="flex" align="middle">
               <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
                 <Button>
-                  {patient.details.lastName}
-,
-                  {patient.details.firstName}
+                  {completName}
                 </Button>
               </a>
               <svg className={style.genderIcon}>
