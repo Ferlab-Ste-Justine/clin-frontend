@@ -199,7 +199,7 @@ const en = {
   'screen.patientvariant.modal.statement.duplicate.button.ok': 'DUPLICATE',
   'screen.patientvariant.modal.statement.duplicate.button.cancel': 'CANCEL',
   'screen.patientvariant.modal.statement.load.title': 'Load another statement?',
-  'screen.patientvariant.modal.statement.load.body': 'You\'re about to load another statement; you currently have unsaved changes that will be lost',
+  'screen.patientvariant.modal.statement.load.body': 'You will lose any unsaved changes',
   'screen.patientvariant.modal.statement.load.button.ok': 'LOAD',
   'screen.patientvariant.modal.statement.load.button.cancel': 'CANCEL',
   'screen.patientvariant.query.menu.add': 'Add Title',

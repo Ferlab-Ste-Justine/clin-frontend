@@ -348,10 +348,9 @@ class Statement extends React.Component {
       id = activeStatementId;
       this.setState({
         statementTitle: null,
-        dropDownIsOpen: false,
       });
     }
-
+    this.toggleMenu(this.state.dropDownIsOpen)
     this.props.onDeleteStatementCallback(id);
     value.currentTarget ? value.stopPropagation() : null;
   }
@@ -859,7 +858,7 @@ class Statement extends React.Component {
                     className={styleStatement.button}
                   >
                     <Popconfirm
-                      title="Vous perdrez toutes les modifications non enregistrées."
+                      title="Supprimer définitivement ce filtre."
                       okText={deleteText}
                       cancelText="Annuler"
                       onConfirm={this.deleteStatement}
@@ -925,7 +924,7 @@ class Statement extends React.Component {
                                                                           onClick={this.duplicateStatement}
                                                                         />
                                                                         <Popconfirm
-                                                                          title="Vous perdrez toutes les modifications non enregistrées."
+                                                                          title="Supprimer définitivement ce filtre."
                                                                           placement="topRight"
                                                                           okText={deleteText}
                                                                           cancelText="Annuler"

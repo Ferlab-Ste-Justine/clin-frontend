@@ -257,7 +257,7 @@ const fr = {
   'screen.patientvariant.modal.statement.duplicate.button.ok': 'DUPLIQUER',
   'screen.patientvariant.modal.statement.duplicate.button.cancel': 'ANNULER',
   'screen.patientvariant.modal.statement.load.title': 'Appliquer un nouveau filtre?',
-  'screen.patientvariant.modal.statement.load.body': 'Vous êtes sur le point de changer de filtre; toutes modifications sera perdues',
+  'screen.patientvariant.modal.statement.load.body': 'Vous perdrez toutes modifications non-enregistrées',
   'screen.patientvariant.modal.statement.load.button.ok': 'APPLIQUER',
   'screen.patientvariant.modal.statement.load.button.cancel': 'ANNULER',
   'screen.patientvariant.query.menu.add': 'Ajouter le titre',
