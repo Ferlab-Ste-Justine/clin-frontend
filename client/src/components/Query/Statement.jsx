@@ -3,7 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm,
+  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm, Popover,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, isEmpty, isEqual,
@@ -55,6 +55,7 @@ class Statement extends React.Component {
       },
       dropDownIsOpen: false,
       onFocus: false,
+      dropdownClickValue: null,
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -101,8 +102,10 @@ class Statement extends React.Component {
     this.handleFocus = this.handleFocus.bind(this);
     this.onFocusTitle = this.onFocusTitle.bind(this);
     this.onBlurTitle = this.onBlurTitle.bind(this);
-    this.onBlurDropdown = this.onBlurDropdown.bind(this);
-    this.handleFocusDropdown = this.handleFocusDropdown.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+    this.toggleMenu = this.toggleMenu.bind(this);
+    this.isDropdownOpen = this.isDropdownOpen.bind(this);
+    this.handlePopUpConfirm = this.handlePopUpConfirm.bind(this);
   }
 
   isCopyable() {
@@ -310,8 +313,7 @@ class Statement extends React.Component {
       id = this.props.activeStatementId;
     }
 
-    const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
-    this.props.onUpdateStatementCallback(id, title, '', this.props.data, false);
+    this.props.onUpdateStatementCallback(id, this.state.statementTitle, '', this.props.data, false);
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
@@ -339,43 +341,33 @@ class Statement extends React.Component {
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
-  deleteStatement(e) {
-    let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
+  deleteStatement(value) {
+    let id = value.currentTarget ? value.currentTarget.getAttribute('dataid') : value;
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
       this.setState({
         statementTitle: null,
+        dropDownIsOpen: false,
       });
     }
 
     this.props.onDeleteStatementCallback(id);
-    e.stopPropagation();
+    value.currentTarget ? value.stopPropagation() : null;
   }
 
-  selectStatement(e) {
-    let id = e.target ? e.target.getAttribute('dataid') : e;
+  selectStatement(value) {
+    let id = value;
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
     }
-    const callbackSelect = () => {
-      this.setState({
-        statementTitle: null,
-      });
-      this.props.onSelectStatementCallback(id);
-    };
-    if (this.isDirty()) {
-      this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.content' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmSelect.modal.cancel' }),
-        callbackSelect,
-      );
-    } else {
-      callbackSelect();
-    }
+
+    this.setState({
+      statementTitle: null,
+      dropDownIsOpen: false,
+    });
+    this.props.onSelectStatementCallback(id);
   }
 
   confirmRemove(keys) {
@@ -611,22 +603,47 @@ class Statement extends React.Component {
   onBlurTitle(e) {
     this.setState({ onFocus: false });
   }
+  onCancel(e) {
+    const dropdown = document.querySelector('.filterDropdown');
+    dropdown.focus();
 
-  onBlurDropdown(e) {
-    this.setState({ dropDownIsOpen: false });
+    this.setState({
+      dropdownClickValue: null,
+
+    });
   }
 
-  handleFocusDropdown(e) {
+  toggleMenu(e) {
+    let { dropdownClickValue } = this.state;
+    if (e === false) {
+      dropdownClickValue = null;
+    }
+    this.setState({
+      dropDownIsOpen: !this.isDropdownOpen(),
+      dropdownClickValue,
+    });
+  }
+
+  isDropdownOpen() {
     const { dropDownIsOpen } = this.state;
-    this.setState({ dropDownIsOpen: !dropDownIsOpen });
+    return dropDownIsOpen === true;
+  }
+
+
+  handlePopUpConfirm(e) {
+    const id = e.target.getAttribute('dataid');
+    if (this.isDirty()) {
+      this.setState({ dropdownClickValue: id });
+    } else {
+      this.selectStatement(id);
+    }
   }
 
   render() {
     const { data, activeStatementId, statements } = this.props;
     const activeStatement = statements[activeStatementId];
     if (!data || !activeStatement) return null;
-
-    const { dropDownIsOpen } = this.state;
+    const { dropDownIsOpen, dropdownClickValue } = this.state;
     if (!data) return null;
     const {
       activeQuery, externalData, options, intl, facets, categories, searchData, target, activeStatementTotals,
@@ -652,6 +669,7 @@ class Statement extends React.Component {
     const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.title' });
     const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.body' });
     const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.input.title.label' });
+    const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.input.title.default' });
     const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.button.ok' });
     const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.button.cancel' });
     const width = calculateTitleWidth(statementTitle);
@@ -736,9 +754,8 @@ class Statement extends React.Component {
     };
 
     const contextSelectStatement = ({ key }) => {
-      this.selectStatement(key);
+      this.setState({ dropDownIsOpen: true });
     };
-
     return (
       <div className={styleStatement.statement}>
         <Modal
@@ -756,6 +773,7 @@ class Statement extends React.Component {
           <br />
           <Input
             onChange={this.onModalSaveTitleInputChange}
+            defaultValue={modalTitleSaveInputDefault}
             value={this.state.saveTitleModalInputValue}
           />
 
@@ -870,46 +888,79 @@ class Statement extends React.Component {
                   <Divider type="vertical" className={styleStatement.divider} />
                   <Dropdown
                     trigger={['click']}
-                    className={`${styleStatement.button} ${dropDownIsOpen ? `${styleStatement.buttonActive}` : null}`}
+                    className={`${styleStatement.button} ${dropDownIsOpen ? `${styleStatement.buttonActive}` : null} filterDropdown `}
                     disabled={(inactiveStatementKeys.length == 0)}
-                    onBlur={this.onBlurDropdown}
-                    onClick={this.handleFocusDropdown}
-                    overlayClassName={styleStatement.dropdown}
+                    visible={this.isDropdownOpen()}
+                    onVisibleChange={this.toggleMenu}
+                    overlayClassName={`${styleStatement.dropdown} `}
                     overlay={(inactiveStatementKeys.length > 0 ? (
-                      <Menu onClick={contextSelectStatement}>
-                        { inactiveStatementKeys.map(key => (
-                          <Menu.Item key={statements[key].uid}>
-                            {statements[key].title}
-                            <div className={styleStatement.dropdownNavigation}>
-                              <IconKit
-                                size={20}
-                                icon={ic_content_copy}
-                                dataid={statements[key].uid}
-                                className={styleStatement.displayOnHover}
-                                onClick={this.duplicateStatement}
-                              />
-                              <IconKit
-                                size={20}
-                                icon={ic_delete}
-                                dataid={statements[key].uid}
-                                className={styleStatement.displayOnHover}
-                                onClick={this.deleteStatement}
-                              />
-                              { (<Icon
-                                type="star"
-                                size={20}
-                                className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
-                                theme={statements[key].isDefault ? 'filled' : 'outlined'}
-                                dataid={statements[key].uid}
-                                onClick={this.setStatementAsDefault}
-                              />)}
-                            </div>
-                          </Menu.Item>
-                        ))
-                      }
+                      <Menu>
+                        {
+                                                                  inactiveStatementKeys.map(key => (
+
+                                                                    <Menu.Item key={statements[key].uid}>
+                                                                          <Popconfirm
+                                                                            title="Vous perdrez toutes les modifications non enregistrées."
+                                                                            okText="Nouveau"
+                                                                            cancelText="Annuler"
+                                                                            onConfirm={() => this.selectStatement(statements[key].uid)}
+                                                                            onCancel={this.onCancel}
+                                                                            icon={null}
+                                                                            className={statements[key].uid}
+                                                                            overlayClassName={`${styleStatement.popconfirm}`}
+                                                                            dataid={statements[key].uid}
+                                                                            visible={!!(this.isDirty() && dropdownClickValue === statements[key].uid)}
+                                                                          >
+                                                                            <div
+                                                                                className={styleStatement.dropdownTitle}
+                                                                                dataid={statements[key].uid}
+                                                                                onClick={this.handlePopUpConfirm}
+                                                                            >
+                                                                              {statements[key].title}
+                                                                            </div>
+                                                                          </Popconfirm>
+                                                                      <div className={styleStatement.dropdownNavigation}>
+                                                                        <IconKit
+                                                                          size={20}
+                                                                          icon={ic_content_copy}
+                                                                          dataid={statements[key].uid}
+                                                                          className={styleStatement.displayOnHover}
+                                                                          onClick={this.duplicateStatement}
+                                                                        />
+                                                                        <Popconfirm
+                                                                          title="Vous perdrez toutes les modifications non enregistrées."
+                                                                          placement="topRight"
+                                                                          okText={deleteText}
+                                                                          cancelText="Annuler"
+                                                                          onConfirm={() => this.deleteStatement(statements[key].uid)}
+                                                                          onCancel={this.onCancel}
+                                                                          icon={null}
+                                                                          overlayClassName={styleStatement.popconfirm}
+                                                                        >
+                                                                          <IconKit
+                                                                            size={20}
+                                                                            icon={ic_delete}
+                                                                            dataid={statements[key].uid}
+                                                                            className={styleStatement.displayOnHover}
+                                                                          />
+                                                                        </Popconfirm>
+                                                                        { (<Icon
+                                                                          type="star"
+                                                                          size={20}
+                                                                          className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
+                                                                          theme={statements[key].isDefault ? 'filled' : 'outlined'}
+                                                                          dataid={statements[key].uid}
+                                                                          onClick={this.setStatementAsDefault}
+                                                                        />)}
+                                                                      </div>
+
+                                                                    </Menu.Item>
+
+                                                                  ))
+                                                                  }
                       </Menu>
                     ) : (<></>))
-                    }
+                                                                    }
                   >
                     <Button>
                       <IconKit
