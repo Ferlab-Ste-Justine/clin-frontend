@@ -76,6 +76,10 @@ export const sanitizeInstructions = instructions => sanitizeOperators(
 
 // @TODO Refactor and use camel-case
 export const calculateTitleWidth = (value) => {
+  if (!value) {
+    return 0;
+  }
+
   const x0 = ['i', 'l', 'j', ';', ',', '|', ' '];
   const x1 = ['t', 'I', ':', '.', '[', ']', '-', '/', '!', '"'];
   const x2 = ['r', 'f', '(', ')', '{', '}'];

@@ -43,7 +43,6 @@ class Statement extends React.Component {
       statementTitle: null,
       saveTitleModalInputValue: '',
       saveTitleModalVisible: false,
-      statementVisualClueText: '',
       originalTitle: '',
       options: {
         copyable: null,
@@ -210,12 +209,12 @@ class Statement extends React.Component {
     });
   }
 
-  showConfirmForDestructiveStatementAction(title, content, okText = 'Ok', cancelText = 'Cancel', funcToCallBack) {
+  showConfirmForDestructiveStatementAction(title, content, funcToCallBack) {
     Modal.confirm({
       title,
       content,
-      okText,
-      cancelText,
+      okText: this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.ok' }),
+      cancelText: this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.cancel' }),
       onOk() { funcToCallBack(); },
       onCancel() {},
     });
@@ -233,7 +232,6 @@ class Statement extends React.Component {
       displayClone.splice(index, 0, howDisplayed);
       this.setState({
         display: displayClone,
-        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         onDuplicateCallback(clone, index);
       });
@@ -259,9 +257,11 @@ class Statement extends React.Component {
     const callbackCreateDraft = () => {
       this.setState({
         statementTitle: null,
-        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
-        this.props.onCreateDraftStatementCallback();
+        const statement = {
+          title: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementConfirmDraft.modal.title' })
+        }
+        this.props.onCreateDraftStatementCallback(statement);
       });
     };
 
@@ -288,7 +288,6 @@ class Statement extends React.Component {
     const callbackDuplicate = () => {
       this.setState({
         statementTitle: null,
-        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       });
       this.props.onDuplicateStatementCallback(id);
     };
@@ -324,9 +323,6 @@ class Statement extends React.Component {
     }
     const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
     const callbackSetStatementAsDefault = () => {
-      this.setState({
-        statementVisualClueText: '',
-      });
       this.props.onUpdateStatementCallback(id, title, '', null, true);
     };
     if (this.isDirty()) {
@@ -350,7 +346,6 @@ class Statement extends React.Component {
       id = activeStatementId;
       this.setState({
         statementTitle: null,
-        statementVisualClueText: '',
       });
     }
 
@@ -367,7 +362,6 @@ class Statement extends React.Component {
     const callbackSelect = () => {
       this.setState({
         statementTitle: null,
-        statementVisualClueText: '',
       });
       this.props.onSelectStatementCallback(id);
     };
@@ -397,7 +391,6 @@ class Statement extends React.Component {
       const sortedDisplay = sortedIndices.map(sortedIndice => display[sortedIndice]);
       this.setState({
         display: sortedDisplay,
-        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         onSortCallback(sortedData);
       });
@@ -468,7 +461,6 @@ class Statement extends React.Component {
       this.setState({
         checkedQueries: [],
         display,
-        statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
       }, () => {
         onBatchEditCallback(newDraft, newSubquery);
       });
@@ -514,13 +506,12 @@ class Statement extends React.Component {
   }
 
   showDeleteConfirm(keys) {
-    const { confirm } = Modal;
     const { intl } = this.props;
-    const modalTitle = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.title' });
-    const modalContent = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.content' });
-    const modalOk = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.ok' });
-    const modalCancel = intl.formatMessage({ id: 'screen.patientvariant.statement.modal.cancel' });
-    confirm({
+    const modalTitle = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.title' });
+    const modalContent = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.body' });
+    const modalOk = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.ok' });
+    const modalCancel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.cancel' });
+    Modal.confirm({
       title: modalTitle,
       content: modalContent,
       okText: modalOk,
@@ -548,7 +539,6 @@ class Statement extends React.Component {
       checkedQueries: [],
       queriesChecksAreIndeterminate: false,
       queriesAreAllChecked: false,
-      statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
     }, () => {
       onRemoveCallback(keysToRemove);
     });
@@ -566,7 +556,6 @@ class Statement extends React.Component {
     display.push(newDisplay);
     this.setState({
       display,
-      statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
     }, () => {
       onEditCallback(newQuery);
     });
@@ -595,7 +584,6 @@ class Statement extends React.Component {
 
     this.setState({
       statementTitle: value,
-      statementVisualClueText: this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' }),
     });
   }
 
@@ -661,13 +649,11 @@ class Statement extends React.Component {
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
     const defaultFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.defaultFilter' });
-
-    const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.title' });
-    const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.content' });
-    const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputLabel' });
-    const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.inputDefault' });
-    const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.ok' });
-    const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.statementTitleSave.modal.cancel' });
+    const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.title' });
+    const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.body' });
+    const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.input.title.label' });
+    const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.button.ok' });
+    const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.button.cancel' });
     const width = calculateTitleWidth(statementTitle);
 
     let containsEmptyQueries = false;
@@ -770,7 +756,6 @@ class Statement extends React.Component {
           <br />
           <Input
             onChange={this.onModalSaveTitleInputChange}
-            defaultValue={modalTitleSaveInputDefault}
             value={this.state.saveTitleModalInputValue}
           />
 
@@ -779,7 +764,7 @@ class Statement extends React.Component {
           {this.isDirty() && (
             <Row type="flex" className={styleStatement.toolbar}>
               <div>
-                { this.props.intl.formatMessage({ id: 'screen.patientvariant.statementVisualClue.modification.text' })}
+                { this.props.intl.formatMessage({ id: 'screen.patientvariant.form.statement.unsavedChanges' })}
               </div>
             </Row>
           )}
@@ -789,7 +774,6 @@ class Statement extends React.Component {
                 <div className={styleStatement.title}>
                   <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                     <div>
-
                       <Input
                         id="statementTitle"
                         onChange={this.onStatementTitleChange}
@@ -801,16 +785,12 @@ class Statement extends React.Component {
                         disabled={activeStatementId == null}
                         style={{ width: `calc(13px + ${width}ch)` }}
                       />
-
-
                       <IconKit
                         icon={ic_edit}
                         size={18}
                         onClick={this.handleFocus}
                         className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
                       />
-
-
                     </div>
                   </Tooltip>
                   {activeStatementId !== 'draft' && (
@@ -821,13 +801,11 @@ class Statement extends React.Component {
                       onClick={this.setStatementAsDefault}
                       disabled={activeStatementId == null}
                     >
-
                       <Icon
                         className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
                         type="star"
                         theme={activeStatement.isDefault ? 'filled' : 'outlined'}
                       />
-
                     </Button>
                   </Tooltip>
                   )}
@@ -899,40 +877,39 @@ class Statement extends React.Component {
                     overlayClassName={styleStatement.dropdown}
                     overlay={(inactiveStatementKeys.length > 0 ? (
                       <Menu onClick={contextSelectStatement}>
-                        {
-                                                                  inactiveStatementKeys.map(key => (
-                                                                    <Menu.Item key={statements[key].uid}>
-                                                                      {statements[key].title}
-                                                                      <div className={styleStatement.dropdownNavigation}>
-                                                                        <IconKit
-                                                                          size={20}
-                                                                          icon={ic_content_copy}
-                                                                          dataid={statements[key].uid}
-                                                                          className={styleStatement.displayOnHover}
-                                                                          onClick={this.duplicateStatement}
-                                                                        />
-                                                                        <IconKit
-                                                                          size={20}
-                                                                          icon={ic_delete}
-                                                                          dataid={statements[key].uid}
-                                                                          className={styleStatement.displayOnHover}
-                                                                          onClick={this.deleteStatement}
-                                                                        />
-                                                                        { (<Icon
-                                                                          type="star"
-                                                                          size={20}
-                                                                          className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
-                                                                          theme={statements[key].isDefault ? 'filled' : 'outlined'}
-                                                                          dataid={statements[key].uid}
-                                                                          onClick={this.setStatementAsDefault}
-                                                                        />)}
-                                                                      </div>
-                                                                    </Menu.Item>
-                                                                  ))
-                                                                  }
+                        { inactiveStatementKeys.map(key => (
+                          <Menu.Item key={statements[key].uid}>
+                            {statements[key].title}
+                            <div className={styleStatement.dropdownNavigation}>
+                              <IconKit
+                                size={20}
+                                icon={ic_content_copy}
+                                dataid={statements[key].uid}
+                                className={styleStatement.displayOnHover}
+                                onClick={this.duplicateStatement}
+                              />
+                              <IconKit
+                                size={20}
+                                icon={ic_delete}
+                                dataid={statements[key].uid}
+                                className={styleStatement.displayOnHover}
+                                onClick={this.deleteStatement}
+                              />
+                              { (<Icon
+                                type="star"
+                                size={20}
+                                className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
+                                theme={statements[key].isDefault ? 'filled' : 'outlined'}
+                                dataid={statements[key].uid}
+                                onClick={this.setStatementAsDefault}
+                              />)}
+                            </div>
+                          </Menu.Item>
+                        ))
+                      }
                       </Menu>
                     ) : (<></>))
-                                                          }
+                    }
                   >
                     <Button>
                       <IconKit

@@ -44,7 +44,7 @@ export const variantShape = {
 };
 
 export const DRAFT_STATEMENT_UID = 'draft';
-const createDraftStatement = (title = 'Filtre sans titre', description = '', queries = null) => ({
+const createDraftStatement = (title, description = '', queries = null) => ({
   uid: DRAFT_STATEMENT_UID,
   title,
   description,
@@ -263,7 +263,12 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       delete draft.statements[action.payload.uid]
     case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
       draft.activeStatementId = DRAFT_STATEMENT_UID;
-      draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement()
+
+      console.log('+ PATIENT_VARIANT_CREATE_DRAFT_STATEMENT ' + JSON.stringify(payload))
+
+      draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(
+        payload.statement.title,
+      )
       draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
       draft.originalQueries = [];
       draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
