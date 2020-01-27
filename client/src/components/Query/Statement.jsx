@@ -331,10 +331,10 @@ class Statement extends React.Component {
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.body' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.cancel' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.body' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.button.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.button.cancel' }),
         callbackSetStatementAsDefault,
       );
     } else {
