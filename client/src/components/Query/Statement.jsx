@@ -782,8 +782,9 @@ class Statement extends React.Component {
         </Modal>
         <div className={styleStatement.header}>
           {this.isDirty() && (
-            <Row type="flex" className={styleStatement.toolbar}>
-              <div>
+            <Row type="flex" align="end" className={styleStatement.toolbar}>
+              <div className={styleStatement.message}>
+                <Icon type="info-circle" className={styleStatement.icon} />
                 { this.props.intl.formatMessage({ id: 'screen.patientvariant.form.statement.unsavedChanges' })}
               </div>
             </Row>

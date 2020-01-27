@@ -95,6 +95,19 @@
 
 
     .toolbar {
+
+      .message {
+        color: $color-warning;
+        font-size: $little-font;
+        font-style: italic;
+        min-width: 175px;
+        margin-bottom: $little-font;
+
+        .icon {
+          heigth: $icon-size;
+          margin-right: $icon-text-spacing;
+        }
+      }
     }
   }
 

@@ -319,7 +319,7 @@ class Query extends React.Component {
     } = options;
     const { onFocus, popconfirmOpen, toolTipOpen } = this.state;
     const isDirty = !isEqual(original, draft);
-    const isEmpty = !draft.instructions || draft.instructions.length === 0;
+    const isEmpty = !draft.instructions || draft.instructions.length === 0
 
     const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
     const deleteText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
@@ -379,7 +379,7 @@ class Query extends React.Component {
             { results && (<span>{results.toLocaleString('en-US').replace(',', '\u00a0')}</span>) }
           </div>
         </div>
-        {draft.instructions.length === 0
+        {isEmpty
           ? (
             <div className={styleQuery.emptyQuery}>
                 Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête

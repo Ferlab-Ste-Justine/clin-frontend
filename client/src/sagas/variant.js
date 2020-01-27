@@ -160,13 +160,13 @@ function* updateStatement(action) {
     }
 
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter saved.' } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Modification enregistrées.' } });
     if (isDefault) {
       yield call(getStatements);
     }
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not saved.' } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Modification non-enregistrées.' } });
   }
 }
 
@@ -182,10 +182,10 @@ function* createStatement(action) {
     }
 
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter created.' } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filtre créé.' } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_CREATE_STATEMENT_FAILED, payload: e });
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter could not be created.' } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filtre non-crée.' } });
   }
 }
 
@@ -194,13 +194,13 @@ function* duplicateStatement(action) {
     const { draftQueries, statements } = yield select(state => state.variant);
     const statement = cloneDeep(statements[action.payload.id]);
     if (!statement) {
-      throw new Error('Statement not found');
+      throw new Error('Filtre non-trouvé.');
     }
 
     statement.title = `${statement.title} COPIE`;
     statement.queries = draftQueries;
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { statement } });
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter duplicated.' } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filtre dupliqué.' } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_FAILED, payload: e });
   }
@@ -213,10 +213,10 @@ function* deleteStatement(action) {
       throw new ApiError(statementResponse.error);
     }
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED, payload: { uid: action.payload.id } });
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filter removed.' } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Filtre supprimé.' } });
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_DELETE_STATEMENT_FAILED, payload: e });
-    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filter not removed.' } });
+    yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Filtre non-supprimé.' } });
   }
 }
 
