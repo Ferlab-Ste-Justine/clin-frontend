@@ -224,6 +224,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
+      // const activeStatementId = action.payload.data.activeStatementId; // eslint-disable-line
       const updatedStatement = { // eslint-disable-line no-case-declarations
         uid: action.payload.data.uid,
         title: action.payload.data.title,
@@ -231,7 +232,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         queries: JSON.parse(action.payload.data.queries),
         isDefault: action.payload.data.isDefault,
       };
+
       draft.statements[updatedStatement.uid] = updatedStatement;
+      // if (activeStatementId !== null && updatedStatement.uid !== activeStatementId && updatedStatement.isDefault === true) {
+      //  draft.statements[activeStatementId].isDefault = false;
+      // }
       break;
 
     case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:

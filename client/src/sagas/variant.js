@@ -67,15 +67,16 @@ function* getStatements() {
 function* updateStatement(action) {
   try {
     const statementKey = action.payload.id;
-    const { draftQueries, statements, activeStatementId } = yield select(state => state.variant);
-    const title = action.payload.title ? action.payload.title : statements[activeStatementId].title;
-    const description = action.payload.description ? action.payload.description : statements[activeStatementId].description;
-    const isDefault = action.payload.switchCurrentStatementToDefault ? true : statements[activeStatementId].isDefault;
+    const { draftQueries, statements } = yield select(state => state.variant);
+    const title = action.payload.title ? action.payload.title : statements[statementKey].title;
+    const description = action.payload.description ? action.payload.description : statements[statementKey].description;
+    const isDefault = action.payload.switchCurrentStatementToDefault ? true : statements[statementKey].isDefault;
     const statementResponse = yield Api.updateStatement(statementKey, (title || ''), (description || ''), draftQueries, isDefault);
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
 
+    // statementResponse.payload.data.activeStatementId = activeStatementId;
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Modification enregistrées.' } });
     yield call(getStatements);
