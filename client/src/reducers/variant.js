@@ -189,22 +189,24 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
             isDefault: hit._source.isDefault,
           };
         });
-        const defaultStatementId = Object.keys(draft.statements).find(
-          statementKey => draft.statements[statementKey].isDefault === true,
-        );
-        if (defaultStatementId) {
-          draft.activeStatementId = defaultStatementId;
-          draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null;
-          draft.originalQueries = draft.statements[defaultStatementId].queries;
-          draft.draftQueries = draft.statements[defaultStatementId].queries;
-          draft.draftHistory = [];
-        } else {
-          draft.activeStatementId = DRAFT_STATEMENT_UID;
-          draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
-          draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
-          draft.originalQueries = [];
-          draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
-          draft.draftHistory = [];
+        if (!state.activeStatementId) {
+          const defaultStatementId = Object.keys(draft.statements).find(
+            statementKey => draft.statements[statementKey].isDefault === true,
+          );
+          if (defaultStatementId) {
+            draft.activeStatementId = defaultStatementId;
+            draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null;
+            draft.originalQueries = draft.statements[defaultStatementId].queries;
+            draft.draftQueries = draft.statements[defaultStatementId].queries;
+            draft.draftHistory = [];
+          } else {
+            draft.activeStatementId = DRAFT_STATEMENT_UID;
+            draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
+            draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
+            draft.originalQueries = [];
+            draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
+            draft.draftHistory = [];
+          }
         }
       }
       break;
@@ -221,9 +223,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.draftHistory = [];
       break;
 
-    case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-      delete draft.statements.draft;
       const updatedStatement = { // eslint-disable-line no-case-declarations
         uid: action.payload.data.uid,
         title: action.payload.data.title,
@@ -231,10 +231,22 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         queries: JSON.parse(action.payload.data.queries),
         isDefault: action.payload.data.isDefault,
       };
-      draft.activeStatementId = updatedStatement.uid;
       draft.statements[updatedStatement.uid] = updatedStatement;
-      draft.originalQueries = cloneDeep(updatedStatement.queries);
-      draft.draftQueries = cloneDeep(updatedStatement.queries);
+      break;
+
+    case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
+      delete draft.statements.draft;
+      const createdStatement = { // eslint-disable-line no-case-declarations
+        uid: action.payload.data.uid,
+        title: action.payload.data.title,
+        description: action.payload.data.description,
+        queries: JSON.parse(action.payload.data.queries),
+        isDefault: action.payload.data.isDefault,
+      };
+      draft.statements[createdStatement.uid] = createdStatement;
+      draft.activeStatementId = createdStatement.uid;
+      draft.originalQueries = cloneDeep(createdStatement.queries);
+      draft.draftQueries = cloneDeep(createdStatement.queries);
       draft.draftHistory = [];
       break;
 

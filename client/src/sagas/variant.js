@@ -78,9 +78,7 @@ function* updateStatement(action) {
 
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'success', message: 'Modification enregistrées.' } });
-    if (isDefault) {
-      yield call(getStatements);
-    }
+    yield call(getStatements);
   } catch (e) {
     yield put({ type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     yield put({ type: actions.SHOW_NOTIFICATION, payload: { type: 'error', message: 'Modification non-enregistrées.' } });
