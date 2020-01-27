@@ -6,7 +6,7 @@ import {
   cloneDeep, isEqual, find, isNull,
 } from 'lodash';
 import {
-  Input, Tooltip,
+  Input, Tooltip, Popconfirm,
 } from 'antd';
 import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
@@ -50,6 +50,8 @@ class Query extends React.Component {
 
     this.state = {
       onFocus: false,
+      popconfirmOpen: false,
+      toolTipOpen: false,
     };
     this.addInstruction = this.addInstruction.bind(this);
     this.replaceInstruction = this.replaceInstruction.bind(this);
@@ -70,6 +72,8 @@ class Query extends React.Component {
     this.handleTitleOnFocus = this.handleTitleOnFocus.bind(this);
     this.handleTitleFocus = this.handleTitleFocus.bind(this);
     this.handleTitleOnChange = this.handleTitleOnChange.bind(this);
+    this.toggleToolTip = this.toggleToolTip.bind(this);
+    this.togglePopConfirm = this.togglePopConfirm.bind(this);
   }
 
   handleTitleChange(e) {
@@ -289,6 +293,23 @@ class Query extends React.Component {
     return draft.title !== undefined;
   }
 
+  toggleToolTip() {
+    const { toolTipOpen, popconfirmOpen } = this.state;
+    if (popconfirmOpen) {
+      this.setState({ toolTipOpen: false });
+    } else {
+      this.setState({ toolTipOpen: !toolTipOpen });
+    }
+  }
+
+  togglePopConfirm() {
+    const { popconfirmOpen, toolTipOpen } = this.state;
+    this.setState({
+      popconfirmOpen: !popconfirmOpen,
+      toolTipOpen: false,
+    });
+  }
+
   render() {
     const {
       active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, intl, facets, categories, draft, externalData,
@@ -296,7 +317,7 @@ class Query extends React.Component {
     const {
       copyable, removable,
     } = options;
-    const { onFocus } = this.state;
+    const { onFocus, popconfirmOpen, toolTipOpen } = this.state;
     const isDirty = !isEqual(original, draft);
     const isEmpty = !draft.instructions || draft.instructions.length === 0
 
@@ -317,6 +338,7 @@ class Query extends React.Component {
                 size="small"
                 defaultValue={draft.title}
                 onBlur={this.handleTitleChange}
+                // onFocus={this.handleTitleOnFocus}
                 onPressEnter={this.handleTitleChange}
                 onChange={this.handleTitleOnChange}
                 className={`title-${draft.key}`}
@@ -337,8 +359,19 @@ class Query extends React.Component {
             </Tooltip>
             )}
             {removable && (
-            <Tooltip title={deleteText}>
-              <IconKit icon={ic_delete} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }} />
+            <Tooltip title={deleteText} onVisibleChange={this.toggleToolTip} visible={toolTipOpen}>
+              <Popconfirm
+                title="Supprimer définitivement cette requête."
+                onConfirm={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }}
+                okText="Annuler"
+                cancelText="Supprimer"
+                icon={null}
+                overlayClassName={styleQuery.popconfirm}
+                onVisibleChange={this.togglePopConfirm}
+              >
+                <IconKit icon={ic_delete} size={16} className={styleQuery.icon} />
+
+              </Popconfirm>
             </Tooltip>
             )}
           </div>
