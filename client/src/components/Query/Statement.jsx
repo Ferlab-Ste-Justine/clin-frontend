@@ -927,9 +927,9 @@ class Statement extends React.Component {
                                   onClick={this.duplicateStatement}
                                 />
                                 <Popconfirm
-                                  title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.query.delete.body' })}
-                                  okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.query.delete.button.ok' })}
-                                  cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.query.delete.button.cancel' })}
+                                  title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.body' })}
+                                  okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.button.ok' })}
+                                  cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.button.cancel' })}
                                   placement="topRight"
                                   onConfirm={() => this.deleteStatement(statements[key].uid)}
                                   onCancel={this.onCancel}
