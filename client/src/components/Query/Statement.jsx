@@ -270,10 +270,10 @@ class Statement extends React.Component {
 
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.body' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.cancel' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.body' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.cancel' }),
         callbackCreateDraft,
       );
     } else {
@@ -331,10 +331,10 @@ class Statement extends React.Component {
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.body' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.cancel' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.title' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.body' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.ok' }),
+        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.load.button.cancel' }),
         callbackSetStatementAsDefault,
       );
     } else {
@@ -899,9 +899,9 @@ class Statement extends React.Component {
                         { inactiveStatementKeys.map(key => (
                             <Menu.Item key={statements[key].uid}>
                               <Popconfirm
-                                title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.new.body' })}
-                                okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.new.button.ok' })}
-                                cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.new.button.cancel' })}
+                                title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.load.body' })}
+                                okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.load.button.ok' })}
+                                cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.load.button.cancel' })}
                                 onConfirm={() => this.selectStatement(statements[key].uid)}
                                 onCancel={this.onCancel}
                                 icon={null}
@@ -927,9 +927,9 @@ class Statement extends React.Component {
                                   onClick={this.duplicateStatement}
                                 />
                                 <Popconfirm
-                                  title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.body' })}
-                                  okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.button.ok' })}
-                                  cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.button.cancel' })}
+                                  title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.query.delete.body' })}
+                                  okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.query.delete.button.ok' })}
+                                  cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.query.delete.button.cancel' })}
                                   placement="topRight"
                                   onConfirm={() => this.deleteStatement(statements[key].uid)}
                                   onCancel={this.onCancel}

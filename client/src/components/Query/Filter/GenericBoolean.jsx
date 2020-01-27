@@ -175,7 +175,7 @@ class GenericBooleanFilter extends React.Component {
   handleSelectionChange(values) {
     const { dataSet } = this.props;
     const {
-      selection, allOptions, page, size,
+      selection, allOptions, page, size, draft,
     } = this.state;
 
     const minValue = size * (page - 1);
@@ -189,8 +189,10 @@ class GenericBooleanFilter extends React.Component {
         values.includes(x.value) ? selection.push(x.value) : null;
       }
     });
+    draft.values = selection;
     this.setState({
       selection,
+      draft,
       indeterminate: (!(values.length === dataSet.length) && values.length > 0),
     });
   }
