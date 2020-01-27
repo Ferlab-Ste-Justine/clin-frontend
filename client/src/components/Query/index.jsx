@@ -360,10 +360,10 @@ class Query extends React.Component {
             {removable && (
             <Tooltip title={deleteText} onVisibleChange={this.toggleToolTip} visible={toolTipOpen}>
               <Popconfirm
-                title={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.popconfirm.delete.body' })}
+                title={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete.body' })}
                 onConfirm={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }}
-                okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.popconfirm.delete.button.ok' })}
-                cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.popconfirm.delete.button.cancel' })}
+                okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete.button.ok' })}
+                cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete.button.cancel' })}
                 icon={null}
                 overlayClassName={styleQuery.popconfirm}
                 onVisibleChange={this.togglePopConfirm}
