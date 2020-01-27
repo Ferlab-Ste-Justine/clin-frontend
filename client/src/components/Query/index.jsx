@@ -303,7 +303,7 @@ class Query extends React.Component {
   }
 
   togglePopConfirm() {
-    const { popconfirmOpen, toolTipOpen } = this.state;
+    const { popconfirmOpen } = this.state;
     this.setState({
       popconfirmOpen: !popconfirmOpen,
       toolTipOpen: false,
@@ -317,7 +317,7 @@ class Query extends React.Component {
     const {
       copyable, removable,
     } = options;
-    const { onFocus, popconfirmOpen, toolTipOpen } = this.state;
+    const { onFocus, toolTipOpen } = this.state;
     const isDirty = !isEqual(original, draft);
     const isEmpty = !draft.instructions || draft.instructions.length === 0
 
@@ -338,7 +338,6 @@ class Query extends React.Component {
                 size="small"
                 defaultValue={draft.title}
                 onBlur={this.handleTitleChange}
-                // onFocus={this.handleTitleOnFocus}
                 onPressEnter={this.handleTitleChange}
                 onChange={this.handleTitleOnChange}
                 className={`title-${draft.key}`}
@@ -370,7 +369,6 @@ class Query extends React.Component {
                 onVisibleChange={this.togglePopConfirm}
               >
                 <IconKit icon={ic_delete} size={16} className={styleQuery.icon} />
-
               </Popconfirm>
             </Tooltip>
             )}

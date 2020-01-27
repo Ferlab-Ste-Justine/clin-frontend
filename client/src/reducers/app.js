@@ -1,12 +1,12 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable camelcase, no-param-reassign */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import { message } from 'antd';
 import moment from 'moment';
 import 'moment/locale/fr';
 import 'moment/locale/en-ca';
-import * as frFr from 'antd/lib/locale-provider/fr_FR'; // eslint-ignore-line camelcase
-import * as enUS from 'antd/lib/locale-provider/en_US'; // eslint-ignore-line camelcase
+import * as frFr from 'antd/lib/locale-provider/fr_FR';
+import * as enUS from 'antd/lib/locale-provider/en_US';
 import * as actions from '../actions/type';
 
 

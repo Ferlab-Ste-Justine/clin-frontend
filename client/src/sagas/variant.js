@@ -1,10 +1,7 @@
-/* eslint-disable */
-
-import uuidv1 from 'uuid/v1';
 import {
-  all, put, takeLatest, select, race, call, delay,
+  all, put, takeLatest, select, call,
 } from 'redux-saga/effects';
-import { find, cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash';
 
 
 import * as actions from '../actions/type';
@@ -54,86 +51,6 @@ function* countVariantsForPatient(action) {
   }
 }
 
-function* undo() {
-  const { activeQuery, draftQueries } = yield select(state => state.variant);
-  const { details } = yield select(state => state.patient);
-  const query = find(draftQueries, { key: activeQuery });
-
-  if (query) {
-    const payload = {
-      patient: details.id,
-      statement: draftQueries,
-      query: query.key,
-      group: 'impact',
-      index: 0,
-      limit: 25,
-    };
-    yield put({ type: actions.PATIENT_VARIANT_SEARCH_REQUESTED, payload });
-  }
-}
-
-function* watchVariantSchemaFetch() {
-  yield takeLatest(actions.VARIANT_SCHEMA_REQUESTED, fetchSchema);
-}
-
-function* watchVariantSearch() {
-  yield takeLatest(actions.PATIENT_VARIANT_SEARCH_REQUESTED, searchVariantsForPatient);
-}
-
-function* watchVariantsCount() {
-  yield takeLatest(actions.PATIENT_VARIANT_COUNT_REQUESTED, countVariantsForPatient);
-}
-
-function* watchGetStatements() {
-  yield takeLatest(actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, getStatements);
-}
-
-function* watchUpdateStatement() {
-  yield takeLatest(actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED, updateStatement);
-}
-
-function* watchCreateStatement() {
-  yield takeLatest(actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED, createStatement);
-}
-
-function* watchDuplicateStatement() {
-  yield takeLatest(actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_REQUESTED, duplicateStatement);
-}
-
-function* watchDeleteStatement() {
-  yield takeLatest(actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED, deleteStatement);
-}
-
-function* watchSelectStatement() {
-  yield takeLatest(actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, selectStatement);
-}
-
-function* watchRefreshCount() {
-  yield takeLatest([
-    actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
-    actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED,
-    actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED,
-    actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
-    actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
-    actions.PATIENT_VARIANT_QUERY_REMOVAL,
-    actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
-  ], refreshCount);
-}
-
-function* watchRefreshResults() {
-  yield takeLatest([
-    actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
-    actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED,
-    actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED,
-    actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
-    actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
-    actions.PATIENT_VARIANT_QUERY_REMOVAL,
-    actions.PATIENT_VARIANT_QUERY_SELECTION,
-    actions.PATIENT_VARIANT_QUERY_REPLACEMENT,
-    actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
-  ], refreshResults);
-}
-
 function* getStatements() {
   try {
     const statementResponse = yield Api.getStatements();
@@ -154,7 +71,7 @@ function* updateStatement(action) {
     const title = action.payload.title ? action.payload.title : statements[activeStatementId].title;
     const description = action.payload.description ? action.payload.description : statements[activeStatementId].description;
     const isDefault = action.payload.switchCurrentStatementToDefault ? true : statements[activeStatementId].isDefault;
-    const statementResponse = yield Api.updateStatement(statementKey, (title ? title : ''), (description ? description : ''), draftQueries, isDefault);
+    const statementResponse = yield Api.updateStatement(statementKey, (title || ''), (description || ''), draftQueries, isDefault);
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
@@ -255,6 +172,68 @@ function* refreshResults() {
       query: activeQuery,
     },
   });
+}
+
+function* watchVariantSchemaFetch() {
+  yield takeLatest(actions.VARIANT_SCHEMA_REQUESTED, fetchSchema);
+}
+
+function* watchVariantSearch() {
+  yield takeLatest(actions.PATIENT_VARIANT_SEARCH_REQUESTED, searchVariantsForPatient);
+}
+
+function* watchVariantsCount() {
+  yield takeLatest(actions.PATIENT_VARIANT_COUNT_REQUESTED, countVariantsForPatient);
+}
+
+function* watchGetStatements() {
+  yield takeLatest(actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, getStatements);
+}
+
+function* watchUpdateStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED, updateStatement);
+}
+
+function* watchCreateStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED, createStatement);
+}
+
+function* watchDuplicateStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_REQUESTED, duplicateStatement);
+}
+
+function* watchDeleteStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED, deleteStatement);
+}
+
+function* watchSelectStatement() {
+  yield takeLatest(actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, selectStatement);
+}
+
+function* watchRefreshCount() {
+  yield takeLatest([
+    actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
+    actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED,
+    actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED,
+    actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
+    actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
+    actions.PATIENT_VARIANT_QUERY_REMOVAL,
+    actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
+  ], refreshCount);
+}
+
+function* watchRefreshResults() {
+  yield takeLatest([
+    actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
+    actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED,
+    actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED,
+    actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
+    actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
+    actions.PATIENT_VARIANT_QUERY_REMOVAL,
+    actions.PATIENT_VARIANT_QUERY_SELECTION,
+    actions.PATIENT_VARIANT_QUERY_REPLACEMENT,
+    actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
+  ], refreshResults);
 }
 
 export default function* watchedVariantSagas() {

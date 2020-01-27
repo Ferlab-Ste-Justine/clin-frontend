@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign, import/no-cycle */
+/* eslint-disable import/no-cycle, no-param-reassign */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 

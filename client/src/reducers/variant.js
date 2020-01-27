@@ -1,8 +1,8 @@
-/* eslint-disable  */
+/* eslint-disable no-param-reassign, no-underscore-dangle */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import {
-  cloneDeep, findIndex, isEqual, last, remove, head,
+  cloneDeep, findIndex, isEqual, last, head,
 } from 'lodash';
 import uuidv1 from 'uuid/v1';
 
@@ -48,9 +48,9 @@ const createDraftStatement = (title, description = '', queries = null) => ({
   uid: DRAFT_STATEMENT_UID,
   title,
   description,
-  queries: queries ? queries : [{ key: uuidv1(), instructions: [] }],
+  queries: queries || [{ key: uuidv1(), instructions: [] }],
   isDefault: false,
-})
+});
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
   const { draftQueries, draftHistory } = draft;
@@ -67,15 +67,14 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_FETCH_SUCCEEDED:
-      const details = normalizePatientDetails(action.payload.data);
+      const details = normalizePatientDetails(action.payload.data); // eslint-disable-line no-case-declarations
       draft.activePatient = details.id;
-      const queryKey = uuidv1();
       draft.originalQueries = [{
-        key: queryKey,
+        key: uuidv1(),
         instructions: [],
       }];
       draft.draftQueries = cloneDeep(draft.originalQueries);
-      draft.activeQuery = queryKey;
+      draft.activeQuery = draft.originalQueries[0].key;
       break;
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
@@ -105,14 +104,12 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       if (draft.draftQueries.length > 1) {
         draft.draftQueries = draft.draftQueries.filter(query => action.payload.keys.indexOf(query.key) === -1);
         // @NOTE Remove matching subquery instructions
-        const filteredDrafts = draft.draftQueries.map(draftQuery => {
-          const filteredInstructions = draftQuery.instructions.filter(instruction => {
-            return !Boolean(instruction.type === INSTRUCTION_TYPE_SUBQUERY && action.payload.keys.indexOf(instruction.data.query) !== -1)
-          })
-          draftQuery.instructions = sanitizeInstructions(filteredInstructions)
+        const filteredDrafts = draft.draftQueries.map((draftQuery) => {
+          const filteredInstructions = draftQuery.instructions.filter(instruction => !(instruction.type === INSTRUCTION_TYPE_SUBQUERY && action.payload.keys.indexOf(instruction.data.query) !== -1));
+          draftQuery.instructions = sanitizeInstructions(filteredInstructions);
           return draftQuery;
-        })
-        draft.draftQueries = filteredDrafts
+        });
+        draft.draftQueries = filteredDrafts;
         draft.activeQuery = last(draft.draftQueries).key;
       } else {
         const newStatement = createDraftStatement('Filtre sans titre');
@@ -136,8 +133,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:
-      const { query } = action.payload;
-      const index = findIndex(draftQueries, { key: query.key });
+      const { query } = action.payload; // eslint-disable-line no-case-declarations
+      const index = findIndex(draftQueries, { key: query.key }); // eslint-disable-line no-case-declarations
       if (index > -1) {
         draftQueries[index] = query;
       } else {
@@ -147,33 +144,28 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_QUERIES_REPLACEMENT:
-      const { queries } = action.payload;
-      draft.draftQueries = queries;
+      draft.draftQueries = action.payload.queries;
       break;
 
     case actions.PATIENT_VARIANT_STATEMENT_SORT:
-      const { statement } = action.payload;
-      draft.draftQueries = statement;
+      draft.draftQueries = action.payload.statement;
       break;
 
     case actions.PATIENT_VARIANT_COMMIT_HISTORY:
-      const { version } = action.payload;
-      const newCommit = {
+      const newCommit = { // eslint-disable-line no-case-declarations
         activeQuery: draft.activeQuery,
-        draftQueries: version,
+        draftQueries: action.payload.version,
       };
-      const lastVersionInHistory = last(draftHistory);
-      if (!isEqual(newCommit, lastVersionInHistory)) {
+      if (!isEqual(newCommit, last(draftHistory))) {
         draftHistory.push(newCommit);
       }
-      const revisions = draftHistory.length;
-      if (revisions > MAX_REVISIONS) {
+      if (draftHistory.length > MAX_REVISIONS) {
         draftHistory.shift();
       }
       break;
 
     case actions.PATIENT_VARIANT_UNDO:
-      const lastVersion = draftHistory.pop();
+      const lastVersion = draftHistory.pop(); // eslint-disable-line no-case-declarations
       draft.draftQueries = lastVersion.draftQueries;
       draft.activeQuery = lastVersion.activeQuery;
       break;
@@ -187,22 +179,22 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
         draft.draftHistory = [];
       } else {
-        draft.statements = {}
-        action.payload.data.hits.forEach(hit => (
+        draft.statements = {};
+        action.payload.data.hits.forEach((hit) => {
           draft.statements[hit._id] = {
             uid: hit._id,
             title: hit._source.title,
             description: hit._source.description,
             queries: JSON.parse(hit._source.queries),
             isDefault: hit._source.isDefault,
-          }
-        ));
+          };
+        });
         const defaultStatementId = Object.keys(draft.statements).find(
-          statementKey => draft.statements[statementKey].isDefault === true
-        )
+          statementKey => draft.statements[statementKey].isDefault === true,
+        );
         if (defaultStatementId) {
-          draft.activeStatementId = defaultStatementId
-          draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null
+          draft.activeStatementId = defaultStatementId;
+          draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null;
           draft.originalQueries = draft.statements[defaultStatementId].queries;
           draft.draftQueries = draft.statements[defaultStatementId].queries;
           draft.draftHistory = [];
@@ -218,10 +210,10 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED:
-      delete draft.statements['draft']
-      const statementId = action.payload.uid ? action.payload.uid : Object.keys(draft.statements).find(
-        statementKey => draft.statements[statementKey].isDefault === true
-      )
+      delete draft.statements.draft;
+      const statementId = action.payload.uid ? action.payload.uid : Object.keys(draft.statements).find( // eslint-disable-line no-case-declarations
+        statementKey => draft.statements[statementKey].isDefault === true,
+      );
       draft.activeStatementId = statementId;
       draft.activeQuery = last(draft.statements[statementId].queries).key;
       draft.originalQueries = draft.statements[statementId].queries;
@@ -231,8 +223,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-      delete draft.statements['draft']
-      const updatedStatement = {
+      delete draft.statements.draft;
+      const updatedStatement = { // eslint-disable-line no-case-declarations
         uid: action.payload.data.uid,
         title: action.payload.data.title,
         description: action.payload.data.description,
@@ -241,8 +233,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       };
       draft.activeStatementId = updatedStatement.uid;
       draft.statements[updatedStatement.uid] = updatedStatement;
-      draft.originalQueries = cloneDeep(updatedStatement.queries)
-      draft.draftQueries = cloneDeep(updatedStatement.queries)
+      draft.originalQueries = cloneDeep(updatedStatement.queries);
+      draft.draftQueries = cloneDeep(updatedStatement.queries);
       draft.draftHistory = [];
       break;
 
@@ -252,7 +244,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         payload.statement.title,
         payload.statement.description,
         payload.statement.queries,
-      )
+      );
       draft.activeQuery = draft.statements[DRAFT_STATEMENT_UID].queries[draft.statements[DRAFT_STATEMENT_UID].queries.length - 1].key;
       draft.originalQueries = [];
       draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
@@ -260,15 +252,15 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED:
-      delete draft.statements[action.payload.uid]
-    case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT:
+      delete draft.statements[action.payload.uid];
+    case actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT: // eslint-disable-line no-fallthrough
       draft.activeStatementId = DRAFT_STATEMENT_UID;
       if (payload.statement) {
         draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(
-          payload.statement.title
-        )
+          payload.statement.title,
+        );
       } else {
-        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre')
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
       }
       draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
       draft.originalQueries = [];

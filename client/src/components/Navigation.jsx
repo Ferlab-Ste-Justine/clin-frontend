@@ -11,7 +11,6 @@ import { userShape } from '../reducers/user';
 import { navigateToPatientSearchScreen, navigate } from '../actions/router';
 
 
-// onClick={navigateToPatientSearchScreen}
 const navigationMenu = (intl, router, actions) => {
   const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
   let tabForRoute = router.location.pathname;

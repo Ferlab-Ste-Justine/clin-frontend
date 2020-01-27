@@ -1,14 +1,14 @@
-/* eslint-disable */
+/* eslint-disable camelcase,  jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Card, Row, Col, Form, Input, Button, Typography
+  Card, Row, Col, Form, Input, Button, Typography,
 } from 'antd';
 import { injectIntl } from 'react-intl';
 import IconKit from 'react-icons-kit';
-import { ic_email,  ic_https } from 'react-icons-kit/md';
+import { ic_email, ic_https } from 'react-icons-kit/md';
 import './style.scss';
-import style from '../../../containers/App/style.module.scss'
+import style from '../../../containers/App/style.module.scss';
 
 
 const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
@@ -132,9 +132,9 @@ class LoginForm extends React.Component {
                   />,
                 )}
               </Form.Item>
-            <a className="forgotPass" onClick={this.handleClick}>
-              {formTextForgotPassword}
-            </a>
+              <a className="forgotPass" onClick={this.handleClick}>
+                {formTextForgotPassword}
+              </a>
               <Button
                 type="primary"
                 htmlType="submit"

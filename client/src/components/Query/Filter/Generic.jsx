@@ -90,6 +90,7 @@ class GenericFilter extends React.Component {
 
   getEditorLabels() {
     const { data, intl } = this.props;
+
     return {
       action: intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` }),
       targets: data.values
@@ -207,7 +208,7 @@ class GenericFilter extends React.Component {
   handleSelectionChange(values) {
     const { dataSet } = this.props;
     const {
-      selection, allOptions, page, size,
+      selection, allOptions, page, size, draft,
     } = this.state;
 
     const minValue = size * (page - 1);
@@ -222,8 +223,10 @@ class GenericFilter extends React.Component {
       }
     });
 
+    draft.values = selection;
     this.setState({
       selection,
+      draft,
       indeterminate: (!(values.length === dataSet.length) && values.length > 0),
     });
   }
