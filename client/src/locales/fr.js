@@ -237,7 +237,7 @@ const fr = {
   'screen.patientvariant.statement.and': 'Et',
   'screen.patientvariant.statement.or': 'Ou',
   'screen.patientvariant.statement.andnot': 'Exclure',
-  'screen.patientvariant.form.statement.unsavedChanges': 'Vous avez des modifications non enregistrées',
+  'screen.patientvariant.form.statement.unsavedChanges': 'modifications non enregistrées',
   'screen.patientvariant.modal.statement.delete.title': 'Êtes-vous sûr de vouloir supprimer cette requête?',
   'screen.patientvariant.modal.statement.delete.body': 'Certaines requêtes combinées seront affectées',
   'screen.patientvariant.modal.statement.delete.button.ok': 'Supprimer',

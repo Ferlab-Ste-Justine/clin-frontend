@@ -317,7 +317,6 @@ class Query extends React.Component {
                 size="small"
                 defaultValue={draft.title}
                 onBlur={this.handleTitleChange}
-                //onFocus={this.handleTitleOnFocus}
                 onPressEnter={this.handleTitleChange}
                 onChange={this.handleTitleOnChange}
                 className={`title-${draft.key}`}
@@ -347,7 +346,7 @@ class Query extends React.Component {
             { results && (<span>{results.toLocaleString('en-US').replace(',', '\u00a0')}</span>) }
           </div>
         </div>
-        {draft.instructions.length === 0
+        {isEmpty
           ? (
             <div className={styleQuery.emptyQuery}>
                 Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête

@@ -179,7 +179,7 @@ const en = {
   'screen.patientvariant.statement.and': 'And',
   'screen.patientvariant.statement.or': 'Or',
   'screen.patientvariant.statement.andnot': 'And Not',
-  'screen.patientvariant.form.statement.unsavedChanges': 'You have unsaved changes',
+  'screen.patientvariant.form.statement.unsavedChanges': 'unsaved changes',
   'screen.patientvariant.modal.statement.delete.title': 'Are you sure you want to delete this query?',
   'screen.patientvariant.modal.statement.delete.body': 'Some queries will also be affected.',
   'screen.patientvariant.modal.statement.delete.button.ok': 'Delete',
