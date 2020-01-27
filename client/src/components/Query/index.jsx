@@ -363,8 +363,8 @@ class Query extends React.Component {
               <Popconfirm
                 title="Supprimer définitivement cette requête."
                 onConfirm={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }}
-                okText="Annuler"
-                cancelText="Supprimer"
+                okText="Supprimer"
+                cancelText="Annuler"
                 icon={null}
                 overlayClassName={styleQuery.popconfirm}
                 onVisibleChange={this.togglePopConfirm}

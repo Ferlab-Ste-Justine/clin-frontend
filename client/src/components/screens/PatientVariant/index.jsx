@@ -479,10 +479,10 @@ class PatientVariantScreen extends React.Component {
               <IconKit size={16} icon={ic_assignment_turned_in} />
                 HPO:
               {patient.ontology.map(ontology => (
-                <Button>
+                <a>
                   {ontology.term}
                   <IconKit className={style.iconLink} size={14} icon={ic_launch} />
-                </Button>
+                </a>
               ))
                 }
             </Row>
