@@ -327,7 +327,7 @@ class Statement extends React.Component {
     }
     const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
     const callbackSetStatementAsDefault = () => {
-      this.props.onUpdateStatementCallback(id, title, '', null, true);
+      this.props.onUpdateStatementCallback(id, title, '', null, !this.props.statements[id].isDefault);
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
