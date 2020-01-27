@@ -123,4 +123,69 @@ margin: 8px 0;
 .tooltip{
 }
 
+.popconfirm{
+    z-index:10000;
+    width:308px;
+      >div{
+        >div:nth-child(2){
+            border-radius:2px;
+            box-shadow: 0px 6px 10px 0px rgba(89, 121, 144, 0.14),
+            0px 1px 18px 0px rgba(89, 121, 144, 0.12),
+            0px 3px 5px -1px rgba(89, 121, 144, 0.2);
+            padding:16px;
+            >div{
+                >div{
+                    >div:nth-child(1){
+                        padding:0;
+                        >div{
+                            padding:0;
+                            color: rgba(35, 55, 80, 0.78);
+                            font-size: 14px;
+                            font-family: $font;
+                            letter-spacing: 0.25px;
+                            line-height: 20px;
+                            margin-bottom:12px;
+                        }
+                    }
+                    >div:nth-child(2){
+                        margin:0;
+                        button{
+                            border-radius:2px;
+                            text-shadow:none;
+                            box-shadow:none;
+                            font-size: 14px;
+                            font-family: $font;
+                            text-align: center;
+                            letter-spacing: 0.25px;
+                            line-height: 20px;
+                            padding:0 12px;
+
+                        }
+
+                        button:nth-child(1){
+                            border: 1px solid rgba(18, 90, 144, 0.3);
+                            color: rgba(35, 55, 80, 0.78);
+
+                            &:hover{
+                                border: 1px solid rgb(29, 139, 198);
+                                color:#125a90;
+                            }
+                        }
+                        button:nth-child(2){
+                         color: #ffffff;
+
+                         &:hover{
+                            background-color:#1b7ab2;
+                            border:1px solid transparent;
+                         }
+                        }
+                    }
+
+                }
+            }
+        }
+      }
+
+  }
+
 
