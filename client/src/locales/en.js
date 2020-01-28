@@ -169,7 +169,7 @@ const en = {
   'screen.patientvariant.statement.combine': 'Combine',
   'screen.patientvariant.statement.delete': 'Delete',
   'screen.patientvariant.statement.newQuery': 'New Query',
-  'screen.patientvariant.statement.myFilter': 'My filter',
+  'screen.patientvariant.statement.myFilter': 'My Filters',
   'screen.patientvariant.statement.tooltip.check': 'Check',
   'screen.patientvariant.statement.tooltip.uncheck': 'Uncheck',
   'screen.patientvariant.statement.tooltip.all': 'All',

@@ -4,6 +4,7 @@ import { produce } from 'immer';
 import {
   cloneDeep, findIndex, isEqual, last, head,
 } from 'lodash';
+import intl from 'react-intl-universal';
 import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
@@ -112,7 +113,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         draft.draftQueries = filteredDrafts;
         draft.activeQuery = last(draft.draftQueries).key;
       } else {
-        const newStatement = createDraftStatement('Filtre sans titre');
+        const newStatement = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
         draft.statements[draft.activeStatementId].queries = newStatement.queries;
         draft.activeQuery = head(newStatement.queries).key;
         draft.draftQueries = newStatement.queries;
@@ -173,7 +174,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
       if (action.payload.data.total < 1) {
         draft.activeStatementId = DRAFT_STATEMENT_UID;
-        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
         draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
         draft.originalQueries = [];
         draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
@@ -201,7 +202,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
             draft.draftHistory = [];
           } else {
             draft.activeStatementId = DRAFT_STATEMENT_UID;
-            draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
+            draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
             draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
             draft.originalQueries = [];
             draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
@@ -273,7 +274,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
           payload.statement.title,
         );
       } else {
-        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
       }
       draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
       draft.originalQueries = [];
