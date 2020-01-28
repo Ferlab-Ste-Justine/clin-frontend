@@ -21,7 +21,7 @@ const userMenu = actions => (
     <Menu.Item key="logout" onClick={actions.logoutUser}>
       <span>
         <Icon type="logout" />
-        {` ${intl.get('navigation.user.logout')}`}
+        {` ${intl.get('header.navigation.user.logout')}`}
       </span>
     </Menu.Item>
   </Menu>
@@ -72,7 +72,7 @@ const Header = ({
                     { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link">
                       <IconKit size={16} icon={ic_supervisor_account} />
-                      {'Patients'}
+                      { intl.get('header.navigation.patient') }
                     </a>
                   </Col>
                   <Divider type="vertical" />
