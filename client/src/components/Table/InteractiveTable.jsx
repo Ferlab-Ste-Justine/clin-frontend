@@ -225,7 +225,7 @@ class InteractiveTable extends React.Component {
             { matchingColumns.map(key => (
               <Row>
                 <Col>
-                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{key}</Checkbox>
+                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{ intl.get(key) }</Checkbox>
                 </Col>
               </Row>
             )) }
