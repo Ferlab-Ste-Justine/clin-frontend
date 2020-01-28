@@ -147,27 +147,27 @@ function* selectStatement(action) {
 
 function* refreshCount() {
   const { details } = yield select(state => state.patient);
-  const { statements, activeStatementId } = yield select(state => state.variant);
+  const { draftQueries } = yield select(state => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_COUNT_REQUESTED,
     payload: {
       patient: details.id,
-      statement: statements[activeStatementId].queries,
-      queries: statements[activeStatementId].queries.map(query => query.key),
+      statement: draftQueries,
+      queries: draftQueries.map(query => query.key),
     },
   });
 }
 
 function* refreshResults() {
   const { details } = yield select(state => state.patient);
-  const { statements, activeStatementId, activeQuery } = yield select(state => state.variant);
+  const { draftQueries, activeQuery } = yield select(state => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_SEARCH_REQUESTED,
     payload: {
       patient: details.id,
-      statement: statements[activeStatementId].queries,
+      statement: draftQueries,
       query: activeQuery,
     },
   });
@@ -217,6 +217,7 @@ function* watchRefreshCount() {
     actionTypes.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
     actionTypes.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
     actionTypes.PATIENT_VARIANT_QUERY_REMOVAL,
+    actionTypes.PATIENT_VARIANT_QUERY_REPLACEMENT,
     actionTypes.PATIENT_VARIANT_QUERIES_REPLACEMENT,
   ], refreshCount);
 }
@@ -229,9 +230,9 @@ function* watchRefreshResults() {
     actionTypes.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
     actionTypes.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
     actionTypes.PATIENT_VARIANT_QUERY_REMOVAL,
-    actionTypes.PATIENT_VARIANT_QUERY_SELECTION,
     actionTypes.PATIENT_VARIANT_QUERY_REPLACEMENT,
     actionTypes.PATIENT_VARIANT_QUERIES_REPLACEMENT,
+    actionTypes.PATIENT_VARIANT_QUERY_SELECTION,
   ], refreshResults);
 }
 
