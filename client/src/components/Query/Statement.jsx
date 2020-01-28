@@ -321,7 +321,7 @@ class Statement extends React.Component {
 
   setStatementAsDefault(e) {
     const {dropDownIsOpen} = this.state
-    let id = e.currentTarget ? e.curre76x12ntTarget.getAttribute('dataid') : e;
+    let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;

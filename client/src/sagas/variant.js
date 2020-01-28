@@ -67,11 +67,12 @@ function* getStatements() {
 function* updateStatement(action) {
   try {
     const statementKey = action.payload.id;
-    const { draftQueries, statements } = yield select(state => state.variant);
+    const { statements } = yield select(state => state.variant);
     const title = action.payload.title ? action.payload.title : statements[statementKey].title;
     const description = action.payload.description ? action.payload.description : statements[statementKey].description;
+    const queries = action.payload.queries ? action.payload.queries : statements[statementKey].queries;
     const isDefault = action.payload.isDefault ? true : statements[statementKey].isDefault;
-    const statementResponse = yield Api.updateStatement(statementKey, (title || ''), (description || ''), draftQueries, isDefault);
+    const statementResponse = yield Api.updateStatement(statementKey, title, description, queries, isDefault);
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
@@ -88,7 +89,6 @@ function* updateStatement(action) {
 function* createStatement(action) {
   try {
     const { draftQueries } = yield select(state => state.variant);
-
     const title = action.payload.title ? action.payload.title : '';
     const description = action.payload.description ? action.payload.description : '';
     const statementResponse = yield Api.createStatement(title, description, draftQueries, false);
