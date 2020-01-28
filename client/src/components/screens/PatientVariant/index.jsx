@@ -76,67 +76,67 @@ class PatientVariantScreen extends React.Component {
     // @NOTE Initialize Component State
     this.state.columnPreset = {
       [VARIANT_TAB]: [
-        { key: 'mutationId', label: 'Variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
-        { key: 'type', label: 'Variant Type', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
+        { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
+        { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
         {
           key: 'gene',
-          label: 'Gene Symbol',
+          label: 'screen.variantsearch.table.geneSymbol',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.genes[0].geneSymbol; } catch (e) { return ''; } },
           }),
         },
         {
           key: 'aachanges',
-          label: 'AA Change(s)',
+          label: 'screen.variantsearch.table.aaChanges',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.consequences[0].aaChange; } catch (e) { return ''; } },
           }),
         },
         {
           key: 'consequences',
-          label: 'Consequence(s)',
+          label: 'screen.variantsearch.table.consequences',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.consequences[0].consequence; } catch (e) { return ''; } },
           }),
         },
         {
           key: 'clinvar',
-          label: 'ClinVar',
+          label: 'screen.variantsearch.table.clinvar',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.clinvar.clinvar_clinsig; } catch (e) { return ''; } },
           }),
         },
         {
           key: 'dbsnp',
-          label: 'DbSnp',
+          label: 'screen.variantsearch.table.dbsnp',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.bdExt.dbSNP[0]; } catch (e) { return ''; } },
           }),
         },
         {
           key: 'pubmed',
-          label: 'Pubmed',
+          label: 'screen.variantsearch.table.pubmed',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed); } catch (e) { return ''; } },
           }),
         },
         {
           key: 'sift',
-          label: 'SIFT',
+          label: 'screen.variantsearch.table.sift',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.consequences[0].predictions.SIFT; } catch (e) { return ''; } },
           }),
         },
         {
           key: 'polyphenhvar',
-          label: 'Polyphen2 HVAR',
+          label: 'screen.variantsearch.table.polyphen2hvar',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred; } catch (e) { return ''; } },
           }),
         },
         {
           key: 'phylop',
-          label: 'PhyloP',
+          label: 'screen.variantsearch.table.phylop',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way; } catch (e) { return ''; } },
           }),
@@ -329,7 +329,7 @@ class PatientVariantScreen extends React.Component {
           id: category.id,
           subid: null,
           type: 'category',
-          label: intl.get(`screen.patientvariant.${category.label}`),
+          label: intl.get(`${category.label}`),
           data: category.filters ? category.filters.reduce((accumulator, filter) => {
             const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
               reverseCategories[facet.id] = category.id;

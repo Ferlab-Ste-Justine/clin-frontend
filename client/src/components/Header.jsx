@@ -79,7 +79,7 @@ const Header = ({
                 </Row>
               </div>
               <Col className="userName">
-                <Dropdown overlay={userMenu(intl, actions)} trigger={['click']}>
+                <Dropdown overlay={userMenu(actions)} trigger={['click']}>
                   { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                   <a className="ant-dropdown-link">
                     <IconKit size={16} icon={ic_account_circle} />

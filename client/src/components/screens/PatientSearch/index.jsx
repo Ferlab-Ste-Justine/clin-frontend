@@ -277,7 +277,7 @@ class PatientSearchScreen extends React.Component {
         <Card className="patientSearch">
           <Row>
             <Col span={24}>
-              <Title level={3}>Liste des patients</Title>
+              <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
             </Col>
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
@@ -312,7 +312,7 @@ class PatientSearchScreen extends React.Component {
             <Col>
               <Button className={`${style.btnPrimary} ${style.btn}`}>
                 <IconKit size={16} icon={ic_add} />
-                Nouveau patient
+                { intl.get('screen.patientsearch.button.new') }
               </Button>
             </Col>
           </Row>
