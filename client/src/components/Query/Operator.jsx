@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {
   Menu, Dropdown,
 } from 'antd';
+import intl from 'react-intl-universal';
 import style from './styles/term.module.scss';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
@@ -93,11 +94,11 @@ class Operator extends React.Component {
       <Menu onClick={this.handleApply} className={style.operatorMenu}>
         <Menu.Item key={OPERATOR_TYPE_AND}>
           <svg className={style.icon}>{svgPathAnd}</svg>
-          Intersection
+          { intl.get('components.query.instruction.operator.and') }
         </Menu.Item>
         <Menu.Item key={OPERATOR_TYPE_OR}>
           <svg className={style.icon}>{svgPathOr}</svg>
-          Union
+          { intl.get('components.query.instruction.operator.or') }
         </Menu.Item>
       </Menu>
     );
