@@ -2,13 +2,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import intl from 'react-intl-universal';
 import {
   find, cloneDeep, debounce,
 } from 'lodash';
 
 import {
-  Menu, Input, AutoComplete, Icon, Tag, Typography, Col, Row,
+  Menu, Input, AutoComplete, Icon, Tag, Typography, Col,
 } from 'antd';
 
 import GenericFilter, { FILTER_OPERAND_TYPE_DEFAULT } from '../../../Query/Filter/Generic';
@@ -202,7 +202,7 @@ class VariantNavigation extends React.Component {
 
   renderFilterType(categoryData) {
     const {
-      intl, activeQuery, queries, data, searchData, patient,
+      activeQuery, queries, data, patient,
     } = this.props;
     const { searchSelection } = this.state;
     const activeFilterId = searchSelection.filter ? searchSelection.filter : this.state.activeFilterId;
@@ -221,7 +221,6 @@ class VariantNavigation extends React.Component {
               selectable: false,
               removable: false,
             }}
-            intl={intl}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand })}
             dataSet={data[activeFilterId] ? data[activeFilterId] : []}
             config={categoryData.config && categoryData.config[categoryData.id]}
@@ -240,7 +239,6 @@ class VariantNavigation extends React.Component {
               selectable: false,
               removable: false,
             }}
-            intl={intl}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, operand: defaultOperand })}
             dataSet={data[activeFilterId] ? data[activeFilterId] : []}
             externalDataSet={patient}
@@ -260,7 +258,6 @@ class VariantNavigation extends React.Component {
               selectable: false,
               removable: false,
             }}
-            intl={intl}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : NumericalComparisonFilter.structFromArgs(activeFilterId))}
             dataSet={data[activeFilterId] ? data[activeFilterId] : []}
             onEditCallback={this.handleFilterChange}
@@ -285,7 +282,6 @@ class VariantNavigation extends React.Component {
               selectable: false,
               removable: false,
             }}
-            intl={intl}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : { id: activeFilterId, type: FILTER_TYPE_GENERICBOOL })}
             dataSet={allOption || []}
             onEditCallback={this.handleFilterChange}
@@ -303,7 +299,6 @@ class VariantNavigation extends React.Component {
               selectable: false,
               removable: false,
             }}
-            intl={intl}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : {
               id: activeFilterId, comparator: '>',
             })}
@@ -317,7 +312,7 @@ class VariantNavigation extends React.Component {
   }
 
   render() {
-    const { intl, schema } = this.props;
+    const { schema } = this.props;
     const { activeFilterId, searchResults, searchSelection } = this.state;
     let autocompletesCount = 0;
     const autocompletes = searchResults.map((group) => {
@@ -412,7 +407,7 @@ result(s)
         {generateMenuComponent(searchSelection, schema.categories ? schema.categories.map((category) => {
           if (category.filters && category.filters.length > 0) {
             const { id } = category;
-            const label = intl.formatMessage({ id: `screen.patientvariant.${category.label}` });
+            const label = intl.get(`screen.patientvariant.${category.label}`);
             const categoryInfo = find(schema.categories, ['id', (searchSelection.category || id)]);
             const categoryData = find(categoryInfo.filters, ['id', (searchSelection.filter || activeFilterId)]);
             const filter = categoryData ? this.renderFilterType(categoryData) : null;
@@ -421,7 +416,7 @@ result(s)
                 { activeFilterId === null && !searchSelection.category && category.filters.map(filter => filter.search && (
                 <Menu.SubMenu
                   key={filter.id}
-                  title={intl.formatMessage({ id: `screen.patientvariant.${filter.label}` })}
+                  title={intl.get(`screen.patientvariant.${filter.label}`)}
                   onTitleClick={this.handleFilterSelection}
                 />
                 ))}
@@ -437,7 +432,6 @@ result(s)
 }
 
 VariantNavigation.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   schema: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}),

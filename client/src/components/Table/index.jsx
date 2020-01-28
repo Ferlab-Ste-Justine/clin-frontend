@@ -1,6 +1,7 @@
 import shortid from 'shortid';
 import React from 'react';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
 import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
@@ -114,7 +115,7 @@ const DataTable = (props) => {
       { columns.map(definition => (
         <Column
           id={definition.key}
-          name={definition.label}
+          name={intl.get(definition.label)}
           cellRenderer={definition.renderer}
         />
       )) }

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
+import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -14,16 +14,15 @@ import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import DataList from '../../DataList';
-
-import './style.scss';
 import { patientShape } from '../../../reducers/patient';
 import { searchShape } from '../../../reducers/search';
-
+import { appShape } from '../../../reducers/app';
 import {
   navigateToPatientScreen, navigateToPatientVariantScreen,
   navigateToPatientSearchScreen,
 } from '../../../actions/router';
-import { appShape } from '../../../reducers/app';
+
+import './style.scss';
 
 
 class PatientScreen extends React.Component {
@@ -51,62 +50,62 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      app, intl, patient, actions,
+      app, patient, actions,
     } = this.props;
 
     const { showSubloadingAnimation } = app;
-    const identifier = intl.formatMessage({ id: 'screen.patient.details.id' });
-    const mrn = intl.formatMessage({ id: 'screen.patient.details.mrn' });
-    const ramq = intl.formatMessage({ id: 'screen.patient.details.ramq' });
-    const dateOfBirth = intl.formatMessage({ id: 'screen.patient.details.dob' });
-    const organization = intl.formatMessage({ id: 'screen.patient.details.organization' });
-    const firstName = intl.formatMessage({ id: 'screen.patient.details.firstName' });
-    const lastName = intl.formatMessage({ id: 'screen.patient.details.lastName' });
-    const gender = intl.formatMessage({ id: 'screen.patient.details.gender' });
-    const pfamily = intl.formatMessage({ id: 'screen.patient.details.family' });
-    const ethnicity = intl.formatMessage({ id: 'screen.patient.details.ethnicity' });
-    const study = intl.formatMessage({ id: 'screen.patient.details.study' });
-    const proband = intl.formatMessage({ id: 'screen.patient.details.proband' });
-    const position = intl.formatMessage({ id: 'screen.patient.details.position' });
-    const preferringPractitioner = intl.formatMessage({ id: 'screen.patient.details.referringPractitioner' });
-    const mln = intl.formatMessage({ id: 'screen.patient.details.mln' });
-    const id = intl.formatMessage({ id: 'screen.patient.details.id' });
-    const practitioner = intl.formatMessage({ id: 'screen.patient.details.practitioner' });
-    const date = intl.formatMessage({ id: 'screen.patient.details.date' });
-    const ageAtConsultation = intl.formatMessage({ id: 'screen.patient.details.ageAtConsultation' });
-    const type = intl.formatMessage({ id: 'screen.patient.details.type' });
-    const author = intl.formatMessage({ id: 'screen.patient.details.author' });
-    const specimen = intl.formatMessage({ id: 'screen.patient.details.specimen' });
-    const consultation = intl.formatMessage({ id: 'screen.patient.details.consultation' });
-    const status = intl.formatMessage({ id: 'screen.patient.details.status' });
-    const request = intl.formatMessage({ id: 'screen.patient.details.request' });
-    const barcode = intl.formatMessage({ id: 'screen.patient.details.barcode' });
-    const code = intl.formatMessage({ id: 'screen.patient.details.code' });
-    const term = intl.formatMessage({ id: 'screen.patient.details.term' });
-    const notes = intl.formatMessage({ id: 'screen.patient.details.notes' });
-    const mother = intl.formatMessage({ id: 'screen.patient.details.mother' });
-    const father = intl.formatMessage({ id: 'screen.patient.details.father' });
-    const familyId = intl.formatMessage({ id: 'screen.patient.details.familyId' });
-    const configuration = intl.formatMessage({ id: 'screen.patient.details.configuration' });
-    const dateAndTime = intl.formatMessage({ id: 'screen.patient.details.dateAndTime' });
-    const ontology = intl.formatMessage({ id: 'screen.patient.details.ontology' });
-    const observed = intl.formatMessage({ id: 'screen.patient.details.observed' });
-    const apparition = intl.formatMessage({ id: 'screen.patient.details.apparition' });
-    const identification = intl.formatMessage({ id: 'screen.patient.header.identification' });
-    const additionalInformation = intl.formatMessage({ id: 'screen.patient.header.additionalInformation' });
-    const referringPractitioner = intl.formatMessage({ id: 'screen.patient.header.referringPractitioner' });
-    const geneticalConsultations = intl.formatMessage({ id: 'screen.patient.header.geneticalConsultations' });
-    const requests = intl.formatMessage({ id: 'screen.patient.header.requests' });
-    const samples = intl.formatMessage({ id: 'screen.patient.header.samples' });
-    const clinicalSigns = intl.formatMessage({ id: 'screen.patient.header.clinicalSigns' });
-    const indications = intl.formatMessage({ id: 'screen.patient.header.indications' });
-    const generalObservations = intl.formatMessage({ id: 'screen.patient.header.generalObservations' });
-    const family = intl.formatMessage({ id: 'screen.patient.header.family' });
-    const familyHistory = intl.formatMessage({ id: 'screen.patient.header.familyHistory' });
-    const generalInformation = intl.formatMessage({ id: 'screen.patient.header.generalInformation' });
-    const familyMembers = intl.formatMessage({ id: 'screen.patient.header.familyMembers' });
-    const patientTab = intl.formatMessage({ id: 'screen.patient.tab.patient' });
-    const clinicalTab = intl.formatMessage({ id: 'screen.patient.tab.clinical' });
+    const identifier = intl.get('screen.patient.details.id');
+    const mrn = intl.get('screen.patient.details.mrn');
+    const ramq = intl.get('screen.patient.details.ramq');
+    const dateOfBirth = intl.get('screen.patient.details.dob');
+    const organization = intl.get('screen.patient.details.organization');
+    const firstName = intl.get('screen.patient.details.firstName');
+    const lastName = intl.get('screen.patient.details.lastName');
+    const gender = intl.get('screen.patient.details.gender');
+    const pfamily = intl.get('screen.patient.details.family');
+    const ethnicity = intl.get('screen.patient.details.ethnicity');
+    const study = intl.get('screen.patient.details.study');
+    const proband = intl.get('screen.patient.details.proband');
+    const position = intl.get('screen.patient.details.position');
+    const preferringPractitioner = intl.get('screen.patient.details.referringPractitioner');
+    const mln = intl.get('screen.patient.details.mln');
+    const id = intl.get('screen.patient.details.id');
+    const practitioner = intl.get('screen.patient.details.practitioner');
+    const date = intl.get('screen.patient.details.date');
+    const ageAtConsultation = intl.get('screen.patient.details.ageAtConsultation');
+    const type = intl.get('screen.patient.details.type');
+    const author = intl.get('screen.patient.details.author');
+    const specimen = intl.get('screen.patient.details.specimen');
+    const consultation = intl.get('screen.patient.details.consultation');
+    const status = intl.get('screen.patient.details.status');
+    const request = intl.get('screen.patient.details.request');
+    const barcode = intl.get('screen.patient.details.barcode');
+    const code = intl.get('screen.patient.details.code');
+    const term = intl.get('screen.patient.details.term');
+    const notes = intl.get('screen.patient.details.notes');
+    const mother = intl.get('screen.patient.details.mother');
+    const father = intl.get('screen.patient.details.father');
+    const familyId = intl.get('screen.patient.details.familyId');
+    const configuration = intl.get('screen.patient.details.configuration');
+    const dateAndTime = intl.get('screen.patient.details.dateAndTime');
+    const ontology = intl.get('screen.patient.details.ontology');
+    const observed = intl.get('screen.patient.details.observed');
+    const apparition = intl.get('screen.patient.details.apparition');
+    const identification = intl.get('screen.patient.header.identification');
+    const additionalInformation = intl.get('screen.patient.header.additionalInformation');
+    const referringPractitioner = intl.get('screen.patient.header.referringPractitioner');
+    const geneticalConsultations = intl.get('screen.patient.header.geneticalConsultations');
+    const requests = intl.get('screen.patient.header.requests');
+    const samples = intl.get('screen.patient.header.samples');
+    const clinicalSigns = intl.get('screen.patient.header.clinicalSigns');
+    const indications = intl.get('screen.patient.header.indications');
+    const generalObservations = intl.get('screen.patient.header.generalObservations');
+    const family = intl.get('screen.patient.header.family');
+    const familyHistory = intl.get('screen.patient.header.familyHistory');
+    const generalInformation = intl.get('screen.patient.header.generalInformation');
+    const familyMembers = intl.get('screen.patient.header.familyMembers');
+    const patientTab = intl.get('screen.patient.tab.patient');
+    const clinicalTab = intl.get('screen.patient.tab.clinical');
     const motherLink = patient.family.members.mother ? (
           <a /* eslint-disable-line */
             data-patient-id={patient.family.members.mother}
@@ -386,7 +385,6 @@ class PatientScreen extends React.Component {
 
 PatientScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
-  intl: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
@@ -402,7 +400,6 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   app: state.app,
-  intl: state.intl,
   patient: state.patient,
   search: state.search,
 });
@@ -410,4 +407,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(injectIntl(PatientScreen));
+)(PatientScreen);

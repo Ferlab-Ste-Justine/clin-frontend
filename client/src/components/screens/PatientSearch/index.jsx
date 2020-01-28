@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
+import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -59,25 +59,21 @@ class PatientSearchScreen extends React.Component {
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this)
 
     // @NOTE Initialize Component State
-    const { intl } = props;
-
     this.state.facet = [
-        intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),
-        intl.formatMessage({ id: 'screen.patientsearch.table.status' }),
-        "Category 1",
-        "Category 2",
+        'screen.patientsearch.table.practitioner',
+        'screen.patientsearch.table.status',
     ]
     this.columnPreset = [
-      { key: 'patientId', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('button', this.getData, { key: 'id' , handler: this.handleGoToPatientScreen})},
-      { key: 'organization', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
-      { key: 'firstName', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
-      { key: 'lastName', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
-      { key: 'dob', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
-      { key: 'familyComposition', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
-      { key: 'position', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }),renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
-      { key: 'practitioner', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
-      { key: 'request', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }),renderer: createCellRenderer('text', this.getData, { key: 'request' })},
-      { key: 'status', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
+      { key: 'patientId', label:'screen.patientsearch.table.patientId', renderer: createCellRenderer('button', this.getData, { key: 'id' , handler: this.handleGoToPatientScreen})},
+      { key: 'organization', label:'screen.patientsearch.table.organization', renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
+      { key: 'firstName', label:'screen.patientsearch.table.firstName', renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
+      { key: 'lastName', label:'screen.patientsearch.table.lastName', renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
+      { key: 'dob', label:'screen.patientsearch.table.dob', renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
+      { key: 'familyComposition', label:'screen.patientsearch.table.familyComposition',renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
+      { key: 'position', label:'screen.patientsearch.table.position',renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
+      { key: 'practitioner', label:'screen.patientsearch.table.practitioner',renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
+      { key: 'request', label:'screen.patientsearch.table.request',renderer: createCellRenderer('text', this.getData, { key: 'request' })},
+      { key: 'status', label:'screen.patientsearch.table.status', renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
     ];
     this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
   }
@@ -232,7 +228,7 @@ class PatientSearchScreen extends React.Component {
     const open = this.isCategorieFacetOpen(index);
     return (
       <a onClick={this.changeFacetFilterOpen.bind(null, index)} key={index}>
-        {name}
+        {intl.get(name)}
         {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
       </a>
     );
@@ -253,7 +249,7 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    const { app, intl, search } = this.props;
+    const { app, search } = this.props;
     const { patient } = search;
     const { total } = patient;
     const { showSubloadingAnimation } = app;
@@ -261,7 +257,7 @@ class PatientSearchScreen extends React.Component {
     } = this.state;
 
     const { Title } = Typography;
-    const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
+    const placeholderText = intl.get('screen.patientsearch.placeholder');
 
     const autoCompleteResults = search.autocomplete.results.map(result => {
       return {
@@ -335,7 +331,6 @@ class PatientSearchScreen extends React.Component {
                 <Card bordered={false} className="tablePatient">
                   <InteractiveTable
                     key="patient-interactive-table"
-                    intl={intl}
                     size={size}
                     page={page}
                     total={total}
@@ -359,7 +354,6 @@ class PatientSearchScreen extends React.Component {
 
 PatientSearchScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
-  intl: PropTypes.shape({}).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
@@ -374,11 +368,10 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   app: state.app,
-  intl: state.intl,
   search: state.search,
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(injectIntl(PatientSearchScreen));
+)(PatientSearchScreen);

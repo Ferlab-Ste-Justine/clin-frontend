@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { hot } from 'react-hot-loader/root';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -7,7 +5,6 @@ import { Route, Switch } from 'react-router';
 import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { IntlProvider } from 'react-intl-redux';
 import { Spin, Layout, ConfigProvider } from 'antd';
 
 import 'antd/dist/antd.less';
@@ -57,21 +54,19 @@ export class App extends React.Component {
     const { app, user, history } = this.props;
     return (
       <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
-        <IntlProvider key="locale-intl">
-          <ConfigProvider key="locale-antd" locale={app.locale.antd}>
-            <Layout id="layout" key="layout">
-              <ConnectedRouter key="connected-router" history={history}>
-                <Switch key="switch">
-                  <PrivateRoute exact path="/patient/search" Component={PatientSearchScreen} key="route-patient-search" user={user} />
-                  <PrivateRoute exact path="/patient/:uid/variant" Component={PatientVariantScreen} key="route-patient-variant" user={user}  />
-                  <PrivateRoute exact path="/patient/:uid" Component={PatientScreen} key="route-patient" user={user} />
-                  <Route exact path="/" component={HomeScreen} key="route-home" />
-                  <Route component={NoMatchScreen} key="route-nomatch" />
-                </Switch>
-              </ConnectedRouter>
-            </Layout>
-          </ConfigProvider>
-        </IntlProvider>
+        <ConfigProvider key="locale-antd" locale={app.locale.antd}>
+          <Layout id="layout" key="layout">
+            <ConnectedRouter key="connected-router" history={history}>
+              <Switch key="switch">
+                <Route exact path="/" component={HomeScreen} key="route-home" />
+                <PrivateRoute exact path="/patient/search" Component={PatientSearchScreen} key="route-patient-search" user={user} />
+                <PrivateRoute exact path="/patient/:uid/variant" Component={PatientVariantScreen} key="route-patient-variant" user={user} />
+                <PrivateRoute exact path="/patient/:uid" Component={PatientScreen} key="route-patient" user={user} />
+                <Route component={NoMatchScreen} key="route-nomatch" />
+              </Switch>
+            </ConnectedRouter>
+          </Layout>
+        </ConfigProvider>
       </Spin>
     );
   }

@@ -1,6 +1,5 @@
 import React from 'react';
 // import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
 import { Card } from 'antd';
 
 import Header from '../../Header';
@@ -24,4 +23,4 @@ const MaintenanceScreen = () => (
 
 // MaintenanceScreen.propTypes = {};
 
-export default injectIntl(MaintenanceScreen);
+export default MaintenanceScreen;

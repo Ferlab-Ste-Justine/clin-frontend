@@ -1,7 +1,6 @@
 /* eslint-disable camelcase, no-param-reassign */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
-import { message } from 'antd';
 import moment from 'moment';
 import 'moment/locale/fr';
 import 'moment/locale/en-ca';
@@ -31,26 +30,6 @@ export const appShape = {
 
 const appReducer = (state = Object.assign({}, initialAppState), action) => produce(state, (draft) => {
   switch (action.type) {
-    case actions.SHOW_NOTIFICATION:
-      if (!window.agent) {
-        message[action.payload.type](action.payload.message);
-      } else {
-        switch (action.payload.type) {
-          default:
-          case 'success':
-            window.agent.play('Wave');
-            break;
-          case 'error':
-            window.agent.play('Hearing_1');
-            break;
-          case 'warn':
-          case 'warning':
-            window.agent.play('GetAttention');
-            break;
-        }
-      }
-      break;
-
     case actions.START_LOADING_ANIMATION:
     case actions.APP_FETCH_REQUESTED:
     case actions.USER_LOGIN_REQUESTED:
@@ -63,10 +42,10 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       draft.showLoadingAnimation = true;
       break;
 
+    case actions.APP_CHANGE_LANGUAGE_SUCCEEDED:
     case actions.STOP_LOADING_ANIMATION:
     case actions.APP_FETCH_SUCCEEDED:
     case actions.APP_FETCH_FAILED:
-    case actions.APP_CHANGE_LANGUAGE_SUCCEEDED:
     case actions.APP_CHANGE_LANGUAGE_FAILED:
     case actions.ROUTER_NAVIGATION_SUCCEEDED:
     case actions.ROUTER_NAVIGATION_FAILED:

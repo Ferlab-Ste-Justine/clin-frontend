@@ -13,7 +13,7 @@ export const changeLanguage = language => ({
 });
 
 export const success = message => ({
-  type: actions.SHOW_NOTIFICATION,
+  type: actions.NOTIFICATION,
   payload: {
     type: 'success',
     message,
@@ -21,7 +21,7 @@ export const success = message => ({
 });
 
 export const error = message => ({
-  type: actions.SHOW_NOTIFICATION,
+  type: actions.NOTIFICATION,
   payload: {
     type: 'error',
     message,
@@ -29,7 +29,7 @@ export const error = message => ({
 });
 
 export const warning = message => ({
-  type: actions.SHOW_NOTIFICATION,
+  type: actions.NOTIFICATION,
   payload: {
     type: 'warning',
     message,

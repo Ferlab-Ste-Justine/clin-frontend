@@ -2,6 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
 import {
   Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Pagination, Input,
 } from 'antd';
@@ -182,11 +183,11 @@ class Filter extends React.Component {
   render() {
     const { allOptions, size, page } = this.state;
     const {
-      data, intl, overlayOnly, editor, dataSet, searchable, autoSelect,
+      data, overlayOnly, editor, dataSet, searchable, autoSelect,
     } = this.props;
-    const filterLabel = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}` });
-    const filterDescription = intl.formatMessage({ id: `screen.patientvariant.filter_${data.id}.description` });
-    const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
+    const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
+    const filterDescription = intl.get(`screen.patientvariant.filter_${data.id}.description`);
+    const filterSearch = intl.get('screen.patientvariant.filter.search');
     const editorLabels = editor.getLabels();
     const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
@@ -305,7 +306,6 @@ class Filter extends React.Component {
 }
 
 Filter.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
   options: PropTypes.shape({}),

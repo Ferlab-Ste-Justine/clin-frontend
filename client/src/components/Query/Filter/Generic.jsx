@@ -1,16 +1,16 @@
 /* eslint-disable */
 import React from 'react';
 import {
-  Typography, Row, Col, Checkbox, Radio, Input, Tag, Tooltip,
+  Row, Col, Checkbox, Radio, Tag, Tooltip,
 } from 'antd';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
 } from 'lodash';
-import IconKit from 'react-icons-kit';
 import {
   empty, one, full,
 } from 'react-icons-kit/entypo';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
 
 import Filter from './index';
 import {FILTER_TYPE_GENERIC} from './index';
@@ -89,23 +89,23 @@ class GenericFilter extends React.Component {
   }
 
   getEditorLabels() {
-    const { data, intl } = this.props;
+    const { data } = this.props;
 
     return {
-      action: intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` }),
+      action: intl.get(`screen.patientvariant.filter.operand.${data.operand}`),
       targets: data.values
     }
   }
 
   getEditor() {
-    const { intl, config } = this.props;
+    const { config } = this.props;
     const {
       draft, selection, size, page, allOptions,
     } = this.state;
     const { operand } = draft;
     const allSelected = allOptions ? selection.length === allOptions.length : false;
-    const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
-    const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
+    const selectAll = intl.get('screen.patientvariant.filter.selection.all');
+    const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 
     const minValue = size * (page - 1);
     const maxValue = size * page;
@@ -138,7 +138,7 @@ class GenericFilter extends React.Component {
             <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
               {config.operands.map(configOperand => (
                 <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
-                  {intl.formatMessage({ id: `screen.patientvariant.filter.operand.${configOperand}` })}
+                  {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
                 </Radio.Button>
               ))}
             </Radio.Group>
@@ -258,7 +258,6 @@ class GenericFilter extends React.Component {
 }
 
 GenericFilter.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
   category: PropTypes.string,

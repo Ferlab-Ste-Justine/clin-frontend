@@ -2,6 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
 import {
   Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm
 } from 'antd';
@@ -262,7 +263,7 @@ class Statement extends React.Component {
         statementTitle: null,
       }, () => {
         const statement = {
-          title: this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.input.title.default' }),
+          title: intl.get('screen.patientvariant.modal.statement.save.input.title.default'),
         };
         this.props.onCreateDraftStatementCallback(statement);
       });
@@ -270,10 +271,10 @@ class Statement extends React.Component {
 
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.body' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.draft.button.cancel' }),
+        intl.get('screen.patientvariant.modal.statement.draft.title'),
+        intl.get('screen.patientvariant.modal.statement.draft.body'),
+        intl.get('screen.patientvariant.modal.statement.draft.button.ok'),
+        intl.get('screen.patientvariant.modal.statement.draft.button.cancel'),
         callbackCreateDraft,
       );
     } else {
@@ -296,10 +297,10 @@ class Statement extends React.Component {
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.body' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.button.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.duplicate.button.cancel' }),
+        intl.get('screen.patientvariant.modal.statement.duplicate.title'),
+        intl.get('screen.patientvariant.modal.statement.duplicate.body'),
+        intl.get('screen.patientvariant.modal.statement.duplicate.button.ok'),
+        intl.get('screen.patientvariant.modal.statement.duplicate.button.cancel'),
         callbackDuplicate,
       );
     } else {
@@ -320,7 +321,7 @@ class Statement extends React.Component {
 
   setStatementAsDefault(e) {
     const {dropDownIsOpen} = this.state
-    let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
+    let id = e.currentTarget ? e.curre76x12ntTarget.getAttribute('dataid') : e;
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
@@ -331,10 +332,10 @@ class Statement extends React.Component {
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.title' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.body' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.button.ok' }),
-        this.props.intl.formatMessage({ id: 'screen.patientvariant.modal.statement.setDefault.button.cancel' }),
+        intl.get('screen.patientvariant.modal.statement.setDefault.title'),
+        intl.get('screen.patientvariant.modal.statement.setDefault.body'),
+        intl.get('screen.patientvariant.modal.statement.setDefault.button.ok'),
+        intl.get('screen.patientvariant.modal.statement.setDefault.button.cancel'),
         callbackSetStatementAsDefault,
       );
     } else {
@@ -503,11 +504,10 @@ class Statement extends React.Component {
   }
 
   showDeleteConfirm(keys) {
-    const { intl } = this.props;
-    const modalTitle = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.title' });
-    const modalContent = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.body' });
-    const modalOk = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.ok' });
-    const modalCancel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.delete.button.cancel' });
+    const modalTitle = intl.get('screen.patientvariant.modal.statement.delete.title');
+    const modalContent = intl.get('screen.patientvariant.modal.statement.delete.body');
+    const modalOk = intl.get('screen.patientvariant.modal.statement.delete.button.ok');
+    const modalCancel = intl.get('screen.patientvariant.modal.statement.delete.button.cancel');
     Modal.confirm({
       title: modalTitle,
       content: modalContent,
@@ -651,7 +651,7 @@ class Statement extends React.Component {
     const { dropDownIsOpen, dropdownClickValue } = this.state;
     if (!data) return null;
     const {
-      activeQuery, externalData, options, intl, facets, categories, searchData, target, activeStatementTotals,
+      activeQuery, externalData, options, facets, categories, searchData, target, activeStatementTotals,
     } = this.props;
     const {
       display, original, checkedQueries, saveTitleModalVisible, onFocus,
@@ -663,20 +663,20 @@ class Statement extends React.Component {
     const inactiveStatementKeys = Object.keys(statements).filter(key => (key !== 'draft' && key !== activeStatementId));
     const statementTitle = this.state.statementTitle !== null ? this.state.statementTitle : activeStatement.title;
     const checkedQueriesCount = checkedQueries.length;
-    const newText = intl.formatMessage({ id: 'screen.patientvariant.statement.new' });
-    const saveText = intl.formatMessage({ id: 'screen.patientvariant.statement.save' });
-    const deleteText = intl.formatMessage({ id: 'screen.patientvariant.statement.delete' });
-    const newQueryText = intl.formatMessage({ id: 'screen.patientvariant.statement.newQuery' });
-    const myFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.myFilter' });
-    const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
-    const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
-    const defaultFilterText = intl.formatMessage({ id: 'screen.patientvariant.statement.tooltip.defaultFilter' });
-    const modalTitleSaveTitle = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.title' });
-    const modalTitleSaveContent = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.body' });
-    const modalTitleSaveInputLabel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.input.title.label' });
-    const modalTitleSaveInputDefault = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.input.title.default' });
-    const modalTitleSaveOk = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.button.ok' });
-    const modalTitleSaveCancel = intl.formatMessage({ id: 'screen.patientvariant.modal.statement.save.button.cancel' });
+    const newText = intl.get('screen.patientvariant.statement.new');
+    const saveText = intl.get('screen.patientvariant.statement.save');
+    const deleteText = intl.get('screen.patientvariant.statement.delete');
+    const newQueryText = intl.get('screen.patientvariant.statement.newQuery');
+    const myFilterText = intl.get('screen.patientvariant.statement.myFilter');
+    const duplicateText = intl.get('screen.patientvariant.query.menu.duplicate');
+    const editTitleText = intl.get('screen.patientvariant.query.menu.editTitle');
+    const defaultFilterText = intl.get('screen.patientvariant.statement.tooltip.defaultFilter');
+    const modalTitleSaveTitle = intl.get('screen.patientvariant.modal.statement.save.title');
+    const modalTitleSaveContent = intl.get('screen.patientvariant.modal.statement.save.body');
+    const modalTitleSaveInputLabel = intl.get('screen.patientvariant.modal.statement.save.input.title.label');
+    const modalTitleSaveInputDefault = intl.get('screen.patientvariant.modal.statement.save.input.title.default');
+    const modalTitleSaveOk = intl.get('screen.patientvariant.modal.statement.save.button.ok');
+    const modalTitleSaveCancel = intl.get('screen.patientvariant.modal.statement.save.button.cancel');
     const width = calculateTitleWidth(statementTitle);
 
     let containsEmptyQueries = false;
@@ -715,7 +715,6 @@ class Statement extends React.Component {
             index={index}
             active={isActive}
             results={(activeStatementTotals[query.key] ? activeStatementTotals[query.key] : null)}
-            intl={intl}
             facets={(facets[query.key] ? facets[query.key] : {})}
             target={target}
             categories={categories}
@@ -785,7 +784,7 @@ class Statement extends React.Component {
             <Row type="flex" align="end" className={styleStatement.toolbar}>
               <div className={styleStatement.message}>
                 <Icon type="info-circle" className={styleStatement.icon} />
-                { this.props.intl.formatMessage({ id: 'screen.patientvariant.form.statement.unsavedChanges' })}
+                { intl.get('screen.patientvariant.form.statement.unsavedChanges')}
               </div>
             </Row>
           )}
@@ -899,9 +898,9 @@ class Statement extends React.Component {
                         { inactiveStatementKeys.map(key => (
                             <Menu.Item key={statements[key].uid}>
                               <Popconfirm
-                                title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.load.body' })}
-                                okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.load.button.ok' })}
-                                cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.load.button.cancel' })}
+                                title={intl.get('screen.patientvariant.popconfirm.statement.load.body')}
+                                okText={intl.get('screen.patientvariant.popconfirm.statement.load.button.ok')}
+                                cancelText={intl.get('screen.patientvariant.popconfirm.statement.load.button.cancel')}
                                 onConfirm={() => this.selectStatement(statements[key].uid)}
                                 onCancel={this.onCancel}
                                 icon={null}
@@ -927,9 +926,9 @@ class Statement extends React.Component {
                                   onClick={this.duplicateStatement}
                                 />
                                 <Popconfirm
-                                  title={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.body' })}
-                                  okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.button.ok' })}
-                                  cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.popconfirm.statement.delete.button.cancel' })}
+                                  title={intl.get('screen.patientvariant.popconfirm.statement.delete.body')}
+                                  okText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.ok')}
+                                  cancelText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.cancel')}
                                   placement="topRight"
                                   onConfirm={() => this.deleteStatement(statements[key].uid)}
                                   onCancel={this.onCancel}
@@ -1035,7 +1034,6 @@ class Statement extends React.Component {
 }
 
 Statement.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
   activeStatementId: PropTypes.string,
   activeStatementTotals: PropTypes.shape({}),

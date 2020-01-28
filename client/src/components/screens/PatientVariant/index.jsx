@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
+import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -264,16 +264,16 @@ class PatientVariantScreen extends React.Component {
     actions.createDraftStatement(statement);
   }
 
-  handleUpdateStatement(id, title, description, queries = null, switchCurrentStatementToDefault = false) {
+  handleUpdateStatement(id, title, description, queries = null, isDefault = false) {
     const { actions } = this.props;
     const { statements } = this.props.variant;
     if (!queries) {
       queries = statements[id].queries;
     }
     if (id === 'draft') {
-      actions.createStatement(id, title, description, queries, switchCurrentStatementToDefault);
+      actions.createStatement(id, title, description, queries, isDefault);
     } else {
-      actions.updateStatement(id, title, description, queries, switchCurrentStatementToDefault);
+      actions.updateStatement(id, title, description, queries, isDefault);
     }
   }
 
@@ -304,7 +304,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const {
-      intl, app, variant, patient,
+      app, variant, patient,
     } = this.props;
     const { showSubloadingAnimation } = app;
     const {
@@ -314,9 +314,9 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab,
     } = this.state;
-    const familyText = intl.formatMessage({ id: 'screen.patientvariant.header.family' });
-    const motherText = intl.formatMessage({ id: 'screen.patientvariant.header.family.mother' });
-    const fatherText = intl.formatMessage({ id: 'screen.patientvariant.header.family.father' });
+    const familyText = intl.get('screen.patientvariant.header.family');
+    const motherText = intl.get('screen.patientvariant.header.family.mother');
+    const fatherText = intl.get('screen.patientvariant.header.family.father');
     const genderFemaleIcon = (<path id="gender_female_24px-a" d="M12,3 C15.3137085,3 18,5.6862915 18,9 C18,11.97 15.84,14.44 13,14.92 L13,17 L15,17 L15,19 L13,19 L13,21 L11,21 L11,19 L9,19 L9,17 L11,17 L11,14.92 C8.16,14.44 6,11.97 6,9 C6,5.6862915 8.6862915,3 12,3 M12,5 C9.790861,5 8,6.790861 8,9 C8,11.209139 9.790861,13 12,13 C14.209139,13 16,11.209139 16,9 C16,6.790861 14.209139,5 12,5 Z" />);
     const genderMaleIcon = (<path id="gender_mael_24px-a" d="M9,9 C10.29,9 11.5,9.41 12.47,10.11 L17.58,5 L13,5 L13,3 L21,3 L21,11 L19,11 L19,6.41 L13.89,11.5 C14.59,12.5 15,13.7 15,15 C15,18.3137085 12.3137085,21 9,21 C5.6862915,21 3,18.3137085 3,15 C3,11.6862915 5.6862915,9 9,9 M9,11 C6.790861,11 5,12.790861 5,15 C5,17.209139 6.790861,19 9,19 C11.209139,19 13,17.209139 13,15 C13,12.790861 11.209139,11 9,11 Z" />);
 
@@ -329,13 +329,13 @@ class PatientVariantScreen extends React.Component {
           id: category.id,
           subid: null,
           type: 'category',
-          label: intl.formatMessage({ id: `screen.patientvariant.${category.label}` }),
+          label: intl.get(`screen.patientvariant.${category.label}`),
           data: category.filters ? category.filters.reduce((accumulator, filter) => {
             const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
               reverseCategories[facet.id] = category.id;
               return {
                 id: facet.id,
-                value: intl.formatMessage({ id: `screen.patientvariant.${(!facet.label ? filter.label : facet.label)}` }),
+                value: intl.get(`screen.patientvariant.${(!facet.label ? filter.label : facet.label)}`),
               };
             }) : [];
 
@@ -352,7 +352,7 @@ class PatientVariantScreen extends React.Component {
             id: reverseCategories[key],
             subid: key,
             type: 'filter',
-            label: intl.formatMessage({ id: `screen.patientvariant.filter_${key}` }),
+            label: intl.get(`screen.patientvariant.filter_${key}`),
             data: facets[activeQuery][key].map(value => ({
               id: value.value,
               value: value.value,
@@ -493,7 +493,6 @@ class PatientVariantScreen extends React.Component {
             <VariantNavigation
               key="variant-navigation"
               className="variant-navigation"
-              intl={intl}
               schema={schema}
               patient={patient}
               queries={draftQueries}
@@ -514,7 +513,6 @@ class PatientVariantScreen extends React.Component {
               data={draftQueries}
               draftHistory={draftHistory}
               original={originalQueries}
-              intl={intl}
               facets={facets}
               target={patient}
               categories={schema.categories}
@@ -550,7 +548,6 @@ class PatientVariantScreen extends React.Component {
                 { currentTab === VARIANT_TAB && (
                 <InteractiveTable
                   key="variant-interactive-table"
-                  intl={intl}
                   isLoading={showSubloadingAnimation}
                   size={size}
                   page={page}
@@ -567,7 +564,6 @@ class PatientVariantScreen extends React.Component {
                 { currentTab === GENE_TAB && (
                 <InteractiveTable
                   key="gene-interactive-table"
-                  intl={intl}
                   isLoading={showSubloadingAnimation}
                   size={size}
                   page={page}
@@ -582,8 +578,6 @@ class PatientVariantScreen extends React.Component {
               </Tabs.TabPane>
             </Tabs>
           </Card>
-
-
         </Card>
         <Footer />
       </Content>
@@ -592,7 +586,6 @@ class PatientVariantScreen extends React.Component {
 }
 
 PatientVariantScreen.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   app: PropTypes.shape(appShape).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
@@ -624,7 +617,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  intl: state.intl,
   app: state.app,
   patient: state.patient,
   variant: state.variant,
@@ -633,4 +625,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(injectIntl(PatientVariantScreen));
+)(PatientVariantScreen);

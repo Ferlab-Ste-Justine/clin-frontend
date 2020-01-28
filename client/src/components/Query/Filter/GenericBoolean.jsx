@@ -9,8 +9,11 @@ import {
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
 } from 'lodash';
-import Filter, { FILTER_TYPE_GENERIC } from './index';
+import intl from 'react-intl-universal';
+
+import Filter from './index';
 import { FILTER_TYPE_GENERICBOOL } from './index';
+
 
 class GenericBooleanFilter extends React.Component {
   constructor(props) {
@@ -86,7 +89,6 @@ class GenericBooleanFilter extends React.Component {
   }
 
   getEditor() {
-    const { intl } = this.props;
     const {
       selection, size, page, allOptions,
     } = this.state;
@@ -94,8 +96,8 @@ class GenericBooleanFilter extends React.Component {
     const minValue = size * (page - 1);
     const maxValue = size * page;
 
-    const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
-    const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
+    const selectAll = intl.get('screen.patientvariant.filter.selection.all');
+    const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 
     const options = allOptions.slice(minValue, maxValue).map((option) => {
       const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
@@ -211,7 +213,6 @@ class GenericBooleanFilter extends React.Component {
 }
 
 GenericBooleanFilter.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
 };

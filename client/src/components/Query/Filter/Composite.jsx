@@ -8,13 +8,15 @@ import {
   cloneDeep,
 } from 'lodash';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
+
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN, FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, FILTER_COMPARATOR_TYPE_LOWER_THAN, FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
 
-const SCORE_SELECTION = '_score_';
 
+const SCORE_SELECTION = '_score_';
 
 class CompositeFilter extends React.Component {
   constructor(props) {
@@ -111,13 +113,13 @@ class CompositeFilter extends React.Component {
 
 
   getEditor() {
-    const { intl, data, dataSet } = this.props;
+    const { data, dataSet } = this.props;
     const { draft } = this.state;
     const { comparator, value } = draft;
-    const typeGt = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.gt' });
-    const typeGte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.gte' });
-    const typeLt = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lt' });
-    const typeLte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lte' });
+    const typeGt = intl.get('screen.patientvariant.filter.comparator.gt');
+    const typeGte = intl.get('screen.patientvariant.filter.comparator.gte');
+    const typeLt = intl.get('screen.patientvariant.filter.comparator.lt');
+    const typeLte = intl.get('screen.patientvariant.filter.comparator.lte');
 
     return {
       getLabels: this.getEditorLabels,
@@ -167,7 +169,6 @@ class CompositeFilter extends React.Component {
   }
 }
 CompositeFilter.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
 };

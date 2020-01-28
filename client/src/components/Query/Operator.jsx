@@ -121,7 +121,6 @@ Operator.propTypes = {
   options: PropTypes.shape({}),
   onEditCallback: PropTypes.func,
   visible: PropTypes.bool,
-  intl: PropTypes.shape({}).isRequired,
 };
 
 Operator.defaultProps = {
