@@ -694,7 +694,7 @@ class Statement extends React.Component {
       if (isDirty) { classNames.push(styleStatement.dirtyContainer); }
       if (isActive) { classNames.push(styleStatement.activeContainer); } else { classNames.push(styleStatement.inactiveContainer); }
       if (!query.title) {
-        query.title = `Requête ${(index + 1)}`;
+        query.title = `${intl.get('screen.patientvariant.query.title.increment')} ${(index + 1)}`;
       }
 
       return [...accumulator, (
@@ -864,9 +864,9 @@ class Statement extends React.Component {
                     className={styleStatement.button}
                   >
                     <Popconfirm
-                      title="Supprimer définitivement ce filtre."
-                      okText={deleteText}
-                      cancelText="Annuler"
+                      title={intl.get('screen.patientvariant.popconfirm.statement.delete.body')}
+                      okText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.cancel')}
+                      cancelText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.ok')}
                       onConfirm={this.deleteStatement}
                       icon={null}
                       overlayClassName={styleStatement.popconfirm}
@@ -982,7 +982,7 @@ class Statement extends React.Component {
                   <svg>
                     { getSvgPathFromOperatorType(OPERATOR_TYPE_AND) }
                   </svg>
-                          Intersection
+                  { intl.get('components.query.instruction.subquery.operator.and') }
                 </Button>
               </Menu.Item>
               <Menu.Item key={OPERATOR_TYPE_OR} disabled={checkedQueriesCount < 2}>
@@ -993,7 +993,7 @@ class Statement extends React.Component {
                   <svg>
                     { getSvgPathFromOperatorType(OPERATOR_TYPE_OR) }
                   </svg>
-                          Union
+                  { intl.get('components.query.instruction.subquery.operator.or') }
                 </Button>
               </Menu.Item>
               <Menu.Item key={OPERATOR_TYPE_AND_NOT} disabled={checkedQueriesCount < 2}>
@@ -1004,7 +1004,7 @@ class Statement extends React.Component {
                   <svg>
                     { getSvgPathFromOperatorType(OPERATOR_TYPE_AND_NOT) }
                   </svg>
-                          Exclusion
+                  { intl.get('components.query.instruction.subquery.operator.andNot') }
                 </Button>
               </Menu.Item>
             </Menu>

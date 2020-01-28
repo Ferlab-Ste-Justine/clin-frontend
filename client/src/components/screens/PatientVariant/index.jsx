@@ -195,7 +195,7 @@ class PatientVariantScreen extends React.Component {
     actions.replaceQuery(query.data || query);
   }
 
-  handleQueriesChange(queries, activeQuery) {
+  handleQueriesChange(queries) {
     const { actions } = this.props;
     this.handleCommitHistory();
     actions.replaceQueries(queries);

@@ -234,10 +234,10 @@ class Filter extends React.Component {
           <br />
           <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
             <Col>
-              <Button onClick={this.handleCancel}>Annuler</Button>
+              <Button onClick={this.handleCancel}>{ intl.get('components.query.filter.button.cancel') }</Button>
             </Col>
             <Col>
-              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>Appliquer</Button>
+              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>{ intl.get('components.query.filter.button.apply') }</Button>
             </Col>
           </Row>
         </Card>
