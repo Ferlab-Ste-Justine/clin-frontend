@@ -237,6 +237,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       if (updatedStatement.isDefault && updatedStatement.uid !== draft.activeStatementId) {
         draft.statements[draft.activeStatementId].isDefault = false;
       }
+      if (updatedStatement.uid === draft.activeStatementId) {
+        draft.originalQueries = updatedStatement.queries;
+        draft.draftQueries = updatedStatement.queries;
+        draft.draftHistory = [];
+      }
       draft.statements[updatedStatement.uid] = updatedStatement;
       break;
 
