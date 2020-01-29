@@ -1,0 +1,116 @@
+@import './variables.scss';
+
+.navigation{
+    margin-bottom:24px;
+    background-color::#1b7ab2;
+    border-radius:2px;
+
+    >ul{
+    }
+
+    .autocomplete{
+        transition:none;
+        border:none;
+        float:left;
+        display:inline-block;
+        padding:8px;
+
+
+
+        >div{
+           min-width:300px;
+           border-radius:2px;
+        }
+
+        &:hover{
+            border:none;
+        }
+
+        i{
+            color:rgba(35, 55, 80, 0.38);
+            margin-right:12px;;
+        }
+
+        input{
+
+            border:none;
+            padding:0 0 0 0 !important;
+            margin-left:52px;
+            width:200px;
+
+            color: rgba(35, 55, 80, 0.38);
+            font-size: 14px;
+            font-family: $font;
+            letter-spacing: 0.25px;
+            line-height: 20px;
+
+            &::placeholder{
+            }
+
+            &:focus{
+                  box-shadow:none;
+            }
+        }
+
+
+
+    }
+
+    .menu{
+
+        border:none;
+
+        font-size: 16px;
+        font-family: $font;
+        font-weight: 500;
+        letter-spacing: 0.15px;
+        background-color:transparent;
+        display:flex;
+        justify-content:space-between;
+        height:56px;
+
+        li{
+                margin:0;
+                top:0;
+                border:none;
+                display:flex;
+                align-items:center;
+
+
+                div{
+                    color: #FFFFFF;
+                    padding:0 24px;
+                    &:hover{
+                    color:#ffffff;
+                    }
+                    span{
+                        display:flex;
+                        align-items:center;
+                    }
+                }
+                &:hover{
+
+                    border:none;
+                    background-color:#125a90;
+                }
+        }
+
+        i{
+            color:rgba(255, 255, 255, 0.54);
+            svg{
+                margin-bottom:3px;
+                margin-right:12px;
+            }
+        }
+    }
+}
+
+.svgIcon{
+    width:24px;
+    height:24px;
+    margin-bottom:3px;
+    margin-right:12px;
+    path{
+        fill:rgba(255, 255, 255, 0.54);
+    }
+}

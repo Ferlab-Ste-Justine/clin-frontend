@@ -489,22 +489,20 @@ class PatientVariantScreen extends React.Component {
           </div>
 
           ) }
+          <VariantNavigation
+            key="variant-navigation"
+            className="variant-navigation"
+            intl={intl}
+            schema={schema}
+            patient={patient}
+            queries={draftQueries}
+            activeQuery={activeQuery}
+            data={facets[activeQuery] || {}}
+            onEditCallback={this.handleQueryChange}
+            searchData={searchData}
+            autocomplete={autocomplete}
+          />
           <Card className="Content">
-            <VariantNavigation
-              key="variant-navigation"
-              className="variant-navigation"
-              intl={intl}
-              schema={schema}
-              patient={patient}
-              queries={draftQueries}
-              activeQuery={activeQuery}
-              data={facets[activeQuery] || {}}
-              onEditCallback={this.handleQueryChange}
-              searchData={searchData}
-              autocomplete={autocomplete}
-            />
-            <br />
-            <br />
             <Statement
               key="variant-statement"
               activeQuery={activeQuery}
