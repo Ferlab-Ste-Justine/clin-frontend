@@ -28,7 +28,6 @@ function* login(action) {
 }
 
 function* logout() {
-  yield put({ type: actions.START_LOADING_ANIMATION });
   try {
     LocalStore.remove(LocalStore.keys.lastId);
     LocalStore.remove(LocalStore.keys.lastScreen);
@@ -41,7 +40,6 @@ function* logout() {
   } catch (e) {
     yield put({ type: actions.USER_LOGOUT_FAILED, payload: e });
   }
-  yield put({ type: actions.STOP_LOADING_ANIMATION });
 }
 
 function* recover(action) {

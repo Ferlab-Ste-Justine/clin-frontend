@@ -4,6 +4,7 @@ import React from 'react';
 import {
   Row, Col, Checkbox, Radio, Tag, Tooltip,
 } from 'antd';
+import intl from 'react-intl-universal';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
 } from 'lodash';
@@ -196,25 +197,25 @@ class SpecificFilter extends Filter {
   }
 
   getEditorLabels() {
-    const { data, intl } = this.props;
+    const { data } = this.props;
     return {
-      action: intl.formatMessage({ id: `screen.patientvariant.filter.operand.${data.operand}` }),
+      action: intl.get(`screen.patientvariant.filter.operand.${data.operand}`),
       targets: data.values,
     };
   }
 
   getEditor() {
-    const { intl, config, renderCustomDataSelector } = this.props;
+    const { config, renderCustomDataSelector } = this.props;
     const {
       draft, selection, selector, size, page, allOptions, indeterminate,
     } = this.state;
     const { operand } = draft;
     const allSelected = allOptions ? selection.length === allOptions.length : false;
-    const selectAll = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.all' });
-    const selectNone = intl.formatMessage({ id: 'screen.patientvariant.filter.selection.none' });
-    const selectorAll = intl.formatMessage({ id: 'screen.patientvariant.filter.specific.selector.all' });
-    const selectorIntersection = intl.formatMessage({ id: 'screen.patientvariant.filter.specific.selector.intersection' });
-    const selectorDifference = intl.formatMessage({ id: 'screen.patientvariant.filter.specific.selector.difference' });
+    const selectAll = intl.get('screen.patientvariant.filter.selection.all');
+    const selectNone = intl.get('screen.patientvariant.filter.selection.none');
+    const selectorAll = intl.get('screen.patientvariant.filter.specific.selector.all');
+    const selectorIntersection = intl.get('screen.patientvariant.filter.specific.selector.intersection');
+    const selectorDifference = intl.get('screen.patientvariant.filter.specific.selector.difference');
     const minValue = size * (page - 1);
     const maxValue = size * page;
 
@@ -260,7 +261,7 @@ class SpecificFilter extends Filter {
               <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
                 {config.operands.map(configOperand => (
                   <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
-                    {intl.formatMessage({ id: `screen.patientvariant.filter.operand.${configOperand}` })}
+                    {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
                   </Radio.Button>
                 ))}
               </Radio.Group>
@@ -299,7 +300,6 @@ class SpecificFilter extends Filter {
 }
 
 SpecificFilter.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
   category: PropTypes.string,

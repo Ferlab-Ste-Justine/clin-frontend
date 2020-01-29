@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
+import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -11,8 +11,8 @@ import { userShape } from '../reducers/user';
 import { navigateToPatientSearchScreen, navigate } from '../actions/router';
 
 
-const navigationMenu = (intl, router, actions) => {
-  const patientSearch = intl.formatMessage({ id: 'navigation.main.searchPatient' });
+const navigationMenu = (router, actions) => {
+  const patientSearch = intl.get('navigation.main.searchPatient');
   let tabForRoute = router.location.pathname;
   if (tabForRoute.indexOf('/patient/') !== -1) {
     tabForRoute = '/patient/search';
@@ -35,12 +35,12 @@ const navigationMenu = (intl, router, actions) => {
 };
 
 const Navigation = ({
-  intl, user, router, actions,
+  user, router, actions,
 }) => (
   <nav id="navigation">
     <Row type="flex">
       <Col span={24} align="start">
-        { user.username !== null && navigationMenu(intl, router, actions)}
+        { user.username !== null && navigationMenu(router, actions)}
       </Col>
     </Row>
   </nav>
@@ -48,7 +48,6 @@ const Navigation = ({
 
 Navigation.propTypes = {
   actions: PropTypes.shape({}).isRequired,
-  intl: PropTypes.shape({}).isRequired,
   user: PropTypes.shape(userShape).isRequired,
   router: PropTypes.shape({}).isRequired,
 };
@@ -61,7 +60,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  intl: state.intl,
   user: state.user,
   router: state.router,
 });
@@ -69,4 +67,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(injectIntl(Navigation));
+)(Navigation);

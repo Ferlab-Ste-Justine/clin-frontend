@@ -1,13 +1,16 @@
 /* eslint-disable */
 import React from 'react';
 import {
-  Typography, Row, Col, Radio, InputNumber,
+  Row, Col, Radio, InputNumber,
 } from 'antd';
 import {
   cloneDeep, orderBy, pullAllBy, filter,
 } from 'lodash';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
+
 import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
+
 
 export const FILTER_COMPARATOR_TYPE_GREATER_THAN = '>';
 export const FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL = '>=';
@@ -42,13 +45,12 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   getEditor() {
-    const { intl } = this.props;
     const { draft } = this.state;
-    const typeGt = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.gt' });
-    const typeGte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.gte' });
-    const typeLt = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lt' });
-    const typeLte = intl.formatMessage({ id: 'screen.patientvariant.filter.comparator.lte' });
-    const valueText = intl.formatMessage({ id: 'screen.patientvariant.filter.numerical.value' });
+    const typeGt = intl.get('screen.patientvariant.filter.comparator.gt');
+    const typeGte = intl.get('screen.patientvariant.filter.comparator.gte');
+    const typeLt = intl.get('screen.patientvariant.filter.comparator.lt');
+    const typeLte = intl.get('screen.patientvariant.filter.comparator.lte');
+    const valueText = intl.get('screen.patientvariant.filter.numerical.value');
     return {
       getLabels: this.getEditorLabels,
       getDraftInstruction: this.getEditorDraftInstruction,
@@ -125,7 +127,6 @@ class NumericalComparisonFilter extends React.Component {
 }
 
 NumericalComparisonFilter.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired
 };
 

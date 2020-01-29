@@ -4,6 +4,7 @@ import { produce } from 'immer';
 import {
   cloneDeep, findIndex, isEqual, last, head,
 } from 'lodash';
+import intl from 'react-intl-universal';
 import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
@@ -112,7 +113,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         draft.draftQueries = filteredDrafts;
         draft.activeQuery = last(draft.draftQueries).key;
       } else {
-        const newStatement = createDraftStatement('Filtre sans titre');
+        const newStatement = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
         draft.statements[draft.activeStatementId].queries = newStatement.queries;
         draft.activeQuery = head(newStatement.queries).key;
         draft.draftQueries = newStatement.queries;
@@ -173,9 +174,9 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
       if (action.payload.data.total < 1) {
         draft.activeStatementId = DRAFT_STATEMENT_UID;
-        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
         draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
-        draft.originalQueries = [];
+        draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
         draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
         draft.draftHistory = [];
       } else {
@@ -201,9 +202,9 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
             draft.draftHistory = [];
           } else {
             draft.activeStatementId = DRAFT_STATEMENT_UID;
-            draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
+            draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
             draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
-            draft.originalQueries = [];
+            draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
             draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
             draft.draftHistory = [];
           }
@@ -224,6 +225,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
+      delete draft.statements.draft;
       const updatedStatement = { // eslint-disable-line no-case-declarations
         uid: action.payload.data.uid,
         title: action.payload.data.title,
@@ -232,6 +234,9 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         isDefault: action.payload.data.isDefault,
       };
 
+      if (updatedStatement.isDefault && updatedStatement.uid !== draft.activeStatementId) {
+        draft.statements[draft.activeStatementId].isDefault = false;
+      }
       draft.statements[updatedStatement.uid] = updatedStatement;
       break;
 
@@ -258,8 +263,8 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         payload.statement.description,
         payload.statement.queries,
       );
-      draft.activeQuery = draft.statements[DRAFT_STATEMENT_UID].queries[draft.statements[DRAFT_STATEMENT_UID].queries.length - 1].key;
-      draft.originalQueries = [];
+      draft.activeQuery = last(draft.statements[DRAFT_STATEMENT_UID].queries).key;
+      draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
       draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
       draft.draftHistory = [];
       break;
@@ -273,10 +278,10 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
           payload.statement.title,
         );
       } else {
-        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement('Filtre sans titre');
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
       }
       draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
-      draft.originalQueries = [];
+      draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
       draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
       draft.draftHistory = [];
       break;

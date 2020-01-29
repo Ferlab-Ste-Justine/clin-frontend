@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {
   cloneDeep, isEqual, find, isNull,
 } from 'lodash';
+import intl from 'react-intl-universal';
 import {
   Input, Tooltip, Popconfirm,
 } from 'antd';
@@ -312,7 +313,7 @@ class Query extends React.Component {
 
   render() {
     const {
-      active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, intl, facets, categories, draft, externalData,
+      active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, facets, categories, draft, externalData,
     } = this.props;
     const {
       copyable, removable,
@@ -321,9 +322,9 @@ class Query extends React.Component {
     const isDirty = !isEqual(original, draft);
     const isEmpty = !draft.instructions || draft.instructions.length === 0
 
-    const duplicateText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
-    const deleteText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
-    const editTitleText = intl.formatMessage({ id: 'screen.patientvariant.query.menu.editTitle' });
+    const duplicateText = intl.get('screen.patientvariant.query.menu.duplicate');
+    const deleteText = intl.get('screen.patientvariant.query.menu.delete');
+    const editTitleText = intl.get('screen.patientvariant.query.menu.editTitle');
     const width = draft.title ? calculateTitleWidth(draft.title) : 0;
     const classNames = [styleQuery.query];
 
@@ -360,10 +361,10 @@ class Query extends React.Component {
             {removable && (
             <Tooltip title={deleteText} onVisibleChange={this.toggleToolTip} visible={toolTipOpen}>
               <Popconfirm
-                title={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete.body' })}
+                title={intl.get('screen.patientvariant.query.menu.delete.body')}
                 onConfirm={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }}
-                okText={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete.button.ok' })}
-                cancelText={this.props.intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete.button.cancel' })}
+                okText={intl.get('screen.patientvariant.query.menu.delete.button.ok')}
+                cancelText={intl.get('screen.patientvariant.query.menu.delete.button.cancel')}
                 icon={null}
                 overlayClassName={styleQuery.popconfirm}
                 onVisibleChange={this.togglePopConfirm}
@@ -393,7 +394,6 @@ class Query extends React.Component {
                         index={index}
                         options={options}
                         data={item.data}
-                        intl={intl}
                         onEditCallback={this.handleOperatorChange}
                         key={uuidv1()}
                       />
@@ -419,7 +419,6 @@ class Query extends React.Component {
                           data={item.data}
                           dataSet={facets[item.data.id] || []}
                           config={categoryData.config && categoryData.config[categoryData.id]}
-                          intl={intl}
                           category={category}
                           onEditCallback={this.handleFilterChange}
                           onRemoveCallback={this.handleFilterRemoval}
@@ -435,7 +434,6 @@ class Query extends React.Component {
                           autoSelect={active}
                           data={item.data}
                           dataSet={facets[item.data.id] || []}
-                          intl={intl}
                           category={category}
                           onEditCallback={this.handleFilterChange}
                           onRemoveCallback={this.handleFilterRemoval}
@@ -463,7 +461,6 @@ class Query extends React.Component {
                           autoSelect={active}
                           data={item.data}
                           dataSet={allOption || []}
-                          intl={intl}
                           category={category}
                           onEditCallback={this.handleFilterChange}
                           onRemoveCallback={this.handleFilterRemoval}
@@ -479,7 +476,6 @@ class Query extends React.Component {
                           autoSelect={active}
                           data={item.data}
                           dataSet={facets[item.data.id] || []}
-                          intl={intl}
                           category={category}
                           onEditCallback={this.handleFilterChange}
                           onRemoveCallback={this.handleFilterRemoval}
@@ -498,7 +494,6 @@ class Query extends React.Component {
                           data={item.data}
                           dataSet={facets[item.data.id] || []}
                           config={categoryData.config && categoryData.config[categoryData.id]}
-                          intl={intl}
                           category={category}
                           onEditCallback={this.handleFilterChange}
                           onRemoveCallback={this.handleFilterRemoval}
@@ -518,7 +513,6 @@ class Query extends React.Component {
                         index={index}
                         options={options}
                         data={item.data}
-                        intl={intl}
                         autoSelect={active}
                         queryIndex={queryIndex}
                         queryTitle={queryTitle}
@@ -541,7 +535,6 @@ class Query extends React.Component {
 }
 
 Query.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape([]).isRequired,
   original: PropTypes.shape([]),
   display: PropTypes.shape({}),
