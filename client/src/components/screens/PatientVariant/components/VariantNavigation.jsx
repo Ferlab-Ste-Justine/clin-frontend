@@ -349,7 +349,7 @@ class VariantNavigation extends React.Component {
     const { schema } = this.props;
     const { activeFilterId, searchResults, searchSelection } = this.state;
     let autocompletesCount = 0;
-    const autocompletes = searchResults.map((group) => {
+    const autocompletes = searchResults.filter(group => group.label !== '').map((group) => {
       autocompletesCount += group.matches.length;
       return (
         <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong>{group.label}</Typography.Text>)}>
