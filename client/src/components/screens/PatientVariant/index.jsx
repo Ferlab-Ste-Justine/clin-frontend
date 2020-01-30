@@ -466,6 +466,7 @@ class PatientVariantScreen extends React.Component {
                 {patient.details.ramq}
               </Col>
             </Row>
+            { patient.ontology && patient.ontology.length > 0 && (
             <Row type="flex" align="middle" className={style.descriptionOntoloy}>
               <IconKit size={16} icon={ic_assignment_turned_in} />
                 HPO:
@@ -477,8 +478,8 @@ class PatientVariantScreen extends React.Component {
               ))
                 }
             </Row>
+            ) }
           </div>
-
           ) }
             <VariantNavigation
               key="variant-navigation"
