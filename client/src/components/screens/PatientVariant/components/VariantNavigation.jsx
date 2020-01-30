@@ -136,6 +136,7 @@ class VariantNavigation extends React.Component {
               break;
             default: break;
           }
+          filter = filter.data;
         }
         this.handleFilterChange(filter);
       });

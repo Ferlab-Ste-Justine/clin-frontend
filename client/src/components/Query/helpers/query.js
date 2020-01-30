@@ -65,14 +65,23 @@ export const sanitizeSubqueries = (instructions) => {
   return instructions;
 };
 
-// @NOTE No subsequent filters
-export const sanitizeFilters = instructions => instructions;
+export const sanitizeFilters = instructions => {
+  const instructionIds = {};
 
-export const sanitizeInstructions = instructions => sanitizeOperators(
-  sanitizeFilters(
-    sanitizeSubqueries(instructions),
-  ),
-);
+  // @NOTE No duplicate filters
+  return instructions.filter(instruction => {
+    if (instruction.type === INSTRUCTION_TYPE_FILTER) {
+      if (instructionIds[instruction.data.id]) {
+        return false;
+      } else {
+        instructionIds[instruction.data.id] = true;
+      }
+    }
+    return true;
+  })
+};
+
+export const sanitizeInstructions = instructions => sanitizeOperators(sanitizeSubqueries(sanitizeFilters(instructions)))
 
 // @TODO Refactor and use camel-case
 export const calculateTitleWidth = (value) => {
