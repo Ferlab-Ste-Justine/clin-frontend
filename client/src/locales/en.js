@@ -204,6 +204,7 @@ const en = {
   'screen.patientvariant.modal.statement.save.button.cancel': 'Cancel',
   'screen.patientvariant.modal.statement.save.input.title.label': 'Enter your new title',
   'screen.patientvariant.modal.statement.save.input.title.default': 'Untitled Filter',
+  'screen.patientvariant.modal.statement.duplicate.input.title.format': '{title} COPY',
   'screen.patientvariant.modal.statement.draft.title': 'Create a new Draft filter?',
   'screen.patientvariant.modal.statement.draft.body': 'You\'re about to create a new filter; these unsaved changes will be lost',
   'screen.patientvariant.modal.statement.draft.button.ok': 'Create new draft',
