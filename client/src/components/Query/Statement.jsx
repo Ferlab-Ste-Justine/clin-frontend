@@ -92,7 +92,7 @@ class Statement extends React.Component {
     this.createDraftStatement = this.createDraftStatement.bind(this);
     this.duplicateStatement = this.duplicateStatement.bind(this);
     this.updateStatement = this.updateStatement.bind(this);
-    this.setStatementAsDefault = this.setStatementAsDefault.bind(this);
+    this.toggleStatementAsDefault = this.toggleStatementAsDefault.bind(this);
     this.deleteStatement = this.deleteStatement.bind(this);
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
@@ -319,7 +319,7 @@ class Statement extends React.Component {
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
-  setStatementAsDefault(e) {
+  toggleStatementAsDefault(e) {
     const {dropDownIsOpen} = this.state
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
@@ -327,8 +327,9 @@ class Statement extends React.Component {
       id = activeStatementId;
     }
     const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
+    const statement = this.props.statements[id];
     const callbackSetStatementAsDefault = () => {
-      this.props.onUpdateStatementCallback(id, title, '', null, !this.props.statements[id].isDefault);
+      this.props.onUpdateStatementCallback(id, title, '', null, !statement.isDefault);
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
@@ -821,7 +822,7 @@ class Statement extends React.Component {
                     <Button
                       type="default"
                       className={styleStatement.button}
-                      onClick={this.setStatementAsDefault}
+                      onClick={this.toggleStatementAsDefault}
                       disabled={activeStatementId == null}
                     >
                       <Icon
@@ -951,7 +952,7 @@ class Statement extends React.Component {
                                   className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
                                   theme={statements[key].isDefault ? 'filled' : 'outlined'}
                                   dataid={statements[key].uid}
-                                  onClick={this.setStatementAsDefault}
+                                  onClick={this.toggleStatementAsDefault}
                                 />)}
                               </div>
                             </Menu.Item>
