@@ -349,24 +349,24 @@ class VariantNavigation extends React.Component {
     const { schema } = this.props;
     const { activeFilterId, searchResults, searchSelection } = this.state;
     let autocompletesCount = 0;
-    const autocompletes = searchResults.map((group) => {
-      autocompletesCount += group.matches.length;
-      return (
-        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong>{group.label}</Typography.Text>)}>
-          {group.matches.map(match => (
-            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} style={{ maxHeight: 31 }}>
-              <Col span={18}>
-                <Typography.Text style={{ maxWidth: 210 }} ellipsis>
-                  {match.value}
-                </Typography.Text>
-              </Col>
-              <Col span={6} justify="end" align="end" style={{ minWidth: 50 }}>
-                {match.count && (<Tag>{match.count}</Tag>)}
-              </Col>
-            </AutoComplete.Option>
-          ))}
-        </AutoComplete.OptGroup>
-      );
+    const autocompletes = searchResults.filter(group => group.label !== '').map((group) => {
+        autocompletesCount += group.matches.length;
+        return (
+          <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong>{group.label}</Typography.Text>)}>
+            {group.matches.map(match => (
+              <AutoComplete.Option key={match.id} value={JSON.stringify(match)} style={{ maxHeight: 31 }}>
+                <Col span={18}>
+                  <Typography.Text style={{ maxWidth: 210 }} ellipsis>
+                    {match.value}
+                  </Typography.Text>
+                </Col>
+                <Col span={6} justify="end" align="end" style={{ minWidth: 50 }}>
+                  {match.count && (<Tag>{match.count}</Tag>)}
+                </Col>
+              </AutoComplete.Option>
+            ))}
+          </AutoComplete.OptGroup>
+        );
     });
     if (autocompletesCount > 0) {
       autocompletes.unshift((<AutoComplete.Option key="count" disabled>
@@ -413,7 +413,6 @@ result(s)
           dataSource={autocompletes}
           onSearch={this.handleNavigationSearch}
           onSelect={this.handleNavigationSelection}
-
           value={this.searchQuery}
           className={styleNavigation.autocomplete}
         >
