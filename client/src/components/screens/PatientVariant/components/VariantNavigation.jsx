@@ -413,7 +413,6 @@ result(s)
           dataSource={autocompletes}
           onSearch={this.handleNavigationSearch}
           onSelect={this.handleNavigationSelection}
-          open = {true}
           value={this.searchQuery}
           className={styleNavigation.autocomplete}
           dropdownClassName={styleNavigation.dropwDownAutoComplete}
