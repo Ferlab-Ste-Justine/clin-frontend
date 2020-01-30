@@ -12,7 +12,7 @@ import {
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
-  ic_widgets, ic_gps_fixed, ic_group, ic_search, ic_call_split, ic_assessment
+  ic_widgets, ic_gps_fixed, ic_group, ic_search, ic_call_split, ic_assessment, ic_done
 } from 'react-icons-kit/md';
 import GenericFilter, { FILTER_OPERAND_TYPE_DEFAULT } from '../../../Query/Filter/Generic';
 import SpecificFilter from '../../../Query/Filter/Specific';
@@ -352,16 +352,17 @@ class VariantNavigation extends React.Component {
     const autocompletes = searchResults.map((group) => {
       autocompletesCount += group.matches.length;
       return (
-        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong>{group.label}</Typography.Text>)}>
+        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong className={styleNavigation.label}>{group.label}</Typography.Text>)} >
           {group.matches.map(match => (
-            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} style={{ maxHeight: 31 }}>
-              <Col span={18}>
+            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} className={styleNavigation.value}>
+              <Col>
                 <Typography.Text style={{ maxWidth: 210 }} ellipsis>
+                  <IconKit size={16} icon={ic_done} className={styleNavigation.iconCheck}/>
                   {match.value}
                 </Typography.Text>
               </Col>
-              <Col span={6} justify="end" align="end" style={{ minWidth: 50 }}>
-                {match.count && (<Tag>{match.count}</Tag>)}
+              <Col justify="end" align="end"  className={styleNavigation.valueCount}>
+                {match.count && (<Tag color="#f0f2f5">{match.count}</Tag>)}
               </Col>
             </AutoComplete.Option>
           ))}
@@ -370,7 +371,7 @@ class VariantNavigation extends React.Component {
     });
     if (autocompletesCount > 0) {
       autocompletes.unshift((<AutoComplete.Option key="count" disabled>
-        <Typography.Text underline>
+        <Typography.Text className={styleNavigation.totalCount} >
           {autocompletesCount}
           {' '}
 result(s)
@@ -413,9 +414,10 @@ result(s)
           dataSource={autocompletes}
           onSearch={this.handleNavigationSearch}
           onSelect={this.handleNavigationSelection}
-
+          open = {true}
           value={this.searchQuery}
           className={styleNavigation.autocomplete}
+          dropdownClassName={styleNavigation.dropwDownAutoComplete}
         >
           <Input prefix={<IconKit size={24} icon={ic_search} />}placeholder="Recherche de filtres" />
         </AutoComplete>
