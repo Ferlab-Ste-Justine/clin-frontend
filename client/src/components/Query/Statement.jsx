@@ -1000,6 +1000,7 @@ class Statement extends React.Component {
                   { intl.get('components.query.instruction.subquery.operator.or') }
                 </Button>
               </Menu.Item>
+              { /* Not implement in clin-proxy-api yet
               <Menu.Item key={OPERATOR_TYPE_AND_NOT} disabled={checkedQueriesCount < 2}>
                 <Button
                   className={`${styleStatement.button} ${styleStatement.combineBtn}`}
@@ -1011,6 +1012,7 @@ class Statement extends React.Component {
                   { intl.get('components.query.instruction.subquery.operator.andNot') }
                 </Button>
               </Menu.Item>
+              */ }
             </Menu>
 
           </Row>

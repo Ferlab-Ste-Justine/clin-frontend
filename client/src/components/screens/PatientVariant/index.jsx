@@ -419,15 +419,6 @@ class PatientVariantScreen extends React.Component {
       <Content>
         <Header />
         <Card className="entity">
-          <PageHeader
-            extra={(
-              <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
-                <Button type="primary">
-                    Patient Details
-                </Button>
-              </a>
-              )}
-          />
           { patient.details.id && (
           <div className={style.patientInfo}>
             <Row className={style.descriptionTitle} type="flex" align="middle">
