@@ -2,6 +2,7 @@ import {
   all, put, takeLatest, select, call,
 } from 'redux-saga/effects';
 import { cloneDeep } from 'lodash';
+import intl from 'react-intl-universal';
 
 import * as actionTypes from '../actions/type';
 import * as actions from '../actions/app';
@@ -112,7 +113,7 @@ function* duplicateStatement(action) {
       throw new Error('Filtre non-trouvé.');
     }
 
-    statement.title = `${statement.title} COPIE`;
+    statement.title = intl.get('screen.patientvariant.modal.statement.duplicate.input.title.format', { title: statement.title });
     statement.queries = draftQueries;
     yield put({ type: actionTypes.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { statement } });
     yield put(actions.success('screen.patientvariant.notification.duplicate.success'));

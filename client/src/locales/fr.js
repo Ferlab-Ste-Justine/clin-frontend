@@ -262,6 +262,7 @@ const fr = {
   'screen.patientvariant.modal.statement.save.button.cancel': 'Annuler',
   'screen.patientvariant.modal.statement.save.input.title.label': 'Entrer votre titre',
   'screen.patientvariant.modal.statement.save.input.title.default': 'Filtre sans titre',
+  'screen.patientvariant.modal.statement.duplicate.input.title.format': '{title} COPIE',
   'screen.patientvariant.modal.statement.draft.title': 'Créer un nouveau filtre?',
   'screen.patientvariant.modal.statement.draft.body': 'Vous êtes sur le point de créer un nouveau filtre; toutes modifications sera perdues',
   'screen.patientvariant.modal.statement.draft.button.ok': 'Créer',
