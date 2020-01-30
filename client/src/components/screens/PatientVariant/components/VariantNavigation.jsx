@@ -8,7 +8,7 @@ import {
 } from 'lodash';
 
 import {
-  Menu, Input, AutoComplete, Tag, Typography, Col,
+  Menu, Input, AutoComplete, Icon, Tag, Typography, Col,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -349,19 +349,20 @@ class VariantNavigation extends React.Component {
     const { schema } = this.props;
     const { activeFilterId, searchResults, searchSelection } = this.state;
     let autocompletesCount = 0;
-    const autocompletes = searchResults.filter(group => group.label !== '').map((group) => {
+    const autocompletes = searchResults.map((group) => {
       autocompletesCount += group.matches.length;
       return (
-        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong>{group.label}</Typography.Text>)}>
+        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong className={styleNavigation.label}>{group.label}</Typography.Text>)} >
           {group.matches.map(match => (
-            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} style={{ maxHeight: 31 }}>
-              <Col span={18}>
+            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} className={styleNavigation.value}>
+              <Col>
                 <Typography.Text style={{ maxWidth: 210 }} ellipsis>
+                  <IconKit size={16} icon={ic_done} className={styleNavigation.iconCheck}/>
                   {match.value}
                 </Typography.Text>
               </Col>
-              <Col span={6} justify="end" align="end" style={{ minWidth: 50 }}>
-                {match.count && (<Tag>{match.count}</Tag>)}
+              <Col justify="end" align="end"  className={styleNavigation.valueCount}>
+                {match.count && (<Tag color="#f0f2f5">{match.count}</Tag>)}
               </Col>
             </AutoComplete.Option>
           ))}
