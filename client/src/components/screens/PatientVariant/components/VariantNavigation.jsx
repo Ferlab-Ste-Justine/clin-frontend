@@ -33,6 +33,7 @@ class VariantNavigation extends React.Component {
       activeFilterId: null,
       searchSelection: {},
       searchResults: [],
+      searchValue:"",
     };
     this.searchQuery = '';
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -43,6 +44,7 @@ class VariantNavigation extends React.Component {
     this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
     this.getIcon = this.getIcon.bind(this)
+    this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this)
   }
 
   handleNavigationSearch(query) {
@@ -345,6 +347,10 @@ class VariantNavigation extends React.Component {
     }
   }
 
+  handleAutoCompleteChange(e){
+    this.setState({ searchValue: e });
+  }
+
   render() {
     const { schema } = this.props;
     const { activeFilterId, searchResults, searchSelection } = this.state;
@@ -417,6 +423,7 @@ result(s)
           value={this.searchQuery}
           className={styleNavigation.autocomplete}
           dropdownClassName={styleNavigation.dropwDownAutoComplete}
+          onChange={this.handleAutoCompleteChange}
         >
           <Input prefix={<IconKit size={24} icon={ic_search} />}placeholder="Recherche de filtres" />
         </AutoComplete>
