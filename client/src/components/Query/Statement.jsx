@@ -869,8 +869,8 @@ class Statement extends React.Component {
                   >
                     <Popconfirm
                       title={intl.get('screen.patientvariant.popconfirm.statement.delete.body')}
-                      okText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.cancel')}
-                      cancelText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.ok')}
+                      okText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.ok')}
+                      cancelText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.cancel')}
                       onConfirm={this.deleteStatement}
                       icon={null}
                       overlayClassName={styleStatement.popconfirm}
