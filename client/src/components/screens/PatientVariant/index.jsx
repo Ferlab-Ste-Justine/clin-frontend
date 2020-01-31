@@ -1,4 +1,3 @@
-/* eslint-disable */
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -6,11 +5,12 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, PageHeader, Tabs, Button, Tag, Row, Col, Dropdown, Menu,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu,
 } from 'antd';
+import IconKit from 'react-icons-kit';
 import {
-  last,
-} from 'lodash';
+  ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
+} from 'react-icons-kit/md';
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -34,14 +34,9 @@ import { navigateToPatientScreen } from '../../../actions/router';
 import './style.scss';
 import style from './style.module.scss';
 
-import IconKit from 'react-icons-kit';
-import {
-  ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
-} from 'react-icons-kit/md';
-
-
 const VARIANT_TAB = 'VARIANTS';
 const GENE_TAB = 'GENES';
+
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
@@ -157,9 +152,15 @@ class PatientVariantScreen extends React.Component {
     this.handleGetStatements();
   }
 
-  handleNavigationToPatientScreen(e) {
-    const { actions } = this.props;
-    actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
+  getData() {
+    const { currentTab } = this.state;
+    if (currentTab === VARIANT_TAB) {
+      const { variant } = this.props;
+      const { activeQuery, results } = variant;
+
+      return results[activeQuery];
+    }
+    return [];
   }
 
   handlePageChange(page) {
@@ -249,7 +250,7 @@ class PatientVariantScreen extends React.Component {
     });
   }
 
-  handleCopy(row, col) {
+  handleCopy(row) {
     const data = this.getData();
     return JSON.stringify(data[row]);
   }
@@ -265,10 +266,10 @@ class PatientVariantScreen extends React.Component {
   }
 
   handleUpdateStatement(id, title, description, queries = null, isDefault = false) {
-    const { actions } = this.props;
-    const { statements } = this.props.variant;
+    const { actions, variant } = this.props;
+    const { statements } = variant;
     if (!queries) {
-      queries = statements[id].queries;
+      queries = statements[id].queries; { /* eslint-disable-line */ }
     }
     if (id === 'draft') {
       actions.createStatement(id, title, description, queries, isDefault);
@@ -292,14 +293,9 @@ class PatientVariantScreen extends React.Component {
     actions.selectStatement(id);
   }
 
-  getData() {
-    const { currentTab } = this.state;
-    if (currentTab === VARIANT_TAB) {
-      const { activeQuery, results } = this.props.variant;
-
-      return results[activeQuery];
-    }
-    return [];
+  handleNavigationToPatientScreen(e) {
+    const { actions } = this.props;
+    actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
   render() {
@@ -312,7 +308,7 @@ class PatientVariantScreen extends React.Component {
       activeStatementId, activeStatementTotals, statements,
     } = variant;
     const {
-      size, page, currentTab,
+      size, page, currentTab, columnPreset,
     } = this.state;
     const familyText = intl.get('screen.patientvariant.header.family');
     const motherText = intl.get('screen.patientvariant.header.family.mother');
@@ -381,32 +377,24 @@ class PatientVariantScreen extends React.Component {
 
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
-    const completName = `${patient.details.lastName}, ${patient.details.firstName}`
+    const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const familyMenu = (
       <Menu>
         <Menu.ItemGroup title={familyText} className={style.menuGroup}>
-          {patient.family.members.mother != ''
+          {patient.family.members.mother !== ''
             ? (
               <Menu.Item>
-                <a href="#" data-patient-id={patient.family.members.mother} onClick={this.handleNavigationToPatientScreen}>
-                  {motherText}
-                  {' '}
-[
-                  {patient.family.members.mother}
-]
+                <a href="#" data-patient-id={patient.family.members.mother} onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
+                  {motherText}{' '}[{patient.family.members.mother}]
                 </a>
               </Menu.Item>
             )
             : null}
-          {patient.family.members.father != ''
+          {patient.family.members.father !== ''
             ? (
               <Menu.Item>
-                <a href="#" data-patient-id={patient.family.members.father} onClick={this.handleNavigationToPatientScreen}>
-                  {fatherText}
-                  {' '}
-[
-                  {patient.family.members.father}
-]
+                <a href="#" data-patient-id={patient.family.members.father} onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
+                  {fatherText}{' '}[{patient.family.members.father}]
                 </a>
               </Menu.Item>
             )
@@ -422,19 +410,19 @@ class PatientVariantScreen extends React.Component {
           { patient.details.id && (
           <div className={style.patientInfo}>
             <Row className={style.descriptionTitle} type="flex" align="middle">
-              <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}>
+              <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
                 <Button>
                   {completName}
                 </Button>
               </a>
-              <svg className={style.genderIcon}>
-                {patient.details.gender === 'male' ? genderMaleIcon : genderFemaleIcon}
-                {' '}
-/>
+              <svg
+                className={style.genderIcon}
+              >
+                {patient.details.gender === 'male' ? genderMaleIcon : genderFemaleIcon}{' '}
+              /> { /* eslint-disable-line */ }
               </svg>
-
               <Tag className={`${style.tag} ${style.tagProban}`}>{patient.details.proband}</Tag>
-              { patient.family.members.mother != '' || patient.family.members.father != ''
+              { patient.family.members.mother !== '' || patient.family.members.father !== ''
                 ? (
                   <Dropdown overlay={familyMenu} overlayClassName={style.familyDropdown}>
                     <Tag className={style.tag}>
@@ -443,11 +431,8 @@ class PatientVariantScreen extends React.Component {
                       <IconKit size={16} icon={ic_arrow_drop_down} />
                     </Tag>
                   </Dropdown>
-                )
-
-                : null
-                }
-
+                ) : null
+              }
             </Row>
             <Row type="flex" className={style.descriptionPatient}>
               <Col>
@@ -471,7 +456,7 @@ class PatientVariantScreen extends React.Component {
               <IconKit size={16} icon={ic_assignment_turned_in} />
                 HPO:
               {patient.ontology.map(ontology => (
-                <a>
+                <a> { /* eslint-disable-line */ }
                   {ontology.term}
                   <IconKit className={style.iconLink} size={14} icon={ic_launch} />
                 </a>
@@ -481,18 +466,18 @@ class PatientVariantScreen extends React.Component {
             ) }
           </div>
           ) }
-            <VariantNavigation
-              key="variant-navigation"
-              className="variant-navigation"
-              schema={schema}
-              patient={patient}
-              queries={draftQueries}
-              activeQuery={activeQuery}
-              data={facets[activeQuery] || {}}
-              onEditCallback={this.handleQueryChange}
-              searchData={searchData}
-              autocomplete={autocomplete}
-            />
+          <VariantNavigation
+            key="variant-navigation"
+            className="variant-navigation"
+            schema={schema}
+            patient={patient}
+            queries={draftQueries}
+            activeQuery={activeQuery}
+            data={facets[activeQuery] || {}}
+            onEditCallback={this.handleQueryChange}
+            searchData={searchData}
+            autocomplete={autocomplete}
+          />
           <Card className="Content">
             <Statement
               key="variant-statement"
@@ -542,7 +527,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
-                  schema={this.state.columnPreset[VARIANT_TAB]}
+                  schema={columnPreset[VARIANT_TAB]}
                   copyCallback={this.handleCopy}
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
@@ -558,7 +543,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
-                  schema={this.state.columnPreset[GENE_TAB]}
+                  schema={columnPreset[GENE_TAB]}
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
                   copyCallback={this.handleCopy}

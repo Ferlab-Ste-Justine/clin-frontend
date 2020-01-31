@@ -1,7 +1,12 @@
 {
   "extends": "airbnb",
   "rules": {
-    "max-len": [1, 124, 4]
+    "max-len": [1, 124, 4],
+    "camelcase": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/forbid-prop-types": "off",
+    "no-param-reassign": "off",
+    "no-underscore-dangle": "off"
   },
   "globals": {
     "alert": true,

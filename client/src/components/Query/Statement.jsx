@@ -1,10 +1,9 @@
-/* eslint-disable */
-
+/* eslint-disable */ // @TODO
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm
+  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, isEmpty, isEqual,
@@ -20,7 +19,7 @@ import {
   createSubqueryInstruction, INSTRUCTION_TYPE_SUBQUERY,
 } from './Subquery';
 import {
-  createOperatorInstruction, getSvgPathFromOperatorType, OPERATOR_TYPE_AND, OPERATOR_TYPE_OR, OPERATOR_TYPE_AND_NOT,
+  createOperatorInstruction, getSvgPathFromOperatorType, OPERATOR_TYPE_AND, OPERATOR_TYPE_OR,
 } from './Operator';
 import { calculateTitleWidth } from './helpers/query';
 import './styles/statement.scss';
@@ -109,18 +108,6 @@ class Statement extends React.Component {
     this.handlePopUpConfirm = this.handlePopUpConfirm.bind(this);
   }
 
-  isCopyable() {
-    const { options } = this.props;
-    const { copyable } = options;
-    return copyable === true;
-  }
-
-  isDuplicatable() {
-    const { options } = this.props;
-    const { duplicatable } = options;
-    return duplicatable === true;
-  }
-
   isEditable() {
     const { options } = this.props;
     const { editable } = options;
@@ -152,39 +139,44 @@ class Statement extends React.Component {
   }
 
   isDirty() {
-    const activeStatement = this.props.statements[this.props.activeStatementId];
-    const activeStatementHasSingleEmptyQuery = this.props.data.length === 1 && this.props.data[0].instructions.length === 0;
-    const statementIsDraft = !activeStatement || this.props.activeStatementId === 'draft';
-
-    const titleHasChanges = this.state.statementTitle !== null && this.state.statementTitle !== activeStatement.title;
-    const queriesHaveChanges = statementIsDraft ? !activeStatementHasSingleEmptyQuery : !isEqual(this.props.data, this.props.original);
+    const {
+      statements, activeStatementId, data, original,
+    } = this.props;
+    const { statementTitle } = this.state;
+    const activeStatement = statements[activeStatementId];
+    const activeStatementHasSingleEmptyQuery = data.length === 1 && data[0].instructions.length === 0;
+    const statementIsDraft = !activeStatement || activeStatementId === 'draft';
+    const titleHasChanges = statementTitle !== null && statementTitle !== activeStatement.title;
+    const queriesHaveChanges = statementIsDraft ? !activeStatementHasSingleEmptyQuery : !isEqual(data, original);
 
     return (titleHasChanges === true) || (queriesHaveChanges === true);
   }
 
   actionIsDisabled(action) {
-    const activeStatement = this.props.statements[this.props.activeStatementId];
-    const statementIsDraft = !activeStatement || this.props.activeStatementId === 'draft';
+    const { statements, activeStatementId, data } = this.props;
+    const activeStatement = statements[activeStatementId];
+    const statementIsDraft = !activeStatement || activeStatementId === 'draft';
     switch (action) {
+      default:
+      case 'share':
+        return true;
       case 'new':
-        return (statementIsDraft && (this.props.data.length === 1 && this.props.data[0].instructions.length === 0));
+        return (statementIsDraft && (data.length === 1 && data[0].instructions.length === 0));
       case 'save':
         return !this.isDirty();
       case 'duplicate':
         return statementIsDraft;
       case 'delete':
         return statementIsDraft;
-      case 'share':
-        return true;
     }
-
-    return false;
   }
 
   handleCopy() {
     if (this.isCopyable()) {
       return true;
     }
+
+    return false;
   }
 
   handleClick(key) {
@@ -253,8 +245,25 @@ class Statement extends React.Component {
     }
   }
 
+  onPositionChange(expandIconPosition) {
+    this.setState({ expandIconPosition });
+  }
+
+  getSubqueryKeys(keysToSearchFor) {
+    const { data } = this.props;
+    const subqueryKeys = data.filter(({ instructions }) => Boolean(instructions.find(i => i.type === INSTRUCTION_TYPE_SUBQUERY && keysToSearchFor.indexOf(i.data.query) !== -1))).map(({ key }) => key);
+    return subqueryKeys;
+  }
+
   getStatements() {
-    this.props.onGetStatementsCallback();
+    const { onGetStatementsCallback } = this.props;
+    onGetStatementsCallback();
+  }
+
+  isDuplicatable() {
+    const { options } = this.props;
+    const { duplicatable } = options;
+    return duplicatable === true;
   }
 
   createDraftStatement() {
@@ -262,10 +271,11 @@ class Statement extends React.Component {
       this.setState({
         statementTitle: null,
       }, () => {
+        const { onCreateDraftStatementCallback } = this.props;
         const statement = {
           title: intl.get('screen.patientvariant.modal.statement.save.input.title.default'),
         };
-        this.props.onCreateDraftStatementCallback(statement);
+        onCreateDraftStatementCallback(statement);
       });
     };
 
@@ -293,7 +303,7 @@ class Statement extends React.Component {
       this.setState({
         statementTitle: null,
       });
-      this.props.onDuplicateStatementCallback(id);
+      this.props.onDuplicateStatementCallback(id); /* eslint-disable-line */
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
@@ -309,27 +319,32 @@ class Statement extends React.Component {
   }
 
   updateStatement(e) {
+    const {
+      activeStatementId, statements, data, onUpdateStatementCallback,
+    } = this.props;
+    const { statementTitle } = this.state;
     let id = e.target ? e.target.getAttribute('dataid') : e;
     if (!id) {
-      id = this.props.activeStatementId;
+      id = activeStatementId;
     }
 
-    const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
-    this.props.onUpdateStatementCallback(id, title, '', this.props.data, false);
+    const title = statementTitle !== null ? statementTitle : statements[id].title;
+    onUpdateStatementCallback(id, title, '', data, false);
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
   toggleStatementAsDefault(e) {
-    const {dropDownIsOpen} = this.state
+    const { dropDownIsOpen, statementTitle } = this.state;
+    const { statements } = this.props;
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
     }
-    const title = this.state.statementTitle !== null ? this.state.statementTitle : this.props.statements[id].title;
-    const statement = this.props.statements[id];
+    const title = statementTitle !== null ? statementTitle : statements[id].title;
+    const statement = statements[id];
     const callbackSetStatementAsDefault = () => {
-      this.props.onUpdateStatementCallback(id, title, '', null, !statement.isDefault);
+      this.props.onUpdateStatementCallback(id, title, '', null, !statement.isDefault); /* eslint-disable-line */
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
@@ -342,14 +357,16 @@ class Statement extends React.Component {
     } else {
       callbackSetStatementAsDefault();
     }
-    if(dropDownIsOpen){
-        this.toggleMenu(dropDownIsOpen)
+    if (dropDownIsOpen) {
+      this.toggleMenu(dropDownIsOpen);
     }
 
     if (e.stopPropagation) { e.stopPropagation(); }
   }
 
   deleteStatement(value) {
+    const { dropDownIsOpen } = this.state;
+    const { onDeleteStatementCallback } = this.props;
     let id = value.currentTarget ? value.currentTarget.getAttribute('dataid') : value;
     if (!id) {
       const { activeStatementId } = this.props;
@@ -358,9 +375,9 @@ class Statement extends React.Component {
         statementTitle: null,
       });
     }
-    this.toggleMenu(this.state.dropDownIsOpen);
-    this.props.onDeleteStatementCallback(id);
-    value.currentTarget ? value.stopPropagation() : null;
+    this.toggleMenu(dropDownIsOpen);
+    onDeleteStatementCallback(id);
+    value.currentTarget ? value.stopPropagation() : null; /* eslint-disable-line */
   }
 
   selectStatement(value) {
@@ -396,15 +413,18 @@ class Statement extends React.Component {
     }
   }
 
-  handleSelect(item) {
+  handleSelect() {
     if (this.isSelectable()) {
       return true;
     }
+
+    return false;
   }
 
   handleUndo() {
     if (this.isUndoable()) {
-      this.props.onDraftHistoryUndoCallback();
+      const { onDraftHistoryUndoCallback } = this.props;
+      onDraftHistoryUndoCallback();
     }
   }
 
@@ -486,10 +506,10 @@ class Statement extends React.Component {
     }
   }
 
-  getSubqueryKeys(keysToSearchFor) {
-    const { data } = this.props;
-    const subqueryKeys = data.filter(({ instructions }) => Boolean(instructions.find(i => i.type === INSTRUCTION_TYPE_SUBQUERY && keysToSearchFor.indexOf(i.data.query) !== -1))).map(({ key }) => key);
-    return subqueryKeys;
+  isCopyable() {
+    const { options } = this.props;
+    const { copyable } = options;
+    return copyable === true;
   }
 
   handleRemoveChecked() {
@@ -567,10 +587,6 @@ class Statement extends React.Component {
     const { data } = this.props;
     const query = find(data, { key });
     return (query ? query.title : '');
-  }
-
-  onPositionChange(expandIconPosition) {
-    this.setState({ expandIconPosition });
   }
 
   onStatementTitleChange(e) {
@@ -781,17 +797,17 @@ class Statement extends React.Component {
 
         </Modal>
         <div className={styleStatement.header}>
-            <Row type="flex" align="end" className={styleStatement.toolbar}>
-              <div className={styleStatement.message}>
-                {this.isDirty() && (
-                  <>
-                    <Icon type="info-circle" className={styleStatement.icon} />
-                    { intl.get('screen.patientvariant.form.statement.unsavedChanges') }
-                  </>
-                )}
-                {!this.isDirty() && (<>&nbsp;</>)}
-              </div>
-            </Row>
+          <Row type="flex" align="end" className={styleStatement.toolbar}>
+            <div className={styleStatement.message}>
+              {this.isDirty() && (
+              <>
+                <Icon type="info-circle" className={styleStatement.icon} />
+                { intl.get('screen.patientvariant.form.statement.unsavedChanges') }
+              </>
+              )}
+              {!this.isDirty() && (<>&nbsp;</>)}
+            </div>
+          </Row>
           <Row type="flex" className={styleStatement.toolbar}>
             <div className={styleStatement.navigation}>
               <div>
@@ -900,63 +916,63 @@ class Statement extends React.Component {
                     overlay={(inactiveStatementKeys.length > 0 ? (
                       <Menu>
                         { inactiveStatementKeys.map(key => (
-                            <Menu.Item key={statements[key].uid}>
+                          <Menu.Item key={statements[key].uid}>
+                            <Popconfirm
+                              title={intl.get('screen.patientvariant.popconfirm.statement.load.body')}
+                              okText={intl.get('screen.patientvariant.popconfirm.statement.load.button.ok')}
+                              cancelText={intl.get('screen.patientvariant.popconfirm.statement.load.button.cancel')}
+                              onConfirm={() => this.selectStatement(statements[key].uid)}
+                              onCancel={this.onCancel}
+                              icon={null}
+                              className={statements[key].uid}
+                              overlayClassName={`${styleStatement.popconfirm}`}
+                              dataid={statements[key].uid}
+                              visible={!!(this.isDirty() && dropdownClickValue === statements[key].uid)}
+                            >
+                              <div
+                                className={styleStatement.dropdownTitle}
+                                dataid={statements[key].uid}
+                                onClick={this.handlePopUpConfirm}
+                              >
+                                {statements[key].title}
+                              </div>
+                            </Popconfirm>
+                            <div className={styleStatement.dropdownNavigation}>
+                              <IconKit
+                                size={20}
+                                icon={ic_content_copy}
+                                dataid={statements[key].uid}
+                                className={styleStatement.displayOnHover}
+                                onClick={this.duplicateStatement}
+                              />
                               <Popconfirm
-                                title={intl.get('screen.patientvariant.popconfirm.statement.load.body')}
-                                okText={intl.get('screen.patientvariant.popconfirm.statement.load.button.ok')}
-                                cancelText={intl.get('screen.patientvariant.popconfirm.statement.load.button.cancel')}
-                                onConfirm={() => this.selectStatement(statements[key].uid)}
+                                title={intl.get('screen.patientvariant.popconfirm.statement.delete.body')}
+                                okText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.ok')}
+                                cancelText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.cancel')}
+                                placement="topRight"
+                                onConfirm={() => this.deleteStatement(statements[key].uid)}
                                 onCancel={this.onCancel}
                                 icon={null}
-                                className={statements[key].uid}
-                                overlayClassName={`${styleStatement.popconfirm}`}
-                                dataid={statements[key].uid}
-                                visible={!!(this.isDirty() && dropdownClickValue === statements[key].uid)}
+                                overlayClassName={styleStatement.popconfirm}
                               >
-                                <div
-                                  className={styleStatement.dropdownTitle}
-                                  dataid={statements[key].uid}
-                                  onClick={this.handlePopUpConfirm}
-                                >
-                                  {statements[key].title}
-                                </div>
-                              </Popconfirm>
-                              <div className={styleStatement.dropdownNavigation}>
                                 <IconKit
                                   size={20}
-                                  icon={ic_content_copy}
+                                  icon={ic_delete}
                                   dataid={statements[key].uid}
                                   className={styleStatement.displayOnHover}
-                                  onClick={this.duplicateStatement}
                                 />
-                                <Popconfirm
-                                  title={intl.get('screen.patientvariant.popconfirm.statement.delete.body')}
-                                  okText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.ok')}
-                                  cancelText={intl.get('screen.patientvariant.popconfirm.statement.delete.button.cancel')}
-                                  placement="topRight"
-                                  onConfirm={() => this.deleteStatement(statements[key].uid)}
-                                  onCancel={this.onCancel}
-                                  icon={null}
-                                  overlayClassName={styleStatement.popconfirm}
-                                >
-                                  <IconKit
-                                    size={20}
-                                    icon={ic_delete}
-                                    dataid={statements[key].uid}
-                                    className={styleStatement.displayOnHover}
-                                  />
-                                </Popconfirm>
-                                { (<Icon
-                                  type="star"
-                                  size={20}
-                                  className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
-                                  theme={statements[key].isDefault ? 'filled' : 'outlined'}
-                                  dataid={statements[key].uid}
-                                  onClick={this.toggleStatementAsDefault}
-                                />)}
-                              </div>
-                            </Menu.Item>
-                          ))
+                              </Popconfirm>
+                              { (<Icon
+                                type="star"
+                                size={20}
+                                className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
+                                theme={statements[key].isDefault ? 'filled' : 'outlined'}
+                                dataid={statements[key].uid}
+                                onClick={this.toggleStatementAsDefault}
+                              />)}
+                            </div>
+                          </Menu.Item>
+                        ))
                         }
                       </Menu>
                     ) : (<></>))
@@ -1040,8 +1056,11 @@ class Statement extends React.Component {
 }
 
 Statement.propTypes = {
+  statements: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
+  original: PropTypes.shape({}).isRequired,
   activeStatementId: PropTypes.string,
+  activeQuery: PropTypes.string,
   activeStatementTotals: PropTypes.shape({}),
   externalData: PropTypes.shape({}),
   display: PropTypes.shape({}),
@@ -1059,6 +1078,7 @@ Statement.propTypes = {
   onDeleteStatementCallback: PropTypes.func,
   onSelectStatementCallback: PropTypes.func,
   onDuplicateStatementCallback: PropTypes.func,
+  onBatchEditCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -1081,7 +1101,6 @@ Statement.defaultProps = {
   externalData: {},
   onSelectCallback: () => {},
   onEditCallback: () => {},
-  onBatchEditCallback: () => {},
   onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},
@@ -1092,6 +1111,7 @@ Statement.defaultProps = {
   onDeleteStatementCallback: () => {},
   onSelectStatementCallback: () => {},
   onDuplicateStatementCallback: () => {},
+  onBatchEditCallback: () => {},
 };
 
 export default Statement;

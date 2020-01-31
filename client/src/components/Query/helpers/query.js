@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import {
   find,
 } from 'lodash';
@@ -65,25 +63,24 @@ export const sanitizeSubqueries = (instructions) => {
   return instructions;
 };
 
-export const sanitizeFilters = instructions => {
+export const sanitizeFilters = (instructions) => {
   const instructionIds = {};
 
   // @NOTE No duplicate filters
-  return instructions.filter(instruction => {
+  return instructions.filter((instruction) => {
     if (instruction.type === INSTRUCTION_TYPE_FILTER) {
       if (instructionIds[instruction.data.id]) {
         return false;
-      } else {
-        instructionIds[instruction.data.id] = true;
       }
+      instructionIds[instruction.data.id] = true;
     }
     return true;
-  })
+  });
 };
 
-export const sanitizeInstructions = instructions => sanitizeOperators(sanitizeSubqueries(sanitizeFilters(instructions)))
+export const sanitizeInstructions = instructions => sanitizeOperators(sanitizeSubqueries(sanitizeFilters(instructions)));
 
-// @TODO Refactor and use camel-case
+// @TODO Refactor
 export const calculateTitleWidth = (value) => {
   if (!value) {
     return 0;
@@ -122,8 +119,7 @@ export const calculateTitleWidth = (value) => {
   let numberOf_X13_Letter = 0;
   let numberOf_X14_Letter = 0;
 
-  const map = Array.prototype.map;
-  map.call(value, (eachLetter) => {
+  value.split('').forEach((eachLetter) => {
     if (x0.includes(eachLetter)) {
       numberOf_X0_Letter += 1;
     } else if (x1.includes(eachLetter)) {

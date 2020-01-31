@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -43,7 +41,12 @@ const QUERY_ACTION_UNDO_ALL = 'undo-all';
 const QUERY_ACTION_DELETE = 'delete';
 const QUERY_ACTION_DUPLICATE = 'duplicate';
 const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
-const QUERY_ACTION_TITLE = 'title';
+const handleTitleOnChange = (e) => {
+  const { value } = e.target;
+  const width = calculateTitleWidth(value);
+
+  e.target.style.width = `calc(15px + ${width}ch)`;
+};
 
 class Query extends React.Component {
   constructor(props) {
@@ -69,10 +72,8 @@ class Query extends React.Component {
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.hasTitle = this.hasTitle.bind(this);
     this.handleTitleOnFocus = this.handleTitleOnFocus.bind(this);
     this.handleTitleFocus = this.handleTitleFocus.bind(this);
-    this.handleTitleOnChange = this.handleTitleOnChange.bind(this);
     this.toggleToolTip = this.toggleToolTip.bind(this);
     this.togglePopConfirm = this.togglePopConfirm.bind(this);
   }
@@ -92,13 +93,6 @@ class Query extends React.Component {
   handleTitleOnFocus(e) {
     e.target.select();
     this.setState({ onFocus: true });
-  }
-
-  handleTitleOnChange(e) {
-    const { value } = e.target;
-    const width = calculateTitleWidth(value);
-
-    e.target.style.width = `calc(15px + ${width}ch)`;
   }
 
   // @TODO Refactor by using state to define the 'autofocus' attribute on the DOM element
@@ -240,58 +234,43 @@ class Query extends React.Component {
     };
   }
 
-  handleClick(e) {
+  handleClick() {
     const { onClickCallback, draft } = this.props;
     onClickCallback(draft.key);
   }
 
   handleMenuSelection({ key }) {
-    const { display, draft, index } = this.props;
+    const {
+      display, draft, index, original, onCopyCallback, onDisplayCallback, onRemoveCallback, onDuplicateCallback, onEditCallback,
+    } = this.props;
+    const sqon = JSON.stringify(this.sqon());
+
     switch (key) {
+      default:
+        break;
       case QUERY_ACTION_COPY:
-        const sqon = JSON.stringify(this.sqon());
         copy(sqon);
-        this.props.onCopyCallback(sqon);
+        onCopyCallback(sqon);
         break;
       case QUERY_ACTION_COMPOUND_OPERATORS:
-        const updatedDisplayCompoundOperators = {
-          ...display,
-          compoundOperators: !display.compoundOperators,
-        };
-        this.props.onDisplayCallback({ display: updatedDisplayCompoundOperators, index });
-        break;
-      case QUERY_ACTION_TITLE:
-        const newDraft = cloneDeep(draft);
-        if (!this.hasTitle()) {
-          newDraft.title = '';
-        } else {
-          delete newDraft.title;
-        }
-        this.props.onEditCallback({
-          data: newDraft,
-          display,
+        onDisplayCallback({
+          display: {
+            ...display,
+            compoundOperators: !display.compoundOperators,
+          },
           index,
         });
         break;
       case QUERY_ACTION_DELETE:
-        this.props.onRemoveCallback(draft.key);
+        onRemoveCallback(draft.key);
         break;
       case QUERY_ACTION_DUPLICATE:
-        this.props.onDuplicateCallback(this.serialize());
+        onDuplicateCallback(this.serialize());
         break;
       case QUERY_ACTION_UNDO_ALL:
-        const { original } = this.props;
-        const clone = cloneDeep(original);
-        this.props.onEditCallback(clone);
-        break;
-      default:
+        onEditCallback(cloneDeep(original));
         break;
     }
-  }
-
-  hasTitle() {
-    const { draft } = this.props;
-    return draft.title !== undefined;
   }
 
   toggleToolTip() {
@@ -320,7 +299,7 @@ class Query extends React.Component {
     } = options;
     const { onFocus, toolTipOpen } = this.state;
     const isDirty = !isEqual(original, draft);
-    const isEmpty = !draft.instructions || draft.instructions.length === 0
+    const isEmpty = !draft.instructions || draft.instructions.length === 0;
 
     const duplicateText = intl.get('screen.patientvariant.query.menu.duplicate');
     const deleteText = intl.get('screen.patientvariant.query.menu.delete');
@@ -331,7 +310,7 @@ class Query extends React.Component {
     if (isDirty) { classNames.push(styleQuery.dirtyQuery); }
     if (active) { classNames.push(styleQuery.activeQuery); } else { classNames.push(styleQuery.inactiveQuery); }
     return (
-      <div className={classNames.join(' ')} onClick={this.handleClick}>
+      <div className={classNames.join(' ')} onClick={this.handleClick}> { /* eslint-disable-line */}
         <div className={styleQuery.toolbar}>
           <Tooltip title={editTitleText}>
             <div className={styleQuery.title}>
@@ -340,7 +319,7 @@ class Query extends React.Component {
                 defaultValue={draft.title}
                 onBlur={this.handleTitleChange}
                 onPressEnter={this.handleTitleChange}
-                onChange={this.handleTitleOnChange}
+                onChange={handleTitleOnChange}
                 className={`title-${draft.key}`}
                 style={{ width: `calc(14px + ${width}ch)` }}
               />
@@ -386,7 +365,7 @@ class Query extends React.Component {
           )
           : (
             <div className={styleQuery.instructions}>
-              { draft.instructions.map((item, index) => {
+              { draft.instructions.map((item, index) => { { /* eslint-disable-line */}
                 switch (item.type) {
                   case INSTRUCTION_TYPE_OPERATOR:
                     return (
@@ -399,13 +378,13 @@ class Query extends React.Component {
                       />
                     );
                   case INSTRUCTION_TYPE_FILTER:
-                    let category = null;
-                    let type = null;
-                    categories.map((x, index) => {
+                    let category = null; /* eslint-disable-line no-case-declarations */
+                    let type = null; /* eslint-disable-line no-case-declarations */
+                    categories.forEach((x) => {
                       const value = find(x.filters, ['id', item.data.id]);
                       if (value) {
                         category = x.id;
-                        type = value.type;
+                        type = value.type; /* eslint-disable-line */
                       }
                     });
                     if (type === FILTER_TYPE_GENERIC) {
@@ -445,7 +424,7 @@ class Query extends React.Component {
                       const categoryInfo = find(categories, ['id', category]);
                       const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
                       const allOption = [];
-                      Object.keys(categoryData.search).map((keyName) => {
+                      Object.keys(categoryData.search).forEach((keyName) => {
                         const datum = facets[keyName];
                         if (datum && datum[0]) {
                           allOption.push({
@@ -506,8 +485,8 @@ class Query extends React.Component {
                     break;
 
                   case INSTRUCTION_TYPE_SUBQUERY:
-                    const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
-                    const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null;
+                    const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null; /* eslint-disable-line no-case-declarations */
+                    const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null; /* eslint-disable-line no-case-declarations */
                     return (
                       <Subquery
                         index={index}
@@ -542,6 +521,8 @@ Query.propTypes = {
   active: PropTypes.bool,
   index: PropTypes.number,
   results: PropTypes.number,
+  facets: PropTypes.shape({}).isRequired,
+  categories: PropTypes.shape({}).isRequired,
   externalData: PropTypes.shape({}),
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
@@ -551,6 +532,7 @@ Query.propTypes = {
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
   findQueryIndexForKey: PropTypes.func,
+  findQueryTitle: PropTypes.func.isRequired, // @TODO Find better way to do this
 };
 
 Query.defaultProps = {
