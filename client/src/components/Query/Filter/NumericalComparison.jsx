@@ -16,6 +16,24 @@ export const FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL = '<=';
 export const FILTER_COMPARATOR_TYPE_DEFAULT = FILTER_COMPARATOR_TYPE_GREATER_THAN;
 
 class NumericalComparisonFilter extends React.Component {
+  /* @NOTE SQON Struct Sample
+  {
+    type: 'numcomparison,
+    data: {
+        id: 'phylop'
+        values: [
+            {
+                comparator: '<',
+                value: 10
+            }
+            {
+                comparator: '>=',
+                value: 0
+            }
+        ]
+    }
+  }
+  */
   static structFromArgs(id, values = [{ comparator: FILTER_COMPARATOR_TYPE_DEFAULT, value: 0 }]) {
     return {
       id,
@@ -78,11 +96,17 @@ class NumericalComparisonFilter extends React.Component {
         <>
           <Row>
             <Col span={24}>
-              <Radio.Group size="small" type="primary" dataindex={index} value={datum.comparator} onChange={this.handleComparatorChange}>
-                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Radio.Button>
-                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Radio.Button>
-                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Radio.Button>
-                <Radio.Button style={{ width: 112, textAlign: 'center' }} value={FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL}>{typeLte}</Radio.Button>
+              <Radio.Group
+                type="primary"
+                size="small"
+                dataindex={index}
+                value={datum.comparator}
+                onChange={this.handleComparatorChange}
+              >
+                <Radio.Button value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Radio.Button>
+                <Radio.Button value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Radio.Button>
+                <Radio.Button value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Radio.Button>
+                <Radio.Button value={FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL}>{typeLte}</Radio.Button>
               </Radio.Group>
             </Col>
           </Row>
@@ -126,7 +150,5 @@ class NumericalComparisonFilter extends React.Component {
 NumericalComparisonFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
 };
-
-// NumericalComparisonFilter.defaultProps = {};
 
 export default NumericalComparisonFilter;

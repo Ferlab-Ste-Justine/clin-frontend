@@ -16,6 +16,16 @@ export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
 
 
 class GenericFilter extends React.Component {
+  /* @NOTE SQON Struct Sample
+  {
+      type: 'generic',
+      data: {
+          id: 'variant_type',
+          operand: 'all',
+          values: ['SNP', 'deletion']
+      }
+  }
+  */
   static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
     return {
       id,

@@ -13,6 +13,14 @@ import Filter, { FILTER_TYPE_GENERICBOOL } from './index';
 
 
 class GenericBooleanFilter extends React.Component {
+  /* @NOTE SQON Struct Sample
+  {
+      type: 'genericbool,
+      data: {
+          values: ['pubmed', 'clinvar']
+      }
+  }
+  */
   static structFromArgs(id, values = []) {
     return {
       id,
@@ -207,7 +215,5 @@ GenericBooleanFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
 };
-
-// GenericBooleanFilter.defaultProps = {};
 
 export default GenericBooleanFilter;

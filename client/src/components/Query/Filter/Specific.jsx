@@ -24,6 +24,16 @@ const SELECTOR_DEFAULT = SELECTOR_ALL;
 const SELECTORS = [SELECTOR_ALL, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
 
 class SpecificFilter extends Filter {
+  /* @NOTE SQON Struct Sample
+  {
+    type: 'specific',
+    data: {
+        id: 'variant_type',
+        operand: 'all',
+        values: ['SNP', 'deletion']
+    }
+  }
+  */
   static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
     return {
       id,

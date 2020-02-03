@@ -5,6 +5,7 @@ const en = {
   'lang.en.short': 'EN',
   'lang.fr.short': 'FR',
   'header.title': 'Quebec center of clinical genomics',
+  'header.description': 'The Quebec Center for Clinical Genomics offers a high-throughput sequencing clinical platform for the molecular diagnosis of Quebec patients in partnership with the eight laboratories of the Quebec Molecular Diagnostic Network.',
   'header.navigation.patient': 'Patients',
   'header.navigation.user.logout': 'Logout',
   'footer.navigation.primary.information': 'Information and services',

@@ -19,7 +19,12 @@ export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
 export const FILTER_TYPE_COMPOSITE = 'composite';
 export const FILTER_TYPE_GENERICBOOL = 'genericbool';
 export const FILTER_TYPE_SPECIFIC = 'specific';
-export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC];
+export const FILTER_TYPES = [
+  FILTER_TYPE_GENERIC,
+  FILTER_TYPE_NUMERICAL_COMPARISON,
+  FILTER_TYPE_COMPOSITE,
+  FILTER_TYPE_SPECIFIC,
+];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,
@@ -226,15 +231,22 @@ class Filter extends React.Component {
                   </Col>
                 </Row>
               ) : null
-          )
-          }
+          )}
           <br />
           <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
             <Col>
-              <Button onClick={this.handleCancel}>{ intl.get('components.query.filter.button.cancel') }</Button>
+              <Button onClick={this.handleCancel}>
+                { intl.get('components.query.filter.button.cancel') }
+              </Button>
             </Col>
             <Col>
-              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>{ intl.get('components.query.filter.button.apply') }</Button>
+              <Button
+                type="primary"
+                style={{ marginLeft: '8px' }}
+                onClick={this.handleApply}
+              >
+                { intl.get('components.query.filter.button.apply') }
+              </Button>
             </Col>
           </Row>
         </Card>
@@ -295,7 +307,9 @@ class Filter extends React.Component {
               </Tag>
             </Dropdown>
           ) }
-          {autoSelect ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} /> : null}
+          {autoSelect
+            ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
+            : null}
         </Tag>
       </span>
     );
