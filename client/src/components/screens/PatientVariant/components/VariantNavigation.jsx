@@ -65,6 +65,7 @@ class VariantNavigation extends React.Component {
       activeFilterId: null,
       searchSelection: {},
       searchResults: [],
+      searchValue: '',
     };
     this.searchQuery = '';
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -74,7 +75,31 @@ class VariantNavigation extends React.Component {
     this.handleNavigationSearch = this.handleNavigationSearch.bind(this);
     this.handleNavigationSelection = this.handleNavigationSelection.bind(this);
     this.renderFilterType = this.renderFilterType.bind(this);
+    this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
+    this.getHighlightSearch = this.getHighlightSearch.bind(this);
   }
+
+  getHighlightSearch(value) {
+    const { searchValue } = this.state;
+    const regex = new RegExp(searchValue, 'i');
+    let tempoValue = value;
+    const highlightValue = [];
+    const highlightPart = value.split(regex);
+    let haveMoreValue = true;
+
+    while (haveMoreValue) {
+      const matchValue = tempoValue.match(regex);
+      if (matchValue) {
+        highlightValue.push(matchValue[0]);
+        tempoValue = tempoValue.slice(matchValue.index + matchValue[0].length);
+      } else {
+        haveMoreValue = false;
+      }
+    }
+
+    return highlightPart.map((stringPart, index) => <React.Fragment>{ index === 0 ? null : <span className={styleNavigation.highlight}>{highlightValue[index - 1]}</span>}{stringPart}</React.Fragment>);
+  }
+
 
   handleNavigationSearch(query) {
     if (query && query.length > 2) {
@@ -174,6 +199,7 @@ class VariantNavigation extends React.Component {
     }
   }
 
+
   handleFilterSelection({ key }) {
     this.setState({
       activeFilterId: key,
@@ -185,6 +211,7 @@ class VariantNavigation extends React.Component {
     filter.remove = true;
     this.handleFilterChange(filter);
   }
+
 
   handleFilterChange(filter) {
     const { onEditCallback } = this.props;
@@ -229,11 +256,16 @@ class VariantNavigation extends React.Component {
     }
   }
 
+
   handleCategoryOpenChange() {
     this.setState({
       activeFilterId: null,
       searchSelection: {},
     });
+  }
+
+  handleAutoCompleteChange(e) {
+    this.setState({ searchValue: e });
   }
 
   renderFilterType(categoryData) {
@@ -335,10 +367,14 @@ class VariantNavigation extends React.Component {
     }
   }
 
+
   render() {
     const { schema } = this.props;
-    const { activeFilterId, searchResults, searchSelection } = this.state;
+    const {
+      activeFilterId, searchResults, searchSelection,
+    } = this.state;
     let autocompletesCount = 0;
+
     const autocompletes = searchResults.filter(group => group.label !== '').map((group) => {
       autocompletesCount += group.matches.length;
       return (
@@ -348,7 +384,7 @@ class VariantNavigation extends React.Component {
               <Col>
                 <Typography.Text style={{ maxWidth: 210 }} ellipsis>
                   <IconKit size={16} icon={ic_done} className={styleNavigation.iconCheck} />
-                  {match.value}
+                  {this.getHighlightSearch(match.value)}
                 </Typography.Text>
               </Col>
               <Col justify="end" align="end" className={styleNavigation.valueCount}>
@@ -407,6 +443,7 @@ class VariantNavigation extends React.Component {
           value={this.searchQuery}
           className={styleNavigation.autocomplete}
           dropdownClassName={styleNavigation.dropwDownAutoComplete}
+          onChange={this.handleAutoCompleteChange}
         >
           <Input prefix={<IconKit size={24} icon={ic_search} />} placeholder="Recherche de filtres" />
         </AutoComplete>

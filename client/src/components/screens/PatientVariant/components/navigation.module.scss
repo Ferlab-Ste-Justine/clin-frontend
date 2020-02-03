@@ -118,6 +118,7 @@
 
 .dropwDownAutoComplete{
     line-height:0;
+    min-width:360px;
 
     >div{
         >ul{
@@ -146,6 +147,8 @@
         align-items:center;
         padding:5px 16px;
         .iconCheck{
+            padding-right:8px;
+            color:rgba(35, 55, 80, 0.38);
             opacity:0;
         }
 
@@ -184,5 +187,9 @@
     }
 
 
+}
+
+.highlight{
+    background-color:#fddeb4;
 }
 
