@@ -48,15 +48,15 @@ export const sortStatement = statement => ({
   },
 });
 
-export const searchVariants = (patient, statement, query, group = null, index = 0, limit = 25) => ({
+export const searchVariants = (patient, statement, query, index = 0, limit = 25, group = null) => ({
   type: actions.PATIENT_VARIANT_SEARCH_REQUESTED,
   payload: {
     patient,
     statement,
     query,
-    group,
     index,
     limit,
+    group,
   },
 });
 

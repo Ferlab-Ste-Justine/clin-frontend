@@ -38,6 +38,8 @@ const languageMenu = actions => (
         {intl.get('lang.fr.long')}
       </span>
     </Menu.Item>
+
+
     <Menu.Item
       onClick={() => {
         actions.changeLanguage('en');

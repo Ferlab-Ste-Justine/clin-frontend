@@ -19,7 +19,12 @@ export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
 export const FILTER_TYPE_COMPOSITE = 'composite';
 export const FILTER_TYPE_GENERICBOOL = 'genericbool';
 export const FILTER_TYPE_SPECIFIC = 'specific';
-export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC];
+export const FILTER_TYPES = [
+  FILTER_TYPE_GENERIC,
+  FILTER_TYPE_NUMERICAL_COMPARISON,
+  FILTER_TYPE_COMPOSITE,
+  FILTER_TYPE_SPECIFIC,
+];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,
@@ -32,7 +37,6 @@ class Filter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSet: null,
       visible: null,
       selected: null,
       opened: null,
@@ -58,9 +62,8 @@ class Filter extends React.Component {
 
     // @NOTE Initialize Component State
     const {
-      dataSet, autoOpen, autoSelect, visible, sortData,
+      autoOpen, autoSelect, visible, sortData,
     } = props;
-    this.state.dataSet = dataSet || [];
     this.state.opened = autoOpen;
     this.state.visible = visible;
     this.state.selected = autoSelect;
@@ -180,7 +183,7 @@ class Filter extends React.Component {
   render() {
     const { allOptions, size, page } = this.state;
     const {
-      data, overlayOnly, editor, dataSet, searchable, autoSelect,
+      data, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
     const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
     const filterDescription = intl.get(`screen.patientvariant.filter_${data.id}.description`);
@@ -213,7 +216,7 @@ class Filter extends React.Component {
           { allOptions && (
             allOptions.length >= size
               ? (
-                <Row style={{ marginTop: 'auto' }}>
+                <Row>
                   <br />
                   <Col align="end" span={24}>
                     <Pagination
@@ -226,15 +229,21 @@ class Filter extends React.Component {
                   </Col>
                 </Row>
               ) : null
-          )
-          }
+          )}
           <br />
-          <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
+          <Row type="flex" justify="end">
             <Col>
-              <Button onClick={this.handleCancel}>{ intl.get('components.query.filter.button.cancel') }</Button>
+              <Button onClick={this.handleCancel}>
+                { intl.get('components.query.filter.button.cancel') }
+              </Button>
             </Col>
             <Col>
-              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>{ intl.get('components.query.filter.button.apply') }</Button>
+              <Button
+                type="primary"
+                onClick={this.handleApply}
+              >
+                { intl.get('components.query.filter.button.apply') }
+              </Button>
             </Col>
           </Row>
         </Card>
@@ -295,7 +304,9 @@ class Filter extends React.Component {
               </Tag>
             </Dropdown>
           ) }
-          {autoSelect ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} /> : null}
+          {autoSelect
+            ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
+            : null}
         </Tag>
       </span>
     );
@@ -304,7 +315,6 @@ class Filter extends React.Component {
 
 Filter.propTypes = {
   data: PropTypes.shape({}).isRequired,
-  dataSet: PropTypes.array.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,

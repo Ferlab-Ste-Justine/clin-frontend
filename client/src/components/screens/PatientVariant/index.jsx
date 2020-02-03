@@ -34,9 +34,9 @@ import { navigateToPatientScreen } from '../../../actions/router';
 import './style.scss';
 import style from './style.module.scss';
 
+
 const VARIANT_TAB = 'VARIANTS';
 const GENE_TAB = 'GENES';
-
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
@@ -164,24 +164,46 @@ class PatientVariantScreen extends React.Component {
   }
 
   handlePageChange(page) {
-    const { variant } = this.props;
-    const { activeQuery } = variant;
+    const { patient, variant, actions } = this.props;
+    const {
+      draftQueries, activeQuery,
+    } = variant;
+    const { size } = this.state;
+    const { id } = patient.details;
 
     this.setState({
       page,
     }, () => {
-      this.handleQuerySelection(activeQuery);
+      actions.searchVariants(
+        id,
+        draftQueries,
+        activeQuery,
+        page,
+        size,
+      );
     });
   }
 
   handlePageSizeChange(size) {
-    const { variant } = this.props;
-    const { activeQuery } = variant;
+    const { patient, variant, actions } = this.props;
+    const {
+      draftQueries, activeQuery,
+    } = variant;
+    const { page } = this.state;
+    const { id } = patient.details;
+
+    console.log(`+ handlePageChange draftQueries ${JSON.stringify(draftQueries)}`);
 
     this.setState({
       size,
     }, () => {
-      this.handleQuerySelection(activeQuery);
+      actions.searchVariants(
+        id,
+        draftQueries,
+        activeQuery,
+        page,
+        size,
+      );
     });
   }
 
@@ -193,19 +215,34 @@ class PatientVariantScreen extends React.Component {
   handleQueryChange(query) {
     const { actions } = this.props;
     this.handleCommitHistory();
-    actions.replaceQuery(query.data || query);
+    this.setState({
+      page: 1,
+      size: 25,
+    }, () => {
+      actions.replaceQuery(query.data || query);
+    });
   }
 
   handleQueriesChange(queries) {
     const { actions } = this.props;
     this.handleCommitHistory();
-    actions.replaceQueries(queries);
+    this.setState({
+      page: 1,
+      size: 25,
+    }, () => {
+      actions.replaceQueries(queries);
+    });
   }
 
   handleQueriesRemoval(keys) {
     const { actions } = this.props;
     this.handleCommitHistory();
-    actions.removeQuery(keys);
+    this.setState({
+      page: 1,
+      size: 25,
+    }, () => {
+      actions.removeQuery(keys);
+    });
   }
 
   handleQueryDuplication(query, index) {

@@ -5,6 +5,7 @@ const fr = {
   'lang.en.short': 'EN',
   'lang.fr.short': 'FR',
   'header.title': 'Centre québécois de génomique clinique',
+  'header.description': 'Le Centre québécois de génomique clinique offre une plateforme clinique de séquençage à haut débit pour le diagnostic moléculaire des patients québécois en partenariat avec les huit laboratoires du Réseau de diagnostic moléculaire du Québec.',
   'header.navigation.patient': 'Patients',
   'header.navigation.user.logout': 'Déconnexion',
   'footer.navigation.primary.information': 'Information et services',

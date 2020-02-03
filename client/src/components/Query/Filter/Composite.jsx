@@ -10,17 +10,37 @@ import intl from 'react-intl-universal';
 
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
-  FILTER_COMPARATOR_TYPE_GREATER_THAN, FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, FILTER_COMPARATOR_TYPE_LOWER_THAN, FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
+  FILTER_COMPARATOR_TYPE_GREATER_THAN,
+  FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
+  FILTER_COMPARATOR_TYPE_LOWER_THAN,
+  FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
 
 
 const SCORE_SELECTION = '_score_';
 
 class CompositeFilter extends React.Component {
+  /* @NOTE SQON Struct Sample
+  {
+      type: 'composite,
+      data: {
+          value: 'T'
+      }
+  }
+  */
   static qualityCompositionStructFromArgs(value) {
     return { value };
   }
 
+  /* @NOTE SQON Struct Sample
+  {
+      type: 'composite,
+      data: {
+          comparator: '<='
+          value: '0'
+      }
+  }
+  */
   static numericalCompositionStructFromArgs(comparator, value) {
     return {
       comparator,
@@ -74,7 +94,12 @@ class CompositeFilter extends React.Component {
               {data.id}
             </Col>
             <Col>
-              <Select value={(!comparator ? value : SCORE_SELECTION)} size="small" type="primary" onChange={this.handleQualityChange}>
+              <Select
+                type="primary"
+                size="small"
+                value={(!comparator ? value : SCORE_SELECTION)}
+                onChange={this.handleQualityChange}
+              >
                 <Select.Option value={SCORE_SELECTION}>Score</Select.Option>
                 { dataSet.map(datum => (
                   <Select.Option value={datum.value}>
@@ -84,7 +109,13 @@ class CompositeFilter extends React.Component {
               </Select>
             </Col>
             <Col>
-              <Select disabled={!comparator} value={(comparator ? comparator || FILTER_COMPARATOR_TYPE_GREATER_THAN : '')} size="small" type="primary" onChange={this.handleComparatorChange}>
+              <Select
+                type="primary"
+                size="small"
+                disabled={!comparator}
+                value={(comparator ? comparator || FILTER_COMPARATOR_TYPE_GREATER_THAN : '')}
+                onChange={this.handleComparatorChange}
+              >
                 <Select.Option value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Select.Option>
                 <Select.Option value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Select.Option>
                 <Select.Option value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Select.Option>
@@ -92,7 +123,12 @@ class CompositeFilter extends React.Component {
               </Select>
             </Col>
             <Col>
-              <InputNumber disabled={!comparator} onChange={this.handleScoreChange} value={(comparator ? value || 0 : '')} step={0.25} />
+              <InputNumber
+                step={1}
+                disabled={!comparator}
+                onChange={this.handleScoreChange}
+                value={(comparator ? value || 0 : '')}
+              />
             </Col>
           </Row>
         </>
@@ -103,7 +139,9 @@ class CompositeFilter extends React.Component {
   getEditorDraftInstruction() {
     const { draft } = this.state;
     const { id, comparator, value } = draft;
-    const composition = comparator ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value) : CompositeFilter.qualityCompositionStructFromArgs(value);
+    const composition = comparator
+      ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value)
+      : CompositeFilter.qualityCompositionStructFromArgs(value);
 
     return CompositeFilter.structFromArgs(id, composition);
   }
@@ -111,7 +149,9 @@ class CompositeFilter extends React.Component {
   getEditorInstruction() {
     const { data } = this.props;
     const { id, comparator, value } = data;
-    const composition = comparator ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value) : CompositeFilter.qualityCompositionStructFromArgs(value);
+    const composition = comparator
+      ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value)
+      : CompositeFilter.qualityCompositionStructFromArgs(value);
 
     return CompositeFilter.structFromArgs(id, composition);
   }
@@ -169,7 +209,5 @@ CompositeFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
 };
-
-// CompositeFilter.defaultProps = {};
 
 export default CompositeFilter;

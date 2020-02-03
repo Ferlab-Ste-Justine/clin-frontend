@@ -25,9 +25,10 @@ function* fetchSchema() {
 function* searchVariantsForPatient(action) {
   try {
     const {
-      patient, statement, query, group, index, limit,
+      patient, statement, query, index, limit,
     } = action.payload;
-    const variantResponse = yield Api.searchVariantsForPatient(patient, statement, query, group, index, limit);
+    const variantResponse = yield Api.searchVariantsForPatient(patient, statement, query, index, limit);
+
     if (variantResponse.error) {
       throw new ApiError(variantResponse.error);
     }

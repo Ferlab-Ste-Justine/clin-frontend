@@ -24,6 +24,16 @@ const SELECTOR_DEFAULT = SELECTOR_ALL;
 const SELECTORS = [SELECTOR_ALL, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
 
 class SpecificFilter extends Filter {
+  /* @NOTE SQON Struct Sample
+  {
+    type: 'specific',
+    data: {
+        id: 'variant_type',
+        operand: 'all',
+        values: ['SNP', 'deletion']
+    }
+  }
+  */
   static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
     return {
       id,
@@ -252,9 +262,9 @@ class SpecificFilter extends Filter {
         <>
           <Row>
             <Col span={24}>
-              <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
+              <Radio.Group type="primary" size="small" value={operand} onChange={this.handleOperandChange}>
                 {config.operands.map(configOperand => (
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
+                  <Radio.Button value={configOperand}>
                     {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
                   </Radio.Button>
                 ))}
@@ -307,7 +317,7 @@ SpecificFilter.defaultProps = {
     // @NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
     <>
       <br />
-      <Row style={{ display: 'flex', alignItems: 'center' }}>
+      <Row>
         <Col span={6}>
           <Checkbox
             key="specific-selector-check-all"
@@ -319,9 +329,9 @@ SpecificFilter.defaultProps = {
           {checkboxLabel}
         </Col>
         <Col span={18}>
-          <Radio.Group size="small" type="secondary" value={selector} onChange={onChangeCallback} style={{ display: 'flex', justifyContent: 'stretch' }}>
+          <Radio.Group type="secondary" size="small" value={selector} onChange={onChangeCallback}>
             { values.map(value => (
-              <Radio.Button style={{ textAlign: 'center', width: '100%' }} value={value.value}>
+              <Radio.Button value={value.value}>
                 {value.label}
               </Radio.Button>
             )) }
