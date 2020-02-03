@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
@@ -10,11 +8,10 @@ import {
   cloneDeep,
 } from 'lodash';
 import IconKit from 'react-icons-kit';
-import {
-  ic_cancel, /* eslint-disable-line */
-} from 'react-icons-kit/md';
+import { ic_cancel } from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
+
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -127,7 +124,7 @@ class Filter extends React.Component {
         editor, onEditCallback, index,
       } = this.props;
       const instruction = editor.getDraftInstruction();
-      instruction.index = index
+      instruction.index = index;
 
       this.setState({
         opened: false,
@@ -313,6 +310,8 @@ Filter.propTypes = {
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
+  onSearchCallback: PropTypes.func,
+  onPageChangeCallBack: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
@@ -322,6 +321,7 @@ Filter.propTypes = {
   searchable: PropTypes.bool,
   sortData: PropTypes.array,
   autoSelect: PropTypes.bool,
+  index: PropTypes.number,
 };
 
 Filter.defaultProps = {
@@ -334,12 +334,15 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
+  onSearchCallback: () => {},
+  onPageChangeCallBack: () => {},
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,
   visible: true,
   searchable: false,
   sortData: [],
+  index: 0,
 };
 
 export default Filter;

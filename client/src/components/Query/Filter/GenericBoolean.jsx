@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -11,17 +9,23 @@ import {
 } from 'lodash';
 import intl from 'react-intl-universal';
 
-import Filter from './index';
-import { FILTER_TYPE_GENERICBOOL } from './index';
+import Filter, { FILTER_TYPE_GENERICBOOL } from './index';
 
 
 class GenericBooleanFilter extends React.Component {
+  static structFromArgs(id, values = []) {
+    return {
+      id,
+      type: FILTER_TYPE_GENERICBOOL,
+      values,
+    };
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       draft: null,
       selection: [],
-      indeterminate: false,
       size: null,
       page: null,
       allOptions: null,
@@ -37,55 +41,26 @@ class GenericBooleanFilter extends React.Component {
 
     // @NOTE Initialize Component State
     const { data, dataSet } = props;
+    const selection = data.values ? cloneDeep(data.values) : [];
+    const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
 
     this.state.draft = cloneDeep(data);
-    this.state.selection = data.values ? cloneDeep(data.values) : [];
-    this.state.allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
+    this.state.selection = selection;
     this.state.page = 1;
     this.state.size = 10;
-
-    if (this.state.selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => this.state.selection.includes(o.value));
+    if (selection.length > 0) {
+      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
       if (value.length === 0) {
         const selectedValue = [];
-        this.state.selection.map(x => selectedValue.push({ value: x, count: 0 }));
-        this.state.allOptions.unshift(...selectedValue);
+        selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        allOptions.unshift(...selectedValue);
       } else {
         const sorted = orderBy(value, ['count'], ['desc']);
-        pullAllBy(this.state.allOptions, cloneDeep(sorted), 'value');
-        this.state.allOptions.unshift(...sorted);
+        pullAllBy(allOptions, cloneDeep(sorted), 'value');
+        allOptions.unshift(...sorted);
       }
     }
-  }
-
-  static structFromArgs(id, values = []) {
-    return {
-      id,
-      type: FILTER_TYPE_GENERICBOOL,
-      values,
-    }
-  }
-
-  getEditorDraftInstruction() {
-    const { draft } = this.state;
-    const { id, values } = draft;
-
-    return GenericBooleanFilter.structFromArgs(id, values);
-  }
-
-  getEditorInstruction() {
-    const { data } = this.props;
-    const { id, values } = data;
-
-    return GenericBooleanFilter.structFromArgs(id, values);
-  }
-
-  getEditorLabels() {
-    const { data } = this.props;
-    return {
-      action: null,
-      targets: data.values
-    }
+    this.state.allOptions = allOptions;
   }
 
   getEditor() {
@@ -120,28 +95,50 @@ class GenericBooleanFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-        <Row>
-          <Checkbox
-            key="check-all"
-            className="selector"
-            indeterminate={(!allSelected && selection.length > 0)}
-            onChange={this.handleCheckAllSelections}
-            checked={allSelected}
-          />
-          {(!allSelected ? selectAll : selectNone)}
-        </Row>
-        <br />
-        <Row>
-          <Col span={24}>
-            <Checkbox.Group
-              options={options}
-              value={selection}
-              onChange={this.handleSelectionChange}
+          <Row>
+            <Checkbox
+              key="check-all"
+              className="selector"
+              indeterminate={(!allSelected && selection.length > 0)}
+              onChange={this.handleCheckAllSelections}
+              checked={allSelected}
             />
-          </Col>
-        </Row>
+            {(!allSelected ? selectAll : selectNone)}
+          </Row>
+          <br />
+          <Row>
+            <Col span={24}>
+              <Checkbox.Group
+                options={options}
+                value={selection}
+                onChange={this.handleSelectionChange}
+              />
+            </Col>
+          </Row>
         </>
-      )
+      ),
+    };
+  }
+
+  getEditorDraftInstruction() {
+    const { draft } = this.state;
+    const { id, values } = draft;
+
+    return GenericBooleanFilter.structFromArgs(id, values);
+  }
+
+  getEditorInstruction() {
+    const { data } = this.props;
+    const { id, values } = data;
+
+    return GenericBooleanFilter.structFromArgs(id, values);
+  }
+
+  getEditorLabels() {
+    const { data } = this.props;
+    return {
+      action: null,
+      targets: data.values,
     };
   }
 
@@ -150,14 +147,12 @@ class GenericBooleanFilter extends React.Component {
     if (!target.checked) {
       this.setState({
         selection: [],
-        indeterminate: false,
       });
     } else {
       const { dataSet } = this.props;
-      const options = dataSet.map(option => option.value);
+      const selection = dataSet.map(option => option.value);
       this.setState({
-        selection: options,
-        indeterminate: false,
+        selection,
       });
     }
   }
@@ -175,7 +170,6 @@ class GenericBooleanFilter extends React.Component {
   }
 
   handleSelectionChange(values) {
-    const { dataSet } = this.props;
     const {
       selection, allOptions, page, size, draft,
     } = this.state;
@@ -184,18 +178,15 @@ class GenericBooleanFilter extends React.Component {
     const maxValue = size * page;
     const options = allOptions.slice(minValue, maxValue);
 
-    options.map((x) => {
+    options.forEach((x) => {
       if (selection.includes(x.value)) {
-        !values.includes(x.value) ? pull(selection, x.value) : null;
-      } else {
-        values.includes(x.value) ? selection.push(x.value) : null;
-      }
+        if (!values.includes(x.value)) { pull(selection, x.value); }
+      } else if (values.includes(x.value)) { selection.push(x.value); }
     });
     draft.values = selection;
     this.setState({
       selection,
       draft,
-      indeterminate: (!(values.length === dataSet.length) && values.length > 0),
     });
   }
 

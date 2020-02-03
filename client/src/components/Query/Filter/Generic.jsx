@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import {
   Row, Col, Checkbox, Radio, Tag, Tooltip,
@@ -6,14 +5,9 @@ import {
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
 } from 'lodash';
-import {
-  empty, one, full,
-} from 'react-icons-kit/entypo';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
-
-import Filter from './index';
-import {FILTER_TYPE_GENERIC} from './index';
+import Filter, { FILTER_TYPE_GENERIC } from './index';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
@@ -22,12 +16,20 @@ export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
 
 
 class GenericFilter extends React.Component {
+  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
+    return {
+      id,
+      type: FILTER_TYPE_GENERIC,
+      operand,
+      values,
+    };
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       draft: null,
       selection: [],
-      indeterminate: false,
       size: null,
       page: null,
       allOptions: null,
@@ -62,38 +64,6 @@ class GenericFilter extends React.Component {
         pullAllBy(allOptions, cloneDeep(sorted), 'value');
         allOptions.unshift(...sorted);
       }
-    }
-  }
-
-  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
-    return {
-      id,
-      type: FILTER_TYPE_GENERIC,
-      operand,
-      values,
-    }
-  }
-
-  getEditorDraftInstruction() {
-    const { draft } = this.state;
-    const { id, operand, values } = draft;
-
-    return GenericFilter.structFromArgs(id, values, operand);
-  }
-
-  getEditorInstruction() {
-    const { data } = this.props;
-    const { id, operand, values } = data;
-
-    return GenericFilter.structFromArgs(id, values, operand);
-  }
-
-  getEditorLabels() {
-    const { data } = this.props;
-
-    return {
-      action: intl.get(`screen.patientvariant.filter.operand.${data.operand}`),
-      targets: data.values
     }
   }
 
@@ -132,47 +102,71 @@ class GenericFilter extends React.Component {
       getDraftInstruction: this.getEditorDraftInstruction,
       getInstruction: this.getEditorInstruction,
       contents: (
-      <>
-        <Row>
-          <Col span={24}>
-            <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
-              {config.operands.map(configOperand => (
-                <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
-                  {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
-                </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Checkbox
-            key="check-all"
-            className="selector"
-            indeterminate={(!allSelected && selection.length > 0)}
-            onChange={this.handleCheckAllSelections}
-            checked={allSelected}
-          />
-          {(!allSelected ? selectAll : selectNone)}
-        </Row>
-        <br />
-        <Row>
-          <Col span={24}>
-            <Checkbox.Group
-              options={options}
-              value={selection}
-              onChange={this.handleSelectionChange}
+        <>
+          <Row>
+            <Col span={24}>
+              <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
+                {config.operands.map(configOperand => (
+                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
+                    {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+            </Col>
+          </Row>
+          <br />
+          <Row>
+            <Checkbox
+              key="check-all"
+              className="selector"
+              indeterminate={(!allSelected && selection.length > 0)}
+              onChange={this.handleCheckAllSelections}
+              checked={allSelected}
             />
-          </Col>
-        </Row>
-      </>
-    )};
+            {(!allSelected ? selectAll : selectNone)}
+          </Row>
+          <br />
+          <Row>
+            <Col span={24}>
+              <Checkbox.Group
+                options={options}
+                value={selection}
+                onChange={this.handleSelectionChange}
+              />
+            </Col>
+          </Row>
+        </>
+      ),
+    };
+  }
+
+  getEditorDraftInstruction() {
+    const { draft } = this.state;
+    const { id, operand, values } = draft;
+
+    return GenericFilter.structFromArgs(id, values, operand);
+  }
+
+  getEditorInstruction() {
+    const { data } = this.props;
+    const { id, operand, values } = data;
+
+    return GenericFilter.structFromArgs(id, values, operand);
+  }
+
+  getEditorLabels() {
+    const { data } = this.props;
+
+    return {
+      action: intl.get(`screen.patientvariant.filter.operand.${data.operand}`),
+      targets: data.values,
+    };
   }
 
   handleSearchByQuery(values) {
     const { dataSet } = this.props;
     const allOptions = cloneDeep(dataSet);
-    const search = values.toLowerCase()
+    const search = values.toLowerCase();
     const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
     pullAllBy(allOptions, cloneDeep(toRemove), 'value');
@@ -193,20 +187,17 @@ class GenericFilter extends React.Component {
     if (!target.checked) {
       this.setState({
         selection: [],
-        indeterminate: false,
       });
     } else {
       const { dataSet } = this.props;
-      const options = dataSet.map(option => option.value);
+      const selection = dataSet.map(option => option.value);
       this.setState({
-        selection: options,
-        indeterminate: false,
+        selection,
       });
     }
   }
 
   handleSelectionChange(values) {
-    const { dataSet } = this.props;
     const {
       selection, allOptions, page, size, draft,
     } = this.state;
@@ -215,11 +206,13 @@ class GenericFilter extends React.Component {
     const maxValue = size * page;
     const options = allOptions.slice(minValue, maxValue);
 
-    options.map((x) => {
+    options.forEach((x) => {
       if (selection.includes(x.value)) {
-        !values.includes(x.value) ? pull(selection, x.value) : null;
-      } else {
-        values.includes(x.value) ? selection.push(x.value) : null;
+        if (!values.includes(x.value)) {
+          pull(selection, x.value);
+        }
+      } else if (values.includes(x.value)) {
+        selection.push(x.value);
       }
     });
 
@@ -227,7 +220,6 @@ class GenericFilter extends React.Component {
     this.setState({
       selection,
       draft,
-      indeterminate: (!(values.length === dataSet.length) && values.length > 0),
     });
   }
 
@@ -248,7 +240,7 @@ class GenericFilter extends React.Component {
         {...this.props}
         type={FILTER_TYPE_GENERIC}
         editor={this.getEditor()}
-        searchable={true}
+        searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
         sortData={allOptions}
@@ -261,13 +253,13 @@ GenericFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
   category: PropTypes.string,
-  config: PropTypes.shape({}).isRequired,
+  config: PropTypes.shape({}),
 };
 
 GenericFilter.defaultProps = {
   category: '',
   config: {
-    operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE]
+    operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE],
   },
 };
 

@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React from 'react';
 import {
   Row, Col, Select, InputNumber,
@@ -19,24 +17,6 @@ import {
 const SCORE_SELECTION = '_score_';
 
 class CompositeFilter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      draft: null,
-    };
-    this.getEditor = this.getEditor.bind(this);
-    this.getEditorLabels = this.getEditorLabels.bind(this);
-    this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
-    this.getEditorInstruction = this.getEditorInstruction.bind(this);
-    this.handleComparatorChange = this.handleComparatorChange.bind(this);
-    this.handleQualityChange = this.handleQualityChange.bind(this);
-    this.handleScoreChange = this.handleScoreChange.bind(this);
-
-    // @NOTE Initialize Component State
-    const { data } = props;
-    this.state.draft = cloneDeep(data);
-  }
-
   static qualityCompositionStructFromArgs(value) {
     return { value };
   }
@@ -56,61 +36,23 @@ class CompositeFilter extends React.Component {
     };
   }
 
-  handleQualityChange(quality) {
-    const { draft } = this.state;
-    const clone = cloneDeep(draft);
+  constructor(props) {
+    super(props);
+    this.state = {
+      draft: null,
+    };
+    this.getEditor = this.getEditor.bind(this);
+    this.getEditorLabels = this.getEditorLabels.bind(this);
+    this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
+    this.getEditorInstruction = this.getEditorInstruction.bind(this);
+    this.handleComparatorChange = this.handleComparatorChange.bind(this);
+    this.handleQualityChange = this.handleQualityChange.bind(this);
+    this.handleScoreChange = this.handleScoreChange.bind(this);
 
-    if (quality !== SCORE_SELECTION) {
-      delete clone.comparator;
-    } else if (!clone.comparator) {
-      clone.comparator = FILTER_COMPARATOR_TYPE_GREATER_THAN;
-      quality = 0;
-    }
-
-    clone.value = quality;
-    this.setState({ draft: clone });
+    // @NOTE Initialize Component State
+    const { data } = props;
+    this.state.draft = cloneDeep(data);
   }
-
-  handleComparatorChange(comparator) {
-    const { draft } = this.state;
-    const clone = cloneDeep(draft);
-
-    clone.comparator = comparator;
-    this.setState({ draft: clone });
-  }
-
-  handleScoreChange(score) {
-    const { draft } = this.state;
-    const clone = cloneDeep(draft);
-
-    clone.value = score;
-    this.setState({ draft: clone });
-  }
-
-  getEditorDraftInstruction() {
-    const { draft } = this.state;
-    const { id, comparator, value } = draft;
-    const composition = comparator ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value) : CompositeFilter.qualityCompositionStructFromArgs(value);
-
-    return CompositeFilter.structFromArgs(id, composition);
-  }
-
-  getEditorInstruction() {
-    const { data } = this.props;
-    const { id, comparator, value } = data;
-    const composition = comparator ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value) : CompositeFilter.qualityCompositionStructFromArgs(value);
-
-    return CompositeFilter.structFromArgs(id, composition);
-  }
-
-  getEditorLabels() {
-    const { data } = this.props;
-    return {
-      action: data.comparator,
-      targets: [ data.value ]
-    }
-  }
-
 
   getEditor() {
     const { data, dataSet } = this.props;
@@ -156,6 +98,61 @@ class CompositeFilter extends React.Component {
         </>
       ),
     };
+  }
+
+  getEditorDraftInstruction() {
+    const { draft } = this.state;
+    const { id, comparator, value } = draft;
+    const composition = comparator ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value) : CompositeFilter.qualityCompositionStructFromArgs(value);
+
+    return CompositeFilter.structFromArgs(id, composition);
+  }
+
+  getEditorInstruction() {
+    const { data } = this.props;
+    const { id, comparator, value } = data;
+    const composition = comparator ? CompositeFilter.numericalCompositionStructFromArgs(comparator, value) : CompositeFilter.qualityCompositionStructFromArgs(value);
+
+    return CompositeFilter.structFromArgs(id, composition);
+  }
+
+  getEditorLabels() {
+    const { data } = this.props;
+    return {
+      action: data.comparator,
+      targets: [data.value],
+    };
+  }
+
+  handleComparatorChange(comparator) {
+    const { draft } = this.state;
+    const clone = cloneDeep(draft);
+
+    clone.comparator = comparator;
+    this.setState({ draft: clone });
+  }
+
+  handleScoreChange(score) {
+    const { draft } = this.state;
+    const clone = cloneDeep(draft);
+
+    clone.value = score;
+    this.setState({ draft: clone });
+  }
+
+  handleQualityChange(quality) {
+    const { draft } = this.state;
+    const clone = cloneDeep(draft);
+
+    if (quality !== SCORE_SELECTION) {
+      delete clone.comparator;
+    } else if (!clone.comparator) {
+      clone.comparator = FILTER_COMPARATOR_TYPE_GREATER_THAN;
+      quality = 0;
+    }
+
+    clone.value = quality;
+    this.setState({ draft: clone });
   }
 
   render() {

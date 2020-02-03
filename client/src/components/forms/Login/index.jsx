@@ -14,8 +14,8 @@ import style from '../../../containers/App/style.module.scss';
 const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 class LoginForm extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       submitLoading: false,
       forgotLoading: false,
@@ -26,7 +26,6 @@ class LoginForm extends React.Component {
 
   componentDidMount() {
     const { form } = this.props;
-    document.querySelector('#login .autofocus input').autofocus = true;
     form.setFields({
       username: {
         value: window.CLIN.defaultUsername,
@@ -35,7 +34,6 @@ class LoginForm extends React.Component {
         value: window.CLIN.defaultPassword,
       },
     });
-    form.validateFields();
   }
 
   handleSubmit(e) {
@@ -81,7 +79,6 @@ class LoginForm extends React.Component {
     const usernameError = form.isFieldTouched('username') && form.getFieldError('username');
     const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
 
-
     return (
       <Card bordered={false} id="login">
         <Row type="flex" justify="end">
@@ -112,6 +109,7 @@ class LoginForm extends React.Component {
                     placeholder={usernamePlaceHolder}
                     autoComplete="off"
                     className={`${style.input} autofocus`}
+                    autoFocus
                   />,
                 )}
               </Form.Item>

@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import React from 'react';
 import {
   Row, Col, Checkbox, Radio, Tag, Tooltip,
@@ -8,9 +6,6 @@ import intl from 'react-intl-universal';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
 } from 'lodash';
-import {
-  empty, one, full,
-} from 'react-icons-kit/entypo';
 import PropTypes from 'prop-types';
 
 import Filter, { FILTER_TYPE_SPECIFIC } from './index';
@@ -21,6 +16,7 @@ import {
   FILTER_OPERAND_TYPE_ONE,
 } from './Generic';
 
+
 const SELECTOR_ALL = 'all';
 const SELECTOR_INTERSECTION = 'intersection';
 const SELECTOR_DIFFERENCE = 'difference';
@@ -28,6 +24,15 @@ const SELECTOR_DEFAULT = SELECTOR_ALL;
 const SELECTORS = [SELECTOR_ALL, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
 
 class SpecificFilter extends Filter {
+  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
+    return {
+      id,
+      type: FILTER_TYPE_SPECIFIC,
+      operand,
+      values,
+    };
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -73,15 +78,6 @@ class SpecificFilter extends Filter {
         allOptions.unshift(...sorted);
       }
     }
-  }
-
-  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
-    return {
-      id,
-      type: FILTER_TYPE_SPECIFIC,
-      operand,
-      values,
-    };
   }
 
   handleSearchByQuery(values) {
@@ -149,12 +145,10 @@ class SpecificFilter extends Filter {
     const maxValue = size * page;
     const options = allOptions.slice(minValue, maxValue);
 
-    options.map((x) => {
+    options.forEach((x) => {
       if (selection.includes(x.value)) {
-        !values.includes(x.value) ? pull(selection, x.value) : null;
-      } else {
-        values.includes(x.value) ? selection.push(x.value) : null;
-      }
+        if (!values.includes(x.value)) { pull(selection, x.value); }
+      } else if (values.includes(x.value)) { selection.push(x.value); }
     });
     draft.values = selection;
 
@@ -290,7 +284,7 @@ class SpecificFilter extends Filter {
         {...this.props}
         type={FILTER_TYPE_SPECIFIC}
         editor={this.getEditor()}
-        searchable={true}
+        searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
         sortData={allOptions}

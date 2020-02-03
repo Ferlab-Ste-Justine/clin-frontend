@@ -180,7 +180,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
         draft.draftHistory = [];
       } else {
-        draft.statements = {};
         action.payload.data.hits.forEach((hit) => {
           draft.statements[hit._id] = {
             uid: hit._id,
@@ -225,7 +224,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED:
-      delete draft.statements.draft;
       const updatedStatement = { // eslint-disable-line no-case-declarations
         uid: action.payload.data.uid,
         title: action.payload.data.title,
