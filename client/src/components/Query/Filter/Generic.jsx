@@ -115,9 +115,9 @@ class GenericFilter extends React.Component {
         <>
           <Row>
             <Col span={24}>
-              <Radio.Group size="small" type="primary" value={operand} onChange={this.handleOperandChange}>
+              <Radio.Group type="primary" size="small" value={operand} onChange={this.handleOperandChange}>
                 {config.operands.map(configOperand => (
-                  <Radio.Button style={{ width: 150, textAlign: 'center' }} value={configOperand}>
+                  <Radio.Button value={configOperand}>
                     {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
                   </Radio.Button>
                 ))}

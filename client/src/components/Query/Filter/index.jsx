@@ -37,7 +37,6 @@ class Filter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSet: null,
       visible: null,
       selected: null,
       opened: null,
@@ -63,9 +62,8 @@ class Filter extends React.Component {
 
     // @NOTE Initialize Component State
     const {
-      dataSet, autoOpen, autoSelect, visible, sortData,
+      autoOpen, autoSelect, visible, sortData,
     } = props;
-    this.state.dataSet = dataSet || [];
     this.state.opened = autoOpen;
     this.state.visible = visible;
     this.state.selected = autoSelect;
@@ -185,7 +183,7 @@ class Filter extends React.Component {
   render() {
     const { allOptions, size, page } = this.state;
     const {
-      data, overlayOnly, editor, dataSet, searchable, autoSelect,
+      data, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
     const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
     const filterDescription = intl.get(`screen.patientvariant.filter_${data.id}.description`);
@@ -218,7 +216,7 @@ class Filter extends React.Component {
           { allOptions && (
             allOptions.length >= size
               ? (
-                <Row style={{ marginTop: 'auto' }}>
+                <Row>
                   <br />
                   <Col align="end" span={24}>
                     <Pagination
@@ -233,7 +231,7 @@ class Filter extends React.Component {
               ) : null
           )}
           <br />
-          <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
+          <Row type="flex" justify="end">
             <Col>
               <Button onClick={this.handleCancel}>
                 { intl.get('components.query.filter.button.cancel') }
@@ -242,7 +240,6 @@ class Filter extends React.Component {
             <Col>
               <Button
                 type="primary"
-                style={{ marginLeft: '8px' }}
                 onClick={this.handleApply}
               >
                 { intl.get('components.query.filter.button.apply') }
@@ -318,7 +315,6 @@ class Filter extends React.Component {
 
 Filter.propTypes = {
   data: PropTypes.shape({}).isRequired,
-  dataSet: PropTypes.array.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
