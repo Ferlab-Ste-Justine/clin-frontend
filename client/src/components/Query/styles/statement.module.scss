@@ -316,16 +316,8 @@
             font-family: $font;
             letter-spacing:$small-letter-spacing;
 
-
-            .displayOnHover{
-                opacity:0;
-            }
-
             &:hover{
                 background: #eff8ff;
-                .displayOnHover{
-                    opacity:1;
-                }
             }
 
             &:active{
