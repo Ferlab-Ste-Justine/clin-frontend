@@ -382,7 +382,7 @@ class VariantNavigation extends React.Component {
           {group.matches.map(match => (
             <AutoComplete.Option key={match.id} value={JSON.stringify(match)} className={styleNavigation.value}>
               <Col>
-                <Typography.Text style={{ maxWidth: 210 }} ellipsis>
+                <Typography.Text style={{ maxWidth: 280 }} ellipsis>
                   <IconKit size={16} icon={ic_done} className={styleNavigation.iconCheck} />
                   {this.getHighlightSearch(match.value)}
                 </Typography.Text>
@@ -444,6 +444,7 @@ class VariantNavigation extends React.Component {
           className={styleNavigation.autocomplete}
           dropdownClassName={styleNavigation.dropwDownAutoComplete}
           onChange={this.handleAutoCompleteChange}
+          open
         >
           <Input prefix={<IconKit size={24} icon={ic_search} />} placeholder="Recherche de filtres" />
         </AutoComplete>

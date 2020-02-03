@@ -38,13 +38,14 @@
             margin-left:52px;
             width:200px;
 
-            color: rgba(35, 55, 80, 0.38);
+            color: #233750;
             font-size: 14px;
             font-family: $font;
             letter-spacing: 0.25px;
             line-height: 20px;
 
             &::placeholder{
+                color: rgba(35, 55, 80, 0.38);
             }
 
             &:focus{
@@ -118,10 +119,12 @@
 
 .dropwDownAutoComplete{
     line-height:0;
-    min-width:360px;
+    min-width:380px;
 
     >div{
         >ul{
+            li{
+            }
         }
 
     }
