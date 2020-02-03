@@ -45,6 +45,7 @@ class VariantNavigation extends React.Component {
     this.renderFilterType = this.renderFilterType.bind(this);
     this.getIcon = this.getIcon.bind(this)
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this)
+    this.getHighlightSearch = this.getHighlightSearch.bind(this)
   }
 
   handleNavigationSearch(query) {
@@ -351,10 +352,35 @@ class VariantNavigation extends React.Component {
     this.setState({ searchValue: e });
   }
 
+  getHighlightSearch(value){
+    const {searchValue} = this.state
+    const regex = new RegExp(searchValue, "i")
+    let tempoValue= value
+    const highlightValue = []
+    const highlightPart = value.split(regex)
+    let haveMoreValue = true
+
+    while(haveMoreValue){
+        const matchValue = tempoValue.match(regex)
+        if(matchValue){
+         highlightValue.push(matchValue[0])
+         tempoValue = tempoValue.slice(matchValue.index + matchValue[0].length)
+        }
+        else{
+         haveMoreValue= false
+        }
+    }
+
+   return highlightPart.map((stringPart, index) => {
+       return <React.Fragment>{ index === 0 ? null : <span className={styleNavigation.highlight}>{highlightValue[index-1]}</span>}{stringPart}</React.Fragment>
+   })
+  }
+
   render() {
     const { schema } = this.props;
-    const { activeFilterId, searchResults, searchSelection } = this.state;
+    const { activeFilterId, searchResults, searchSelection, searchValue } = this.state;
     let autocompletesCount = 0;
+
     const autocompletes = searchResults.filter(group => group.label !== '').map((group) => {
       autocompletesCount += group.matches.length;
       return (
@@ -364,7 +390,7 @@ class VariantNavigation extends React.Component {
               <Col>
                 <Typography.Text style={{ maxWidth: 210 }} ellipsis>
                   <IconKit size={16} icon={ic_done} className={styleNavigation.iconCheck}/>
-                  {match.value}
+                  {this.getHighlightSearch(match.value)}
                 </Typography.Text>
               </Col>
               <Col justify="end" align="end"  className={styleNavigation.valueCount}>
