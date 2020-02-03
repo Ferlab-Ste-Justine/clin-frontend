@@ -10,6 +10,11 @@ import style from './styles/term.module.scss';
 export const INSTRUCTION_TYPE_SUBQUERY = 'subquery';
 
 class Subquery extends React.Component {
+  /* @NOTE SQON Struct Sample
+  {
+      query: 'and',
+  }
+  */
   static structFromArgs(query) {
     return {
       query,

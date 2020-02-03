@@ -192,8 +192,6 @@ class PatientVariantScreen extends React.Component {
     const { page } = this.state;
     const { id } = patient.details;
 
-    console.log(`+ handlePageChange draftQueries ${JSON.stringify(draftQueries)}`);
-
     this.setState({
       size,
     }, () => {
@@ -209,7 +207,12 @@ class PatientVariantScreen extends React.Component {
 
   handleQuerySelection(key) {
     const { actions } = this.props;
-    actions.selectQuery(key);
+    this.setState({
+      page: 1,
+      size: 25,
+    }, () => {
+      actions.selectQuery(key);
+    });
   }
 
   handleQueryChange(query) {

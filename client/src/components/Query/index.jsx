@@ -95,7 +95,7 @@ class Query extends React.Component {
     this.setState({ onFocus: true });
   }
 
-  // @TODO Refactor by using state to define the 'autofocus' attribute on the DOM element
+  // @TODO Refactor by using state to define the 'autofocus' attribute on the DOM element?
   handleTitleFocus() {
     const { draft } = this.props;
     const input = document.querySelector(`.title-${draft.key}`);

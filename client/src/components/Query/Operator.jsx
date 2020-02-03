@@ -6,6 +6,7 @@ import {
 import intl from 'react-intl-universal';
 import style from './styles/term.module.scss';
 
+
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
 export const OPERATOR_TYPE_OR = 'or';
@@ -31,6 +32,11 @@ export const getSvgPathFromOperatorType = (type) => {
 
 
 class Operator extends React.Component {
+  /* @NOTE SQON Struct Sample
+  {
+      type: 'and',
+  }
+  */
   static structFromArgs(type = OPERATOR_TYPE_DEFAULT) {
     return {
       type: (OPERATOR_TYPES.indexOf(type) !== -1 ? type : OPERATOR_TYPE_DEFAULT),
