@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign, import/no-cycle */
+/* eslint-disable import/no-cycle, no-param-reassign */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
@@ -16,14 +16,14 @@ import {
 export const initialPatientState = {
   details: {
     id: null,
-    birthDate: null,
+    birthDate: '',
     gender: null,
     mrn: null,
     ramq: null,
     ethnicity: null,
     proband: null,
-    firstName: null,
-    lastName: null,
+    firstName: '',
+    lastName: '',
   },
   family: {
     id: null,

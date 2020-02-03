@@ -1,98 +1,62 @@
-/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { cloneDeep, isEqual, find, isNull } from 'lodash';
 import {
-  Dropdown, Icon, Menu, Input, Badge,
+  cloneDeep, isEqual, find, isNull,
+} from 'lodash';
+import intl from 'react-intl-universal';
+import {
+  Input, Tooltip, Popconfirm,
 } from 'antd';
+import uuidv1 from 'uuid/v1';
 import copy from 'copy-to-clipboard';
-const Joi = require('@hapi/joi');
 
-import './style.scss';
-import { INSTRUCTION_TYPE_FILTER } from './Filter/index';
+import IconKit from 'react-icons-kit';
+import {
+  ic_edit, ic_delete, ic_filter_none,
+} from 'react-icons-kit/md';
+import {
+  INSTRUCTION_TYPE_FILTER,
+  FILTER_TYPE_GENERIC,
+  FILTER_TYPE_NUMERICAL_COMPARISON,
+  FILTER_TYPE_GENERICBOOL,
+  FILTER_TYPE_COMPOSITE,
+  FILTER_TYPE_SPECIFIC,
+} from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
-import GenericBooleanFilter from './Filter/GenericBoolean'
-import Operator, { INSTRUCTION_TYPE_OPERATOR, OPERATOR_TYPES } from './Operator';
-import Subquery, { INSTRUCTION_TYPE_SUBQUERY, SUBQUERY_TYPES } from './Subquery';
-import {convertIndexToColor, convertIndexToLetter} from './Statement';
-import {FILTER_TYPE_GENERIC , FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_GENERICBOOL, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC} from './Filter/index'
+import GenericBooleanFilter from './Filter/GenericBoolean';
+import Operator, {
+  INSTRUCTION_TYPE_OPERATOR,
+  OPERATOR_TYPE_AND_NOT,
+} from './Operator';
+import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
+import { sanitizeInstructions, calculateTitleWidth } from './helpers/query';
+import styleQuery from './styles/query.module.scss';
+
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
 const QUERY_ACTION_DELETE = 'delete';
 const QUERY_ACTION_DUPLICATE = 'duplicate';
 const QUERY_ACTION_COMPOUND_OPERATORS = 'compound-operators';
-const QUERY_ACTION_VIEW_SQON = 'view-sqon';
-const QUERY_ACTION_TITLE = 'title';
+const handleTitleOnChange = (e) => {
+  const { value } = e.target;
+  const width = calculateTitleWidth(value);
 
-export const sanitizeInstructions = (instructions) => {
-    instructions = sanitizeSubqueries(instructions);
-    instructions = sanitizeFilters(instructions);
-    instructions = sanitizeOperators(instructions);
-    return instructions;
-}
-
-const sanitizeOperators = (instructions) => {
-  // @NOTE No subsequent operators
-  let lastOperatorIndex = null;
-  const sanitizedInstructions = instructions.filter((instruction, index) => {
-    if (instruction.type === INSTRUCTION_TYPE_OPERATOR) {
-      if (lastOperatorIndex !== null && ((lastOperatorIndex + 1) === index)) {
-        lastOperatorIndex = index;
-        return false;
-      }
-      lastOperatorIndex = index;
-    }
-    return true;
-  });
-
-  // @NOTE No prefix operator
-  if (sanitizedInstructions[0] && sanitizedInstructions[0].type === INSTRUCTION_TYPE_OPERATOR) {
-      sanitizedInstructions.shift();
-  }
-
-  // @NOTE No suffix operator
-  const instructionsLength = sanitizedInstructions.length - 1;
-  if (sanitizedInstructions[instructionsLength] && sanitizedInstructions[instructionsLength].type === INSTRUCTION_TYPE_OPERATOR) {
-    sanitizedInstructions.pop();
-  }
-
-  // @No subsequent filters or subqueries without an operator
-  for(let i in sanitizedInstructions){
-    const defaultOperator = {data:{type:"and"} ,
-                             type:INSTRUCTION_TYPE_OPERATOR }
-    const operator = find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) ? find(sanitizedInstructions, ['type', INSTRUCTION_TYPE_OPERATOR]) : defaultOperator
-    const next = Number(i)+1
-    if(next < sanitizedInstructions.length){
-        if(sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY){
-            if(sanitizedInstructions[next].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[next].type === INSTRUCTION_TYPE_SUBQUERY){
-                sanitizedInstructions.splice(next, 0, operator);
-            }
-        }
-    }
-  }
-
-  return sanitizedInstructions;
+  e.target.style.width = `calc(15px + ${width}ch)`;
 };
-
-const sanitizeSubqueries = (instructions) => {
-  if (instructions.length === 1 && instructions[0].type === INSTRUCTION_TYPE_SUBQUERY) {
-    instructions.shift();
-  }
-
-  return instructions;
-};
-
-// @NOTE No subsequent filters
-const sanitizeFilters = instructions => instructions;
-
 
 class Query extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      onFocus: false,
+      popconfirmOpen: false,
+      toolTipOpen: false,
+    };
     this.addInstruction = this.addInstruction.bind(this);
     this.replaceInstruction = this.replaceInstruction.bind(this);
     this.removeInstruction = this.removeInstruction.bind(this);
@@ -105,29 +69,61 @@ class Query extends React.Component {
     this.serialize = this.serialize.bind(this);
     this.sqon = this.sqon.bind(this);
     this.json = this.json.bind(this);
-    this.createMenuComponent = this.createMenuComponent.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
-    this.handleAdvancedChange = this.handleAdvancedChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.hasTitle = this.hasTitle.bind(this);
+    this.handleTitleOnFocus = this.handleTitleOnFocus.bind(this);
+    this.handleTitleFocus = this.handleTitleFocus.bind(this);
+    this.toggleToolTip = this.toggleToolTip.bind(this);
+    this.togglePopConfirm = this.togglePopConfirm.bind(this);
+  }
+
+  handleTitleChange(e) {
+    const title = e.target.value;
+    const { draft, onEditCallback } = this.props;
+    e.target.blur();
+    if (title !== draft.title) {
+      const serialized = this.serialize();
+      serialized.data.title = title;
+      onEditCallback(serialized);
+    }
+    this.setState({ onFocus: false });
+  }
+
+  handleTitleOnFocus(e) {
+    e.target.select();
+    this.setState({ onFocus: true });
+  }
+
+  // @TODO Refactor by using state to define the 'autofocus' attribute on the DOM element?
+  handleTitleFocus() {
+    const { draft } = this.props;
+    const input = document.querySelector(`.title-${draft.key}`);
+    input.focus();
   }
 
   addInstruction(instruction) {
-      const { draft, display, index, onEditCallback } = this.props;
-      const newDraft = cloneDeep(draft)
+    // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
+    const { draft } = this.props;
+    const andNotOperator = find(draft.instructions, dInstruction => (dInstruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
+    if (!andNotOperator) {
+      const { display, index, onEditCallback } = this.props;
+      const newDraft = cloneDeep(draft);
       newDraft.instructions.push(instruction);
       newDraft.instructions = sanitizeInstructions(newDraft.instructions);
       onEditCallback({
         data: newDraft,
         display,
-        index
+        index,
       });
+    }
   }
 
   replaceInstruction(instruction) {
-    const { draft, display, index, onEditCallback } = this.props;
-    const newDraft = cloneDeep(draft)
+    const {
+      draft, display, index, onEditCallback,
+    } = this.props;
+    const newDraft = cloneDeep(draft);
     const instructionIndex = instruction.index;
 
     newDraft.instructions[instructionIndex] = instruction;
@@ -135,13 +131,15 @@ class Query extends React.Component {
     onEditCallback({
       data: newDraft,
       display,
-      index
+      index,
     });
   }
 
   removeInstruction(instruction) {
-    const { draft, display, index, onEditCallback } = this.props;
-    const newDraft = cloneDeep(draft)
+    const {
+      draft, display, index, onEditCallback,
+    } = this.props;
+    const newDraft = cloneDeep(draft);
     const instructionIndex = instruction.index;
 
     newDraft.instructions.splice(instructionIndex, 1);
@@ -149,7 +147,7 @@ class Query extends React.Component {
     onEditCallback({
       data: newDraft,
       display,
-      index
+      index,
     });
   }
 
@@ -168,30 +166,36 @@ class Query extends React.Component {
   handleFilterChange(filter) {
     const instruction = {
       type: INSTRUCTION_TYPE_FILTER,
-      data: filter
+      data: filter,
     };
     if (!isNull(filter.index)) {
-      instruction.index = filter.index
+      instruction.index = filter.index;
       this.replaceInstruction(instruction);
     } else {
-      this.addInstruction(instruction)
+      this.addInstruction(instruction);
     }
   }
 
   // @NOTE All operators within a query must have the same type
   handleOperatorChange(operator) {
-    const { draft, onEditCallback } = this.props;
-    const instructions = draft.instructions.map((datum) => {
+    const {
+      draft, display, index, onEditCallback,
+    } = this.props;
+    const updatedDraft = cloneDeep(draft);
+    updatedDraft.instructions = updatedDraft.instructions.map((datum) => {
       if (datum.type === INSTRUCTION_TYPE_OPERATOR) {
         datum.data.type = operator.data.type;
       }
+
       return datum;
     });
-    const updatedDraft = {
-      ...draft,
-      instructions
-    }
-    onEditCallback(updatedDraft);
+
+    updatedDraft.instructions = sanitizeInstructions(updatedDraft.instructions);
+    onEditCallback({
+      data: updatedDraft,
+      display,
+      index,
+    });
   }
 
   handleSubqueryChange(subquery) {
@@ -203,102 +207,20 @@ class Query extends React.Component {
     });
   }
 
-  handleTitleChange(e) {
-    const title = e.target.value;
-    const { draft, onEditCallback } = this.props;
-    if (title !== draft.title) {
-      const serialized = this.serialize();
-      newDraft.data.title = title
-      onEditCallback(serialized);
-    }
-  }
-
-  handleAdvancedChange(e) {
-    const { options, display, draft } = this.props;
-    const { editable } = options;
-    if (editable) {
-      const {value} = e.target;
-      let rawQuery = draft;
-      try {
-        rawQuery = JSON.parse(value);
-        const QuerySchema = Joi.object().keys({
-          title: Joi.string(),
-          instructions: Joi.array().items(Joi.object().keys({
-            type: Joi.string().valid(INSTRUCTION_TYPE_FILTER, INSTRUCTION_TYPE_OPERATOR, INSTRUCTION_TYPE_SUBQUERY).required(),
-            //data: Joi.object()
-
-
-            /*
-            filter: Joi.string().when(
-              'type', {
-                is: INSTRUCTION_TYPE_FILTER,
-                then: Joi.object().keys({
-                  data: Joi.object().keys({
-                    id: Joi.string().required(),
-                    type: Joi.string().valid('generic', 'specific').required(),
-                    operand: Joi.string().valid('all', 'one', 'none').required(),
-                    values: Joi.array().items(Joi.string()).required(),
-                  }).required()
-                })
-              }),
-              */
-
-            /*
-                        operator: Joi.string().when(
-                          'type', {
-                            is: INSTRUCTION_TYPE_OPERATOR,
-                            then: Joi.object().keys({
-                              data: Joi.object().keys({
-                                type: Joi.string().valid(OPERATOR_TYPES).required()
-                              })
-                            })
-                        }),
-            */
-            /*
-            subquery: Joi.string().when(
-              'type', {
-                is: INSTRUCTION_TYPE_SUBQUERY,
-                then: Joi.object().keys({
-                  data: Joi.object().keys({
-                    type: Joi.string().valid('generic', 'specific').required(),
-                  }).required()
-                })
-              }),
-              */
-          }))
-        });
-
-      const validation = Joi.validate(rawQuery, QuerySchema);
-      display.viewableSqonIsValid = !validation.error;
-
-      } catch (e) {
-        display.viewableSqonIsValid = false;
-        console.log(e)
-      }
-
-      this.setState({
-        display,
-      }, () => {
-        if (this.props.onEditCallback) {
-          this.props.onEditCallback(rawQuery);
-        }
-      });
-    }
-  }
-
   json() {
     const { draft } = this.props;
-    const sqon = this.sqon()
+    const sqon = this.sqon();
     return { ...draft, instructions: sqon };
   }
 
   sqon() {
     const { draft } = this.props;
     const sqon = draft.instructions.map((datum) => {
-      delete datum.key;
-      delete datum.display;
-      delete datum.data.index;
-      return datum;
+      const newDatum = cloneDeep(datum);
+      delete newDatum.key;
+      delete newDatum.display;
+      delete newDatum.data.index;
+      return newDatum;
     });
     return sqon;
   }
@@ -312,336 +234,295 @@ class Query extends React.Component {
     };
   }
 
-  handleClick(e) {
+  handleClick() {
     const { onClickCallback, draft } = this.props;
     onClickCallback(draft.key);
   }
 
   handleMenuSelection({ key }) {
-    const { display, draft, index } = this.props;
+    const {
+      display, draft, index, original, onCopyCallback, onDisplayCallback, onRemoveCallback, onDuplicateCallback, onEditCallback,
+    } = this.props;
+    const sqon = JSON.stringify(this.sqon());
+
     switch (key) {
-      case QUERY_ACTION_COPY:
-        const sqon = JSON.stringify(this.sqon());
-        copy(sqon);
-        this.props.onCopyCallback(sqon);
+      default:
         break;
-      case QUERY_ACTION_VIEW_SQON:
-        const updatedDisplayViewSqon = {
-          ...display,
-          viewableSqon: !display.viewableSqon,
-        };
-        this.props.onDisplayCallback({ display: updatedDisplayViewSqon, index});
+      case QUERY_ACTION_COPY:
+        copy(sqon);
+        onCopyCallback(sqon);
         break;
       case QUERY_ACTION_COMPOUND_OPERATORS:
-        const updatedDisplayCompoundOperators = {
-          ...display,
-          compoundOperators: !display.compoundOperators,
-        };
-        this.props.onDisplayCallback({ display: updatedDisplayCompoundOperators, index });
-        break;
-      case QUERY_ACTION_TITLE:
-        const newDraft = cloneDeep(draft);
-        if (!this.hasTitle()) {
-          newDraft.title = '';
-        } else {
-          delete newDraft.title;
-        }
-        this.props.onEditCallback({
-          data: newDraft,
-          display,
+        onDisplayCallback({
+          display: {
+            ...display,
+            compoundOperators: !display.compoundOperators,
+          },
           index,
         });
         break;
       case QUERY_ACTION_DELETE:
-        this.props.onRemoveCallback(draft.key);
+        onRemoveCallback(draft.key);
         break;
       case QUERY_ACTION_DUPLICATE:
-        this.props.onDuplicateCallback(this.serialize());
+        onDuplicateCallback(this.serialize());
         break;
       case QUERY_ACTION_UNDO_ALL:
-        const { original } = this.props;
-        const clone = cloneDeep(original);
-        this.props.onEditCallback(clone);
-        break;
-      default:
+        onEditCallback(cloneDeep(original));
         break;
     }
   }
 
-  hasTitle() {
-    const { draft } = this.props;
-    return draft.title !== undefined;
+  toggleToolTip() {
+    const { toolTipOpen, popconfirmOpen } = this.state;
+    if (popconfirmOpen) {
+      this.setState({ toolTipOpen: false });
+    } else {
+      this.setState({ toolTipOpen: !toolTipOpen });
+    }
   }
 
-  createMenuComponent() {
-    const { options, original, intl, display } = this.props;
-    const {
-      copyable, duplicatable, editable, removable, undoable,
-    } = options;
-    const { compoundOperators, viewableSqon } = display;
-    const menuAdd = intl.formatMessage({ id: 'screen.patientvariant.query.menu.add' });
-    const menuRemove = intl.formatMessage({ id: 'screen.patientvariant.query.menu.remove' });
-    const menuCopy = intl.formatMessage({ id: 'screen.patientvariant.query.menu.copy' });
-    const menuMaximize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.maximize' });
-    const menuMinimize = intl.formatMessage({ id: 'screen.patientvariant.query.menu.minimize' });
-    const menuDuplicate = intl.formatMessage({ id: 'screen.patientvariant.query.menu.duplicate' });
-    const menuRevert = intl.formatMessage({ id: 'screen.patientvariant.query.menu.revert' });
-    const menuAdvancedEditor = intl.formatMessage({ id: 'screen.patientvariant.query.menu.advancedEditor' });
-    const menuDelete = intl.formatMessage({ id: 'screen.patientvariant.query.menu.delete' });
-    const titleMetaIsPresent = this.hasTitle();
-
-    return (
-      <Menu onClick={this.handleMenuSelection}>
-        {editable && (
-        <Menu.Item key={QUERY_ACTION_TITLE}>
-          <Icon type={`file${(titleMetaIsPresent ? '' : '-text')}`} />
-          {(titleMetaIsPresent ? menuRemove : menuAdd)}
-        </Menu.Item>
-        )
-      }
-        {copyable && (
-        <Menu.Item key={QUERY_ACTION_COPY}>
-          <Icon type="font-size" />
-            {menuCopy}
-        </Menu.Item>
-        )
-      }
-        <Menu.Item key={QUERY_ACTION_COMPOUND_OPERATORS}>
-          <Icon type={`${(compoundOperators ? 'plus' : 'minus')}-circle`} />
-          {(compoundOperators ? menuMaximize : menuMinimize)}
-        </Menu.Item>
-        {duplicatable && (
-        <Menu.Item key={QUERY_ACTION_DUPLICATE}>
-          <Icon type="file-add" />
-            {menuDuplicate}
-        </Menu.Item>
-        )
-      }
-        {removable && (
-        <Menu.Item key={QUERY_ACTION_DELETE}>
-          <Icon type="delete" />
-            {menuDelete}
-        </Menu.Item>
-        )
-      }
-      </Menu>
-    );
+  togglePopConfirm() {
+    const { popconfirmOpen } = this.state;
+    this.setState({
+      popconfirmOpen: !popconfirmOpen,
+      toolTipOpen: false,
+    });
   }
 
   render() {
-    const { active, options, original, onSelectCallback, findQueryIndexForKey, results, intl, facets, categories, draft, searchData, display, externalData } = this.props;
     const {
-      copyable, duplicatable, removable, undoable,
+      active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, facets, categories, draft, externalData,
+    } = this.props;
+    const {
+      copyable, removable,
     } = options;
-    const hasMenu = copyable || duplicatable || removable || undoable;
-    const { compoundOperators, viewableSqon, viewableSqonIsValid } = display;
+    const { onFocus, toolTipOpen } = this.state;
     const isDirty = !isEqual(original, draft);
-    let operatorsHandler = null;
-    if (compoundOperators) {
-      const operator = find(draft.instructions, {'type': INSTRUCTION_TYPE_OPERATOR});
-      if (operator) {
-        operatorsHandler = (
-          <Operator
-            key={operator.key}
-            options={options}
-            data={operator.data}
-            intl={intl}
-            onEditCallback={this.handleOperatorChange}
-          />
-        );
-      }
-    }
+    const isEmpty = !draft.instructions || draft.instructions.length === 0;
 
-    const query = draft.instructions ? (
-      <div className={`query${(isDirty ? ' dirty' : '')}`} onClick={this.handleClick}>
-        {this.hasTitle()
-          && (
-          <Input
-            size="small"
-            className="title"
-            allowClear
-            placeholder="Add Title"
-            defaultValue={draft.title}
-            onBlur={this.handleTitleChange}
-            onPressEnter={this.handleTitleChange}
-          />
+    const duplicateText = intl.get('screen.patientvariant.query.menu.duplicate');
+    const deleteText = intl.get('screen.patientvariant.query.menu.delete');
+    const editTitleText = intl.get('screen.patientvariant.query.menu.editTitle');
+    const width = draft.title ? calculateTitleWidth(draft.title) : 0;
+    const classNames = [styleQuery.query];
+
+    if (isDirty) { classNames.push(styleQuery.dirtyQuery); }
+    if (active) { classNames.push(styleQuery.activeQuery); } else { classNames.push(styleQuery.inactiveQuery); }
+    return (
+      <div className={classNames.join(' ')} onClick={this.handleClick}> { /* eslint-disable-line */}
+        <div className={styleQuery.toolbar}>
+          <Tooltip title={editTitleText}>
+            <div className={styleQuery.title}>
+              <Input
+                size="small"
+                defaultValue={draft.title}
+                onBlur={this.handleTitleChange}
+                onPressEnter={this.handleTitleChange}
+                onChange={handleTitleOnChange}
+                className={`title-${draft.key}`}
+                style={{ width: `calc(14px + ${width}ch)` }}
+              />
+              <IconKit
+                icon={ic_edit}
+                size={14}
+                className={`${styleQuery.iconTitle} ${styleQuery.icon} ${onFocus ? `${styleQuery.focusIcon}` : null}`}
+                onClick={this.handleTitleFocus}
+              />
+            </div>
+          </Tooltip>
+          <div className={styleQuery.actions}>
+            {copyable && !isEmpty && (
+            <Tooltip title={duplicateText}>
+              <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }} />
+            </Tooltip>
+            )}
+            {removable && (
+            <Tooltip title={deleteText} onVisibleChange={this.toggleToolTip} visible={toolTipOpen}>
+              <Popconfirm
+                title={intl.get('screen.patientvariant.query.menu.delete.body')}
+                onConfirm={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }}
+                okText={intl.get('screen.patientvariant.query.menu.delete.button.ok')}
+                cancelText={intl.get('screen.patientvariant.query.menu.delete.button.cancel')}
+                icon={null}
+                overlayClassName={styleQuery.popconfirm}
+                onVisibleChange={this.togglePopConfirm}
+              >
+                <IconKit icon={ic_delete} size={16} className={styleQuery.icon} />
+              </Popconfirm>
+            </Tooltip>
+            )}
+          </div>
+          <div className={styleQuery.count}>
+            { results && (<span>{results.toLocaleString('en-US').replace(',', '\u00a0')}</span>) }
+          </div>
+        </div>
+        {isEmpty
+          ? (
+            <div className={styleQuery.emptyQuery}>
+                Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête
+            </div>
           )
-        }
-        <div className="instructions">
-          { !viewableSqon && draft.instructions.map((item, index) => {
-            switch (item.type) {
-              case INSTRUCTION_TYPE_OPERATOR:
-                if (compoundOperators) {
-                  return null;
-                }
-                return (
-                  <Operator
-                    index={index}
-                    options={options}
-                    data={item.data}
-                    intl={intl}
-                    onEditCallback={this.handleOperatorChange}
-                    key={index}
-                  />
-                );
-              case INSTRUCTION_TYPE_FILTER:
-                let category = null
-                let type = null
-                categories.map((x, index) => {
-                    const value = find(x.filters, ['id', item.data.id]  );
-                    if(value){
-                        category = x.id
-                        type = value.type
-                    }
-                })
-
-                if(type === FILTER_TYPE_GENERIC){
-                    const categoryInfo = find(categories, ['id', category]);
-                    const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+          : (
+            <div className={styleQuery.instructions}>
+              { draft.instructions.map((item, index) => { { /* eslint-disable-line */}
+                switch (item.type) {
+                  case INSTRUCTION_TYPE_OPERATOR:
                     return (
-                        <GenericFilter
-                            index={index}
-                            options={options}
-                            data={item.data}
-                            dataSet={facets[item.data.id] || []}
-                            config={categoryData.config && categoryData.config[categoryData.id]}
-                            intl={intl}
-                            category={category}
-                            onEditCallback={this.handleFilterChange}
-                            onRemoveCallback={this.handleFilterRemoval}
-                            onSelectCallback={onSelectCallback}
-                            key={index}
-                          />
-                    );
-                }else if(type === FILTER_TYPE_NUMERICAL_COMPARISON){
-                    return (
-                        <NumericalComparisonFilter
-                           index={index}
-                           options={options}
-                           data={item.data}
-                           dataSet={facets[item.data.id] || []}
-                           intl={intl}
-                           category={category}
-                           onEditCallback={this.handleFilterChange}
-                           onRemoveCallback={this.handleFilterRemoval}
-                           onSelectCallback={onSelectCallback}
-                           key={index}
-                       />
-                    );
-                }else if(type === FILTER_TYPE_GENERICBOOL) {
-
-                  const categoryInfo =find(categories, ['id', category]);
-                  const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
-
-                  const allOption = []
-                  Object.keys(categoryData.search).map((keyName) => {
-                      const data = find(searchData, ['id', keyName])
-                      if (data && data.data[0]) {
-                        const count = data.data[0].count
-                        allOption.push({value:keyName , count:count})
-                      }
-                    }
-                  )
-                   return (
-                       <GenericBooleanFilter
+                      <Operator
                         index={index}
                         options={options}
                         data={item.data}
-                        dataSet={allOption ? allOption : []}
-                        intl={intl}
-                        category={category}
-                        onEditCallback={this.handleFilterChange}
-                        onRemoveCallback={this.handleFilterRemoval}
-                        onSelectCallback={onSelectCallback}
-                        key={index}
+                        onEditCallback={this.handleOperatorChange}
+                        key={uuidv1()}
                       />
-                   );
-              } else if (type === FILTER_TYPE_COMPOSITE) {
-                return (
-                  <CompositeFilter
-                    index={index}
-                    options={options}
-                    data={item.data}
-                    dataSet={facets[item.data.id] || []}
-                    intl={intl}
-                    category={category}
-                    onEditCallback={this.handleFilterChange}
-                    onRemoveCallback={this.handleFilterRemoval}
-                    onSelectCallback={onSelectCallback}
-                    key={index}
-                  />
-                );
-              } else if (type === FILTER_TYPE_SPECIFIC) {
-                  return (
-                    <SpecificFilter
-                      index={index}
-                      options={options}
-                      data={item.data}
-                      dataSet={facets[item.data.id] || []}
-                      externalDataSet={externalData}
-                      intl={intl}
-                      category={category}
-                      onEditCallback={this.handleFilterChange}
-                      onRemoveCallback={this.handleFilterRemoval}
-                      onSelectCallback={onSelectCallback}
-                      key={index}
-                    />
-                  );
-              }
-              break;
+                    );
+                  case INSTRUCTION_TYPE_FILTER:
+                    let category = null; /* eslint-disable-line no-case-declarations */
+                    let type = null; /* eslint-disable-line no-case-declarations */
+                    categories.forEach((x) => {
+                      const value = find(x.filters, ['id', item.data.id]);
+                      if (value) {
+                        category = x.id;
+                        type = value.type; /* eslint-disable-line */
+                      }
+                    });
+                    if (type === FILTER_TYPE_GENERIC) {
+                      const categoryInfo = find(categories, ['id', category]);
+                      const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+                      return (
+                        <GenericFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          config={categoryData.config && categoryData.config[categoryData.id]}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
+                      return (
+                        <NumericalComparisonFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_GENERICBOOL) {
+                      const categoryInfo = find(categories, ['id', category]);
+                      const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+                      const allOption = [];
+                      Object.keys(categoryData.search).forEach((keyName) => {
+                        const datum = facets[keyName];
+                        if (datum && datum[0]) {
+                          allOption.push({
+                            value: keyName,
+                            count: datum[0].count,
+                          });
+                        }
+                      });
+                      return (
+                        <GenericBooleanFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={allOption || []}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_COMPOSITE) {
+                      return (
+                        <CompositeFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
+                    } if (type === FILTER_TYPE_SPECIFIC) {
+                      const categoryInfo = find(categories, ['id', category]);
+                      const categoryData = find(categoryInfo.filters, ['id', item.data.id]);
+                      return (
+                        <SpecificFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={facets[item.data.id] || []}
+                          config={categoryData.config && categoryData.config[categoryData.id]}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          externalDataSet={externalData}
+                          key={uuidv1()}
+                        />
+                      );
+                    }
+                    break;
 
-              case INSTRUCTION_TYPE_SUBQUERY:
-                const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null;
-                return (
-                  <Subquery
-                    index={index}
-                    options={options}
-                    data={item.data}
-                    intl={intl}
-                    queryIndex={queryIndex}
-                    queryColor={active && queryIndex !== null ? convertIndexToColor(queryIndex) : null}
-                    queryTitle={queryIndex !== null ? convertIndexToLetter(queryIndex) : index }
-                    onEditCallback={this.handleSubqueryChange}
-                    onRemoveCallback={this.handleSubqueryRemoval}
-                    onSelectCallback={onSelectCallback}
-                    key={index}
-                  />
-                );
-              default:
-                return null;
-            }
-          })}
-          { viewableSqon && (
-          <Input.TextArea
-            value={JSON.stringify(this.json())}
-            className={`no-drag${viewableSqonIsValid ? '' : ' invalid'}`}
-            rows={2}
-            onChange={this.handleAdvancedChange}
-          />
-          ) }
-        </div>
-        <div className="actions">
-          { compoundOperators && ( operatorsHandler ) }
-          { hasMenu && (
-          <Dropdown overlay={this.createMenuComponent} trigger = {['click']}>
-            <Icon type="more" />
-          </Dropdown>
-          ) }
-        </div>
+                  case INSTRUCTION_TYPE_SUBQUERY:
+                    const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null; /* eslint-disable-line no-case-declarations */
+                    const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null; /* eslint-disable-line no-case-declarations */
+                    return (
+                      <Subquery
+                        index={index}
+                        options={options}
+                        data={item.data}
+                        autoSelect={active}
+                        queryIndex={queryIndex}
+                        queryTitle={queryTitle}
+                        onEditCallback={this.handleSubqueryChange}
+                        onRemoveCallback={this.handleSubqueryRemoval}
+                        onSelectCallback={onSelectCallback}
+                        key={uuidv1()}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })}
+            </div>
+          )
+        }
       </div>
-    ) : null;
-    return !!results ? <Badge className={( active ? 'active' : 'inactive' )} count={results} overflowCount={9999}>{query}</Badge> : query
+    );
   }
 }
 
 Query.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape([]).isRequired,
   original: PropTypes.shape([]),
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   active: PropTypes.bool,
+  index: PropTypes.number,
   results: PropTypes.number,
+  facets: PropTypes.shape({}).isRequired,
+  categories: PropTypes.shape({}).isRequired,
   externalData: PropTypes.shape({}),
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
@@ -650,12 +531,12 @@ Query.propTypes = {
   onDuplicateCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
-  onUndoCallback: PropTypes.func,
   findQueryIndexForKey: PropTypes.func,
+  findQueryTitle: PropTypes.func.isRequired, // @TODO Find better way to do this
 };
 
 Query.defaultProps = {
-  original : [],
+  original: [],
   display: {
     compoundOperators: false,
     viewableSqon: false,
@@ -669,6 +550,7 @@ Query.defaultProps = {
     undoable: true,
   },
   active: false,
+  index: 0,
   results: null,
   externalData: {},
   onClickCallback: () => {},
@@ -678,7 +560,6 @@ Query.defaultProps = {
   onDuplicateCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
-  onUndoCallback: () => {},
   findQueryIndexForKey: null,
 };
 

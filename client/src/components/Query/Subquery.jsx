@@ -1,74 +1,33 @@
-/* eslint-disable import/no-cycle, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Tag, Popover, Typography, Icon,
+  Tag,
 } from 'antd';
-
+import IconKit from 'react-icons-kit';
+import { ic_cancel } from 'react-icons-kit/md';
+import style from './styles/term.module.scss';
 
 export const INSTRUCTION_TYPE_SUBQUERY = 'subquery';
-export const SUBQUERY_TYPE_INTERSECT = 'and';
-export const SUBQUERY_TYPE_UNITE = 'or';
-export const SUBQUERY_TYPE_SUBTRACT = 'and not';
-export const SUBQUERY_TYPES = [SUBQUERY_TYPE_INTERSECT, SUBQUERY_TYPE_UNITE, SUBQUERY_TYPE_SUBTRACT];
-
-export const createSubquery = (operand, query) => ({
-  type: INSTRUCTION_TYPE_SUBQUERY,
-  data: {
-    query,
-  },
-});
-
-const createPopoverBySubqueryType = (state) => {
-  const { data } = state;
-  const { type } = data;
-  let content = null;
-
-  switch (type) {
-    case SUBQUERY_TYPE_UNITE:
-      content = (
-        <div>
-          <Typography.Text>Subquery is an union [OR]</Typography.Text>
-        </div>
-      );
-      break;
-    case SUBQUERY_TYPE_SUBTRACT:
-      content = (
-        <div>
-          <Typography.Text>Subquery is a subtraction [AND NOT]</Typography.Text>
-        </div>
-      );
-      break;
-    case SUBQUERY_TYPE_INTERSECT:
-    default:
-      content = (
-        <div>
-          <Typography.Text>Subquery is an intersection [AND]</Typography.Text>
-        </div>
-      );
-      break;
-  }
-
-  return (
-    <Popover
-      className="legend"
-      trigger="hover"
-      placement="topLeft"
-      content={content}
-    >
-      <Icon type="block" />
-    </Popover>
-  );
-};
-
 
 class Subquery extends React.Component {
+  /* @NOTE SQON Struct Sample
+  {
+      query: 'and',
+  }
+  */
+  static structFromArgs(query) {
+    return {
+      query,
+    };
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       data: null,
       draft: null,
       visible: true,
+      selected: false,
     };
     this.isEditable = this.isEditable.bind(this);
     this.isSelectable = this.isSelectable.bind(this);
@@ -77,7 +36,6 @@ class Subquery extends React.Component {
     this.serialize = this.serialize.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.handleClose = this.handleClose.bind(this);
-    this.createPopoverComponent = this.createPopoverComponent.bind(this);
 
     // @NOTE Initialize Component State
     const { data } = props;
@@ -97,14 +55,15 @@ class Subquery extends React.Component {
     return selectable === true;
   }
 
-  isVisible() {
-    const { visible } = this.state;
-    return visible === true;
-  }
 
   isSelected() {
     const { selected } = this.state;
     return selected === true;
+  }
+
+  isVisible() {
+    const { visible } = this.state;
+    return visible === true;
   }
 
   serialize() {
@@ -117,10 +76,6 @@ class Subquery extends React.Component {
     }
   }
 
-  createPopoverComponent() {
-    return createPopoverBySubqueryType(this.state);
-  }
-
   handleClose() {
     if (this.isEditable()) {
       const { onRemoveCallback } = this.props;
@@ -131,26 +86,29 @@ class Subquery extends React.Component {
   }
 
   render() {
-    const { queryIndex, queryTitle, queryColor } = this.props;
-    const popover = this.createPopoverComponent();
+    const { queryIndex, queryTitle, autoSelect } = this.props;
     if (queryIndex === -1) {
       this.handleClose();
       return null;
     }
-    const selectedColor = this.isSelected() ? 'blue' : '';
     return (
       <span>
         <Tag
-          className="subquery"
           visible={this.isVisible()}
-          closable={this.isEditable()}
           onClose={this.handleClose}
-          color={(queryColor || selectedColor)}
+          className={autoSelect ? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
+          color={autoSelect ? '#b5e6f7' : '#d1deea'}
         >
-          {popover}
-          <span onClick={this.handleSelect}>
-            {queryTitle}
-          </span>
+          <Tag
+            color="#FFFFFF"
+            className={`${style.insideTag}`}
+          >
+            { queryTitle }
+          </Tag>
+          {autoSelect
+            ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
+            : null
+          }
         </Tag>
       </span>
     );
@@ -159,22 +117,27 @@ class Subquery extends React.Component {
 
 Subquery.propTypes = {
   queryIndex: PropTypes.number,
-  queryColor: PropTypes.string,
   queryTitle: PropTypes.string,
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
+  autoSelect: PropTypes.bool,
   onRemoveCallback: PropTypes.func,
 };
 
 Subquery.defaultProps = {
   queryIndex: null,
-  queryColor: null,
   queryTitle: null,
   options: {
     editable: false,
     selectable: false,
   },
+  autoSelect: false,
   onRemoveCallback: () => {},
 };
 
 export default Subquery;
+
+export const createSubqueryInstruction = query => ({
+  type: INSTRUCTION_TYPE_SUBQUERY,
+  data: Subquery.structFromArgs(query),
+});

@@ -1,22 +1,21 @@
-/* eslint-disable */
+/* eslint-disable camelcase,  jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Card, Row, Col, Form, Input, Button, Typography
+  Card, Row, Col, Form, Input, Button, Typography,
 } from 'antd';
-import { injectIntl } from 'react-intl';
+import intl from 'react-intl-universal';
 import IconKit from 'react-icons-kit';
-import { ic_email,  ic_https } from 'react-icons-kit/md';
+import { ic_email, ic_https } from 'react-icons-kit/md';
 import './style.scss';
-import style from '../../../containers/App/style.module.scss'
-
+import style from '../../../containers/App/style.module.scss';
 
 
 const hasErrors = fieldsError => Object.keys(fieldsError).some(field => fieldsError[field]);
 
 class LoginForm extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       submitLoading: false,
       forgotLoading: false,
@@ -27,7 +26,6 @@ class LoginForm extends React.Component {
 
   componentDidMount() {
     const { form } = this.props;
-    document.querySelector('#login .autofocus input').autofocus = true;
     form.setFields({
       username: {
         value: window.CLIN.defaultUsername,
@@ -36,7 +34,6 @@ class LoginForm extends React.Component {
         value: window.CLIN.defaultPassword,
       },
     });
-    form.validateFields();
   }
 
   handleSubmit(e) {
@@ -63,25 +60,24 @@ class LoginForm extends React.Component {
   }
 
   render() {
-    const { appIsLoading, form, intl } = this.props;
+    const { appIsLoading, form } = this.props;
     const { submitLoading, forgotLoading } = this.state;
     const { Text } = Typography;
 
     const submitLoadingState = submitLoading && appIsLoading;
     const forgotLoadingState = forgotLoading && appIsLoading;
-    const formErrorIsRequired = intl.formatMessage({ id: 'form.error.isRequired' });
-    const formErrorIsNotEmail = intl.formatMessage({ id: 'form.error.isNotEmail' });
-    const formTextForgotPassword = intl.formatMessage({ id: 'form.login.forgotPassword' });
-    const usernameField = intl.formatMessage({ id: 'form.login.usernameField' });
-    const usernamePlaceHolder = intl.formatMessage({ id: 'form.login.username.PlaceHolder' });
-    const passwordField = intl.formatMessage({ id: 'form.login.passwordField' });
-    const submitButton = intl.formatMessage({ id: 'form.login.submitButton' });
-    const connexionTitle = intl.formatMessage({ id: 'form.login.headline5' });
-    const createAccount = intl.formatMessage({ id: 'form.login.createAccount' });
-    const introText = intl.formatMessage({ id: 'form.login.introText' });
+    const formErrorIsRequired = intl.get('form.error.isRequired');
+    const formErrorIsNotEmail = intl.get('form.error.isNotEmail');
+    const formTextForgotPassword = intl.get('form.login.forgotPassword');
+    const usernameField = intl.get('form.login.usernameField');
+    const usernamePlaceHolder = intl.get('form.login.username.PlaceHolder');
+    const passwordField = intl.get('form.login.passwordField');
+    const submitButton = intl.get('form.login.submitButton');
+    const connexionTitle = intl.get('form.login.headline5');
+    const createAccount = intl.get('form.login.createAccount');
+    const introText = intl.get('form.login.introText');
     const usernameError = form.isFieldTouched('username') && form.getFieldError('username');
     const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
-
 
     return (
       <Card bordered={false} id="login">
@@ -113,6 +109,7 @@ class LoginForm extends React.Component {
                     placeholder={usernamePlaceHolder}
                     autoComplete="off"
                     className={`${style.input} autofocus`}
+                    autoFocus
                   />,
                 )}
               </Form.Item>
@@ -133,9 +130,9 @@ class LoginForm extends React.Component {
                   />,
                 )}
               </Form.Item>
-            <a className="forgotPass" onClick={this.handleClick}>
-              {formTextForgotPassword}
-            </a>
+              <a className="forgotPass" onClick={this.handleClick}>
+                {formTextForgotPassword}
+              </a>
               <Button
                 type="primary"
                 htmlType="submit"
@@ -156,11 +153,8 @@ class LoginForm extends React.Component {
 LoginForm.propTypes = {
   appIsLoading: PropTypes.bool.isRequired,
   form: PropTypes.shape({}).isRequired,
-  intl: PropTypes.shape({}).isRequired,
   handleAuthentication: PropTypes.func.isRequired,
   handlePasswordRecovery: PropTypes.func.isRequired,
 };
 
-const IntlLoginForm = injectIntl(LoginForm);
-
-export default Form.create()(IntlLoginForm);
+export default Form.create()(LoginForm);

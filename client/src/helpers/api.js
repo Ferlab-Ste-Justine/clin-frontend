@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 const successCallback = payload => ({ payload });
 const errorCallback = error => ({ error });
 
@@ -55,17 +56,53 @@ const getVariantSchema = () => axios.get(`${window.CLIN.variantServiceApiUrl}/sc
   .then(successCallback)
   .catch(errorCallback);
 
-const searchVariantsForPatient = (patient, statement, query, group, page, size) => axios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
+const searchVariantsForPatient = (patient, statement, query, page, size, group) => axios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
   patient,
   statement,
   query,
-  group,
   page,
   size,
+  group,
 })
   .then(successCallback)
   .catch(errorCallback);
 
+const countVariantsForPatient = (patient, statement, queries) => axios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
+  patient,
+  statement,
+  queries,
+})
+  .then(successCallback)
+  .catch(errorCallback);
+
+const getStatements = () => axios.get(`${window.CLIN.metaServiceApiUrl}/statement`, {})
+  .then(successCallback)
+  .catch(errorCallback);
+
+const createStatement = (title, description, queries, isDefault = false) => axios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
+  title,
+  description,
+  queries,
+  isDefault,
+})
+  .then(successCallback)
+  .catch(errorCallback);
+
+const updateStatement = (uid, title, description, queries, isDefault) => axios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
+  uid,
+  title,
+  description,
+  queries,
+  isDefault,
+})
+  .then(successCallback)
+  .catch(errorCallback);
+
+const deleteStatement = uid => axios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
+  data: { uid },
+})
+  .then(successCallback)
+  .catch(errorCallback);
 
 export default {
   login,
@@ -75,4 +112,9 @@ export default {
   searchPatients,
   getVariantSchema,
   searchVariantsForPatient,
+  countVariantsForPatient,
+  getStatements,
+  createStatement,
+  updateStatement,
+  deleteStatement,
 };

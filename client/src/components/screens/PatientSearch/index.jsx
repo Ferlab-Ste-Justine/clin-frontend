@@ -1,20 +1,18 @@
-/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
+import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
   Card, AutoComplete, Row, Col, Input, Icon, Typography, Button,
 } from 'antd';
 import { ExportToCsv } from 'export-to-csv';
-import { format } from 'util';
 import IconKit from 'react-icons-kit';
 import {
-  ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay, ic_keyboard_arrow_right, ic_keyboard_arrow_down, ic_close
+  ic_add, ic_keyboard_arrow_right, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
 import {
-  cloneDeep, filter, pullAllBy, isEqual, find, findIndex, debounce,
+  debounce,
 } from 'lodash';
 
 import './style.scss';
@@ -24,7 +22,7 @@ import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import { createCellRenderer } from '../../Table/index';
-import InteractiveTable from '../../Table/InteractiveTable'
+import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
@@ -36,12 +34,11 @@ class PatientSearchScreen extends React.Component {
     super(props);
 
     this.state = {
-      autoCompleteIsOpen: false,
       size: 25,
       page: 1,
       isFacetOpen: false,
       facetFilterOpen: [],
-      facet:[],
+      facet: [],
       data: [],
     };
     this.handleAutoCompleteChange = debounce(this.handleAutoCompleteChange.bind(this), 250, { leading: true });
@@ -56,28 +53,24 @@ class PatientSearchScreen extends React.Component {
     this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
     this.getData = this.getData.bind(this);
     this.handleCopy = this.handleCopy.bind(this);
-    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this)
+    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
 
     // @NOTE Initialize Component State
-    const { intl } = props;
-
     this.state.facet = [
-        intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),
-        intl.formatMessage({ id: 'screen.patientsearch.table.status' }),
-        "Category 1",
-        "Category 2",
-    ]
+      'screen.patientsearch.table.practitioner',
+      'screen.patientsearch.table.status',
+    ];
     this.columnPreset = [
-      { key: 'patientId', label:intl.formatMessage({ id: 'screen.patientsearch.table.patientId' }), renderer: createCellRenderer('button', this.getData, { key: 'id' , handler: this.handleGoToPatientScreen})},
-      { key: 'organization', label:intl.formatMessage({ id: 'screen.patientsearch.table.organization' }), renderer: createCellRenderer('text', this.getData, { key: 'organization' })},
-      { key: 'firstName', label:intl.formatMessage({ id: 'screen.patientsearch.table.firstName' }), renderer: createCellRenderer('text', this.getData, { key: 'firstName' })},
-      { key: 'lastName', label:intl.formatMessage({ id: 'screen.patientsearch.table.lastName' }), renderer: createCellRenderer('text', this.getData, { key: 'lastName' })},
-      { key: 'dob', label:intl.formatMessage({ id: 'screen.patientsearch.table.dob' }), renderer: createCellRenderer('text', this.getData, { key: 'birthDate' })},
-      { key: 'familyComposition', label:intl.formatMessage({ id: 'screen.patientsearch.table.familyComposition' }),renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' })},
-      { key: 'position', label:intl.formatMessage({ id: 'screen.patientsearch.table.position' }),renderer: createCellRenderer('text', this.getData, { key: 'proband' })},
-      { key: 'practitioner', label:intl.formatMessage({ id: 'screen.patientsearch.table.practitioner' }),renderer: createCellRenderer('text', this.getData, { key: 'practitioner' })},
-      { key: 'request', label:intl.formatMessage({ id: 'screen.patientsearch.table.request' }),renderer: createCellRenderer('text', this.getData, { key: 'request' })},
-      { key: 'status', label:intl.formatMessage({ id: 'screen.patientsearch.table.status' }), renderer: createCellRenderer('dot', this.getData, { key: 'status',renderer: (value)=>{ if(value === 'completed'){return 'success'} else {return 'default'} }})}
+      { key: 'patientId', label: 'screen.patientsearch.table.patientId', renderer: createCellRenderer('button', this.getData, { key: 'id', handler: this.handleGoToPatientScreen }) },
+      { key: 'organization', label: 'screen.patientsearch.table.organization', renderer: createCellRenderer('text', this.getData, { key: 'organization' }) },
+      { key: 'firstName', label: 'screen.patientsearch.table.firstName', renderer: createCellRenderer('text', this.getData, { key: 'firstName' }) },
+      { key: 'lastName', label: 'screen.patientsearch.table.lastName', renderer: createCellRenderer('text', this.getData, { key: 'lastName' }) },
+      { key: 'dob', label: 'screen.patientsearch.table.dob', renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }) },
+      { key: 'familyComposition', label: 'screen.patientsearch.table.familyComposition', renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' }) },
+      { key: 'position', label: 'screen.patientsearch.table.position', renderer: createCellRenderer('text', this.getData, { key: 'proband' }) },
+      { key: 'practitioner', label: 'screen.patientsearch.table.practitioner', renderer: createCellRenderer('text', this.getData, { key: 'practitioner' }) },
+      { key: 'request', label: 'screen.patientsearch.table.request', renderer: createCellRenderer('text', this.getData, { key: 'request' }) },
+      { key: 'status', label: 'screen.patientsearch.table.status', renderer: createCellRenderer('dot', this.getData, { key: 'status', renderer: (value) => { if (value === 'completed') { return 'success'; } return 'default'; } }) },
     ];
     this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
   }
@@ -119,60 +112,17 @@ class PatientSearchScreen extends React.Component {
 
   getData() {
     const { data } = this.state;
-    return data
+    return data;
   }
 
-  handleCopy(row, col) {
-    const data = this.getData();
-
-    return JSON.stringify(data[row]);
-  }
-
-  exportToTsv() {
-    const { page, size, data } = this.state;
-    const { search } = this.props;
-    const { lastSearchType } = search;
-    const pages = Math.ceil((search[lastSearchType].total / size));
-    const filename = `${lastSearchType}_${page}of${pages}`;
-    const csvExporter = new ExportToCsv({
-      filename,
-      fieldSeparator: '\t',
-      showLabels: true,
-      useKeysAsHeaders: true,
-    });
-
-    csvExporter.generateCsv(data);
-  }
-
-  handleGoToPatientScreen(e){
-    const { actions } = this.props;
-    const value =  e.target.getAttribute('data-id')
-    actions.navigateToPatientScreen(value);
-  }
-
-  handleAutoCompleteChange(query) {
-    const { actions } = this.props;
-    const { size } = this.state;
-    if (query && query.length > 0) {
-      actions.autoCompletePatients('partial', query, 1, size);
-      this.setState({
-        page: 1,
-        autoCompleteIsOpen: true,
-      });
-    } else {
-      this.setState({
-        page: 1,
-      });
-      actions.searchPatientsByQuery(null, 1, size);
-    }
-  }
-
-  handleAutoCompleteSelect(value) {
-    const { actions } = this.props;
-    const patientId = value.split(' ')[0] || null;
-    if (patientId) {
-      actions.navigateToPatientScreen(patientId);
-    }
+  getCardCategoryTitle(name, index) {
+    const open = this.isCategorieFacetOpen(index);
+    return (
+      <a onClick={this.changeFacetFilterOpen.bind(null, index)} key={index}> { /* eslint-disable-line */ }
+        {intl.get(name)}
+        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
+      </a>
+    );
   }
 
   handleAutoCompletePressEnter(e) {
@@ -180,7 +130,6 @@ class PatientSearchScreen extends React.Component {
     const { actions } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
     this.setState({
-      autoCompleteIsOpen: false,
       page: 1,
     });
 
@@ -228,14 +177,56 @@ class PatientSearchScreen extends React.Component {
     });
   }
 
-  getCardCategoryTitle(name, index) {
-    const open = this.isCategorieFacetOpen(index);
-    return (
-      <a onClick={this.changeFacetFilterOpen.bind(null, index)} key={index}>
-        {name}
-        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
-      </a>
-    );
+  handleAutoCompleteChange(query) {
+    const { actions } = this.props;
+    const { size } = this.state;
+    if (query && query.length > 0) {
+      actions.autoCompletePatients('partial', query, 1, size);
+      this.setState({
+        page: 1,
+      });
+    } else {
+      this.setState({
+        page: 1,
+      });
+      actions.searchPatientsByQuery(null, 1, size);
+    }
+  }
+
+  handleAutoCompleteSelect(value) {
+    const { actions } = this.props;
+    const patientId = value.split(' ')[0] || null;
+    if (patientId) {
+      actions.navigateToPatientScreen(patientId);
+    }
+  }
+
+  handleGoToPatientScreen(e) {
+    const { actions } = this.props;
+    const value = e.target.getAttribute('data-id');
+    actions.navigateToPatientScreen(value);
+  }
+
+  exportToTsv() {
+    const { page, size, data } = this.state;
+    const { search } = this.props;
+    const { lastSearchType } = search;
+    const pages = Math.ceil((search[lastSearchType].total / size));
+    const filename = `${lastSearchType}_${page}of${pages}`;
+    const csvExporter = new ExportToCsv({
+      filename,
+      fieldSeparator: '\t',
+      showLabels: true,
+      useKeysAsHeaders: true,
+    });
+
+    csvExporter.generateCsv(data);
+  }
+
+  handleCopy(row) {
+    const data = this.getData();
+
+    return JSON.stringify(data[row]);
   }
 
   changeFacetFilterOpen(index) {
@@ -253,27 +244,37 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    const { app, intl, search } = this.props;
+    const { app, search } = this.props;
     const { patient } = search;
     const { total } = patient;
     const { showSubloadingAnimation } = app;
-    const { size, page, isFacetOpen, facet,
+    const {
+      size, page, isFacetOpen, facet,
     } = this.state;
 
     const { Title } = Typography;
-    const placeholderText = intl.formatMessage({ id: 'screen.patientsearch.placeholder' });
+    const placeholderText = intl.get('screen.patientsearch.placeholder');
 
-    const autoCompleteResults = search.autocomplete.results.map(result => {
-      return {
-        value: result.id,
-        text: (<>
+    const autoCompleteResults = search.autocomplete.results.map(result => ({
+      value: result.id,
+      text: (
+        <>
           <Typography.Text strong>{result.firstName} {result.lastName}</Typography.Text>
           <br />
-          <Typography.Text disabled style={{ fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block' }}>{result.ramq}</Typography.Text>
-          <hr style={{ borderTop: 'none', borderBottom: '1px solid #CCCCCC', marginBottom: -5, marginTop: 3 }}/>
-        </>)
-      };
-    })
+          <Typography.Text
+            disabled
+            style={{
+              fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block',
+            }}
+          >{result.ramq}
+          </Typography.Text>
+          <hr style={{
+            borderTop: 'none', borderBottom: '1px solid #CCCCCC', marginBottom: -5, marginTop: 3,
+          }}
+          />
+        </>
+      ),
+    }));
 
     return (
       <Content>
@@ -281,11 +282,11 @@ class PatientSearchScreen extends React.Component {
         <Card className="patientSearch">
           <Row>
             <Col span={24}>
-              <Title level={3}>Liste des patients</Title>
+              <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
             </Col>
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
-            {/*<Col>
+            {/* <Col>
               <Button disabled className={`${style.btn} filter`} style={isFacetOpen ? { width: 280 } : { width: 'auto' }} onClick={this.handleOpenFacet}>
                 <div>
                   <IconKit size={16} icon={ic_tune} />
@@ -295,7 +296,7 @@ class PatientSearchScreen extends React.Component {
                      <IconKit size={16} icon={ic_close} />
                 )}
               </Button>
-            </Col>*/}
+            </Col> */}
             <Col className="autoSearch">
               <AutoComplete
                 size="large"
@@ -316,7 +317,7 @@ class PatientSearchScreen extends React.Component {
             <Col>
               <Button className={`${style.btnPrimary} ${style.btn}`}>
                 <IconKit size={16} icon={ic_add} />
-                Nouveau patient
+                { intl.get('screen.patientsearch.button.new') }
               </Button>
             </Col>
           </Row>
@@ -324,30 +325,26 @@ class PatientSearchScreen extends React.Component {
             { isFacetOpen && (
             <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
               {facet.map((column, index) => (
-                <Card key={index} bordered={false} className="category" title={this.getCardCategoryTitle(column, index)}>
-                </Card>
-              ))
-                 }
-
+                <Card bordered={false} className="category" title={this.getCardCategoryTitle(column, index)} />
+              ))}
             </Col>
             )}
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
-                <Card bordered={false} className="tablePatient">
-                  <InteractiveTable
-                    key="patient-interactive-table"
-                    intl={intl}
-                    size={size}
-                    page={page}
-                    total={total}
-                    schema={this.columnPreset}
-                    pageChangeCallback={this.handlePageChange}
-                    pageSizeChangeCallback={this.handlePageSizeChange}
-                    exportCallback={this.exportToTsv}
-                    numFrozenColumns={1}
-                    isLoading={showSubloadingAnimation}
-                    copyCallback={this.handleCopy}
-                  />
-                </Card>
+              <Card bordered={false} className="tablePatient">
+                <InteractiveTable
+                  key="patient-interactive-table"
+                  size={size}
+                  page={page}
+                  total={total}
+                  schema={this.columnPreset}
+                  pageChangeCallback={this.handlePageChange}
+                  pageSizeChangeCallback={this.handlePageSizeChange}
+                  exportCallback={this.exportToTsv}
+                  numFrozenColumns={1}
+                  isLoading={showSubloadingAnimation}
+                  copyCallback={this.handleCopy}
+                />
+              </Card>
             </Col>
           </Row>
         </Card>
@@ -359,7 +356,6 @@ class PatientSearchScreen extends React.Component {
 
 PatientSearchScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
-  intl: PropTypes.shape({}).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
@@ -374,11 +370,10 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   app: state.app,
-  intl: state.intl,
   search: state.search,
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(injectIntl(PatientSearchScreen));
+)(PatientSearchScreen);

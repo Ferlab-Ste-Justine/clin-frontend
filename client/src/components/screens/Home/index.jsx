@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Card, Typography } from 'antd';
+import intl from 'react-intl-universal';
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -15,11 +15,9 @@ import { appShape } from '../../../reducers/app';
 import './style.scss';
 
 
-const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
+const HomeScreen = ({ app, actions }) => {
   const { showLoadingAnimation } = app;
   const { Paragraph } = Typography;
-  window.CLIN.translate = intl.formatMessage;
-  const title = intl.formatMessage({ id: 'header.title' });
   return (
     <Content>
       <Header />
@@ -30,10 +28,8 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
           handlePasswordRecovery={actions.recoverUser}
         />
         <div className="content">
-          <img className="logo" alt={title} src="/assets/logos/cqgc-color.svg" />
-          <Paragraph>
-            Le Centre québécois de génomique clinique offre une plateforme clinique de séquençage à haut débit pour le diagnostic moléculaire des patients québécois en partenariat avec les huit laboratoires du Réseau de diagnostic moléculaire du Québec.
-          </Paragraph>
+          <img className="logo" alt={intl.get('header.title')} src="/assets/logos/cqgc-color.svg" />
+          <Paragraph>{intl.get('header.description')}</Paragraph>
           <div className="partenaire">
             <img height="42" alt="Centre hospitalier universitaire mère-enfant CHU Sainte-Justine" src="/assets/logos/chujs-color.svg" />
             <img height="75" alt="Centre hospitalier urbain de Montréal" src="/assets/chum.png" />
@@ -54,7 +50,6 @@ const HomeScreen = ({ app, intl, actions }) => { // eslint-disable-line
 HomeScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   app: PropTypes.shape(appShape).isRequired,
-  intl: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -66,10 +61,9 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   app: state.app,
-  intl: state.intl,
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(injectIntl(HomeScreen));
+)(HomeScreen);

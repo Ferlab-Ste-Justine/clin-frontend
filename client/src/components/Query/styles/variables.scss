@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+
+$font: 'Roboto', sans-serif;
+$large-font: 24px;
+$medium-font: 16px;
+$small-font: 14px;
+$little-font:12px;
+$font-weight-medium: 500;
+$letter-spacing: 1.25px;
+$small-letter-spacing: 0.25px;
+
+$active-background-color: #e9eff5;
+$inactive-background-color: #e9eff5;
+
+$tag-active-background-color: #1d8bc6;
+$tag-inactive-text-color: #233750;
+$tag-inactive-background-color: transparent;
+$tag-active-text-color: #ffffff;
+
+$icon-size: 16px;
+$icon-color: rgba(18, 90, 144, 0.38);
+$icon-color-hover: #249ed9;
+$icon-text-spacing: 8px;
+
+$default-radius:2px;
+
+$color-disable:rgba(35, 55, 80, 0.38);
+$disable-opacity:0.6;
+
+$color-warning: #f2891e;
+

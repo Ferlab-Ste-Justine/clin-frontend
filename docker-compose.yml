@@ -12,6 +12,8 @@ services:
       - "sshvolume:/etc/letsencrypt"
     ports:
       - 443:443
+    deploy:
+      replicas: 2
     networks:
       - proxy
     command: |
@@ -62,7 +64,7 @@ services:
             proxy_cache_bypass $$http_upgrade;
         }
         location /api/meta {  ### this service is defined in clin-proxy-api
-            proxy_pass https://meta:6000/meta;
+            proxy_pass https://meta:7000/meta;
             proxy_http_version 1.1;
             proxy_set_header Connection keep-alive;
             proxy_set_header Upgrade $$http_upgrade;

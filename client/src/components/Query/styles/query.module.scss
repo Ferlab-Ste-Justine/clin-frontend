@@ -1,0 +1,191 @@
+@import './variables.scss';
+
+.query {
+
+  width: 100%;
+
+  .toolbar {
+    background-color: $active-background-color;
+    display: flex;
+    align-items: center;
+    height:26px;
+
+    .title {
+    display:flex;
+    align-items:center;
+    width:auto;
+
+      input {
+        padding:0 4px;
+        font-family: $font;
+        font-size: $little-font;
+        font-weight: $font-weight-medium;
+        letter-spacing: $small-letter-spacing;
+        background-color: transparent;
+        border:1px solid transparent;
+        border-radius:$default-radius;
+
+        &:focus {
+          box-shadow: none;
+          border:2px solid $tag-active-background-color;
+          border-right-width:2px !important;
+          &:hover{
+              border:2px solid $tag-active-background-color;
+          }
+        }
+        &:hover{
+            border:1px solid $color-disable;
+        }
+      }
+
+    }
+    .icon {
+      display:flex !important;
+      cursor: pointer;
+      margin-right: 8px;
+      color:$color-disable;
+      opacity:0.7;
+
+      &:hover{
+        opacity:1;
+        color:#1B7AB2;
+      }
+    }
+
+    .focusIcon{
+    color:#1d8bc6;
+    }
+
+    .actions {
+      display: flex;
+      margin-left: auto;
+    }
+
+    .count {
+      display: flex;
+      justify-content: flex-end;
+      margin-right: 12px;
+      >span {
+        font-family: $font;
+        font-size: $little-font;
+        letter-spacing: $small-letter-spacing;
+        border-radius: 2px;
+        padding: 0 5px;
+      }
+    }
+
+  }
+
+  .instructions {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 8px 0;
+    padding-left: 4px;
+
+    > * {
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+  }
+
+}
+
+.dirtyQuery {
+}
+
+.activeQuery {  .count {
+    >span {
+      background-color: $tag-active-background-color;
+      color: $tag-active-text-color;
+    }
+  }
+}
+
+.inactiveQuery {
+  .count {
+    >span {
+      background-color: $tag-inactive-background-color;
+      color: $tag-inactive-text-color;
+    }
+  }
+}
+
+.emptyQuery{
+color: rgb(229, 107, 26);
+font-family:$font;
+font-size: $little-font;
+font-weight: 500;
+letter-spacing:$small-letter-spacing;
+margin: 8px 0;
+
+}
+
+.tooltip{
+}
+
+.popconfirm{
+    z-index:10000;
+    width:308px;
+      >div{
+        >div:nth-child(2){
+            border-radius:2px;
+            box-shadow: 0px 6px 10px 0px rgba(89, 121, 144, 0.14),
+            0px 1px 18px 0px rgba(89, 121, 144, 0.12),
+            0px 3px 5px -1px rgba(89, 121, 144, 0.2);
+            padding:16px;
+            >div{
+                >div{
+                    >div:nth-child(1){
+                        padding:0;
+                        >div{
+                            padding:0;
+                            color: rgba(35, 55, 80, 0.78);
+                            font-size: 14px;
+                            font-family: $font;
+                            letter-spacing: 0.25px;
+                            line-height: 20px;
+                            margin-bottom:12px;
+                        }
+                    }
+                    >div:nth-child(2){
+                        margin:0;
+                        button{
+                            border-radius:2px;
+                            text-shadow:none;
+                            box-shadow:none;
+                            font-size: 14px;
+                            font-family: $font;
+                            text-align: center;
+                            letter-spacing: 0.25px;
+                            line-height: 20px;
+                            padding:0 12px;
+
+                        }
+
+                        button:nth-child(1){
+                            border: 1px solid rgba(18, 90, 144, 0.3);
+                            color: rgba(35, 55, 80, 0.78);
+
+                            &:hover{
+                                border: 1px solid rgb(29, 139, 198);
+                                color:#125a90;
+                            }
+                        }
+                        button:nth-child(2){
+                         color: #ffffff;
+
+                         &:hover{
+                            background-color:#1b7ab2;
+                            border:1px solid transparent;
+                         }
+                        }
+                    }
+
+                }
+            }
+        }
+      }
+
+  }
+
+

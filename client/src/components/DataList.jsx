@@ -33,12 +33,13 @@ const DataList = (props) => {
 
 DataList.propTypes = {
   title: PropTypes.string.isRequired,
-  dataSource: PropTypes.array.isRequired, /* eslint-disable-line */
+  dataSource: PropTypes.shape([]),
   style: PropTypes.shape({}),
 };
 
 DataList.defaultProps = {
   style: {},
+  dataSource: [],
 };
 
 export default DataList;

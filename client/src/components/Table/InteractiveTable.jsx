@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
 import {
   Row, Col, Button, Checkbox, Popover, Card, Spin, Input,
 } from 'antd';
@@ -113,7 +114,7 @@ class InteractiveTable extends React.Component {
     if (this.isSelectable()) {
       const { orderedColumns } = this.state;
       const query = e.target.value.toLowerCase();
-      const columnMatches = orderedColumns.filter(column => column.label.toLowerCase()
+      const columnMatches = orderedColumns.filter(column => intl.get(column.label).toLowerCase()
         .startsWith(query));
 
       this.setState({
@@ -187,7 +188,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      intl, size, page, total, isLoading, numFrozenColumns, copyCallback,
+      size, page, total, isLoading, numFrozenColumns, copyCallback,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -204,7 +205,7 @@ class InteractiveTable extends React.Component {
         title={(
           <Input
             className="SearchInput"
-              placeholder={intl.formatMessage({ id: 'components.table.action.search' })} suffix={<IconKit size={16} icon={ic_search} />} /* eslint-disable-line */
+            placeholder={intl.get('components.table.action.search')} suffix={<IconKit size={16} icon={ic_search} />} /* eslint-disable-line */
             onChange={this.handleSearchColumnByQuery}
             value={searchValue}
           />
@@ -214,7 +215,7 @@ class InteractiveTable extends React.Component {
         { !isEqual(orderedColumns.map(column => column.label), visibleColumns) && (
           <Row>
             <a onClick={this.handleResetColumnSelector}> { /* eslint-disable-line */ }
-              {intl.formatMessage({ id: 'components.table.action.reset' })} <IconKit size={16} icon={ic_replay} /> { /* eslint-disable-line */ }
+              {intl.get('components.table.action.reset')} <IconKit size={16} icon={ic_replay} /> { /* eslint-disable-line */ }
             </a>
           </Row>
         ) }
@@ -224,7 +225,7 @@ class InteractiveTable extends React.Component {
             { matchingColumns.map(key => (
               <Row>
                 <Col>
-                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{key}</Checkbox>
+                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{ intl.get(key) }</Checkbox>
                 </Col>
               </Row>
             )) }
@@ -241,7 +242,7 @@ class InteractiveTable extends React.Component {
                 <Col>
                   <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                   <IconKit size={16} icon={ic_swap_horiz} /> { /* eslint-disable-line */ }
-                    {intl.formatMessage({ id: 'components.table.action.organize' })}
+                    {intl.get('components.table.action.organize')}
                   </Button>
                 </Col>
               ) }
@@ -255,7 +256,7 @@ class InteractiveTable extends React.Component {
                   >
                     <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                           <IconKit size={16} icon={ic_view_column} /> { /* eslint-disable-line */ }
-                      {intl.formatMessage({ id: 'components.table.action.display' })}
+                      {intl.get('components.table.action.display')}
                     </Button>
                   </Popover>
                 </Col>
@@ -263,7 +264,7 @@ class InteractiveTable extends React.Component {
               { isExportable && (
                 <Col>
                   <Button onClick={this.handleExport} className={`${style.btn} ${style.btnSec}`}>
-                    <IconKit size={16} icon={ic_cloud_download} /> {intl.formatMessage({ id: 'components.table.action.export' })} { /* eslint-disable-line */ }
+                    <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.export')} { /* eslint-disable-line */ }
                   </Button>
                 </Col>
               ) }
@@ -305,7 +306,6 @@ class InteractiveTable extends React.Component {
 }
 
 InteractiveTable.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   schema: PropTypes.shape({}).isRequired,
   size: PropTypes.number.isRequired,
   page: PropTypes.number.isRequired,

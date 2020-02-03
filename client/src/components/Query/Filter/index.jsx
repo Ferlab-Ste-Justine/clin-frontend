@@ -1,13 +1,17 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
+import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Icon, Pagination,Input
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Pagination, Input,
 } from 'antd';
 import {
   cloneDeep,
 } from 'lodash';
+import IconKit from 'react-icons-kit';
+import { ic_cancel } from 'react-icons-kit/md';
+
+import style from '../styles/term.module.scss';
+
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -15,7 +19,12 @@ export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
 export const FILTER_TYPE_COMPOSITE = 'composite';
 export const FILTER_TYPE_GENERICBOOL = 'genericbool';
 export const FILTER_TYPE_SPECIFIC = 'specific';
-export const FILTER_TYPES = [FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON, FILTER_TYPE_COMPOSITE, FILTER_TYPE_SPECIFIC];
+export const FILTER_TYPES = [
+  FILTER_TYPE_GENERIC,
+  FILTER_TYPE_NUMERICAL_COMPARISON,
+  FILTER_TYPE_COMPOSITE,
+  FILTER_TYPE_SPECIFIC,
+];
 
 export const createFilter = type => ({
   type: INSTRUCTION_TYPE_FILTER,
@@ -28,9 +37,8 @@ class Filter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSet: null,
       visible: null,
-      selected: false,
+      selected: null,
       opened: null,
       allOptions: [],
       size: null,
@@ -50,13 +58,15 @@ class Filter extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleSearchByQuery = this.handleSearchByQuery.bind(this)
+    this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
 
     // @NOTE Initialize Component State
-    const { dataSet, autoOpen, visible, sortData } = props;
-    this.state.dataSet = dataSet || [];
+    const {
+      autoOpen, autoSelect, visible, sortData,
+    } = props;
     this.state.opened = autoOpen;
     this.state.visible = visible;
+    this.state.selected = autoSelect;
     this.state.allOptions = cloneDeep(sortData);
     this.state.page = 1;
     this.state.size = 10;
@@ -111,48 +121,23 @@ class Filter extends React.Component {
     }
   }
 
-  // @NOTE Refactor this; logic should be moved within the class for the selected filter type
   handleApply() {
     if (this.isEditable()) {
-      const { editor, onEditCallback, data, type, index } = this.props;
-      const { id } = data;
-      let instruction = { id, type, index };
-      if (type === FILTER_TYPE_GENERIC) {
-        instruction.values = editor.props.children[4].props.children.props.children.props.value;
-        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
-        if (instruction.values.length === 0) {
-          this.handleClose(true);
-        }
-      } else if (type === FILTER_TYPE_SPECIFIC) {
-        instruction.operand = editor.props.children[0].props.children.props.children.props.value;
-        instruction.values = editor.props.children[3].props.children.props.children.props.value;
-        if (instruction.values.length === 0) {
-          this.handleClose(true);
-        }
-      } else if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
-        instruction.comparator = editor.props.children[0].props.children.props.children.props.value;
-        instruction.value = editor.props.children[2].props.children[1].props.children.props.defaultValue;
-      } else if (type === FILTER_TYPE_GENERICBOOL) {
-        instruction.values = editor.props.children[2].props.children.props.children.props.value
-      } else if (type === FILTER_TYPE_COMPOSITE) {
-        const quality = editor.props.children.props.children[1] ? editor.props.children.props.children[1].props.children.props.value : null;
-        const comparator = editor.props.children.props.children[2] ? editor.props.children.props.children[2].props.children.props.value : null;
-        const score = editor.props.children.props.children[3] ? editor.props.children.props.children[3].props.children.props.value : null;
-        if (comparator) {
-          instruction.comparator = comparator;
-          instruction.value = score;
-        } else {
-          delete instruction.comparator;
-          instruction.value = quality;
-        }
-      }
+      const {
+        editor, onEditCallback, index,
+      } = this.props;
+      const instruction = editor.getDraftInstruction();
+      instruction.index = index;
 
       this.setState({
         opened: false,
       }, () => {
         onEditCallback(instruction);
+        if (!instruction.values || instruction.values.length === 0) {
+          this.handleClose(true);
+        }
       });
-   }
+    }
   }
 
   handleCancel() {
@@ -189,67 +174,76 @@ class Filter extends React.Component {
     });
   }
 
-  handleSearchByQuery(value){
-      const { onSearchCallback } = this.props;
-      const search = value.target.value
-      onSearchCallback(search);
+  handleSearchByQuery(value) {
+    const { onSearchCallback } = this.props;
+    const search = value.target.value;
+    onSearchCallback(search);
   }
 
   render() {
     const { allOptions, size, page } = this.state;
-    const { data, intl, overlayOnly, editor, label, legend, content, dataSet, searchable } = this.props;
-    const titleText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id });
-    const descriptionText = intl.formatMessage({ id: 'screen.patientvariant.filter_'+data.id+'.description'});
-    const filterSearch = intl.formatMessage({ id: 'screen.patientvariant.filter.search' });
+    const {
+      data, overlayOnly, editor, searchable, autoSelect,
+    } = this.props;
+    const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
+    const filterDescription = intl.get(`screen.patientvariant.filter_${data.id}.description`);
+    const filterSearch = intl.get('screen.patientvariant.filter.search');
+    const editorLabels = editor.getLabels();
+    const actionLabel = editorLabels.action;
+    const actionTargets = editorLabels.targets;
     const overlay = (
       <Popover
         visible={this.isOpened()}
       >
         <Card className="filterCard">
-          <Typography.Title level={4}>{titleText}</Typography.Title>
-          <Typography>{descriptionText}</Typography>
+          <Typography.Title level={4}>{filterLabel}</Typography.Title>
+          <Typography>{filterDescription}</Typography>
           <br />
           {searchable && (
-               <>
-               <Row>
-                 <Input
-                   allowClear
-                   placeholder={filterSearch}
-                   size="small"
-                   onChange={this.handleSearchByQuery}
-                 />
-               </Row>
-               <br/>
-               </>
-          )
-          }
-          { editor }
-          { allOptions  && (
-                allOptions.length >= size
-                  ? (
-                    <Row style={{ marginTop: 'auto' }}>
-                      <br />
-                      <Col align="end" span={24}>
-                        <Pagination
-                          total={allOptions.length}
-                          pageSize={size}
-                          current={page}
-                          pageSizeOptions={['10', '25', '50', '100']}
-                          onChange={this.handlePageChange}
-                        />
-                      </Col>
-                    </Row>
-                  ) : null
-          )
-          }
-
+          <>
+            <Row>
+              <Input
+                allowClear
+                placeholder={filterSearch}
+                size="small"
+                onChange={this.handleSearchByQuery}
+              />
+            </Row>
+            <br />
+          </>
+          )}
+          { editor.contents }
+          { allOptions && (
+            allOptions.length >= size
+              ? (
+                <Row>
+                  <br />
+                  <Col align="end" span={24}>
+                    <Pagination
+                      total={allOptions.length}
+                      pageSize={size}
+                      current={page}
+                      pageSizeOptions={['10', '25', '50', '100']}
+                      onChange={this.handlePageChange}
+                    />
+                  </Col>
+                </Row>
+              ) : null
+          )}
           <br />
-          <Row type="flex" justify="end" style={dataSet.length < 10 ? { marginTop: 'auto' } : null}>
+          <Row type="flex" justify="end">
             <Col>
-              <Button onClick={this.handleCancel}>Annuler</Button>
+              <Button onClick={this.handleCancel}>
+                { intl.get('components.query.filter.button.cancel') }
+              </Button>
             </Col>
             <Col>
-              <Button style={{ marginLeft: '8px' }} type="primary" onClick={this.handleApply}>Appliquer</Button>
+              <Button
+                type="primary"
+                onClick={this.handleApply}
+              >
+                { intl.get('components.query.filter.button.apply') }
+              </Button>
             </Col>
           </Row>
         </Card>
@@ -272,35 +266,47 @@ class Filter extends React.Component {
     return (
       <span>
         <Tag
-          className="filter"
           visible={this.isVisible()}
-          closable={this.isRemovable()}
           onClose={this.handleClose}
-          color={(this.isOpened() || this.isSelected())? 'blue' : ''}
-          onClick={this.handleSelect}
+          color={autoSelect ? '#b5e6f7' : '#d1deea'}
+          className={autoSelect ? `${style.tag} ${style.selectedTag}` : `${style.tag} `}
         >
-          <Popover
-            className="legend"
-            trigger="hover"
-            placement="topLeft"
-            content={content}
+          <Tag
+            color={autoSelect ? '#e2f5fc' : '#E9EFF5 '}
+            className={`${style.insideTag}`}
           >
-            { legend }
-          </Popover>
-          <span onClick={this.toggleMenu}>
-            { label }
-          </span>
+            { filterLabel }
+          </Tag>
+          <Tag
+            color={autoSelect ? '#b5e6f7' : '#d1deea'}
+            className={`${style.insideTag} ${style.operator}`}
+          >
+            { actionLabel }
+          </Tag>
           { this.isEditable() && (
-          <Dropdown
-            trigger="click"
-            onVisibleChange={this.toggleMenu}
-            overlay={overlay}
-            visible={this.isOpened()}
-            placement="bottomLeft"
-          >
-            <Icon type="caret-down" onClick={this.toggleMenu} />
-          </Dropdown>
+            <Dropdown
+              trigger="click"
+              onVisibleChange={this.toggleMenu}
+              overlay={overlay}
+              visible={this.isOpened()}
+              placement="bottomLeft"
+            >
+              <Tag
+                onClick={this.toggleMenu}
+                color="#FFFFFF"
+                className={`${style.insideTag}`}
+              >
+                {actionTargets.map((target, index) => (
+                  <>
+                    {index !== 0 ? ' • ' : null } {target}
+                  </>
+                ))}
+              </Tag>
+            </Dropdown>
           ) }
+          {autoSelect
+            ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
+            : null}
         </Tag>
       </span>
     );
@@ -308,23 +314,24 @@ class Filter extends React.Component {
 }
 
 Filter.propTypes = {
-  intl: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
-  dataSet: PropTypes.array.isRequired,
-  type:PropTypes.string.isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onSelectCallback: PropTypes.func,
+  onSearchCallback: PropTypes.func,
+  onPageChangeCallBack: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
-  label: PropTypes.string,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
+  searchable: PropTypes.bool,
   sortData: PropTypes.array,
+  autoSelect: PropTypes.bool,
+  index: PropTypes.number,
 };
 
 Filter.defaultProps = {
@@ -337,11 +344,15 @@ Filter.defaultProps = {
   onEditCallback: () => {},
   onRemoveCallback: () => {},
   onSelectCallback: () => {},
-  label: '',
+  onSearchCallback: () => {},
+  onPageChangeCallBack: () => {},
   autoOpen: false,
+  autoSelect: false,
   overlayOnly: false,
   visible: true,
-  sortData:[]
+  searchable: false,
+  sortData: [],
+  index: 0,
 };
 
 export default Filter;

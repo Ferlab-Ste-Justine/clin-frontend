@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
-import { intlReducer } from 'react-intl-redux';
 
 import appReducer from './app';
 import patientReducer from './patient';
@@ -9,12 +8,11 @@ import userReducer from './user';
 import variantReducer from './variant';
 
 const rootReducer = history => combineReducers({
-  app: appReducer,
-  intl: intlReducer,
-  patient: patientReducer,
   router: connectRouter(history),
-  search: searchReducer,
+  app: appReducer,
   user: userReducer,
+  patient: patientReducer,
+  search: searchReducer,
   variant: variantReducer,
 });
 
