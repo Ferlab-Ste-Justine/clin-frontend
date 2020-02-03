@@ -114,7 +114,7 @@ class InteractiveTable extends React.Component {
     if (this.isSelectable()) {
       const { orderedColumns } = this.state;
       const query = e.target.value.toLowerCase();
-      const columnMatches = orderedColumns.filter(column => column.label.toLowerCase()
+      const columnMatches = orderedColumns.filter(column => intl.get(column.label).toLowerCase()
         .startsWith(query));
 
       this.setState({
