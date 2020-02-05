@@ -562,7 +562,7 @@ class Statement extends React.Component {
   }
 
   handleNewQuery(event, query = null) {
-    const { onEditCallback } = this.props;
+    const { onEditCallback, onSelectCallback } = this.props;
     const { display } = this.state;
 
     const newQuery = query || {
@@ -575,6 +575,7 @@ class Statement extends React.Component {
       display,
     }, () => {
       onEditCallback(newQuery);
+      onSelectCallback(newQuery.key);
     });
   }
 
