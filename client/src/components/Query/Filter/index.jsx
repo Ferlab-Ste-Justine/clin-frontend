@@ -133,7 +133,7 @@ class Filter extends React.Component {
         opened: false,
       }, () => {
         onEditCallback(instruction);
-        if (!instruction.values || instruction.values.length === 0) {
+        if ((!instruction.values && !instruction.value) || (instruction.values && instruction.values.length === 0) || (instruction.value && instruction.value.length === 0)) {
           this.handleClose(true);
         }
       });
