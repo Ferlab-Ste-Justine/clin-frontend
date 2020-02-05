@@ -139,14 +139,14 @@ class SpecificFilter extends Filter {
           indeterminate = true;
           options = cloneDeep(dataSet).filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
-            return hpoValue ? (observed.indexOf(hpoValue) !== -1) : false;
+            return hpoValue ? (observed.indexOf(hpoValue) === -1) : false;
           });
           break;
         case SELECTOR_DIFFERENCE:
           indeterminate = true;
           options = cloneDeep(dataSet).filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
-            return hpoValue ? (notObserved.indexOf(hpoValue) === -1) : false;
+            return hpoValue ? (notObserved.indexOf(hpoValue) !== -1) : false;
           });
           break;
       }
