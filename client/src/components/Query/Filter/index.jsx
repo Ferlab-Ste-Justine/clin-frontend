@@ -132,9 +132,11 @@ class Filter extends React.Component {
       this.setState({
         opened: false,
       }, () => {
-        onEditCallback(instruction);
-        if (!instruction.values || instruction.values.length === 0) {
+        const instructionIsEmpty = !instruction.values || instruction.values.length === 0;
+        if (instructionIsEmpty) {
           this.handleClose(true);
+        } else {
+          onEditCallback(instruction);
         }
       });
     }
