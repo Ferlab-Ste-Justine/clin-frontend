@@ -123,20 +123,28 @@ class SpecificFilter extends Filter {
       const { dataSet, externalDataSet } = this.props;
       const { selector } = this.state;
       const externalOntology = externalDataSet.ontology.map(ontology => ontology.code);
+      const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
       let options = [];
       let indeterminate = false;
+
       switch (selector) {
         default:
         case SELECTOR_ALL:
-          options = dataSet;
+          options = cloneDeep(dataSet);
           break;
         case SELECTOR_INTERSECTION:
           indeterminate = true;
-          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) !== -1);
+          options = cloneDeep(dataSet).filter((option) => {
+            const hpoValue = option.value.match(hpoRegexp).toString();
+            return hpoValue ? (externalOntology.indexOf(hpoValue) !== -1) : false;
+          });
           break;
         case SELECTOR_DIFFERENCE:
           indeterminate = true;
-          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) === -1);
+          options = cloneDeep(dataSet).filter((option) => {
+            const hpoValue = option.value.match(hpoRegexp).toString();
+            return hpoValue ? (externalOntology.indexOf(hpoValue) === -1) : false;
+          });
           break;
       }
 
