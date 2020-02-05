@@ -133,7 +133,7 @@ class SpecificFilter extends Filter {
       switch (selector) {
         default:
         case SELECTOR_ALL:
-          options = cloneDeep(dataSet);
+          options = dataSet;
           break;
         case SELECTOR_INTERSECTION:
           indeterminate = true;
