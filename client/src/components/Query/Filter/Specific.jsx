@@ -111,9 +111,12 @@ class SpecificFilter extends Filter {
 
   handleCheckAllSelections(e) {
     const { target } = e;
+    const { draft } = this.state;
     if (!target.checked) {
+      draft.values = [];
       this.setState({
         selection: [],
+        draft,
         indeterminate: false,
       });
     } else {
@@ -137,8 +140,11 @@ class SpecificFilter extends Filter {
           break;
       }
 
+      const selection = options.map(option => option.value);
+      draft.values = selection;
       this.setState({
-        selection: options.map(option => option.value),
+        selection,
+        draft,
         indeterminate,
       });
     }
