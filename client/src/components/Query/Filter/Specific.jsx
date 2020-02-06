@@ -111,17 +111,25 @@ class SpecificFilter extends Filter {
 
   handleCheckAllSelections(e) {
     const { target } = e;
+    const { draft } = this.state;
     if (!target.checked) {
+      draft.values = [];
       this.setState({
         selection: [],
+        draft,
         indeterminate: false,
       });
     } else {
       const { dataSet, externalDataSet } = this.props;
       const { selector } = this.state;
-      const externalOntology = externalDataSet.ontology.map(ontology => ontology.code);
+      const notObserved = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '')
+        .map(ontology => ontology.code);
+      const observed = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS')
+        .map(ontology => ontology.code);
+      const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
       let options = [];
       let indeterminate = false;
+
       switch (selector) {
         default:
         case SELECTOR_ALL:
@@ -129,16 +137,25 @@ class SpecificFilter extends Filter {
           break;
         case SELECTOR_INTERSECTION:
           indeterminate = true;
-          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) !== -1);
+          options = dataSet.filter((option) => {
+            const hpoValue = option.value.match(hpoRegexp).toString();
+            return hpoValue ? (observed.indexOf(hpoValue) !== -1) : false;
+          });
           break;
         case SELECTOR_DIFFERENCE:
           indeterminate = true;
-          options = dataSet.filter(option => externalOntology.indexOf(option.value.split(',')[0]) === -1);
+          options = dataSet.filter((option) => {
+            const hpoValue = option.value.match(hpoRegexp).toString();
+            return hpoValue ? (notObserved.indexOf(hpoValue) !== -1) : false;
+          });
           break;
       }
 
+      const selection = options.map(option => option.value);
+      draft.values = selection;
       this.setState({
-        selection: options.map(option => option.value),
+        selection,
+        draft,
         indeterminate,
       });
     }

@@ -152,15 +152,20 @@ class GenericBooleanFilter extends React.Component {
 
   handleCheckAllSelections(e) {
     const { target } = e;
+    const { draft } = this.state;
     if (!target.checked) {
+      draft.values = [];
       this.setState({
         selection: [],
+        draft,
       });
     } else {
       const { dataSet } = this.props;
       const selection = dataSet.map(option => option.value);
+      draft.values = selection;
       this.setState({
         selection,
+        draft,
       });
     }
   }

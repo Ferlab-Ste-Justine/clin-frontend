@@ -337,7 +337,7 @@ class VariantNavigation extends React.Component {
             autoOpen
             options={filterOptions}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : GenericBooleanFilter.structFromArgs(currentActiveFilterId))}
-            dataSet={categoryData.search ? categoryData.search.reduce((accumulator, keyName) => {
+            dataSet={categoryData.search && Object.keys(categoryData.search).length > 0 ? Object.keys(categoryData.search).reduce((accumulator, keyName) => {
               const datum = data[keyName];
               if (datum && datum[0]) {
                 accumulator.push({ value: keyName, count: datum[0].count });
