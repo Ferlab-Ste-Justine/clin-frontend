@@ -44,6 +44,7 @@ class Filter extends React.Component {
       allOptions: [],
       size: null,
       page: null,
+      visibleInput: false,
     };
 
     this.isEditable = this.isEditable.bind(this);
@@ -60,6 +61,7 @@ class Filter extends React.Component {
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
+    this.handleInputView = this.handleInputView.bind(this);
 
     // @NOTE Initialize Component State
     const {
@@ -182,8 +184,16 @@ class Filter extends React.Component {
     onSearchCallback(search);
   }
 
+  handleInputView() {
+    const { visibleInput } = this.state;
+    this.setState({ visibleInput: !visibleInput });
+  }
+
+
   render() {
-    const { allOptions, size, page } = this.state;
+    const {
+      allOptions, size, page, visibleInput,
+    } = this.state;
     const {
       data, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
@@ -208,7 +218,7 @@ class Filter extends React.Component {
                   <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
                 </Button>
               </Tooltip>
-              <Button className={styleFilter.iconSearch}>
+              <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
                 <IconKit size={24} icon={ic_search} />
               </Button>
             </Row>
@@ -220,10 +230,9 @@ class Filter extends React.Component {
                   allowClear
                   placeholder={filterSearch}
                   onChange={this.handleSearchByQuery}
-                  className={styleFilter.searchInput}
+                  className={visibleInput ? `${styleFilter.searchInput}` : `${styleFilter.searchInputClose}`}
                 />
               </Row>
-              <br />
             </>
             )}
           </div>

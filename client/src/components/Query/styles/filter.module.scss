@@ -13,6 +13,7 @@
     }
 
     .fieldHeader{
+        border-bottom: 1px solid rgba(35, 55, 80,0.12);
         .labelTitle{
             color: rgb(35, 55, 80);
             font-size: 16px;
@@ -29,6 +30,10 @@
             box-shadow: none;
             margin-left: 8px;
             height: auto;
+
+            &:after{
+             animation: 0s !important;
+            }
             i{
                 color: rgba(35, 55, 80, 0.38);
             }
@@ -36,21 +41,41 @@
         }
         .iconSearch{
             margin-left: auto;
-    
+                &:hover{
+                    i{
+                        color: #233750;
+                    }
+                    
+                }    
         }
 
         .searchInput{
+            margin: 16px 0;
             input{
                 background-color:rgba(35, 55, 80,0.08) ;
                 border: none;
                 border-radius: 2px;
-                color: rgba(35, 55, 80, 0.78);
+                color: #233750;
                 font-size: 14px;
                 font-family: $font;
                 letter-spacing: 0.25px;
                 line-height: 20px;
+                &::placeholder{
+                    color: rgba(35, 55, 80, 0.38);
+                }
+                &:focus{
+                    box-shadow: none;
+                }
+        
+                &:disabled{
+                    background: rgba(35, 55, 80, 0.14);
+                }
             }
 
+
+        }
+        .searchInputClose{
+            display: none;
         }
     }
     
