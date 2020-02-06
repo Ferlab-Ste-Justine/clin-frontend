@@ -67,6 +67,14 @@ const searchVariantsForPatient = (patient, statement, query, page, size, group) 
   .then(successCallback)
   .catch(errorCallback);
 
+const searchFacetsForPatient = (patient, statement, query) => axios.post(`${window.CLIN.variantServiceApiUrl}/facet`, {
+  patient,
+  statement,
+  query,
+})
+  .then(successCallback)
+  .catch(errorCallback);
+
 const countVariantsForPatient = (patient, statement, queries) => axios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
   patient,
   statement,
@@ -112,6 +120,7 @@ export default {
   searchPatients,
   getVariantSchema,
   searchVariantsForPatient,
+  searchFacetsForPatient,
   countVariantsForPatient,
   getStatements,
   createStatement,

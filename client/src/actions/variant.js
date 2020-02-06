@@ -60,6 +60,15 @@ export const searchVariants = (patient, statement, query, index = 0, limit = 25,
   },
 });
 
+export const searchFacets = (patient, statement, query) => ({
+  type: actions.PATIENT_VARIANT_FACET_REQUESTED,
+  payload: {
+    patient,
+    statement,
+    query,
+  },
+});
+
 export const countVariants = (patient, statement, queries) => ({
   type: actions.PATIENT_VARIANT_COUNT_REQUESTED,
   payload: {

@@ -38,6 +38,22 @@ function* searchVariantsForPatient(action) {
   }
 }
 
+function* searchFacetsForPatient(action) {
+  try {
+    const {
+      patient, statement, query,
+    } = action.payload;
+    const facetResponse = yield Api.searchFacetsForPatient(patient, statement, query);
+
+    if (facetResponse.error) {
+      throw new ApiError(facetResponse.error);
+    }
+    yield put({ type: actionTypes.PATIENT_VARIANT_FACET_SUCCEEDED, payload: facetResponse.payload.data });
+  } catch (e) {
+    yield put({ type: actionTypes.PATIENT_VARIANT_FACET_FAILED, payload: e });
+  }
+}
+
 function* countVariantsForPatient(action) {
   try {
     const {
@@ -175,12 +191,30 @@ function* refreshResults() {
   });
 }
 
+function* refreshFacets() {
+  const { details } = yield select(state => state.patient);
+  const { draftQueries, activeQuery } = yield select(state => state.variant);
+
+  yield put({
+    type: actionTypes.PATIENT_VARIANT_FACET_REQUESTED,
+    payload: {
+      patient: details.id,
+      statement: draftQueries,
+      query: activeQuery,
+    },
+  });
+}
+
 function* watchVariantSchemaFetch() {
   yield takeLatest(actionTypes.VARIANT_SCHEMA_REQUESTED, fetchSchema);
 }
 
 function* watchVariantSearch() {
   yield takeLatest(actionTypes.PATIENT_VARIANT_SEARCH_REQUESTED, searchVariantsForPatient);
+}
+
+function* watchFacetSearch() {
+  yield takeLatest(actionTypes.PATIENT_VARIANT_FACET_REQUESTED, searchFacetsForPatient);
 }
 
 function* watchVariantsCount() {
@@ -238,12 +272,27 @@ function* watchRefreshResults() {
   ], refreshResults);
 }
 
+function* watchRefreshFacets() {
+  yield takeLatest([
+    actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
+    actionTypes.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED,
+    actionTypes.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED,
+    actionTypes.PATIENT_VARIANT_DELETE_STATEMENT_SUCCEEDED,
+    actionTypes.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
+    actionTypes.PATIENT_VARIANT_QUERY_REMOVAL,
+    actionTypes.PATIENT_VARIANT_QUERY_REPLACEMENT,
+    actionTypes.PATIENT_VARIANT_QUERIES_REPLACEMENT,
+    actionTypes.PATIENT_VARIANT_QUERY_SELECTION,
+  ], refreshFacets);
+}
+
 export default function* watchedVariantSagas() {
   yield all([
     watchVariantSchemaFetch(),
     watchGetStatements(),
     watchVariantsCount(),
     watchVariantSearch(),
+    watchFacetSearch(),
     watchSelectStatement(),
     watchCreateStatement(),
     watchUpdateStatement(),
@@ -251,5 +300,6 @@ export default function* watchedVariantSagas() {
     watchDuplicateStatement(),
     watchRefreshCount(),
     watchRefreshResults(),
+    watchRefreshFacets(),
   ]);
 }
