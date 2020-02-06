@@ -309,7 +309,7 @@ const fr = {
   'screen.patientvariant.filter.comparator.gte': '>=',
   'screen.patientvariant.filter.comparator.lt': '<',
   'screen.patientvariant.filter.comparator.lte': '<=',
-  'screen.patientvariant.filter.selection.all': 'Tous',
+  'screen.patientvariant.filter.selection.all': 'Tout sélectionner',
   'screen.patientvariant.filter.selection.none': 'Aucun',
   'screen.patientvariant.filter.numerical.value': 'Valeur',
   'screen.patientvariant.filter.specific.selector.all': 'Tous les signes',

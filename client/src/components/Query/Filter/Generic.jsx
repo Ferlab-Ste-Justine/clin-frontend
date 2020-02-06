@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Row, Col, Checkbox, Radio, Tag, Tooltip,
+  Row, Col, Checkbox, Radio, Tag, Tooltip, Button, Divider,
 } from 'antd';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
@@ -8,6 +8,7 @@ import {
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import Filter, { FILTER_TYPE_GENERIC } from './index';
+import styleFilter from '../styles/filter.module.scss';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
@@ -51,7 +52,8 @@ class GenericFilter extends React.Component {
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
     this.handleOperandChange = this.handleOperandChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
-    this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
+    this.handleSelectNone = this.handleSelectNone.bind(this);
+    this.handleSelectAll = this.handleSelectAll.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
 
     // @NOTE Initialize Component State
@@ -83,7 +85,6 @@ class GenericFilter extends React.Component {
       draft, selection, size, page, allOptions,
     } = this.state;
     const { operand } = draft;
-    const allSelected = allOptions ? selection.length === allOptions.length : false;
     const selectAll = intl.get('screen.patientvariant.filter.selection.all');
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 
@@ -113,7 +114,7 @@ class GenericFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-          <Row>
+          <Row className={styleFilter.operand}>
             <Col span={24}>
               <Radio.Group type="primary" size="small" value={operand} onChange={this.handleOperandChange}>
                 {config.operands.map(configOperand => (
@@ -124,16 +125,10 @@ class GenericFilter extends React.Component {
               </Radio.Group>
             </Col>
           </Row>
-          <br />
-          <Row>
-            <Checkbox
-              key="check-all"
-              className="selector"
-              indeterminate={(!allSelected && selection.length > 0)}
-              onChange={this.handleCheckAllSelections}
-              checked={allSelected}
-            />
-            {(!allSelected ? selectAll : selectNone)}
+          <Row className={styleFilter.selectionToolBar}>
+            <Button onClick={this.handleSelectAll}>{selectAll}</Button>
+            <Divider type="vertical" />
+            <Button onClick={this.handleSelectNone}>{selectNone}</Button>
           </Row>
           <br />
           <Row>
@@ -192,24 +187,24 @@ class GenericFilter extends React.Component {
     });
   }
 
-  handleCheckAllSelections(e) {
-    const { target } = e;
+  handleSelectNone() {
     const { draft } = this.state;
-    if (!target.checked) {
-      draft.values = [];
-      this.setState({
-        selection: [],
-        draft,
-      });
-    } else {
-      const { dataSet } = this.props;
-      const selection = dataSet.map(option => option.value);
-      draft.values = selection;
-      this.setState({
-        selection,
-        draft,
-      });
-    }
+    draft.values = [];
+    this.setState({
+      selection: [],
+      draft,
+    });
+  }
+
+  handleSelectAll() {
+    const { draft } = this.state;
+    const { dataSet } = this.props;
+    const selection = dataSet.map(option => option.value);
+    draft.values = selection;
+    this.setState({
+      selection,
+      draft,
+    });
   }
 
   handleSelectionChange(values) {

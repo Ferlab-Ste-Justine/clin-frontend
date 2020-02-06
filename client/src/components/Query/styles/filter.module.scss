@@ -78,6 +78,37 @@
             display: none;
         }
     }
+
+    .selectionToolBar{
+        margin: 16px 0;
+        button{
+            border:none;
+            padding: 0;
+            box-shadow: none;
+            height: auto;
+            span{
+                color: rgba(35, 55, 80, 0.78);
+                font-size: 12px;
+                font-family: $font;
+                text-decoration: underline;
+                letter-spacing: 0.4px;
+            }
+            &:hover{
+                span{
+                    color: rgb(35, 55, 80);  
+                    text-decoration: none;
+                }
+            }
+
+
+            &:after{
+                animation: 0s !important;
+               } 
+        }
+        >div{
+            margin: 0 4px;
+        }
+    }
     
 
 }
@@ -100,4 +131,9 @@
             width: 300px;
 }
     }
+}
+
+.operand{
+
+        display: none;
 }
