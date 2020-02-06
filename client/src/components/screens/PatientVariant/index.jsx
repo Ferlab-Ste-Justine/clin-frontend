@@ -424,7 +424,6 @@ class PatientVariantScreen extends React.Component {
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const allOntology = sortBy(patient.ontology, 'term');
     const visibleOntology = allOntology.slice(0, 4);
-    console.log('patient', allOntology);
     const familyMenu = (
       <Menu>
         <Menu.ItemGroup title={familyText} className={style.menuGroup}>
