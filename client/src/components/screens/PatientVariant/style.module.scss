@@ -14,7 +14,7 @@
             background:none;
             padding:0;
             box-shadow: none;
-            color: #233750;
+            color:#125a90;
             transition:none;
             .spaceAfter{
                 margin-right:4px;
@@ -28,13 +28,12 @@
                         height: 30px;
                         letter-spacing: 0.25px;
                         line-height: 30px;
-                        text-decoration: underline;
 
             }
             &:hover{
                 color:#125a90;
                 span{
-                text-decoration: none;
+                text-decoration: underline;
                 }
             }
 
@@ -47,31 +46,6 @@
                 fill:rgba(35, 55, 80, 0.54);
                 }
 
-        }
-
-        .tag{
-            background:rgba(29, 139, 198,0.15);
-            border:none;
-            border-radius:2px;
-            padding:1px 6px;
-            color: #125a90;
-            font-family:$font;
-            font-size: 12px;
-            letter-spacing: 0.4px;
-            line-height: 16px;
-            text-align: center;
-
-            i{
-                color:#125a90;
-                margin:0;
-            }
-
-            &:hover{
-            background:rgba(29, 139, 198,0.25);
-            color: #125a90;
-            cursor:pointer;
-            opacity:1;
-            }
         }
 
         .tagProban{
@@ -100,8 +74,8 @@
             transition:none;
             height:16px;
             margin-left:8px;
-            color: #233750;
-            text-decoration:underline;
+            color: #125a90;
+            text-decoration:none;
             span{
 
                         font-family: $font;
@@ -112,23 +86,29 @@
                         line-height: 16px;
             }
             .iconLink{
-            color:rgba(35, 55, 80, 0.54);
+            color:#1b7ab2;
+            opacity:.5;
             margin-left:2px;
             }
 
             &:hover{
                 color:#125a90;
-                text-decoration:none;
+                text-decoration:underline;
                 .iconLink{
-                color:#125a90;
+                color:#1b7ab2;
+                opacity:1;
                 }
             }
 
 
         }
+
+        .ontologyTag{
+            margin-left:16px;
+        }
     }
 
-    i:not(.iconLink){
+    .icon{
         color:rgba(35, 55, 80, 0.38);
         margin-right:4px;
         margin-top:-1px;
@@ -175,9 +155,57 @@
              }
          }
         }
-
     }
 
+
+
+}
+
+.ontologyDropdown{
+    .ontologyItem{
+        color:#233750;
+        font-size: 14px;
+        font-family: $font;
+        letter-spacing: 0.25px;
+        line-height: 20px;
+        text-decoration:none;
+
+        &:hover{
+                .iconHover{
+                    opacity:1;
+                }
+        }
+
+        .iconHover{
+            color:rgba(35, 55, 80, 0.54);
+            opacity:0;
+        }
+    }
+}
+
+.tag{
+    background:rgba(29, 139, 198,0.15);
+    border:none;
+    border-radius:2px;
+    padding:1px 6px;
+    color: #125a90;
+    font-family:$font;
+    font-size: 12px;
+    letter-spacing: 0.4px;
+    line-height: 16px;
+    text-align: center;
+
+    i{
+        color:#125a90;
+        margin:0;
+    }
+
+    &:hover{
+    background:rgba(29, 139, 198,0.25);
+    color: #125a90;
+    cursor:pointer;
+    opacity:1;
+    }
 }
 
 
