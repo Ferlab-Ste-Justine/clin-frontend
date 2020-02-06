@@ -1,0 +1,78 @@
+@import './variables.scss';
+
+
+.filterCard{
+    width: 300px;
+    border:none;
+    box-shadow: 0px 6px 10px 0px rgba(89, 121, 144, 0.14),
+                0px 1px 18px 0px rgba(89, 121, 144, 0.12),
+                0px 3px 5px -1px rgba(89, 121, 144, 0.2);
+    >div{
+        padding: 16px;
+
+    }
+
+    .fieldHeader{
+        .labelTitle{
+            color: rgb(35, 55, 80);
+            font-size: 16px;
+            font-family: $font;
+            font-weight: 500;
+            letter-spacing: 0.15px;
+            line-height: 24px;
+            display: inline;
+            margin: 0;
+        }
+        button{
+            border:none;
+            padding: 0;
+            box-shadow: none;
+            margin-left: 8px;
+            height: auto;
+            i{
+                color: rgba(35, 55, 80, 0.38);
+            }
+    
+        }
+        .iconSearch{
+            margin-left: auto;
+    
+        }
+
+        .searchInput{
+            input{
+                background-color:rgba(35, 55, 80,0.08) ;
+                border: none;
+                border-radius: 2px;
+                color: rgba(35, 55, 80, 0.78);
+                font-size: 14px;
+                font-family: $font;
+                letter-spacing: 0.25px;
+                line-height: 20px;
+            }
+
+        }
+    }
+    
+
+}
+
+.tooltip{
+    >div{
+        opacity: 1;
+        div:first-child{
+            display: none;
+        }
+        div:nth-child(2){
+            background-color: #e7ebef;
+            color: rgba(35, 55, 80, 0.78);
+            font-size: 12px;
+            font-family: $font;
+            letter-spacing: 0.4px;
+            line-height: 16px;
+            border-radius: 2px;
+            padding: 12px;
+            width: 300px;
+}
+    }
+}

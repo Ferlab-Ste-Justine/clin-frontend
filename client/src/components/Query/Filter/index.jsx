@@ -2,15 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Pagination, Input,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Pagination, Input, Tooltip,
 } from 'antd';
 import {
   cloneDeep,
 } from 'lodash';
 import IconKit from 'react-icons-kit';
-import { ic_cancel } from 'react-icons-kit/md';
+import { ic_cancel, ic_info_outline, ic_search } from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
+import styleFilter from '../styles/filter.module.scss';
 
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
@@ -196,23 +197,37 @@ class Filter extends React.Component {
       <Popover
         visible={this.isOpened()}
       >
-        <Card className="filterCard">
-          <Typography.Title level={4}>{filterLabel}</Typography.Title>
-          <Typography>{filterDescription}</Typography>
-          <br />
-          {searchable && (
-          <>
-            <Row>
-              <Input
-                allowClear
-                placeholder={filterSearch}
-                size="small"
-                onChange={this.handleSearchByQuery}
-              />
+        <Card className={styleFilter.filterCard}>
+          <div className={styleFilter.fieldHeader}>
+            <Row type="flex" justify="start" align="middle">
+              <Typography.Title className={styleFilter.labelTitle}>
+                {filterLabel}
+              </Typography.Title>
+              <Tooltip overlayClassName={styleFilter.tooltip} placement="right" title={filterDescription}>
+                <Button>
+                  <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
+                </Button>
+              </Tooltip>
+              <Button className={styleFilter.iconSearch}>
+                <IconKit size={24} icon={ic_search} />
+              </Button>
             </Row>
-            <br />
-          </>
-          )}
+
+            {searchable && (
+            <>
+              <Row>
+                <Input
+                  allowClear
+                  placeholder={filterSearch}
+                  onChange={this.handleSearchByQuery}
+                  className={styleFilter.searchInput}
+                />
+              </Row>
+              <br />
+            </>
+            )}
+          </div>
+
           { editor.contents }
           { allOptions && (
             allOptions.length >= size
