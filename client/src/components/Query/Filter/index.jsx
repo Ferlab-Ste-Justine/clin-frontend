@@ -273,6 +273,12 @@ class Filter extends React.Component {
 
 
   render() {
+<<<<<<< HEAD
+=======
+    const {
+      allOptions, size, page, visibleInput,
+    } = this.state;
+>>>>>>> 048224b... Final HeaderMultiselect dropdown
     const {
       onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
