@@ -8,12 +8,13 @@
                 0px 1px 18px 0px rgba(89, 121, 144, 0.12),
                 0px 3px 5px -1px rgba(89, 121, 144, 0.2);
     >div{
-        padding: 16px;
+        padding: 0;
 
     }
-
     .fieldHeader{
         border-bottom: 1px solid rgba(35, 55, 80,0.12);
+        margin: 16px 16px 0 16px;
+        padding-bottom: 16px;
         .labelTitle{
             color: rgb(35, 55, 80);
             font-size: 16px;
@@ -80,7 +81,7 @@
     }
 
     .selectionToolBar{
-        margin: 16px 0;
+        margin: 16px;
         button{
             border:none;
             padding: 0;
@@ -108,6 +109,94 @@
         >div{
             margin: 0 4px;
         }
+    }
+
+    .checkboxGroup{
+
+        .checkboxLabel{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 16px;
+
+            &:hover{
+                background-color: rgba(29, 139, 198,0.08);
+                .checkboxValue{
+                    .valueCount{
+                        background-color: #fff;
+                  }
+                }
+            }
+
+            >span:nth-child(1){
+                top:0;
+                margin: 3px;
+                >span{
+                    width: 18px;
+                    height: 18px;
+                    border: 2px solid rgba(35, 55, 80, 0.38);
+                    background-color: transparent;
+                }
+
+            }
+
+            >span:nth-child(2){
+                width: 100%;
+                padding: 0;
+                >span::nth-child(2){
+                    margin:0;
+
+                }
+
+            }
+
+            .checkboxValue{
+                display: flex;
+                justify-content: space-between;
+                margin-left: 8px;
+                .valueCount{
+                    padding:3px 4px;
+                    color: rgba(35, 55, 80, 0.78);
+                    background-color: #f0f2f5;
+                    font-family: $font;
+                    font-size: 12px;
+                    letter-spacing: 0.4px;
+                    line-height:10px;
+                    text-align: center;
+                    margin:0 0 0 12px;
+                    border: none;
+              }
+            }
+
+        }
+
+        .check{
+            >span:first-child{
+                span{
+                 background-color:#1b7ab2  ;
+                 border: 2px solid #1b7ab2;
+                }
+
+                &:after{
+                    border: none;
+                }
+            }
+        
+            &:hover{
+                >span:first-child{
+                    span{
+                        background-color:#1b7ab2  ;
+                        border: 2px solid #1b7ab2;
+                        &:after{
+                            left:22%;
+                        }
+                       }
+                }
+            }
+        }
+
+
+
     }
     
 

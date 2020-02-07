@@ -94,14 +94,14 @@ class GenericFilter extends React.Component {
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
     const options = allOptions.slice(minValue, maxValue).map((option) => {
-      const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
+      const value = option.value.length < 30 ? option.value : `${option.value.substring(0, 30)} ...`;
       return {
         label: (
-          <span>
+          <span className={styleFilter.checkboxValue}>
             <Tooltip title={option.value}>
               {value}
             </Tooltip>
-            <Tag>{option.count}</Tag>
+            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
           </span>
         ),
         value: option.value,
@@ -130,14 +130,17 @@ class GenericFilter extends React.Component {
             <Divider type="vertical" />
             <Button onClick={this.handleSelectNone}>{selectNone}</Button>
           </Row>
-          <br />
           <Row>
             <Col span={24}>
-              <Checkbox.Group
-                options={options}
-                value={selection}
-                onChange={this.handleSelectionChange}
-              />
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+                { options.map(option => (
+                  <Row>
+                    <Col>
+                      <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                    </Col>
+                  </Row>
+                )) }
+              </Checkbox.Group>
             </Col>
           </Row>
         </>
