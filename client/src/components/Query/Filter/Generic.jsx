@@ -111,18 +111,6 @@ class GenericFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-          {/* <Row>
-            <Col span={24}>
-              <Radio.Group type="primary" size="small" value={operand} onChange={this.handleOperandChange}>
-                {config.operands.map(configOperand => (
-                  <Radio.Button value={configOperand}>
-                    {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-            </Col>
-          </Row>
-          <br /> */}
           <Row>
             <Checkbox
               key="check-all"
@@ -237,7 +225,6 @@ class GenericFilter extends React.Component {
   }
 
   handleOperandChange(operand) {
-    console.log('Selected operand: ', operand);
     const { config } = this.props;
     if (config.operands.indexOf(operand) !== -1) {
       const { draft } = this.state;
@@ -245,16 +232,6 @@ class GenericFilter extends React.Component {
       this.setState({ draft });
     }
   }
-
-  // handleOperandChange(operand) {
-  //   this.setState({
-  //     draft: {
-  //       ...this.state.draft,
-  //       operand:this.state.draft.operand,
-  //     },
-  //   });
-  //   console.log('Operand selected: ', operand);
-  // }
 
   render() {
     const { allOptions } = this.state;

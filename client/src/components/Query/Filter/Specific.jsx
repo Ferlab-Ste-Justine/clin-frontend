@@ -193,9 +193,8 @@ class SpecificFilter extends Filter {
     }
   }
 
-  handleOperandChange(e) {
+  handleOperandChange(operand) {
     const { config } = this.props;
-    const operand = e.target.value;
     if (config.operands.indexOf(operand) !== -1) {
       const { draft } = this.state;
       draft.operand = operand;
@@ -314,6 +313,7 @@ class SpecificFilter extends Filter {
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
+        onOperandChange={this.handleOperandChange}
         sortData={allOptions}
       />
     );

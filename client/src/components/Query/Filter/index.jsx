@@ -188,16 +188,30 @@ class Filter extends React.Component {
       onOperandChange(e.key);
     };
 
-    const applyMenu = (
+    const applyMenu = cfg => (!cfg ? null : (
       <Menu onClick={e => handleMenuClick(e)}>
-        {config.operands.map(configOperand => (
+        {cfg.operands.map(configOperand => (
           <Menu.Item key={configOperand}>
             <Icon type="user" />
             {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
           </Menu.Item>
         ))}
       </Menu>
-    );
+    ));
+
+    const hasOperands = cfg => cfg && config.operands;
+    const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
+      <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)}>
+        {intl.get('components.query.filter.button.apply')}
+      </Dropdown.Button>
+    ) : (
+      <Button
+        type="primary"
+        onClick={this.handleApply}
+      >
+        {intl.get('components.query.filter.button.apply') }
+      </Button>
+    ));
 
     const { allOptions, size, page } = this.state;
     const {
@@ -256,10 +270,7 @@ class Filter extends React.Component {
               </Button>
             </Col>
             <Col>
-
-              <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu}>
-                {intl.get('components.query.filter.button.apply')}
-              </Dropdown.Button>
+              <ApplyButton cfg={config} />
             </Col>
           </Row>
         </Card>
