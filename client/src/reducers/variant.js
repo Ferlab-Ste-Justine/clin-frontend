@@ -85,14 +85,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
-      draft.facets[action.payload.data.query] = action.payload.data.facets;
       draft.results[action.payload.data.query] = action.payload.data.hits;
-      draft.activeStatementTotals[action.payload.data.query] = action.payload.data.total;
       break;
 
-    case actions.PATIENT_VARIANT_SEARCH_FAILED:
-      draft.facets[action.payload.data.query] = {};
-      draft.results[action.payload.data.query] = {};
+    case actions.PATIENT_VARIANT_FACET_SUCCEEDED:
+      draft.facets[action.payload.data.query] = action.payload.data.facets;
       break;
 
     case actions.PATIENT_VARIANT_COUNT_SUCCEEDED:
