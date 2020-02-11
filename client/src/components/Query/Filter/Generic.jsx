@@ -94,7 +94,7 @@ class GenericFilter extends React.Component {
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
     const options = allOptions.slice(minValue, maxValue).map((option) => {
-      const value = option.value.length < 30 ? option.value : `${option.value.substring(0, 30)} ...`;
+      const value = option.value.length < 29 ? option.value : `${option.value.substring(0, 29)} ...`;
       return {
         label: (
           <span className={styleFilter.checkboxValue}>

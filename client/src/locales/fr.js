@@ -302,6 +302,7 @@ const fr = {
   'screen.patientvariant.query.menu.delete.button.ok': 'Supprimer',
   'screen.patientvariant.query.menu.delete.button.cancel': 'Annuler',
   'screen.patientvariant.filter.search': 'Recherche',
+  'screen.patientvariant.filter.pagination.value': 'valeurs',
   'screen.patientvariant.filter.operand.all': 'Toutes',
   'screen.patientvariant.filter.operand.one': 'Au moins une',
   'screen.patientvariant.filter.operand.none': 'Aucune',

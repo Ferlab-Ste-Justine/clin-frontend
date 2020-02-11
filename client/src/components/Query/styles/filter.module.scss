@@ -130,7 +130,7 @@
 
             >span:nth-child(1){
                 top:0;
-                margin: 3px;
+                margin:3px 3px 3px 0;
                 >span{
                     width: 18px;
                     height: 18px;
@@ -198,7 +198,26 @@
 
 
     }
-    
+    .paginationInfo{
+        padding:16px;
+        .pagination{
+            li{
+                border: 1px solid rgba(18, 90, 144, 0.3) !important;
+                margin: 0 2px;
+                a{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    span{
+                        left: -4px;
+                    }
+                }
+            }
+            li:last-of-type{
+                margin-right: 0; 
+            }
+        }
+    }
 
 }
 

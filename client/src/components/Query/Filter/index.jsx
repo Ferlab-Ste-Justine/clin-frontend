@@ -200,6 +200,7 @@ class Filter extends React.Component {
     const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
     const filterDescription = intl.get(`screen.patientvariant.filter_${data.id}.description`);
     const filterSearch = intl.get('screen.patientvariant.filter.search');
+    const valueText = intl.get('screen.patientvariant.filter.pagination.value');
     const editorLabels = editor.getLabels();
     const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
@@ -241,15 +242,17 @@ class Filter extends React.Component {
           { allOptions && (
             allOptions.length >= size
               ? (
-                <Row>
-                  <br />
-                  <Col align="end" span={24}>
+                <Row className={styleFilter.paginationInfo} type="flex" align="middle" justify="space-between">
+                  <Col>{allOptions.length} {valueText}</Col>
+                  <Col>
                     <Pagination
+                      className={styleFilter.pagination}
                       total={allOptions.length}
                       pageSize={size}
                       current={page}
                       pageSizeOptions={['10', '25', '50', '100']}
                       onChange={this.handlePageChange}
+                      size="small"
                     />
                   </Col>
                 </Row>
