@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Pagination, Input,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Icon,
 } from 'antd';
 import {
   cloneDeep,
@@ -182,6 +182,37 @@ class Filter extends React.Component {
   }
 
   render() {
+    const { onOperandChange, config } = this.props;
+
+    const handleMenuClick = (e) => {
+      onOperandChange(e.key);
+    };
+
+    const applyMenu = cfg => (!cfg ? null : (
+      <Menu onClick={e => handleMenuClick(e)}>
+        {cfg.operands.map(configOperand => (
+          <Menu.Item key={configOperand}>
+            <Icon type="user" />
+            {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
+          </Menu.Item>
+        ))}
+      </Menu>
+    ));
+
+    const hasOperands = cfg => cfg && config.operands;
+    const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
+      <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)}>
+        {intl.get('components.query.filter.button.apply')}
+      </Dropdown.Button>
+    ) : (
+      <Button
+        type="primary"
+        onClick={this.handleApply}
+      >
+        {intl.get('components.query.filter.button.apply') }
+      </Button>
+    ));
+
     const { allOptions, size, page } = this.state;
     const {
       data, overlayOnly, editor, searchable, autoSelect,
@@ -239,12 +270,7 @@ class Filter extends React.Component {
               </Button>
             </Col>
             <Col>
-              <Button
-                type="primary"
-                onClick={this.handleApply}
-              >
-                { intl.get('components.query.filter.button.apply') }
-              </Button>
+              <ApplyButton cfg={config} />
             </Col>
           </Row>
         </Card>
@@ -315,6 +341,7 @@ class Filter extends React.Component {
 }
 
 Filter.propTypes = {
+  config: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
@@ -323,6 +350,7 @@ Filter.propTypes = {
   onSelectCallback: PropTypes.func,
   onSearchCallback: PropTypes.func,
   onPageChangeCallBack: PropTypes.func,
+  onOperandChange: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
@@ -347,6 +375,7 @@ Filter.defaultProps = {
   onSelectCallback: () => {},
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
+  onOperandChange: () => { },
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,

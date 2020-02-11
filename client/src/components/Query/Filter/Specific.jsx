@@ -122,7 +122,10 @@ class SpecificFilter extends Filter {
     } else {
       const { dataSet, externalDataSet } = this.props;
       const { selector } = this.state;
-      const externalOntology = externalDataSet.ontology.map(ontology => ontology.code);
+      const notObserved = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '')
+        .map(ontology => ontology.code);
+      const observed = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS')
+        .map(ontology => ontology.code);
       const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
       let options = [];
       let indeterminate = false;
@@ -130,20 +133,20 @@ class SpecificFilter extends Filter {
       switch (selector) {
         default:
         case SELECTOR_ALL:
-          options = cloneDeep(dataSet);
+          options = dataSet;
           break;
         case SELECTOR_INTERSECTION:
           indeterminate = true;
-          options = cloneDeep(dataSet).filter((option) => {
+          options = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
-            return hpoValue ? (externalOntology.indexOf(hpoValue) !== -1) : false;
+            return hpoValue ? (observed.indexOf(hpoValue) !== -1) : false;
           });
           break;
         case SELECTOR_DIFFERENCE:
           indeterminate = true;
-          options = cloneDeep(dataSet).filter((option) => {
+          options = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
-            return hpoValue ? (externalOntology.indexOf(hpoValue) === -1) : false;
+            return hpoValue ? (notObserved.indexOf(hpoValue) !== -1) : false;
           });
           break;
       }
@@ -190,9 +193,8 @@ class SpecificFilter extends Filter {
     }
   }
 
-  handleOperandChange(e) {
+  handleOperandChange(operand) {
     const { config } = this.props;
-    const operand = e.target.value;
     if (config.operands.indexOf(operand) !== -1) {
       const { draft } = this.state;
       draft.operand = operand;
@@ -311,6 +313,7 @@ class SpecificFilter extends Filter {
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
+        onOperandChange={this.handleOperandChange}
         sortData={allOptions}
       />
     );

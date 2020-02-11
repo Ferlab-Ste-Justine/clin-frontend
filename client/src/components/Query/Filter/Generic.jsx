@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Row, Col, Checkbox, Radio, Tag, Tooltip,
+  Row, Col, Checkbox, Tag, Tooltip,
 } from 'antd';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
@@ -78,11 +78,9 @@ class GenericFilter extends React.Component {
   }
 
   getEditor() {
-    const { config } = this.props;
     const {
-      draft, selection, size, page, allOptions,
+      selection, size, page, allOptions,
     } = this.state;
-    const { operand } = draft;
     const allSelected = allOptions ? selection.length === allOptions.length : false;
     const selectAll = intl.get('screen.patientvariant.filter.selection.all');
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
@@ -113,18 +111,6 @@ class GenericFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-          <Row>
-            <Col span={24}>
-              <Radio.Group type="primary" size="small" value={operand} onChange={this.handleOperandChange}>
-                {config.operands.map(configOperand => (
-                  <Radio.Button value={configOperand}>
-                    {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-            </Col>
-          </Row>
-          <br />
           <Row>
             <Checkbox
               key="check-all"
@@ -238,9 +224,8 @@ class GenericFilter extends React.Component {
     });
   }
 
-  handleOperandChange(e) {
+  handleOperandChange(operand) {
     const { config } = this.props;
-    const operand = e.target.value;
     if (config.operands.indexOf(operand) !== -1) {
       const { draft } = this.state;
       draft.operand = operand;
@@ -250,14 +235,17 @@ class GenericFilter extends React.Component {
 
   render() {
     const { allOptions } = this.state;
+    const { config } = this.props;
     return (
       <Filter
         {...this.props}
+        config={config}
         type={FILTER_TYPE_GENERIC}
         editor={this.getEditor()}
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
+        onOperandChange={this.handleOperandChange}
         sortData={allOptions}
       />
     );

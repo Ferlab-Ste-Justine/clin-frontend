@@ -6,11 +6,11 @@ import {
 } from 'lodash';
 
 import {
-  Menu, Input, AutoComplete, Tag, Typography, Col,
+  Menu, Input, AutoComplete, Tag, Typography, Col, Tooltip, Button,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
-  ic_widgets, ic_gps_fixed, ic_group, ic_search, ic_call_split, ic_assessment, ic_done,
+  ic_widgets, ic_gps_fixed, ic_group, ic_search, ic_call_split, ic_assessment, ic_done, ic_keyboard_arrow_right, ic_info_outline, ic_cloud_upload,
 } from 'react-icons-kit/md';
 import GenericFilter from '../../../Query/Filter/Generic';
 import SpecificFilter from '../../../Query/Filter/Specific';
@@ -456,13 +456,35 @@ class VariantNavigation extends React.Component {
             const categoryData = find(categoryInfo.filters, ['id', (searchSelection.filter || activeFilterId)]);
             const filter = categoryData ? this.renderFilterType(categoryData) : null;
             return (
-              <Menu.SubMenu key={id} title={<span>{getCategoryIcon(category.label)}{label}</span>}>
+              <Menu.SubMenu key={id} title={<span>{getCategoryIcon(category.label)}{label}</span>} popupClassName={styleNavigation.menuDropdown}>
+                <div className={activeFilterId === null && category.label === 'category_variant' ? `${styleNavigation.openId}` : `${styleNavigation.closeId} `}>
+                  <Typography.Text>
+                    Identifiant
+                    <Tooltip overlayClassName={styleNavigation.tooltip} placement="right" title="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.">
+                      <Button>
+                        <IconKit size={16} className={styleNavigation.iconInfo} icon={ic_info_outline} />
+                      </Button>
+                    </Tooltip>
+                  </Typography.Text>
+                  <Input placeholder="ex: chr7:g:399383 A>T, rs93939, etc" />
+                  <Button>
+                    <IconKit size={18} icon={ic_cloud_upload} />
+                    Importer une liste
+                  </Button>
+
+                </div>
                 { activeFilterId === null && !searchSelection.category && category.filters.map(f => f.search && (
-                <Menu.SubMenu
-                  key={f.id}
-                  title={intl.get(`screen.patientvariant.${f.label}`)}
-                  onTitleClick={this.handleFilterSelection}
-                />
+                  <Menu.SubMenu
+                    key={f.id}
+                    title={(
+                      <div className={category.label === 'category_variant' ? `${styleNavigation.subMenuVariant}` : `${styleNavigation.subMenuTitle}`}>
+                        {intl.get(`screen.patientvariant.${f.label}`)}
+                        <IconKit size={24} icon={ic_keyboard_arrow_right} className={styleNavigation.iconRightArrow} />
+                      </div>
+                    )}
+                    onTitleClick={this.handleFilterSelection}
+                    className={styleNavigation.filterChoise}
+                  />
                 ))}
                 { filter }
               </Menu.SubMenu>
