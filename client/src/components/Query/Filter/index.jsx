@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Tooltip,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Icon, Tooltip,
 } from 'antd';
 import {
   cloneDeep,
@@ -15,22 +15,6 @@ import {
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 
-const svgPathAll = (<path id="union-a" d="M9.04996157,15.7500378 C8.34998719,15.0675628 8,14.1842168 8,13.1 L8,4 L5,4 L5,13.1 C5,15.2843345 5.57858424,16.9550859 6.73575271,18.1122544 C7.89292119,19.2694229 9.64767029,19.8986714 12,20 L12.3664544,19.9796136 C14.5353848,19.8309723 16.1679824,19.2085193 17.2642473,18.1122544 C18.3605122,17.0159895 18.9374937,15.4587804 18.9951918,13.4406269 L19,13.1 L19,4 L16,4 L16,13.1 C16,14.1842168 15.6500128,15.0675628 14.9500384,15.7500378 C14.3039082,16.3800147 13.4163252,16.7834934 12.2872892,16.9604736 L12,17 C10.7332821,16.8491669 9.74993595,16.4325128 9.04996157,15.7500378 Z" />);
-const svgPathOne = (<path id="intersection-a" d="M9.04996157,8.24996219 C8.34998719,8.93243721 8,9.81578315 8,10.9 L8,20 L5,20 L5,10.9 C5,8.71566554 5.57858424,7.04491407 6.73575271,5.88774559 C7.89292119,4.73057712 9.64767029,4.10132859 12,4 L12.3664544,4.0203864 C14.5353848,4.16902765 16.1679824,4.79148072 17.2642473,5.88774559 C18.3605122,6.98401047 18.9374937,8.54121963 18.9951918,10.5593731 L19,10.9 L19,20 L16,20 L16,10.9 C16,9.81578315 15.6500128,8.93243721 14.9500384,8.24996219 C14.3039082,7.61998525 13.4163252,7.21650664 12.2872892,7.03952636 L12,7 C10.7332821,7.15083311 9.74993595,7.56748717 9.04996157,8.24996219 Z" />);
-const svgPathNone = (<polygon id="exclusion-a" points="15.447 3 14.106 8 20 8 20 11 13.302 11 12.766 13 20 13 20 16 11.962 16 10.623 21 8.553 21 9.892 16 4 16 4 13 10.696 13 11.231 11 4 11 4 8 12.035 8 13.376 3" />);
-
-export const getSvgPathFromOperandType = (type) => {
-  console.log('coucou');
-  switch (type) {
-    default:
-    case 'all':
-      return svgPathAll;
-    case 'one':
-      return svgPathOne;
-    case 'none':
-      return svgPathNone;
-  }
-};
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
@@ -217,10 +201,10 @@ class Filter extends React.Component {
       onOperandChange(e.key);
     };
     const applyMenu = cfg => (!cfg ? null : (
-      <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
+      <Menu onClick={e => handleMenuClick(e)}>
         {cfg.operands.map(configOperand => (
           <Menu.Item key={configOperand}>
-            <svg className={styleFilter.svgIcon}>{ getSvgPathFromOperandType(configOperand) }</svg>
+            <Icon type="user" />
             {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
           </Menu.Item>
         ))}
