@@ -242,7 +242,7 @@ class SpecificFilter extends Filter {
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
     const options = allOptions.slice(minValue, maxValue).map((option) => {
-      const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
+      const value = option.value.length < 29 ? option.value : `${option.value.substring(0, 29)} ...`;
       return {
         label: (
           <span>
@@ -343,7 +343,7 @@ SpecificFilter.defaultProps = {
             onChange={onCheckAllCallback}
             checked={checkboxIsChecked}
           />
-          {checkboxLabel}
+          coucou
         </Col>
         <Col span={18}>
           <Radio.Group type="secondary" size="small" value={selector} onChange={onChangeCallback}>
