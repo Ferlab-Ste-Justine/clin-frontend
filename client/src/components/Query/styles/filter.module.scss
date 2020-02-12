@@ -252,15 +252,32 @@
         }
 
         .applyButton{
+            display: flex;
+            flex-direction: row-reverse;
             button{
                 height: 24px;
                 background-color: #1b7ab2;
                 border: none;
                 padding: 0 8px;
 
+
                 &:first-of-type{
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                    border-top-right-radius: 2px;
+                    border-bottom-right-radius: 2px;
+                }
+
+                &:nth-child(2){
                     border-top-left-radius: 2px;
                     border-bottom-left-radius: 2px;
+                    border-top-right-radius: 0;
+                    border-bottom-right-radius: 0;
+                    border-right: 1px solid rgba(255, 255, 255, 0.3);
+
+                    i{
+                        display: flex;
+                    }
                 }
 
                 span{
@@ -299,4 +316,35 @@
             width: 300px;
 }
     }
+}
+
+
+
+.operandDropdown{
+    border-radius: 2px;
+    li{
+        display: flex;
+        padding:4px 8px;
+        color: rgb(35, 55, 80);
+        font-size: 14px;
+        font-family: $font;
+        letter-spacing: 0.25px;
+        .svgIcon{
+            width:24px;
+            height:24px;
+            margin-right: 8px;
+            path, polygon{
+                fill:$color-disable;
+            }
+        }
+
+        &:hover{
+            .svgIcon{
+                path, polygon{
+                    fill:#1b7ab2;
+                }
+            } 
+        }
+    }
+
 }
