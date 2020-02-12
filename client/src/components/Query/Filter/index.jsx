@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Tooltip,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Icon, Tooltip,
 } from 'antd';
 import {
   cloneDeep,
@@ -15,6 +15,7 @@ import {
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 import {
   getSvgPathFromOperatorType,
@@ -112,6 +113,8 @@ export const getSvgPathFromOperandType = (type) => {
   }
 };
 >>>>>>> a8f77b6... operand dropdown
+=======
+>>>>>>> c7b2bb2... Fix style
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
@@ -309,14 +312,18 @@ class Filter extends React.Component {
       onOperandChangeCallBack(e.key);
     };
     const applyMenu = cfg => (!cfg ? null : (
-      <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
+      <Menu onClick={e => handleMenuClick(e)}>
         {cfg.operands.map(configOperand => (
           <Menu.Item key={configOperand}>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
 =======
             <svg className={styleFilter.svgIcon}>{ getSvgPathFromOperandType(configOperand) }</svg>
 >>>>>>> a8f77b6... operand dropdown
+=======
+            <Icon type="user" />
+>>>>>>> c7b2bb2... Fix style
             {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
           </Menu.Item>
         ))}
