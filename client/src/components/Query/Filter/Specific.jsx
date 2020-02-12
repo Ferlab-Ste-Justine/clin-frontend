@@ -343,7 +343,7 @@ SpecificFilter.defaultProps = {
             onChange={onCheckAllCallback}
             checked={checkboxIsChecked}
           />
-          coucou
+          {checkboxLabel}
         </Col>
         <Col span={18}>
           <Radio.Group type="secondary" size="small" value={selector} onChange={onChangeCallback}>
