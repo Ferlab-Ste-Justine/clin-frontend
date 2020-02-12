@@ -15,6 +15,47 @@ import {
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 
+import {
+  getSvgPathFromOperatorType,
+  OPERATOR_TYPE_UNION,
+  OPERATOR_TYPE_INTERSECTION,
+  OPERATOR_TYPE_EXCLUSION,
+} from '../Operator';
+
+export const FILTER_OPERAND_TYPE_ALL = 'all';
+export const FILTER_OPERAND_TYPE_ONE = 'one';
+export const FILTER_OPERAND_TYPE_NONE = 'none';
+export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
+
+const operatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_UNION;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_INTERSECTION;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_EXCLUSION;
+    default:
+      return OPERATOR_TYPE_UNION;
+  }
+};
+
+export const OperatorIconComponent = operand => props => (
+  <svg width="10em" height="10em" viewBox="0 0 24 24" {...props}>
+    {getSvgPathFromOperatorType(operand)}
+  </svg>
+);
+
+const IconForOperand = operand => props => (
+  <Icon
+    {...props}
+    className={styleFilter.svgIcon}
+    component={OperatorIconComponent(operatorFromOperand(operand))}
+  />
+);
+
+// const IntersectionSvg = require('../../../icons/intersection.svg');
+
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
 export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
@@ -136,7 +177,10 @@ class Filter extends React.Component {
       this.setState({
         opened: false,
       }, () => {
-        if ((!instruction.values && !instruction.value) || (instruction.values && instruction.values.length === 0) || (instruction.value && instruction.value.length === 0)) {
+        if (
+          (!instruction.values && !instruction.value)
+          || (instruction.values && instruction.values.length === 0)
+          || (instruction.value && instruction.value.length === 0)) {
           this.handleClose(true);
         } else {
           onEditCallback(instruction);
@@ -207,16 +251,30 @@ class Filter extends React.Component {
       <Menu onClick={e => handleMenuClick(e)}>
         {cfg.operands.map(configOperand => (
           <Menu.Item key={configOperand}>
-            <Icon type="user" />
-            {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
+            <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
           </Menu.Item>
         ))}
       </Menu>
     ));
 
     const hasOperands = cfg => cfg && config.operands;
+    const { operand } = this.props;
+
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
-      <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)} className={styleFilter.applyButton} placement="bottomLeft">
+      // <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)} className={styleFilter.applyButton} placement="bottomLeft">
+      <Dropdown.Button
+        type="primary"
+        className="composite-filter-apply-button"
+        icon={(
+          <Icon
+            // className={styleFilter.whiteSvgIcon}
+            component={OperatorIconComponent(operatorFromOperand(operand))}
+          />
+          )}
+        onClick={this.handleApply}
+        overlay={applyMenu(cfg)
+        }
+      >
         {intl.get('components.query.filter.button.apply')}
       </Dropdown.Button>
     ) : (
@@ -330,12 +388,12 @@ class Filter extends React.Component {
           >
             { filterLabel }
           </Tag>
-          <Tag
+          <div
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            { actionLabel }
-          </Tag>
+            {operand ? IconForOperand(operand)() : actionLabel}
+          </div>
           { this.isEditable() && (
             <Dropdown
               trigger="click"
@@ -380,6 +438,7 @@ Filter.propTypes = {
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
+  operand: PropTypes.string,
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
@@ -401,7 +460,8 @@ Filter.defaultProps = {
   onSelectCallback: () => {},
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
-  onOperandChangeCallBack: () => { },
+  onOperandChangeCallBack: () => {},
+  operand: '',
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,
