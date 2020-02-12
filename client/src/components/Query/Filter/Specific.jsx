@@ -15,6 +15,7 @@ import {
   FILTER_OPERAND_TYPE_NONE,
   FILTER_OPERAND_TYPE_ONE,
 } from './Generic';
+import styleFilter from '../styles/filter.module.scss';
 
 
 const SELECTOR_ALL = 'all';
@@ -245,11 +246,11 @@ class SpecificFilter extends Filter {
       const value = option.value.length < 29 ? option.value : `${option.value.substring(0, 29)} ...`;
       return {
         label: (
-          <span>
+          <span className={styleFilter.checkboxValue}>
             <Tooltip title={option.value}>
               {value}
             </Tooltip>
-            <Tag>{option.count}</Tag>
+            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
           </span>
         ),
         value: option.value,
@@ -291,11 +292,15 @@ class SpecificFilter extends Filter {
           <br />
           <Row>
             <Col span={24}>
-              <Checkbox.Group
-                options={options}
-                value={selection}
-                onChange={this.handleSelectionChange}
-              />
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+                { options.map(option => (
+                  <Row>
+                    <Col>
+                      <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                    </Col>
+                  </Row>
+                )) }
+              </Checkbox.Group>
             </Col>
           </Row>
         </>
