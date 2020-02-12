@@ -2,13 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Pagination, Input, Tooltip,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Icon, Tooltip,
 } from 'antd';
 import {
   cloneDeep,
 } from 'lodash';
 import IconKit from 'react-icons-kit';
-import { ic_cancel, ic_info_outline, ic_search } from 'react-icons-kit/md';
+import {
+  ic_cancel, ic_info_outline, ic_search, ic_chevron_left,
+} from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
@@ -194,6 +196,37 @@ class Filter extends React.Component {
     const {
       allOptions, size, page, visibleInput,
     } = this.state;
+    const { onOperandChange, config } = this.props;
+
+    const handleMenuClick = (e) => {
+      onOperandChange(e.key);
+    };
+
+    const applyMenu = cfg => (!cfg ? null : (
+      <Menu onClick={e => handleMenuClick(e)}>
+        {cfg.operands.map(configOperand => (
+          <Menu.Item key={configOperand}>
+            <Icon type="user" />
+            {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
+          </Menu.Item>
+        ))}
+      </Menu>
+    ));
+
+    const hasOperands = cfg => cfg && config.operands;
+    const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
+      <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)} className={styleFilter.applyButton}>
+        {intl.get('components.query.filter.button.apply')}
+      </Dropdown.Button>
+    ) : (
+      <Button
+        type="primary"
+        onClick={this.handleApply}
+      >
+        {intl.get('components.query.filter.button.apply') }
+      </Button>
+    ));
+
     const {
       data, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
@@ -258,20 +291,15 @@ class Filter extends React.Component {
                 </Row>
               ) : null
           )}
-          <br />
-          <Row type="flex" justify="end">
+          <Row type="flex" justify="end" className={styleFilter.actionToolBar}>
             <Col>
-              <Button onClick={this.handleCancel}>
+              <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
+                <IconKit size={16} icon={ic_chevron_left} />
                 { intl.get('components.query.filter.button.cancel') }
               </Button>
             </Col>
             <Col>
-              <Button
-                type="primary"
-                onClick={this.handleApply}
-              >
-                { intl.get('components.query.filter.button.apply') }
-              </Button>
+              <ApplyButton cfg={config} />
             </Col>
           </Row>
         </Card>
@@ -342,6 +370,7 @@ class Filter extends React.Component {
 }
 
 Filter.propTypes = {
+  config: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
@@ -350,6 +379,7 @@ Filter.propTypes = {
   onSelectCallback: PropTypes.func,
   onSearchCallback: PropTypes.func,
   onPageChangeCallBack: PropTypes.func,
+  onOperandChange: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
@@ -374,6 +404,7 @@ Filter.defaultProps = {
   onSelectCallback: () => {},
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
+  onOperandChange: () => { },
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,
