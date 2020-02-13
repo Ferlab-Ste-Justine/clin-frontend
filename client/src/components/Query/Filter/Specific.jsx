@@ -261,10 +261,13 @@ class SpecificFilter extends Filter {
 
   render() {
     const { allOptions, draft } = this.state;
+    const { config } = this.props;
     const { operand } = draft;
+
     return (
       <Filter
         {...this.props}
+        config={config}
         type={FILTER_TYPE_SPECIFIC}
         editor={this.getEditor()}
         searchable

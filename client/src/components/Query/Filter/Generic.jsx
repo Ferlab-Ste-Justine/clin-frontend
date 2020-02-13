@@ -248,7 +248,7 @@ class GenericFilter extends React.Component {
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
-        onOperandChange={this.handleOperandChange}
+        onOperandChangeCallBack={this.handleOperandChange}
         sortData={allOptions}
       />
     );
