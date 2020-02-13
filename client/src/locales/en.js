@@ -245,6 +245,7 @@ const en = {
   'screen.patientvariant.query.menu.delete.button.ok': 'Delete',
   'screen.patientvariant.query.menu.delete.button.cancel': 'Cancel',
   'screen.patientvariant.filter.search': 'Search',
+  'screen.patientvariant.filter.pagination.value': 'values',
   'screen.patientvariant.filter.operand.all': 'Intersection',
   'screen.patientvariant.filter.operand.one': 'Union',
   'screen.patientvariant.filter.operand.none': 'Exclusion',

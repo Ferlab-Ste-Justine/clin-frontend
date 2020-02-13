@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+  <defs>
+    <polygon id="exclusion-a" points="15.447 3 14.106 8 20 8 20 11 13.302 11 12.766 13 20 13 20 16 11.962 16 10.623 21 8.553 21 9.892 16 4 16 4 13 10.696 13 11.231 11 4 11 4 8 12.035 8 13.376 3"/>
+  </defs>
+  <use xlink:href="#exclusion-a"/>
+</svg>

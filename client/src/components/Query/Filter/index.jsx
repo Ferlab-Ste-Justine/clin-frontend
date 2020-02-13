@@ -2,16 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Icon,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Icon, Tooltip,
 } from 'antd';
 import {
   cloneDeep,
 } from 'lodash';
 import IconKit from 'react-icons-kit';
-import { ic_cancel } from 'react-icons-kit/md';
+import {
+  ic_cancel, ic_info_outline, ic_search, ic_chevron_left,
+} from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
-
+import styleFilter from '../styles/filter.module.scss';
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -43,6 +45,7 @@ class Filter extends React.Component {
       allOptions: [],
       size: null,
       page: null,
+      visibleInput: false,
     };
 
     this.isEditable = this.isEditable.bind(this);
@@ -59,6 +62,7 @@ class Filter extends React.Component {
     this.toggleMenu = this.toggleMenu.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
+    this.handleInputView = this.handleInputView.bind(this);
 
     // @NOTE Initialize Component State
     const {
@@ -181,8 +185,19 @@ class Filter extends React.Component {
     onSearchCallback(search);
   }
 
+  handleInputView() {
+    const { visibleInput } = this.state;
+    this.setState({ visibleInput: !visibleInput });
+  }
+
+
   render() {
-    const { onOperandChangeCallBack, config } = this.props;
+    const {
+      onOperandChangeCallBack, config, data, overlayOnly, editor, searchable, autoSelect,
+    } = this.props;
+    const {
+      allOptions, size, page, visibleInput,
+    } = this.state;
 
     const handleMenuClick = (e) => {
       onOperandChangeCallBack(e.key);
@@ -201,7 +216,7 @@ class Filter extends React.Component {
 
     const hasOperands = cfg => cfg && config.operands;
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
-      <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)}>
+      <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)} className={styleFilter.applyButton} placement="bottomLeft">
         {intl.get('components.query.filter.button.apply')}
       </Dropdown.Button>
     ) : (
@@ -212,14 +227,10 @@ class Filter extends React.Component {
         {intl.get('components.query.filter.button.apply') }
       </Button>
     ));
-
-    const { allOptions, size, page } = this.state;
-    const {
-      data, overlayOnly, editor, searchable, autoSelect,
-    } = this.props;
     const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
     const filterDescription = intl.get(`screen.patientvariant.filter_${data.id}.description`);
     const filterSearch = intl.get('screen.patientvariant.filter.search');
+    const valueText = intl.get('screen.patientvariant.filter.pagination.value');
     const editorLabels = editor.getLabels();
     const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
@@ -227,45 +238,60 @@ class Filter extends React.Component {
       <Popover
         visible={this.isOpened()}
       >
-        <Card className="filterCard">
-          <Typography.Title level={4}>{filterLabel}</Typography.Title>
-          <Typography>{filterDescription}</Typography>
-          <br />
-          {searchable && (
-          <>
-            <Row>
-              <Input
-                allowClear
-                placeholder={filterSearch}
-                size="small"
-                onChange={this.handleSearchByQuery}
-              />
+        <Card className={styleFilter.filterCard}>
+          <div className={styleFilter.fieldHeader}>
+            <Row type="flex" justify="start" align="middle">
+              <Typography.Title className={styleFilter.labelTitle}>
+                {filterLabel}
+              </Typography.Title>
+              <Tooltip overlayClassName={styleFilter.tooltip} placement="right" title={filterDescription}>
+                <Button>
+                  <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
+                </Button>
+              </Tooltip>
+              <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                <IconKit size={24} icon={ic_search} />
+              </Button>
             </Row>
-            <br />
-          </>
-          )}
+
+            {searchable && (
+            <>
+              <Row>
+                <Input
+                  allowClear
+                  placeholder={filterSearch}
+                  onChange={this.handleSearchByQuery}
+                  className={visibleInput ? `${styleFilter.searchInput}` : `${styleFilter.searchInputClose}`}
+                />
+              </Row>
+            </>
+            )}
+          </div>
+
           { editor.contents }
           { allOptions && (
             allOptions.length >= size
               ? (
-                <Row>
-                  <br />
-                  <Col align="end" span={24}>
+                <Row className={styleFilter.paginationInfo} type="flex" align="middle" justify="space-between">
+                  <Col>{allOptions.length} {valueText}</Col>
+                  <Col>
                     <Pagination
+                      className={styleFilter.pagination}
                       total={allOptions.length}
                       pageSize={size}
                       current={page}
                       pageSizeOptions={['10', '25', '50', '100']}
                       onChange={this.handlePageChange}
+                      size="small"
                     />
                   </Col>
                 </Row>
               ) : null
           )}
-          <br />
-          <Row type="flex" justify="end">
+          <Row type="flex" justify="end" className={styleFilter.actionToolBar}>
             <Col>
-              <Button onClick={this.handleCancel}>
+              <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
+                <IconKit size={16} icon={ic_chevron_left} />
                 { intl.get('components.query.filter.button.cancel') }
               </Button>
             </Col>

@@ -15,6 +15,7 @@ import {
   FILTER_OPERAND_TYPE_NONE,
   FILTER_OPERAND_TYPE_ONE,
 } from './Generic';
+import styleFilter from '../styles/filter.module.scss';
 
 
 const SELECTOR_ALL = 'all';
@@ -208,14 +209,14 @@ class SpecificFilter extends Filter {
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
     const options = allOptions.slice(minValue, maxValue).map((option) => {
-      const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
+      const value = option.value.length < 29 ? option.value : `${option.value.substring(0, 25)} ...`;
       return {
         label: (
-          <span>
+          <span className={styleFilter.checkboxValue}>
             <Tooltip title={option.value}>
               {value}
             </Tooltip>
-            <Tag>{option.count}</Tag>
+            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
           </span>
         ),
         value: option.value,
@@ -242,11 +243,15 @@ class SpecificFilter extends Filter {
           { dataSelector || null }
           <Row>
             <Col span={24}>
-              <Checkbox.Group
-                options={options}
-                value={draft.values}
-                onChange={this.handleSelectionChange}
-              />
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options} className={`${styleFilter.checkboxGroup} `} value={draft.values}>
+                { options.map(option => (
+                  <Row>
+                    <Col>
+                      <Checkbox className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                    </Col>
+                  </Row>
+                )) }
+              </Checkbox.Group>
             </Col>
           </Row>
         </>
