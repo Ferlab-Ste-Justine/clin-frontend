@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import intl from 'react-intl-universal';
 import {
-  cloneDeep, pull, orderBy, pullAllBy, filter,
+  cloneDeep, orderBy, pullAllBy, filter,
 } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -18,10 +18,11 @@ import {
 
 
 const SELECTOR_ALL = 'all';
+const SELECTOR_NONE = 'none';
 const SELECTOR_INTERSECTION = 'intersection';
 const SELECTOR_DIFFERENCE = 'difference';
-const SELECTOR_DEFAULT = SELECTOR_ALL;
-const SELECTORS = [SELECTOR_ALL, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
+const SELECTOR_DEFAULT = SELECTOR_NONE;
+const SELECTORS = [SELECTOR_ALL, SELECTOR_NONE, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
 
 class SpecificFilter extends Filter {
   /* @NOTE SQON Struct Sample
@@ -30,15 +31,17 @@ class SpecificFilter extends Filter {
     data: {
         id: 'variant_type',
         operand: 'all',
+        selector: 'none',
         values: ['SNP', 'deletion']
     }
   }
   */
-  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT) {
+  static structFromArgs(id, values = [], operand = FILTER_OPERAND_TYPE_DEFAULT, selector = SELECTOR_NONE) {
     return {
       id,
       type: FILTER_TYPE_SPECIFIC,
       operand,
+      selector,
       values,
     };
   }
@@ -49,7 +52,6 @@ class SpecificFilter extends Filter {
       draft: null,
       selection: [],
       selector: null,
-      indeterminate: false,
       size: null,
       page: null,
       allOptions: null,
@@ -62,7 +64,6 @@ class SpecificFilter extends Filter {
     this.handleOperandChange = this.handleOperandChange.bind(this);
     this.handleSelectorChange = this.handleSelectorChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
-    this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
 
     // @NOTE Initialize Component State
@@ -109,96 +110,63 @@ class SpecificFilter extends Filter {
     });
   }
 
-  handleOperandChange(operand) {
-    const { config } = this.props;
-    if (config.operands.indexOf(operand) !== -1) {
-      const { draft } = this.state;
-      draft.operand = operand;
-      this.setState({ draft });
-    }
-  }
-
-  handleCheckAllSelections(e) {
-    const { target } = e;
-    const { draft } = this.state;
-    if (!target.checked) {
-      draft.values = [];
-      this.setState({
-        selection: [],
-        draft,
-        indeterminate: false,
-      });
-    } else {
-      const { dataSet, externalDataSet } = this.props;
-      const { selector } = this.state;
-      const notObserved = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '')
-        .map(ontology => ontology.code);
-      const observed = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS')
-        .map(ontology => ontology.code);
-      const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
-      let options = [];
-      let indeterminate = false;
-
-      switch (selector) {
-        default:
-        case SELECTOR_ALL:
-          options = dataSet;
-          break;
-        case SELECTOR_INTERSECTION:
-          indeterminate = true;
-          options = dataSet.filter((option) => {
-            const hpoValue = option.value.match(hpoRegexp).toString();
-            return hpoValue ? (observed.indexOf(hpoValue) !== -1) : false;
-          });
-          break;
-        case SELECTOR_DIFFERENCE:
-          indeterminate = true;
-          options = dataSet.filter((option) => {
-            const hpoValue = option.value.match(hpoRegexp).toString();
-            return hpoValue ? (notObserved.indexOf(hpoValue) !== -1) : false;
-          });
-          break;
-      }
-
-      const selection = options.map(option => option.value);
-      draft.values = selection;
-      this.setState({
-        selection,
-        draft,
-        indeterminate,
-      });
-    }
-  }
-
   handleSelectionChange(values) {
-    const { dataSet } = this.props;
     const { draft } = this.state;
-    const {
-      selection, allOptions, page, size,
-    } = this.state;
 
-    const minValue = size * (page - 1);
-    const maxValue = size * page;
-    const options = allOptions.slice(minValue, maxValue);
-
-    options.forEach((x) => {
-      if (selection.includes(x.value)) {
-        if (!values.includes(x.value)) { pull(selection, x.value); }
-      } else if (values.includes(x.value)) { selection.push(x.value); }
-    });
-    draft.values = selection;
-
+    draft.values = values;
     this.setState({
-      selection,
       draft,
-      indeterminate: (!(values.length === dataSet.length) && values.length > 0),
     });
   }
 
   handleSelectorChange(e) {
     const selector = e.target.value;
     if (SELECTORS.indexOf(selector) !== -1) {
-      this.setState({ selector });
+      const { draft } = this.state;
+      const { dataSet, externalDataSet } = this.props;
+      const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
+      let selectedValues = [];
+      let selectorDataSet = [];
+
+      switch (selector) {
+        default:
+        case SELECTOR_NONE:
+          break;
+        case SELECTOR_ALL:
+          selectedValues = dataSet;
+          break;
+        case SELECTOR_INTERSECTION:
+          selectorDataSet = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS')
+            .map(ontology => ontology.code);
+          selectedValues = dataSet.filter((option) => {
+            const hpoValue = option.value.match(hpoRegexp).toString();
+            return hpoValue ? (selectorDataSet.indexOf(hpoValue) !== -1) : false;
+          });
+          break;
+        case SELECTOR_DIFFERENCE:
+          selectorDataSet = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '')
+            .map(ontology => ontology.code);
+          selectedValues = dataSet.filter((option) => {
+            const hpoValue = option.value.match(hpoRegexp).toString();
+            return hpoValue ? (selectorDataSet.indexOf(hpoValue) !== -1) : false;
+          });
+          break;
+      }
+
+      draft.values = selectedValues.map(option => option.value);
+      draft.selector = selector;
+      this.setState({
+        draft,
+      });
+    }
+  }
+
+  handleOperandChange(operand) {
+    const { config } = this.props;
+    if (config.operands.indexOf(operand) !== -1) {
+      const { draft } = this.state;
+      draft.operand = operand;
+      this.setState({ draft });
     }
   }
 
@@ -227,12 +195,11 @@ class SpecificFilter extends Filter {
   getEditor() {
     const { renderCustomDataSelector } = this.props;
     const {
-      selection, selector, size, page, allOptions, indeterminate,
+      draft, size, page, allOptions,
     } = this.state;
-    const allSelected = allOptions ? selection.length === allOptions.length : false;
-    const selectAll = intl.get('screen.patientvariant.filter.selection.all');
-    const selectNone = intl.get('screen.patientvariant.filter.selection.none');
+    const { selector } = draft;
     const selectorAll = intl.get('screen.patientvariant.filter.specific.selector.all');
+    const selectorNone = intl.get('screen.patientvariant.filter.specific.selector.none');
     const selectorIntersection = intl.get('screen.patientvariant.filter.specific.selector.intersection');
     const selectorDifference = intl.get('screen.patientvariant.filter.specific.selector.difference');
     const minValue = size * (page - 1);
@@ -255,18 +222,15 @@ class SpecificFilter extends Filter {
       };
     });
 
-    const customDataSelector = renderCustomDataSelector(
+    const dataSelector = renderCustomDataSelector(
       this.handleSelectorChange,
-      this.handleCheckAllSelections,
       [
+        { label: selectorAll, value: SELECTOR_ALL },
+        { label: selectorNone, value: SELECTOR_NONE },
         { label: selectorIntersection, value: SELECTOR_INTERSECTION },
         { label: selectorDifference, value: SELECTOR_DIFFERENCE },
-        { label: selectorAll, value: SELECTOR_ALL },
       ],
       selector,
-      allSelected ? selectNone : selectAll,
-      allSelected,
-      indeterminate,
     );
 
     return {
@@ -275,14 +239,12 @@ class SpecificFilter extends Filter {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-          <Row>
-            { customDataSelector }
-          </Row>
+          { dataSelector || null }
           <Row>
             <Col span={24}>
               <Checkbox.Group
                 options={options}
-                value={selection}
+                value={draft.values}
                 onChange={this.handleSelectionChange}
               />
             </Col>
@@ -302,7 +264,7 @@ class SpecificFilter extends Filter {
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
-        onOperandChange={this.handleOperandChange}
+        onOperandChangeCallBack={this.handleOperandChange}
         sortData={allOptions}
       />
     );
@@ -319,32 +281,19 @@ SpecificFilter.propTypes = {
 };
 
 SpecificFilter.defaultProps = {
-  renderCustomDataSelector: (onChangeCallback, onCheckAllCallback, values, selector, checkboxLabel, checkboxIsChecked, checkboxIsIndeterminate = false) => (
+  renderCustomDataSelector: (onChangeCallback, values, selector) => (
     // @NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
-    <>
-      <br />
-      <Row>
-        <Col span={6}>
-          <Checkbox
-            key="specific-selector-check-all"
-            className="selector"
-            indeterminate={checkboxIsIndeterminate}
-            onChange={onCheckAllCallback}
-            checked={checkboxIsChecked}
-          />
-          {checkboxLabel}
-        </Col>
-        <Col span={18}>
-          <Radio.Group type="secondary" size="small" value={selector} onChange={onChangeCallback}>
-            { values.map(value => (
-              <Radio.Button value={value.value}>
-                {value.label}
-              </Radio.Button>
-            )) }
-          </Radio.Group>
-        </Col>
-      </Row>
-    </>
+    <Row>
+      <Col span={24}>
+        <Radio.Group type="secondary" size="small" value={selector} onChange={onChangeCallback}>
+          { values.map(value => (
+            <Radio.Button value={value.value}>
+              {value.label}
+            </Radio.Button>
+          )) }
+        </Radio.Group>
+      </Col>
+    </Row>
   ),
   category: '',
   config: {

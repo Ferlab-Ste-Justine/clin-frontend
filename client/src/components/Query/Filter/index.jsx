@@ -182,10 +182,10 @@ class Filter extends React.Component {
   }
 
   render() {
-    const { onOperandChange, config } = this.props;
+    const { onOperandChangeCallBack, config } = this.props;
 
     const handleMenuClick = (e) => {
-      onOperandChange(e.key);
+      onOperandChangeCallBack(e.key);
     };
 
     const applyMenu = cfg => (!cfg ? null : (
@@ -350,7 +350,7 @@ Filter.propTypes = {
   onSelectCallback: PropTypes.func,
   onSearchCallback: PropTypes.func,
   onPageChangeCallBack: PropTypes.func,
-  onOperandChange: PropTypes.func,
+  onOperandChangeCallBack: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
@@ -375,7 +375,7 @@ Filter.defaultProps = {
   onSelectCallback: () => {},
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
-  onOperandChange: () => { },
+  onOperandChangeCallBack: () => { },
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,
