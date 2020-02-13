@@ -262,7 +262,6 @@ class SpecificFilter extends Filter {
   render() {
     const { allOptions, draft } = this.state;
     const { config } = this.props;
-    const { operand } = draft;
 
     return (
       <Filter
@@ -271,7 +270,7 @@ class SpecificFilter extends Filter {
         type={FILTER_TYPE_SPECIFIC}
         editor={this.getEditor()}
         searchable
-        operand={operand}
+        draft={draft}
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
         onOperandChangeCallBack={this.handleOperandChange}

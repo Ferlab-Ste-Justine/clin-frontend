@@ -237,7 +237,7 @@ class Filter extends React.Component {
 
   render() {
     const {
-      onOperandChangeCallBack, config, data, overlayOnly, editor, searchable, autoSelect,
+      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -258,22 +258,21 @@ class Filter extends React.Component {
     ));
 
     const hasOperands = cfg => cfg && config.operands;
-    const { operand } = this.props;
+    const { operand } = draft;
 
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
-      // <Dropdown.Button type="primary" onClick={this.handleApply} overlay={applyMenu(cfg)} className={styleFilter.applyButton} placement="bottomLeft">
       <Dropdown.Button
         type="primary"
-        className="composite-filter-apply-button"
+        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
         icon={(
           <Icon
-            // className={styleFilter.whiteSvgIcon}
             component={OperatorIconComponent(operatorFromOperand(operand))}
           />
           )}
         onClick={this.handleApply}
         overlay={applyMenu(cfg)
         }
+        placement="bottomLeft"
       >
         {intl.get('components.query.filter.button.apply')}
       </Dropdown.Button>
@@ -438,7 +437,7 @@ Filter.propTypes = {
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
-  operand: PropTypes.string,
+  draft: PropTypes.shape({}),
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
@@ -461,7 +460,7 @@ Filter.defaultProps = {
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
   onOperandChangeCallBack: () => {},
-  operand: '',
+  draft: {},
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,
