@@ -109,6 +109,15 @@ class SpecificFilter extends Filter {
     });
   }
 
+  handleOperandChange(operand) {
+    const { config } = this.props;
+    if (config.operands.indexOf(operand) !== -1) {
+      const { draft } = this.state;
+      draft.operand = operand;
+      this.setState({ draft });
+    }
+  }
+
   handleCheckAllSelections(e) {
     const { target } = e;
     const { draft } = this.state;
@@ -193,15 +202,6 @@ class SpecificFilter extends Filter {
     }
   }
 
-  handleOperandChange(operand) {
-    const { config } = this.props;
-    if (config.operands.indexOf(operand) !== -1) {
-      const { draft } = this.state;
-      draft.operand = operand;
-      this.setState({ draft });
-    }
-  }
-
   getEditorDraftInstruction() {
     const { draft } = this.state;
     const { id, operand, values } = draft;
@@ -225,11 +225,10 @@ class SpecificFilter extends Filter {
   }
 
   getEditor() {
-    const { config, renderCustomDataSelector } = this.props;
+    const { renderCustomDataSelector } = this.props;
     const {
-      draft, selection, selector, size, page, allOptions, indeterminate,
+      selection, selector, size, page, allOptions, indeterminate,
     } = this.state;
-    const { operand } = draft;
     const allSelected = allOptions ? selection.length === allOptions.length : false;
     const selectAll = intl.get('screen.patientvariant.filter.selection.all');
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
@@ -277,18 +276,8 @@ class SpecificFilter extends Filter {
       contents: (
         <>
           <Row>
-            <Col span={24}>
-              <Radio.Group type="primary" size="small" value={operand} onChange={this.handleOperandChange}>
-                {config.operands.map(configOperand => (
-                  <Radio.Button value={configOperand}>
-                    {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-            </Col>
+            { customDataSelector }
           </Row>
-          { customDataSelector }
-          <br />
           <Row>
             <Col span={24}>
               <Checkbox.Group
