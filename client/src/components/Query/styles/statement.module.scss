@@ -98,14 +98,17 @@
 
       .message {
         color: $color-warning;
-        font-size: $little-font;
+        font-size: 11px;
         font-style: italic;
         min-width: 175px;
-        margin-bottom: $little-font;
         text-align: right;
+        position: absolute;
+        top: -20px;
+        right: 0;
+        display: flex;
+        align-items: center;
 
         .icon {
-          heigth: $icon-size;
           margin-right: $icon-text-spacing;
         }
       }
