@@ -137,9 +137,14 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   render() {
+    const {
+      draft,
+    } = this.state;
+
     return (
       <Filter
         {...this.props}
+        draft={draft}
         type={FILTER_TYPE_NUMERICAL_COMPARISON}
         editor={this.getEditor()}
       />

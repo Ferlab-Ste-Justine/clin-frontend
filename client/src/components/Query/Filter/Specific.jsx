@@ -9,16 +9,15 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 
-import Filter, { FILTER_TYPE_SPECIFIC } from './index';
-import {
+import Filter, {
+  FILTER_TYPE_SPECIFIC,
   FILTER_OPERAND_TYPE_ALL,
   FILTER_OPERAND_TYPE_DEFAULT,
   FILTER_OPERAND_TYPE_NONE,
   FILTER_OPERAND_TYPE_ONE,
-} from './Generic';
+} from './index';
 import '../styles/filter.scss';
 import styleFilter from '../styles/filter.module.scss';
-
 
 const SELECTOR_ALL = 'all';
 const SELECTOR_NONE = 'none';
@@ -262,13 +261,17 @@ class SpecificFilter extends Filter {
   }
 
   render() {
-    const { allOptions } = this.state;
+    const { allOptions, draft } = this.state;
+    const { config } = this.props;
+
     return (
       <Filter
         {...this.props}
+        config={config}
         type={FILTER_TYPE_SPECIFIC}
         editor={this.getEditor()}
         searchable
+        draft={draft}
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
         onOperandChangeCallBack={this.handleOperandChange}

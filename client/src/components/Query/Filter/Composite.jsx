@@ -196,9 +196,14 @@ class CompositeFilter extends React.Component {
   }
 
   render() {
+    const {
+      draft,
+    } = this.state;
+
     return (
       <Filter
         {...this.props}
+        draft={draft}
         type={FILTER_TYPE_COMPOSITE}
         editor={this.getEditor()}
       />
