@@ -348,3 +348,21 @@
     }
 
 }
+
+.graySvgIcon{
+    margin-right: 8px;
+    path, polygon{
+        fill:rgba(35, 55, 80, 0.38);
+    }
+}
+
+.operator-icon-svg {
+  margin-right: "-8px";
+  height: "16px";
+  width: "16px";
+  fill:rgba(255, 255, 255, 1.0);
+}
+
+.composite-filter-apply-button {
+  display: 'inline-flex';
+}
