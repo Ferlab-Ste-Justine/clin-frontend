@@ -225,7 +225,6 @@ class GenericFilter extends React.Component {
   }
 
   handleOperandChange(operand) {
-    console.log('handleOperand change: ', operand);
     const { config } = this.props;
     if (config.operands.indexOf(operand) !== -1) {
       const { draft } = this.state;
