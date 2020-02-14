@@ -2,7 +2,8 @@
 
 
 .filterCard{
-    width: 300px;
+    min-width: 300px;
+    max-width: 420px;
     border:none;
     box-shadow: 0px 6px 10px 0px rgba(89, 121, 144, 0.14),
                 0px 1px 18px 0px rgba(89, 121, 144, 0.12),
@@ -110,6 +111,7 @@
             margin: 0 4px;
         }
     }
+
 
     .checkboxGroup{
         .checkboxLabel{

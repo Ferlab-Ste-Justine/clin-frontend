@@ -1,6 +1,7 @@
+
 import React from 'react';
 import {
-  Row, Col, Checkbox, Radio, Tag, Tooltip,
+  Row, Col, Checkbox, Tag, Tooltip, Divider, Button,
 } from 'antd';
 import intl from 'react-intl-universal';
 import {
@@ -15,7 +16,7 @@ import Filter, {
   FILTER_OPERAND_TYPE_NONE,
   FILTER_OPERAND_TYPE_ONE,
 } from './index';
-
+import '../styles/filter.scss';
 import styleFilter from '../styles/filter.module.scss';
 
 const SELECTOR_ALL = 'all';
@@ -120,8 +121,7 @@ class SpecificFilter extends Filter {
     });
   }
 
-  handleSelectorChange(e) {
-    const selector = e.target.value;
+  handleSelectorChange(selector) {
     if (SELECTORS.indexOf(selector) !== -1) {
       const { draft } = this.state;
       const { dataSet, externalDataSet } = this.props;
@@ -290,18 +290,15 @@ SpecificFilter.propTypes = {
 };
 
 SpecificFilter.defaultProps = {
-  renderCustomDataSelector: (onChangeCallback, values, selector) => (
+  renderCustomDataSelector: (onChangeCallback, values) => (
     // @NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
-    <Row>
-      <Col span={24}>
-        <Radio.Group type="secondary" size="small" value={selector} onChange={onChangeCallback}>
-          { values.map(value => (
-            <Radio.Button value={value.value}>
-              {value.label}
-            </Radio.Button>
-          )) }
-        </Radio.Group>
-      </Col>
+    <Row className={styleFilter.selectionToolBar}>
+      { values.map(value => (
+        <>
+          <Button onClick={() => onChangeCallback(value.value)} className={value.value}>{value.label}</Button>
+          <Divider className="divider" type="vertical" />
+        </>
+      )) }
     </Row>
   ),
   category: '',
