@@ -1,6 +1,7 @@
+
 import React from 'react';
 import {
-  Row, Col, Checkbox, Radio, Tag, Tooltip,
+  Row, Col, Checkbox, Tag, Tooltip, Divider, Button,
 } from 'antd';
 import intl from 'react-intl-universal';
 import {
@@ -15,6 +16,7 @@ import {
   FILTER_OPERAND_TYPE_NONE,
   FILTER_OPERAND_TYPE_ONE,
 } from './Generic';
+import '../styles/filter.scss';
 import styleFilter from '../styles/filter.module.scss';
 
 
@@ -286,18 +288,15 @@ SpecificFilter.propTypes = {
 };
 
 SpecificFilter.defaultProps = {
-  renderCustomDataSelector: (onChangeCallback, values, selector) => (
+  renderCustomDataSelector: (onChangeCallback, values) => (
     // @NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
-    <Row>
-      <Col span={24}>
-        <Radio.Group type="secondary" size="small" value={selector} onChange={onChangeCallback}>
-          { values.map(value => (
-            <Radio.Button value={value.value}>
-              {value.label}
-            </Radio.Button>
-          )) }
-        </Radio.Group>
-      </Col>
+    <Row className={styleFilter.selectionToolBar}>
+      { values.map(value => (
+        <>
+          <Button className={value.value}>{value.label}</Button>
+          <Divider className="divider" type="vertical" />
+        </>
+      )) }
     </Row>
   ),
   category: '',
