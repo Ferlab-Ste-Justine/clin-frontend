@@ -257,6 +257,8 @@ class Filter extends React.Component {
       </Menu>
     ));
 
+    const savedOperand = data.operand;
+
     const hasOperands = cfg => cfg && config.operands;
     const { operand } = draft;
 
@@ -391,7 +393,7 @@ class Filter extends React.Component {
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            {operand ? IconForOperand(operand)() : actionLabel}
+            {operand ? IconForOperand(savedOperand)() : actionLabel}
           </div>
           { this.isEditable() && (
             <Dropdown
