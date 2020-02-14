@@ -87,27 +87,46 @@ const getStatements = () => axios.get(`${window.CLIN.metaServiceApiUrl}/statemen
   .then(successCallback)
   .catch(errorCallback);
 
-const createStatement = (title, description, queries, isDefault = false) => axios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const createStatement = (title, description, queries) => axios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
   title,
   description,
   queries,
-  isDefault,
 })
   .then(successCallback)
   .catch(errorCallback);
 
-const updateStatement = (uid, title, description, queries, isDefault) => axios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const updateStatement = (uid, title, description, queries) => axios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
   uid,
   title,
   description,
   queries,
-  isDefault,
 })
   .then(successCallback)
   .catch(errorCallback);
 
 const deleteStatement = uid => axios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
   data: { uid },
+})
+  .then(successCallback)
+  .catch(errorCallback);
+
+const getUserProfile = () => axios.get(`${window.CLIN.metaServiceApiUrl}/profile`, {})
+  .then(successCallback)
+  .catch(errorCallback);
+
+const createUserProfile = (defaultStatement = '', patientTableConfig = {}, variantTableConfig = {}) => axios.post(`${window.CLIN.metaServiceApiUrl}/profile`, {
+  defaultStatement,
+  patientTableConfig,
+  variantTableConfig,
+})
+  .then(successCallback)
+  .catch(errorCallback);
+
+const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, variantTableConfig = {}) => axios.put(`${window.CLIN.metaServiceApiUrl}/profile`, {
+  uid,
+  defaultStatement,
+  patientTableConfig,
+  variantTableConfig,
 })
   .then(successCallback)
   .catch(errorCallback);
@@ -126,4 +145,7 @@ export default {
   createStatement,
   updateStatement,
   deleteStatement,
+  getUserProfile,
+  createUserProfile,
+  updateUserProfile,
 };

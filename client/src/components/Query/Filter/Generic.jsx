@@ -240,10 +240,10 @@ class GenericFilter extends React.Component {
     return (
       <Filter
         {...this.props}
+        draft={draft}
         config={config}
         type={FILTER_TYPE_GENERIC}
         editor={this.getEditor()}
-        draft={draft}
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}

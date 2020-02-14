@@ -50,7 +50,6 @@ const createDraftStatement = (title, description = '', queries = null) => ({
   title,
   description,
   queries: queries || [{ key: uuidv1(), instructions: [] }],
-  isDefault: false,
 });
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
@@ -61,6 +60,10 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
       draft = Object.assign({}, initialVariantState);
+      break;
+
+    case actions.USER_PROFILE_SUCCEEDED:
+      draft.activeStatementId = action.payload.data.hits[0]._source.defaultStatement;
       break;
 
     case actions.VARIANT_SCHEMA_SUCCEEDED:
@@ -183,27 +186,15 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
             title: hit._source.title,
             description: hit._source.description,
             queries: JSON.parse(hit._source.queries),
-            isDefault: hit._source.isDefault,
           };
         });
         if (!state.activeStatementId) {
-          const defaultStatementId = Object.keys(draft.statements).find(
-            statementKey => draft.statements[statementKey].isDefault === true,
-          );
-          if (defaultStatementId) {
-            draft.activeStatementId = defaultStatementId;
-            draft.activeQuery = last(draft.statements[defaultStatementId].queries).key || null;
-            draft.originalQueries = draft.statements[defaultStatementId].queries;
-            draft.draftQueries = draft.statements[defaultStatementId].queries;
-            draft.draftHistory = [];
-          } else {
-            draft.activeStatementId = DRAFT_STATEMENT_UID;
-            draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
-            draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
-            draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
-            draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
-            draft.draftHistory = [];
-          }
+          draft.activeStatementId = DRAFT_STATEMENT_UID;
+          draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
+          draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
+          draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
+          draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
+          draft.draftHistory = [];
         }
       }
       break;
@@ -228,15 +219,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         queries: JSON.parse(action.payload.data.queries),
         isDefault: action.payload.data.isDefault,
       };
-
-      if (updatedStatement.isDefault && updatedStatement.uid !== draft.activeStatementId) {
-        draft.statements[draft.activeStatementId].isDefault = false;
-      }
-      if (updatedStatement.uid === draft.activeStatementId) {
-        draft.originalQueries = updatedStatement.queries;
-        draft.draftQueries = updatedStatement.queries;
-        draft.draftHistory = [];
-      }
       draft.statements[updatedStatement.uid] = updatedStatement;
       break;
 
@@ -247,7 +229,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         title: action.payload.data.title,
         description: action.payload.data.description,
         queries: JSON.parse(action.payload.data.queries),
-        isDefault: action.payload.data.isDefault,
       };
       draft.statements[createdStatement.uid] = createdStatement;
       draft.activeStatementId = createdStatement.uid;

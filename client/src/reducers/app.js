@@ -69,7 +69,6 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       break;
 
     case actions.START_SUBLOADING_ANIMATION:
-    case actions.USER_FETCH_REQUESTED:
     case actions.PATIENT_SEARCH_REQUESTED:
     case actions.PATIENT_FETCH_REQUESTED:
     case actions.PATIENT_VARIANT_SEARCH_REQUESTED:
@@ -79,8 +78,6 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       break;
 
     case actions.STOP_SUBLOADING_ANIMATION:
-    case actions.USER_FETCH_SUCCEEDED:
-    case actions.USER_FETCH_FAILED:
     case actions.PATIENT_SEARCH_SUCCEEDED:
     case actions.PATIENT_SEARCH_FAILED:
     case actions.PATIENT_FETCH_SUCCEEDED:

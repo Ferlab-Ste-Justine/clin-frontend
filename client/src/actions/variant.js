@@ -101,25 +101,23 @@ export const createDraftStatement = statement => ({
   },
 });
 
-export const updateStatement = (id, title, description, queries, isDefault) => ({
+export const updateStatement = (id, title, description, queries) => ({
   type: actions.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED,
   payload: {
     id,
     title,
     description,
     queries,
-    isDefault,
   },
 });
 
-export const createStatement = (id, title, description, queries, isDefault) => ({
+export const createStatement = (id, title, description, queries) => ({
   type: actions.PATIENT_VARIANT_CREATE_STATEMENT_REQUESTED,
   payload: {
     id,
     title,
     description,
     queries,
-    isDefault,
   },
 });
 
