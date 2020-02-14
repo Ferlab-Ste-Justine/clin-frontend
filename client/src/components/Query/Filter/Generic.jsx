@@ -7,14 +7,14 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
-import Filter, { FILTER_TYPE_GENERIC } from './index';
+import Filter, {
+  FILTER_TYPE_GENERIC,
+  FILTER_OPERAND_TYPE_ALL,
+  FILTER_OPERAND_TYPE_DEFAULT,
+  FILTER_OPERAND_TYPE_NONE,
+  FILTER_OPERAND_TYPE_ONE,
+} from './index';
 import styleFilter from '../styles/filter.module.scss';
-
-export const FILTER_OPERAND_TYPE_ALL = 'all';
-export const FILTER_OPERAND_TYPE_ONE = 'one';
-export const FILTER_OPERAND_TYPE_NONE = 'none';
-export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
-
 
 class GenericFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -234,18 +234,20 @@ class GenericFilter extends React.Component {
   }
 
   render() {
-    const { allOptions } = this.state;
+    const { allOptions, draft } = this.state;
     const { config } = this.props;
+
     return (
       <Filter
         {...this.props}
         config={config}
         type={FILTER_TYPE_GENERIC}
         editor={this.getEditor()}
+        draft={draft}
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
-        onOperandChange={this.handleOperandChange}
+        onOperandChangeCallBack={this.handleOperandChange}
         sortData={allOptions}
       />
     );
