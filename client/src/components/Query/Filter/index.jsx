@@ -257,13 +257,15 @@ class Filter extends React.Component {
       </Menu>
     ));
 
+    const savedOperand = data.operand;
+
     const hasOperands = cfg => cfg && config.operands;
     const { operand } = draft;
 
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
       <Dropdown.Button
         type="primary"
-        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
+        className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
         icon={(
           <Icon
             component={OperatorIconComponent(operatorFromOperand(operand))}
@@ -280,6 +282,7 @@ class Filter extends React.Component {
       <Button
         type="primary"
         onClick={this.handleApply}
+        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
       >
         {intl.get('components.query.filter.button.apply') }
       </Button>
@@ -391,7 +394,7 @@ class Filter extends React.Component {
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            {operand ? IconForOperand(operand)() : actionLabel}
+            {operand ? IconForOperand(savedOperand)() : actionLabel}
           </div>
           { this.isEditable() && (
             <Dropdown
