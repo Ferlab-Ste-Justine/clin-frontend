@@ -1,5 +1,5 @@
 import {
-  all, put, takeLatest, select, call,
+  all, put, takeLatest, select,
 } from 'redux-saga/effects';
 import { cloneDeep } from 'lodash';
 import intl from 'react-intl-universal';
@@ -89,15 +89,13 @@ function* updateStatement(action) {
     const title = action.payload.title ? action.payload.title : statements[statementKey].title;
     const description = action.payload.description ? action.payload.description : statements[statementKey].description;
     const queries = action.payload.queries ? action.payload.queries : statements[statementKey].queries;
-    const isDefault = action.payload.isDefault === null ? false : action.payload.isDefault;
-    const statementResponse = yield Api.updateStatement(statementKey, title, description, queries, isDefault);
+    const statementResponse = yield Api.updateStatement(statementKey, title, description, queries);
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }
 
     yield put({ type: actionTypes.PATIENT_VARIANT_UPDATE_STATEMENT_SUCCEEDED, payload: statementResponse.payload.data });
     yield put(actions.success('screen.patientvariant.notification.save.success'));
-    yield call(getStatements);
   } catch (e) {
     yield put({ type: actionTypes.PATIENT_VARIANT_UPDATE_STATEMENT_FAILED, payload: e });
     yield put(actions.error('screen.patientvariant.notification.save.error'));

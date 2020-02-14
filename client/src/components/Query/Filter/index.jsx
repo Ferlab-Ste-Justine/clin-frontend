@@ -237,7 +237,7 @@ class Filter extends React.Component {
 
   render() {
     const {
-      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect,
+      onOperandChangeCallBack, config, data, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -257,13 +257,15 @@ class Filter extends React.Component {
       </Menu>
     ));
 
+    const savedOperand = data.operand;
+
     const hasOperands = cfg => cfg && config.operands;
-    const { operand } = draft;
+    const { operand } = data;
 
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
       <Dropdown.Button
         type="primary"
-        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
+        className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
         icon={(
           <>
             <Icon
@@ -283,6 +285,7 @@ class Filter extends React.Component {
       <Button
         type="primary"
         onClick={this.handleApply}
+        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
       >
         {intl.get('components.query.filter.button.apply') }
       </Button>
@@ -394,7 +397,7 @@ class Filter extends React.Component {
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            {operand ? IconForOperand(operand)() : actionLabel}
+            {operand ? IconForOperand(savedOperand)() : actionLabel}
           </div>
           { this.isEditable() && (
             <Dropdown
@@ -440,7 +443,6 @@ Filter.propTypes = {
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
-  draft: PropTypes.shape({}),
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
@@ -463,7 +465,6 @@ Filter.defaultProps = {
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
   onOperandChangeCallBack: () => {},
-  draft: {},
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,
