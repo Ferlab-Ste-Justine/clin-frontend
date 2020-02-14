@@ -334,17 +334,15 @@ class Statement extends React.Component {
   }
 
   toggleStatementAsDefault(e) {
-    const { dropDownIsOpen, statementTitle } = this.state;
-    const { statements } = this.props;
+    const { dropDownIsOpen } = this.state;
     let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
     if (!id) {
       const { activeStatementId } = this.props;
       id = activeStatementId;
     }
-    const title = statementTitle !== null ? statementTitle : statements[id].title;
-    const statement = statements[id];
+
     const callbackSetStatementAsDefault = () => {
-      this.props.onUpdateStatementCallback(id, title, '', null, !statement.isDefault); /* eslint-disable-line */
+      this.props.onSetDefaultStatementCallback(id); /* eslint-disable-line */
     };
     if (this.isDirty()) {
       this.showConfirmForDestructiveStatementAction(
@@ -663,7 +661,7 @@ class Statement extends React.Component {
   }
 
   render() {
-    const { data, activeStatementId, statements } = this.props;
+    const { data, activeStatementId, statements, defaultStatementId } = this.props;
     const activeStatement = statements[activeStatementId];
     if (!data || !activeStatement) return null;
     const { dropDownIsOpen, dropdownClickValue } = this.state;
@@ -843,9 +841,9 @@ class Statement extends React.Component {
                       disabled={activeStatementId == null}
                     >
                       <Icon
-                        className={activeStatement.isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
+                        className={(activeStatement.uid === defaultStatementId) ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
                         type="star"
-                        theme={activeStatement.isDefault ? 'filled' : 'outlined'}
+                        theme={(activeStatement.uid === defaultStatementId) ? 'filled' : 'outlined'}
                       />
                     </Button>
                   </Tooltip>
@@ -966,8 +964,8 @@ class Statement extends React.Component {
                               { (<Icon
                                 type="star"
                                 size={20}
-                                className={statements[key].isDefault ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
-                                theme={statements[key].isDefault ? 'filled' : 'outlined'}
+                                className={(key === defaultStatementId) ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
+                                theme={(key === defaultStatementId) ? 'filled' : 'outlined'}
                                 dataid={statements[key].uid}
                                 onClick={this.toggleStatementAsDefault}
                               />)}
@@ -1061,6 +1059,7 @@ Statement.propTypes = {
   data: PropTypes.array.isRequired,
   original: PropTypes.shape({}).isRequired,
   activeStatementId: PropTypes.string,
+  defaultStatementId: PropTypes.string,
   activeQuery: PropTypes.string,
   activeStatementTotals: PropTypes.shape({}),
   externalData: PropTypes.shape({}),
@@ -1080,6 +1079,7 @@ Statement.propTypes = {
   onSelectStatementCallback: PropTypes.func,
   onDuplicateStatementCallback: PropTypes.func,
   onBatchEditCallback: PropTypes.func,
+  onSetDefaultStatementCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -1097,6 +1097,7 @@ Statement.defaultProps = {
     undoable: true,
   },
   activeStatementId: '',
+  defaultStatementId: '',
   activeStatementTotals: {},
   target: {},
   externalData: {},
@@ -1113,6 +1114,7 @@ Statement.defaultProps = {
   onSelectStatementCallback: () => {},
   onDuplicateStatementCallback: () => {},
   onBatchEditCallback: () => {},
+  onSetDefaultStatementCallback: () => {},
 };
 
 export default Statement;
