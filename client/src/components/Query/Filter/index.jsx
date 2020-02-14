@@ -9,7 +9,7 @@ import {
 } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
-  ic_cancel, ic_info_outline, ic_search, ic_chevron_left,
+  ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
@@ -265,9 +265,12 @@ class Filter extends React.Component {
         type="primary"
         className={`composite-filter-apply-button ${styleFilter.applyButton}`}
         icon={(
-          <Icon
-            component={OperatorIconComponent(operatorFromOperand(operand))}
-          />
+          <>
+            <Icon
+              component={OperatorIconComponent(operatorFromOperand(operand))}
+            />
+            <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
+          </>
           )}
         onClick={this.handleApply}
         overlay={applyMenu(cfg)
