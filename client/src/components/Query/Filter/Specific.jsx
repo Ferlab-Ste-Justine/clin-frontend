@@ -121,8 +121,7 @@ class SpecificFilter extends Filter {
     });
   }
 
-  handleSelectorChange(e) {
-    const selector = e.target.value;
+  handleSelectorChange(selector) {
     if (SELECTORS.indexOf(selector) !== -1) {
       const { draft } = this.state;
       const { dataSet, externalDataSet } = this.props;
@@ -296,7 +295,7 @@ SpecificFilter.defaultProps = {
     <Row className={styleFilter.selectionToolBar}>
       { values.map(value => (
         <>
-          <Button className={value.value}>{value.label}</Button>
+          <Button onClick={() => onChangeCallback(value.value)} className={value.value}>{value.label}</Button>
           <Divider className="divider" type="vertical" />
         </>
       )) }
