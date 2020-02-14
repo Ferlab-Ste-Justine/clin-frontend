@@ -276,9 +276,17 @@
                     border-top-right-radius: 0;
                     border-bottom-right-radius: 0;
                     border-right: 1px solid rgba(255, 255, 255, 0.3);
+                    display: flex;
+                    align-items: center;
+                    padding:0 0 0 4px !important;
 
-                    i{
-                        display: flex;
+                    i:first-of-type{
+                        line-height: 0;
+                        svg{
+                            width: 16px;
+                            height: 16px;
+                        }
+
                     }
                 }
 
