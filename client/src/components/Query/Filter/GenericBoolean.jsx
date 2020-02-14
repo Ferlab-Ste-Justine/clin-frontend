@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Row, Col, Checkbox, Tooltip, Tag,
+  Row, Col, Checkbox, Tooltip, Tag, Button, Divider,
 } from 'antd';
 import {
   cloneDeep, pull, orderBy, pullAllBy, filter,
@@ -10,7 +10,7 @@ import {
 import intl from 'react-intl-universal';
 
 import Filter, { FILTER_TYPE_GENERICBOOL } from './index';
-
+import styleFilter from '../styles/filter.module.scss';
 
 class GenericBooleanFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -43,7 +43,8 @@ class GenericBooleanFilter extends React.Component {
     this.getEditorLabels = this.getEditorLabels.bind(this);
     this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
     this.getEditorInstruction = this.getEditorInstruction.bind(this);
-    this.handleCheckAllSelections = this.handleCheckAllSelections.bind(this);
+    this.handleSelectNone = this.handleSelectNone.bind(this);
+    this.handleSelectAll = this.handleSelectAll.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
     this.handleSearchByQuery = this.handleSearchByQuery.bind(this);
 
@@ -75,7 +76,6 @@ class GenericBooleanFilter extends React.Component {
     const {
       selection, size, page, allOptions,
     } = this.state;
-    const allSelected = allOptions ? selection.length === allOptions.length : false;
     const minValue = size * (page - 1);
     const maxValue = size * page;
 
@@ -86,11 +86,11 @@ class GenericBooleanFilter extends React.Component {
       const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
       return {
         label: (
-          <span>
+          <span className={styleFilter.checkboxValue}>
             <Tooltip title={option.value}>
               {value}
             </Tooltip>
-            <Tag>{option.count}</Tag>
+            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
           </span>
         ),
         value: option.value,
@@ -103,24 +103,22 @@ class GenericBooleanFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-          <Row>
-            <Checkbox
-              key="check-all"
-              className="selector"
-              indeterminate={(!allSelected && selection.length > 0)}
-              onChange={this.handleCheckAllSelections}
-              checked={allSelected}
-            />
-            {(!allSelected ? selectAll : selectNone)}
+          <Row className={styleFilter.selectionToolBar}>
+            <Button onClick={this.handleSelectAll}>{selectAll}</Button>
+            <Divider type="vertical" />
+            <Button onClick={this.handleSelectNone}>{selectNone}</Button>
           </Row>
-          <br />
           <Row>
             <Col span={24}>
-              <Checkbox.Group
-                options={options}
-                value={selection}
-                onChange={this.handleSelectionChange}
-              />
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+                { options.map(option => (
+                  <Row>
+                    <Col>
+                      <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                    </Col>
+                  </Row>
+                )) }
+              </Checkbox.Group>
             </Col>
           </Row>
         </>
@@ -150,24 +148,24 @@ class GenericBooleanFilter extends React.Component {
     };
   }
 
-  handleCheckAllSelections(e) {
-    const { target } = e;
+  handleSelectNone() {
     const { draft } = this.state;
-    if (!target.checked) {
-      draft.values = [];
-      this.setState({
-        selection: [],
-        draft,
-      });
-    } else {
-      const { dataSet } = this.props;
-      const selection = dataSet.map(option => option.value);
-      draft.values = selection;
-      this.setState({
-        selection,
-        draft,
-      });
-    }
+    draft.values = [];
+    this.setState({
+      selection: [],
+      draft,
+    });
+  }
+
+  handleSelectAll() {
+    const { draft } = this.state;
+    const { dataSet } = this.props;
+    const selection = dataSet.map(option => option.value);
+    draft.values = selection;
+    this.setState({
+      selection,
+      draft,
+    });
   }
 
   handleSearchByQuery(values) {

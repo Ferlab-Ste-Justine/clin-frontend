@@ -251,7 +251,7 @@
             }
         }
 
-        .applyButton{
+        .dropDownApplyButton{
             display: flex;
             flex-direction: row-reverse;
             button{
@@ -293,6 +293,24 @@
                 }
             }
 
+        }
+
+        .applyButton{
+            height: 24px;
+            background-color: #1b7ab2;
+            border: none;
+            padding: 0 8px;
+            border-radius: 2px;
+            span{
+                color: rgb(255, 255, 255);
+                font-size: 12px;
+                font-family: $font;
+                font-weight: 500;
+                letter-spacing: 0.25px;
+            }
+            &:hover{
+                background-color:rgba(27, 122, 178, 0.92)
+            }
         }
     }
 

@@ -263,7 +263,7 @@ class Filter extends React.Component {
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
       <Dropdown.Button
         type="primary"
-        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
+        className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
         icon={(
           <Icon
             component={OperatorIconComponent(operatorFromOperand(operand))}
@@ -280,6 +280,7 @@ class Filter extends React.Component {
       <Button
         type="primary"
         onClick={this.handleApply}
+        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
       >
         {intl.get('components.query.filter.button.apply') }
       </Button>
