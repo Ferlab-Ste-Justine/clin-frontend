@@ -276,9 +276,20 @@
                     border-top-right-radius: 0;
                     border-bottom-right-radius: 0;
                     border-right: 1px solid rgba(255, 255, 255, 0.3);
+                    display: flex;
+                    align-items: center;
+                    padding:0 0 0 4px !important;
 
                     i{
-                        display: flex;
+                        color:rgba(255, 255, 255, 0.54);
+                    }
+                    i:first-of-type{
+                        line-height: 0;
+                        svg{
+                            width: 16px;
+                            height: 16px;
+                        }
+
                     }
                 }
 
@@ -349,17 +360,20 @@
         font-size: 14px;
         font-family: $font;
         letter-spacing: 0.25px;
-        .svgIcon{
-            width:24px;
-            height:24px;
+        align-items: center;
+        .graySvgIcon{
             margin-right: 8px;
+            svg{
+                width:24px;
+                height:24px;
+            }
             path, polygon{
                 fill:rgba(35, 55, 80, 0.38);
             }
         }
 
         &:hover{
-            .svgIcon{
+            .graySvgIcon{
                 path, polygon{
                     fill:#1b7ab2;
                 }
@@ -369,12 +383,6 @@
 
 }
 
-.graySvgIcon{
-    margin-right: 8px;
-    path, polygon{
-        fill:rgba(35, 55, 80, 0.38);
-    }
-}
 
 .operator-icon-svg {
   margin-right: "-8px";
