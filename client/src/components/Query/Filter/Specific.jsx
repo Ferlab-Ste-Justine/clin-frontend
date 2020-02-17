@@ -216,7 +216,7 @@ class SpecificFilter extends Filter {
             <Tooltip title={option.value}>
               {value}
             </Tooltip>
-            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
+            <Tag className={styleFilter.valueCount}>{intl.get('components.query.count', { count: option.count })}</Tag>
           </span>
         ),
         value: option.value,

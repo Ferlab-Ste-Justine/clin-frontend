@@ -103,7 +103,7 @@ class CompositeFilter extends React.Component {
                 <Select.Option value={SCORE_SELECTION}>Score</Select.Option>
                 { dataSet.map(datum => (
                   <Select.Option value={datum.value}>
-                    {`${datum.value} [ ${datum.count} ]`}
+                    {`${datum.value} [ ${intl.get('components.query.count', { count: datum.count })} ]`}
                   </Select.Option>
                 )) }
               </Select>

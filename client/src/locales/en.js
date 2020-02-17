@@ -342,6 +342,8 @@ const en = {
   'screen.variantsearch.table.sift': 'SIFT',
   'screen.variantsearch.table.polyphen2hvar': 'Polyphen2 HVAR',
   'screen.variantsearch.table.phylop': 'PhyloP',
+  'components.query.empty': 'Use the search field or facets above to create your request.',
+  'components.query.count': '{count, number}',
   'components.query.filter.button.apply': 'Apply',
   'components.query.filter.button.cancel': 'Cancel',
   'components.query.instruction.subquery.operator.and': 'Intersection',
