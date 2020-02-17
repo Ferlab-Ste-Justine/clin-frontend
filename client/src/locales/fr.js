@@ -353,6 +353,8 @@ const fr = {
   'screen.variantsearch.table.sift': 'SIFT',
   'screen.variantsearch.table.polyphen2hvar': 'Polyphen2 HVAR',
   'screen.variantsearch.table.phylop': 'PhyloP',
+  'components.query.empty': 'Utilisez le champ de recherche ou les facettes en haut afin de créer votre requête',
+  'components.query.count': '{count, number}',
   'components.query.filter.button.apply': 'Appliquer',
   'components.query.filter.button.cancel': 'Annuler',
   'components.query.instruction.subquery.operator.and': 'Intersection',

@@ -354,13 +354,13 @@ class Query extends React.Component {
             )}
           </div>
           <div className={styleQuery.count}>
-            { results && (<span>{results.toLocaleString('en-US').replace(',', '\u00a0')}</span>) }
+            { results && (<span>{intl.get('components.query.count', { count: results })}</span>) }
           </div>
         </div>
         {isEmpty
           ? (
             <div className={styleQuery.emptyQuery}>
-                Utilisez le champ de recherche ou les facettes à gauche afin de créer votre requête
+              {intl.get('components.query.empty')}
             </div>
           )
           : (
