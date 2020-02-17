@@ -280,6 +280,9 @@
                     align-items: center;
                     padding:0 0 0 4px !important;
 
+                    i{
+                        color:rgba(255, 255, 255, 0.54);
+                    }
                     i:first-of-type{
                         line-height: 0;
                         svg{
