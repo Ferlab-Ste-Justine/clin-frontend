@@ -120,6 +120,7 @@ const fr = {
   'screen.patientvariant.header.family': 'Famille',
   'screen.patientvariant.header.family.mother': 'Mère',
   'screen.patientvariant.header.family.father': 'Père',
+  'screen.patientvariant.header.ontology.observed': 'HPO observés',
   'screen.patientvariant.header.ontology.viewAll': 'Voir tous',
   'screen.patientvariant.category_variant': 'Variants',
   'screen.patientvariant.filter_popover_back': 'Retour',
