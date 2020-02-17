@@ -202,9 +202,14 @@ class GenericBooleanFilter extends React.Component {
   }
 
   render() {
+    const {
+      draft,
+    } = this.state;
+
     return (
       <Filter
         {...this.props}
+        draft={draft}
         type={FILTER_TYPE_GENERICBOOL}
         editor={this.getEditor()}
         searchable

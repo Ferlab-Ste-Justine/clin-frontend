@@ -9,7 +9,7 @@ import {
 } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
-  ic_cancel, ic_info_outline, ic_search, ic_chevron_left,
+  ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
@@ -237,7 +237,7 @@ class Filter extends React.Component {
 
   render() {
     const {
-      onOperandChangeCallBack, config, data, overlayOnly, editor, searchable, autoSelect,
+      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -248,28 +248,32 @@ class Filter extends React.Component {
     };
 
     const applyMenu = cfg => (!cfg ? null : (
-      <Menu onClick={e => handleMenuClick(e)}>
+      <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
         {cfg.operands.map(configOperand => (
           <Menu.Item key={configOperand}>
             <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
+            {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
           </Menu.Item>
         ))}
       </Menu>
     ));
 
+    const { operand } = draft;
     const savedOperand = data.operand;
 
     const hasOperands = cfg => cfg && config.operands;
-    const { operand } = data;
 
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
       <Dropdown.Button
         type="primary"
         className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
         icon={(
-          <Icon
-            component={OperatorIconComponent(operatorFromOperand(operand))}
-          />
+          <>
+            <Icon
+              component={OperatorIconComponent(operatorFromOperand(operand))}
+            />
+            <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
+          </>
           )}
         onClick={this.handleApply}
         overlay={applyMenu(cfg)
@@ -429,6 +433,7 @@ class Filter extends React.Component {
 Filter.propTypes = {
   config: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
+  draft: PropTypes.shape({}),
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -450,6 +455,7 @@ Filter.propTypes = {
 };
 
 Filter.defaultProps = {
+  draft: {},
   options: {
     editable: false,
     selectable: false,
