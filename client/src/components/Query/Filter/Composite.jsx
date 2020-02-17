@@ -24,7 +24,10 @@ class CompositeFilter extends React.Component {
   {
       type: 'composite,
       data: {
-          value: 'T'
+          id: 'sift',
+          values: [
+              { value: 'T' }
+          ]
       }
   }
   */
@@ -36,8 +39,10 @@ class CompositeFilter extends React.Component {
   {
       type: 'composite,
       data: {
-          comparator: '<='
-          value: '0'
+          id: 'sift',
+          values: [
+              { comparator: '<=', value: '0' }
+          ]
       }
   }
   */
