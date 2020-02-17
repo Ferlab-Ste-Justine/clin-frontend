@@ -248,10 +248,11 @@ class Filter extends React.Component {
     };
 
     const applyMenu = cfg => (!cfg ? null : (
-      <Menu onClick={e => handleMenuClick(e)}>
+      <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
         {cfg.operands.map(configOperand => (
           <Menu.Item key={configOperand}>
             <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
+            {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
           </Menu.Item>
         ))}
       </Menu>

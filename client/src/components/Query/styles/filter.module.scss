@@ -357,17 +357,20 @@
         font-size: 14px;
         font-family: $font;
         letter-spacing: 0.25px;
-        .svgIcon{
-            width:24px;
-            height:24px;
+        align-items: center;
+        .graySvgIcon{
             margin-right: 8px;
+            svg{
+                width:24px;
+                height:24px;
+            }
             path, polygon{
                 fill:rgba(35, 55, 80, 0.38);
             }
         }
 
         &:hover{
-            .svgIcon{
+            .graySvgIcon{
                 path, polygon{
                     fill:#1b7ab2;
                 }
@@ -377,12 +380,6 @@
 
 }
 
-.graySvgIcon{
-    margin-right: 8px;
-    path, polygon{
-        fill:rgba(35, 55, 80, 0.38);
-    }
-}
 
 .operator-icon-svg {
   margin-right: "-8px";
