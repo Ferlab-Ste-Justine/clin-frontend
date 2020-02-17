@@ -20,7 +20,16 @@ export const recoverUser = username => ({
   },
 });
 
-export const fetchUser = uid => ({
-  type: actions.USER_FETCH_REQUESTED,
-  payload: uid,
+export const getUserProfile = () => ({
+  type: actions.USER_PROFILE_REQUESTED,
+});
+
+export const updateUserProfile = (id, defaultStatement, patientTableConfig, variantTableConfig) => ({
+  type: actions.USER_PROFILE_UPDATE_REQUESTED,
+  payload: {
+    id,
+    defaultStatement,
+    patientTableConfig,
+    variantTableConfig,
+  },
 });

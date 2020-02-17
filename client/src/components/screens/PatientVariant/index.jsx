@@ -32,10 +32,14 @@ import {
   getStatements, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
   createStatement, countVariants,
 } from '../../../actions/variant';
+import {
+  updateUserProfile,
+} from '../../../actions/user';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
 import style from './style.module.scss';
+import { userShape } from '../../../reducers/user';
 
 
 const VARIANT_TAB = 'VARIANTS';
@@ -69,6 +73,7 @@ class PatientVariantScreen extends React.Component {
     this.handleDeleteStatement = this.handleDeleteStatement.bind(this);
     this.handleSelectStatement = this.handleSelectStatement.bind(this);
     this.handleDuplicateStatement = this.handleDuplicateStatement.bind(this);
+    this.handleSetDefaultStatement = this.handleSetDefaultStatement.bind(this);
     this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
@@ -308,16 +313,16 @@ class PatientVariantScreen extends React.Component {
     actions.createDraftStatement(statement);
   }
 
-  handleUpdateStatement(id, title, description, queries = null, isDefault = false) {
+  handleUpdateStatement(id, title, description, queries = null) {
     const { actions, variant } = this.props;
     const { statements } = variant;
     if (!queries) {
       queries = statements[id].queries; { /* eslint-disable-line */ }
     }
     if (id === 'draft') {
-      actions.createStatement(id, title, description, queries, isDefault);
+      actions.createStatement(id, title, description, queries);
     } else {
-      actions.updateStatement(id, title, description, queries, isDefault);
+      actions.updateStatement(id, title, description, queries);
     }
   }
 
@@ -336,6 +341,13 @@ class PatientVariantScreen extends React.Component {
     actions.selectStatement(id);
   }
 
+  handleSetDefaultStatement(id) {
+    const { actions, user } = this.props;
+    const { profile } = user;
+
+    actions.updateUserProfile(profile.uid, id, profile.patientTableConfig, profile.variantTableConfig);
+  }
+
   handleNavigationToPatientScreen(e) {
     const { actions } = this.props;
     actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
@@ -343,7 +355,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const {
-      app, variant, patient,
+      app, variant, patient, user,
     } = this.props;
     const { showSubloadingAnimation } = app;
     const {
@@ -353,6 +365,7 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab, columnPreset,
     } = this.state;
+    const defaultStatementId = user.profile.defaultStatement ? user.profile.defaultStatement : null;
     const familyText = intl.get('screen.patientvariant.header.family');
     const motherText = intl.get('screen.patientvariant.header.family.mother');
     const fatherText = intl.get('screen.patientvariant.header.family.father');
@@ -556,6 +569,7 @@ class PatientVariantScreen extends React.Component {
               activeQuery={activeQuery}
               activeStatementId={activeStatementId}
               activeStatementTotals={activeStatementTotals}
+              defaultStatementId={defaultStatementId}
               statements={statements}
               data={draftQueries}
               draftHistory={draftHistory}
@@ -585,6 +599,7 @@ class PatientVariantScreen extends React.Component {
               onDeleteStatementCallback={this.handleDeleteStatement}
               onSelectStatementCallback={this.handleSelectStatement}
               onDuplicateStatementCallback={this.handleDuplicateStatement}
+              onSetDefaultStatementCallback={this.handleSetDefaultStatement}
               searchData={searchData}
               externalData={patient}
             />
@@ -634,6 +649,7 @@ class PatientVariantScreen extends React.Component {
 
 PatientVariantScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
+  user: PropTypes.shape(userShape).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
@@ -660,11 +676,13 @@ const mapDispatchToProps = dispatch => ({
     deleteStatement,
     selectStatement,
     duplicateStatement,
+    updateUserProfile,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
   app: state.app,
+  user: state.user,
   patient: state.patient,
   variant: state.variant,
 });

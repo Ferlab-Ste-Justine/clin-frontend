@@ -234,7 +234,7 @@ class GenericFilter extends React.Component {
   }
 
   render() {
-    const { allOptions, draft } = this.state;
+    const { allOptions } = this.state;
     const { config } = this.props;
 
     return (
@@ -243,7 +243,6 @@ class GenericFilter extends React.Component {
         config={config}
         type={FILTER_TYPE_GENERIC}
         editor={this.getEditor()}
-        draft={draft}
         searchable
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}

@@ -1,9 +1,7 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
-import { success, error } from '../actions/app';
 import Api, { ApiError } from '../helpers/api';
-import LocalStore from '../helpers/storage/local';
 
 
 function* login(action) {
@@ -12,26 +10,17 @@ function* login(action) {
     if (response.error) {
       throw new ApiError(response.error);
     }
-    const previousId = LocalStore.read(LocalStore.keys.lastId);
-    const currentId = window.btoa(response.payload.data.data.user.username);
-    LocalStore.write(LocalStore.keys.lastId, currentId);
+
     yield put({ type: actions.USER_LOGIN_SUCCEEDED, payload: response.payload });
-    if (currentId === previousId) {
-      yield put({ type: actions.USER_SESSION_RESTORE_LAST_KNOWN_STATE });
-    } else {
-      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
-    }
+    yield put({ type: actions.USER_PROFILE_REQUESTED });
+    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
   } catch (e) {
     yield put({ type: actions.USER_LOGIN_FAILED, payload: e });
-    yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
   }
 }
 
 function* logout() {
   try {
-    LocalStore.remove(LocalStore.keys.lastId);
-    LocalStore.remove(LocalStore.keys.lastScreen);
-    LocalStore.remove(LocalStore.keys.lastScreenState);
     const response = yield Api.logout();
     if (response.error) {
       throw new ApiError(response.error);
@@ -46,21 +35,44 @@ function* recover(action) {
   try {
     yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
     yield put({ type: actions.USER_RECOVERY_SUCCEEDED, payload: action.payload });
-    yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
   } catch (e) {
     yield put({ type: actions.USER_RECOVERY_FAILED, payload: e });
-    yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
   }
 }
 
-function* fetch(action) {
+function* getUserProfile() {
   try {
-    yield new Promise(resolve => setTimeout(() => resolve(1), 1500));
-    yield put({ type: actions.USER_FETCH_SUCCEEDED, payload: action.payload });
-    yield put(success(window.CLIN.translate({ id: 'message.success.generic' })));
+    let response = yield Api.getUserProfile();
+    if (response.error) {
+      throw new ApiError(response.error);
+    }
+
+    if (response.payload.data.data.total === 0) {
+      response = yield Api.createUserProfile();
+      if (response.error) {
+        throw new ApiError(response.error);
+      }
+    }
+
+    yield put({ type: actions.USER_PROFILE_SUCCEEDED, payload: response.payload.data });
   } catch (e) {
-    yield put({ type: actions.USER_FETCH_FAILED, payload: e });
-    yield put(error(window.CLIN.translate({ id: 'message.error.generic' })));
+    yield put({ type: actions.USER_PROFILE_FAILED, payload: e });
+  }
+}
+
+function* updateUserProfile(action) {
+  try {
+    const defaultStatement = action.payload.defaultStatement ? action.payload.defaultStatement : '';
+    const patientTableConfig = action.payload.patientTableConfig ? action.payload.patientTableConfig : {};
+    const variantTableConfig = action.payload.variantTableConfig ? action.payload.variantTableConfig : {};
+    const statementResponse = yield Api.updateUserProfile(action.payload.id, defaultStatement, patientTableConfig, variantTableConfig);
+    if (statementResponse.error) {
+      throw new ApiError(statementResponse.error);
+    }
+
+    yield put({ type: actions.USER_PROFILE_UPDATE_SUCCEEDED, payload: statementResponse.payload.data });
+  } catch (e) {
+    yield put({ type: actions.USER_PROFILE_UPDATE_FAILED, payload: e });
   }
 }
 
@@ -76,15 +88,20 @@ function* watchUserRecover() {
   yield takeLatest(actions.USER_RECOVERY_REQUESTED, recover);
 }
 
-function* watchUserFetch() {
-  yield takeLatest(actions.USER_FETCH_REQUESTED, fetch);
+function* watchGetUserProfile() {
+  yield takeLatest(actions.USER_PROFILE_REQUESTED, getUserProfile);
+}
+
+function* watchUpdateUserProfile() {
+  yield takeLatest(actions.USER_PROFILE_UPDATE_REQUESTED, updateUserProfile);
 }
 
 export default function* watchedUserSagas() {
   yield all([
     watchUserLogin(),
     watchUserRecover(),
-    watchUserFetch(),
     watchUserLogout(),
+    watchGetUserProfile(),
+    watchUpdateUserProfile(),
   ]);
 }
