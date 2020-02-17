@@ -266,11 +266,11 @@ class SpecificFilter extends Filter {
     return (
       <Filter
         {...this.props}
+        draft={draft}
         config={config}
         type={FILTER_TYPE_SPECIFIC}
         editor={this.getEditor()}
         searchable
-        draft={draft}
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
         onOperandChangeCallBack={this.handleOperandChange}

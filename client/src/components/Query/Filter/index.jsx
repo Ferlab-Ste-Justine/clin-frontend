@@ -237,7 +237,7 @@ class Filter extends React.Component {
 
   render() {
     const {
-      onOperandChangeCallBack, config, data, overlayOnly, editor, searchable, autoSelect,
+      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -257,10 +257,10 @@ class Filter extends React.Component {
       </Menu>
     ));
 
+    const { operand } = draft;
     const savedOperand = data.operand;
 
     const hasOperands = cfg => cfg && config.operands;
-    const { operand } = data;
 
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
       <Dropdown.Button
@@ -429,6 +429,7 @@ class Filter extends React.Component {
 Filter.propTypes = {
   config: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
+  draft: PropTypes.shape({}),
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -450,6 +451,7 @@ Filter.propTypes = {
 };
 
 Filter.defaultProps = {
+  draft: {},
   options: {
     editable: false,
     selectable: false,
