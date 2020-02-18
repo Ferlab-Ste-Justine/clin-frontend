@@ -334,28 +334,8 @@ class Statement extends React.Component {
   }
 
   toggleStatementAsDefault(e) {
-    const { dropDownIsOpen } = this.state;
-    let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : '';
-
-    const callbackSetStatementAsDefault = () => {
-      this.props.onSetDefaultStatementCallback(id); /* eslint-disable-line */
-    };
-    if (this.isDirty()) {
-      this.showConfirmForDestructiveStatementAction(
-        intl.get('screen.patientvariant.modal.statement.setDefault.title'),
-        intl.get('screen.patientvariant.modal.statement.setDefault.body'),
-        intl.get('screen.patientvariant.modal.statement.setDefault.button.ok'),
-        intl.get('screen.patientvariant.modal.statement.setDefault.button.cancel'),
-        callbackSetStatementAsDefault,
-      );
-    } else {
-      callbackSetStatementAsDefault();
-    }
-    if (dropDownIsOpen) {
-      this.toggleMenu(dropDownIsOpen);
-    }
-
-    if (e.stopPropagation) { e.stopPropagation(); }
+    const id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : '';
+    this.props.onSetDefaultStatementCallback(id);
   }
 
   deleteStatement(value) {
@@ -706,7 +686,7 @@ class Statement extends React.Component {
       if (isDirty) { classNames.push(styleStatement.dirtyContainer); }
       if (isActive) { classNames.push(styleStatement.activeContainer); } else { classNames.push(styleStatement.inactiveContainer); }
       if (!query.title) {
-        query.title = `${intl.get('screen.patientvariant.query.title.increment')} ${(index + 1)}`;
+        query.title = intl.get('screen.patientvariant.query.title.increment', {count: (index + 1)});
       }
 
       return [...accumulator, (
