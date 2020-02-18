@@ -83,7 +83,7 @@ class GenericBooleanFilter extends React.Component {
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 
     const options = allOptions.slice(minValue, maxValue).map((option) => {
-      const value = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
+      const value = option.value.length < 30 ? option.value : `${option.value.substring(0, 25)} ...`;
       return {
         label: (
           <span className={styleFilter.checkboxValue}>
