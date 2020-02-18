@@ -112,6 +112,105 @@
         }
     }
 
+    .rangeSlider{
+        padding: 0 16px ;
+
+        >div{
+            margin:24px 0 16px 0;
+
+            >div{
+                &:nth-child(1){
+                    background-color: rgba(134, 213, 242,0.38);
+                    height: 2px;
+                }
+                &:nth-child(2){
+                    height: 2px;
+                    background-color: #249ed9;
+                }
+
+                &:nth-child(4), &:nth-child(5){
+                    background-color: #1d8bc6;
+                    border: none;
+                    width: 12px;
+                    height: 12px;
+                }
+            }
+        }
+    }
+
+    .rangeInput{
+        padding: 0 16px ;
+        margin-bottom: 24px;
+        >div{
+            >div{
+                width: 54px;
+                border-radius: 2px;
+                height: 26px;
+                border: 1px solid rgba(18, 90, 144, 0.3);
+                box-shadow: none;
+                >div{
+                    &:nth-child(1){
+                        opacity: 1;
+                        border: none;
+                        width: 16px;
+                        margin-right: 4px;
+
+                        &:hover{
+                            span{
+                                height: 40% !important;
+                            }
+                        }
+                        span{
+                            border: none;
+                            height: 40%;
+                            i{
+                                width: 16px;
+                                right: 0;
+                                transform: none;
+                                font-size: 7px !important;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                top:45%;
+                                height: auto;
+                            }
+                            &:nth-child(1){
+                                margin-bottom: 4px;
+                                i{
+                                    &:nth-child(1){
+                                        margin-top: auto;
+                                    }
+                                }
+                            }
+                            &:hover{
+                                height: 40% !important;
+                            }
+                        }
+                    }
+                }
+                input{
+                    height: 20px;
+                    color: rgb(35, 55, 80);
+                    font-size: 14px;
+                    font-family: $font;
+                    letter-spacing: 0.25px;
+                    margin: 2px 0;
+                    padding-left: 8px;
+                    padding-right: 14px;
+                    &:focus{
+                        outline: none;
+                    }
+                    
+                }
+
+                &:focus{
+                    box-shadow: none;
+                }
+            }
+        }
+
+    }
+
 
     .checkboxGroup{
         .checkboxLabel{
@@ -220,10 +319,10 @@
             }
         }
     }
-
     .actionToolBar{
-        padding:16px;
-
+        padding:16px 0;
+        border-top: 1px solid rgba(35, 55, 80, 0.12);
+        margin: 16px 16px 0 16px;
         .cancelButton{
             border-radius: 2px;
             border: 1px solid rgba(18, 90, 144, 0.15);
