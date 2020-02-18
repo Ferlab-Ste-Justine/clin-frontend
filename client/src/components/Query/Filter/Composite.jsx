@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import {
-  Row, Col, Select, InputNumber, Slider, Checkbox, Tooltip, Tag,
+  Row, Col, InputNumber, Slider, Checkbox, Tooltip, Tag,
 } from 'antd';
 import {
   cloneDeep, orderBy, filter, pullAllBy, pull,
@@ -12,9 +11,6 @@ import intl from 'react-intl-universal';
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN,
-  FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
-  FILTER_COMPARATOR_TYPE_LOWER_THAN,
-  FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
 import styleFilter from '../styles/filter.module.scss';
 

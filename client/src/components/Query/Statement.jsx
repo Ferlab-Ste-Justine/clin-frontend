@@ -335,11 +335,7 @@ class Statement extends React.Component {
 
   toggleStatementAsDefault(e) {
     const { dropDownIsOpen } = this.state;
-    let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : e;
-    if (!id) {
-      const { activeStatementId } = this.props;
-      id = activeStatementId;
-    }
+    let id = e.currentTarget ? e.currentTarget.getAttribute('dataid') : '';
 
     const callbackSetStatementAsDefault = () => {
       this.props.onSetDefaultStatementCallback(id); /* eslint-disable-line */
@@ -837,6 +833,7 @@ class Statement extends React.Component {
                     <Button
                       type="default"
                       className={styleStatement.button}
+                      dataid={(activeStatement.uid === defaultStatementId) ? '' : activeStatement.uid}
                       onClick={this.toggleStatementAsDefault}
                       disabled={activeStatementId == null}
                     >
@@ -966,7 +963,7 @@ class Statement extends React.Component {
                                 size={20}
                                 className={(key === defaultStatementId) ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
                                 theme={(key === defaultStatementId) ? 'filled' : 'outlined'}
-                                dataid={statements[key].uid}
+                                dataid={(statements[key].uid === defaultStatementId) ? '' : statements[key].uid}
                                 onClick={this.toggleStatementAsDefault}
                               />)}
                             </div>
