@@ -230,7 +230,7 @@ const en = {
   'screen.patientvariant.popconfirm.statement.delete.body': 'Are you sure you want to delete this filter?',
   'screen.patientvariant.popconfirm.statement.delete.button.ok': 'Delete',
   'screen.patientvariant.popconfirm.statement.delete.button.cancel': 'Cancel',
-  'screen.patientvariant.query.title.increment': 'Query',
+  'screen.patientvariant.query.title.increment': 'Query {count, number}',
   'screen.patientvariant.query.menu.add': 'Add Title',
   'screen.patientvariant.query.menu.editTitle': 'Edit Title',
   'screen.patientvariant.query.menu.defaultFilter': 'Default filter',

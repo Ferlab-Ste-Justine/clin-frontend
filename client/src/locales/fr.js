@@ -284,7 +284,7 @@ const fr = {
   'screen.patientvariant.popconfirm.statement.delete.body': 'Êtes-vous sûr de vouloir supprimer ce filtre?',
   'screen.patientvariant.popconfirm.statement.delete.button.ok': 'Supprimer',
   'screen.patientvariant.popconfirm.statement.delete.button.cancel': 'Annuler',
-  'screen.patientvariant.query.title.increment': 'Requête',
+  'screen.patientvariant.query.title.increment': 'Requête {count, number}',
   'screen.patientvariant.modal.statement.setDefault.title': 'Mettre ce filtre par défault?',
   'screen.patientvariant.modal.statement.setDefault.body': 'Vous perdrez toutes modifications non-enregistrées.',
   'screen.patientvariant.modal.statement.setDefault.button.ok': 'Continuer',

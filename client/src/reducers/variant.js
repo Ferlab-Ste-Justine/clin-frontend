@@ -49,7 +49,7 @@ const createDraftStatement = (title, description = '', queries = null) => ({
   uid: DRAFT_STATEMENT_UID,
   title,
   description,
-  queries: queries || [{ key: uuidv1(), instructions: [] }],
+  queries: queries || [{ key: uuidv1(), title: intl.get('screen.patientvariant.query.title.increment', { count: 1 }), instructions: [] }],
 });
 
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
@@ -220,6 +220,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         isDefault: action.payload.data.isDefault,
       };
       draft.statements[updatedStatement.uid] = updatedStatement;
+      if (state.activeStatementId === updatedStatement.uid) {
+        draft.draftQueries = draft.statements[statementId].queries;
+        draft.originalQueries = updatedStatement.queries;
+        draft.draftHistory = [];
+      }
       break;
 
     case actions.PATIENT_VARIANT_CREATE_STATEMENT_SUCCEEDED:
