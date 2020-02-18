@@ -195,6 +195,11 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
           draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
           draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
           draft.draftHistory = [];
+        } else {
+          draft.activeQuery = head(draft.statements[state.activeStatementId].queries).key;
+          draft.originalQueries = draft.statements[state.activeStatementId].queries;
+          draft.draftQueries = draft.statements[state.activeStatementId].queries;
+          draft.draftHistory = [];
         }
       }
       break;
