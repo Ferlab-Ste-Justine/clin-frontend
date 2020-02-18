@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import {
-  Row, Col, Select, InputNumber,
+  Row, Col, Select, InputNumber, Slider, Checkbox, Tooltip, Tag,
 } from 'antd';
 import {
-  cloneDeep,
+  cloneDeep, orderBy, filter, pullAllBy, pull,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
@@ -15,7 +16,7 @@ import {
   FILTER_COMPARATOR_TYPE_LOWER_THAN,
   FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
-
+import styleFilter from '../styles/filter.module.scss';
 
 const SCORE_SELECTION = '_score_';
 
@@ -60,6 +61,7 @@ class CompositeFilter extends React.Component {
     super(props);
     this.state = {
       draft: null,
+      selection: [],
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
@@ -68,20 +70,53 @@ class CompositeFilter extends React.Component {
     this.handleComparatorChange = this.handleComparatorChange.bind(this);
     this.handleQualityChange = this.handleQualityChange.bind(this);
     this.handleScoreChange = this.handleScoreChange.bind(this);
+    this.handleSelectionChange = this.handleSelectionChange.bind(this);
 
     // @NOTE Initialize Component State
-    const { data } = props;
+    const { data, dataSet } = props;
     this.state.draft = cloneDeep(data);
+    const selection = data.values ? cloneDeep(data.values) : [];
+    const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
+    this.state.selection = selection;
+    this.state.page = 1;
+    this.state.size = 10;
+    if (selection.length > 0) {
+      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
+      if (value.length === 0) {
+        const selectedValue = [];
+        selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        allOptions.unshift(...selectedValue);
+      } else {
+        const sorted = orderBy(value, ['count'], ['desc']);
+        pullAllBy(allOptions, cloneDeep(sorted), 'value');
+        allOptions.unshift(...sorted);
+      }
+    }
   }
 
   getEditor() {
     const { data, dataSet } = this.props;
-    const { draft } = this.state;
+    const { draft, selection } = this.state;
     const { comparator, value } = draft;
     const typeGt = intl.get('screen.patientvariant.filter.comparator.gt');
     const typeGte = intl.get('screen.patientvariant.filter.comparator.gte');
     const typeLt = intl.get('screen.patientvariant.filter.comparator.lt');
     const typeLte = intl.get('screen.patientvariant.filter.comparator.lte');
+
+    const options = dataSet.map((option) => {
+      const valueText = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
+      return {
+        label: (
+          <span className={styleFilter.checkboxValue}>
+            <Tooltip title={option.value}>
+              {valueText}
+            </Tooltip>
+            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
+          </span>
+        ),
+        value: option.value,
+      };
+    });
 
     return {
       getLabels: this.getEditorLabels,
@@ -109,26 +144,31 @@ class CompositeFilter extends React.Component {
               </Select>
             </Col>
             <Col>
-              <Select
-                type="primary"
-                size="small"
-                disabled={!comparator}
-                value={(comparator ? comparator || FILTER_COMPARATOR_TYPE_GREATER_THAN : '')}
-                onChange={this.handleComparatorChange}
-              >
-                <Select.Option value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Select.Option>
-                <Select.Option value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Select.Option>
-                <Select.Option value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Select.Option>
-                <Select.Option value={FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL}>{typeLte}</Select.Option>
-              </Select>
+              <InputNumber
+                step={0.1}
+                defaultValue={0.0}
+                onChange={this.onChange}
+              />
             </Col>
             <Col>
               <InputNumber
-                step={1}
-                disabled={!comparator}
-                onChange={this.handleScoreChange}
-                value={(comparator ? value || 0 : '')}
+                step={0.1}
+                defaultValue={0.0}
+                onChange={this.onChange}
               />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+                { options.map(option => (
+                  <Row>
+                    <Col>
+                      <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                    </Col>
+                  </Row>
+                )) }
+              </Checkbox.Group>
             </Col>
           </Row>
         </>
@@ -170,6 +210,28 @@ class CompositeFilter extends React.Component {
 
     clone.comparator = comparator;
     this.setState({ draft: clone });
+  }
+
+  handleSelectionChange(values) {
+    const {
+      selection, page, size, draft,
+    } = this.state;
+    const { dataSet } = this.props;
+    const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
+    const minValue = size * (page - 1);
+    const maxValue = size * page;
+    const options = allOptions.slice(minValue, maxValue);
+
+    options.forEach((x) => {
+      if (selection.includes(x.value)) {
+        if (!values.includes(x.value)) { pull(selection, x.value); }
+      } else if (values.includes(x.value)) { selection.push(x.value); }
+    });
+    draft.values = selection;
+    this.setState({
+      selection,
+      draft,
+    });
   }
 
   handleScoreChange(score) {
