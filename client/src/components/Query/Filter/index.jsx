@@ -9,7 +9,7 @@ import {
 } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
-  ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down,
+  ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down, ic_replay,
 } from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
@@ -302,7 +302,7 @@ class Filter extends React.Component {
     } = this.state;
 >>>>>>> 048224b... Final HeaderMultiselect dropdown
     const {
-      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect,
+      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect, resettable,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -389,12 +389,19 @@ class Filter extends React.Component {
                   <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
                 </Button>
               </Tooltip>
-              <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
-                <IconKit size={24} icon={ic_search} />
-              </Button>
+              {(searchable) && (
+                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                  <IconKit size={24} icon={ic_search} />
+                </Button>
+              )}
+              {(resettable) && (
+                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                  <IconKit size={24} icon={ic_replay} />
+                </Button>
+              )}
             </Row>
 
-            {searchable && (
+            {(searchable) && (
             <>
               <Row>
                 <Input
@@ -527,6 +534,7 @@ Filter.propTypes = {
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
   searchable: PropTypes.bool,
+  resettable: PropTypes.bool,
   sortData: PropTypes.array,
   autoSelect: PropTypes.bool,
   index: PropTypes.number,
@@ -551,6 +559,7 @@ Filter.defaultProps = {
   overlayOnly: false,
   visible: true,
   searchable: false,
+  resettable: false,
   sortData: [],
   index: 0,
 };

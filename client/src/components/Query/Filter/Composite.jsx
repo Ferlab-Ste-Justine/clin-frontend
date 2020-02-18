@@ -7,7 +7,6 @@ import {
   cloneDeep, orderBy, filter, pullAllBy, pull,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import intl from 'react-intl-universal';
 
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
@@ -95,13 +94,8 @@ class CompositeFilter extends React.Component {
   }
 
   getEditor() {
-    const { data, dataSet } = this.props;
-    const { draft, selection } = this.state;
-    const { comparator, value } = draft;
-    const typeGt = intl.get('screen.patientvariant.filter.comparator.gt');
-    const typeGte = intl.get('screen.patientvariant.filter.comparator.gte');
-    const typeLt = intl.get('screen.patientvariant.filter.comparator.lt');
-    const typeLte = intl.get('screen.patientvariant.filter.comparator.lte');
+    const { dataSet } = this.props;
+    const { selection } = this.state;
 
     const options = dataSet.map((option) => {
       const valueText = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
@@ -268,6 +262,7 @@ class CompositeFilter extends React.Component {
         draft={draft}
         type={FILTER_TYPE_COMPOSITE}
         editor={this.getEditor()}
+        resettable
       />
     );
   }
