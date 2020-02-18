@@ -388,7 +388,7 @@ class VariantNavigation extends React.Component {
                 </Typography.Text>
               </Col>
               <Col justify="end" align="end" className={styleNavigation.valueCount}>
-                {match.count && (<Tag color="#f0f2f5">{match.count}</Tag>)}
+                {match.count && (<Tag color="#f0f2f5">{intl.get('components.query.count', { count: match.count })}</Tag>)}
               </Col>
             </AutoComplete.Option>
           ))}
