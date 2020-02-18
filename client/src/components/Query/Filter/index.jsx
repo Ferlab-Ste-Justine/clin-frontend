@@ -19,7 +19,8 @@ import {
   getSvgPathFromOperatorType,
   OPERATOR_TYPE_UNION,
   OPERATOR_TYPE_INTERSECTION,
-  OPERATOR_TYPE_EXCLUSION,
+  OPERATOR_TYPE_NOT_EQUAL,
+  OPERATOR_TYPE_EQUAL,
 } from '../Operator';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
@@ -34,8 +35,38 @@ const operatorFromOperand = (operand) => {
     case FILTER_OPERAND_TYPE_ALL:
       return OPERATOR_TYPE_INTERSECTION;
     case FILTER_OPERAND_TYPE_NONE:
-      return OPERATOR_TYPE_EXCLUSION;
+      return OPERATOR_TYPE_NOT_EQUAL;
     default:
+      return OPERATOR_TYPE_UNION;
+  }
+};
+
+const OuterOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_NOT_EQUAL;
+    default:
+      return OPERATOR_TYPE_EQUAL;
+  }
+};
+
+const InnerOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path 1`);
+      return OPERATOR_TYPE_UNION;
+    case FILTER_OPERAND_TYPE_ALL:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path 2`);
+      return OPERATOR_TYPE_INTERSECTION;
+    case FILTER_OPERAND_TYPE_NONE:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path 3`);
+      return OPERATOR_TYPE_UNION;
+    default:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path default`);
       return OPERATOR_TYPE_UNION;
   }
 };
@@ -46,15 +77,21 @@ export const OperatorIconComponent = operand => props => (
   </svg>
 );
 
-const IconForOperand = operand => props => (
+const PillOuterIconForOperand = operand => props => (
   <Icon
     {...props}
     className={styleFilter.svgIcon}
-    component={OperatorIconComponent(operatorFromOperand(operand))}
+    component={OperatorIconComponent(OuterOperatorFromOperand(operand))}
   />
 );
 
-// const IntersectionSvg = require('../../../icons/intersection.svg');
+const PillInnerIconForOperand = operand => props => (
+  <Icon
+    {...props}
+    className={styleFilter.svgIcon}
+    component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
+  />
+);
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -398,7 +435,7 @@ class Filter extends React.Component {
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            {operand ? IconForOperand(savedOperand)() : actionLabel}
+            {operand ? PillOuterIconForOperand(savedOperand)() : actionLabel}
           </div>
           { this.isEditable() && (
             <Dropdown
@@ -415,7 +452,7 @@ class Filter extends React.Component {
               >
                 {actionTargets.map((target, index) => (
                   <>
-                    {index !== 0 ? ' • ' : null } {target}
+                    {index !== 0 ? PillInnerIconForOperand(savedOperand)() : null } {target}
                   </>
                 ))}
               </Tag>
