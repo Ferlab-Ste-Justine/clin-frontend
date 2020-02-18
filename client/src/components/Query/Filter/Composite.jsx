@@ -1,20 +1,15 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import {
-  Row, Col, Select, InputNumber, Slider, Checkbox, Tooltip, Tag,
+  Row, Col, InputNumber, Slider, Checkbox, Tooltip, Tag,
 } from 'antd';
 import {
   cloneDeep, orderBy, filter, pullAllBy, pull,
 } from 'lodash';
 import PropTypes from 'prop-types';
-import intl from 'react-intl-universal';
 
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN,
-  FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
-  FILTER_COMPARATOR_TYPE_LOWER_THAN,
-  FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
 import styleFilter from '../styles/filter.module.scss';
 
@@ -100,13 +95,8 @@ class CompositeFilter extends React.Component {
   }
 
   getEditor() {
-    const { data, dataSet } = this.props;
-    const { draft, selection } = this.state;
-    const { comparator, value } = draft;
-    const typeGt = intl.get('screen.patientvariant.filter.comparator.gt');
-    const typeGte = intl.get('screen.patientvariant.filter.comparator.gte');
-    const typeLt = intl.get('screen.patientvariant.filter.comparator.lt');
-    const typeLte = intl.get('screen.patientvariant.filter.comparator.lte');
+    const { dataSet } = this.props;
+    const { selection } = this.state;
 
     const options = dataSet.map((option) => {
       const valueText = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
