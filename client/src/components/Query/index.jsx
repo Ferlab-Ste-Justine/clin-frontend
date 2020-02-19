@@ -318,6 +318,7 @@ class Query extends React.Component {
                 size="small"
                 defaultValue={draft.title}
                 onBlur={this.handleTitleChange}
+                onFocus={this.handleTitleOnFocus}
                 onPressEnter={this.handleTitleChange}
                 onChange={handleTitleOnChange}
                 className={`title-${draft.key}`}
