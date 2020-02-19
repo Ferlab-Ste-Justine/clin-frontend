@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm,
+  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm, Typography,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, isEmpty, isEqual,
@@ -54,7 +54,7 @@ class Statement extends React.Component {
         undoable: null,
       },
       dropDownIsOpen: false,
-      onFocus: false,
+      modalIsOpen: false,
       dropdownClickValue: null,
     };
     this.isCopyable = this.isCopyable.bind(this);
@@ -99,9 +99,6 @@ class Statement extends React.Component {
     this.onStatementTitleChangeEnter = this.onStatementTitleChangeEnter.bind(this);
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.onFocusTitle = this.onFocusTitle.bind(this);
-    this.onBlurTitle = this.onBlurTitle.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.isDropdownOpen = this.isDropdownOpen.bind(this);
@@ -586,20 +583,6 @@ class Statement extends React.Component {
     this.setState({ saveTitleModalInputValue: value });
   }
 
-  handleFocus() {
-    const input = document.querySelector('#statementTitle');
-    input.focus();
-  }
-
-  onFocusTitle(e) {
-    e.target.select();
-    this.setState({ onFocus: true });
-  }
-
-  onBlurTitle() {
-    this.setState({ onFocus: false });
-  }
-
   onCancel() {
     const dropdown = document.querySelector('.filterDropdown');
     dropdown.focus();
@@ -639,6 +622,7 @@ class Statement extends React.Component {
   render() {
     const { data, activeStatementId, statements, defaultStatementId } = this.props;
     const activeStatement = statements[activeStatementId];
+    const { Text } = Typography;
     if (!data || !activeStatement) return null;
     const { dropDownIsOpen, dropdownClickValue } = this.state;
     if (!data) return null;
@@ -646,7 +630,7 @@ class Statement extends React.Component {
       activeQuery, externalData, options, facets, categories, searchData, target, activeStatementTotals,
     } = this.props;
     const {
-      display, original, checkedQueries, saveTitleModalVisible, onFocus,
+      display, original, checkedQueries, saveTitleModalVisible, modalIsOpen,
     } = this.state;
     const {
       reorderable,
@@ -789,23 +773,36 @@ class Statement extends React.Component {
                 <div className={styleStatement.title}>
                   <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                     <div>
-                      <Input
-                        id="statementTitle"
-                        onChange={this.onStatementTitleChange}
-                        onFocus={this.onFocusTitle}
-                        onBlur={this.onBlurTitle}
-                        onPressEnter={this.onStatementTitleChangeEnter}
-                        autocomplete="off"
-                        value={statementTitle}
-                        disabled={activeStatementId == null}
-                        style={{ width: `calc(13px + ${width}ch)` }}
-                      />
-                      <IconKit
+                      <Button>
+                        {statementTitle} 
+                        onClick={this.handleFocus}                      
+                        <IconKit
                         icon={ic_edit}
                         size={18}
-                        onClick={this.handleFocus}
-                        className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
-                      />
+                        className={`${styleStatement.iconTitle} ${styleStatement.icon} ${modalIsOpen ? `${styleStatement.focusIcon}` : null}`}
+                        />
+                      </Button>
+                      <Modal
+                        visible={modalIsOpen}
+                        title="Title"
+                        onOk={this.handleOk}
+                        onCancel={this.handleCancel}
+                        footer={[
+                          <Button key="back" onClick={this.handleCancel}>
+                            Return
+                          </Button>,
+                          <Button key="submit" type="primary" onClick={this.handleOk}>
+                            Submit
+                          </Button>,
+                        ]}
+                      >
+                        <p>Some contents</p>
+                        <p>Some contents</p>
+                        <p>Some contents</p>
+                        <p>Some contents</p>
+                        <p>Some contents</p>
+                      </Modal>
+
                     </div>
                   </Tooltip>
                   {activeStatementId !== 'draft' && (
