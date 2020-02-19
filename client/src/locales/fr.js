@@ -289,6 +289,7 @@ const fr = {
   'screen.patientvariant.modal.statement.setDefault.body': 'Vous perdrez toutes modifications non-enregistrées.',
   'screen.patientvariant.modal.statement.setDefault.button.ok': 'Continuer',
   'screen.patientvariant.modal.statement.setDefault.button.cancel': 'Annuler',
+  'screen.patientvariant.modal.statement.changeTitle.title': 'Modifier le titre du filtre',
   'screen.patientvariant.query.menu.add': 'Ajouter le titre',
   'screen.patientvariant.query.menu.editTitle': 'Modifier le titre',
   'screen.patientvariant.query.menu.remove': 'Supprimer le titre',

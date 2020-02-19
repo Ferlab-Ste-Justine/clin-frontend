@@ -103,6 +103,7 @@ class Statement extends React.Component {
     this.toggleMenu = this.toggleMenu.bind(this);
     this.isDropdownOpen = this.isDropdownOpen.bind(this);
     this.handlePopUpConfirm = this.handlePopUpConfirm.bind(this);
+    this.showModal = this.showModal.bind(this)
   }
 
   isEditable() {
@@ -619,6 +620,10 @@ class Statement extends React.Component {
     }
   }
 
+  showModal(){
+    this.setState({ modalIsOpen : true})
+  }
+
   render() {
     const { data, activeStatementId, statements, defaultStatementId } = this.props;
     const activeStatement = statements[activeStatementId];
@@ -653,6 +658,7 @@ class Statement extends React.Component {
     const modalTitleSaveInputDefault = intl.get('screen.patientvariant.modal.statement.save.input.title.default');
     const modalTitleSaveOk = intl.get('screen.patientvariant.modal.statement.save.button.ok');
     const modalTitleSaveCancel = intl.get('screen.patientvariant.modal.statement.save.button.cancel');
+    const modalTitleChangeTitle = intl.get('screen.patientvariant.modal.statement.changeTitle.title');
     const width = calculateTitleWidth(statementTitle);
 
     let containsEmptyQueries = false;
@@ -773,9 +779,9 @@ class Statement extends React.Component {
                 <div className={styleStatement.title}>
                   <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                     <div>
-                      <Button>
+                      <Button onClick={this.showModal} >
                         {statementTitle} 
-                        onClick={this.handleFocus}                      
+                                             
                         <IconKit
                         icon={ic_edit}
                         size={18}
@@ -784,23 +790,20 @@ class Statement extends React.Component {
                       </Button>
                       <Modal
                         visible={modalIsOpen}
-                        title="Title"
                         onOk={this.handleOk}
                         onCancel={this.handleCancel}
                         footer={[
                           <Button key="back" onClick={this.handleCancel}>
-                            Return
+                            {modalTitleSaveCancel}
                           </Button>,
                           <Button key="submit" type="primary" onClick={this.handleOk}>
-                            Submit
+                            {modalTitleSaveOk}
                           </Button>,
                         ]}
                       >
-                        <p>Some contents</p>
-                        <p>Some contents</p>
-                        <p>Some contents</p>
-                        <p>Some contents</p>
-                        <p>Some contents</p>
+                        <Text>{modalTitleChangeTitle}</Text>
+                        <span>{modalTitleSaveInputLabel}</span>
+                        <Input/>
                       </Modal>
 
                     </div>

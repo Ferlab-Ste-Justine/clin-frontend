@@ -224,6 +224,7 @@ const en = {
   'screen.patientvariant.modal.statement.setDefault.body': 'You will lose any unsaved changes.',
   'screen.patientvariant.modal.statement.setDefault.button.ok': 'Continue',
   'screen.patientvariant.modal.statement.setDefault.button.cancel': 'Cancel',
+  'screen.patientvariant.modal.statement.changeTitle.title': 'Change filter title',
   'screen.patientvariant.popconfirm.statement.load.body': 'All unsaved changes will be lost.',
   'screen.patientvariant.popconfirm.statement.load.button.ok': 'Continue',
   'screen.patientvariant.popconfirm.statement.load.button.cancel': 'Cancel',
