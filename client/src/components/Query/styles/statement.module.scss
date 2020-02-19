@@ -137,9 +137,6 @@
 
 
         }
-          i:not(.star){
-           padding-bottom: 1px;
-          }
 
         .starFilled{
           color:#f8a335;
@@ -151,6 +148,8 @@
         }
 
         a{
+            display: flex;
+            align-items: center;
             &:hover{
                 text-decoration:none;
             }
