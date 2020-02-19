@@ -20,14 +20,36 @@
         border-radius:2px;
         margin-right:0px;
         border:none;
-         &:nth-child(3):hover {
-            margin-right:2px;
+        padding: 0 12px  ;
+
+        .termList{
+            display:flex;
+            align-items:center;
+            border-bottom: 1px solid transparent;
+            height: 14px;
         }
 
         &:hover{
             opacity:1;
         }
+
+        .innerIconOperand{
+            height: 13px;
+            width: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            svg{
+                color: rgba(35, 55, 80, 0.38);
+                height: 14px;
+                width: 14px;
+                margin: 0 4px;
+            }
+        }
+
     }
+
+
 
     .operator{
         color: $color-disable;
@@ -56,9 +78,12 @@
     .insideTag{
         color:#125a90;
          &:nth-child(3):hover {
-            text-decoration: underline;
             cursor:pointer;
-            margin-right:2px;
+            .termList{
+                border-bottom: 1px solid;
+            }
+    
+            
         }
     }
 
