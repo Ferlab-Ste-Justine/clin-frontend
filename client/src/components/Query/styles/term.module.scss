@@ -40,7 +40,7 @@
             justify-content: center;
             align-items: center;
             svg{
-                color: rgba(35, 55, 80, 0.38);
+                color: rgba(18, 90, 144,0.5);;
                 height: 14px;
                 width: 14px;
                 margin: 0 4px;
@@ -64,6 +64,7 @@
         color: rgba(18, 90, 144, 0.38);
         margin-right:2px;
         margin-left:6px;
+        display: flex !important;
 
         &:hover{
             color:#125a90;
