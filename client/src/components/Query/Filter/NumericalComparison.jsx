@@ -92,7 +92,9 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   getEditor() {
-    const { draft, sliderDisabled, inputDisabled } = this.state;
+    const {
+      draft, sliderDisabled, inputDisabled,
+    } = this.state;
     const { facets, data } = this.props;
 
     const min = roundDown2(facets[`${data.id}_min`][0].value);
@@ -128,6 +130,7 @@ class NumericalComparisonFilter extends React.Component {
               <InputNumber
                 step={0.01}
                 min={min}
+                max={max}
                 defaultValue={defaultMin}
                 onChange={this.handleMinValueChange}
                 disabled={inputDisabled}
@@ -136,6 +139,7 @@ class NumericalComparisonFilter extends React.Component {
             <Col>
               <InputNumber
                 step={0.01}
+                min={min}
                 max={max}
                 defaultValue={defaultMax}
                 onChange={this.handleMaxValueChange}
@@ -149,19 +153,37 @@ class NumericalComparisonFilter extends React.Component {
     };
   }
 
+  addMissingValue() {
+    const { facets, data } = this.props;
+
+    const max = roundDown2(facets[`${data.id}_max`][0].value);
+
+    // If older data coming from backend, add a second value element
+    if (data.values.length < 2) {
+      data.values.push({ comparator: '<=', value: max });
+    }
+  }
+
   handleReset() {
     this.setState({ sliderDisabled: false, inputDisabled: false });
   }
 
   handleMinValueChange(value) {
+    const newValue = roundDown2(value);
     const { draft } = this.state;
-    draft.values[0] = { comparator: '>=', value: roundDown2(value) };
+
+    draft.values[0] = { comparator: '>=', value: newValue };
+
     this.setState({ draft, sliderDisabled: true });
   }
 
   handleMaxValueChange(value) {
+    const newValue = roundDown2(value);
     const { draft } = this.state;
-    draft.values[1] = { comparator: '<=', value: roundDown2(value) };
+
+    draft.values[1] = { comparator: '>=', value: newValue };
+
+    draft.values[1] = { comparator: '<=', value: newValue };
     this.setState({ draft, sliderDisabled: true });
   }
 
