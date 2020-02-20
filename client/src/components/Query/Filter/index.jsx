@@ -293,7 +293,6 @@ class Filter extends React.Component {
     this.setState({ visibleInput: !visibleInput });
   }
 
-
   render() {
 <<<<<<< HEAD
 =======
@@ -302,7 +301,7 @@ class Filter extends React.Component {
     } = this.state;
 >>>>>>> 048224b... Final HeaderMultiselect dropdown
     const {
-      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect, resettable,
+      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect, resettable, onReset,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -395,7 +394,7 @@ class Filter extends React.Component {
                 </Button>
               )}
               {(resettable) && (
-                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                <Button className={styleFilter.iconSearch} onClick={onReset}>
                   <IconKit size={24} icon={ic_replay} />
                 </Button>
               )}
@@ -516,10 +515,11 @@ class Filter extends React.Component {
 }
 
 Filter.propTypes = {
-  config: PropTypes.shape({}).isRequired,
+  config: PropTypes.shape({}),
   data: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  onReset: PropTypes.func,
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
@@ -541,12 +541,14 @@ Filter.propTypes = {
 };
 
 Filter.defaultProps = {
+  config: {},
   draft: {},
   options: {
     editable: false,
     selectable: false,
     removable: false,
   },
+  onReset: () => {},
   onCancelCallback: () => {},
   onEditCallback: () => {},
   onRemoveCallback: () => {},
