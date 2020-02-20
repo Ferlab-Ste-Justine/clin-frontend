@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
+import intl from 'react-intl-universal';
 import {
   Row, Col, Select, InputNumber, Slider, Checkbox, Tooltip, Tag,
 } from 'antd';
@@ -94,8 +95,9 @@ class CompositeFilter extends React.Component {
   }
 
   getEditor() {
-    const { dataSet } = this.props;
-    const { selection } = this.state;
+    const { dataSet, data } = this.props;
+    const { selection, draft } = this.state;
+    const { comparator, value } = draft;
 
     const options = dataSet.map((option) => {
       const valueText = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;

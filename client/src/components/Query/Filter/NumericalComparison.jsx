@@ -98,6 +98,14 @@ class NumericalComparisonFilter extends React.Component {
     const min = roundDown2(facets[`${data.id}_min`][0].value);
     const max = roundDown2(facets[`${data.id}_max`][0].value);
 
+    // If older data coming from backend, add a second value element
+    if (data.values.length < 2) {
+      data.values.push({ comparator: '<=', value: max });
+    }
+
+    const defaultMin = data && data.values.length ? data.values[0].value : min;
+    const defaultMax = data && data.values.length ? data.values[1].value : max;
+
     return {
       getLabels: this.getEditorLabels,
       getDraftInstruction: this.getEditorDraftInstruction,
@@ -107,7 +115,7 @@ class NumericalComparisonFilter extends React.Component {
           <Row className={styleFilter.rangeSlider}>
             <Slider
               range
-              defaultValue={[min, max]}
+              defaultValue={[defaultMin, defaultMax]}
               min={min}
               max={max}
               step={0.01}
@@ -120,7 +128,7 @@ class NumericalComparisonFilter extends React.Component {
               <InputNumber
                 step={0.01}
                 min={min}
-                defaultValue={min}
+                defaultValue={defaultMin}
                 onChange={this.handleMinValueChange}
                 disabled={inputDisabled}
               />
@@ -129,7 +137,7 @@ class NumericalComparisonFilter extends React.Component {
               <InputNumber
                 step={0.01}
                 max={max}
-                defaultValue={max}
+                defaultValue={defaultMax}
                 onChange={this.handleMaxValueChange}
                 disabled={inputDisabled}
               />
@@ -153,16 +161,14 @@ class NumericalComparisonFilter extends React.Component {
 
   handleMaxValueChange(value) {
     const { draft } = this.state;
-    draft.values[0] = { comparator: '<=', value: roundDown2(value) };
+    draft.values[1] = { comparator: '<=', value: roundDown2(value) };
     this.setState({ draft, sliderDisabled: true });
   }
 
   handleSliderChange(range) {
-    console.log('handleSlider change. State before: ', this.state);
     const { draft } = this.state;
     draft.values[0] = { comparator: '>=', value: roundDown2(range[0]) };
     draft.values[1] = { comparator: '<=', value: roundDown2(range[1]) };
-    console.log('called with range: ', range);
 
     this.setState({ draft, inputDisabled: true });
   }
