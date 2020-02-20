@@ -56,6 +56,7 @@ class Statement extends React.Component {
       dropDownIsOpen: false,
       modalIsOpen: false,
       dropdownClickValue: null,
+      draftTitle:null
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -96,7 +97,6 @@ class Statement extends React.Component {
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
-    this.onStatementTitleChangeEnter = this.onStatementTitleChangeEnter.bind(this);
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
     this.onCancel = this.onCancel.bind(this);
@@ -104,6 +104,9 @@ class Statement extends React.Component {
     this.isDropdownOpen = this.isDropdownOpen.bind(this);
     this.handlePopUpConfirm = this.handlePopUpConfirm.bind(this);
     this.showModal = this.showModal.bind(this)
+    this.handleTitleInputFocus = this.handleTitleInputFocus.bind(this)
+    this.closeModal = this.closeModal.bind(this)
+    this.handleTitleChange = this.handleTitleChange.bind(this)
   }
 
   isEditable() {
@@ -563,20 +566,15 @@ class Statement extends React.Component {
   }
 
   onStatementTitleChange(e) {
-    const { value } = e.target;
-    const width = calculateTitleWidth(value);
-
-    e.target.style.width = `calc(13px + ${width}ch)`;
+    const inputValue = document.querySelector(".inputTitle").value
+    const {
+      activeStatementId, data, onUpdateStatementCallback,
+    } = this.props;
 
     this.setState({
-      statementTitle: value,
-    });
-  }
-
-  onStatementTitleChangeEnter(e) {
-    e.target.blur();
-
-    this.onStatementTitleChange(e);
+      statementTitle: inputValue,
+      modalIsOpen: false,
+    }, () => { onUpdateStatementCallback(activeStatementId, inputValue, '', data, false); });
   }
 
   onModalSaveTitleInputChange(e) {
@@ -624,6 +622,24 @@ class Statement extends React.Component {
     this.setState({ modalIsOpen : true})
   }
 
+  closeModal(){
+    const { activeStatementId, statements } = this.props;
+    const activeStatement = statements[activeStatementId];
+    const statementTitle = this.state.statementTitle !== null ? this.state.statementTitle : activeStatement.title;
+    this.setState({ modalIsOpen : false,
+                    draftTitle :statementTitle
+                  })
+  }
+
+  handleTitleInputFocus(e){
+    e.target.select();
+  }
+
+  handleTitleChange(e){
+    const value = e.target.value
+    this.setState({ draftTitle : value})
+  }
+
   render() {
     const { data, activeStatementId, statements, defaultStatementId } = this.props;
     const activeStatement = statements[activeStatementId];
@@ -635,7 +651,7 @@ class Statement extends React.Component {
       activeQuery, externalData, options, facets, categories, searchData, target, activeStatementTotals,
     } = this.props;
     const {
-      display, original, checkedQueries, saveTitleModalVisible, modalIsOpen,
+      display, original, checkedQueries, saveTitleModalVisible, modalIsOpen, draftTitle
     } = this.state;
     const {
       reorderable,
@@ -779,7 +795,8 @@ class Statement extends React.Component {
                 <div className={styleStatement.title}>
                   <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                     <div>
-                      <Button onClick={this.showModal} >
+                      {console.log("patate",statementTitle)}
+                      <Button onClick={this.showModal} className={styleStatement.editTitleButton}>
                         {statementTitle} 
                                              
                         <IconKit
@@ -790,20 +807,20 @@ class Statement extends React.Component {
                       </Button>
                       <Modal
                         visible={modalIsOpen}
-                        onOk={this.handleOk}
-                        onCancel={this.handleCancel}
-                        footer={[
-                          <Button key="back" onClick={this.handleCancel}>
-                            {modalTitleSaveCancel}
-                          </Button>,
-                          <Button key="submit" type="primary" onClick={this.handleOk}>
-                            {modalTitleSaveOk}
-                          </Button>,
-                        ]}
+                        onOk={this.onStatementTitleChange}
+                        onCancel = {this.closeModal}
+                        okText={modalTitleSaveOk}
+                        cancelText={modalTitleSaveCancel}
+                        className={styleStatement.titleModal}
+                        width={488}
+                        destroyOnClose={true}
                       >
-                        <Text>{modalTitleChangeTitle}</Text>
-                        <span>{modalTitleSaveInputLabel}</span>
-                        <Input/>
+                        <Text className={styleStatement.modalTitle}>{modalTitleChangeTitle}</Text>
+                        <label className={styleStatement.modalLabel}>
+                          {modalTitleSaveInputLabel}
+                          <Input className={`inputTitle ${styleStatement.inputTitle}`} defaultValue={statementTitle} value={draftTitle ? draftTitle : statementTitle} autoFocus onChange={this.handleTitleChange} onFocus={this.handleTitleInputFocus}/>
+                        </label>
+                        
                       </Modal>
 
                     </div>
