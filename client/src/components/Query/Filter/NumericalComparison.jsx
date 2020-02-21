@@ -1,11 +1,10 @@
 import React from 'react';
 import {
-  Row, Col, Radio, InputNumber,
+  Row, Col, InputNumber, Slider,
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
-import intl from 'react-intl-universal';
-
+import styleFilter from '../styles/filter.module.scss';
 import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
 
 
@@ -83,44 +82,33 @@ class NumericalComparisonFilter extends React.Component {
 
   getEditor() {
     const { draft } = this.state;
-    const typeGt = intl.get('screen.patientvariant.filter.comparator.gt');
-    const typeGte = intl.get('screen.patientvariant.filter.comparator.gte');
-    const typeLt = intl.get('screen.patientvariant.filter.comparator.lt');
-    const typeLte = intl.get('screen.patientvariant.filter.comparator.lte');
-    const valueText = intl.get('screen.patientvariant.filter.numerical.value');
     return {
       getLabels: this.getEditorLabels,
       getDraftInstruction: this.getEditorDraftInstruction,
       getInstruction: this.getEditorInstruction,
-      contents: draft.values ? draft.values.map((datum, index) => (
+      contents: draft.values ? (
         <>
-          <Row>
-            <Col span={24}>
-              <Radio.Group
-                type="primary"
-                size="small"
-                dataindex={index}
-                value={datum.comparator}
-                onChange={this.handleComparatorChange}
-              >
-                <Radio.Button value={FILTER_COMPARATOR_TYPE_GREATER_THAN}>{typeGt}</Radio.Button>
-                <Radio.Button value={FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL}>{typeGte}</Radio.Button>
-                <Radio.Button value={FILTER_COMPARATOR_TYPE_LOWER_THAN}>{typeLt}</Radio.Button>
-                <Radio.Button value={FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL}>{typeLte}</Radio.Button>
-              </Radio.Group>
-            </Col>
+          <Row className={styleFilter.rangeSlider}>
+            <Slider range defaultValue={[20, 50]} />
           </Row>
-          <br />
-          <Row type="flex" align="middle">
+          <Row type="flex" justify="space-between" className={styleFilter.rangeInput}>
             <Col>
-              {valueText}
+              <InputNumber
+                step={0.1}
+                defaultValue={0.0}
+                onChange={this.onChange}
+              />
             </Col>
             <Col>
-              <InputNumber onChange={this.handleValueChange} defaultValue={datum.value} step={1} />
+              <InputNumber
+                step={0.1}
+                defaultValue={0.0}
+                onChange={this.onChange}
+              />
             </Col>
           </Row>
         </>
-      )) : null,
+      ) : null,
     };
   }
 
@@ -147,6 +135,7 @@ class NumericalComparisonFilter extends React.Component {
         draft={draft}
         type={FILTER_TYPE_NUMERICAL_COMPARISON}
         editor={this.getEditor()}
+        resettable
       />
     );
   }

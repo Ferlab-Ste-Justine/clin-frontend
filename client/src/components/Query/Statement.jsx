@@ -12,7 +12,7 @@ import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
 import IconKit from 'react-icons-kit';
 import {
-  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_edit,
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_edit, ic_add
 } from 'react-icons-kit/md';
 import Query from './index';
 import {
@@ -968,6 +968,25 @@ class Statement extends React.Component {
             </div>
             <Divider className={styleStatement.dividerHorizontal} />
           </Row>
+        </div>
+        <div className={styleStatement.body}>
+          {reorderable
+            ? (
+              <DragSortableList
+                key="sortable"
+                type="vertical"
+                items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
+                onSort={this.handleReorder}
+                className={styleStatement.draggableContainer}
+              />
+            ) : queries
+          }
+        </div>
+        <div className={styleStatement.footer}>
+          <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery} className={styleStatement.newQueryButton}>
+            <IconKit size={20} icon={ic_add} />
+            {newQueryText}
+          </Button>
           <Row type="flex" className={styleStatement.toolbar}>
             <Menu onClick={this.handleCombine} mode="horizontal" className={styleStatement.menuCombine}>
               <Menu.Item key={OPERATOR_TYPE_AND} disabled={checkedQueriesCount < 2}>
@@ -1008,23 +1027,6 @@ class Statement extends React.Component {
             </Menu>
 
           </Row>
-
-        </div>
-        <div className={styleStatement.body}>
-          {reorderable
-            ? (
-              <DragSortableList
-                key="sortable"
-                type="vertical"
-                items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
-                onSort={this.handleReorder}
-                className={styleStatement.draggableContainer}
-              />
-            ) : queries
-          }
-        </div>
-        <div className={styleStatement.footer}>
-          <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery}>{newQueryText}</Button>
         </div>
       </div>
     );
