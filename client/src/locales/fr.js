@@ -242,7 +242,7 @@ const fr = {
   'screen.patientvariant.statement.save': 'Sauvegarder',
   'screen.patientvariant.statement.combine': 'Combiner',
   'screen.patientvariant.statement.delete': 'Supprimer',
-  'screen.patientvariant.statement.newQuery': 'Nouvelle requête',
+  'screen.patientvariant.statement.newQuery': 'Requête',
   'screen.patientvariant.statement.myFilter': 'Mes filtres',
   'screen.patientvariant.statement.tooltip.check': 'Cocher',
   'screen.patientvariant.statement.tooltip.uncheck': 'Décocher',
