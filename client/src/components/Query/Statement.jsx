@@ -818,7 +818,7 @@ class Statement extends React.Component {
                         <Text className={styleStatement.modalTitle}>{modalTitleChangeTitle}</Text>
                         <label className={styleStatement.modalLabel}>
                           {modalTitleSaveInputLabel}
-                          <Input className={`inputTitle ${styleStatement.inputTitle}`} defaultValue={statementTitle} value={draftTitle ? draftTitle : statementTitle} autoFocus onChange={this.handleTitleChange} onFocus={this.handleTitleInputFocus}/>
+                          <Input className={`inputTitle ${styleStatement.inputTitle}`} defaultValue={statementTitle} autoFocus onChange={this.handleTitleChange} onFocus={this.handleTitleInputFocus}/>
                         </label>
                         
                       </Modal>
