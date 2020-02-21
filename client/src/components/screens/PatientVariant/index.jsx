@@ -604,8 +604,8 @@ class PatientVariantScreen extends React.Component {
               searchData={searchData}
               externalData={patient}
             />
-            <br />
-            <br />
+          </Card>
+          <Card className={`Content ${style.variantTable}`}>
             <Tabs key="variant-interpreter-tabs" activeKey={currentTab} onChange={this.handleTabChange}>
               <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
                 { currentTab === VARIANT_TAB && (

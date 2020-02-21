@@ -454,7 +454,7 @@ class Filter extends React.Component {
               )}
             </Row>
 
-            {searchable && (
+            {(searchable) && (
             <>
               <Row>
                 <Input

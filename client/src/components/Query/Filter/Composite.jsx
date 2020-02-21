@@ -12,9 +12,6 @@ import PropTypes from 'prop-types';
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN,
-  FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
-  FILTER_COMPARATOR_TYPE_LOWER_THAN,
-  FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from './NumericalComparison';
 import styleFilter from '../styles/filter.module.scss';
 
@@ -95,9 +92,8 @@ class CompositeFilter extends React.Component {
   }
 
   getEditor() {
-    const { dataSet, data } = this.props;
+    const { dataSet } = this.props;
     const { selection, draft } = this.state;
-    const { comparator, value } = draft;
 
     const options = dataSet.map((option) => {
       const valueText = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
@@ -120,25 +116,10 @@ class CompositeFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-          <Row type="flex" align="middle">
-            <Col>
-              {data.id}
-            </Col>
-            <Col>
-              <Select
-                type="primary"
-                size="small"
-                value={(!comparator ? value : SCORE_SELECTION)}
-                onChange={this.handleQualityChange}
-              >
-                <Select.Option value={SCORE_SELECTION}>Score</Select.Option>
-                { dataSet.map(datum => (
-                  <Select.Option value={datum.value}>
-                    {`${datum.value} [ ${intl.get('components.query.count', { count: datum.count })} ]`}
-                  </Select.Option>
-                )) }
-              </Select>
-            </Col>
+          <Row className={styleFilter.rangeSlider}>
+            <Slider range defaultValue={[20, 50]} />
+          </Row>
+          <Row type="flex" justify="space-between" className={styleFilter.rangeInput}>
             <Col>
               <InputNumber
                 step={0.1}

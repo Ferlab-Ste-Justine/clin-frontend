@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm,
+  Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm, Typography,
 } from 'antd';
 import {
   cloneDeep, find, findIndex, pull, isEmpty, isEqual,
@@ -12,7 +12,7 @@ import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
 import IconKit from 'react-icons-kit';
 import {
-  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_edit,
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_edit, ic_add
 } from 'react-icons-kit/md';
 import Query from './index';
 import {
@@ -54,8 +54,9 @@ class Statement extends React.Component {
         undoable: null,
       },
       dropDownIsOpen: false,
-      onFocus: false,
+      modalIsOpen: false,
       dropdownClickValue: null,
+      draftTitle:null
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -96,16 +97,16 @@ class Statement extends React.Component {
     this.selectStatement = this.selectStatement.bind(this);
     this.onPositionChange = this.onPositionChange.bind(this);
     this.onStatementTitleChange = this.onStatementTitleChange.bind(this);
-    this.onStatementTitleChangeEnter = this.onStatementTitleChangeEnter.bind(this);
     this.handleCancelModal = this.handleCancelModal.bind(this);
     this.showConfirmForDestructiveStatementAction = this.showConfirmForDestructiveStatementAction.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.onFocusTitle = this.onFocusTitle.bind(this);
-    this.onBlurTitle = this.onBlurTitle.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.isDropdownOpen = this.isDropdownOpen.bind(this);
     this.handlePopUpConfirm = this.handlePopUpConfirm.bind(this);
+    this.showModal = this.showModal.bind(this)
+    this.handleTitleInputFocus = this.handleTitleInputFocus.bind(this)
+    this.closeModal = this.closeModal.bind(this)
+    this.handleTitleChange = this.handleTitleChange.bind(this)
   }
 
   isEditable() {
@@ -565,39 +566,20 @@ class Statement extends React.Component {
   }
 
   onStatementTitleChange(e) {
-    const { value } = e.target;
-    const width = calculateTitleWidth(value);
-
-    e.target.style.width = `calc(13px + ${width}ch)`;
+    const inputValue = document.querySelector(".inputTitle").value
+    const {
+      activeStatementId, data, onUpdateStatementCallback,
+    } = this.props;
 
     this.setState({
-      statementTitle: value,
-    });
-  }
-
-  onStatementTitleChangeEnter(e) {
-    e.target.blur();
-
-    this.onStatementTitleChange(e);
+      statementTitle: inputValue,
+      modalIsOpen: false,
+    }, () => { onUpdateStatementCallback(activeStatementId, inputValue, '', data, false); });
   }
 
   onModalSaveTitleInputChange(e) {
     const { value } = e.target;
     this.setState({ saveTitleModalInputValue: value });
-  }
-
-  handleFocus() {
-    const input = document.querySelector('#statementTitle');
-    input.focus();
-  }
-
-  onFocusTitle(e) {
-    e.target.select();
-    this.setState({ onFocus: true });
-  }
-
-  onBlurTitle() {
-    this.setState({ onFocus: false });
   }
 
   onCancel() {
@@ -636,9 +618,32 @@ class Statement extends React.Component {
     }
   }
 
+  showModal(){
+    this.setState({ modalIsOpen : true})
+  }
+
+  closeModal(){
+    const { activeStatementId, statements } = this.props;
+    const activeStatement = statements[activeStatementId];
+    const statementTitle = this.state.statementTitle !== null ? this.state.statementTitle : activeStatement.title;
+    this.setState({ modalIsOpen : false,
+                    draftTitle :statementTitle
+                  })
+  }
+
+  handleTitleInputFocus(e){
+    e.target.select();
+  }
+
+  handleTitleChange(e){
+    const value = e.target.value
+    this.setState({ draftTitle : value})
+  }
+
   render() {
     const { data, activeStatementId, statements, defaultStatementId } = this.props;
     const activeStatement = statements[activeStatementId];
+    const { Text } = Typography;
     if (!data || !activeStatement) return null;
     const { dropDownIsOpen, dropdownClickValue } = this.state;
     if (!data) return null;
@@ -646,7 +651,7 @@ class Statement extends React.Component {
       activeQuery, externalData, options, facets, categories, searchData, target, activeStatementTotals,
     } = this.props;
     const {
-      display, original, checkedQueries, saveTitleModalVisible, onFocus,
+      display, original, checkedQueries, saveTitleModalVisible, modalIsOpen, draftTitle
     } = this.state;
     const {
       reorderable,
@@ -669,6 +674,7 @@ class Statement extends React.Component {
     const modalTitleSaveInputDefault = intl.get('screen.patientvariant.modal.statement.save.input.title.default');
     const modalTitleSaveOk = intl.get('screen.patientvariant.modal.statement.save.button.ok');
     const modalTitleSaveCancel = intl.get('screen.patientvariant.modal.statement.save.button.cancel');
+    const modalTitleChangeTitle = intl.get('screen.patientvariant.modal.statement.changeTitle.title');
     const width = calculateTitleWidth(statementTitle);
 
     let containsEmptyQueries = false;
@@ -789,23 +795,33 @@ class Statement extends React.Component {
                 <div className={styleStatement.title}>
                   <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                     <div>
-                      <Input
-                        id="statementTitle"
-                        onChange={this.onStatementTitleChange}
-                        onFocus={this.onFocusTitle}
-                        onBlur={this.onBlurTitle}
-                        onPressEnter={this.onStatementTitleChangeEnter}
-                        autocomplete="off"
-                        value={statementTitle}
-                        disabled={activeStatementId == null}
-                        style={{ width: `calc(13px + ${width}ch)` }}
-                      />
-                      <IconKit
+                      <Button onClick={this.showModal} className={styleStatement.editTitleButton}>
+                        {statementTitle} 
+                                             
+                        <IconKit
                         icon={ic_edit}
                         size={18}
-                        onClick={this.handleFocus}
-                        className={`${styleStatement.iconTitle} ${styleStatement.icon} ${onFocus ? `${styleStatement.focusIcon}` : null}`}
-                      />
+                        className={`${styleStatement.iconTitle} ${styleStatement.icon} ${modalIsOpen ? `${styleStatement.focusIcon}` : null}`}
+                        />
+                      </Button>
+                      <Modal
+                        visible={modalIsOpen}
+                        onOk={this.onStatementTitleChange}
+                        onCancel = {this.closeModal}
+                        okText={modalTitleSaveOk}
+                        cancelText={modalTitleSaveCancel}
+                        className={styleStatement.titleModal}
+                        width={488}
+                        destroyOnClose={true}
+                      >
+                        <Text className={styleStatement.modalTitle}>{modalTitleChangeTitle}</Text>
+                        <label className={styleStatement.modalLabel}>
+                          {modalTitleSaveInputLabel}
+                          <Input className={`inputTitle ${styleStatement.inputTitle}`} defaultValue={statementTitle} autoFocus onChange={this.handleTitleChange} onFocus={this.handleTitleInputFocus}/>
+                        </label>
+                        
+                      </Modal>
+
                     </div>
                   </Tooltip>
                   {activeStatementId !== 'draft' && (
@@ -968,6 +984,25 @@ class Statement extends React.Component {
             </div>
             <Divider className={styleStatement.dividerHorizontal} />
           </Row>
+        </div>
+        <div className={styleStatement.body}>
+          {reorderable
+            ? (
+              <DragSortableList
+                key="sortable"
+                type="vertical"
+                items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
+                onSort={this.handleReorder}
+                className={styleStatement.draggableContainer}
+              />
+            ) : queries
+          }
+        </div>
+        <div className={styleStatement.footer}>
+          <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery} className={styleStatement.newQueryButton}>
+            <IconKit size={20} icon={ic_add} />
+            {newQueryText}
+          </Button>
           <Row type="flex" className={styleStatement.toolbar}>
             <Menu onClick={this.handleCombine} mode="horizontal" className={styleStatement.menuCombine}>
               <Menu.Item key={OPERATOR_TYPE_AND} disabled={checkedQueriesCount < 2}>
@@ -1008,23 +1043,6 @@ class Statement extends React.Component {
             </Menu>
 
           </Row>
-
-        </div>
-        <div className={styleStatement.body}>
-          {reorderable
-            ? (
-              <DragSortableList
-                key="sortable"
-                type="vertical"
-                items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
-                onSort={this.handleReorder}
-                className={styleStatement.draggableContainer}
-              />
-            ) : queries
-          }
-        </div>
-        <div className={styleStatement.footer}>
-          <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery}>{newQueryText}</Button>
         </div>
       </div>
     );

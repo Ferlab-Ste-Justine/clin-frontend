@@ -9,7 +9,6 @@ import {
 
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
-
 import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
 import styleFilter from '../styles/filter.module.scss';
 
