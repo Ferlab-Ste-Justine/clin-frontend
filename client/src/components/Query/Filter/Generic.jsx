@@ -83,7 +83,6 @@ class GenericFilter extends React.Component {
     const {
       selection, size, page, allOptions,
     } = this.state;
-
     const selectAll = intl.get('screen.patientvariant.filter.selection.all');
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 

@@ -318,6 +318,7 @@ class Query extends React.Component {
                 size="small"
                 defaultValue={draft.title}
                 onBlur={this.handleTitleChange}
+                onFocus={this.handleTitleOnFocus}
                 onPressEnter={this.handleTitleChange}
                 onChange={handleTitleOnChange}
                 className={`title-${draft.key}`}
@@ -412,6 +413,7 @@ class Query extends React.Component {
                           options={options}
                           autoSelect={active}
                           data={item.data}
+                          facets={facets}
                           dataSet={facets[item.data.id] || []}
                           category={category}
                           onEditCallback={this.handleFilterChange}
@@ -448,12 +450,16 @@ class Query extends React.Component {
                         />
                       );
                     } if (type === FILTER_TYPE_COMPOSITE) {
+                      const min = facets[`${item.data.id}_min`];
+                      const max = facets[`${item.data.id}_max`];
                       return (
                         <CompositeFilter
                           index={index}
                           options={options}
                           autoSelect={active}
                           data={item.data}
+                          min={min}
+                          max={max}
                           dataSet={facets[item.data.id] || []}
                           category={category}
                           onEditCallback={this.handleFilterChange}

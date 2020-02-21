@@ -19,7 +19,9 @@ import {
   getSvgPathFromOperatorType,
   OPERATOR_TYPE_UNION,
   OPERATOR_TYPE_INTERSECTION,
-  OPERATOR_TYPE_EXCLUSION,
+  OPERATOR_TYPE_NOT_EQUAL,
+  OPERATOR_TYPE_EQUAL,
+  OPERATOR_TYPE_ELEMENT_OF,
 } from '../Operator';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
@@ -34,27 +36,59 @@ const operatorFromOperand = (operand) => {
     case FILTER_OPERAND_TYPE_ALL:
       return OPERATOR_TYPE_INTERSECTION;
     case FILTER_OPERAND_TYPE_NONE:
-      return OPERATOR_TYPE_EXCLUSION;
+      return OPERATOR_TYPE_NOT_EQUAL;
     default:
       return OPERATOR_TYPE_UNION;
   }
 };
 
-export const OperatorIconComponent = operand => props => (
+const OuterOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_NOT_EQUAL;
+    default:
+      return OPERATOR_TYPE_EQUAL;
+  }
+};
+
+const InnerOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_UNION;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_INTERSECTION;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_UNION;
+    default:
+      return OPERATOR_TYPE_UNION;
+  }
+};
+
+export const OperatorIconComponent = operator => props => (
   <svg width="10em" height="10em" viewBox="0 0 24 24" {...props}>
-    {getSvgPathFromOperatorType(operand)}
+    {getSvgPathFromOperatorType(operator)}
   </svg>
 );
 
-const IconForOperand = operand => props => (
+const PillOuterIconForOperand = operand => props => (
   <Icon
     {...props}
     className={styleFilter.svgIcon}
-    component={OperatorIconComponent(operatorFromOperand(operand))}
+    component={OperatorIconComponent(OuterOperatorFromOperand(operand))}
   />
 );
 
-// const IntersectionSvg = require('../../../icons/intersection.svg');
+const PillInnerIconForOperand = operand => props => (
+  <Icon
+    {...props}
+    className={style.innerIconOperand}
+    component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
+  />
+);
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -75,6 +109,13 @@ export const createFilter = type => ({
     type: (FILTER_TYPES.indexOf(type) !== -1 ? type : FILTER_TYPE_GENERIC),
   },
 });
+
+// eslint-disable-next-line react/prop-types
+const Interval = ({ min, max }) => (
+  <div className={style.termList}>
+    {`[${min}, ${max}]`}
+  </div>
+);
 
 class Filter extends React.Component {
   constructor(props) {
@@ -115,6 +156,28 @@ class Filter extends React.Component {
     this.state.allOptions = cloneDeep(sortData);
     this.state.page = 1;
     this.state.size = 10;
+  }
+
+  getMin() {
+    if (!this.isNumericalComparisonFilter()) return 0;
+
+    const { data } = this.props;
+
+    if (!data) return 0;
+    const { values } = data;
+
+    return values[0].value;
+  }
+
+  getMax() {
+    if (!this.isNumericalComparisonFilter()) return null;
+
+    const { data } = this.props;
+
+    if (!data) return 0;
+    const { values } = data;
+
+    return values[1].value;
   }
 
   isEditable() {
@@ -167,7 +230,9 @@ class Filter extends React.Component {
   }
 
   handleApply() {
+    console.log('*** handleApply');
     if (this.isEditable()) {
+      console.log('*** handleApply - 1');
       const {
         editor, onEditCallback, index,
       } = this.props;
@@ -177,16 +242,19 @@ class Filter extends React.Component {
       this.setState({
         opened: false,
       }, () => {
+        console.log('*** handleApply - 2');
         if (
           (!instruction.values && !instruction.value)
           || (instruction.values && instruction.values.length === 0)
           || (instruction.value && instruction.value.length === 0)) {
           this.handleClose(true);
         } else {
+          console.log('*** handleApply - 3');
           onEditCallback(instruction);
         }
       });
     }
+    console.log('*** handleApply - 4');
   }
 
   handleCancel() {
@@ -234,10 +302,70 @@ class Filter extends React.Component {
     this.setState({ visibleInput: !visibleInput });
   }
 
+  pillOuterOperatorIcon() {
+    const { type, data, editor } = this.props;
+    const { operand } = data;
+
+    if (this.hasOperands()) {
+      return PillOuterIconForOperand(operand)();
+    }
+
+    if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
+      return (
+        <Icon
+          // {...props}
+          className={styleFilter.svgIcon}
+          component={OperatorIconComponent(OPERATOR_TYPE_ELEMENT_OF)}
+        />
+      );
+    }
+
+    const editorLabels = editor.getLabels();
+    const actionLabel = editorLabels.action;
+    return actionLabel;
+  }
+
+  termList() {
+    const { data, editor } = this.props;
+    const { operand } = data;
+
+    const editorLabels = editor.getLabels();
+    const actionTargets = editorLabels.targets;
+
+    return (
+      <div className={style.termList}>
+        {actionTargets.map((target, index) => (
+          <>
+            {index !== 0 ? PillInnerIconForOperand(operand)() : null}{target}
+          </>
+        ))}
+      </div>
+    );
+  }
+
+  hasOperands() {
+    const { config } = this.props;
+    return config.operands;
+  }
+
+  isNumericalComparisonFilter() {
+    const { type } = this.props;
+
+    return type === FILTER_TYPE_NUMERICAL_COMPARISON;
+  }
 
   render() {
     const {
-      onOperandChangeCallBack, config, data, draft, overlayOnly, editor, searchable, autoSelect, resettable,
+      onOperandChangeCallBack,
+      config,
+      data,
+      draft,
+      overlayOnly,
+      editor,
+      resettable,
+      searchable,
+      autoSelect,
+      onReset,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -261,9 +389,7 @@ class Filter extends React.Component {
     const { operand } = draft;
     const savedOperand = data.operand;
 
-    const hasOperands = cfg => cfg && config.operands;
-
-    const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
+    const ApplyButton = ({ cfg }) => (this.hasOperands() ? (
       <Dropdown.Button
         type="primary"
         className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
@@ -296,7 +422,7 @@ class Filter extends React.Component {
     const filterSearch = intl.get('screen.patientvariant.filter.search');
     const valueText = intl.get('screen.patientvariant.filter.pagination.value');
     const editorLabels = editor.getLabels();
-    const actionLabel = editorLabels.action;
+    // const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
     const overlay = (
       <Popover
@@ -314,17 +440,16 @@ class Filter extends React.Component {
                 </Button>
               </Tooltip>
               {(searchable) && (
-                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
-                  <IconKit size={24} icon={ic_search} />
-                </Button>
+              <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                <IconKit size={24} icon={ic_search} />
+              </Button>
               )}
               {(resettable) && (
-                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                <Button className={styleFilter.iconSearch} onClick={onReset}>
                   <IconKit size={24} icon={ic_replay} />
                 </Button>
               )}
             </Row>
-
             {(searchable) && (
             <>
               <Row>
@@ -405,7 +530,7 @@ class Filter extends React.Component {
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            {operand ? IconForOperand(savedOperand)() : actionLabel}
+            {this.pillOuterOperatorIcon()}
           </div>
           { this.isEditable() && (
             <Dropdown
@@ -420,11 +545,19 @@ class Filter extends React.Component {
                 color="#FFFFFF"
                 className={`${style.insideTag}`}
               >
-                {actionTargets.map((target, index) => (
-                  <>
-                    {index !== 0 ? ' • ' : null } {target}
-                  </>
-                ))}
+                {this.isNumericalComparisonFilter()
+                  ? (<Interval min={this.getMin()} max={this.getMax()} />)
+                  : (
+                    <div className={style.termList}>
+                      {actionTargets.map((target, index) => (
+                        <>
+                          {index !== 0 ? PillInnerIconForOperand(savedOperand)() : null}{target}
+                        </>
+                      ))}
+                    </div>
+                  )
+                }
+
               </Tag>
             </Dropdown>
           ) }
@@ -438,10 +571,12 @@ class Filter extends React.Component {
 }
 
 Filter.propTypes = {
-  config: PropTypes.shape({}).isRequired,
+  type: PropTypes.string,
+  config: PropTypes.shape({}),
   data: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape({}),
   options: PropTypes.shape({}),
+  onReset: PropTypes.func,
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
@@ -463,12 +598,15 @@ Filter.propTypes = {
 };
 
 Filter.defaultProps = {
+  type: '',
+  config: {},
   draft: {},
   options: {
     editable: false,
     selectable: false,
     removable: false,
   },
+  onReset: () => {},
   onCancelCallback: () => {},
   onEditCallback: () => {},
   onRemoveCallback: () => {},
