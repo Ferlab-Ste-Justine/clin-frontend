@@ -116,6 +116,22 @@ class CompositeFilter extends React.Component {
           <Row className={styleFilter.rangeSlider}>
             <Slider range defaultValue={[20, 50]} />
           </Row>
+          <Row type="flex" justify="space-between" className={styleFilter.rangeInput}>
+            <Col>
+              <InputNumber
+                step={0.1}
+                defaultValue={0.0}
+                onChange={this.onChange}
+              />
+            </Col>
+            <Col>
+              <InputNumber
+                step={0.1}
+                defaultValue={0.0}
+                onChange={this.onChange}
+              />
+            </Col>
+          </Row>
           <Row>
             <Col span={24}>
               <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
@@ -127,20 +143,6 @@ class CompositeFilter extends React.Component {
                   </Row>
                 )) }
               </Checkbox.Group>
-            </Col>
-            <Col>
-              <InputNumber
-                step={0.1}
-                defaultValue={0.0}
-                onChange={this.onChange}
-              />
-            </Col>
-            <Col>
-              <InputNumber
-                step={0.1}
-                defaultValue={0.0}
-                onChange={this.onChange}
-              />
             </Col>
           </Row>
         </>
