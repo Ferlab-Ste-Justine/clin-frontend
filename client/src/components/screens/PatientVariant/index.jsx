@@ -564,7 +564,7 @@ class PatientVariantScreen extends React.Component {
             searchData={searchData}
             autocomplete={autocomplete}
           />
-          <Card className="Content">
+          <Card className={`Content ${style.variantContent}`}>
             <Statement
               key="variant-statement"
               activeQuery={activeQuery}
