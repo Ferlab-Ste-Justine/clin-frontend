@@ -1,13 +1,11 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
-import intl from 'react-intl-universal';
+import PropTypes from 'prop-types';
 import {
-  Row, Col, Select, InputNumber, Slider, Checkbox, Tooltip, Tag,
+  Row, Col, InputNumber, Slider, Checkbox, Tooltip, Tag,
 } from 'antd';
 import {
   cloneDeep, orderBy, filter, pullAllBy, pull,
 } from 'lodash';
-import PropTypes from 'prop-types';
 
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
@@ -16,6 +14,7 @@ import {
 import styleFilter from '../styles/filter.module.scss';
 
 const SCORE_SELECTION = '_score_';
+
 
 class CompositeFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -93,7 +92,7 @@ class CompositeFilter extends React.Component {
 
   getEditor() {
     const { dataSet } = this.props;
-    const { selection, draft } = this.state;
+    const { selection } = this.state;
 
     const options = dataSet.map((option) => {
       const valueText = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
@@ -250,6 +249,7 @@ class CompositeFilter extends React.Component {
     );
   }
 }
+
 CompositeFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,

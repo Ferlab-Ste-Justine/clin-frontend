@@ -163,7 +163,6 @@ class NumericalComparisonFilter extends React.Component {
               />
             </Col>
           </Row>
-          {/* <br /> */}
         </>
       ) : null,
     };

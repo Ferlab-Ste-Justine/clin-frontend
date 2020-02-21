@@ -22,7 +22,6 @@ import {
   OPERATOR_TYPE_NOT_EQUAL,
   OPERATOR_TYPE_EQUAL,
   OPERATOR_TYPE_ELEMENT_OF,
-  // OPERATOR_TYPE_ELEMENT_OF,
 } from '../Operator';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
@@ -350,12 +349,6 @@ class Filter extends React.Component {
     return type === FILTER_TYPE_NUMERICAL_COMPARISON;
   }
 
-  isCompositeFilter() {
-    const { type } = this.props;
-
-    return type === FILTER_TYPE_COMPOSITE;
-  }
-
   render() {
     const {
       onOperandChangeCallBack,
@@ -441,7 +434,6 @@ class Filter extends React.Component {
                   <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
                 </Button>
               </Tooltip>
-
               {(searchable) && (
               <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
                 <IconKit size={24} icon={ic_search} />
@@ -453,7 +445,6 @@ class Filter extends React.Component {
                 </Button>
               )}
             </Row>
-
             {(searchable) && (
             <>
               <Row>
