@@ -41,7 +41,7 @@
             justify-content: center;
             align-items: center;
             svg{
-                color: rgba(18, 90, 144,0.5);;
+                color: rgba(35, 55, 80, 0.54);
                 height: 14px;
                 width: 14px;
                 margin: 0 4px;
@@ -79,12 +79,27 @@
 .selectedTag{
     .insideTag{
         color:#125a90;
-         &:nth-child(3):hover {
-            cursor:pointer;
-            .termList{
-                border-bottom: 1px solid;
-            }
+         &:nth-child(3) {
+            &:hover{
+                cursor:pointer;
+                .termList{
+                    border-bottom: 1px solid;
     
+                }
+            }
+            .innerIconOperand{
+                height: 13px;
+                width: 22px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                svg{
+                    color: rgba(18, 90, 144,0.5);;
+                    height: 14px;
+                    width: 14px;
+                    margin: 0 4px;
+                }
+            }
             
         }
     }

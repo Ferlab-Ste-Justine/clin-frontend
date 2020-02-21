@@ -3,8 +3,6 @@
 .statement {
 
   .header {
-    margin-bottom: 20px;
-
     .navigation{
       width:100%;
       >div{
@@ -89,7 +87,7 @@
       }
 
       .dividerHorizontal{
-        margin:8px 0 16px 0;
+        margin:8px 0 24px 0;
         background: rgba(18, 90, 144, 0.10);
         height:2px;
       }
@@ -193,6 +191,8 @@
   }
   .menuCombine{
         border:none;
+        line-height: 0;
+        margin-left: 16px;
          li{
             border:none;
             padding:0;
@@ -298,6 +298,53 @@
 
   .footer {
     margin-top: 20px;
+    display: flex;
+    align-items: center;
+    .newQueryButton{
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      background: rgb(27, 122, 178);
+      border-color: transparent;
+      i{
+        margin-right: 8px;
+        svg{
+          color: rgb(255, 255, 255);
+        }
+      }
+      span{
+        color: rgb(255, 255, 255);
+        font-size: 14px;
+        font-family: $font;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1.25px;
+      }
+
+      &:hover{
+        background: rgba(27, 122, 178,0.92);
+      }
+
+      &:focus{
+        background: rgba(27, 122, 178,0.76);
+      }
+
+      &:disabled{
+        border: none;
+        background: rgba(35, 55, 80,0.12);
+        i{
+          margin-right: 8px;
+          svg{
+            color: rgba(35, 55, 80, 0.38);
+          }
+        }
+        span{
+          color: rgba(35, 55, 80, 0.38);
+        }
+      }
+    }
   }
 
 }
