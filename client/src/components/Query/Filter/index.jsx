@@ -88,7 +88,7 @@ const PillOuterIconForOperand = operand => props => (
 const PillInnerIconForOperand = operand => props => (
   <Icon
     {...props}
-    className={styleFilter.svgIcon}
+    className={style.innerIconOperand}
     component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
   />
 );
@@ -450,11 +450,13 @@ class Filter extends React.Component {
                 color="#FFFFFF"
                 className={`${style.insideTag}`}
               >
-                {actionTargets.map((target, index) => (
-                  <>
-                    {index !== 0 ? PillInnerIconForOperand(savedOperand)() : null } {target}
-                  </>
-                ))}
+                <div className={style.termList}>
+                  {actionTargets.map((target, index) => (
+                    <>
+                      {index !== 0 ? PillInnerIconForOperand(savedOperand)() : null }{target}
+                    </>
+                  ))}
+                </div>
               </Tag>
             </Dropdown>
           ) }

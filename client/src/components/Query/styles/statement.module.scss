@@ -32,11 +32,7 @@
         height:24px;
       }
 
-      .dividerHorizontal{
-        margin:12px 0 24px 0;
-        background: rgba(18, 90, 144, 0.10);
-        height:2px;
-      }
+
 
       .title{
           display:flex;
@@ -97,10 +93,16 @@
                   }
       }
 
-
+      .dividerHorizontal{
+        margin:8px 0 16px 0;
+        background: rgba(18, 90, 144, 0.10);
+        height:2px;
+      }
 
     .toolbar {
-
+      ul{
+        line-height: 0;
+      }
       .message {
         color: $color-warning;
         font-size: 11px;
@@ -140,9 +142,6 @@
 
 
         }
-          i:not(.star){
-           padding-bottom: 2px;
-          }
 
         .starFilled{
           color:#f8a335;
@@ -154,6 +153,8 @@
         }
 
         a{
+            display: flex;
+            align-items: center;
             &:hover{
                 text-decoration:none;
             }
