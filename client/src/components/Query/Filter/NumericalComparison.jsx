@@ -40,7 +40,10 @@ class NumericalComparisonFilter extends React.Component {
     }
   }
   */
-  static structFromArgs(id, values = [{ comparator: FILTER_COMPARATOR_TYPE_DEFAULT, value: 0 }]) {
+  static structFromArgs(id, values = [
+    { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
+    { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
+  ]) {
     return {
       id,
       type: FILTER_TYPE_NUMERICAL_COMPARISON,
@@ -54,6 +57,8 @@ class NumericalComparisonFilter extends React.Component {
       draft: null,
       sliderDisabled: false,
       inputDisabled: false,
+      currentLow: -1,
+      currentHigh: -1,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
@@ -93,31 +98,41 @@ class NumericalComparisonFilter extends React.Component {
 
   getEditor() {
     const {
-      draft, sliderDisabled, inputDisabled,
+      draft, sliderDisabled, inputDisabled, currentLow, currentHigh,
     } = this.state;
-    const { facets, data } = this.props;
+    const { data } = this.props;
 
-    const min = roundDown2(facets[`${data.id}_min`][0].value);
-    const max = roundDown2(facets[`${data.id}_max`][0].value);
+    const min = this.minValue();
+    const max = this.maxValue();
 
-    // If older data coming from backend, add a second value element
-    if (data.values.length < 2) {
-      data.values.push({ comparator: '<=', value: max });
+    let defaultLow = 0;
+    if (this.areValuesReceived()) {
+      defaultLow = data.values[0].value;
+    } else if (this.isMinSet()) {
+      defaultLow = currentLow;
+    } else {
+      defaultLow = min;
     }
 
-    const defaultMin = data && data.values.length ? data.values[0].value : min;
-    const defaultMax = data && data.values.length ? data.values[1].value : max;
+    let defaultHigh = 0;
+    if (this.areValuesReceived()) {
+      defaultHigh = data.values[1].value;
+    } else if (this.isMaxSet()) {
+      defaultHigh = currentHigh;
+    } else {
+      defaultHigh = max;
+    }
 
     return {
       getLabels: this.getEditorLabels,
       getDraftInstruction: this.getEditorDraftInstruction,
       getInstruction: this.getEditorInstruction,
-      contents: draft && draft.values ? (
+      contents: draft && draft.values && draft.values.length > 1 ? (
         <>
           <Row className={styleFilter.rangeSlider}>
             <Slider
               range
-              defaultValue={[defaultMin, defaultMax]}
+              defaultValue={[defaultLow, defaultHigh]}
               min={min}
               max={max}
               step={0.01}
@@ -129,9 +144,10 @@ class NumericalComparisonFilter extends React.Component {
             <Col>
               <InputNumber
                 step={0.01}
+                value={this.lowInputValue()}
                 min={min}
-                max={max}
-                defaultValue={defaultMin}
+                max={this.highInputValue()}
+                defaultValue={defaultLow}
                 onChange={this.handleMinValueChange}
                 disabled={inputDisabled}
               />
@@ -139,9 +155,10 @@ class NumericalComparisonFilter extends React.Component {
             <Col>
               <InputNumber
                 step={0.01}
-                min={min}
+                value={this.highInputValue()}
+                min={this.lowInputValue()}
                 max={max}
-                defaultValue={defaultMax}
+                defaultValue={defaultHigh}
                 onChange={this.handleMaxValueChange}
                 disabled={inputDisabled}
               />
@@ -151,6 +168,79 @@ class NumericalComparisonFilter extends React.Component {
         </>
       ) : null,
     };
+  }
+
+  minValue() {
+    const { facets, data } = this.props;
+    const min = roundDown2(facets[`${data.id}_min`][0].value);
+    return min;
+  }
+
+  maxValue() {
+    const { facets, data } = this.props;
+    const max = roundDown2(facets[`${data.id}_max`][0].value);
+    return max;
+  }
+
+  lowValueReceived() {
+    const { data } = this.props;
+    const { values } = data;
+    return values[0].value;
+  }
+
+  highValueReceived() {
+    const { data } = this.props;
+    const { values } = data;
+    return values[1].value;
+  }
+
+  lowInputValue() {
+    const { draft } = this.state;
+    const { values } = draft;
+    const { value } = values[0];
+
+    let ret = 0;
+    if (this.isMinSet()) {
+      ret = value;
+    } else if (this.areValuesReceived()) {
+      ret = this.lowValueReceived();
+    } else {
+      ret = this.minValue();
+    }
+
+    return ret;
+  }
+
+  highInputValue() {
+    const { draft } = this.state;
+    const { values } = draft;
+    const { value } = values[1];
+
+    let ret = 0;
+    if (this.isMaxSet()) {
+      ret = value;
+    } else if (this.areValuesReceived()) {
+      ret = this.highValueReceived();
+    } else {
+      ret = this.maxValue();
+    }
+
+    return ret;
+  }
+
+  areValuesReceived() {
+    const { data } = this.props;
+    return data.values[0].value !== 0 || data.values[0].value !== 0;
+  }
+
+  isMinSet() {
+    const { currentLow } = this.state;
+    return currentLow > -1;
+  }
+
+  isMaxSet() {
+    const { currentHigh } = this.state;
+    return currentHigh > -1;
   }
 
   addMissingValue() {
@@ -169,22 +259,25 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   handleMinValueChange(value) {
-    const newValue = roundDown2(value);
+    const newValue = value;
     const { draft } = this.state;
+    let { currentLow } = this.state;
 
     draft.values[0] = { comparator: '>=', value: newValue };
+    currentLow = draft.values[0].value;
 
-    this.setState({ draft, sliderDisabled: true });
+    this.setState({ draft, sliderDisabled: true, currentLow });
   }
 
   handleMaxValueChange(value) {
-    const newValue = roundDown2(value);
+    const newValue = value;
     const { draft } = this.state;
-
-    draft.values[1] = { comparator: '>=', value: newValue };
+    let { currentHigh } = this.state;
 
     draft.values[1] = { comparator: '<=', value: newValue };
-    this.setState({ draft, sliderDisabled: true });
+    currentHigh = draft.values[1].value;
+
+    this.setState({ draft, sliderDisabled: true, currentHigh });
   }
 
   handleSliderChange(range) {
@@ -212,6 +305,16 @@ class NumericalComparisonFilter extends React.Component {
     );
   }
 }
+
+// NumericalComparisonFilter.upgradeData = (data, facets) => {
+//   const max = roundDown2(facets[`${data.id}_max`][0].value);
+
+//   if (data.values.length < 2) {
+//     data.values.push({ comparator: '<=', value: max });
+//   }
+
+//   return data;
+// };
 
 NumericalComparisonFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,

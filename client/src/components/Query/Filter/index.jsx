@@ -231,9 +231,7 @@ class Filter extends React.Component {
   }
 
   handleApply() {
-    console.log('*** handleApply');
     if (this.isEditable()) {
-      console.log('*** handleApply - 1');
       const {
         editor, onEditCallback, index,
       } = this.props;
@@ -243,19 +241,16 @@ class Filter extends React.Component {
       this.setState({
         opened: false,
       }, () => {
-        console.log('*** handleApply - 2');
         if (
           (!instruction.values && !instruction.value)
           || (instruction.values && instruction.values.length === 0)
           || (instruction.value && instruction.value.length === 0)) {
           this.handleClose(true);
         } else {
-          console.log('*** handleApply - 3');
           onEditCallback(instruction);
         }
       });
     }
-    console.log('*** handleApply - 4');
   }
 
   handleCancel() {
