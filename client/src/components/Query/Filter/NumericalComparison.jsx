@@ -1,16 +1,13 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import {
-  Row, Col, InputNumber, Slider,
-} from 'antd';
 
 // import { Icon } from 'react-icons-kit';
 // import { ic_refresh } from 'react-icons-kit/md/ic_refresh';
 
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
+import NumericalComparisonWidget from './widgets/NumericalComparisonWidget';
 import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
-import styleFilter from '../styles/filter.module.scss';
 
 export const FILTER_COMPARATOR_TYPE_GREATER_THAN = '>';
 export const FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL = '>=';
@@ -19,6 +16,7 @@ export const FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL = '<=';
 export const FILTER_COMPARATOR_TYPE_DEFAULT = FILTER_COMPARATOR_TYPE_GREATER_THAN;
 
 const roundDown2 = value => Math.floor(100 * value) / 100.0;
+
 
 class NumericalComparisonFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -127,43 +125,19 @@ class NumericalComparisonFilter extends React.Component {
       getDraftInstruction: this.getEditorDraftInstruction,
       getInstruction: this.getEditorInstruction,
       contents: draft && draft.values && draft.values.length > 1 ? (
-        <>
-          <Row className={styleFilter.rangeSlider}>
-            <Slider
-              range
-              defaultValue={[defaultLow, defaultHigh]}
-              min={min}
-              max={max}
-              step={0.01}
-              disabled={sliderDisabled}
-              onChange={this.handleSliderChange}
-            />
-          </Row>
-          <Row type="flex" justify="space-between" className={styleFilter.rangeInput}>
-            <Col>
-              <InputNumber
-                step={0.01}
-                value={this.lowInputValue()}
-                min={min}
-                max={this.highInputValue()}
-                defaultValue={defaultLow}
-                onChange={this.handleMinValueChange}
-                disabled={inputDisabled}
-              />
-            </Col>
-            <Col>
-              <InputNumber
-                step={0.01}
-                value={this.highInputValue()}
-                min={this.lowInputValue()}
-                max={max}
-                defaultValue={defaultHigh}
-                onChange={this.handleMaxValueChange}
-                disabled={inputDisabled}
-              />
-            </Col>
-          </Row>
-        </>
+        <NumericalComparisonWidget
+          onMinValueChange={this.handleMinValueChange}
+          onMaxValueChange={this.handleMaxValueChange}
+          onSliderValueChange={this.handleSliderChange}
+          defaultLow={defaultLow}
+          defaultHigh={defaultHigh}
+          currentLow={this.lowInputValue()}
+          currentHigh={this.highInputValue()}
+          sliderDisabled={sliderDisabled}
+          inputDisabled={inputDisabled}
+          min={min}
+          max={max}
+        />
       ) : null,
     };
   }
@@ -257,6 +231,7 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   handleMinValueChange(value) {
+    console.log('handleMinValueChange - value: ', value);
     const newValue = value;
     const { draft } = this.state;
     let { currentLow } = this.state;
@@ -268,6 +243,7 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   handleMaxValueChange(value) {
+    console.log('handleMaxValueChange - value: ', value);
     const newValue = value;
     const { draft } = this.state;
     let { currentHigh } = this.state;
