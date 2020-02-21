@@ -9,7 +9,7 @@ import {
 } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
-  ic_cancel, ic_info_outline, ic_search, ic_chevron_left,
+  ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 
 import style from '../styles/term.module.scss';
@@ -19,7 +19,8 @@ import {
   getSvgPathFromOperatorType,
   OPERATOR_TYPE_UNION,
   OPERATOR_TYPE_INTERSECTION,
-  OPERATOR_TYPE_EXCLUSION,
+  OPERATOR_TYPE_NOT_EQUAL,
+  OPERATOR_TYPE_EQUAL,
 } from '../Operator';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
@@ -34,8 +35,38 @@ const operatorFromOperand = (operand) => {
     case FILTER_OPERAND_TYPE_ALL:
       return OPERATOR_TYPE_INTERSECTION;
     case FILTER_OPERAND_TYPE_NONE:
-      return OPERATOR_TYPE_EXCLUSION;
+      return OPERATOR_TYPE_NOT_EQUAL;
     default:
+      return OPERATOR_TYPE_UNION;
+  }
+};
+
+const OuterOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_NOT_EQUAL;
+    default:
+      return OPERATOR_TYPE_EQUAL;
+  }
+};
+
+const InnerOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path 1`);
+      return OPERATOR_TYPE_UNION;
+    case FILTER_OPERAND_TYPE_ALL:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path 2`);
+      return OPERATOR_TYPE_INTERSECTION;
+    case FILTER_OPERAND_TYPE_NONE:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path 3`);
+      return OPERATOR_TYPE_UNION;
+    default:
+      console.log(`innerOperatorForOperand - operand: ${operand} - path default`);
       return OPERATOR_TYPE_UNION;
   }
 };
@@ -46,15 +77,21 @@ export const OperatorIconComponent = operand => props => (
   </svg>
 );
 
-const IconForOperand = operand => props => (
+const PillOuterIconForOperand = operand => props => (
   <Icon
     {...props}
     className={styleFilter.svgIcon}
-    component={OperatorIconComponent(operatorFromOperand(operand))}
+    component={OperatorIconComponent(OuterOperatorFromOperand(operand))}
   />
 );
 
-// const IntersectionSvg = require('../../../icons/intersection.svg');
+const PillInnerIconForOperand = operand => props => (
+  <Icon
+    {...props}
+    className={style.innerIconOperand}
+    component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
+  />
+);
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
 export const FILTER_TYPE_GENERIC = 'generic';
@@ -248,26 +285,32 @@ class Filter extends React.Component {
     };
 
     const applyMenu = cfg => (!cfg ? null : (
-      <Menu onClick={e => handleMenuClick(e)}>
+      <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
         {cfg.operands.map(configOperand => (
           <Menu.Item key={configOperand}>
             <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
+            {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
           </Menu.Item>
         ))}
       </Menu>
     ));
 
-    const hasOperands = cfg => cfg && config.operands;
     const { operand } = draft;
+    const savedOperand = data.operand;
+
+    const hasOperands = cfg => cfg && config.operands;
 
     const ApplyButton = ({ cfg }) => (hasOperands(cfg) ? (
       <Dropdown.Button
         type="primary"
-        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
+        className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
         icon={(
-          <Icon
-            component={OperatorIconComponent(operatorFromOperand(operand))}
-          />
+          <>
+            <Icon
+              component={OperatorIconComponent(operatorFromOperand(operand))}
+            />
+            <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
+          </>
           )}
         onClick={this.handleApply}
         overlay={applyMenu(cfg)
@@ -280,6 +323,7 @@ class Filter extends React.Component {
       <Button
         type="primary"
         onClick={this.handleApply}
+        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
       >
         {intl.get('components.query.filter.button.apply') }
       </Button>
@@ -391,7 +435,7 @@ class Filter extends React.Component {
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            {operand ? IconForOperand(operand)() : actionLabel}
+            {operand ? PillOuterIconForOperand(savedOperand)() : actionLabel}
           </div>
           { this.isEditable() && (
             <Dropdown
@@ -406,11 +450,13 @@ class Filter extends React.Component {
                 color="#FFFFFF"
                 className={`${style.insideTag}`}
               >
-                {actionTargets.map((target, index) => (
-                  <>
-                    {index !== 0 ? ' • ' : null } {target}
-                  </>
-                ))}
+                <div className={style.termList}>
+                  {actionTargets.map((target, index) => (
+                    <>
+                      {index !== 0 ? PillInnerIconForOperand(savedOperand)() : null }{target}
+                    </>
+                  ))}
+                </div>
               </Tag>
             </Dropdown>
           ) }
@@ -426,6 +472,7 @@ class Filter extends React.Component {
 Filter.propTypes = {
   config: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
+  draft: PropTypes.shape({}),
   options: PropTypes.shape({}),
   onCancelCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
@@ -437,7 +484,6 @@ Filter.propTypes = {
   editor: PropTypes.shape({}).isRequired,
   legend: PropTypes.shape({}).isRequired,
   content: PropTypes.shape({}).isRequired,
-  draft: PropTypes.shape({}),
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,
@@ -448,6 +494,7 @@ Filter.propTypes = {
 };
 
 Filter.defaultProps = {
+  draft: {},
   options: {
     editable: false,
     selectable: false,
@@ -460,7 +507,6 @@ Filter.defaultProps = {
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
   onOperandChangeCallBack: () => {},
-  draft: {},
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,

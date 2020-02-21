@@ -216,7 +216,7 @@ class SpecificFilter extends Filter {
             <Tooltip title={option.value}>
               {value}
             </Tooltip>
-            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
+            <Tag className={styleFilter.valueCount}>{intl.get('components.query.count', { count: option.count })}</Tag>
           </span>
         ),
         value: option.value,
@@ -266,11 +266,11 @@ class SpecificFilter extends Filter {
     return (
       <Filter
         {...this.props}
+        draft={draft}
         config={config}
         type={FILTER_TYPE_SPECIFIC}
         editor={this.getEditor()}
         searchable
-        draft={draft}
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
         onOperandChangeCallBack={this.handleOperandChange}

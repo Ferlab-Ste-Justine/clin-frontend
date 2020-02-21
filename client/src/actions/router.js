@@ -8,14 +8,6 @@ export const navigate = location => ({
   },
 });
 
-export const navigateToLastKnownState = (screen, state) => ({
-  type: actions.USER_SESSION_RESTORE_LAST_KNOWN_STATE,
-  payload: {
-    screen,
-    state,
-  },
-});
-
 export const navigateToPatientScreen = uid => ({
   type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
   payload: {

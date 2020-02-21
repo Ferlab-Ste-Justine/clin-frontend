@@ -32,10 +32,14 @@ import {
   getStatements, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
   createStatement, countVariants,
 } from '../../../actions/variant';
+import {
+  updateUserProfile,
+} from '../../../actions/user';
 import { navigateToPatientScreen } from '../../../actions/router';
 
 import './style.scss';
 import style from './style.module.scss';
+import { userShape } from '../../../reducers/user';
 
 
 const VARIANT_TAB = 'VARIANTS';
@@ -69,6 +73,7 @@ class PatientVariantScreen extends React.Component {
     this.handleDeleteStatement = this.handleDeleteStatement.bind(this);
     this.handleSelectStatement = this.handleSelectStatement.bind(this);
     this.handleDuplicateStatement = this.handleDuplicateStatement.bind(this);
+    this.handleSetDefaultStatement = this.handleSetDefaultStatement.bind(this);
     this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
@@ -308,16 +313,16 @@ class PatientVariantScreen extends React.Component {
     actions.createDraftStatement(statement);
   }
 
-  handleUpdateStatement(id, title, description, queries = null, isDefault = false) {
+  handleUpdateStatement(id, title, description, queries = null) {
     const { actions, variant } = this.props;
     const { statements } = variant;
     if (!queries) {
       queries = statements[id].queries; { /* eslint-disable-line */ }
     }
     if (id === 'draft') {
-      actions.createStatement(id, title, description, queries, isDefault);
+      actions.createStatement(id, title, description, queries);
     } else {
-      actions.updateStatement(id, title, description, queries, isDefault);
+      actions.updateStatement(id, title, description, queries);
     }
   }
 
@@ -336,6 +341,13 @@ class PatientVariantScreen extends React.Component {
     actions.selectStatement(id);
   }
 
+  handleSetDefaultStatement(id) {
+    const { actions, user } = this.props;
+    const { profile } = user;
+
+    actions.updateUserProfile(profile.uid, id, profile.patientTableConfig, profile.variantTableConfig);
+  }
+
   handleNavigationToPatientScreen(e) {
     const { actions } = this.props;
     actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
@@ -343,7 +355,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const {
-      app, variant, patient,
+      app, variant, patient, user,
     } = this.props;
     const { showSubloadingAnimation } = app;
     const {
@@ -353,12 +365,14 @@ class PatientVariantScreen extends React.Component {
     const {
       size, page, currentTab, columnPreset,
     } = this.state;
+    const defaultStatementId = user.profile.defaultStatement ? user.profile.defaultStatement : null;
     const familyText = intl.get('screen.patientvariant.header.family');
     const motherText = intl.get('screen.patientvariant.header.family.mother');
     const fatherText = intl.get('screen.patientvariant.header.family.father');
     const viewAllText = intl.get('screen.patientvariant.header.ontology.viewAll');
     const genderFemaleIcon = (<path id="gender_female_24px-a" d="M12,3 C15.3137085,3 18,5.6862915 18,9 C18,11.97 15.84,14.44 13,14.92 L13,17 L15,17 L15,19 L13,19 L13,21 L11,21 L11,19 L9,19 L9,17 L11,17 L11,14.92 C8.16,14.44 6,11.97 6,9 C6,5.6862915 8.6862915,3 12,3 M12,5 C9.790861,5 8,6.790861 8,9 C8,11.209139 9.790861,13 12,13 C14.209139,13 16,11.209139 16,9 C16,6.790861 14.209139,5 12,5 Z" />);
     const genderMaleIcon = (<path id="gender_mael_24px-a" d="M9,9 C10.29,9 11.5,9.41 12.47,10.11 L17.58,5 L13,5 L13,3 L21,3 L21,11 L19,11 L19,6.41 L13.89,11.5 C14.59,12.5 15,13.7 15,15 C15,18.3137085 12.3137085,21 9,21 C5.6862915,21 3,18.3137085 3,15 C3,11.6862915 5.6862915,9 9,9 M9,11 C6.790861,11 5,12.790861 5,15 C5,17.209139 6.790861,19 9,19 C11.209139,19 13,17.209139 13,15 C13,12.790861 11.209139,11 9,11 Z" />);
+    const observedHpoText = intl.get('screen.patientvariant.header.ontology.observed');
 
     const total = currentTab === VARIANT_TAB ? activeStatementTotals[activeQuery] : [];
     const searchData = [];
@@ -423,7 +437,7 @@ class PatientVariantScreen extends React.Component {
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const allOntology = sortBy(patient.ontology, 'term');
-    const visibleOntology = allOntology.slice(0, 4);
+    const visibleOntology = allOntology.filter((ontology => ontology.observed === 'POS')).slice(0, 4);
     const familyMenu = (
       <Menu>
         <Menu.ItemGroup title={familyText} className={style.menuGroup}>
@@ -515,10 +529,10 @@ class PatientVariantScreen extends React.Component {
             { patient.ontology && patient.ontology.length > 0 && (
             <Row type="flex" align="middle" className={style.descriptionOntoloy}>
               <IconKit className={style.icon} size={16} icon={ic_assignment_turned_in} />
-                HPO:
-              {visibleOntology.map(ontology => (
-                <a> { /* eslint-disable-line */ }
-                  {ontology.term}
+              {observedHpoText}:
+              {visibleOntology.map(vontology => (
+                <a href={`https://hpo.jax.org/app/browse/term/${vontology.code}`} target="_blank"> { /* eslint-disable-line */ }
+                  {vontology.term}
                   <IconKit className={style.iconLink} size={14} icon={ic_launch} />
                 </a>
               ))
@@ -550,12 +564,13 @@ class PatientVariantScreen extends React.Component {
             searchData={searchData}
             autocomplete={autocomplete}
           />
-          <Card className="Content">
+          <Card className={`Content ${style.variantContent}`}>
             <Statement
               key="variant-statement"
               activeQuery={activeQuery}
               activeStatementId={activeStatementId}
               activeStatementTotals={activeStatementTotals}
+              defaultStatementId={defaultStatementId}
               statements={statements}
               data={draftQueries}
               draftHistory={draftHistory}
@@ -585,6 +600,7 @@ class PatientVariantScreen extends React.Component {
               onDeleteStatementCallback={this.handleDeleteStatement}
               onSelectStatementCallback={this.handleSelectStatement}
               onDuplicateStatementCallback={this.handleDuplicateStatement}
+              onSetDefaultStatementCallback={this.handleSetDefaultStatement}
               searchData={searchData}
               externalData={patient}
             />
@@ -634,6 +650,7 @@ class PatientVariantScreen extends React.Component {
 
 PatientVariantScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
+  user: PropTypes.shape(userShape).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
@@ -660,11 +677,13 @@ const mapDispatchToProps = dispatch => ({
     deleteStatement,
     selectStatement,
     duplicateStatement,
+    updateUserProfile,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
   app: state.app,
+  user: state.user,
   patient: state.patient,
   variant: state.variant,
 });
