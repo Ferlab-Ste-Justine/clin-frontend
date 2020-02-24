@@ -254,6 +254,18 @@
                 display: flex;
                 justify-content: space-between;
                 margin-left: 8px;
+
+                .tag{
+                    margin-left: 8px;
+                    span{
+                        width: 8px;
+                        height: 8px;
+                    }
+
+                }
+                .observedTag{
+                    background-color: red;
+                }
                 .valueCount{
                     padding:3px 4px;
                     color: rgba(35, 55, 80, 0.78);
