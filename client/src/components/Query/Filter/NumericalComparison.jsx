@@ -227,11 +227,12 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   handleReset() {
-    this.setState({ sliderDisabled: false, inputDisabled: false });
+    this.setState({
+      sliderDisabled: false, inputDisabled: false,
+    });
   }
 
   handleMinValueChange(value) {
-    console.log('handleMinValueChange - value: ', value);
     const newValue = value;
     const { draft } = this.state;
     let { currentLow } = this.state;
@@ -243,7 +244,6 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   handleMaxValueChange(value) {
-    console.log('handleMaxValueChange - value: ', value);
     const newValue = value;
     const { draft } = this.state;
     let { currentHigh } = this.state;
@@ -259,7 +259,9 @@ class NumericalComparisonFilter extends React.Component {
     draft.values[0] = { comparator: '>=', value: roundDown2(range[0]) };
     draft.values[1] = { comparator: '<=', value: roundDown2(range[1]) };
 
-    this.setState({ draft, inputDisabled: true });
+    this.setState({
+      draft, inputDisabled: true, currentLow: range[0], currentHigh: range[1],
+    });
   }
 
   render() {
@@ -279,16 +281,6 @@ class NumericalComparisonFilter extends React.Component {
     );
   }
 }
-
-// NumericalComparisonFilter.upgradeData = (data, facets) => {
-//   const max = roundDown2(facets[`${data.id}_max`][0].value);
-
-//   if (data.values.length < 2) {
-//     data.values.push({ comparator: '<=', value: max });
-//   }
-
-//   return data;
-// };
 
 NumericalComparisonFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,

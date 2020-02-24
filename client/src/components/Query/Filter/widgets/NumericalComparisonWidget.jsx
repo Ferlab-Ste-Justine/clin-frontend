@@ -27,13 +27,13 @@ class NumericalComparisonWidget extends React.Component {
       max,
     } = this.props;
 
-    console.log('Widget - props: ', this.props);
     return (
       <>
         <Row className={styleFilter.rangeSlider}>
           <Slider
             range
             defaultValue={[defaultLow, defaultHigh]}
+            value={[currentLow, currentHigh]}
             min={min}
             max={max}
             step={0.01}
