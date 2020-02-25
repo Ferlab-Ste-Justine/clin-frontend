@@ -22,7 +22,6 @@
             font-family: $font;
             font-weight: 500;
             letter-spacing: 0.15px;
-            line-height: 24px;
             display: inline;
             margin: 0;
         }
@@ -224,6 +223,7 @@
                 .checkboxValue{
                     .valueCount{
                         background-color: #fff;
+                        
                   }
                 }
             }
@@ -261,10 +261,12 @@
                     font-family: $font;
                     font-size: 12px;
                     letter-spacing: 0.4px;
-                    line-height:10px;
+                    line-height:12.5px;
                     text-align: center;
                     margin:0 0 0 12px;
                     border: none;
+                    border-radius: 2px;
+                    height: 18px;
               }
             }
 
