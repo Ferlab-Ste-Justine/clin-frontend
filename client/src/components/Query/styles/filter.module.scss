@@ -315,6 +315,12 @@
     .paginationInfo{
         padding:0 16px;
         margin-top:16px ;
+        .valueCount{
+            color: rgba(35, 55, 80, 0.78);
+            font-size: 12px;
+            font-family: $font;
+            letter-spacing: 0.4px;
+        }
         .pagination{
             li{
                 border: 1px solid rgba(18, 90, 144, 0.3) !important;

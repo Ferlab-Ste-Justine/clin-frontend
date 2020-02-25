@@ -381,7 +381,7 @@ class Filter extends React.Component {
             allOptions.length >= size
               ? (
                 <Row className={styleFilter.paginationInfo} type="flex" align="middle" justify="space-between">
-                  <Col>{allOptions.length} {valueText}</Col>
+                  <Col className={styleFilter.valueCount}>{allOptions.length} {valueText}</Col>
                   <Col>
                     <Pagination
                       className={styleFilter.pagination}
