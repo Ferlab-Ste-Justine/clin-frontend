@@ -795,7 +795,6 @@ class Statement extends React.Component {
                 <div className={styleStatement.title}>
                   <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                     <div>
-                      {console.log("patate",statementTitle)}
                       <Button onClick={this.showModal} className={styleStatement.editTitleButton}>
                         {statementTitle} 
                                              
