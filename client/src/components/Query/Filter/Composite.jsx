@@ -1,11 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Row, Col, InputNumber, Slider, Checkbox, Tooltip, Tag,
 } from 'antd';
 import {
   cloneDeep, orderBy, filter, pullAllBy, pull,
 } from 'lodash';
-import PropTypes from 'prop-types';
 
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
@@ -14,6 +14,7 @@ import {
 import styleFilter from '../styles/filter.module.scss';
 
 const SCORE_SELECTION = '_score_';
+
 
 class CompositeFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -248,6 +249,7 @@ class CompositeFilter extends React.Component {
     );
   }
 }
+
 CompositeFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
