@@ -1,11 +1,11 @@
 
 import React from 'react';
 import {
-  Row, Col, Checkbox, Tag, Tooltip, Divider, Button,
+  Row, Col, Checkbox, Tag, Tooltip, Divider, Button, Badge,
 } from 'antd';
 import intl from 'react-intl-universal';
 import {
-  cloneDeep, orderBy, pullAllBy, filter,
+  cloneDeep, orderBy, pullAllBy, filter, find,
 } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -194,7 +194,7 @@ class SpecificFilter extends Filter {
   }
 
   getEditor() {
-    const { renderCustomDataSelector } = this.props;
+    const { renderCustomDataSelector, externalDataSet } = this.props;
     const {
       draft, size, page, allOptions,
     } = this.state;
@@ -209,13 +209,24 @@ class SpecificFilter extends Filter {
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
     const options = allOptions.slice(minValue, maxValue).map((option) => {
-      const value = option.value.length < 29 ? option.value : `${option.value.substring(0, 25)} ...`;
+      const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
+      const observedPos = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS');
+      const observedNeg = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '');
+      const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
+      const code = option.value.match(hpoRegexp).toString();
+      const isObservePos = find(observedPos, { code });
+      const isObserveNeg = find(observedNeg, { code });
       return {
         label: (
           <span className={styleFilter.checkboxValue}>
-            <Tooltip title={option.value}>
-              {value}
-            </Tooltip>
+            <div className={styleFilter.valueInfo}>
+              <Tooltip title={option.value}>
+                {value}
+              </Tooltip>
+              {(isObservePos || isObserveNeg) && (
+                <Badge color={isObservePos ? '#52c41a' : '#f5646c'} className={styleFilter.tag} />
+              )}
+            </div>
             <Tag className={styleFilter.valueCount}>{intl.get('components.query.count', { count: option.count })}</Tag>
           </span>
         ),
