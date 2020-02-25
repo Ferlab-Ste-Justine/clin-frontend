@@ -107,12 +107,10 @@ class NumericalComparisonFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: draft && draft.values && draft.values.length > 1 ? (
         <NumericalComparisonWidget
-          facets={facets}
           min={min}
           max={max}
           draft={draft}
           updateDraft={this.updateDraft}
-          savedData={data}
           rounding={roundDown2}
         />
       ) : null,
@@ -121,7 +119,6 @@ class NumericalComparisonFilter extends React.Component {
 
   handleReset() {
     const { draft } = this.state;
-    console.log('handleReset - old draft: ', draft);
 
     const { data } = this.props;
     const newDraft = { ...draft };
@@ -129,13 +126,10 @@ class NumericalComparisonFilter extends React.Component {
     newDraft.values[0].value = data.values[0].value;
     newDraft.values[1].value = data.values[1].value;
 
-    console.log('handleReset - new draft: ', newDraft);
-
     this.setState({ draft: newDraft });
   }
 
   updateDraft(draft) {
-    console.log('updateDraft ...');
     this.setState({ ...draft });
   }
 

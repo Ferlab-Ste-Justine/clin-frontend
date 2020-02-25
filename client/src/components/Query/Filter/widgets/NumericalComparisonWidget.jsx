@@ -108,8 +108,6 @@ class NumericalComparisonWidget extends React.Component {
 NumericalComparisonWidget.propTypes = {
   min: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
-  facets: PropTypes.shape({}).isRequired,
-  savedData: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape({}).isRequired,
   updateDraft: PropTypes.func.isRequired,
   rounding: PropTypes.func.isRequired,
