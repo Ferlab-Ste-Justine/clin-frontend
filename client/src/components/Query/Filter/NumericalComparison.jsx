@@ -9,14 +9,12 @@ import PropTypes from 'prop-types';
 import NumericalComparisonWidget from './widgets/NumericalComparisonWidget';
 import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
 
-export const FILTER_COMPARATOR_TYPE_GREATER_THAN = '>';
-export const FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL = '>=';
-export const FILTER_COMPARATOR_TYPE_LOWER_THAN = '<';
-export const FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL = '<=';
-export const FILTER_COMPARATOR_TYPE_DEFAULT = FILTER_COMPARATOR_TYPE_GREATER_THAN;
+import {
+  FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
+  FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
+} from '../Operator';
 
 const roundDown2 = value => Math.floor(100 * value) / 100.0;
-
 
 class NumericalComparisonFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -52,21 +50,13 @@ class NumericalComparisonFilter extends React.Component {
     super(props);
     this.state = {
       draft: null,
-      sliderDisabled: false,
-      inputDisabled: false,
-      currentLow: -1,
-      currentHigh: -1,
-      lowValueSet: false,
-      highValueSet: false,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
     this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
     this.getEditorInstruction = this.getEditorInstruction.bind(this);
     this.handleReset = this.handleReset.bind(this);
-    this.handleSliderChange = this.handleSliderChange.bind(this);
-    this.handleMinValueChange = this.handleMinValueChange.bind(this);
-    this.handleMaxValueChange = this.handleMaxValueChange.bind(this);
+    this.updateDraft = this.updateDraft.bind(this);
 
     // @NOTE Initialize Component State
     const { data } = props;
@@ -97,30 +87,13 @@ class NumericalComparisonFilter extends React.Component {
 
   getEditor() {
     const {
-      draft, sliderDisabled, inputDisabled, lowValueSet, highValueSet,
+      draft,
     } = this.state;
 
-    const min = this.minValue();
-    const max = this.maxValue();
+    const { data, facets } = this.props;
 
-    let defaultLow = 0;
-    let defaultHigh = 0;
-    let currentLow = this.lowInputValue();
-    let currentHigh = this.highInputValue();
-
-    if (!lowValueSet) {
-      defaultLow = this.initialLow();
-      currentLow = this.initialLow();
-    } else {
-      defaultLow = min;
-    }
-
-    if (!highValueSet) {
-      defaultHigh = this.initialLow();
-      currentHigh = this.initialHigh();
-    } else {
-      defaultHigh = max;
-    }
+    const min = roundDown2(facets[`${data.id}_min`][0].value);
+    const max = roundDown2(facets[`${data.id}_max`][0].value);
 
     return {
       getLabels: this.getEditorLabels,
@@ -128,179 +101,36 @@ class NumericalComparisonFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: draft && draft.values && draft.values.length > 1 ? (
         <NumericalComparisonWidget
-          onMinValueChange={this.handleMinValueChange}
-          onMaxValueChange={this.handleMaxValueChange}
-          onSliderValueChange={this.handleSliderChange}
-          defaultLow={defaultLow}
-          defaultHigh={defaultHigh}
-          currentLow={currentLow}
-          currentHigh={currentHigh}
-          sliderDisabled={sliderDisabled}
-          inputDisabled={inputDisabled}
+          facets={facets}
           min={min}
           max={max}
+          draft={draft}
+          updateDraft={this.updateDraft}
+          savedData={data}
+          rounding={roundDown2}
         />
       ) : null,
     };
   }
 
-  initialLow() {
-    const { data } = this.props;
-
-    const min = this.minValue();
-
-    let initialLow = 0;
-    if (this.areValuesReceived()) {
-      initialLow = data.values[0].value;
-    } else {
-      initialLow = min;
-    }
-
-    return initialLow;
-  }
-
-  initialHigh() {
-    const { data } = this.props;
-
-    const max = this.maxValue();
-
-    let initialHigh = 0;
-    if (this.areValuesReceived()) {
-      initialHigh = data.values[1].value;
-    } else {
-      initialHigh = max;
-    }
-
-    return initialHigh;
-  }
-
-  minValue() {
-    const { facets, data } = this.props;
-    const min = roundDown2(facets[`${data.id}_min`][0].value);
-    return min;
-  }
-
-  maxValue() {
-    const { facets, data } = this.props;
-    const max = roundDown2(facets[`${data.id}_max`][0].value);
-    return max;
-  }
-
-  lowValueReceived() {
-    const { data } = this.props;
-    const { values } = data;
-    return values[0].value;
-  }
-
-  highValueReceived() {
-    const { data } = this.props;
-    const { values } = data;
-    return values[1].value;
-  }
-
-  lowInputValue() {
-    const { draft } = this.state;
-    const { values } = draft;
-    const { value } = values[0];
-
-    let ret = 0;
-    if (this.isLowSet()) {
-      ret = value;
-    } else if (this.areValuesReceived()) {
-      ret = this.lowValueReceived();
-    } else {
-      ret = this.minValue();
-    }
-
-    return ret;
-  }
-
-  highInputValue() {
-    const { draft } = this.state;
-    const { values } = draft;
-    const { value } = values[1];
-
-    let ret = 0;
-    if (this.isLowSet()) {
-      ret = value;
-    } else if (this.areValuesReceived()) {
-      ret = this.highValueReceived();
-    } else {
-      ret = this.maxValue();
-    }
-
-    return ret;
-  }
-
-  areValuesReceived() {
-    const { data } = this.props;
-    return data.values[0].value !== 0 || data.values[0].value !== 0;
-  }
-
-  isLowSet() {
-    const { currentLow } = this.state;
-    return currentLow > -1;
-  }
-
-  isHighSet() {
-    const { currentHigh } = this.state;
-    return currentHigh > -1;
-  }
-
   handleReset() {
-    this.setState({
-      sliderDisabled: false,
-      inputDisabled: false,
-      lowValueSet: false,
-      highValueSet: false,
-      currentLow: this.initialLow(),
-      currentHigh: this.initialHigh(),
-    });
-  }
-
-  handleMinValueChange(value) {
-    const newValue = value;
     const { draft } = this.state;
-    let { currentLow } = this.state;
+    console.log('handleReset - old draft: ', draft);
 
-    draft.values[0] = { comparator: '>=', value: newValue };
-    currentLow = draft.values[0].value;
+    const { data } = this.props;
+    const newDraft = { ...draft };
 
-    this.setState({
-      draft, sliderDisabled: true, currentLow, lowValueSet: true,
-    });
+    newDraft.values[0].value = data.values[0].value;
+    newDraft.values[1].value = data.values[1].value;
+
+    console.log('handleReset - new draft: ', newDraft);
+
+    this.setState({ draft: newDraft });
   }
 
-  handleMaxValueChange(value) {
-    const newValue = value;
-    const { draft } = this.state;
-    let { currentHigh } = this.state;
-
-    draft.values[1] = { comparator: '<=', value: newValue };
-    currentHigh = draft.values[1].value;
-
-    this.setState({
-      draft, sliderDisabled: true, currentHigh, highValueSet: true,
-    });
-  }
-
-  handleSliderChange(range) {
-    const { draft, lowValueSet, highValueSet } = this.state;
-
-    const newLowValueSet = (draft.values[0].value !== range[0]) || lowValueSet;
-    const newHighValueChanged = draft.values[1].value !== range[1] || highValueSet;
-
-    draft.values[0] = { comparator: '>=', value: roundDown2(range[0]) };
-    draft.values[1] = { comparator: '<=', value: roundDown2(range[1]) };
-
-    this.setState({
-      draft,
-      inputDisabled: true,
-      currentLow: range[0],
-      currentHigh: range[1],
-      lowValueSet: newLowValueSet,
-      highValueSet: newHighValueChanged,
-    });
+  updateDraft(draft) {
+    console.log('updateDraft ...');
+    this.setState({ ...draft });
   }
 
   render() {

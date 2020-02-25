@@ -10,7 +10,7 @@ import {
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN,
-} from './NumericalComparison';
+} from '../Operator';
 import styleFilter from '../styles/filter.module.scss';
 
 const SCORE_SELECTION = '_score_';
