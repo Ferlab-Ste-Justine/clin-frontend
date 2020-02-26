@@ -5,6 +5,7 @@ import {
 
 import PropTypes from 'prop-types';
 import styleFilter from '../../styles/filter.module.scss';
+import { calculateTitleWidth } from '../../helpers/query';
 
 class NumericalComparisonWidget extends React.Component {
   constructor(props) {
@@ -26,7 +27,12 @@ class NumericalComparisonWidget extends React.Component {
       min,
       max,
     } = this.props;
-
+    const widthMin = calculateTitleWidth(currentLow.toString());
+    const widthMax = calculateTitleWidth(currentHigh.toString());
+    console.log('currentLow', currentLow);
+    console.log('currentHigh', currentHigh);
+    console.log('min', min);
+    console.log('max', max);
     return (
       <>
         <Row className={styleFilter.rangeSlider}>
@@ -51,6 +57,7 @@ class NumericalComparisonWidget extends React.Component {
               defaultValue={defaultLow}
               onChange={onMinValueChange}
               disabled={inputDisabled}
+              style={{ width: `calc(38px + ${widthMin}ch)` }}
             />
           </Col>
           <Col>
@@ -62,6 +69,7 @@ class NumericalComparisonWidget extends React.Component {
               defaultValue={defaultHigh}
               onChange={onMaxValueChange}
               disabled={inputDisabled}
+              style={{ width: `calc(38px + ${widthMax}ch)` }}
             />
           </Col>
         </Row>
