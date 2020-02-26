@@ -7,44 +7,78 @@ import PropTypes from 'prop-types';
 import styleFilter from '../../styles/filter.module.scss';
 import { calculateTitleWidth } from '../../helpers/query';
 
+import {
+  FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
+  FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
+} from '../../Operator';
+
 class NumericalComparisonWidget extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+
+    this.handleMinValueChange = this.handleMinValueChange.bind(this);
+    this.handleMaxValueChange = this.handleMaxValueChange.bind(this);
+    this.handleSliderValueChange = this.handleSliderValueChange.bind(this);
+  }
+
+  handleMinValueChange(value) {
+    const { draft, updateDraft } = this.props;
+
+    const newDraft = { ...draft };
+    newDraft.values[0] = { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value };
+
+    updateDraft(newDraft);
+  }
+
+  handleMaxValueChange(value) {
+    const { draft, updateDraft } = this.props;
+
+    const newDraft = { ...draft };
+    newDraft.values[1] = { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value };
+
+    updateDraft(newDraft);
+  }
+
+  handleSliderValueChange(range) {
+    const {
+      draft, updateDraft, rounding,
+    } = this.props;
+
+    const newDraft = { ...draft };
+    newDraft.values[0] = { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: rounding(range[0]) };
+    newDraft.values[1] = { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: rounding(range[1]) };
+
+    updateDraft(newDraft);
   }
 
   render() {
     const {
-      onMinValueChange,
-      onMaxValueChange,
-      onSliderValueChange,
-      defaultLow,
-      defaultHigh,
-      currentLow,
-      currentHigh,
-      sliderDisabled,
-      inputDisabled,
       min,
       max,
+      draft,
     } = this.props;
-    const widthMin = calculateTitleWidth(currentLow.toString());
-    const widthMax = calculateTitleWidth(currentHigh.toString());
-    console.log('currentLow', currentLow);
-    console.log('currentHigh', currentHigh);
-    console.log('min', min);
-    console.log('max', max);
+    const widthMin = calculateTitleWidth(min.toFixed(2).toString());
+    const widthMax = calculateTitleWidth(max.toFixed(2).toString());
+
+    let currentLow = draft.values[0].value;
+    let currentHigh = draft.values[1].value;
+
+    if (currentLow === 0 && currentHigh === 0) {
+      currentLow = min;
+      currentHigh = max;
+    }
+
     return (
       <>
         <Row className={styleFilter.rangeSlider}>
           <Slider
             range
-            defaultValue={[defaultLow, defaultHigh]}
+            defaultValue={[currentLow, currentHigh]}
             value={[currentLow, currentHigh]}
             min={min}
             max={max}
             step={0.01}
-            disabled={sliderDisabled}
-            onChange={onSliderValueChange}
+            onChange={this.handleSliderValueChange}
           />
         </Row>
         <Row type="flex" justify="space-between" className={styleFilter.rangeInput}>
@@ -54,9 +88,8 @@ class NumericalComparisonWidget extends React.Component {
               value={currentLow}
               min={min}
               max={currentHigh}
-              defaultValue={defaultLow}
-              onChange={onMinValueChange}
-              disabled={inputDisabled}
+              defaultValue={currentLow}
+              onChange={this.handleMinValueChange}
               style={{ width: `calc(38px + ${widthMin}ch)` }}
             />
           </Col>
@@ -66,9 +99,8 @@ class NumericalComparisonWidget extends React.Component {
               value={currentHigh}
               min={currentLow}
               max={max}
-              defaultValue={defaultHigh}
-              onChange={onMaxValueChange}
-              disabled={inputDisabled}
+              defaultValue={currentHigh}
+              onChange={this.handleMaxValueChange}
               style={{ width: `calc(38px + ${widthMax}ch)` }}
             />
           </Col>
@@ -79,17 +111,11 @@ class NumericalComparisonWidget extends React.Component {
 }
 
 NumericalComparisonWidget.propTypes = {
-  onMinValueChange: PropTypes.func.isRequired,
-  onMaxValueChange: PropTypes.func.isRequired,
-  onSliderValueChange: PropTypes.func.isRequired,
-  defaultLow: PropTypes.number.isRequired,
-  defaultHigh: PropTypes.number.isRequired,
-  currentLow: PropTypes.number.isRequired,
-  currentHigh: PropTypes.number.isRequired,
-  sliderDisabled: PropTypes.bool.isRequired,
-  inputDisabled: PropTypes.number.isRequired,
   min: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
+  draft: PropTypes.shape({}).isRequired,
+  updateDraft: PropTypes.func.isRequired,
+  rounding: PropTypes.func.isRequired,
 };
 
 export default NumericalComparisonWidget;

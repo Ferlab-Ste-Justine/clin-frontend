@@ -10,7 +10,7 @@ import {
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN,
-} from './NumericalComparison';
+} from '../Operator';
 import styleFilter from '../styles/filter.module.scss';
 
 const SCORE_SELECTION = '_score_';
@@ -21,7 +21,9 @@ class CompositeFilter extends React.Component {
   {
       type: 'composite,
       data: {
-          value: 'T'
+        values: [
+            { value: 'T' }
+        ]
       }
   }
   */
@@ -33,8 +35,9 @@ class CompositeFilter extends React.Component {
   {
       type: 'composite,
       data: {
-          comparator: '<='
-          value: '0'
+        values: [
+            { comparator: '<=', value: 0 }
+        ]
       }
   }
   */
