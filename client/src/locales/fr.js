@@ -196,6 +196,8 @@ const fr = {
   'screen.patientvariant.category_zygosity': 'Transmission',
   'screen.patientvariant.filter_transmission': 'Transmission',
   'screen.patientvariant.filter_transmission.description': 'Ceci est une description',
+  'screen.patientvariant.filter_zygosity': 'Zygosité',
+  'screen.patientvariant.filter_zygosity.description': 'Ceci est une description',
   'screen.patientvariant.filter_cohort_rqdm': 'RQDM',
   'screen.patientvariant.filter_cohort_rqdm.description': 'RQDM',
   'screen.patientvariant.filter_cohort_gnomad_exomes': 'gnomad_exomes',
