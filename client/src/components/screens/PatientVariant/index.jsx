@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/anchor-has-content */
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -12,7 +14,7 @@ import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import {
-  sortBy,
+  sortBy, findIndex,
 } from 'lodash';
 
 import Header from '../../Header';
@@ -86,70 +88,166 @@ class PatientVariantScreen extends React.Component {
           key: 'dbsnp',
           label: 'screen.variantsearch.table.dbsnp',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.bdExt.dbsnp[0]; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                  <a
+                    href="#"
+                  >
+                    {data.bdExt.dbSNP}
+                  </a>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'consequences',
           label: 'screen.variantsearch.table.consequences',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].consequence; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  data.consequences.map(consequence => (
+                    <Row>
+                      <Col>{consequence.consequence}</Col>
+                      <Col><a href="#">{consequence.geneAffectedSymbol ? consequence.geneAffectedSymbol : ''}</a></Col>
+                      <Col>{consequence.aaChange ? consequence.aaChange : ''}</Col>
+                    </Row>
+                  ))
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'clinvar',
           label: 'screen.variantsearch.table.clinvar',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.clinvar.invar_clinsig; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  <>
+                    <Row>{data.clinvar.clinvar_clinsig}</Row>
+                    <Row><a>{data.clinvar.clinvar_id}</a></Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'cadd',
           label: 'screen.variantsearch.table.cadd',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].predictions.CADD_score; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  data.consequences.map(consequence => (
+                    <Row>{consequence.predictions.CADD_score}</Row>
+                  ))
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'frequencies',
           label: 'screen.variantsearch.table.frequencies',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return `${data.frequencies.interne.PN}/ ${data.frequencies.interne.AC}`; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                const frequenciesAN = data.frequencies.interne.AN / 2;
+                return (
+                  <>
+                    <Row><a>{data.frequencies.interne.PN}</a><span>/</span>{frequenciesAN}</Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'gnomAD ',
           label: 'screen.variantsearch.table.gnomAd',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.frequencies.interne.AC; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  <>
+                    <Row><a>{data.frequencies.gnomAD_exomes.AF}</a></Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'zygosity ',
           label: 'screen.variantsearch.table.zygosity',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.donors[0].zygosity; } catch (e) { return ''; } },
+            renderer: (data) => {
+              // eslint-disable-next-line react/destructuring-assignment
+              const donorIndex = findIndex(data.donors, { patientId: this.props.variant.activePatient });
+              try {
+                return (
+                  <>
+                    <Row>{data.donors[donorIndex].zygosity}</Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'transmission ',
           label: 'screen.variantsearch.table.transmission',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.donors[0].zygosity; } catch (e) { return ''; } },
+            renderer: (data) => {
+              // eslint-disable-next-line react/destructuring-assignment
+              const donorIndex = findIndex(data.donors, { patientId: this.props.variant.activePatient });
+              try {
+                return (
+                  <>
+                    <Row>{data.donors[donorIndex].transmission}</Row>
+                    <Row>{data.donors[donorIndex].genotypeFamily}</Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'seq ',
           label: 'screen.variantsearch.table.seq',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.donors[0].adAlt; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                // eslint-disable-next-line react/destructuring-assignment
+                const donorIndex = findIndex(data.donors, { patientId: this.props.variant.activePatient });
+                return (
+                  <>
+                    <Row>{data.donors[donorIndex].adAlt}<span>/</span>{data.donors[donorIndex].adTotal}</Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'pubmed ',
           label: 'screen.variantsearch.table.pubmed',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.bdExt; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  data.bdExt.pubmed.map(value => (
+                    <Row>{value} - </Row>
+                  ))
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
       ],
