@@ -6,7 +6,7 @@ import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography,
+  Badge, Button, Typography, Checkbox,
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import './style.scss';
@@ -28,15 +28,12 @@ export const createCellRenderer = (type, getData, options = {}) => {
         break;
       case 'link':
         valueRenderer = value => (
-          <Button
+          <a
             type="link"
-            size={options.size}
-            shape={options.shape}
-            icon={options.icon}
             href={(options.renderer ? options.renderer(value) : '#')}
           >
             {value}
-          </Button>
+          </a>
         );
         break;
       case 'button':
@@ -62,13 +59,15 @@ export const createCellRenderer = (type, getData, options = {}) => {
       case 'custom':
         valueRenderer = options.renderer;
         break;
+      case 'checkbox':
+        valueRenderer = () => (<Checkbox />);
+        break;
     }
 
     return (row) => {
       try {
         const dataSet = getData();
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
-
         return (
           <Cell className={row % 2 !== 0 ? `${styleTable.cellValue} ${styleTable.evenRow}` : `${styleTable.cellValue}`}>
             {valueRenderer(value)}
@@ -86,7 +85,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
 const DataTable = (props) => {
   const {
     columns, size, total, enableReordering, enableResizing, renderContextMenuCallback, reorderColumnsCallback, resizeColumnCallback,
-    numFrozenColumns, enableGhostCells, copyCallback,
+    numFrozenColumns, enableGhostCells, copyCallback, columnWidth,
   } = props;
   const rowsCount = size <= total ? size : total;
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
@@ -111,6 +110,7 @@ const DataTable = (props) => {
       defaultRowHeight={36}
       getCellClipboardData={copyCallback}
       className={styleTable.table}
+      columnWidths={columnWidth}
     >
       { columns.map(definition => (
         <Column
@@ -135,6 +135,7 @@ DataTable.propTypes = {
   reorderColumnsCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
   copyCallback: PropTypes.func,
+  columnWidth: PropTypes.shape([]),
 };
 
 DataTable.defaultProps = {
@@ -149,6 +150,7 @@ DataTable.defaultProps = {
   reorderColumnsCallback: () => {},
   resizeColumnCallback: () => {},
   copyCallback: null,
+  columnWidth: [],
 };
 
 export default DataTable;

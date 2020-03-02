@@ -79,20 +79,14 @@ class PatientVariantScreen extends React.Component {
     // @NOTE Initialize Component State
     this.state.columnPreset = {
       [VARIANT_TAB]: [
-        { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
+        { key: 'checkbox', label: 'Check', renderer: createCellRenderer('checkbox', this.getData, { key: 'mutationId' }) },
+        { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('link', this.getData, { key: 'mutationId' }) },
         { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
         {
-          key: 'gene',
-          label: 'screen.variantsearch.table.geneSymbol',
+          key: 'dbsnp',
+          label: 'screen.variantsearch.table.dbsnp',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.genes[0].geneSymbol; } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'aachanges',
-          label: 'screen.variantsearch.table.aaChanges',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].aaChange; } catch (e) { return ''; } },
+            renderer: (data) => { try { return data.bdExt.dbsnp[0]; } catch (e) { return ''; } },
           }),
         },
         {
@@ -106,42 +100,56 @@ class PatientVariantScreen extends React.Component {
           key: 'clinvar',
           label: 'screen.variantsearch.table.clinvar',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.clinvar.clinvar_clinsig; } catch (e) { return ''; } },
+            renderer: (data) => { try { return data.clinvar.invar_clinsig; } catch (e) { return ''; } },
           }),
         },
         {
-          key: 'dbsnp',
-          label: 'screen.variantsearch.table.dbsnp',
+          key: 'cadd',
+          label: 'screen.variantsearch.table.cadd',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.bdExt.dbSNP[0]; } catch (e) { return ''; } },
+            renderer: (data) => { try { return data.consequences[0].predictions.CADD_score; } catch (e) { return ''; } },
           }),
         },
         {
-          key: 'pubmed',
+          key: 'frequencies',
+          label: 'screen.variantsearch.table.frequencies',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return `${data.frequencies.interne.PN}/ ${data.frequencies.interne.AC}`; } catch (e) { return ''; } },
+          }),
+        },
+        {
+          key: 'gnomAD ',
+          label: 'screen.variantsearch.table.gnomAd',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.frequencies.interne.AC; } catch (e) { return ''; } },
+          }),
+        },
+        {
+          key: 'zygosity ',
+          label: 'screen.variantsearch.table.zygosity',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.donors[0].zygosity; } catch (e) { return ''; } },
+          }),
+        },
+        {
+          key: 'transmission ',
+          label: 'screen.variantsearch.table.transmission',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.donors[0].zygosity; } catch (e) { return ''; } },
+          }),
+        },
+        {
+          key: 'seq ',
+          label: 'screen.variantsearch.table.seq',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => { try { return data.donors[0].adAlt; } catch (e) { return ''; } },
+          }),
+        },
+        {
+          key: 'pubmed ',
           label: 'screen.variantsearch.table.pubmed',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed); } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'sift',
-          label: 'screen.variantsearch.table.sift',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].predictions.SIFT; } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'polyphenhvar',
-          label: 'screen.variantsearch.table.polyphen2hvar',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred; } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'phylop',
-          label: 'screen.variantsearch.table.phylop',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way; } catch (e) { return ''; } },
+            renderer: (data) => { try { return data.bdExt; } catch (e) { return ''; } },
           }),
         },
       ],
@@ -165,7 +173,6 @@ class PatientVariantScreen extends React.Component {
     if (currentTab === VARIANT_TAB) {
       const { variant } = this.props;
       const { activeQuery, results } = variant;
-
       return results[activeQuery];
     }
     return [];

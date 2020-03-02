@@ -321,11 +321,11 @@
       }
       span{
         color: rgb(255, 255, 255);
-        font-size: 14px;
+        font-size: $small-font;
         font-family: $font;
-        font-weight: 500;
+        font-weight: $font-weight-medium;
         text-transform: uppercase;
-        letter-spacing: 1.25px;
+        letter-spacing: $letter-spacing;
       }
 
       &:hover{
@@ -483,7 +483,7 @@
                         >div{
                             padding:0;
                             color: rgba(35, 55, 80, 0.78);
-                            font-size: 14px;
+                            font-size: $small-font;
                             font-family: $font;
                             letter-spacing: 0.25px;
                             line-height: 20px;
@@ -496,7 +496,7 @@
                             border-radius:2px;
                             text-shadow:none;
                             box-shadow:none;
-                            font-size: 14px;
+                            font-size: $small-font;
                             font-family: $font;
                             text-align: center;
                             letter-spacing: 0.25px;
@@ -562,12 +562,12 @@
             height: 48px;
             border-radius: 2px;
             span{
-              font-size: 14px;
+              font-size: $small-font;
               font-family: $font;
-              font-weight: 500;
+              font-weight: $font-weight-medium;
               text-align: center;
               text-transform: uppercase;
-              letter-spacing: 1.25px;
+              letter-spacing: $letter-spacing;
             }
 
             &:nth-child(1){
@@ -597,14 +597,14 @@
 
   .modalTitle{
     color: rgb(35, 55, 80);
-    font-size: 24px;
+    font-size: $large-font;
     font-family: $font;
     display:block;
     margin-bottom: 36px;
   }
   .modalLabel{
     color: rgb(35, 55, 80);
-    font-size: 14px;
+    font-size: $small-font;
     font-family: $font;
     letter-spacing: 0.25px;
   }
@@ -613,7 +613,7 @@
     border-radius:2px;
     border: 1px solid rgba(18, 90, 144, 0.3);
     height: 48px;
-    font-size: 16px;
+    font-size: $medium-font;
     font-family: $font;
     letter-spacing: 0.15px;
     margin-top: 8px;

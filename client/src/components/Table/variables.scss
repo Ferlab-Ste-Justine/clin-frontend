@@ -1,18 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 
-$light: #ffffff;
-$background:#F3F5F7;
-
-$disabledColor:#E5E7EA;
+$white: #ffffff;
 
 $primary: #125a90;
-$blue-800: #1b7ab2;
 $primary-light:#E4F1F9;
 $primary-dark:#233750;
-$primary-hover:#2B84B8;
-$primary-text-disabled:rgba(35, 55, 80, 0.38);
 $light-blue:#e3ebf2;
-$dark-blue: #095797;
 $light-hover: #F7FBFD;
 $icon-color:rgba(35, 55, 80, 0.38);
 $light-text:rgba(35, 55, 80, 0.78);
@@ -20,20 +13,11 @@ $row-even-Color:#F6F9FB;
 $table-separator:#CDDDE8;
 
 $font: 'Roboto', sans-serif;
-
-$large-font:24px;
-$medium-font:16px;
 $small-font:14px;
 $font-weight-medium:500;
 
-$letter-spacing: 1.25px;
 $small-letter-spacing: 0.25px;
-
-$default-line-height:16px;
-
 
 $border-radius: 2px;
 $defaultSpacing: 8px;
-$smallSpacing: 4px;
 $mediumSpacing: 12px;
-$largeSpacing: 16px;

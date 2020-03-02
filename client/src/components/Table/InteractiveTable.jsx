@@ -186,6 +186,32 @@ class InteractiveTable extends React.Component {
     }
   }
 
+  renderColumnWidth() {
+    const {
+      orderedColumns, visibleColumns,
+    } = this.state;
+    const filteredColumns = orderedColumns.filter(column => visibleColumns.indexOf(column.label) !== -1);
+    const columnWidth = Array(filteredColumns.length).fill(150);
+    // eslint-disable-next-line array-callback-return
+    filteredColumns.map((column, index) => {
+      switch (column.key) {
+        case 'mutationId':
+          columnWidth[index] = 200;
+          break;
+        case 'consequences':
+          columnWidth[index] = 220;
+          break;
+        case 'checkbox':
+          columnWidth[index] = 50;
+          break;
+        default:
+          columnWidth[index] = 150;
+          break;
+      }
+    });
+    return columnWidth;
+  }
+
   render() {
     const {
       size, page, total, isLoading, numFrozenColumns, copyCallback,
@@ -198,7 +224,8 @@ class InteractiveTable extends React.Component {
     const isSelectable = this.isSelectable();
     const isExportable = this.isExportable();
     const filteredColumns = orderedColumns.filter(column => visibleColumns.indexOf(column.label) !== -1);
-
+    const columnWidth = this.renderColumnWidth(filteredColumns);
+    this.renderColumnWidth(filteredColumns);
     const content = (
       <Card
         className={`${styleTable.columnFilter}`}
@@ -283,6 +310,7 @@ class InteractiveTable extends React.Component {
               resizeColumnsCallback={this.handleColumnResized}
               numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
+              columnWidth={columnWidth}
               copyCallback={copyCallback}
               enableGhostCells
             />
