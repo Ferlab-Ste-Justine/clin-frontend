@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Row, Col, Checkbox, Tooltip, Tag,
 } from 'antd';
 import {
-  cloneDeep, orderBy, filter, pullAllBy, pull, pluck,
+  cloneDeep, orderBy, filter, pullAllBy, pull,
 } from 'lodash';
 
 import Filter, { FILTER_TYPE_COMPOSITE } from './index';
@@ -141,7 +140,6 @@ class CompositeFilter extends React.Component {
       selectionActive,
     } = this.state;
 
-    console.log('Composite.getEditor ...');
     const options = dataSet.map((option) => {
       const valueText = option.value.length < 60 ? option.value : `${option.value.substring(0, 55)} ...`;
       return {
@@ -237,7 +235,6 @@ class CompositeFilter extends React.Component {
       targets: data.values.map(v => v.value),
     };
 
-    console.log('Composite - getEditorLabels - labels: ', labels);
     return labels;
   }
 
@@ -272,7 +269,6 @@ class CompositeFilter extends React.Component {
     const { data } = this.props;
     const { values } = data;
 
-
     let operator = null;
     const { comparator } = values[0];
     if (comparator) {
@@ -301,7 +297,6 @@ class CompositeFilter extends React.Component {
   handleReset() {
     const { draft } = this.state;
 
-    // const { data } = this.props;
     const newDraft = { ...draft };
 
     newDraft.values = [

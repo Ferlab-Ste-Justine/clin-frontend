@@ -1,9 +1,6 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
 
-// import { Icon } from 'react-icons-kit';
-// import { ic_refresh } from 'react-icons-kit/md/ic_refresh';
-
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
 import NumericalComparisonWidget from './widgets/NumericalComparisonWidget';
@@ -128,7 +125,7 @@ class NumericalComparisonFilter extends React.Component {
       getLabels: this.getEditorLabels,
       getDraftInstruction: this.getEditorDraftInstruction,
       getInstruction: this.getEditorInstruction,
-      contents: draft /* && draft.values && draft.values.length > 1 */ ? (
+      contents: draft ? (
         <NumericalComparisonWidget
           min={this.getMin()}
           max={this.getMax()}
@@ -146,8 +143,6 @@ class NumericalComparisonFilter extends React.Component {
     } = this.props;
 
     const { values } = data;
-
-    console.log('getPillContent - values: ', values);
 
     return (
       <Interval
@@ -214,13 +209,6 @@ class NumericalComparisonFilter extends React.Component {
     const {
       draft,
     } = this.state;
-
-    const {
-      data,
-    } = this.props;
-
-    console.log('render - draft: ', draft);
-    console.log('render - data: ', data);
 
     return (
       <Filter

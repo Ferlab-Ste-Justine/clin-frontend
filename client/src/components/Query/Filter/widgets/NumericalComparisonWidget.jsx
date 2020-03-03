@@ -64,7 +64,6 @@ class NumericalComparisonWidget extends React.Component {
     });
 
     if (!valueObj) {
-      // valueObj = { comparator, value: roundUp(decimals)(value) };
       valueObj = { comparator, value };
       values.unshift(valueObj);
     }
