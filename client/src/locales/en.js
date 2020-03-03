@@ -179,6 +179,8 @@ const en = {
   'screen.patientvariant.category_zygosity': 'Transmission',
   'screen.patientvariant.filter_transmission': 'Transmission',
   'screen.patientvariant.filter_transmission.description': 'This is a description',
+  'screen.patientvariant.filter_zygosity': 'Zygosity',
+  'screen.patientvariant.filter_zygosity.description': 'This is a description',
   'screen.patientvariant.category_metric': 'Metrics',
   'screen.patientvariant.filter_value': 'Value',
   'screen.patientvariant.statement.new': 'New',

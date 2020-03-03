@@ -494,7 +494,6 @@ class PatientVariantScreen extends React.Component {
                 className={style.genderIcon}
               >
                 {patient.details.gender === 'male' ? genderMaleIcon : genderFemaleIcon}{' '}
-              /> { /* eslint-disable-line */ }
               </svg>
               <Tag className={`${style.tag} ${style.tagProban}`}>{patient.details.proband}</Tag>
               { patient.family.members.mother !== '' || patient.family.members.father !== ''

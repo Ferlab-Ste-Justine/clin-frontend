@@ -6,6 +6,7 @@ import {
 
 import PropTypes from 'prop-types';
 import styleFilter from '../../styles/filter.module.scss';
+import { calculateTitleWidth } from '../../helpers/query';
 
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
@@ -235,6 +236,8 @@ class NumericalComparisonWidget extends React.Component {
       tick,
       disabled,
     } = this.props;
+    const widthMin = calculateTitleWidth(min.toFixed(2).toString());
+    const widthMax = calculateTitleWidth(max.toFixed(2).toString());
 
     const currentLow = this.lowValue();
     const currentHigh = this.highValue();
@@ -263,6 +266,7 @@ class NumericalComparisonWidget extends React.Component {
               defaultValue={currentLow}
               onChange={this.handleMinValueChange}
               disabled={disabled}
+              style={{ width: `calc(38px + ${widthMin}ch)` }}
             />
           </Col>
           <Col>
@@ -274,6 +278,7 @@ class NumericalComparisonWidget extends React.Component {
               defaultValue={currentHigh}
               onChange={this.handleMaxValueChange}
               disabled={disabled}
+              style={{ width: `calc(38px + ${widthMax}ch)` }}
             />
           </Col>
         </Row>
