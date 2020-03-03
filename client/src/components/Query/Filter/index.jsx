@@ -16,12 +16,11 @@ import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 
 import {
-  getSvgPathFromOperatorType,
   OPERATOR_TYPE_UNION,
   OPERATOR_TYPE_INTERSECTION,
   OPERATOR_TYPE_NOT_EQUAL,
   OPERATOR_TYPE_EQUAL,
-  OPERATOR_TYPE_ELEMENT_OF,
+  OperatorIconComponent,
 } from '../Operator';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
@@ -68,12 +67,6 @@ const InnerOperatorFromOperand = (operand) => {
   }
 };
 
-export const OperatorIconComponent = operator => props => (
-  <svg width="10em" height="10em" viewBox="0 0 24 24" {...props}>
-    {getSvgPathFromOperatorType(operator)}
-  </svg>
-);
-
 const PillOuterIconForOperand = operand => props => (
   <Icon
     {...props}
@@ -109,13 +102,6 @@ export const createFilter = type => ({
     type: (FILTER_TYPES.indexOf(type) !== -1 ? type : FILTER_TYPE_GENERIC),
   },
 });
-
-// eslint-disable-next-line react/prop-types
-const Interval = ({ min, max }) => (
-  <div className={style.termList}>
-    {`[${min}, ${max}]`}
-  </div>
-);
 
 class Filter extends React.Component {
   constructor(props) {
@@ -158,27 +144,28 @@ class Filter extends React.Component {
     this.state.size = 10;
   }
 
-  getMin() {
-    if (!this.isNumericalComparisonFilter()) return 0;
+  // TODO remove
+  // getMin() {
+  //   if (!this.isNumericalComparisonFilter() && !this.isCompositeFilter()) return 0;
 
-    const { data } = this.props;
+  //   const { data } = this.props;
 
-    if (!data) return 0;
-    const { values } = data;
+  //   if (!data) return 0;
+  //   const { values } = data;
 
-    return values[0].value;
-  }
+  //   return values[0].value;
+  // }
 
-  getMax() {
-    if (!this.isNumericalComparisonFilter()) return null;
+  // getMax() {
+  //   if (!this.isNumericalComparisonFilter() && !this.isCompositeFilter()) return null;
 
-    const { data } = this.props;
+  //   const { data } = this.props;
 
-    if (!data) return 0;
-    const { values } = data;
+  //   if (!data) return 0;
+  //   const { values } = data;
 
-    return values[1].value;
-  }
+  //   return values[1].value;
+  // }
 
   isEditable() {
     const { options } = this.props;
@@ -298,21 +285,18 @@ class Filter extends React.Component {
   }
 
   pillOuterOperatorIcon() {
-    const { type, data, editor } = this.props;
+    const { data, editor } = this.props;
     const { operand } = data;
 
     if (this.hasOperands()) {
       return PillOuterIconForOperand(operand)();
     }
 
-    if (type === FILTER_TYPE_NUMERICAL_COMPARISON) {
-      return (
-        <Icon
-          // {...props}
-          className={styleFilter.svgIcon}
-          component={OperatorIconComponent(OPERATOR_TYPE_ELEMENT_OF)}
-        />
-      );
+    if (this.isNumericalComparisonFilter() || this.isCompositeFilter()) {
+      const {
+        getPillOuterIcon,
+      } = this.props;
+      return getPillOuterIcon();
     }
 
     const editorLabels = editor.getLabels();
@@ -349,6 +333,12 @@ class Filter extends React.Component {
     return type === FILTER_TYPE_NUMERICAL_COMPARISON;
   }
 
+  isCompositeFilter() {
+    const { type } = this.props;
+
+    return type === FILTER_TYPE_COMPOSITE;
+  }
+
   render() {
     const {
       onOperandChangeCallBack,
@@ -361,6 +351,7 @@ class Filter extends React.Component {
       searchable,
       autoSelect,
       onReset,
+      getPillContent,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -540,8 +531,8 @@ class Filter extends React.Component {
                 color="#FFFFFF"
                 className={`${style.insideTag}`}
               >
-                {this.isNumericalComparisonFilter()
-                  ? (<Interval min={this.getMin()} max={this.getMax()} />)
+                {this.isNumericalComparisonFilter() || this.isCompositeFilter()
+                  ? getPillContent()
                   : (
                     <div className={style.termList}>
                       {actionTargets.map((target, index) => (
@@ -590,6 +581,8 @@ Filter.propTypes = {
   sortData: PropTypes.array,
   autoSelect: PropTypes.bool,
   index: PropTypes.number,
+  getPillContent: PropTypes.func,
+  getPillOuterIcon: PropTypes.func,
 };
 
 Filter.defaultProps = {
@@ -617,6 +610,8 @@ Filter.defaultProps = {
   resettable: false,
   sortData: [],
   index: 0,
+  getPillContent: () => {},
+  getPillOuterIcon: () => {},
 };
 
 export default Filter;

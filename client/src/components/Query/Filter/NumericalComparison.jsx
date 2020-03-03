@@ -8,13 +8,18 @@ import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
 import NumericalComparisonWidget from './widgets/NumericalComparisonWidget';
 import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
+import Interval from './widgets/Interval';
 
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
   FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
+  OPERATOR_TYPE_ELEMENT_OF,
+  IconForOperator,
 } from '../Operator';
 
-const roundDown2 = value => Math.floor(100 * value) / 100.0;
+import { roundDown, roundUp } from '../helpers/rounding';
+
+const VALUE_DECIMALS = 2;
 
 class NumericalComparisonFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -52,10 +57,6 @@ class NumericalComparisonFilter extends React.Component {
       draft: null,
       sliderDisabled: false,
       inputDisabled: false,
-      currentLow: -1,
-      currentHigh: -1,
-      lowValueSet: false,
-      highValueSet: false,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
@@ -63,7 +64,9 @@ class NumericalComparisonFilter extends React.Component {
     this.getEditorInstruction = this.getEditorInstruction.bind(this);
     this.handleReset = this.handleReset.bind(this);
     this.updateDraft = this.updateDraft.bind(this);
-
+    this.getPillContent = this.getPillContent.bind(this);
+    this.handleFilterChange = this.handleFilterChange.bind(this);
+    this.getPillOuterIcon = this.getPillOuterIcon.bind(this);
     // @NOTE Initialize Component State
     const { data } = props;
     this.state.draft = cloneDeep(data);
@@ -71,16 +74,27 @@ class NumericalComparisonFilter extends React.Component {
 
   getEditorDraftInstruction() {
     const { draft } = this.state;
-    const { id, values } = draft;
+    const { id } = draft;
 
-    return NumericalComparisonFilter.structFromArgs(id, values);
+    const values = draft.values.filter(term => !term.markedForDeletion);
+
+    return {
+      id,
+      type: FILTER_TYPE_NUMERICAL_COMPARISON,
+      values,
+    };
   }
 
   getEditorInstruction() {
     const { data } = this.props;
     const { id, values } = data;
 
-    return NumericalComparisonFilter.structFromArgs(id, values);
+    const trimmedValues = values.filter(v => !v.markedForDeletion);
+    return {
+      id,
+      type: FILTER_TYPE_NUMERICAL_COMPARISON,
+      values: trimmedValues,
+    };
   }
 
   getEditorLabels() {
@@ -91,30 +105,73 @@ class NumericalComparisonFilter extends React.Component {
     };
   }
 
+  getMin() {
+    const { data, facets } = this.props;
+    const min = roundUp(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
+    return min;
+  }
+
+  getMax() {
+    const { data, facets } = this.props;
+    const max = roundDown(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
+    return max;
+  }
+
   getEditor() {
     const {
       draft,
     } = this.state;
 
-    const { data, facets } = this.props;
-
-    const min = roundDown2(facets[`${data.id}_min`][0].value);
-    const max = roundDown2(facets[`${data.id}_max`][0].value);
+    const { data } = this.props;
 
     return {
       getLabels: this.getEditorLabels,
       getDraftInstruction: this.getEditorDraftInstruction,
       getInstruction: this.getEditorInstruction,
-      contents: draft && draft.values && draft.values.length > 1 ? (
+      contents: draft /* && draft.values && draft.values.length > 1 */ ? (
         <NumericalComparisonWidget
-          min={min}
-          max={max}
-          draft={draft}
+          min={this.getMin()}
+          max={this.getMax()}
+          draft={cloneDeep(draft)}
+          savedData={data}
           updateDraft={this.updateDraft}
-          rounding={roundDown2}
         />
       ) : null,
     };
+  }
+
+  getPillContent() {
+    const {
+      data,
+    } = this.props;
+
+    const { values } = data;
+
+    console.log('getPillContent - values: ', values);
+
+    return (
+      <Interval
+        terms={values}
+      />
+    );
+  }
+
+  getPillOuterIcon() {
+    const { data } = this.props;
+    const { values } = data;
+
+    let operator = null;
+    switch (values.length) {
+      case 1:
+        operator = values[0].comparator;
+        break;
+      case 2:
+        operator = OPERATOR_TYPE_ELEMENT_OF;
+        break;
+      default:
+        break;
+    }
+    return IconForOperator(operator);
   }
 
   handleReset() {
@@ -130,7 +187,27 @@ class NumericalComparisonFilter extends React.Component {
   }
 
   updateDraft(draft) {
-    this.setState({ ...draft });
+    this.setState({ draft });
+  }
+
+  handleFilterChange(filterArg) {
+    const {
+      draft,
+    } = this.state;
+
+    const {
+      onEditCallback,
+    } = this.props;
+
+    const draftClone = cloneDeep(draft);
+
+    draftClone.values = draftClone.values.filter(term => !term.markedForDeletion);
+
+    if (!draftClone.values.length) return;
+
+    this.setState({ draft: draftClone }, () => {
+      onEditCallback(filterArg);
+    });
   }
 
   render() {
@@ -138,20 +215,31 @@ class NumericalComparisonFilter extends React.Component {
       draft,
     } = this.state;
 
+    const {
+      data,
+    } = this.props;
+
+    console.log('render - draft: ', draft);
+    console.log('render - data: ', data);
+
     return (
       <Filter
         {...this.props}
         draft={draft}
+        onEditCallback-={this.handleFilterChange}
         type={FILTER_TYPE_NUMERICAL_COMPARISON}
         editor={this.getEditor()}
         resettable
         onReset={this.handleReset}
+        getPillContent={this.getPillContent}
+        getPillOuterIcon={this.getPillOuterIcon}
       />
     );
   }
 }
 
 NumericalComparisonFilter.propTypes = {
+  onEditCallback: PropTypes.func.isRequired,
   data: PropTypes.shape({}).isRequired,
   facets: PropTypes.shape({}).isRequired,
 };
