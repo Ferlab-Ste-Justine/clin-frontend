@@ -1,8 +1,14 @@
 import axios from 'axios';
 
 
-const successCallback = payload => ({ payload });
-const errorCallback = error => ({ error });
+const successCallback = (payload) => {
+  console.log('API Success. payload: ', payload);
+  return { payload };
+};
+const errorCallback = (error) => {
+  console.log('API ERROR. error: ', { error });
+  return { error };
+};
 
 axios.defaults.withCredentials = true;
 axios.defaults.crossdomain = true;
@@ -51,6 +57,10 @@ export class ApiError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+const getVariantDetails = id => axios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
+  .then(successCallback)
+  .catch(errorCallback);
 
 const getVariantSchema = () => axios.get(`${window.CLIN.variantServiceApiUrl}/schema`)
   .then(successCallback)
@@ -137,6 +147,7 @@ export default {
   getPatientById,
   getPatientsByAutoComplete,
   searchPatients,
+  getVariantDetails,
   getVariantSchema,
   searchVariantsForPatient,
   searchFacetsForPatient,

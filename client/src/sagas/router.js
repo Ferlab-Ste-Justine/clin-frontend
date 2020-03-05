@@ -14,6 +14,19 @@ function* navigate(action) {
   }
 }
 
+function* navigateToVariantDetailsScreen(action) {
+  try {
+    const { uid } = action.payload;
+    const location = `/variantDetails/${uid}`;
+    yield put({ type: actions.VARIANT_DETAILS_REQUESTED, payload: { uid } });
+    yield put(push(location));
+    window.scrollTo(0, 0);
+    yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_FAILED, message: e.message });
+  }
+}
+
 function* navigateToPatientScreen(action) {
   try {
     const { uid } = action.payload;
@@ -67,11 +80,16 @@ function* watchNavigateToPatientVariantScreen() {
   yield takeLatest(actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED, navigateToPatientVariantScreen);
 }
 
+function* watchNavigateToVariantDetailsScreen() {
+  yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToVariantDetailsScreen);
+}
+
 export default function* watchedRouterSagas() {
   yield all([
     watchNavigate(),
     watchNavigateToPatientScreen(),
     watchNavigateToPatientSearchScreen(),
     watchNavigateToPatientVariantScreen(),
+    watchNavigateToVariantDetailsScreen(),
   ]);
 }

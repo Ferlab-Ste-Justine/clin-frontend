@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -35,7 +36,7 @@ import {
 import {
   updateUserProfile,
 } from '../../../actions/user';
-import { navigateToPatientScreen } from '../../../actions/router';
+import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
 
 import './style.scss';
 import style from './style.module.scss';
@@ -74,12 +75,13 @@ class PatientVariantScreen extends React.Component {
     this.handleSelectStatement = this.handleSelectStatement.bind(this);
     this.handleDuplicateStatement = this.handleDuplicateStatement.bind(this);
     this.handleSetDefaultStatement = this.handleSetDefaultStatement.bind(this);
+    this.handleNavigationToVariantDetailsScreen = this.handleNavigationToVariantDetailsScreen.bind(this);
     this.getData = this.getData.bind(this);
 
     // @NOTE Initialize Component State
     this.state.columnPreset = {
       [VARIANT_TAB]: [
-        { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
+        { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('button', this.getData, { key: 'mutationId', handler: this.handleNavigationToVariantDetailsScreen }) },
         { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
         {
           key: 'gene',
@@ -169,6 +171,18 @@ class PatientVariantScreen extends React.Component {
       return results[activeQuery];
     }
     return [];
+  }
+
+  handleNavigationToVariantDetailsScreen(e) {
+    const { actions, variant } = this.props;
+    const { activeQuery, results } = variant;
+    const resultList = results[activeQuery];
+    const mutationId = e.target.getAttribute('data-id');
+
+    const mutation = resultList.find(r => r.mutationId === mutationId);
+    if (mutation) {
+      actions.navigateToVariantDetailsScreen(mutation.id);
+    }
   }
 
   handlePageChange(page) {
@@ -669,6 +683,7 @@ const mapDispatchToProps = dispatch => ({
     commitHistory,
     undo,
     navigateToPatientScreen,
+    navigateToVariantDetailsScreen,
     getStatements,
     createDraftStatement,
     createStatement,
