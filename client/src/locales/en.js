@@ -350,6 +350,7 @@ const en = {
   'screen.variantsearch.table.geneSymbol': 'Gene',
   'screen.variantsearch.table.aaChanges': 'AA Changes',
   'screen.variantsearch.table.consequences': 'Consequences',
+  'screen.variantsearch.table.exomiser': 'Exomiser',
   'screen.variantsearch.table.clinvar': 'ClinVar',
   'screen.variantsearch.table.cadd': 'CADD',
   'screen.variantsearch.table.frequencies': 'Frequencies',

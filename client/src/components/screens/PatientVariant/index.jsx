@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/anchor-has-content */
 
@@ -7,14 +8,14 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import {
-  sortBy, findIndex,
+  sortBy, findIndex, filter,
 } from 'lodash';
 
 import Header from '../../Header';
@@ -77,11 +78,12 @@ class PatientVariantScreen extends React.Component {
     this.handleDuplicateStatement = this.handleDuplicateStatement.bind(this);
     this.handleSetDefaultStatement = this.handleSetDefaultStatement.bind(this);
     this.getData = this.getData.bind(this);
+    this.getRowHeight = this.getRowHeight.bind(this);
+    this.getImpactTag = this.getImpactTag.bind(this);
 
     // @NOTE Initialize Component State
     this.state.columnPreset = {
       [VARIANT_TAB]: [
-        { key: 'checkbox', label: 'Check', renderer: createCellRenderer('checkbox', this.getData, { key: 'mutationId' }) },
         { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('link', this.getData, { key: 'mutationId' }) },
         { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
         {
@@ -93,7 +95,10 @@ class PatientVariantScreen extends React.Component {
                 return (
                   // eslint-disable-next-line jsx-a11y/anchor-is-valid
                   <a
-                    href="#"
+                    href={`https://www.ncbi.nlm.nih.gov/snp/${data.bdExt.dbSNP}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="link, dbsnp"
                   >
                     {data.bdExt.dbSNP}
                   </a>
@@ -108,14 +113,54 @@ class PatientVariantScreen extends React.Component {
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
+                // eslint-disable-next-line array-callback-return
+                data.consequences.map((consequence) => {
+                  const valueArray = consequence.consequence[0].split('_');
+                  const arrayFilter = valueArray.filter(item => item !== 'variant');
+                  const finalString = arrayFilter.join(' ');
+                  consequence.consequence[0] = finalString;
+                });
                 return (
-                  data.consequences.map(consequence => (
-                    <Row>
-                      <Col>{consequence.consequence}</Col>
-                      <Col><a href="#">{consequence.geneAffectedSymbol ? consequence.geneAffectedSymbol : ''}</a></Col>
-                      <Col>{consequence.aaChange ? consequence.aaChange : ''}</Col>
-                    </Row>
-                  ))
+                  <div>
+                    {
+                    data.consequences.map(consequence => (
+                      consequence.canonical === true ? (
+                        <Row className="consequences">
+                          <Col>{this.getImpactTag(consequence.impact)}</Col>
+                          <Col>{consequence.consequence[0]}</Col>
+                          <Col>
+                            <a
+                              href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.geneAffectedSymbol}`}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              className="link"
+                            >
+                              {consequence.geneAffectedSymbol ? consequence.geneAffectedSymbol : ''}
+                            </a>
+                          </Col>
+                          <Col>{consequence.aaChange ? consequence.aaChange : ''}</Col>
+                        </Row>
+                      ) : null
+                    ))
+                    }
+                  </div>
+                );
+              } catch (e) { return ''; }
+            },
+          }),
+        },
+        {
+          key: 'exomiser',
+          label: 'screen.variantsearch.table.exomiser',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              try {
+                const { variant } = this.props;
+                const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+                return (
+                  <div className="exomiser">
+                    <Row>{data.donors[donorIndex].exomiserScore}</Row>
+                  </div>
                 );
               } catch (e) { return ''; }
             },
@@ -128,10 +173,19 @@ class PatientVariantScreen extends React.Component {
             renderer: (data) => {
               try {
                 return (
-                  <>
+                  <div className="clinvar">
                     <Row>{data.clinvar.clinvar_clinsig}</Row>
-                    <Row><a>{data.clinvar.clinvar_id}</a></Row>
-                  </>
+                    <Row>
+                      <a
+                        href={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${data.clinvar.clinvar_id}/`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="link"
+                      >
+                        {data.clinvar.clinvar_id}
+                      </a>
+                    </Row>
+                  </div>
                 );
               } catch (e) { return ''; }
             },
@@ -145,7 +199,10 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   data.consequences.map(consequence => (
-                    <Row>{consequence.predictions.CADD_score}</Row>
+                    consequence.canonical === true ? (
+                      <Row>{consequence.predictions.CADD_score}</Row>
+                    ) : null
+
                   ))
                 );
               } catch (e) { return ''; }
@@ -155,13 +212,14 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'frequencies',
           label: 'screen.variantsearch.table.frequencies',
+          asInfo: true,
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
                 const frequenciesAN = data.frequencies.interne.AN / 2;
                 return (
                   <>
-                    <Row><a>{data.frequencies.interne.PN}</a><span>/</span>{frequenciesAN}</Row>
+                    <Row><a className="link">{data.frequencies.interne.PN}</a><span>/</span>{frequenciesAN}</Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -169,14 +227,23 @@ class PatientVariantScreen extends React.Component {
           }),
         },
         {
-          key: 'gnomAD ',
+          key: 'gnomAD',
           label: 'screen.variantsearch.table.gnomAd',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
                 return (
                   <>
-                    <Row><a>{data.frequencies.gnomAD_exomes.AF}</a></Row>
+                    <Row>
+                      <a
+                        href={`https://gnomad.broadinstitute.org/variant/${data.chrom}-${data.start}-${data.refAllele}-${data.altAllele}`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="link"
+                      >
+                        {data.frequencies.gnomAD_exomes.AF.toExponential()}
+                      </a>
+                    </Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -184,7 +251,7 @@ class PatientVariantScreen extends React.Component {
           }),
         },
         {
-          key: 'zygosity ',
+          key: 'zygosity',
           label: 'screen.variantsearch.table.zygosity',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
@@ -201,7 +268,7 @@ class PatientVariantScreen extends React.Component {
           }),
         },
         {
-          key: 'transmission ',
+          key: 'transmission',
           label: 'screen.variantsearch.table.transmission',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
@@ -209,17 +276,17 @@ class PatientVariantScreen extends React.Component {
               const donorIndex = findIndex(data.donors, { patientId: this.props.variant.activePatient });
               try {
                 return (
-                  <>
-                    <Row>{data.donors[donorIndex].transmission}</Row>
+                  <div>
+                    <Row>{data.donors[donorIndex].transmission.join(', ')}</Row>
                     <Row>{data.donors[donorIndex].genotypeFamily}</Row>
-                  </>
+                  </div>
                 );
               } catch (e) { return ''; }
             },
           }),
         },
         {
-          key: 'seq ',
+          key: 'seq',
           label: 'screen.variantsearch.table.seq',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
@@ -236,15 +303,38 @@ class PatientVariantScreen extends React.Component {
           }),
         },
         {
-          key: 'pubmed ',
+          key: 'pubmed',
           label: 'screen.variantsearch.table.pubmed',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
+                const menu = (
+                  <Menu>
+                    {data.bdExt.pubmed.map(value => (
+                      <Menu.Item>
+                        <a
+                          href={`https://www.ncbi.nlm.nih.gov/pubmed/${value}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          className="link"
+                        >
+                          {value}
+                        </a>
+                      </Menu.Item>
+                    ))}
+                  </Menu>
+                );
                 return (
-                  data.bdExt.pubmed.map(value => (
-                    <Row>{value} - </Row>
-                  ))
+                  <div>
+                    {
+                      <Dropdown overlay={menu} trigger={['click']} placement="bottomCenter" overlayClassName="pubmedDropdown">
+                        <a>
+                          {data.bdExt.pubmed[0]}
+                          <IconKit size={16} icon={ic_arrow_drop_down} />
+                        </a>
+                      </Dropdown>
+                    }
+                  </div>
                 );
               } catch (e) { return ''; }
             },
@@ -264,6 +354,50 @@ class PatientVariantScreen extends React.Component {
 
   componentDidMount() {
     this.handleGetStatements();
+  }
+
+  getImpactTag(impact) {
+    switch (impact) {
+      case 'HIGH':
+        return (
+          <Badge className="impact" color="#f5646c" />
+        );
+      case 'MODERATE':
+        return (
+          <Badge className="impact" color="#ffa812" />
+        );
+      case 'LOW':
+        return (
+          <Badge className="impact" color="#52c41a" />
+        );
+      case 'MODIFIER':
+        return (
+          <Badge className="impact" color="#b5b5b5" />
+        );
+      default:
+        return null;
+    }
+  }
+
+  getRowHeight() {
+    const data = this.getData();
+    const { size } = this.state;
+    const { variant } = this.props;
+    const rowHeight = Array(size).fill(36);
+    if (data) {
+      data.map((value, index) => {
+        const donorIndex = findIndex(value.donors, { patientId: variant.activePatient });
+        const canonical = filter(value.consequences, { canonical: true });
+        const nbValue = canonical.length;
+        rowHeight[index] = nbValue <= 1 ? 32 : nbValue * 16 + 20;
+        if (nbValue <= 1 && (value.clinvar || value.donors[donorIndex].transmission)) {
+          rowHeight[index] = 2 * 16 + 20;
+        }
+        return rowHeight;
+      });
+      return rowHeight;
+    }
+    return rowHeight;
   }
 
   getData() {
@@ -458,6 +592,7 @@ class PatientVariantScreen extends React.Component {
     actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
+
   render() {
     const {
       app, variant, patient, user,
@@ -482,6 +617,8 @@ class PatientVariantScreen extends React.Component {
     const total = currentTab === VARIANT_TAB ? activeStatementTotals[activeQuery] : [];
     const searchData = [];
     const reverseCategories = {};
+
+    const rowHeight = this.getRowHeight();
     if (schema.categories) {
       schema.categories.forEach((category) => {
         searchData.push({
@@ -489,12 +626,12 @@ class PatientVariantScreen extends React.Component {
           subid: null,
           type: 'category',
           label: intl.get(`${category.label}`),
-          data: category.filters ? category.filters.reduce((accumulator, filter) => {
-            const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
+          data: category.filters ? category.filters.reduce((accumulator, clarify) => {
+            const searcheableFacet = clarify.facet ? clarify.facet.map((facet) => {
               reverseCategories[facet.id] = category.id;
               return {
                 id: facet.id,
-                value: intl.get(`screen.patientvariant.${(!facet.label ? filter.label : facet.label)}`),
+                value: intl.get(`screen.patientvariant.${(!facet.label ? clarify.label : facet.label)}`),
               };
             }) : [];
 
@@ -537,7 +674,6 @@ class PatientVariantScreen extends React.Component {
 
       return accumulator;
     }, []);
-
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
@@ -724,6 +860,8 @@ class PatientVariantScreen extends React.Component {
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
                   isExportable={false}
+                  rowHeight={rowHeight}
+                  numFrozenColumns={1}
                 />
                 ) }
               </Tabs.TabPane>

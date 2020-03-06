@@ -11,8 +11,6 @@ import {
 import { cloneDeep } from 'lodash';
 import './style.scss';
 
-import styleTable from './style.module.scss';
-
 
 export const createCellRenderer = (type, getData, options = {}) => {
   try {
@@ -31,6 +29,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
           <a
             type="link"
             href={(options.renderer ? options.renderer(value) : '#')}
+            className="link"
           >
             {value}
           </a>
@@ -45,6 +44,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
             icon={options.icon}
             onClick={options.handler}
             data-id={value}
+            className="button"
           >
             {options.label || value}
           </Button>
@@ -69,7 +69,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const dataSet = getData();
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
         return (
-          <Cell className={row % 2 !== 0 ? `${styleTable.cellValue} ${styleTable.evenRow}` : `${styleTable.cellValue}`}>
+          <Cell className="cellValue">
             {valueRenderer(value)}
           </Cell>
         );
@@ -87,6 +87,7 @@ const DataTable = (props) => {
     columns, size, total, enableReordering, enableResizing, renderContextMenuCallback, reorderColumnsCallback, resizeColumnCallback,
     numFrozenColumns, enableGhostCells, copyCallback, columnWidth,
   } = props;
+  let { rowHeight } = props;
   const rowsCount = size <= total ? size : total;
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
     if (oldIndex === newIndex) {
@@ -95,6 +96,7 @@ const DataTable = (props) => {
 
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
+  rowHeight = rowsCount === 0 ? [] : rowHeight;
   return (
     <Table
       key={shortid.generate()}
@@ -107,9 +109,8 @@ const DataTable = (props) => {
       bodyContextMenuRenderer={renderContextMenuCallback}
       onColumnsReordered={handleColumnsReordered}
       onColumnWidthChanged={resizeColumnCallback}
-      defaultRowHeight={36}
+      rowHeights={rowHeight}
       getCellClipboardData={copyCallback}
-      className={styleTable.table}
       columnWidths={columnWidth}
     >
       { columns.map(definition => (
@@ -136,6 +137,7 @@ DataTable.propTypes = {
   resizeColumnCallback: PropTypes.func,
   copyCallback: PropTypes.func,
   columnWidth: PropTypes.shape([]),
+  rowHeight: PropTypes.shape([]),
 };
 
 DataTable.defaultProps = {
@@ -151,6 +153,7 @@ DataTable.defaultProps = {
   resizeColumnCallback: () => {},
   copyCallback: null,
   columnWidth: [],
+  rowHeight: [],
 };
 
 export default DataTable;

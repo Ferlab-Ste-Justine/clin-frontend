@@ -199,10 +199,22 @@ class InteractiveTable extends React.Component {
           columnWidth[index] = 200;
           break;
         case 'consequences':
-          columnWidth[index] = 220;
+          columnWidth[index] = 250;
           break;
-        case 'checkbox':
-          columnWidth[index] = 50;
+        case 'exomiser':
+          columnWidth[index] = 100;
+          break;
+        case 'type':
+          columnWidth[index] = 100;
+          break;
+        case 'clinvar':
+          columnWidth[index] = 160;
+          break;
+        case 'zygosity':
+          columnWidth[index] = 90;
+          break;
+        case 'seq':
+          columnWidth[index] = 80;
           break;
         default:
           columnWidth[index] = 150;
@@ -214,7 +226,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      size, page, total, isLoading, numFrozenColumns, copyCallback,
+      size, page, total, isLoading, numFrozenColumns, copyCallback, rowHeight,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -313,6 +325,7 @@ class InteractiveTable extends React.Component {
               columnWidth={columnWidth}
               copyCallback={copyCallback}
               enableGhostCells
+              rowHeight={rowHeight}
             />
           </Col>
         </Row>
@@ -350,6 +363,7 @@ InteractiveTable.propTypes = {
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
   copyCallback: PropTypes.func,
+  rowHeight: PropTypes.number,
 };
 
 InteractiveTable.defaultProps = {
@@ -365,6 +379,7 @@ InteractiveTable.defaultProps = {
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},
   copyCallback: () => {},
+  rowHeight: null,
 };
 
 export default InteractiveTable;
