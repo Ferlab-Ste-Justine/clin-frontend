@@ -28,6 +28,10 @@ export const createCellRenderer = (type, getData, options = {}) => {
       case 'paragraph':
         valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
         break;
+      case 'capitalText':
+        valueRenderer = value => (
+          <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{value}</Typography.Text>);
+        break;
       case 'link':
         valueRenderer = value => (
           <a

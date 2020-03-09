@@ -85,7 +85,7 @@ class PatientVariantScreen extends React.Component {
     this.state.columnPreset = {
       [VARIANT_TAB]: [
         { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('link', this.getData, { key: 'mutationId' }) },
-        { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
+        { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('capitalText', this.getData, { key: 'type' }) },
         {
           key: 'dbsnp',
           label: 'screen.variantsearch.table.dbsnp',
@@ -127,7 +127,7 @@ class PatientVariantScreen extends React.Component {
                       consequence.canonical === true ? (
                         <Row className="consequences">
                           <Col>{this.getImpactTag(consequence.impact)}</Col>
-                          <Col>{consequence.consequence[0]}</Col>
+                          <Col className="consequence">{consequence.consequence[0]}</Col>
                           <Col>
                             <a
                               href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.geneAffectedSymbol}`}
@@ -219,7 +219,7 @@ class PatientVariantScreen extends React.Component {
                 const frequenciesAN = data.frequencies.interne.AN / 2;
                 return (
                   <>
-                    <Row><a className="link">{data.frequencies.interne.PN}</a><span>/</span>{frequenciesAN}</Row>
+                    <Row><a className="link">{data.frequencies.interne.PN}</a><span> / </span>{frequenciesAN}</Row>
                   </>
                 );
               } catch (e) { return ''; }
