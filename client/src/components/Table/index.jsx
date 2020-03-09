@@ -6,9 +6,13 @@ import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography, Checkbox,
+  Badge, Button, Typography, Checkbox, Tooltip,
 } from 'antd';
 import { cloneDeep } from 'lodash';
+import IconKit from 'react-icons-kit';
+import {
+  ic_info_outline,
+} from 'react-icons-kit/md';
 import './style.scss';
 
 
@@ -97,6 +101,17 @@ const DataTable = (props) => {
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
   rowHeight = rowsCount === 0 ? [] : rowHeight;
+
+  const nameRenderer = index => (
+    <div className="tooltipHeader">
+      {intl.get(columns[index].label)}
+      <Tooltip title={columns[index].description}>
+        <Button>
+          <IconKit icon={ic_info_outline} />
+        </Button>
+      </Tooltip>
+    </div>
+  );
   return (
     <Table
       key={shortid.generate()}
@@ -118,6 +133,7 @@ const DataTable = (props) => {
           id={definition.key}
           name={intl.get(definition.label)}
           cellRenderer={definition.renderer}
+          columnHeaderCellRenderer={definition.description ? nameRenderer : null}
         />
       )) }
     </Table>

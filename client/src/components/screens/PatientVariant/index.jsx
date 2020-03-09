@@ -212,7 +212,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'frequencies',
           label: 'screen.variantsearch.table.frequencies',
-          asInfo: true,
+          description: 'Description pour fréquence',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
@@ -270,6 +270,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'transmission',
           label: 'screen.variantsearch.table.transmission',
+          description: 'Description pour transmission',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               // eslint-disable-next-line react/destructuring-assignment
@@ -288,6 +289,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'seq',
           label: 'screen.variantsearch.table.seq',
+          description: 'Description pour seq',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
