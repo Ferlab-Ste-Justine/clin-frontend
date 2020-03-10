@@ -43,6 +43,19 @@ export const createCellRenderer = (type, getData, options = {}) => {
           </a>
         );
         break;
+      case 'wrapTextLink':
+        valueRenderer = value => (
+          <div className="wrapTextLinkContainer">
+            <a
+              type="link"
+              href={(options.renderer ? options.renderer(value) : '#')}
+              className="wrapTextLink"
+            >
+              {value}
+            </a>
+          </div>
+        );
+        break;
       case 'button':
         valueRenderer = value => (
           <Button

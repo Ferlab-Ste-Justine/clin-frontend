@@ -134,6 +134,17 @@
     .link{
         color: $primary;
     }
+    .wrapTextLinkContainer{
+        width: 100%;
+        .wrapTextLink{
+            width: 100%;
+            height: auto;
+            word-wrap: break-word;
+            white-space: pre-wrap
+        }
+    }
+
+
     .capitalText{
         text-transform: capitalize;
     }
