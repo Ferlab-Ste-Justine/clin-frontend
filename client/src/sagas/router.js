@@ -1,7 +1,14 @@
-import { push } from 'connected-react-router';
-import { all, put, takeLatest } from 'redux-saga/effects';
+import { push, LOCATION_CHANGE } from 'connected-react-router';
+import {
+  all, put, takeLatest, call,
+} from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
+import { fetchPatient, searchPatientsByQuery } from '../actions/patient';
+import {
+  isPatientSearchRoute, isPatientPageRoutePattern, isPatientVariantPageRoutePattern, getPatientIdFromPatientPageRoute, getPatientIdFromPatientVariantPageRoute,
+} from '../helpers/route';
+
 
 function* navigate(action) {
   try {
@@ -51,6 +58,58 @@ function* navigateToPatientSearchScreen() {
   }
 }
 
+function* manualUserNavigation(action) {
+  const isPageReload = action.payload.isFirstRendering === true;
+  const location = action.payload.location.pathname;
+
+  if (isPatientVariantPageRoutePattern(location)) {
+    console.log('+ isPatientVariantPageRoutePattern');
+    const patientId = getPatientIdFromPatientPageRoute(location);
+
+
+    console.log(`+ isPatientVariantPageRoutePattern patientId ${JSON.stringify(patientId)}`);
+
+
+    yield fetchPatient(patientId);
+    yield navigateToPatientVariantScreen({ payload: { uid: patientId } });
+  } else if (isPatientPageRoutePattern(location)) {
+    console.log('+ isPatientPageRoutePattern');
+    const patientId = getPatientIdFromPatientVariantPageRoute(location);
+
+
+    console.log(`+ isPatientPageRoutePattern patientId ${JSON.stringify(patientId)}`);
+
+
+    yield navigateToPatientScreen({ payload: { uid: patientId } });
+  } else if (isPatientSearchRoute(location)) {
+    console.log('+ isPatientSearchRoute');
+
+    yield call(searchPatientsByQuery);
+  } else {
+    // @TODO
+  }
+
+  yield console.log(`+ isPageReload ${JSON.stringify(isPageReload)}`);
+  yield console.log(`+ ${JSON.stringify(action.payload)}`);
+
+  /*
+  + TEST {
+  "type":"@@router/LOCATION_CHANGE",
+  "payload":{
+    "location":{
+      "pathname":"/patient/search",
+      "search":"",
+      "hash":"",
+      "key":"w1lwzc"},
+    "action":"POP",
+    "isFirstRendering":true}}
+   */
+}
+
+function* watchManualUserNavigation() {
+  yield takeLatest(LOCATION_CHANGE, manualUserNavigation);
+}
+
 function* watchNavigate() {
   yield takeLatest(actions.ROUTER_NAVIGATION_REQUESTED, navigate);
 }
@@ -73,5 +132,6 @@ export default function* watchedRouterSagas() {
     watchNavigateToPatientScreen(),
     watchNavigateToPatientSearchScreen(),
     watchNavigateToPatientVariantScreen(),
+    watchManualUserNavigation(),
   ]);
 }

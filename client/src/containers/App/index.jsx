@@ -17,10 +17,11 @@ import PatientScreen from '../../components/screens/Patient';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
 import PatientVariantScreen from '../../components/screens/PatientVariant';
 import PrivateRoute from '../PrivateRoute';
-
+import {
+  ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT,
+} from '../../helpers/route';
 import { loadApp, error, warning } from '../../actions/app';
 import { appShape } from '../../reducers/app';
-import { userShape } from '../../reducers/user';
 
 export class App extends React.Component {
   constructor() {
@@ -51,7 +52,13 @@ export class App extends React.Component {
       );
     }
 
-    const { app, user, history } = this.props;
+    // @NOTE In case we use intl for routes later on...
+    const pathPatientSearch = `/${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`;
+    const pathPatientPage = `/${ROUTE_NAME_PATIENT}/:uid`;
+    const pathPatientVariants = `/${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
+    const pathVariantPage = `/${ROUTE_NAME_VARIANT}/:uid`;
+
+    const { app, history } = this.props;
     return (
       <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
         <ConfigProvider key="locale-antd" locale={app.locale.antd}>
@@ -59,9 +66,10 @@ export class App extends React.Component {
             <ConnectedRouter key="connected-router" history={history}>
               <Switch key="switch">
                 <Route exact path="/" component={HomeScreen} key="route-home" />
-                <PrivateRoute exact path="/patient/search" Component={PatientSearchScreen} key="route-patient-search" user={user} />
-                <PrivateRoute exact path="/patient/:uid/variant" Component={PatientVariantScreen} key="route-patient-variant" user={user} />
-                <PrivateRoute exact path="/patient/:uid" Component={PatientScreen} key="route-patient" user={user} />
+                <PrivateRoute exact path={pathPatientSearch} Component={PatientSearchScreen} key="route-patient-search" />
+                <PrivateRoute exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
+                <PrivateRoute exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
+                <PrivateRoute exact path={pathVariantPage} Component={MaintenanceScreen} key="route-variant" />
                 <Route component={NoMatchScreen} key="route-nomatch" />
               </Switch>
             </ConnectedRouter>
@@ -75,13 +83,11 @@ export class App extends React.Component {
 App.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   app: PropTypes.shape(appShape).isRequired,
-  user: PropTypes.shape(userShape).isRequired,
   history: PropTypes.shape({}).isRequired,
 };
 
 const mapStateToProps = state => ({
   app: state.app,
-  user: state.user,
 });
 
 const mapDispatchToProps = dispatch => ({
