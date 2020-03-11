@@ -1,18 +1,17 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import {
-  sortBy,
+  sortBy, findIndex, filter,
 } from 'lodash';
 
 import Header from '../../Header';
@@ -75,73 +74,270 @@ class PatientVariantScreen extends React.Component {
     this.handleDuplicateStatement = this.handleDuplicateStatement.bind(this);
     this.handleSetDefaultStatement = this.handleSetDefaultStatement.bind(this);
     this.getData = this.getData.bind(this);
+    this.getRowHeight = this.getRowHeight.bind(this);
+    this.getImpactTag = this.getImpactTag.bind(this);
+    this.calculateTitleWidth = this.calculateTitleWidth.bind(this);
 
     // @NOTE Initialize Component State
     this.state.columnPreset = {
       [VARIANT_TAB]: [
-        { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('text', this.getData, { key: 'mutationId' }) },
-        { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('text', this.getData, { key: 'type' }) },
+        { key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('wrapTextLink', this.getData, { key: 'mutationId' }) },
+        { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('capitalText', this.getData, { key: 'type' }) },
         {
-          key: 'gene',
-          label: 'screen.variantsearch.table.geneSymbol',
+          key: 'dbsnp',
+          label: 'screen.variantsearch.table.dbsnp',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.genes[0].geneSymbol; } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'aachanges',
-          label: 'screen.variantsearch.table.aaChanges',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].aaChange; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  <a
+                    href={`https://www.ncbi.nlm.nih.gov/snp/${data.bdExt.dbSNP}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="link, dbsnp"
+                  >
+                    {data.bdExt.dbSNP}
+                  </a>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'consequences',
           label: 'screen.variantsearch.table.consequences',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].consequence; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                data.consequences.map((consequence) => {
+                  const valueArray = consequence.consequence[0].split('_');
+                  const arrayFilter = valueArray.filter(item => item !== 'variant');
+                  const finalString = arrayFilter.join(' ');
+                  consequence.consequence[0] = finalString;
+                  return consequence.consequence[0];
+                });
+                return (
+                  <div>
+                    {
+                    data.consequences.map(consequence => (
+                      consequence.canonical === true ? (
+                        <Row className="consequences">
+                          <Col>{this.getImpactTag(consequence.impact)}</Col>
+                          <Col className="consequence">{consequence.consequence[0]}</Col>
+                          <Col>
+                            <a
+                              href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.geneAffectedSymbol}`}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              className="link"
+                            >
+                              {consequence.geneAffectedSymbol ? consequence.geneAffectedSymbol : ''}
+                            </a>
+                          </Col>
+                          <Col>{consequence.aaChange ? consequence.aaChange : ''}</Col>
+                        </Row>
+                      ) : null
+                    ))
+                    }
+                  </div>
+                );
+              } catch (e) { return ''; }
+            },
+          }),
+        },
+        {
+          key: 'exomiser',
+          label: 'screen.variantsearch.table.exomiser',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              try {
+                const { variant } = this.props;
+                const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+                return (
+                  <div className="exomiser">
+                    <Row>{data.donors[donorIndex].exomiserScore}</Row>
+                  </div>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'clinvar',
           label: 'screen.variantsearch.table.clinvar',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.clinvar.clinvar_clinsig; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  <div className="clinvar">
+                    <Row>{data.clinvar.clinvar_clinsig}</Row>
+                    <Row>
+                      <a
+                        href={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${data.clinvar.clinvar_id}/`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="link"
+                      >
+                        {data.clinvar.clinvar_id}
+                      </a>
+                    </Row>
+                  </div>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
-          key: 'dbsnp',
-          label: 'screen.variantsearch.table.dbsnp',
+          key: 'cadd',
+          label: 'screen.variantsearch.table.cadd',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.bdExt.dbSNP[0]; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                return (
+                  data.consequences.map(consequence => (
+                    consequence.canonical === true ? (
+                      <Row>{consequence.predictions.CADD_score}</Row>
+                    ) : null
+
+                  ))
+                );
+              } catch (e) { return ''; }
+            },
+          }),
+        },
+        {
+          key: 'frequencies',
+          label: 'screen.variantsearch.table.frequencies',
+          description: 'Description pour fréquence',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              try {
+                const frequenciesAN = data.frequencies.interne.AN / 2;
+                return (
+                  <>
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                    <Row><a className="link">{data.frequencies.interne.PN}</a><span> / </span>{frequenciesAN}</Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
+          }),
+        },
+        {
+          key: 'gnomAD',
+          label: 'screen.variantsearch.table.gnomAd',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              try {
+                return (
+                  <>
+                    <Row>
+                      <a
+                        href={`https://gnomad.broadinstitute.org/variant/${data.chrom}-${data.start}-${data.refAllele}-${data.altAllele}`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                        className="link"
+                      >
+                        {data.frequencies.gnomAD_exomes.AF.toExponential()}
+                      </a>
+                    </Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
+          }),
+        },
+        {
+          key: 'zygosity',
+          label: 'screen.variantsearch.table.zygosity',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              const { variant } = this.props;
+              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+              try {
+                return (
+                  <>
+                    <Row>{data.donors[donorIndex].zygosity}</Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
+          }),
+        },
+        {
+          key: 'transmission',
+          label: 'screen.variantsearch.table.transmission',
+          description: 'Description pour transmission',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              const { variant } = this.props;
+              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+              try {
+                return (
+                  <div>
+                    <Row>{data.donors[donorIndex].transmission.join(', ')}</Row>
+                    <Row>{data.donors[donorIndex].genotypeFamily}</Row>
+                  </div>
+                );
+              } catch (e) { return ''; }
+            },
+          }),
+        },
+        {
+          key: 'seq',
+          label: 'screen.variantsearch.table.seq',
+          description: 'Description pour seq',
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              try {
+                const { variant } = this.props;
+                const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+                return (
+                  <>
+                    <Row>{data.donors[donorIndex].adAlt}<span> / </span>{data.donors[donorIndex].adTotal}</Row>
+                  </>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
         {
           key: 'pubmed',
           label: 'screen.variantsearch.table.pubmed',
           renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return JSON.stringify(data.bdExt.pubmed); } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'sift',
-          label: 'screen.variantsearch.table.sift',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].predictions.SIFT; } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'polyphenhvar',
-          label: 'screen.variantsearch.table.polyphen2hvar',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].predictions.Polyphen2_HVAR_pred; } catch (e) { return ''; } },
-          }),
-        },
-        {
-          key: 'phylop',
-          label: 'screen.variantsearch.table.phylop',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => { try { return data.consequences[0].conservationsScores.PhyloP17Way; } catch (e) { return ''; } },
+            renderer: (data) => {
+              try {
+                const menu = (
+                  <Menu>
+                    {data.bdExt.pubmed.map(value => (
+                      <Menu.Item>
+                        <a
+                          href={`https://www.ncbi.nlm.nih.gov/pubmed/${value}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          className="link"
+                        >
+                          {value}
+                        </a>
+                      </Menu.Item>
+                    ))}
+                  </Menu>
+                );
+                return (
+                  <div>
+                    {
+                      <Dropdown overlay={menu} trigger={['click']} placement="bottomCenter" overlayClassName="pubmedDropdown">
+                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                        <a>
+                          {data.bdExt.pubmed[0]}
+                          <IconKit size={16} icon={ic_arrow_drop_down} />
+                        </a>
+                      </Dropdown>
+                    }
+                  </div>
+                );
+              } catch (e) { return ''; }
+            },
           }),
         },
       ],
@@ -160,15 +356,147 @@ class PatientVariantScreen extends React.Component {
     this.handleGetStatements();
   }
 
+
+  // eslint-disable-next-line class-methods-use-this
+  getImpactTag(impact) {
+    switch (impact) {
+      case 'HIGH':
+        return (
+          <Badge className="impact" color="#f5646c" />
+        );
+      case 'MODERATE':
+        return (
+          <Badge className="impact" color="#ffa812" />
+        );
+      case 'LOW':
+        return (
+          <Badge className="impact" color="#52c41a" />
+        );
+      case 'MODIFIER':
+        return (
+          <Badge className="impact" color="#b5b5b5" />
+        );
+      default:
+        return null;
+    }
+  }
+
+  getRowHeight() {
+    const data = this.getData();
+    const { size } = this.state;
+    const { variant } = this.props;
+    const rowHeight = Array(data ? data.length : size).fill(36);
+    if (data) {
+      data.map((value, index) => {
+        const donorIndex = findIndex(value.donors, { patientId: variant.activePatient });
+        const canonical = filter(value.consequences, { canonical: true });
+        const nbValue = canonical.length;
+        rowHeight[index] = nbValue <= 1 ? 32 : nbValue * 16 + 20;
+        if (nbValue <= 1 && (value.clinvar || value.donors[donorIndex].transmission)) {
+          rowHeight[index] = 2 * 16 + 20;
+        }
+        const { mutationId } = value;
+        const mutationIdWidth = this.calculateTitleWidth(mutationId);
+        const mutationIdIdNbLine = Math.ceil(mutationIdWidth / 20);
+        if (rowHeight[index] < mutationIdIdNbLine * 16 + 20) {
+          rowHeight[index] = mutationIdIdNbLine * 16 + 20;
+        }
+        return rowHeight;
+      });
+      return rowHeight;
+    }
+    return rowHeight;
+  }
+
   getData() {
     const { currentTab } = this.state;
     if (currentTab === VARIANT_TAB) {
       const { variant } = this.props;
       const { activeQuery, results } = variant;
-
+      // console.log('results[activeQuery]', results[activeQuery]);
       return results[activeQuery];
     }
     return [];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  calculateTitleWidth(value) {
+    if (!value) {
+      return 0;
+    }
+
+    const x0 = ['i', 'l', 'j', ';', ',', '|', ' '];
+    const x1 = ['t', 'I', ':', '.', '[', ']', '-', '/', '!', '"'];
+    const x2 = ['r', 'f', '(', ')', '{', '}'];
+    const x3 = ['v', 'x', 'y', 'z', '_', '*', '»', '«'];
+    const x4 = ['c', 'k', 's'];
+    const x5 = ['g', 'p', 'q', 'b', 'd', 'h', 'n', 'u', 'û', 'ù', 'ü', 'o', 'ô', 'ö', 'E', 'Ê', 'É', 'È', 'Ë', 'J', '+', '=', '$', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+    const x6 = ['T', 'S', 'Y', 'Z'];
+    const x7 = ['K', 'X', 'B', 'R', 'P', '&', '#'];
+    const x8 = ['U', 'Ù', 'Ü', 'Û', 'V', 'C', 'D'];
+    const x9 = ['A'];
+    const x10 = ['G', 'O', 'Q'];
+    const x11 = ['H', 'N'];
+    const x12 = ['w', '%'];
+    const x13 = ['m', 'M'];
+    const x14 = ['W'];
+
+    let numberOf_X0_Letter = 0;
+    let numberOf_X1_Letter = 0;
+    let numberOf_X2_Letter = 0;
+    let numberOf_X3_Letter = 0;
+    let numberOf_X4_Letter = 0;
+    let numberOf_X_Letter = 0;
+    let numberOf_X5_Letter = 0;
+    let numberOf_X6_Letter = 0;
+    let numberOf_X7_Letter = 0;
+    let numberOf_X8_Letter = 0;
+    let numberOf_X9_Letter = 0;
+    let numberOf_X10_Letter = 0;
+    let numberOf_X11_Letter = 0;
+    let numberOf_X12_Letter = 0;
+    let numberOf_X13_Letter = 0;
+    let numberOf_X14_Letter = 0;
+
+    value.split('').forEach((eachLetter) => {
+      if (x0.includes(eachLetter)) {
+        numberOf_X0_Letter += 1;
+      } else if (x1.includes(eachLetter)) {
+        numberOf_X1_Letter += 1;
+      } else if (x2.includes(eachLetter)) {
+        numberOf_X2_Letter += 1;
+      } else if (x3.includes(eachLetter)) {
+        numberOf_X3_Letter += 1;
+      } else if (x4.includes(eachLetter)) {
+        numberOf_X4_Letter += 1;
+      } else if (x5.includes(eachLetter)) {
+        numberOf_X5_Letter += 1;
+      } else if (x6.includes(eachLetter)) {
+        numberOf_X6_Letter += 1;
+      } else if (x7.includes(eachLetter)) {
+        numberOf_X7_Letter += 1;
+      } else if (x8.includes(eachLetter)) {
+        numberOf_X8_Letter += 1;
+      } else if (x9.includes(eachLetter)) {
+        numberOf_X9_Letter += 1;
+      } else if (x10.includes(eachLetter)) {
+        numberOf_X10_Letter += 1;
+      } else if (x11.includes(eachLetter)) {
+        numberOf_X11_Letter += 1;
+      } else if (x12.includes(eachLetter)) {
+        numberOf_X12_Letter += 1;
+      } else if (x13.includes(eachLetter)) {
+        numberOf_X13_Letter += 1;
+      } else if (x14.includes(eachLetter)) {
+        numberOf_X14_Letter += 1;
+      } else {
+        numberOf_X_Letter += 1;
+      }
+    });
+    const width = (numberOf_X0_Letter * 0.47) + (numberOf_X1_Letter * 0.6) + (numberOf_X2_Letter * 0.64) + (numberOf_X3_Letter * 0.90) + (numberOf_X4_Letter * 0.94)
+      + (numberOf_X_Letter * 0.98) + (numberOf_X5_Letter * 1.02) + (numberOf_X6_Letter * 1.1) + (numberOf_X7_Letter * 1.14) + (numberOf_X8_Letter * 1.17) + (numberOf_X9_Letter * 1.20)
+      + (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33) + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
+    return width;
   }
 
   handlePageChange(page) {
@@ -353,6 +681,7 @@ class PatientVariantScreen extends React.Component {
     actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
+
   render() {
     const {
       app, variant, patient, user,
@@ -384,12 +713,12 @@ class PatientVariantScreen extends React.Component {
           subid: null,
           type: 'category',
           label: intl.get(`${category.label}`),
-          data: category.filters ? category.filters.reduce((accumulator, filter) => {
-            const searcheableFacet = filter.facet ? filter.facet.map((facet) => {
+          data: category.filters ? category.filters.reduce((accumulator, clarify) => {
+            const searcheableFacet = clarify.facet ? clarify.facet.map((facet) => {
               reverseCategories[facet.id] = category.id;
               return {
                 id: facet.id,
-                value: intl.get(`screen.patientvariant.${(!facet.label ? filter.label : facet.label)}`),
+                value: intl.get(`screen.patientvariant.${(!facet.label ? clarify.label : facet.label)}`),
               };
             }) : [];
 
@@ -432,11 +761,11 @@ class PatientVariantScreen extends React.Component {
 
       return accumulator;
     }, []);
-
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const allOntology = sortBy(patient.ontology, 'term');
+    const rowHeight = this.getRowHeight();
     const visibleOntology = allOntology.filter((ontology => ontology.observed === 'POS')).slice(0, 4);
     const familyMenu = (
       <Menu>
@@ -619,6 +948,8 @@ class PatientVariantScreen extends React.Component {
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
                   isExportable={false}
+                  rowHeight={rowHeight}
+                  numFrozenColumns={1}
                 />
                 ) }
               </Tabs.TabPane>
