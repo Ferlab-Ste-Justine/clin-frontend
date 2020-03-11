@@ -118,7 +118,12 @@ const DataTable = (props) => {
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
   rowHeight = rowsCount === 0 ? [] : rowHeight;
-
+  if (rowsCount < rowHeight.length) {
+    rowHeight = rowHeight.slice(0, rowsCount);
+  }
+  if (rowHeight.length < rowsCount) {
+    rowHeight = Array(rowsCount).fill(36);
+  }
   const nameRenderer = index => (
     <div className="tooltipHeader">
       {intl.get(columns[index].label)}

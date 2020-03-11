@@ -385,7 +385,7 @@ class PatientVariantScreen extends React.Component {
     const data = this.getData();
     const { size } = this.state;
     const { variant } = this.props;
-    const rowHeight = Array(size).fill(36);
+    const rowHeight = Array(data ? data.length : size).fill(36);
     if (data) {
       data.map((value, index) => {
         const donorIndex = findIndex(value.donors, { patientId: variant.activePatient });
@@ -397,11 +397,10 @@ class PatientVariantScreen extends React.Component {
         }
         const { mutationId } = value;
         const mutationIdWidth = this.calculateTitleWidth(mutationId);
-        const mutationIdIdNbLine = Math.ceil(mutationIdWidth / 19);
+        const mutationIdIdNbLine = Math.ceil(mutationIdWidth / 20);
         if (rowHeight[index] < mutationIdIdNbLine * 16 + 20) {
           rowHeight[index] = mutationIdIdNbLine * 16 + 20;
         }
-
         return rowHeight;
       });
       return rowHeight;
@@ -414,6 +413,7 @@ class PatientVariantScreen extends React.Component {
     if (currentTab === VARIANT_TAB) {
       const { variant } = this.props;
       const { activeQuery, results } = variant;
+      // console.log('results[activeQuery]', results[activeQuery]);
       return results[activeQuery];
     }
     return [];
@@ -706,8 +706,6 @@ class PatientVariantScreen extends React.Component {
     const total = currentTab === VARIANT_TAB ? activeStatementTotals[activeQuery] : [];
     const searchData = [];
     const reverseCategories = {};
-
-    const rowHeight = this.getRowHeight();
     if (schema.categories) {
       schema.categories.forEach((category) => {
         searchData.push({
@@ -767,6 +765,7 @@ class PatientVariantScreen extends React.Component {
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const allOntology = sortBy(patient.ontology, 'term');
+    const rowHeight = this.getRowHeight();
     const visibleOntology = allOntology.filter((ontology => ontology.observed === 'POS')).slice(0, 4);
     const familyMenu = (
       <Menu>
