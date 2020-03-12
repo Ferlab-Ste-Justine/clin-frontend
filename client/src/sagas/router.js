@@ -18,7 +18,6 @@ function* navigateToVariantDetailsScreen(action) {
   try {
     const { uid } = action.payload;
     const location = `/variantDetails/${uid}`;
-    yield put({ type: actions.VARIANT_DETAILS_REQUESTED, payload: { uid } });
     yield put(push(location));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });

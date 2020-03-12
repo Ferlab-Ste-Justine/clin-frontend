@@ -1,14 +1,8 @@
 import axios from 'axios';
 
 
-const successCallback = (payload) => {
-  console.log('API Success. payload: ', payload);
-  return { payload };
-};
-const errorCallback = (error) => {
-  console.log('API ERROR. error: ', { error });
-  return { error };
-};
+const successCallback = payload => ({ payload });
+const errorCallback = error => ({ error });
 
 axios.defaults.withCredentials = true;
 axios.defaults.crossdomain = true;

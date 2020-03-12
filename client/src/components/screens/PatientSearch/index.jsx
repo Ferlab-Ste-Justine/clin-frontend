@@ -254,7 +254,7 @@ class PatientSearchScreen extends React.Component {
 
     const { Title } = Typography;
     const placeholderText = intl.get('screen.patientsearch.placeholder');
-
+    const rowHeight = Array(size).fill(36);
     const autoCompleteResults = search.autocomplete.results.map(result => ({
       value: result.id,
       text: (
@@ -343,6 +343,7 @@ class PatientSearchScreen extends React.Component {
                   numFrozenColumns={1}
                   isLoading={showSubloadingAnimation}
                   copyCallback={this.handleCopy}
+                  rowHeight={rowHeight}
                 />
               </Card>
             </Col>
