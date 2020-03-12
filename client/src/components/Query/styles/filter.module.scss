@@ -421,7 +421,18 @@
                 }
 
                 &:hover{
-                    background-color:rgba(27, 122, 178, 0.92)
+                    background-color:rgba(27, 122, 178, 0.92);
+                }
+
+                &:disabled{
+                    background: rgba(35, 55, 80,0.12);
+                    span{
+                        color: $color-disable;
+                    }
+                    i svg{
+                        color: $color-disable;
+                    }
+                    
                 }
             }
 
@@ -442,6 +453,12 @@
             }
             &:hover{
                 background-color:rgba(27, 122, 178, 0.92)
+            }
+            &:disabled{
+                background: rgba(35, 55, 80,0.12);
+                span{
+                    color: $color-disable;
+                }                
             }
         }
     }
