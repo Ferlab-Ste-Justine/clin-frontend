@@ -209,42 +209,23 @@
 }
 
 .tooltipHeader{
-    padding:5px 16px;
-    color: $primary-dark;
-    font-size: 14px;
-    font-family: $font;
-    font-weight: $font-weight-medium;
-    letter-spacing: $small-letter-spacing;
-    border-right: 1px solid #CDDDE8;
     display: flex;
     align-items: center;
-
-    button{
-        padding:0;
-        height:auto;
-        font-size:inherit;
-        border:none;
-        background:none;
-        box-shadow: none;
-        padding-left: 4px;
-        i{
-            display: flex !important;
-            height: 16px;
-            svg{
-                color: $primary-dark;
-
-        }
+    &:hover::after{
+        content: "patate";
+        position: absolute;
+        background-color: red;
+        top:-10px;
+        left:0;
+        z-index:10000000000000;
     }
-        &:after{
-        animation: 0s !important;
-        }
-        &:hover{
-            background:none; 
+    i{
+        display: flex !important;
+        height: 16px;
+        svg{
+            color: $primary-dark;
         }
 
-        &:focus{
-            background:transparent; 
-        }
     }
 }
 
