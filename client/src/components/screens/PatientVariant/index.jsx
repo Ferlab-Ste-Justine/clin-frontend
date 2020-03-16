@@ -457,7 +457,6 @@ class PatientVariantScreen extends React.Component {
     if (currentTab === VARIANT_TAB) {
       const { variant } = this.props;
       const { activeQuery, results } = variant;
-      // console.log('results[activeQuery]', results[activeQuery]);
       return results[activeQuery];
     }
     return [];

@@ -36,11 +36,6 @@ const COLUMN_WIDTH = {
   WIDE: 200,
 };
 
-const aaChangeRenderer = (data) => {
-  console.log('aaChange renderer - data: ', data);
-  return 'TODO';
-};
-
 const columnPresetToColumn = c => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
@@ -58,7 +53,6 @@ class VariantDetailsScreen extends React.Component {
     this.getExternalCohortFrequencies = this.getExternalCohortFrequencies.bind(this);
     this.getGenes = this.getGenes.bind(this);
     this.getDonors = this.getDonors.bind(this);
-    this.handleTabChange = this.handleTabChange.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
 
     this.state.consequencesColumnPreset = [
@@ -139,10 +133,8 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
           renderer: (data) => {
             try {
-              console.log('key custom renderer. data: ', data);
               return data.key;
             } catch (e) {
-              console.log('key custom renderer. data error: ', data);
               return '';
             }
           },
@@ -198,10 +190,8 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
           renderer: (data) => {
             try {
-              console.log('key custom renderer. data: ', data);
               return data.key;
             } catch (e) {
-              console.log('key custom renderer. data error: ', data);
               return '';
             }
           },
@@ -585,11 +575,6 @@ class VariantDetailsScreen extends React.Component {
     return [];
   }
 
-
-  handleTabChange(e) {
-    console.log('Tab changed - e: ', e, this);
-  }
-
   render() {
     const {
       currentTab,
@@ -638,7 +623,7 @@ class VariantDetailsScreen extends React.Component {
       <Content>
         <Header />
         {data.mutationId}
-        <Tabs key="..." defaultActiveKey={SUMMARY_TAB} className="tabs" onChange={this.handleTabChange}>
+        <Tabs key="..." defaultActiveKey={SUMMARY_TAB} className="tabs">
           <Tabs.TabPane
             key={SUMMARY_TAB}
             style={{ height: '100%' }}
