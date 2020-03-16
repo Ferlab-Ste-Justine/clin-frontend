@@ -503,12 +503,21 @@ class VariantDetailsScreen extends React.Component {
         refAllele,
       } = data;
 
-      const url = `https://gnomad.broadinstitute.org/variant/${chrom}-${start}-${altAllele}-${refAllele}?dataset=gnomad_r3`;
+      const url = `https://gnomad.broadinstitute.org/variant/${chrom}-${start}-${refAllele}-${altAllele}?dataset=gnomad_r3`;
       const externalCohortsKeys = Object.keys(frequencies).filter(k => k !== 'interne' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
         const frequency = frequencies[key];
         frequency.key = key;
-        frequency.info = url;
+        frequency.info = (
+          <Button
+            type="link"
+            size={25}
+            href={url}
+            target="_blank"
+          >
+            Voir plus
+          </Button>
+        );
         return frequency;
       });
 
@@ -540,12 +549,26 @@ class VariantDetailsScreen extends React.Component {
   }
 
   getAssociationData() {
-    const genes = this.getGenes().filter(g => !!g.orphanet || !!g.radboudumc);
-    return genes.map(g => ({
-      geneSymbol: g.geneSymbol,
-      orphanet: g.orphanet ? (<ul>{g.orphanet.map(o => (<li>{o}</li>))}</ul>) : '',
-      radboudumc: g.radboudumc ? (<ul>{g.radboudumc.map(r => (<li>{r}</li>))}</ul>) : '',
-    }));
+    const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
+    const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
+
+    const associationLine = source => gene => (
+      <li><span>{gene.geneSymbol}</span><span>{` ${gene[source].join(', ')}`}</span></li>
+    );
+
+    const orphanetInfo = (<ul>{genesOrphanet.map(g => associationLine('orphanet')(g))}</ul>);
+    const radboudumcInfo = (<ul>{genesRadboudumc.map(g => associationLine('radboudumc')(g))}</ul>);
+
+    return [
+      {
+        label: 'Orphanet',
+        value: orphanetInfo,
+      },
+      {
+        label: 'Radboudumc',
+        value: radboudumcInfo,
+      },
+    ];
   }
 
   getHPODataSource() {
@@ -799,10 +822,8 @@ class VariantDetailsScreen extends React.Component {
                   enableGhostCells
                 /> */}
 
-                <Table
-                  pagination={false}
+                <DataList
                   dataSource={this.getAssociationData()}
-                  columns={associationColumnPreset.map(columnPresetToColumn)}
                 />
               </Col>
 
