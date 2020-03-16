@@ -44,6 +44,17 @@ import { userShape } from '../../../reducers/user';
 const VARIANT_TAB = 'VARIANTS';
 const GENE_TAB = 'GENES';
 
+const COLUMN_WIDTHS = {
+  MUTATION_ID: 200,
+  CONSEQUENCES: 250,
+  EXOMISER: 100,
+  TYPE: 100,
+  CLINVAR: 160,
+  ZYGOSITY: 90,
+  SEQ: 80,
+  DEFAULT: 150,
+};
+
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -83,9 +94,28 @@ class PatientVariantScreen extends React.Component {
     this.state.columnPreset = {
       [VARIANT_TAB]: [
         {
-          key: 'mutationId', label: 'screen.variantsearch.table.variant', renderer: createCellRenderer('button', this.getData, { key: 'mutationId', handler: this.handleNavigationToVariantDetailsScreen }),
+          key: 'mutationId',
+          label: 'screen.variantsearch.table.variant',
+          renderer: createCellRenderer('button', this.getData, {
+            key: 'mutationId',
+            handler: this.handleNavigationToVariantDetailsScreen,
+            renderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
+          }),
+          columnWidth: COLUMN_WIDTHS.MUTATION_ID,
         },
-        { key: 'type', label: 'screen.variantsearch.table.variantType', renderer: createCellRenderer('capitalText', this.getData, { key: 'type' }) },
+        {
+          key: 'type',
+          label: 'screen.variantsearch.table.variantType',
+          renderer: createCellRenderer('capitalText', this.getData, {
+            key: 'type',
+            renderer: (data) => {
+              try {
+                return data.type;
+              } catch (e) { return ''; }
+            },
+          }),
+          columnWidth: COLUMN_WIDTHS.TYPE,
+        },
         {
           key: 'dbsnp',
           label: 'screen.variantsearch.table.dbsnp',
@@ -105,6 +135,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
         {
           key: 'consequences',
@@ -147,6 +178,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.CONSEQUENCES,
         },
         {
           key: 'exomiser',
@@ -164,6 +196,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.EXOMISER,
         },
         {
           key: 'clinvar',
@@ -189,6 +222,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.CLINVAR,
         },
         {
           key: 'cadd',
@@ -207,6 +241,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
         {
           key: 'frequencies',
@@ -225,6 +260,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
         {
           key: 'gnomAD',
@@ -249,6 +285,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
         {
           key: 'zygosity',
@@ -266,6 +303,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.ZYGOSITY,
         },
         {
           key: 'transmission',
@@ -285,6 +323,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
         {
           key: 'seq',
@@ -303,6 +342,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.SEQ,
         },
         {
           key: 'pubmed',
@@ -342,6 +382,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
       ],
       [GENE_TAB]: [],

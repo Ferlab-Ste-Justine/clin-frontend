@@ -35,7 +35,6 @@ const COLUMN_WIDTH = {
   MEDIUM: 150,
   WIDE: 200,
 };
-const getColumnWidth = c => c.columnWidth;
 
 const aaChangeRenderer = (data) => {
   console.log('aaChange renderer - data: ', data);
@@ -745,7 +744,6 @@ class VariantDetailsScreen extends React.Component {
                   resizeColumnsCallback={this.handleColumnResized}
                   numFrozenColumns={consequencesColumnPreset.length}
                   columns={consequencesColumnPreset}
-                  columnWidth={consequencesColumnPreset.map(getColumnWidth)}
                   copyCallback={this.handleCopy}
                   enableGhostCells
                 />
@@ -777,7 +775,6 @@ class VariantDetailsScreen extends React.Component {
                   resizeColumnsCallback={this.handleColumnResized}
                   numFrozenColumns={internalCohortsFrequenciesColumnPreset.length}
                   columns={internalCohortsFrequenciesColumnPreset}
-                  columnWidth={internalCohortsFrequenciesColumnPreset.map(getColumnWidth)}
                   copyCallback={this.handleCopy}
                   enableGhostCells
                 />
@@ -799,7 +796,6 @@ class VariantDetailsScreen extends React.Component {
                   resizeColumnsCallback={this.handleColumnResized}
                   numFrozenColumns={externalCohortsFrequenciesColumnPreset.length}
                   columns={externalCohortsFrequenciesColumnPreset}
-                  columnWidth={externalCohortsFrequenciesColumnPreset.map(getColumnWidth)}
                   copyCallback={this.handleCopy}
                   enableGhostCells
                 />
@@ -832,7 +828,6 @@ class VariantDetailsScreen extends React.Component {
                   resizeColumnsCallback={this.handleColumnResized}
                   numFrozenColumns={clinVarColumnPreset.length}
                   columns={clinVarColumnPreset}
-                  columnWidth={clinVarColumnPreset.map(getColumnWidth)}
                   copyCallback={this.handleCopy}
                   enableGhostCells
                 />
@@ -854,7 +849,6 @@ class VariantDetailsScreen extends React.Component {
                   resizeColumnsCallback={this.handleColumnResized}
                   numFrozenColumns={orphanetRadboudumcColumnPreset.length}
                   columns={orphanetRadboudumcColumnPreset}
-                  columnWidth={orphanetRadboudumcColumnPreset.map(getColumnWidth)}
                   copyCallback={this.handleCopy}
                   enableGhostCells
                 />
@@ -876,7 +870,6 @@ class VariantDetailsScreen extends React.Component {
                   resizeColumnsCallback={this.handleColumnResized}
                   numFrozenColumns={HPOColumnPreset.length}
                   columns={HPOColumnPreset}
-                  columnWidth={HPOColumnPreset.map(getColumnWidth)}
                   copyCallback={this.handleCopy}
                   enableGhostCells
                 />
@@ -915,7 +908,6 @@ class VariantDetailsScreen extends React.Component {
                   resizeColumnsCallback={this.handleColumnResized}
                   numFrozenColumns={donorsColumnPreset.length}
                   columns={donorsColumnPreset}
-                  columnWidth={donorsColumnPreset.map(getColumnWidth)}
                   copyCallback={this.handleCopy}
                   enableGhostCells
                 />

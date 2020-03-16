@@ -236,8 +236,6 @@ class InteractiveTable extends React.Component {
     const isSelectable = this.isSelectable();
     const isExportable = this.isExportable();
     const filteredColumns = orderedColumns.filter(column => visibleColumns.indexOf(column.label) !== -1);
-    const columnWidth = this.renderColumnWidth(filteredColumns);
-    this.renderColumnWidth(filteredColumns);
     const content = (
       <Card
         className={`${styleTable.columnFilter}`}
@@ -322,7 +320,6 @@ class InteractiveTable extends React.Component {
               resizeColumnsCallback={this.handleColumnResized}
               numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
-              columnWidth={columnWidth}
               copyCallback={copyCallback}
               enableGhostCells
               rowHeight={rowHeight}
