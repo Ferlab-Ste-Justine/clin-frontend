@@ -8,7 +8,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -40,10 +40,9 @@ const COLUMN_WIDTH = {
   WIDE: 200,
 };
 
-const aaChangeRenderer = (data) => {
-  console.log('aaChange renderer - data: ', data);
-  return 'TODO';
-};
+const columnPresetToColumn = c => ({
+  key: c.key, title: intl.get(c.label), dataIndex: c.key,
+});
 
 const header = title => (<Typography.Title level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
 class VariantDetailsScreen extends React.Component {
@@ -56,10 +55,9 @@ class VariantDetailsScreen extends React.Component {
     this.getConsequences = this.getConsequences.bind(this);
     this.getInternalCohortFrequencies = this.getInternalCohortFrequencies.bind(this);
     this.getExternalCohortFrequencies = this.getExternalCohortFrequencies.bind(this);
-    this.getClinVarData = this.getClinVarData.bind(this);
     this.getGenes = this.getGenes.bind(this);
     this.getDonors = this.getDonors.bind(this);
-    this.handleTabChange = this.handleTabChange.bind(this);
+    this.getHPODataSource = this.getHPODataSource.bind(this);
 
     this.state.consequencesColumnPreset = [
       {
@@ -137,13 +135,10 @@ class VariantDetailsScreen extends React.Component {
         key: 'key',
         label: 'screen.variantDetails.frequenciesTab.LDMColumn',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
-          // key: 'key',
           renderer: (data) => {
             try {
-              console.log('key custom renderer. data: ', data);
               return data.key;
             } catch (e) {
-              console.log('key custom renderer. data error: ', data);
               return '';
             }
           },
@@ -197,13 +192,10 @@ class VariantDetailsScreen extends React.Component {
         key: 'key',
         label: 'screen.variantDetails.frequenciesTab.LDMColumn',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          // key: 'key',
           renderer: (data) => {
             try {
-              console.log('key custom renderer. data: ', data);
               return data.key;
             } catch (e) {
-              console.log('key custom renderer. data error: ', data);
               return '';
             }
           },
@@ -249,34 +241,7 @@ class VariantDetailsScreen extends React.Component {
       },
     ];
 
-    this.state.clinVarColumnPreset = [
-      {
-        key: 'clinvar_id',
-        label: 'screen.variantDetails.clinicalAssociationsTab.ClinVarID',
-        renderer: createCellRenderer('custom', this.getClinVarData, {
-          renderer: (data) => { try { return data.clinvar_id; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
-      },
-      {
-        key: 'clinvar_clinsig',
-        label: 'screen.variantDetails.clinicalAssociationsTab.signification',
-        renderer: createCellRenderer('custom', this.getClinVarData, {
-          renderer: (data) => { try { return data.clinvar_clinsig; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
-      },
-      {
-        key: 'clinvar_trait',
-        label: 'screen.variantDetails.clinicalAssociationsTab.sign',
-        renderer: createCellRenderer('custom', this.getClinVarData, {
-          renderer: (data) => { try { return data.clinvar_trait; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
-      },
-    ];
-
-    this.state.orphanetRadboudumcColumnPreset = [
+    this.state.associationColumnPreset = [
       {
         key: 'geneSymbol',
         label: 'screen.variantDetails.clinicalAssociationsTab.gene',
@@ -328,7 +293,7 @@ class VariantDetailsScreen extends React.Component {
       },
       {
         key: 'trait',
-        label: 'screen.variantDetails.clinicalAssociationsTab.trait',
+        label: 'screen.variantDetails.clinicalAssociationsTab.sign',
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
@@ -542,41 +507,25 @@ class VariantDetailsScreen extends React.Component {
         refAllele,
       } = data;
 
-      const url = `https://gnomad.broadinstitute.org/variant/${chrom}-${start}-${altAllele}-${refAllele}?dataset=gnomad_r3`;
+      const url = `https://gnomad.broadinstitute.org/variant/${chrom}-${start}-${refAllele}-${altAllele}?dataset=gnomad_r3`;
       const externalCohortsKeys = Object.keys(frequencies).filter(k => k !== 'interne' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
         const frequency = frequencies[key];
         frequency.key = key;
-        frequency.info = url;
+        frequency.info = (
+          <Button
+            type="link"
+            size={25}
+            href={url}
+            target="_blank"
+          >
+            Voir plus
+          </Button>
+        );
         return frequency;
       });
 
       return rows;
-    }
-
-    return [];
-  }
-
-  getClinVarData() {
-    const { variantDetails } = this.props;
-    const { data } = variantDetails;
-
-    if (data) {
-      const {
-        clinvar,
-      } = data;
-
-      if (clinvar) {
-        const {
-          clinvar_id, clinvar_clinsig, clinvar_trait,
-        } = clinvar;
-
-        return [
-          {
-            clinvar_id, clinvar_clinsig, clinvar_trait,
-          },
-        ];
-      }
     }
 
     return [];
@@ -603,6 +552,42 @@ class VariantDetailsScreen extends React.Component {
     return [];
   }
 
+  getAssociationData() {
+    const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
+    const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
+
+    const associationLine = source => gene => (
+      <li><span>{gene.geneSymbol}</span><span>{` ${gene[source].join(', ')}`}</span></li>
+    );
+
+    const orphanetInfo = (<ul>{genesOrphanet.map(g => associationLine('orphanet')(g))}</ul>);
+    const radboudumcInfo = (<ul>{genesRadboudumc.map(g => associationLine('radboudumc')(g))}</ul>);
+
+    return [
+      {
+        label: 'Orphanet',
+        value: orphanetInfo,
+      },
+      {
+        label: 'Radboudumc',
+        value: radboudumcInfo,
+      },
+    ];
+  }
+
+  getHPODataSource() {
+    const genes = this.getGenes();
+
+    if (genes.filter(g => !!g.hpo).length > 0) {
+      return genes.map((g) => {
+        const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+        return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>) };
+      });
+    }
+
+    return [];
+  }
+
   getDonors() {
     const { variantDetails } = this.props;
     const { data } = variantDetails;
@@ -615,11 +600,6 @@ class VariantDetailsScreen extends React.Component {
     }
 
     return [];
-  }
-
-
-  handleTabChange(e) {
-    console.log('Tab changed - e: ', e, this);
   }
 
   render() {
@@ -644,6 +624,7 @@ class VariantDetailsScreen extends React.Component {
       refAllele,
       altAllele,
       clinvar_clinsig,
+      clinvar,
       lastAnnotationUpdate,
       bdExt,
       frequencies,
@@ -654,7 +635,7 @@ class VariantDetailsScreen extends React.Component {
       internalCohortsFrequenciesColumnPreset,
       externalCohortsFrequenciesColumnPreset,
       clinVarColumnPreset,
-      orphanetRadboudumcColumnPreset,
+      associationColumnPreset,
       HPOColumnPreset,
       donorsColumnPreset,
     } = this.state;
@@ -780,16 +761,10 @@ class VariantDetailsScreen extends React.Component {
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
-                  <DataTable
-                    size={this.getInternalCohortFrequencies().length}
-                    total={this.getInternalCohortFrequencies().length}
-                    enableReordering={false}
-                    reorderColumnsCallback={this.handleColumnsReordered}
-                    resizeColumnsCallback={this.handleColumnResized}
-                    numFrozenColumns={internalCohortsFrequenciesColumnPreset.length}
-                    columns={internalCohortsFrequenciesColumnPreset}
-                    copyCallback={this.handleCopy}
-                    enableGhostCells
+                  <Table
+                    pagination={false}
+                    dataSource={this.getInternalCohortFrequencies()}
+                    columns={internalCohortsFrequenciesColumnPreset.map(columnPresetToColumn)}
                   />
                 </Col>
               </Row>
@@ -801,16 +776,10 @@ class VariantDetailsScreen extends React.Component {
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
-                  <DataTable
-                    size={this.getExternalCohortFrequencies().length}
-                    total={this.getExternalCohortFrequencies().length}
-                    enableReordering={false}
-                    reorderColumnsCallback={this.handleColumnsReordered}
-                    resizeColumnsCallback={this.handleColumnResized}
-                    numFrozenColumns={externalCohortsFrequenciesColumnPreset.length}
-                    columns={externalCohortsFrequenciesColumnPreset}
-                    copyCallback={this.handleCopy}
-                    enableGhostCells
+                  <Table
+                    pagination={false}
+                    dataSource={this.getExternalCohortFrequencies()}
+                    columns={externalCohortsFrequenciesColumnPreset.map(columnPresetToColumn)}
                   />
                 </Col>
               </Row>
@@ -826,24 +795,24 @@ class VariantDetailsScreen extends React.Component {
                 </span>
             )}
             >
-
-              <Row>
-                <Col>
-                  {header('Clin Var')}
-                </Col>
-              </Row>
               <Row type="flex" gutter={32}>
                 <Col>
-                  <DataTable
-                    size={this.getClinVarData().length}
-                    total={this.getClinVarData().length}
-                    enableReordering={false}
-                    reorderColumnsCallback={this.handleColumnsReordered}
-                    resizeColumnsCallback={this.handleColumnResized}
-                    numFrozenColumns={clinVarColumnPreset.length}
-                    columns={clinVarColumnPreset}
-                    copyCallback={this.handleCopy}
-                    enableGhostCells
+                  <DataList
+                    title="Clin Var"
+                    dataSource={clinvar ? [
+                      {
+                        label: intl.get('screen.variantDetails.clinicalAssociationsTab.ClinVarID'),
+                        value: clinvar.clinvar_id,
+                      },
+                      {
+                        label: intl.get('screen.variantDetails.clinicalAssociationsTab.signification'),
+                        value: clinvar.clinvar_clinsig,
+                      },
+                      {
+                        label: intl.get('screen.variantDetails.clinicalAssociationsTab.sign'),
+                        value: clinvar.clinvar_trait,
+                      },
+                    ] : []}
                   />
                 </Col>
               </Row>
@@ -855,18 +824,23 @@ class VariantDetailsScreen extends React.Component {
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
-                  <DataTable
-                    size={this.getGenes().length}
-                    total={this.getGenes().length}
-                    enableReordering={false}
-                    reorderColumnsCallback={this.handleColumnsReordered}
-                    resizeColumnsCallback={this.handleColumnResized}
-                    numFrozenColumns={orphanetRadboudumcColumnPreset.length}
-                    columns={orphanetRadboudumcColumnPreset}
-                    copyCallback={this.handleCopy}
-                    enableGhostCells
+                  {/* <DataTable
+                  size={this.getGenes().length}
+                  total={this.getGenes().length}
+                  enableReordering={false}
+                  reorderColumnsCallback={this.handleColumnsReordered}
+                  resizeColumnsCallback={this.handleColumnResized}
+                  numFrozenColumns={associationColumnPreset.length}
+                  columns={associationColumnPreset}
+                  copyCallback={this.handleCopy}
+                  enableGhostCells
+                /> */}
+
+                  <DataList
+                    dataSource={this.getAssociationData()}
                   />
                 </Col>
+
               </Row>
 
               <Row>
@@ -876,17 +850,22 @@ class VariantDetailsScreen extends React.Component {
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
-                  <DataTable
-                    size={this.getGenes().length}
-                    total={this.getGenes().length}
-                    enableReordering={false}
-                    reorderColumnsCallback={this.handleColumnsReordered}
-                    resizeColumnsCallback={this.handleColumnResized}
-                    numFrozenColumns={HPOColumnPreset.length}
-                    columns={HPOColumnPreset}
-                    copyCallback={this.handleCopy}
-                    enableGhostCells
+                  <Table
+                    pagination={false}
+                    dataSource={this.getHPODataSource()}
+                    columns={HPOColumnPreset.map(columnPresetToColumn)}
                   />
+                  {/* <DataTable
+                  size={this.getGenes().length}
+                  total={this.getGenes().length}
+                  enableReordering={false}
+                  reorderColumnsCallback={this.handleColumnsReordered}
+                  resizeColumnsCallback={this.handleColumnResized}
+                  numFrozenColumns={HPOColumnPreset.length}
+                  columns={HPOColumnPreset}
+                  copyCallback={this.handleCopy}
+                  enableGhostCells
+                /> */}
                 </Col>
               </Row>
 
