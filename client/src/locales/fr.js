@@ -386,6 +386,7 @@ const fr = {
   'screen.variantDetails.clinicalAssociationsTab.term': 'Terme',
   'screen.variantDetails.clinicalAssociationsTab.orphanet': 'Orphanet',
   'screen.variantDetails.clinicalAssociationsTab.radboudumc': 'Radboudumc',
+  'screen.variantDetails.clinicalAssociationsTab.donors': 'Nb Patients',
   'screen.variantDetails.patientsTab.donor': 'Patient',
   'screen.variantDetails.patientsTab.LDM': 'LDM',
   'screen.variantDetails.patientsTab.studyId': 'Étude',
