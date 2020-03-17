@@ -86,7 +86,9 @@ class CompositeFilter extends React.Component {
       selection: [],
       numericalComparisonActive: true,
       selectionActive: true,
+      canApply: true,
     };
+    this.cachedValues = [];
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
     this.getEditorDraftInstruction = this.getEditorDraftInstruction.bind(this);
@@ -126,12 +128,12 @@ class CompositeFilter extends React.Component {
 
   getMin() {
     const { data, facets } = this.props;
-    return roundUp(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
+    return roundDown(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
   }
 
   getMax() {
     const { data, facets } = this.props;
-    return roundDown(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
+    return roundUp(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
   }
 
   getEditor() {
@@ -171,6 +173,7 @@ class CompositeFilter extends React.Component {
             tick={VALUE_TICK}
             decimals={VALUE_DECIMALS}
             draft={cloneDeep(draft)}
+            cachedValues={this.cachedValues}
             savedData={data}
             updateDraft={this.updateScoreRange}
             disabled={!numericalComparisonActive}
@@ -293,8 +296,12 @@ class CompositeFilter extends React.Component {
     return IconForOperator(operator);
   }
 
+  clearCachedValues() {
+    this.cachedValues.length = 0;
+  }
+
   updateScoreRange(scoreRangeDraft) {
-    this.setState({ draft: scoreRangeDraft, selectionActive: false });
+    this.setState({ draft: scoreRangeDraft, selectionActive: false, canApply: true });
   }
 
   handleReset() {
@@ -307,8 +314,14 @@ class CompositeFilter extends React.Component {
       { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
     ];
 
+    this.clearCachedValues();
+
     this.setState({
-      draft: newDraft, selection: [], selectionActive: true, numericalComparisonActive: true,
+      draft: newDraft,
+      selection: [],
+      selectionActive: true,
+      numericalComparisonActive: true,
+      canApply: false,
     });
   }
 
@@ -341,6 +354,7 @@ class CompositeFilter extends React.Component {
       selection,
       draft,
       numericalComparisonActive: false,
+      canApply: true,
     });
   }
 
@@ -384,11 +398,13 @@ class CompositeFilter extends React.Component {
   render() {
     const {
       draft,
+      canApply,
     } = this.state;
 
     return (
       <Filter
         {...this.props}
+        canApply={canApply}
         onEditCallback={this.handleFilterChange}
         draft={draft}
         type={FILTER_TYPE_COMPOSITE}

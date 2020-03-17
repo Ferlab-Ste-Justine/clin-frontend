@@ -13,7 +13,7 @@ import {
   FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
 } from '../../Operator';
 
-import { roundDown } from '../../helpers/rounding';
+import { roundDown, roundUp } from '../../helpers/rounding';
 
 class NumericalComparisonWidget extends React.Component {
   constructor(props) {
@@ -22,12 +22,11 @@ class NumericalComparisonWidget extends React.Component {
     this.handleMinValueChange = this.handleMinValueChange.bind(this);
     this.handleMaxValueChange = this.handleMaxValueChange.bind(this);
     this.handleSliderValueChange = this.handleSliderValueChange.bind(this);
-
-    this.cachedValues = [];
+    this.cachedValues = props.cachedValues;
   }
 
   componentWillUnmount() {
-    this.cachedValues = [];
+    this.clearCache();
   }
 
   setHighValue(value) {
@@ -44,7 +43,7 @@ class NumericalComparisonWidget extends React.Component {
     });
 
     if (!valueObj) {
-      valueObj = { comparator, value: roundDown(decimals)(value) };
+      valueObj = { comparator, value: roundUp(decimals)(value) };
       values.push(valueObj);
     }
 
@@ -65,11 +64,15 @@ class NumericalComparisonWidget extends React.Component {
     });
 
     if (!valueObj) {
-      valueObj = { comparator, value };
+      valueObj = { comparator, value: roundDown(value) };
       values.unshift(valueObj);
     }
 
     this.cacheValueObj(valueObj);
+  }
+
+  clearCache() {
+    this.cachedValues.length = 0;
   }
 
   cacheValueObj(valueObj) {
@@ -300,6 +303,7 @@ NumericalComparisonWidget.propTypes = {
   decimals: PropTypes.number,
   savedData: PropTypes.shape({}).isRequired,
   draft: PropTypes.shape({}).isRequired,
+  cachedValues: PropTypes.array.isRequired,
   updateDraft: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
 };

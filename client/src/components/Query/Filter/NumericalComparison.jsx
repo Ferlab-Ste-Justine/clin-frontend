@@ -54,6 +54,7 @@ class NumericalComparisonFilter extends React.Component {
       draft: null,
       sliderDisabled: false,
       inputDisabled: false,
+      canApply: true,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
@@ -67,6 +68,7 @@ class NumericalComparisonFilter extends React.Component {
     // @NOTE Initialize Component State
     const { data } = props;
     this.state.draft = cloneDeep(data);
+    this.cachedValues = [];
   }
 
   getEditorDraftInstruction() {
@@ -104,13 +106,13 @@ class NumericalComparisonFilter extends React.Component {
 
   getMin() {
     const { data, facets } = this.props;
-    const min = roundUp(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
+    const min = roundDown(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
     return min;
   }
 
   getMax() {
     const { data, facets } = this.props;
-    const max = roundDown(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
+    const max = roundUp(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
     return max;
   }
 
@@ -132,6 +134,7 @@ class NumericalComparisonFilter extends React.Component {
           draft={cloneDeep(draft)}
           savedData={data}
           updateDraft={this.updateDraft}
+          cachedValues={this.cachedValues}
         />
       ) : null,
     };
@@ -169,6 +172,10 @@ class NumericalComparisonFilter extends React.Component {
     return IconForOperator(operator);
   }
 
+  clearCachedValues() {
+    this.cachedValues.length = 0;
+  }
+
   handleReset() {
     const { draft } = this.state;
 
@@ -178,11 +185,13 @@ class NumericalComparisonFilter extends React.Component {
     newDraft.values[0].value = data.values[0].value;
     newDraft.values[1].value = data.values[1].value;
 
-    this.setState({ draft: newDraft });
+    this.clearCachedValues();
+
+    this.setState({ draft: newDraft, canApply: false });
   }
 
   updateDraft(draft) {
-    this.setState({ draft });
+    this.setState({ draft, canApply: !!this.cachedValues.length });
   }
 
   handleFilterChange(filterArg) {
@@ -208,12 +217,14 @@ class NumericalComparisonFilter extends React.Component {
   render() {
     const {
       draft,
+      canApply,
     } = this.state;
 
     return (
       <Filter
         {...this.props}
         draft={draft}
+        canApply={canApply}
         onEditCallback-={this.handleFilterChange}
         type={FILTER_TYPE_NUMERICAL_COMPARISON}
         editor={this.getEditor()}

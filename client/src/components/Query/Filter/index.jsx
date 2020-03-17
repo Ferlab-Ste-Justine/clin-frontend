@@ -352,6 +352,7 @@ class Filter extends React.Component {
       autoSelect,
       onReset,
       getPillContent,
+      canApply,
     } = this.props;
     const {
       allOptions, size, page, visibleInput,
@@ -398,6 +399,7 @@ class Filter extends React.Component {
       <Button
         type="primary"
         onClick={this.handleApply}
+        disabled={!canApply}
         className={`composite-filter-apply-button ${styleFilter.applyButton}`}
       >
         {intl.get('components.query.filter.button.apply') }
@@ -583,6 +585,7 @@ Filter.propTypes = {
   index: PropTypes.number,
   getPillContent: PropTypes.func,
   getPillOuterIcon: PropTypes.func,
+  canApply: PropTypes.bool,
 };
 
 Filter.defaultProps = {
@@ -594,6 +597,7 @@ Filter.defaultProps = {
     selectable: false,
     removable: false,
   },
+  canApply: true,
   onReset: () => {},
   onCancelCallback: () => {},
   onEditCallback: () => {},
