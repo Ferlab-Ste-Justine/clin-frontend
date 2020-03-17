@@ -572,8 +572,7 @@ class VariantDetailsScreen extends React.Component {
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g) => {
         const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-        const numbers = data.donors.length;
-        return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>), donors: numbers };
+        return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>), donors: '' };
       });
     }
 
