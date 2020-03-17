@@ -1,0 +1,59 @@
+@import './variables.scss';
+
+.variantPageContent{
+    .variantPageHeader{
+        background-color: #fff;
+        display:flex;
+        align-items: center;
+        padding:24px;
+        .mutationID{
+            padding-left:12px;
+            font-family: $font;
+            font-weight: 500;
+            font-size: 24px;
+            color: #125A90;
+        }
+
+    }
+
+    .tabs{
+        padding: 0;
+    }
+
+    .ant-tabs-bar{
+        margin: 0 0 24px 0
+    }
+    .ant-tabs-nav-scroll{
+        background-color: #fff;
+        padding: 0 24px;
+    }
+    .ant-tabs-tab-active{
+        .tabName{
+            font-weight: 500;
+            color: #1D8BC6;
+        }
+    }
+
+    .ant-tabs-ink-bar{
+        background-color:#1D8BC6;
+    }
+
+    .ant-tabs-nav .ant-tabs-tab{
+        padding: 12px 0;
+    }
+    .tabName{
+        font-family: $font;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        color: #536377;
+
+        i{
+            padding-right: 8px;
+        }
+    }
+
+    .ant-tabs-tabpane{
+        padding: 0 24px 24px 24px;
+    }
+}
