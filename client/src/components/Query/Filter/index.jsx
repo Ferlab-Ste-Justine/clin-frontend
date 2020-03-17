@@ -380,7 +380,7 @@ class Filter extends React.Component {
       <Dropdown.Button
         type="primary"
         className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
-        disabled={haveChange}
+        disabled={haveChange || !canApply}
         icon={(
           <>
             <Icon
@@ -400,9 +400,8 @@ class Filter extends React.Component {
       <Button
         type="primary"
         onClick={this.handleApply}
-        disabled={!canApply}
         className={`composite-filter-apply-button ${styleFilter.applyButton}`}
-        disabled={haveChange}
+        disabled={haveChange || !canApply}
       >
         {intl.get('components.query.filter.button.apply') }
       </Button>
