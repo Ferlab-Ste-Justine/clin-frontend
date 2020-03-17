@@ -131,7 +131,8 @@ const DataTable = (props) => {
     rowHeight = rowHeight.slice(0, rowsCount);
   }
   if (rowHeight.length < rowsCount) {
-    rowHeight = Array(rowsCount).fill(36);
+    const bufferArray = Array(rowsCount - rowHeight.length).fill(36);
+    rowHeight = [...rowHeight, ...bufferArray];
   }
   const nameRenderer = index => (
     <div className="tooltipHeader">

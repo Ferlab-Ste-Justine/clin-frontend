@@ -436,7 +436,7 @@ class PatientVariantScreen extends React.Component {
         const canonical = filter(value.consequences, { canonical: true });
         const nbValue = canonical.length;
         rowHeight[index] = nbValue <= 1 ? 32 : nbValue * 16 + 20;
-        if (nbValue <= 1 && (value.clinvar || value.donors[donorIndex].transmission)) {
+        if (nbValue <= 1 && (value.clinvar || (value.donors[donorIndex] ? value.donors[donorIndex].transmission : null))) {
           rowHeight[index] = 2 * 16 + 20;
         }
         const { mutationId } = value;
@@ -457,7 +457,6 @@ class PatientVariantScreen extends React.Component {
     if (currentTab === VARIANT_TAB) {
       const { variant } = this.props;
       const { activeQuery, results } = variant;
-      // console.log('results[activeQuery]', results[activeQuery]);
       return results[activeQuery];
     }
     return [];

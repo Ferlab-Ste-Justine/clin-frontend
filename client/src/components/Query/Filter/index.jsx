@@ -363,7 +363,7 @@ class Filter extends React.Component {
       onReset,
     } = this.props;
     const {
-      allOptions, size, page, visibleInput,
+      allOptions, size, page, visibleInput, selected,
     } = this.state;
 
     const handleMenuClick = (e) => {
@@ -383,11 +383,12 @@ class Filter extends React.Component {
 
     const { operand } = draft;
     const savedOperand = data.operand;
-
+    const haveChange = ((data.type === 'generic' || data.type === 'specific' || data.type === 'genericbool') && draft.values.length === 0 && !selected) || (data.type === 'numcomparison' && !selected && draft.values[0].value === 0 && draft.values[1].value === 0) ? true : null;
     const ApplyButton = ({ cfg }) => (this.hasOperands() ? (
       <Dropdown.Button
         type="primary"
         className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
+        disabled={haveChange}
         icon={(
           <>
             <Icon
@@ -408,6 +409,7 @@ class Filter extends React.Component {
         type="primary"
         onClick={this.handleApply}
         className={`composite-filter-apply-button ${styleFilter.applyButton}`}
+        disabled={haveChange}
       >
         {intl.get('components.query.filter.button.apply') }
       </Button>
@@ -417,6 +419,7 @@ class Filter extends React.Component {
     const filterSearch = intl.get('screen.patientvariant.filter.search');
     const valueText = intl.get('screen.patientvariant.filter.pagination.value');
     const editorLabels = editor.getLabels();
+
     // const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
     const overlay = (
