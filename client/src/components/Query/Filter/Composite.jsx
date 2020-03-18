@@ -307,12 +307,16 @@ class CompositeFilter extends React.Component {
   handleReset() {
     const { draft } = this.state;
 
+    const { data } = this.props;
+
     const newDraft = { ...draft };
 
-    newDraft.values = [
-      { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
-      { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
-    ];
+    // newDraft.values = [
+    //   { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
+    //   { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
+    // ];
+
+    data.values.forEach((v, i) => { newDraft.values[i] = v; });
 
     this.clearCachedValues();
 

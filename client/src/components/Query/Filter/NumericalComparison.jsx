@@ -182,8 +182,7 @@ class NumericalComparisonFilter extends React.Component {
     const { data } = this.props;
     const newDraft = { ...draft };
 
-    newDraft.values[0].value = data.values[0].value;
-    newDraft.values[1].value = data.values[1].value;
+    data.values.forEach((v, i) => { newDraft.values[i] = v; });
 
     this.clearCachedValues();
 
