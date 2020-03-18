@@ -7,7 +7,7 @@ import {
   cloneDeep, orderBy, filter, pullAllBy, pull,
 } from 'lodash';
 
-import Filter, { FILTER_TYPE_COMPOSITE } from './index';
+import Filter, { FILTER_TYPE_COMPOSITE, FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
 import {
   FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL,
   FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL,
@@ -301,6 +301,7 @@ class CompositeFilter extends React.Component {
   }
 
   updateScoreRange(scoreRangeDraft) {
+    scoreRangeDraft.type = FILTER_TYPE_NUMERICAL_COMPARISON;
     this.setState({ draft: scoreRangeDraft, selectionActive: false, canApply: true });
   }
 
@@ -310,11 +311,6 @@ class CompositeFilter extends React.Component {
     const { data } = this.props;
 
     const newDraft = { ...draft };
-
-    // newDraft.values = [
-    //   { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
-    //   { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
-    // ];
 
     data.values.forEach((v, i) => { newDraft.values[i] = v; });
 
@@ -354,6 +350,7 @@ class CompositeFilter extends React.Component {
     });
 
     draft.values = selection.filter(s => !s.comparator).map(v => ({ value: v }));
+    draft.type = FILTER_TYPE_GENERIC;
     this.setState({
       selection,
       draft,
