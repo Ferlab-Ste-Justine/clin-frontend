@@ -144,29 +144,6 @@ class Filter extends React.Component {
     this.state.size = 10;
   }
 
-  // TODO remove
-  // getMin() {
-  //   if (!this.isNumericalComparisonFilter() && !this.isCompositeFilter()) return 0;
-
-  //   const { data } = this.props;
-
-  //   if (!data) return 0;
-  //   const { values } = data;
-
-  //   return values[0].value;
-  // }
-
-  // getMax() {
-  //   if (!this.isNumericalComparisonFilter() && !this.isCompositeFilter()) return null;
-
-  //   const { data } = this.props;
-
-  //   if (!data) return 0;
-  //   const { values } = data;
-
-  //   return values[1].value;
-  // }
-
   isEditable() {
     const { options } = this.props;
     const { editable } = options;
