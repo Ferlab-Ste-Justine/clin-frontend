@@ -294,17 +294,10 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'trait',
         label: 'screen.variantDetails.clinicalAssociationsTab.sign',
-        renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => {
-            try {
-              const lis = data.hpo.map(h => (<li>{h}</li>));
-              return (<ul>{lis}</ul>);
-            } catch (e) {
-              return '';
-            }
-          },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'donors',
+        label: 'screen.variantDetails.clinicalAssociationsTab.donors',
       },
       // {
       //   key: 'donors',
@@ -576,12 +569,14 @@ class VariantDetailsScreen extends React.Component {
   }
 
   getHPODataSource() {
-    const genes = this.getGenes();
+    const { variantDetails } = this.props;
+    const { data } = variantDetails;
+    const { genes } = data;
 
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g) => {
         const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-        return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>) };
+        return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>), donors: '' };
       });
     }
 
@@ -815,18 +810,6 @@ class VariantDetailsScreen extends React.Component {
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
-                  {/* <DataTable
-                  size={this.getGenes().length}
-                  total={this.getGenes().length}
-                  enableReordering={false}
-                  reorderColumnsCallback={this.handleColumnsReordered}
-                  resizeColumnsCallback={this.handleColumnResized}
-                  numFrozenColumns={associationColumnPreset.length}
-                  columns={associationColumnPreset}
-                  copyCallback={this.handleCopy}
-                  enableGhostCells
-                /> */}
-
                   <DataList
                     dataSource={this.getAssociationData()}
                   />
