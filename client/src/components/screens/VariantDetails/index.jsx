@@ -44,7 +44,7 @@ const columnPresetToColumn = c => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
-const header = title => (<Typography.Title level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
+const header = title => (<Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
 class VariantDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -646,6 +646,7 @@ class VariantDetailsScreen extends React.Component {
     };
     const impact = c => `${c.geneAffectedSymbol} - ${canonicalTranscript(c) ? canonicalTranscript(c).featureId : ''}`;
     const impacts = consequences.map(c => impact(c)).join(', ');
+    console.log('data', data);
     return (
       <Content>
         <Header />
@@ -668,63 +669,52 @@ class VariantDetailsScreen extends React.Component {
                 </span>
             )}
             >
-              <Row type="flex" gutter={32}>
+              <Row type="flex" className="resumeDataList">
                 <Col>
-                  <Row>
-                    <Col>
-                      <DataList
-                        title={intl.get(SUMMARY_TAB)}
-                        dataSource={[
-                          { label: 'Variant', value: dnaChange },
-                          { label: 'Cytobande', value: genes && genes[0] ? genes[0].location : '' },
-                          { label: 'Type', value: type },
-                          { label: 'Génome Réf.', value: assemblyVersion },
-                          { label: 'Allele Réf.', value: refAllele },
-                          { label: 'Allele Atl', value: altAllele },
-                          { label: 'Gène(s)', value: genes.map(g => g.geneSymbol).join(', ') },
-                          { label: 'Impact(s)', value: impacts },
-                          { label: 'Signification clinique (Clinvar)', value: clinvar_clinsig },
-                          { label: 'Date des annotations', value: lastAnnotationUpdate },
-                        ]}
-                      />
-                    </Col>
-                  </Row>
+                  <DataList
+                    title={intl.get(SUMMARY_TAB)}
+                    dataSource={[
+                      { label: 'Variant', value: dnaChange },
+                      { label: 'Cytobande', value: genes && genes[0] ? genes[0].location : '' },
+                      { label: 'Type', value: type },
+                      { label: 'Génome Réf.', value: assemblyVersion },
+                      { label: 'Allele Réf.', value: refAllele },
+                      { label: 'Allele Atl', value: altAllele },
+                      { label: 'Gène(s)', value: genes.map(g => g.geneSymbol).join(', ') },
+                      { label: 'Impact(s)', value: impacts },
+                      { label: 'Signification clinique (Clinvar)', value: clinvar_clinsig },
+                      { label: 'Date des annotations', value: lastAnnotationUpdate },
+                    ]}
+                  />
                 </Col>
-
                 <Col>
-                  <Row>
-                    <Col>
-                      <DataList
-                        title="Références externes"
-                        dataSource={[
-                          { label: 'Clin Var', value: bdExt ? bdExt.clinvar || '' : '' },
-                          { label: 'OMIN', value: bdExt && bdExt.omin ? bdExt.omin : '' },
-                          { label: 'dbSNP', value: bdExt && bdExt.dbSNP ? bdExt.dbSNP : '' },
-                          { label: 'Pubmed', value: bdExt && bdExt.pubmed ? bdExt.pubmed.join(', ') : '' },
-                        ]}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <DataList
-                        title="Patients"
-                        dataSource={[
-                          { label: 'Nb de patients (i)', value: `${frequencies.interne.PN}/${frequencies.interne.AN / 2}` },
-                          { label: 'Nb d\'alleles ALT', value: `${frequencies.interne.AC}` },
-                          { label: 'Nb total d\'alleles', value: `${frequencies.interne.AN}` },
-                          { label: 'Nb d\'homozygotes', value: `${frequencies.interne.HC}` },
-                          { label: 'Fréquences', value: `${frequencies.interne.AF.toFixed(5)}` },
-                        ]}
-                      />
-                    </Col>
-                  </Row>
+                  <DataList
+                    title="Références externes"
+                    dataSource={[
+                      { label: 'Clin Var', value: bdExt ? bdExt.clinvar || '' : '' },
+                      { label: 'OMIN', value: bdExt && bdExt.omin ? bdExt.omin : '' },
+                      { label: 'dbSNP', value: bdExt && bdExt.dbSNP ? bdExt.dbSNP : '' },
+                      { label: 'Pubmed', value: bdExt && bdExt.pubmed ? bdExt.pubmed.join(', ') : '' },
+                    ]}
+                  />
+                </Col>
+                <Col>
+                  <DataList
+                    title="Patients"
+                    dataSource={[
+                      { label: 'Nb de patients (i)', value: `${frequencies.interne.PN}/${frequencies.interne.AN / 2}` },
+                      { label: 'Nb d\'alleles ALT', value: `${frequencies.interne.AC}` },
+                      { label: 'Nb total d\'alleles', value: `${frequencies.interne.AN}` },
+                      { label: 'Nb d\'homozygotes', value: `${frequencies.interne.HC}` },
+                      { label: 'Fréquences', value: `${frequencies.interne.AF.toFixed(5)}` },
+                    ]}
+                  />
                 </Col>
               </Row>
 
               <Row>
                 <Col>
-                  {header('Conséquences')}
+                  <Typography.Title className="tableHeader pageWidth" level={4} style={{ marginBottom: 0 }}>Conséquences</Typography.Title>
                 </Col>
               </Row>
               <Row type="flex" gutter={32}>
@@ -739,6 +729,7 @@ class VariantDetailsScreen extends React.Component {
                     columns={consequencesColumnPreset}
                     copyCallback={this.handleCopy}
                     enableGhostCells
+                    enableRowHeader={false}
                   />
                 </Col>
               </Row>

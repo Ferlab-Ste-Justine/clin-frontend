@@ -116,6 +116,7 @@ const DataTable = (props) => {
     numFrozenColumns,
     enableGhostCells,
     copyCallback,
+    enableRowHeader,
   } = props;
   let { rowHeight } = props;
   const rowsCount = size <= total ? size : total;
@@ -159,6 +160,7 @@ const DataTable = (props) => {
       rowHeights={rowHeight}
       getCellClipboardData={copyCallback}
       columnWidths={columns.map(c => c.columnWidth)}
+      enableRowHeader={enableRowHeader}
     >
       { columns.map(definition => (
         <Column
@@ -185,6 +187,7 @@ DataTable.propTypes = {
   resizeColumnCallback: PropTypes.func,
   copyCallback: PropTypes.func,
   rowHeight: PropTypes.shape([]),
+  enableRowHeader: PropTypes.bool,
 };
 
 DataTable.defaultProps = {
@@ -200,6 +203,7 @@ DataTable.defaultProps = {
   resizeColumnCallback: () => {},
   copyCallback: null,
   rowHeight: [],
+  enableRowHeader: true,
 };
 
 export default DataTable;
