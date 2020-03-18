@@ -205,7 +205,7 @@ class InteractiveTable extends React.Component {
           columnWidth[index] = 100;
           break;
         case 'type':
-          columnWidth[index] = 100;
+          columnWidth[index] = 90;
           break;
         case 'clinvar':
           columnWidth[index] = 160;
@@ -215,6 +215,18 @@ class InteractiveTable extends React.Component {
           break;
         case 'seq':
           columnWidth[index] = 80;
+          break;
+        case 'dbsnp':
+          columnWidth[index] = 120;
+          break;
+        case 'frequencies':
+          columnWidth[index] = 120;
+          break;
+        case 'cadd':
+          columnWidth[index] = 90;
+          break;
+        case 'gnomAD':
+          columnWidth[index] = 120;
           break;
         default:
           columnWidth[index] = 150;
