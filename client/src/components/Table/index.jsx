@@ -6,7 +6,7 @@ import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography, Checkbox, Tooltip,
+  Badge, Button, Typography, Checkbox,
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import IconKit from 'react-icons-kit';
@@ -135,17 +135,12 @@ const DataTable = (props) => {
     const bufferArray = Array(rowsCount - rowHeight.length).fill(36);
     rowHeight = [...rowHeight, ...bufferArray];
   }
-  const nameRenderer = index => (
+
+  const renderColumnHeader = (name, index) => (
     <div className="tooltipHeader">
-      {intl.get(columns[index].label)}
-      <Tooltip title={columns[index].description}>
-        <Button>
-          <IconKit icon={ic_info_outline} />
-        </Button>
-      </Tooltip>
+      {intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} />
     </div>
   );
-  console.log('enableGhostCells', enableGhostCells);
   return (
     <Table
       key={shortid.generate()}
@@ -166,9 +161,9 @@ const DataTable = (props) => {
       { columns.map(definition => (
         <Column
           id={definition.key}
-          name={intl.get(definition.label)}
+          name={definition.description ? definition.description : intl.get(definition.label)}
           cellRenderer={definition.renderer}
-          columnHeaderCellRenderer={definition.description ? nameRenderer : null}
+          nameRenderer={definition.description ? renderColumnHeader : null}
         />
       )) }
     </Table>

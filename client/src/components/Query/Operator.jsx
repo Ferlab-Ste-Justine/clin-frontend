@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Dropdown,
+  Menu, Dropdown, Icon,
 } from 'antd';
 import intl from 'react-intl-universal';
 import style from './styles/term.module.scss';
-
+import styleFilter from './styles/filter.module.scss';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
@@ -43,6 +43,8 @@ const svgPathIntersection = (<path id="intersection-a" d="M9.04996157,8.24996219
 const svgPathNotEqual = (<polygon id="exclusion-a" points="15.447 3 14.106 8 20 8 20 11 13.302 11 12.766 13 20 13 20 16 11.962 16 10.623 21 8.553 21 9.892 16 4 16 4 13 10.696 13 11.231 11 4 11 4 8 12.035 8 13.376 3" />);
 const svgPathEqual = (<path id="equal-a" d="M20,13 L20,16 L4,16 L4,13 L20,13 Z M20,8 L20,11 L4,11 L4,8 L20,8 Z" />);
 const svgPathElementOf = (<path id="element-of-a" d="M19,3 L19,6 C14.9934082,5.99926758 11.9934082,5.99926758 10,6 C7.4634528,6.2350766 6.32620437,7.5591052 6.06494241,10.4994236 L19,10.5 L19,13.5 L6.06285587,13.5013588 C6.3160151,16.4472692 7.42613796,17.7890831 10,18 L19,18 L19,18 L19,21 L10,21 L10,21 C6,20.7307129 3,18 3,12 C3,6 6.06311035,3.29736328 10,3 L19,3 L19,3 Z" />);
+const svgPathGreaterThanOrEqual = (<path id="greater-or-equal-a" d="M2,7 L11,10.9701174 L11,13.0298826 L2,17 L2,14.4493063 L8.4375,11.9733191 L2,9.5506937 L2,7 Z M22,13 L22,15 L13,15 L13,13 L22,13 Z M22,9 L22,11 L13,11 L13,9 L22,9 Z" />);
+const svgPathLesserThanOrEqual = (<path id="less-than-or-equal-a" d="M15.5625,11.9733191 L22,9.5506937 L22,7 L13,10.9701174 L13,13.0298826 L22,17 L22,14.4493063 L15.5625,11.9733191 Z M11,11 L2,11 L2,9 L11,9 L11,11 Z M11,15 L2,15 L2,13 L11,13 L11,15 Z" />);
 
 export const getSvgPathFromOperatorType = (type) => {
   switch (type) {
@@ -63,8 +65,26 @@ export const getSvgPathFromOperatorType = (type) => {
       return svgPathEqual;
     case OPERATOR_TYPE_ELEMENT_OF:
       return svgPathElementOf;
+    case FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL:
+      return svgPathGreaterThanOrEqual;
+    case FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL:
+      return svgPathLesserThanOrEqual;
   }
 };
+
+export const OperatorIconComponent = operator => props => (
+  <svg width="10em" height="10em" viewBox="0 0 24 24" {...props}>
+    {getSvgPathFromOperatorType(operator)}
+  </svg>
+);
+
+export const IconForOperator = operator => (
+  <Icon
+    // {...props}
+    className={styleFilter.svgIcon}
+    component={OperatorIconComponent(operator)}
+  />
+);
 
 class Operator extends React.Component {
   /* @NOTE SQON Struct Sample

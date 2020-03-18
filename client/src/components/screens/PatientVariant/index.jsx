@@ -61,7 +61,7 @@ class PatientVariantScreen extends React.Component {
     this.state = {
       currentTab: VARIANT_TAB,
       page: 1,
-      size: 25,
+      size: 15,
     };
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
@@ -246,7 +246,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'frequencies',
           label: 'screen.variantsearch.table.frequencies',
-          description: 'Description pour fréquence',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
@@ -308,7 +308,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'transmission',
           label: 'screen.variantsearch.table.transmission',
-          description: 'Description pour transmission',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               const { variant } = this.props;
@@ -328,7 +328,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'seq',
           label: 'screen.variantsearch.table.seq',
-          description: 'Description pour seq',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
