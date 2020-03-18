@@ -635,8 +635,34 @@ class VariantDetailsScreen extends React.Component {
       const canonical = c.transcripts.find(t => t.canonical);
       return canonical;
     };
-    const impact = c => `${c.geneAffectedSymbol} - ${canonicalTranscript(c) ? canonicalTranscript(c).featureId : ''}`;
-    const impacts = consequences.map(c => impact(c)).join(', ');
+    const impact = (c) => {
+      if (canonicalTranscript(c)) {
+        const impactScore = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
+        const sift = c.predictions && c.predictions.SIFT
+          ? (<li>{`SIFT: ${c.predictions.SIFT} - ${c.predictions.SIFT_score}`}</li>) : null;
+        const polyphen = c.predictions && c.predictions.Polyphen2_HVAR_score
+          ? (
+            <li>
+              {`Polyphen2_HVAR: ${c.predictions.Polyphen2_HVAR_score} - ${c.predictions.Polyphen2_HVAR_pred}`}
+            </li>
+          ) : null;
+
+        const items = [impactScore, sift, polyphen].filter(item => !!item);
+        return (
+          <>
+            <div>
+              <span>{`${c.geneAffectedSymbol} - ${canonicalTranscript(c).featureId}`}</span>
+            </div>
+            <ul>
+              {items}
+            </ul>
+          </>
+        );
+      }
+
+      return null;
+    };
+    const impacts = consequences.map(c => impact(c)).filter(i => !!i).map(i => (<li>{i}</li>));
     return (
       <Content>
         <Header />
@@ -665,7 +691,7 @@ class VariantDetailsScreen extends React.Component {
                         { label: 'Allele Réf.', value: refAllele },
                         { label: 'Allele Atl', value: altAllele },
                         { label: 'Gène(s)', value: genes.map(g => g.geneSymbol).join(', ') },
-                        { label: 'Impact(s)', value: impacts },
+                        { label: 'Impact(s)', value: (<ul>{impacts}</ul>) },
                         { label: 'Signification clinique (Clinvar)', value: clinvar_clinsig },
                         { label: 'Date des annotations', value: lastAnnotationUpdate },
                       ]}
