@@ -20,6 +20,9 @@
         padding: 0;
     }
 
+    .ant-tabs.ant-tabs-top.tabs.ant-tabs-line{
+        background: #EDF0F3;
+    }   
     .ant-tabs-bar{
         margin: 0 0 24px 0
     }
@@ -124,9 +127,11 @@
         color: #125A90;
         background: #F8FAFC;
         padding: 12px 16px;
+        border-bottom: 2px solid #e8e8e8;
     }
 
     .resumeDataList{
+        margin-bottom: 24px;
         .ant-col{
             width: calc((100% - 48px) / 3);
             &:nth-child(2){
@@ -135,6 +140,33 @@
         }
 
     }
+
+    .consequencesTable{
+        .ant-col{
+            width: 100%;
+        }
+
+        .bp3-table-column-header-cell{
+            background-color: #F8FAFC ;
+            border-bottom: 1px solid #e8e8e8;
+        }
     
+        .bp3-table-row-name{
+            border-right: none;
+        }
+        .bp3-table-menu{
+            background-color: #e3ebf2 ;
+            border-right: none;
+        }
+        .bp3-table-column-name{
+            border-right: none;
+        }
+        .bp3-table-cell{
+            border-right: none;
+            border-bottom: 1px solid #e8e8e8;
+        }
+    }
+
+
 
 }

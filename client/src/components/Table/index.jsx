@@ -145,6 +145,7 @@ const DataTable = (props) => {
       </Tooltip>
     </div>
   );
+  console.log('enableGhostCells', enableGhostCells);
   return (
     <Table
       key={shortid.generate()}

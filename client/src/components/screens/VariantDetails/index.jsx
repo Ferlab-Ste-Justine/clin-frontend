@@ -712,15 +712,15 @@ class VariantDetailsScreen extends React.Component {
                   <Typography.Title className="tableHeader pageWidth" level={4} style={{ marginBottom: 0 }}>Conséquences</Typography.Title>
                 </Col>
               </Row>
-              <Row type="flex" gutter={32}>
+              <Row type="flex" gutter={32} className="consequencesTable">
                 <Col>
                   <DataTable
                     size={this.getConsequences().length}
                     total={this.getConsequences().length}
                     enableReordering={false}
+                    enableResizing
                     reorderColumnsCallback={this.handleColumnsReordered}
                     resizeColumnsCallback={this.handleColumnResized}
-                    numFrozenColumns={consequencesColumnPreset.length}
                     columns={consequencesColumnPreset}
                     copyCallback={this.handleCopy}
                     enableGhostCells
