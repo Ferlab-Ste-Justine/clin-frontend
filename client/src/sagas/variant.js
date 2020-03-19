@@ -8,7 +8,6 @@ import * as actionTypes from '../actions/type';
 import * as actions from '../actions/app';
 import Api, { ApiError } from '../helpers/api';
 
-
 function* fetchSchema() {
   try {
     const schemaResponse = yield Api.getVariantSchema();

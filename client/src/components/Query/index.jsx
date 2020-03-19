@@ -460,6 +460,7 @@ class Query extends React.Component {
                           data={item.data}
                           min={min}
                           max={max}
+                          facets={facets}
                           dataSet={facets[item.data.id] || []}
                           category={category}
                           onEditCallback={this.handleFilterChange}

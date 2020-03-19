@@ -1,0 +1,172 @@
+@import './variables.scss';
+
+.variantPageContent{
+    .variantPageHeader{
+        background-color: #fff;
+        display:flex;
+        align-items: center;
+        padding:24px;
+        .mutationID{
+            padding-left:12px;
+            font-family: $font;
+            font-weight: 500;
+            font-size: 24px;
+            color: #125A90;
+        }
+
+    }
+
+    .tabs{
+        padding: 0;
+    }
+
+    .ant-tabs.ant-tabs-top.tabs.ant-tabs-line{
+        background: #EDF0F3;
+    }   
+    .ant-tabs-bar{
+        margin: 0 0 24px 0
+    }
+    .ant-tabs-nav-scroll{
+        background-color: #fff;
+        padding: 0 24px;
+    }
+    .ant-tabs-tab-active{
+        .tabName{
+            font-weight: 500;
+            color: #1D8BC6;
+        }
+    }
+
+    .ant-tabs-ink-bar{
+        background-color:#1D8BC6;
+    }
+
+    .ant-tabs-nav .ant-tabs-tab{
+        padding: 12px 0;
+    }
+    .tabName{
+        font-family: $font;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        color: #536377;
+
+        i{
+            padding-right: 8px;
+        }
+    }
+
+    .ant-tabs-tabpane{
+        padding: 0 24px 24px 24px;
+    }
+
+    .datalist{
+        border: none;
+        border-radius: 2px;
+        height: fit-content;
+        &:hover{
+            box-shadow:none;
+            cursor: default;
+        }
+        .ant-card-head{
+            background: #F8FAFC;
+            padding: 12px 16px;
+            margin-bottom:0;
+            border-bottom: 2px solid #e8e8e8;
+
+            .ant-card-head-title{
+                padding: 0;
+            }
+            .datalisteHeader{
+                font-family: $font;
+                font-weight: 500;
+                font-size: 20px;
+                margin-bottom: 0;
+                color: #125A90;
+                line-height: 28px;
+            }
+        }
+        .ant-card-body{
+            padding: 0;
+
+            .listRow{
+                padding: 8px 16px;
+                span{
+                    font-family: $font;
+                    font-size: 14px;
+                    line-height: 22px;
+                    color: #536377;
+                }
+                .rowTitle{
+                    width: 50%;
+        
+                }
+        
+                .rowValue{
+                    display: flex;
+                    justify-content: right;
+                    margin: 0;
+                    span{
+                       text-align: right; 
+                       width: 100%;
+                    }
+                }
+            }
+
+        }
+
+
+
+    }
+
+    .tableHeader{
+        font-family: $font;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 28px;
+        color: #125A90;
+        background: #F8FAFC;
+        padding: 12px 16px;
+        border-bottom: 2px solid #e8e8e8;
+    }
+
+    .resumeDataList{
+        margin-bottom: 24px;
+        .ant-col{
+            width: calc((100% - 48px) / 3);
+            &:nth-child(2){
+                margin:0 24px;
+            }
+        }
+
+    }
+
+    .consequencesTable{
+        .ant-col{
+            width: 100%;
+        }
+
+        .bp3-table-column-header-cell{
+            background-color: #F8FAFC ;
+            border-bottom: 1px solid #e8e8e8;
+        }
+    
+        .bp3-table-row-name{
+            border-right: none;
+        }
+        .bp3-table-menu{
+            background-color: #e3ebf2 ;
+            border-right: none;
+        }
+        .bp3-table-column-name{
+            border-right: none;
+        }
+        .bp3-table-cell{
+            border-right: none;
+            border-bottom: 1px solid #e8e8e8;
+        }
+    }
+
+
+
+}

@@ -7,20 +7,19 @@ import {
 
 const DataList = (props) => {
   const { title, dataSource, style } = props;
-  const header = (<Typography.Title level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
-
+  const header = (<Typography.Title level={4} className="datalisteHeader" style={{ marginBottom: 0 }}>{title}</Typography.Title>);
   return (
     <Card className="datalist" title={header} type="inner" size="small" hoverable style={style}>
       <List
         size="small"
         dataSource={dataSource}
         renderItem={item => (
-          <List.Item style={{ padding: 5 }}>
+          <List.Item className="listRow">
             <Row type="flex" justify="space-between" style={{ width: '100%' }}>
-              <Col span={12}>
-                <Typography.Text strong>{item.label}</Typography.Text>
+              <Col className="rowTitle">
+                <Typography.Text>{item.label}</Typography.Text>
               </Col>
-              <Col span={12}>
+              <Col className="rowValue">
                 <Typography.Text>{item.value}</Typography.Text>
               </Col>
             </Row>
