@@ -105,8 +105,18 @@ export const createCellRenderer = (type, getData, options = {}) => {
 
 const DataTable = (props) => {
   const {
-    columns, size, total, enableReordering, enableResizing, renderContextMenuCallback, reorderColumnsCallback, resizeColumnCallback,
-    numFrozenColumns, enableGhostCells, copyCallback, columnWidth,
+    columns,
+    size,
+    total,
+    enableReordering,
+    enableResizing,
+    renderContextMenuCallback,
+    reorderColumnsCallback,
+    resizeColumnCallback,
+    numFrozenColumns,
+    enableGhostCells,
+    copyCallback,
+    enableRowHeader,
   } = props;
   let { rowHeight } = props;
   const rowsCount = size <= total ? size : total;
@@ -125,7 +135,12 @@ const DataTable = (props) => {
     const bufferArray = Array(rowsCount - rowHeight.length).fill(36);
     rowHeight = [...rowHeight, ...bufferArray];
   }
-  const renderColumnHeader = (name, index) => (<div className="tooltipHeader">{intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} /></div>);
+
+  const renderColumnHeader = (name, index) => (
+    <div className="tooltipHeader">
+      {intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} />
+    </div>
+  );
   return (
     <Table
       key={shortid.generate()}
@@ -140,7 +155,8 @@ const DataTable = (props) => {
       onColumnWidthChanged={resizeColumnCallback}
       rowHeights={rowHeight}
       getCellClipboardData={copyCallback}
-      columnWidths={columnWidth}
+      columnWidths={columns.map(c => c.columnWidth)}
+      enableRowHeader={enableRowHeader}
     >
       { columns.map(definition => (
         <Column
@@ -166,8 +182,8 @@ DataTable.propTypes = {
   reorderColumnsCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
   copyCallback: PropTypes.func,
-  columnWidth: PropTypes.shape([]),
   rowHeight: PropTypes.shape([]),
+  enableRowHeader: PropTypes.bool,
 };
 
 DataTable.defaultProps = {
@@ -182,8 +198,8 @@ DataTable.defaultProps = {
   reorderColumnsCallback: () => {},
   resizeColumnCallback: () => {},
   copyCallback: null,
-  columnWidth: [],
   rowHeight: [],
+  enableRowHeader: true,
 };
 
 export default DataTable;
