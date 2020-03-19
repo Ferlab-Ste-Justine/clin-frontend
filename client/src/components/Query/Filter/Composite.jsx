@@ -128,12 +128,18 @@ class CompositeFilter extends React.Component {
 
   getMin() {
     const { data, facets } = this.props;
-    return roundDown(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
+    if (facets[`${data.id}_min`]) {
+      return roundDown(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
+    }
+    return 0;
   }
 
   getMax() {
     const { data, facets } = this.props;
-    return roundUp(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
+    if (facets[`${data.id}_max`]) {
+      return roundUp(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
+    }
+    return 0;
   }
 
   getEditor() {

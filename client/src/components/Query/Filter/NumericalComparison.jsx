@@ -106,14 +106,21 @@ class NumericalComparisonFilter extends React.Component {
 
   getMin() {
     const { data, facets } = this.props;
-    const min = roundDown(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
-    return min;
+    if (facets[`${data.id}_min`]) {
+      const min = roundDown(VALUE_DECIMALS)(facets[`${data.id}_min`][0].value);
+      return min;
+    }
+    return 0;
   }
 
   getMax() {
     const { data, facets } = this.props;
-    const max = roundUp(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
-    return max;
+
+    if (facets[`${data.id}_max`]) {
+      const max = roundUp(VALUE_DECIMALS)(facets[`${data.id}_max`][0].value);
+      return max;
+    }
+    return 0;
   }
 
   getEditor() {
