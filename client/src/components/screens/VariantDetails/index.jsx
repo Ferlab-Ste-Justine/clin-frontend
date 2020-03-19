@@ -24,7 +24,6 @@ import DataTable, { createCellRenderer } from '../../Table/index';
 
 import './style.scss';
 import style from './style.module.scss';
-// import { variantDetails } from '../../../reducers/variantDetails';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
 
@@ -44,7 +43,77 @@ const columnPresetToColumn = c => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
-const header = title => (<Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
+const header = title => (
+  <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>
+);
+
+const canonicalTranscript = (c) => {
+  const canonical = c.transcripts.find(t => t.canonical);
+  return canonical;
+};
+
+const impactSummary = (c) => {
+  if (canonicalTranscript(c)) {
+    const impactScore = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
+    const items = [impactScore].filter(item => !!item);
+    return (
+      <>
+        <div>
+          <span>{`${c.geneAffectedSymbol} - ${canonicalTranscript(c).featureId}`}</span>
+        </div>
+        <ul>
+          {items}
+        </ul>
+      </>
+    );
+  }
+
+  return null;
+};
+
+const impact = (c) => {
+  const vep = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
+
+  let items = [vep];
+
+  if (c.predictions) {
+    const sift = c.predictions.SIFT
+      ? (<li>{`SIFT: ${c.predictions.SIFT} - ${c.predictions.SIFT_score}`}</li>) : null;
+
+    const polyphen2 = c.predictions.Polyphen2_HVAR_score
+      ? (
+        <li>
+          {`Polyphen2_HVAR: ${c.predictions.Polyphen2_HVAR_score} - ${c.predictions.Polyphen2_HVAR_pred}`}
+        </li>
+      ) : null;
+
+    const lrt = c.predictions.LRT_Pred
+      ? (<li>{`LRT: ${c.predictions.LRT_Pred} - ${c.predictions.LRT_score}`}</li>) : null;
+
+    const fathmm = c.predictions.FATHMM
+      ? (<li>{`FATHMM: ${c.predictions.FATHMM} - ${c.predictions.FATHMM_score}`}</li>) : null;
+
+    const cadd = c.predictions.CADD_Score
+      ? (<li>{`CADD score: ${c.predictions.CADD_Score}}`}</li>) : null;
+
+    const dann = c.predictions && c.predictions.DANN_Score
+      ? (<li>{`CADD score: ${c.predictions.DANN_Score}}`}</li>) : null;
+
+    const revel = c.predictions && c.predictions.REVEL_Score
+      ? (<li>{`REVEL score: ${c.predictions.REVEL_Score}}`}</li>) : null;
+
+    items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
+  }
+
+  return (
+    <>
+      <ul>
+        {items}
+      </ul>
+    </>
+  );
+};
+
 class VariantDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -63,7 +132,7 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
-        renderer: createCellRenderer('button', this.getConsequences, { key: 'geneAffectedId' }),
+        renderer: createCellRenderer('button', this.getConsequences, { key: 'geneAffectedSymbol' }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
@@ -103,7 +172,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'impact',
         label: 'screen.variantDetails.summaryTab.consequencesTable.ImpactColumn',
         renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => { try { return data.impact; } catch (e) { return ''; } },
+          renderer: (data) => { try { return impact(data); } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
@@ -602,10 +671,6 @@ class VariantDetailsScreen extends React.Component {
       currentTab,
     } = this.state;
 
-    const consequences = this.getConsequences();
-
-    if (!consequences) return null;
-
     const { variantDetails } = this.props;
     const { data } = variantDetails;
 
@@ -623,6 +688,7 @@ class VariantDetailsScreen extends React.Component {
       lastAnnotationUpdate,
       bdExt,
       frequencies,
+      consequences,
     } = data;
 
     const {
@@ -635,38 +701,7 @@ class VariantDetailsScreen extends React.Component {
       donorsColumnPreset,
     } = this.state;
 
-    const canonicalTranscript = (c) => {
-      const canonical = c.transcripts.find(t => t.canonical);
-      return canonical;
-    };
-    const impact = (c) => {
-      if (canonicalTranscript(c)) {
-        const impactScore = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
-        const sift = c.predictions && c.predictions.SIFT
-          ? (<li>{`SIFT: ${c.predictions.SIFT} - ${c.predictions.SIFT_score}`}</li>) : null;
-        const polyphen = c.predictions && c.predictions.Polyphen2_HVAR_score
-          ? (
-            <li>
-              {`Polyphen2_HVAR: ${c.predictions.Polyphen2_HVAR_score} - ${c.predictions.Polyphen2_HVAR_pred}`}
-            </li>
-          ) : null;
-
-        const items = [impactScore, sift, polyphen].filter(item => !!item);
-        return (
-          <>
-            <div>
-              <span>{`${c.geneAffectedSymbol} - ${canonicalTranscript(c).featureId}`}</span>
-            </div>
-            <ul>
-              {items}
-            </ul>
-          </>
-        );
-      }
-
-      return null;
-    };
-    const impacts = consequences.map(c => impact(c)).filter(i => !!i).map(i => (<li>{i}</li>));
+    const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li>{i}</li>));
     return (
       <Content>
         <Header />
@@ -701,7 +736,7 @@ class VariantDetailsScreen extends React.Component {
                       { label: 'Allele Réf.', value: refAllele },
                       { label: 'Allele Atl', value: altAllele },
                       { label: 'Gène(s)', value: genes.map(g => g.geneSymbol).join(', ') },
-                      { label: 'Impact(s)', value: (<ul>{impacts}</ul>) },
+                      { label: 'Impact(s)', value: (<ul>{impactsSummary}</ul>) },
                       { label: 'Signification clinique (Clinvar)', value: clinvar_clinsig },
                       { label: 'Date des annotations', value: lastAnnotationUpdate },
                     ]}
@@ -854,17 +889,6 @@ class VariantDetailsScreen extends React.Component {
                     dataSource={this.getHPODataSource()}
                     columns={HPOColumnPreset.map(columnPresetToColumn)}
                   />
-                  {/* <DataTable
-                  size={this.getGenes().length}
-                  total={this.getGenes().length}
-                  enableReordering={false}
-                  reorderColumnsCallback={this.handleColumnsReordered}
-                  resizeColumnsCallback={this.handleColumnResized}
-                  numFrozenColumns={HPOColumnPreset.length}
-                  columns={HPOColumnPreset}
-                  copyCallback={this.handleCopy}
-                  enableGhostCells
-                /> */}
                 </Col>
               </Row>
 
