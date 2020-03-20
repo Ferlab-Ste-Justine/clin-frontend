@@ -186,7 +186,7 @@ class InteractiveTable extends React.Component {
     }
   }
 
-  renderColumnWidth() {
+  rrenderColumnWidth() {
     const {
       orderedColumns, visibleColumns,
     } = this.state;
@@ -198,15 +198,16 @@ class InteractiveTable extends React.Component {
         case 'mutationId':
           columnWidth[index] = 200;
           break;
+        case 'type':
+          columnWidth[index] = 90;
+          break;
         case 'consequences':
           columnWidth[index] = 250;
           break;
         case 'exomiser':
           columnWidth[index] = 100;
           break;
-        case 'type':
-          columnWidth[index] = 90;
-          break;
+
         case 'clinvar':
           columnWidth[index] = 160;
           break;
