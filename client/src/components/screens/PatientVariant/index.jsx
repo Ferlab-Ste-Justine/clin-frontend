@@ -593,7 +593,7 @@ class PatientVariantScreen extends React.Component {
     const { actions } = this.props;
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.selectQuery(key);
     });
@@ -604,7 +604,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.replaceQuery(query.data || query);
     });
@@ -615,7 +615,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.replaceQueries(queries);
     });
@@ -626,7 +626,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.removeQuery(keys);
     });
