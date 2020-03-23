@@ -1,6 +1,6 @@
 @import './variables.scss';
 
-.navigation{
+.navigationFilter{
     margin-bottom:24px;
     background-color:#1b7ab2;
     border-radius:2px;
@@ -78,12 +78,17 @@
                 div{
                     color: #FFFFFF;
                     padding:0 24px;
+                    display: flex;
+                    align-items: center;
                     &:hover{
                     color:#ffffff;
                     }
                     span{
                         display:flex;
                         align-items:center;
+                        .iconRightArrowDropDown{
+                            display: none !important;
+                        }
                     }
                 }
                 &:hover{
@@ -118,13 +123,6 @@
     line-height:0;
     min-width:380px;
 
-    >div{
-        >ul{
-            li{
-            }
-        }
-
-    }
     .label{
         strong{
                 color: rgba(35, 55, 80, 0.38);
@@ -199,7 +197,7 @@
     ul{
         background-color:transparent;
         border-radius: 0;
-}
+    }
     .openId{
         padding: 8px 16px 16px 16px;
         display: flex;
@@ -306,6 +304,9 @@
             background: rgba(29, 139, 198, 0.08);
 
             .subMenuVariant , .subMenuTitle{
+                .iconRightArrowDropDown{
+                    display: none;
+                }
                 color:#125a90;    
                 &:hover{
                     border-top:1px solid transparent;
@@ -363,7 +364,73 @@
             border-top:1px solid transparent;
         }
     }
-    
+
+}
+
+
+.menuDropdown{
+    .ant-menu-submenu:not(.filterChoise){
+        &:hover{
+            background: rgba(29, 139, 198, 0.08);
+            .ant-menu-submenu-title{
+                >span{
+                    color:#125a90;  
+                    border-top:1px solid transparent;
+                    padding: 2px 0;
+                }
+            }
+        }
+
+        &:hover + .ant-menu-submenu:not(.filterChoise){
+            .ant-menu-submenu-title{
+                >span{
+                    border-top:1px solid transparent;
+                    padding: 2px 0;
+                }
+            }
+        }
+
+        &:first-of-type{
+            .ant-menu-submenu-title{
+                >span{
+                    border-top:1px solid transparent;
+                    padding: 2px 0;
+                }
+            }
+        }
+        .ant-menu-submenu-title{
+            margin:0;
+            height: 48px;
+
+            >span{
+                color: rgba(35, 55, 80, 0.78);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-top: 1px solid rgba(35, 55, 80,0.12);
+                padding: 2px 0;
+
+                div{
+                    display: flex;
+                    align-items: center;
+                    margin:0;
+                }
+                .value{
+                    font-size: 14px;
+                    font-family: $font;
+                    font-weight: 500;
+                    letter-spacing: 0.1px;
+                }
+                i{
+                    margin-right: 12px;
+                    display: flex !important;
+                }
+            }
+            .ant-menu-submenu-arrow{
+                display:none !important;
+            }
+        }
+    }
     
 }
 
