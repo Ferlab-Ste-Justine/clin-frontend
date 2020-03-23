@@ -6,7 +6,7 @@ import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography, Checkbox,
+  Badge, Button, Typography, Checkbox, Tooltip,
 } from 'antd';
 import { cloneDeep } from 'lodash';
 import IconKit from 'react-icons-kit';
@@ -71,6 +71,23 @@ export const createCellRenderer = (type, getData, options = {}) => {
           </Button>
         );
         break;
+      case 'tooltipButton':
+        valueRenderer = value => (
+          <Tooltip title={options.label || value} mouseEnterDelay={1}>
+            <Button
+              type={options.type}
+              size={options.size}
+              shape={options.shape}
+              icon={options.icon}
+              onClick={options.handler}
+              data-id={value}
+              className="button"
+            >
+              {options.label || value}
+            </Button>
+          </Tooltip>
+        );
+        break;
       case 'badge':
         valueRenderer = value => (<Badge count={value} />);
         break;
@@ -132,15 +149,10 @@ const DataTable = (props) => {
     rowHeight = rowHeight.slice(0, rowsCount);
   }
   if (rowHeight.length < rowsCount) {
-    const bufferArray = Array(rowsCount - rowHeight.length).fill(36);
+    const bufferArray = Array(rowsCount - rowHeight.length).fill(32);
     rowHeight = [...rowHeight, ...bufferArray];
   }
-
-  const renderColumnHeader = (name, index) => (
-    <div className="tooltipHeader">
-      {intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} />
-    </div>
-  );
+  const renderColumnHeader = (name, index) => (<div className="tooltipHeader">{intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} /></div>);
   return (
     <Table
       key={shortid.generate()}
