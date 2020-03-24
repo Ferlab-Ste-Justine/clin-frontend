@@ -635,12 +635,32 @@ class VariantDetailsScreen extends React.Component {
     const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
 
-    const associationLine = source => gene => (
-      <li><span>{gene.geneSymbol}</span><span>{` ${gene[source].join(', ')}`}</span></li>
+    const orphanetLink = (on) => {
+      const re = /(?<=Orph:)\d+(\.\d*)?/;
+      const orphaId = re.exec(on)[0];
+
+      return (
+        <Link
+          url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+          text={on}
+        />
+      );
+    };
+
+    const orphphanetLine = gene => (
+      <li><span>{gene.geneSymbol}</span><span>{gene.orphanet.map(on => (orphanetLink(on)))}</span></li>
     );
 
-    const orphanetInfo = (<ul>{genesOrphanet.map(g => associationLine('orphanet')(g))}</ul>);
-    const radboudumcInfo = (<ul>{genesRadboudumc.map(g => associationLine('radboudumc')(g))}</ul>);
+    const radboudumcLine = gene => (
+      <li><span>{gene.geneSymbol}</span><span>{` ${gene.radboudumc.join(', ')}`}</span></li>
+    );
+
+    const orphanetInfo = (
+      <ul>{genesOrphanet.map(g => orphphanetLine(g))}</ul>
+    );
+    const radboudumcInfo = (
+      <ul>{genesRadboudumc.map(g => radboudumcLine(g))}</ul>
+    );
 
     return [
       {
@@ -661,7 +681,13 @@ class VariantDetailsScreen extends React.Component {
 
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g) => {
-        const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+        const lis = g.hpo ? g.hpo.map((h) => {
+          const re = /(?<=HP:)\d+(\.\d*)?/;
+          const hpoId = re.exec(h)[0];
+          const url = `https://hpo.jax.org/app/browse/term/HP:${hpoId}`;
+          return (<li><Link url={url} text={h} /></li>);
+        }) : [];
         return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>), donors: '' };
       });
     }
@@ -978,7 +1004,12 @@ class VariantDetailsScreen extends React.Component {
                             label: intl.get(
                               'screen.variantDetails.clinicalAssociationsTab.ClinVarID',
                             ),
-                            value: clinvar.clinvar_id,
+                            value: (
+                              <Link
+                                url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
+                                text={clinvar.clinvar_id}
+                              />
+                            ),
                           },
                           {
                             label: intl.get(
@@ -990,7 +1021,7 @@ class VariantDetailsScreen extends React.Component {
                             label: intl.get(
                               'screen.variantDetails.clinicalAssociationsTab.sign',
                             ),
-                            value: clinvar.clinvar_trait,
+                            value: clinvar.clinvar_trait.join(', '),
                           },
                         ]
                         : []
