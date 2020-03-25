@@ -639,12 +639,13 @@ class VariantDetailsScreen extends React.Component {
       const re = /(?<=Orph:)\d+(\.\d*)?/;
       const orphaId = re.exec(on)[0];
 
-      return (
-        <Link
-          url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
-          text={on}
-        />
-      );
+      return (<span>{on}</span>);
+      // return (
+      //   <Link
+      //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+      //     text={on}
+      //   />
+      // );
     };
 
     const orphphanetLine = gene => (
