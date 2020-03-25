@@ -144,6 +144,15 @@ class Filter extends React.Component {
     this.state.size = 10;
   }
 
+  componentDidUpdate() {
+    const { visibleInput } = this.state;
+    const { data } = this.props;
+    const input = document.querySelector(`.${data.id}searchInput`);
+    if (input && visibleInput) {
+      input.firstChild.focus();
+    }
+  }
+
   isEditable() {
     const { options } = this.props;
     const { editable } = options;
@@ -220,6 +229,7 @@ class Filter extends React.Component {
     const { onCancelCallback } = this.props;
     this.setState({
       opened: false,
+      visibleInput: false,
     }, () => {
       onCancelCallback(this.serialize());
     });
@@ -419,12 +429,13 @@ class Filter extends React.Component {
             </Row>
             {(searchable) && (
             <>
-              <Row>
+              <Row className={visibleInput ? null : `${styleFilter.searchInputClose}`}>
                 <Input
                   allowClear
                   placeholder={filterSearch}
                   onChange={this.handleSearchByQuery}
-                  className={visibleInput ? `${styleFilter.searchInput}` : `${styleFilter.searchInputClose}`}
+                  className={`${styleFilter.searchInput} ${data.id}searchInput`}
+                  autoFocus
                 />
               </Row>
             </>
