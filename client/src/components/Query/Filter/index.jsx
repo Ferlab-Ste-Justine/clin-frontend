@@ -421,7 +421,7 @@ class Filter extends React.Component {
                 <IconKit size={24} icon={ic_search} />
               </Button>
               )}
-              {(resettable) && (
+              {(resettable && canApply) && (
                 <Button className={styleFilter.iconSearch} onClick={onReset}>
                   <IconKit size={24} icon={ic_replay} />
                 </Button>

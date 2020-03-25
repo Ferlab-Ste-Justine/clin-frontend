@@ -54,7 +54,7 @@ class NumericalComparisonFilter extends React.Component {
       draft: null,
       sliderDisabled: false,
       inputDisabled: false,
-      canApply: true,
+      canApply: false,
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);

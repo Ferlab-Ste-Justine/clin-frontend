@@ -86,7 +86,7 @@ class CompositeFilter extends React.Component {
       selection: [],
       numericalComparisonActive: true,
       selectionActive: true,
-      canApply: true,
+      canApply: false,
     };
     this.cachedValues = [];
     this.getEditor = this.getEditor.bind(this);
@@ -159,7 +159,7 @@ class CompositeFilter extends React.Component {
             <Tooltip title={option.value}>
               {valueText}
             </Tooltip>
-            <Tag className={styleFilter.valueCount}>{option.count}</Tag>
+            <Tag className={selectionActive ? `${styleFilter.valueCount}` : `${styleFilter.valueCount} ${styleFilter.valueCountDisabled}`}>{option.count}</Tag>
           </span>
         ),
         value: option.value,
