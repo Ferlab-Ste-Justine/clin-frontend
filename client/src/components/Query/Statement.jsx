@@ -25,7 +25,6 @@ import { calculateTitleWidth } from './helpers/query';
 import './styles/statement.scss';
 import styleStatement from './styles/statement.module.scss';
 
-
 class Statement extends React.Component {
   constructor(props) {
     super(props);
