@@ -374,6 +374,7 @@ class VariantNavigation extends React.Component {
             autoOpen
             options={filterOptions}
             data={(activeFilterForActiveQuery ? activeFilterForActiveQuery.data : CompositeFilter.structFromArgs(currentActiveFilterId))}
+            facets={data}
             dataSet={dataSet}
             config={config}
             onEditCallback={this.handleFilterChange}

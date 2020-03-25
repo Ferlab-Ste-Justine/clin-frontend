@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 
 
 /* eslint-disable no-unused-vars */
@@ -7,6 +8,7 @@ import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import uuidv1 from 'uuid/v1';
 import {
   Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table,
 } from 'antd';
@@ -24,7 +26,6 @@ import DataTable, { createCellRenderer } from '../../Table/index';
 
 import './style.scss';
 import style from './style.module.scss';
-// import { variantDetails } from '../../../reducers/variantDetails';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
 
@@ -44,7 +45,98 @@ const columnPresetToColumn = c => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
-const header = title => (<Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>);
+const header = title => (
+  <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>
+);
+
+const canonicalTranscript = (c) => {
+  const canonical = c.transcripts.find(t => t.canonical);
+  return canonical;
+};
+
+const Link = ({ url, text }) => (
+  <Button
+    key={uuidv1()}
+    type="link"
+    size={25}
+    href={url}
+    target="_blank"
+  >
+    {text}
+  </Button>
+);
+
+Link.propTypes = {
+  url: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+};
+
+const impactSummary = (c) => {
+  if (canonicalTranscript(c)) {
+    const impactScore = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
+    const items = [impactScore].filter(item => !!item);
+    return (
+      <>
+        <div>
+          <span>
+            <Link
+              url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedSymbol}`}
+              text={c.geneAffectedSymbol}
+            />
+          </span>
+          <span>{`- ${canonicalTranscript(c).featureId}`}</span>
+        </div>
+        <ul>{items}</ul>
+      </>
+    );
+  }
+
+  return null;
+};
+
+const impact = (c) => {
+  const vep = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
+
+  let items = [vep];
+
+  if (c.predictions) {
+    const sift = c.predictions.SIFT
+      ? (<li>{`SIFT: ${c.predictions.SIFT} - ${c.predictions.SIFT_score}`}</li>) : null;
+
+    const polyphen2 = c.predictions.Polyphen2_HVAR_score
+      ? (
+        <li>
+          {`Polyphen2_HVAR: ${c.predictions.Polyphen2_HVAR_score} - ${c.predictions.Polyphen2_HVAR_pred}`}
+        </li>
+      ) : null;
+
+    const lrt = c.predictions.LRT_Pred
+      ? (<li>{`LRT: ${c.predictions.LRT_Pred} - ${c.predictions.LRT_score}`}</li>) : null;
+
+    const fathmm = c.predictions.FATHMM
+      ? (<li>{`FATHMM: ${c.predictions.FATHMM} - ${c.predictions.FATHMM_score}`}</li>) : null;
+
+    const cadd = c.predictions.CADD_Score
+      ? (<li>{`CADD score: ${c.predictions.CADD_Score}}`}</li>) : null;
+
+    const dann = c.predictions && c.predictions.DANN_Score
+      ? (<li>{`CADD score: ${c.predictions.DANN_Score}}`}</li>) : null;
+
+    const revel = c.predictions && c.predictions.REVEL_Score
+      ? (<li>{`REVEL score: ${c.predictions.REVEL_Score}}`}</li>) : null;
+
+    items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
+  }
+
+  return (
+    <>
+      <ul>
+        {items}
+      </ul>
+    </>
+  );
+};
+
 class VariantDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -63,7 +155,7 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
-        renderer: createCellRenderer('button', this.getConsequences, { key: 'geneAffectedId' }),
+        renderer: createCellRenderer('button', this.getConsequences, { key: 'geneAffectedSymbol' }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
@@ -103,7 +195,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'impact',
         label: 'screen.variantDetails.summaryTab.consequencesTable.ImpactColumn',
         renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => { try { return data.impact; } catch (e) { return ''; } },
+          renderer: (data) => { try { return impact(data); } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
@@ -121,7 +213,9 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getConsequences, {
           renderer: (data) => {
             try {
-              const lis = data.transcripts.map(t => (<li>{t.featureId}</li>));
+              const { geneAffectedId } = data;
+              const baseUrl = 'https://useast.ensembl.org/Homo_sapiens/Transcript/Summary?db=core';
+              const lis = data.transcripts.map(t => (<li><Link url={`${baseUrl}&t=${t.featureId}`} text={t.featureId} /></li>));
               return data.transcripts.map(t => (<ul>{lis}</ul>));
             } catch (e) { return ''; }
           },
@@ -225,14 +319,10 @@ class VariantDetailsScreen extends React.Component {
           renderer: (data) => {
             try {
               return (
-                <Button
-                  type="link"
-                  size={25}
-                  href={data.info}
-                  target="_blank"
-                >
-                  Voir plus
-                </Button>
+                <Link
+                  url={data.info}
+                  text="Voir plus"
+                />
               );
             } catch (e) { return ''; }
           },
@@ -506,14 +596,10 @@ class VariantDetailsScreen extends React.Component {
         const frequency = frequencies[key];
         frequency.key = key;
         frequency.info = (
-          <Button
-            type="link"
-            size={25}
-            href={url}
-            target="_blank"
-          >
-            Voir plus
-          </Button>
+          <Link
+            url={url}
+            text="Voir plus"
+          />
         );
         return frequency;
       });
@@ -549,12 +635,33 @@ class VariantDetailsScreen extends React.Component {
     const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
 
-    const associationLine = source => gene => (
-      <li><span>{gene.geneSymbol}</span><span>{` ${gene[source].join(', ')}`}</span></li>
+    const orphanetLink = (on) => {
+      const re = /(?<=Orph:)\d+(\.\d*)?/;
+      const orphaId = re.exec(on)[0];
+
+      return (<span>{on}</span>);
+      // return (
+      //   <Link
+      //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+      //     text={on}
+      //   />
+      // );
+    };
+
+    const orphphanetLine = gene => (
+      <li><span>{gene.geneSymbol}</span><span>{gene.orphanet.map(on => (orphanetLink(on)))}</span></li>
     );
 
-    const orphanetInfo = (<ul>{genesOrphanet.map(g => associationLine('orphanet')(g))}</ul>);
-    const radboudumcInfo = (<ul>{genesRadboudumc.map(g => associationLine('radboudumc')(g))}</ul>);
+    const radboudumcLine = gene => (
+      <li><span>{gene.geneSymbol}</span><span>{` ${gene.radboudumc.join(', ')}`}</span></li>
+    );
+
+    const orphanetInfo = (
+      <ul>{genesOrphanet.map(g => orphphanetLine(g))}</ul>
+    );
+    const radboudumcInfo = (
+      <ul>{genesRadboudumc.map(g => radboudumcLine(g))}</ul>
+    );
 
     return [
       {
@@ -575,7 +682,13 @@ class VariantDetailsScreen extends React.Component {
 
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g) => {
-        const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+        const lis = g.hpo ? g.hpo.map((h) => {
+          const re = /(?<=HP:)\d+(\.\d*)?/;
+          const hpoId = re.exec(h)[0];
+          const url = `https://hpo.jax.org/app/browse/term/HP:${hpoId}`;
+          return (<li><Link url={url} text={h} /></li>);
+        }) : [];
         return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>), donors: '' };
       });
     }
@@ -602,10 +715,6 @@ class VariantDetailsScreen extends React.Component {
       currentTab,
     } = this.state;
 
-    const consequences = this.getConsequences();
-
-    if (!consequences) return null;
-
     const { variantDetails } = this.props;
     const { data } = variantDetails;
 
@@ -623,6 +732,7 @@ class VariantDetailsScreen extends React.Component {
       lastAnnotationUpdate,
       bdExt,
       frequencies,
+      consequences,
     } = data;
 
     const {
@@ -635,50 +745,38 @@ class VariantDetailsScreen extends React.Component {
       donorsColumnPreset,
     } = this.state;
 
-    const canonicalTranscript = (c) => {
-      const canonical = c.transcripts.find(t => t.canonical);
-      return canonical;
-    };
-    const impact = (c) => {
-      if (canonicalTranscript(c)) {
-        const impactScore = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
-        const sift = c.predictions && c.predictions.SIFT
-          ? (<li>{`SIFT: ${c.predictions.SIFT} - ${c.predictions.SIFT_score}`}</li>) : null;
-        const polyphen = c.predictions && c.predictions.Polyphen2_HVAR_score
-          ? (
-            <li>
-              {`Polyphen2_HVAR: ${c.predictions.Polyphen2_HVAR_score} - ${c.predictions.Polyphen2_HVAR_pred}`}
-            </li>
-          ) : null;
-
-        const items = [impactScore, sift, polyphen].filter(item => !!item);
-        return (
-          <>
-            <div>
-              <span>{`${c.geneAffectedSymbol} - ${canonicalTranscript(c).featureId}`}</span>
-            </div>
-            <ul>
-              {items}
-            </ul>
-          </>
-        );
-      }
-
-      return null;
-    };
-    const impacts = consequences.map(c => impact(c)).filter(i => !!i).map(i => (<li>{i}</li>));
+    const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
     return (
       <Content>
         <Header />
         <div className="variantPageContent">
           <div className="variantPageHeader">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z" fill="#1D8BC6" />
-              <path d="M16.0587 20.0146L19.6728 8.88889H22.3883L17.2699 23.1111H14.8767L9.77783 8.88889H12.4836L16.0587 20.0146Z" fill="#EAF3FA" />
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z"
+                fill="#1D8BC6"
+              />
+              <path
+                d="M16.0587 20.0146L19.6728 8.88889H22.3883L17.2699 23.1111H14.8767L9.77783 8.88889H12.4836L16.0587 20.0146Z"
+                fill="#EAF3FA"
+              />
             </svg>
-            <Typography.Text className="mutationID">{data.mutationId}</Typography.Text>
+            <Typography.Text className="mutationID">
+              {data.mutationId}
+            </Typography.Text>
           </div>
-          <Tabs key="..." defaultActiveKey={SUMMARY_TAB} className="tabs" onChange={this.handleTabChange}>
+          <Tabs
+            key="..."
+            defaultActiveKey={SUMMARY_TAB}
+            className="tabs"
+            onChange={this.handleTabChange}
+          >
             <Tabs.TabPane
               key={SUMMARY_TAB}
               style={{ height: '100%' }}
@@ -687,7 +785,7 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_assessment} />
                   {intl.get(SUMMARY_TAB)}
                 </span>
-            )}
+)}
             >
               <Row type="flex" className="resumeDataList">
                 <Col>
@@ -695,15 +793,40 @@ class VariantDetailsScreen extends React.Component {
                     title={intl.get(SUMMARY_TAB)}
                     dataSource={[
                       { label: 'Variant', value: dnaChange },
-                      { label: 'Cytobande', value: genes && genes[0] ? genes[0].location : '' },
+                      {
+                        label: 'Cytobande',
+                        value: genes && genes[0] ? genes[0].location : '',
+                      },
                       { label: 'Type', value: type },
                       { label: 'Génome Réf.', value: assemblyVersion },
                       { label: 'Allele Réf.', value: refAllele },
                       { label: 'Allele Atl', value: altAllele },
-                      { label: 'Gène(s)', value: genes.map(g => g.geneSymbol).join(', ') },
-                      { label: 'Impact(s)', value: (<ul>{impacts}</ul>) },
-                      { label: 'Signification clinique (Clinvar)', value: clinvar_clinsig },
-                      { label: 'Date des annotations', value: lastAnnotationUpdate },
+                      {
+                        label: 'Gène(s)',
+                        value: (
+                          <ul>
+                            {genes.map(g => (
+                              <li key={g.geneSymbol}>
+                                {
+                                  <Link
+                                    url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensemblId}`}
+                                    text={g.geneSymbol}
+                                  />
+                                }
+                              </li>
+                            ))}
+                          </ul>
+                        ),
+                      },
+                      { label: 'Impact(s)', value: <ul>{impactsSummary}</ul> },
+                      {
+                        label: 'Signification clinique (Clinvar)',
+                        value: clinvar_clinsig,
+                      },
+                      {
+                        label: 'Date des annotations',
+                        value: lastAnnotationUpdate,
+                      },
                     ]}
                   />
                 </Col>
@@ -712,10 +835,53 @@ class VariantDetailsScreen extends React.Component {
                   <DataList
                     title="Références externes"
                     dataSource={[
-                      { label: 'Clin Var', value: bdExt ? bdExt.clinvar || '' : '' },
-                      { label: 'OMIN', value: bdExt && bdExt.omin ? bdExt.omin : '' },
-                      { label: 'dbSNP', value: bdExt && bdExt.dbSNP ? bdExt.dbSNP : '' },
-                      { label: 'Pubmed', value: bdExt && bdExt.pubmed ? bdExt.pubmed.join(', ') : '' },
+                      {
+                        label: 'Clin Var',
+                        value: bdExt ? (
+                          <Link
+                            url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.clinvar}`}
+                            text={bdExt.clinvar}
+                          />
+                        ) : (
+                          ''
+                        ),
+                      },
+                      {
+                        label: 'OMIM',
+                        value:
+                          bdExt && bdExt.omim ? (
+                            <Link
+                              url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.omim}`}
+                              text={bdExt.omim}
+                            />
+                          ) : (
+                            ''
+                          ),
+                      },
+                      {
+                        label: 'dbSNP',
+                        value:
+                          bdExt && bdExt.dbSNP ? (
+                            <Link
+                              url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.dbSNP}`}
+                              text={bdExt.dbSNP}
+                            />
+                          ) : (
+                            ''
+                          ),
+                      },
+                      {
+                        label: 'Pubmed',
+                        value:
+                          bdExt && bdExt.pubmed
+                            ? bdExt.pubmed.map(p => (
+                              <Link
+                                url={`https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=citation&id=${p}`}
+                                text={p}
+                              />
+                            ))
+                            : '',
+                      },
                     ]}
                   />
                 </Col>
@@ -723,11 +889,27 @@ class VariantDetailsScreen extends React.Component {
                   <DataList
                     title="Patients"
                     dataSource={[
-                      { label: 'Nb de patients (i)', value: `${frequencies.interne.PN}/${frequencies.interne.AN / 2}` },
-                      { label: 'Nb d\'alleles ALT', value: `${frequencies.interne.AC}` },
-                      { label: 'Nb total d\'alleles', value: `${frequencies.interne.AN}` },
-                      { label: 'Nb d\'homozygotes', value: `${frequencies.interne.HC}` },
-                      { label: 'Fréquences', value: `${frequencies.interne.AF.toFixed(5)}` },
+                      {
+                        label: 'Nb de patients (i)',
+                        value: `${frequencies.interne.PN}/${frequencies.interne
+                          .AN / 2}`,
+                      },
+                      {
+                        label: "Nb d'alleles ALT",
+                        value: `${frequencies.interne.AC}`,
+                      },
+                      {
+                        label: "Nb total d'alleles",
+                        value: `${frequencies.interne.AN}`,
+                      },
+                      {
+                        label: "Nb d'homozygotes",
+                        value: `${frequencies.interne.HC}`,
+                      },
+                      {
+                        label: 'Fréquences',
+                        value: `${frequencies.interne.AF.toFixed(5)}`,
+                      },
                     ]}
                   />
                 </Col>
@@ -735,7 +917,13 @@ class VariantDetailsScreen extends React.Component {
 
               <Row>
                 <Col>
-                  <Typography.Title className="tableHeader pageWidth" level={4} style={{ marginBottom: 0 }}>Conséquences</Typography.Title>
+                  <Typography.Title
+                    className="tableHeader pageWidth"
+                    level={4}
+                    style={{ marginBottom: 0 }}
+                  >
+                    Conséquences
+                  </Typography.Title>
                 </Col>
               </Row>
               <Row type="flex" gutter={32} className="consequencesTable">
@@ -763,34 +951,34 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_show_chart} />
                   {intl.get(FREQUENCIES_TAB)}
                 </span>
-            )}
+)}
             >
               <Row>
-                <Col>
-                  {header('Cohortes internes')}
-                </Col>
+                <Col>{header('Cohortes internes')}</Col>
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
                   <Table
                     pagination={false}
                     dataSource={this.getInternalCohortFrequencies()}
-                    columns={internalCohortsFrequenciesColumnPreset.map(columnPresetToColumn)}
+                    columns={internalCohortsFrequenciesColumnPreset.map(
+                      columnPresetToColumn,
+                    )}
                   />
                 </Col>
               </Row>
               <Row />
               <Row>
-                <Col>
-                  {header('Cohortes externes')}
-                </Col>
+                <Col>{header('Cohortes externes')}</Col>
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
                   <Table
                     pagination={false}
                     dataSource={this.getExternalCohortFrequencies()}
-                    columns={externalCohortsFrequenciesColumnPreset.map(columnPresetToColumn)}
+                    columns={externalCohortsFrequenciesColumnPreset.map(
+                      columnPresetToColumn,
+                    )}
                   />
                 </Col>
               </Row>
@@ -804,48 +992,56 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_local_library} />
                   {intl.get(CLINICAL_ASSOCIATIONS_TAB)}
                 </span>
-            )}
+)}
             >
               <Row type="flex" gutter={32}>
                 <Col>
                   <DataList
                     title="Clin Var"
-                    dataSource={clinvar ? [
-                      {
-                        label: intl.get('screen.variantDetails.clinicalAssociationsTab.ClinVarID'),
-                        value: clinvar.clinvar_id,
-                      },
-                      {
-                        label: intl.get('screen.variantDetails.clinicalAssociationsTab.signification'),
-                        value: clinvar.clinvar_clinsig,
-                      },
-                      {
-                        label: intl.get('screen.variantDetails.clinicalAssociationsTab.sign'),
-                        value: clinvar.clinvar_trait,
-                      },
-                    ] : []}
+                    dataSource={
+                      clinvar
+                        ? [
+                          {
+                            label: intl.get(
+                              'screen.variantDetails.clinicalAssociationsTab.ClinVarID',
+                            ),
+                            value: (
+                              <Link
+                                url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
+                                text={clinvar.clinvar_id}
+                              />
+                            ),
+                          },
+                          {
+                            label: intl.get(
+                              'screen.variantDetails.clinicalAssociationsTab.signification',
+                            ),
+                            value: clinvar.clinvar_clinsig,
+                          },
+                          {
+                            label: intl.get(
+                              'screen.variantDetails.clinicalAssociationsTab.sign',
+                            ),
+                            value: clinvar.clinvar_trait.join(', '),
+                          },
+                        ]
+                        : []
+                    }
                   />
                 </Col>
               </Row>
 
               <Row>
-                <Col>
-                  {header('Association/Condition')}
-                </Col>
+                <Col>{header('Association/Condition')}</Col>
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
-                  <DataList
-                    dataSource={this.getAssociationData()}
-                  />
+                  <DataList dataSource={this.getAssociationData()} />
                 </Col>
-
               </Row>
 
               <Row>
-                <Col>
-                  {header('Human Phenotype Ontology (HPO)')}
-                </Col>
+                <Col>{header('Human Phenotype Ontology (HPO)')}</Col>
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
@@ -854,20 +1050,8 @@ class VariantDetailsScreen extends React.Component {
                     dataSource={this.getHPODataSource()}
                     columns={HPOColumnPreset.map(columnPresetToColumn)}
                   />
-                  {/* <DataTable
-                  size={this.getGenes().length}
-                  total={this.getGenes().length}
-                  enableReordering={false}
-                  reorderColumnsCallback={this.handleColumnsReordered}
-                  resizeColumnsCallback={this.handleColumnResized}
-                  numFrozenColumns={HPOColumnPreset.length}
-                  columns={HPOColumnPreset}
-                  copyCallback={this.handleCopy}
-                  enableGhostCells
-                /> */}
                 </Col>
               </Row>
-
             </Tabs.TabPane>
 
             <Tabs.TabPane
@@ -878,19 +1062,19 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_people} />
                   {intl.get(PATIENTS_TAB)}
                 </span>
-            )}
+)}
             >
               <Row>
                 <Col>
                   <div>
-                    {`${this.getDonors().length} patient(s) sont porteur(s) de ce variant`}
+                    {`${
+                      this.getDonors().length
+                    } patient(s) sont porteur(s) de ce variant`}
                   </div>
                 </Col>
               </Row>
               <Row>
-                <Col>
-                  {header('Patients')}
-                </Col>
+                <Col>{header('Patients')}</Col>
               </Row>
               <Row type="flex" gutter={32}>
                 <Col>
@@ -906,11 +1090,9 @@ class VariantDetailsScreen extends React.Component {
                   />
                 </Col>
               </Row>
-
             </Tabs.TabPane>
           </Tabs>
         </div>
-
       </Content>
     );
   }

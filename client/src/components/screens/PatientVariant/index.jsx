@@ -46,10 +46,14 @@ const GENE_TAB = 'GENES';
 
 const COLUMN_WIDTHS = {
   MUTATION_ID: 200,
-  CONSEQUENCES: 250,
-  EXOMISER: 100,
   TYPE: 100,
+  DBSNP: 120,
+  CONSEQUENCES: 230,
+  EXOMISER: 100,
   CLINVAR: 160,
+  CADD: 90,
+  FREQUENCIES: 120,
+  GNOMAD: 120,
   ZYGOSITY: 90,
   SEQ: 80,
   DEFAULT: 150,
@@ -61,7 +65,7 @@ class PatientVariantScreen extends React.Component {
     this.state = {
       currentTab: VARIANT_TAB,
       page: 1,
-      size: 25,
+      size: 15,
     };
     this.handleQuerySelection = this.handleQuerySelection.bind(this);
     this.handleQueryChange = this.handleQueryChange.bind(this);
@@ -96,7 +100,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'mutationId',
           label: 'screen.variantsearch.table.variant',
-          renderer: createCellRenderer('button', this.getData, {
+          renderer: createCellRenderer('tooltipButton', this.getData, {
             key: 'mutationId',
             handler: this.handleNavigationToVariantDetailsScreen,
             renderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
@@ -135,7 +139,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
-          columnWidth: COLUMN_WIDTHS.DEFAULT,
+          columnWidth: COLUMN_WIDTHS.DBSNP,
         },
         {
           key: 'consequences',
@@ -241,12 +245,12 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
-          columnWidth: COLUMN_WIDTHS.DEFAULT,
+          columnWidth: COLUMN_WIDTHS.CADD,
         },
         {
           key: 'frequencies',
           label: 'screen.variantsearch.table.frequencies',
-          description: 'Description pour fréquence',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
@@ -260,7 +264,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
-          columnWidth: COLUMN_WIDTHS.DEFAULT,
+          columnWidth: COLUMN_WIDTHS.FREQUENCIES,
         },
         {
           key: 'gnomAD',
@@ -285,7 +289,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
-          columnWidth: COLUMN_WIDTHS.DEFAULT,
+          columnWidth: COLUMN_WIDTHS.GNOMAD,
         },
         {
           key: 'zygosity',
@@ -308,7 +312,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'transmission',
           label: 'screen.variantsearch.table.transmission',
-          description: 'Description pour transmission',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               const { variant } = this.props;
@@ -328,7 +332,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'seq',
           label: 'screen.variantsearch.table.seq',
-          description: 'Description pour seq',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
@@ -429,7 +433,7 @@ class PatientVariantScreen extends React.Component {
     const data = this.getData();
     const { size } = this.state;
     const { variant } = this.props;
-    const rowHeight = Array(data ? data.length : size).fill(36);
+    const rowHeight = Array(data ? data.length : size).fill(32);
     if (data) {
       data.map((value, index) => {
         const donorIndex = findIndex(value.donors, { patientId: variant.activePatient });
@@ -445,6 +449,7 @@ class PatientVariantScreen extends React.Component {
         if (rowHeight[index] < mutationIdIdNbLine * 16 + 20) {
           rowHeight[index] = mutationIdIdNbLine * 16 + 20;
         }
+        rowHeight[index] = rowHeight[index] === 36 ? 32 : rowHeight[index];
         return rowHeight;
       });
       return rowHeight;
@@ -588,7 +593,7 @@ class PatientVariantScreen extends React.Component {
     const { actions } = this.props;
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.selectQuery(key);
     });
@@ -599,7 +604,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.replaceQuery(query.data || query);
     });
@@ -610,7 +615,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.replaceQueries(queries);
     });
@@ -621,7 +626,7 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 25,
+      size: 15,
     }, () => {
       actions.removeQuery(keys);
     });

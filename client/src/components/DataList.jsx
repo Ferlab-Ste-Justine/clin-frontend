@@ -8,7 +8,6 @@ import {
 const DataList = (props) => {
   const { title, dataSource, style } = props;
   const header = (<Typography.Title level={4} className="datalisteHeader" style={{ marginBottom: 0 }}>{title}</Typography.Title>);
-  console.log('dataSource', dataSource);
   return (
     <Card className="datalist" title={header} type="inner" size="small" hoverable style={style}>
       <List

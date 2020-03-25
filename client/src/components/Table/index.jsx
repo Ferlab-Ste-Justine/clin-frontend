@@ -71,6 +71,23 @@ export const createCellRenderer = (type, getData, options = {}) => {
           </Button>
         );
         break;
+      case 'tooltipButton':
+        valueRenderer = value => (
+          <Tooltip title={options.label || value} mouseEnterDelay={1}>
+            <Button
+              type={options.type}
+              size={options.size}
+              shape={options.shape}
+              icon={options.icon}
+              onClick={options.handler}
+              data-id={value}
+              className="button"
+            >
+              {options.label || value}
+            </Button>
+          </Tooltip>
+        );
+        break;
       case 'badge':
         valueRenderer = value => (<Badge count={value} />);
         break;
@@ -132,20 +149,10 @@ const DataTable = (props) => {
     rowHeight = rowHeight.slice(0, rowsCount);
   }
   if (rowHeight.length < rowsCount) {
-    const bufferArray = Array(rowsCount - rowHeight.length).fill(36);
+    const bufferArray = Array(rowsCount - rowHeight.length).fill(32);
     rowHeight = [...rowHeight, ...bufferArray];
   }
-  const nameRenderer = index => (
-    <div className="tooltipHeader">
-      {intl.get(columns[index].label)}
-      <Tooltip title={columns[index].description}>
-        <Button>
-          <IconKit icon={ic_info_outline} />
-        </Button>
-      </Tooltip>
-    </div>
-  );
-  console.log('enableGhostCells', enableGhostCells);
+  const renderColumnHeader = (name, index) => (<div className="tooltipHeader">{intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} /></div>);
   return (
     <Table
       key={shortid.generate()}
@@ -166,9 +173,9 @@ const DataTable = (props) => {
       { columns.map(definition => (
         <Column
           id={definition.key}
-          name={intl.get(definition.label)}
+          name={definition.description ? definition.description : intl.get(definition.label)}
           cellRenderer={definition.renderer}
-          columnHeaderCellRenderer={definition.description ? nameRenderer : null}
+          nameRenderer={definition.description ? renderColumnHeader : null}
         />
       )) }
     </Table>
