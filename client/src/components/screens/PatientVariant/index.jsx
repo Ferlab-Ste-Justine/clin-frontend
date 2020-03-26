@@ -160,7 +160,7 @@ class PatientVariantScreen extends React.Component {
                   <div>
                     {
                     data.consequences.map(consequence => (
-                      consequence.canonical === true ? (
+                      consequence.pick === true ? (
                         <Row className="consequences">
                           <Col>{this.getImpactTag(consequence.impact)}</Col>
                           <Col className="consequence">{consequence.consequence[0]}</Col>
@@ -238,7 +238,7 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   data.consequences.map(consequence => (
-                    consequence.canonical === true ? (
+                    consequence.pick === true ? (
                       <Row>{consequence.predictions.CADD_score}</Row>
                     ) : null
 
@@ -439,8 +439,9 @@ class PatientVariantScreen extends React.Component {
     if (data) {
       data.map((value, index) => {
         const donorIndex = findIndex(value.donors, { patientId: variant.activePatient });
-        const canonical = filter(value.consequences, { canonical: true });
-        const nbValue = canonical.length;
+        // const canonical = filter(value.consequences, { canonical: true });
+        const pick = filter(value.consequences, { pick: true });
+        const nbValue = pick.length;
         rowHeight[index] = nbValue <= 1 ? 32 : nbValue * 16 + 20;
         if (nbValue <= 1 && (value.clinvar || (value.donors[donorIndex] ? value.donors[donorIndex].transmission : null))) {
           rowHeight[index] = 2 * 16 + 20;
