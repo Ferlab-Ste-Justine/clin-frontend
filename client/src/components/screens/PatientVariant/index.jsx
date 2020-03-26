@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-no-target-blank */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
@@ -158,7 +160,7 @@ class PatientVariantScreen extends React.Component {
                   <div>
                     {
                     data.consequences.map(consequence => (
-                      consequence.canonical === true ? (
+                      consequence.pick === true ? (
                         <Row className="consequences">
                           <Col>{this.getImpactTag(consequence.impact)}</Col>
                           <Col className="consequence">{consequence.consequence[0]}</Col>
@@ -236,7 +238,7 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   data.consequences.map(consequence => (
-                    consequence.canonical === true ? (
+                    consequence.pick === true ? (
                       <Row>{consequence.predictions.CADD_score}</Row>
                     ) : null
 
@@ -437,8 +439,9 @@ class PatientVariantScreen extends React.Component {
     if (data) {
       data.map((value, index) => {
         const donorIndex = findIndex(value.donors, { patientId: variant.activePatient });
-        const canonical = filter(value.consequences, { canonical: true });
-        const nbValue = canonical.length;
+        // const canonical = filter(value.consequences, { canonical: true });
+        const pick = filter(value.consequences, { pick: true });
+        const nbValue = pick.length;
         rowHeight[index] = nbValue <= 1 ? 32 : nbValue * 16 + 20;
         if (nbValue <= 1 && (value.clinvar || (value.donors[donorIndex] ? value.donors[donorIndex].transmission : null))) {
           rowHeight[index] = 2 * 16 + 20;
@@ -877,75 +880,114 @@ class PatientVariantScreen extends React.Component {
       <Content>
         <Header />
         <Card className="entity">
-          { patient.details.id && (
-          <div className={style.patientInfo}>
-            <Row className={style.descriptionTitle} type="flex" align="middle">
-              <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
-                <Button>
-                  {completName}
-                </Button>
-              </a>
-              <svg
-                className={style.genderIcon}
+          {patient.details.id && (
+            <div className={style.patientInfo}>
+              <Row
+                className={style.descriptionTitle}
+                type="flex"
+                align="middle"
               >
-                {patient.details.gender === 'male' ? genderMaleIcon : genderFemaleIcon}{' '}
-              </svg>
-              <Tag className={`${style.tag} ${style.tagProban}`}>{patient.details.proband}</Tag>
-              { patient.family.members.mother !== '' || patient.family.members.father !== ''
-                ? (
-                  <Dropdown overlay={familyMenu} overlayClassName={style.familyDropdown}>
-                    <Tag className={style.tag}>
-                      {familyText}
-                      {' '}
-                      <IconKit size={16} icon={ic_arrow_drop_down} />
-                    </Tag>
-                  </Dropdown>
-                ) : null
-              }
-            </Row>
-            <Row type="flex" className={style.descriptionPatient}>
-              <Col>
-                <IconKit className={style.icon} size={16} icon={ic_assignment_ind} />
-                {' '}
-                {patient.details.mrn}
-              </Col>
-              <Col>
-                <IconKit className={style.icon} size={16} icon={ic_location_city} />
-                {' '}
-                {patient.organization.name}
-              </Col>
-              <Col>
-                <IconKit className={style.icon} size={16} icon={ic_folder_shared} />
-                {' '}
-                {patient.details.ramq}
-              </Col>
-            </Row>
-            { patient.ontology && patient.ontology.length > 0 && (
-            <Row type="flex" align="middle" className={style.descriptionOntoloy}>
-              <IconKit className={style.icon} size={16} icon={ic_assignment_turned_in} />
-              {observedHpoText}:
-              {visibleOntology.map(vontology => (
-                <a href={`https://hpo.jax.org/app/browse/term/${vontology.code}`} target="_blank"> { /* eslint-disable-line */ }
-                  {vontology.term}
-                  <IconKit className={style.iconLink} size={14} icon={ic_launch} />
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                <a
+                  href="#"
+                  data-patient-id={patient.details.id}
+                  onClick={this.handleNavigationToPatientScreen}
+                >
+                  {' '}
+                  {/* eslint-disable-line */}
+                  <Button>{completName}</Button>
                 </a>
-              ))
-                }
-
-              { allOntology.length > 4
-                ? (
-                  <Dropdown overlay={ontologyMenu} className={style.ontologyTag} overlayClassName={style.ontologyDropdown}>
+                <svg className={style.genderIcon}>
+                  {patient.details.gender === 'male'
+                    ? genderMaleIcon
+                    : genderFemaleIcon}{' '}
+                </svg>
+                <Tag className={`${style.tag} ${style.tagProban}`}>
+                  {patient.details.proband}
+                </Tag>
+                {patient.family.members.mother !== ''
+                || patient.family.members.father !== '' ? (
+                  <Dropdown
+                    overlay={familyMenu}
+                    overlayClassName={style.familyDropdown}
+                  >
                     <Tag className={style.tag}>
-                      {viewAllText}
+                      {familyText}{' '}
                       <IconKit size={16} icon={ic_arrow_drop_down} />
                     </Tag>
                   </Dropdown>
-                ) : null
-              }
-            </Row>
-            ) }
-          </div>
-          ) }
+                  ) : null}
+              </Row>
+              <Row type="flex" className={style.descriptionPatient}>
+                <Col>
+                  <IconKit
+                    className={style.icon}
+                    size={16}
+                    icon={ic_assignment_ind}
+                  />{' '}
+                  {patient.details.mrn}
+                </Col>
+                <Col>
+                  <IconKit
+                    className={style.icon}
+                    size={16}
+                    icon={ic_location_city}
+                  />{' '}
+                  {patient.organization.name}
+                </Col>
+                <Col>
+                  <IconKit
+                    className={style.icon}
+                    size={16}
+                    icon={ic_folder_shared}
+                  />{' '}
+                  {patient.details.ramq}
+                </Col>
+              </Row>
+              {patient.ontology && patient.ontology.length > 0 && (
+                <Row
+                  type="flex"
+                  align="middle"
+                  className={style.descriptionOntoloy}
+                >
+                  <IconKit
+                    className={style.icon}
+                    size={16}
+                    icon={ic_assignment_turned_in}
+                  />
+                  {observedHpoText}:
+                  {visibleOntology.map(vontology => (
+                    <a
+                      href={`https://hpo.jax.org/app/browse/term/${vontology.code}`}
+                      target="_blank"
+                    >
+                      {' '}
+                      {/* eslint-disable-line */}
+                      {vontology.term}
+                      <IconKit
+                        className={style.iconLink}
+                        size={14}
+                        icon={ic_launch}
+                      />
+                    </a>
+                  ))}
+                  {allOntology.length > 4 ? (
+                    <Dropdown
+                      overlay={ontologyMenu}
+                      className={style.ontologyTag}
+                      overlayClassName={style.ontologyDropdown}
+                    >
+                      <Tag className={style.tag}>
+                        {viewAllText}
+                        <IconKit size={16} icon={ic_arrow_drop_down} />
+                      </Tag>
+                    </Dropdown>
+                  ) : null}
+                </Row>
+              )}
+            </div>
+          )}
           <VariantNavigation
             key="variant-navigation"
             className="variant-navigation"
@@ -995,45 +1037,50 @@ class PatientVariantScreen extends React.Component {
               onSelectStatementCallback={this.handleSelectStatement}
               onDuplicateStatementCallback={this.handleDuplicateStatement}
               onSetDefaultStatementCallback={this.handleSetDefaultStatement}
+              newCombinedQueryCallback={this.handleQuerySelection}
               searchData={searchData}
               externalData={patient}
             />
           </Card>
           <Card className={`Content ${style.variantTable}`}>
-            <Tabs key="variant-interpreter-tabs" activeKey={currentTab} onChange={this.handleTabChange}>
+            <Tabs
+              key="variant-interpreter-tabs"
+              activeKey={currentTab}
+              onChange={this.handleTabChange}
+            >
               <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
-                { currentTab === VARIANT_TAB && (
-                <InteractiveTable
-                  key="variant-interactive-table"
-                  isLoading={showSubloadingAnimation}
-                  size={size}
-                  page={page}
-                  total={total}
-                  schema={columnPreset[VARIANT_TAB]}
-                  copyCallback={this.handleCopy}
-                  pageChangeCallback={this.handlePageChange}
-                  pageSizeChangeCallback={this.handlePageSizeChange}
-                  isExportable={false}
-                  rowHeight={rowHeight}
-                  numFrozenColumns={1}
-                />
-                ) }
+                {currentTab === VARIANT_TAB && (
+                  <InteractiveTable
+                    key="variant-interactive-table"
+                    isLoading={showSubloadingAnimation}
+                    size={size}
+                    page={page}
+                    total={total}
+                    schema={columnPreset[VARIANT_TAB]}
+                    copyCallback={this.handleCopy}
+                    pageChangeCallback={this.handlePageChange}
+                    pageSizeChangeCallback={this.handlePageSizeChange}
+                    isExportable={false}
+                    rowHeight={rowHeight}
+                    numFrozenColumns={1}
+                  />
+                )}
               </Tabs.TabPane>
               <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
-                { currentTab === GENE_TAB && (
-                <InteractiveTable
-                  key="gene-interactive-table"
-                  isLoading={showSubloadingAnimation}
-                  size={size}
-                  page={page}
-                  total={total}
-                  schema={columnPreset[GENE_TAB]}
-                  pageChangeCallback={this.handlePageChange}
-                  pageSizeChangeCallback={this.handlePageSizeChange}
-                  copyCallback={this.handleCopy}
-                  isExportable={false}
-                />
-                ) }
+                {currentTab === GENE_TAB && (
+                  <InteractiveTable
+                    key="gene-interactive-table"
+                    isLoading={showSubloadingAnimation}
+                    size={size}
+                    page={page}
+                    total={total}
+                    schema={columnPreset[GENE_TAB]}
+                    pageChangeCallback={this.handlePageChange}
+                    pageSizeChangeCallback={this.handlePageSizeChange}
+                    copyCallback={this.handleCopy}
+                    isExportable={false}
+                  />
+                )}
               </Tabs.TabPane>
             </Tabs>
           </Card>

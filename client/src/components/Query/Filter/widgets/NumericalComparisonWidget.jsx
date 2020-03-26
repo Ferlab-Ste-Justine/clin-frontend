@@ -270,6 +270,7 @@ class NumericalComparisonWidget extends React.Component {
               onChange={this.handleMinValueChange}
               disabled={disabled}
               style={{ width: `calc(38px + ${widthMin}ch)` }}
+              onFocus={(e) => { e.target.select(); }}
             />
           </Col>
           <Col>
@@ -282,6 +283,7 @@ class NumericalComparisonWidget extends React.Component {
               onChange={this.handleMaxValueChange}
               disabled={disabled}
               style={{ width: `calc(38px + ${widthMax}ch)` }}
+              onFocus={(e) => { e.target.select(); }}
             />
           </Col>
         </Row>

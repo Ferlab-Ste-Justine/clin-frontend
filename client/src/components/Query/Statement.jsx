@@ -426,7 +426,7 @@ class Statement extends React.Component {
   }
 
   handleCombine({ key }) {
-    const { data } = this.props;
+    const { data, newCombinedQueryCallback } = this.props;
 
     const { checkedQueries, display } = this.state;
     const defaultDisplay = cloneDeep(this.props.display);
@@ -456,6 +456,7 @@ class Statement extends React.Component {
         display,
       }, () => {
         onBatchEditCallback(newDraft, newSubquery);
+        newCombinedQueryCallback(newSubquery.key);
       });
     }
   }
@@ -1074,6 +1075,7 @@ Statement.propTypes = {
   onDuplicateStatementCallback: PropTypes.func,
   onBatchEditCallback: PropTypes.func,
   onSetDefaultStatementCallback: PropTypes.func,
+  newCombinedQueryCallback: PropTypes.func,
 };
 
 Statement.defaultProps = {
@@ -1109,6 +1111,7 @@ Statement.defaultProps = {
   onDuplicateStatementCallback: () => {},
   onBatchEditCallback: () => {},
   onSetDefaultStatementCallback: () => {},
+  newCombinedQueryCallback: () => {}
 };
 
 export default Statement;

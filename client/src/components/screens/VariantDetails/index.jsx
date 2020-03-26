@@ -155,72 +155,60 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
-        renderer: createCellRenderer('button', this.getConsequences, { key: 'geneAffectedSymbol' }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        renderer: c => c.geneAffectedSymbol || '',
       },
       {
         key: 'aaChange',
         label: 'screen.variantDetails.summaryTab.consequencesTable.AAColumn',
-        renderer: createCellRenderer('custom', this.getConsequences, {
-          key: 'aaChange',
-          renderer: (data) => { try { return data.aaChange; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        renderer: c => c.aaChange || '',
       },
       {
         key: 'consequence',
-        label: 'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn',
-        renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => { try { return data.consequence[0].split('_variant')[0]; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        label:
+          'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn',
+        renderer: c => c.consequence[0].split('_variant')[0],
       },
       {
         key: 'cdnaChange',
-        label: 'screen.variantDetails.summaryTab.consequencesTable.CDNAChangeColumn',
-        renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => { try { return data.cdnaChange; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        label:
+          'screen.variantDetails.summaryTab.consequencesTable.CDNAChangeColumn',
+        renderer: c => c.dnaChange || '',
       },
       {
         key: 'strand',
-        label: 'screen.variantDetails.summaryTab.consequencesTable.StrandColumn',
-        renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => { try { return data.strand === +1 ? '+' : '-'; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        label:
+          'screen.variantDetails.summaryTab.consequencesTable.StrandColumn',
+        renderer: c => (c.strand === +1 ? '+' : '-'),
       },
       {
         key: 'impact',
-        label: 'screen.variantDetails.summaryTab.consequencesTable.ImpactColumn',
-        renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => { try { return impact(data); } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        label:
+          'screen.variantDetails.summaryTab.consequencesTable.ImpactColumn',
+        renderer: c => impact(c),
       },
       {
-        key: 'conservationScores.PhyloP17Way',
-        label: 'screen.variantDetails.summaryTab.consequencesTable.ConservationColumn',
-        renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => { try { return data.conservationsScores.PhyloP17Way; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        key: 'PhyloP17Way',
+        label:
+          'screen.variantDetails.summaryTab.consequencesTable.ConservationColumn',
+        renderer: (c) => { try { return c.conservationsScores.PhyloP17Way; } catch (e) { return ''; } },
       },
       {
         key: 'transcripts',
-        label: 'screen.variantDetails.summaryTab.consequencesTable.TranscriptsColumn',
-        renderer: createCellRenderer('custom', this.getConsequences, {
-          renderer: (data) => {
-            try {
-              const { geneAffectedId } = data;
-              const baseUrl = 'https://useast.ensembl.org/Homo_sapiens/Transcript/Summary?db=core';
-              const lis = data.transcripts.map(t => (<li><Link url={`${baseUrl}&t=${t.featureId}`} text={t.featureId} /></li>));
-              return data.transcripts.map(t => (<ul>{lis}</ul>));
-            } catch (e) { return ''; }
-          },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        label:
+          'screen.variantDetails.summaryTab.consequencesTable.TranscriptsColumn',
+        renderer: (data) => {
+          try {
+            const baseUrl = 'https://useast.ensembl.org/Homo_sapiens/Transcript/Summary?db=core';
+            const lis = data.transcripts.map(t => (
+              <li>
+                <Link url={`${baseUrl}&t=${t.featureId}`} text={t.featureId} />
+              </li>
+            ));
+            return data.transcripts.map(t => <ul>{lis}</ul>);
+          } catch (e) {
+            return '';
+          }
+        },
       },
     ];
 
@@ -553,6 +541,23 @@ class VariantDetailsScreen extends React.Component {
     }
 
     return [];
+  }
+
+  getConsequencesData() {
+    const {
+      consequencesColumnPreset,
+    } = this.state;
+
+    const consequences = this.getConsequences();
+    const consequencesData = consequences.map((c) => {
+      const data = consequencesColumnPreset.reduce((acc, cur) => {
+        acc[cur.key] = cur.renderer(c);
+        return acc;
+      }, {});
+      return data;
+    });
+
+    return consequencesData;
   }
 
   getInternalCohortFrequencies() {
@@ -928,16 +933,12 @@ class VariantDetailsScreen extends React.Component {
               </Row>
               <Row type="flex" gutter={32} className="consequencesTable">
                 <Col>
-                  <DataTable
-                    size={this.getConsequences().length}
-                    total={this.getConsequences().length}
-                    enableReordering={false}
-                    reorderColumnsCallback={this.handleColumnsReordered}
-                    resizeColumnsCallback={this.handleColumnResized}
-                    columns={consequencesColumnPreset}
-                    copyCallback={this.handleCopy}
-                    enableGhostCells
-                    enableRowHeader={false}
+                  <Table
+                    pagination={false}
+                    dataSource={this.getConsequencesData()}
+                    columns={consequencesColumnPreset.map(
+                      columnPresetToColumn,
+                    )}
                   />
                 </Col>
               </Row>
@@ -951,7 +952,7 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_show_chart} />
                   {intl.get(FREQUENCIES_TAB)}
                 </span>
-)}
+                  )}
             >
               <Row>
                 <Col>{header('Cohortes internes')}</Col>
