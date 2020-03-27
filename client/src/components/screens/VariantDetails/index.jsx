@@ -670,16 +670,20 @@ class VariantDetailsScreen extends React.Component {
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
 
     const orphanetLink = (on) => {
-      const re = /(?<=Orph:)\d+(\.\d*)?/;
-      const orphaId = (on.panel ? re.exec(on.panel)[0] : '');
+      const {
+        dataId, panel,
+      } = on;
 
-      return (<span>{on.panel ? on.panel : null}</span>);
-      // return (
-      //   <Link
-      //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
-      //     text={on}
-      //   />
-      // );
+      const re = /(?<=Orph:)\d+(\.\d*)?/;
+      const orphaId = panel ? re.exec(panel)[0] : '';
+
+      // return (<span>{on.panel ? on.panel : null}</span>);
+      return (
+        <Link
+          url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${dataId}&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+          text={panel}
+        />
+      );
     };
 
     const orphphanetLine = gene => (
