@@ -334,7 +334,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.panel.map(o => (<li>{o}</li>));
+              const lis = data.orphanet.map(o => (<li>{o}</li>));
               return (<ul>{lis}</ul>);
             } catch (e) {
               return '';
@@ -637,14 +637,14 @@ class VariantDetailsScreen extends React.Component {
   }
 
   getAssociationData() {
-    const genesOrphanet = this.getGenes().filter(g => !!g.orphanet.panel);
+    const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
 
     const orphanetLink = (on) => {
       const re = /(?<=Orph:)\d+(\.\d*)?/;
-      const orphaId = re.exec(on)[0];
+      const orphaId = (on.panel ? re.exec(on.panel)[0] : '');
 
-      return (<span>{on}</span>);
+      return (<span>{on.panel ? on.panel : null}</span>);
       // return (
       //   <Link
       //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
@@ -654,7 +654,7 @@ class VariantDetailsScreen extends React.Component {
     };
 
     const orphphanetLine = gene => (
-      <li><span>{gene.geneSymbol}</span><span>{gene.orphanet.panel.map(on => (orphanetLink(on)))}</span></li>
+      <li><span>{gene.geneSymbol}</span><span>{gene.orphanet.map(on => (orphanetLink(on)))}</span></li>
     );
 
     const radboudumcLine = gene => (
