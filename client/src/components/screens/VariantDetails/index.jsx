@@ -334,7 +334,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.map(o => (<li>{o}</li>));
+              const lis = data.orphanet.panel.map(o => (<li>{o}</li>));
               return (<ul>{lis}</ul>);
             } catch (e) {
               return '';
@@ -637,7 +637,7 @@ class VariantDetailsScreen extends React.Component {
   }
 
   getAssociationData() {
-    const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
+    const genesOrphanet = this.getGenes().filter(g => !!g.orphanet.panel);
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
 
     const orphanetLink = (on) => {
@@ -654,7 +654,7 @@ class VariantDetailsScreen extends React.Component {
     };
 
     const orphphanetLine = gene => (
-      <li><span>{gene.geneSymbol}</span><span>{gene.orphanet.map(on => (orphanetLink(on)))}</span></li>
+      <li><span>{gene.geneSymbol}</span><span>{gene.orphanet.panel.map(on => (orphanetLink(on)))}</span></li>
     );
 
     const radboudumcLine = gene => (
