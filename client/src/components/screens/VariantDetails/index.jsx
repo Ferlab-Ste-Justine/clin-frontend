@@ -763,13 +763,15 @@ class VariantDetailsScreen extends React.Component {
       assemblyVersion,
       refAllele,
       altAllele,
-      clinvar_clinsig,
       clinvar,
       lastAnnotationUpdate,
       bdExt,
       frequencies,
       consequences,
     } = data;
+
+    const clinvar_clinsig = clinvar ? clinvar.clinvar_clinsig : '';
+
     const {
       consequencesColumnPreset,
       internalCohortsFrequenciesColumnPreset,
