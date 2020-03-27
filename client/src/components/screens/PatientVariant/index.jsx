@@ -887,8 +887,6 @@ class PatientVariantScreen extends React.Component {
                 type="flex"
                 align="middle"
               >
-                // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                // eslint-disable-next-line jsx-a11y/anchor-is-valid
                 <a
                   href="#"
                   data-patient-id={patient.details.id}
