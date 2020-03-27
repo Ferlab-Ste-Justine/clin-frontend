@@ -98,7 +98,7 @@
                     color: #536377;
                 }
                 .rowTitle{
-                    width: 50%;
+                    width: 48%;
         
                 }
         
@@ -106,9 +106,35 @@
                     display: flex;
                     justify-content: right;
                     margin: 0;
+                    width: 48%;
                     span{
                        text-align: right; 
                        width: 100%;
+                       ul{
+                           margin: 0;
+                           li{
+                            margin: 0;
+                            padding: 0;
+                            list-style-type: none;
+
+                           }
+                       }
+                    }
+                    a{
+                        padding: 0;
+                        span{
+                            color: #1D8BC6;
+                        }
+                    }
+                    .impact{
+                        width: inherit;
+                        margin: 0 8px;
+                        span{
+                            height: 8px;
+                            width: 8px;
+                            margin: 0;
+                        }
+                
                     }
                 }
             }
@@ -165,6 +191,56 @@
             border-right: none;
             border-bottom: 1px solid #e8e8e8;
         }
+    }
+
+    .ant-table-body{
+        th{
+            background: #F8FAFC;
+            .ant-table-column-title{
+                font-family: $font;
+                font-weight: 500;
+                font-size: 14px;
+                color: #233750;
+            }
+        }
+        tr{
+            &:not(.ant-table-expanded-row):not(.ant-table-row-selected){
+                td{
+                    background: #fff;
+                }
+            }
+            td{
+                background: #fff;
+                font-family: $font;
+                font-size: 14px;
+                color: #536377;
+                .capitalize{
+                    text-transform: capitalize;
+                }
+                ul{
+                    padding: 0;
+                    margin: 0;
+                    li{
+                        list-style-type: none;
+                        a{
+                            padding: 0;
+                        }
+
+
+                    }
+                }
+                a{
+                    span{
+                        background: #fff;
+                        font-family: $font;
+                        font-size: 14px;
+                        color: #1D8BC6;; 
+                    }
+                }
+
+            }
+        }
+
     }
 
 
