@@ -677,7 +677,6 @@ class VariantDetailsScreen extends React.Component {
       const re = /(?<=Orph:)\d+(\.\d*)?/;
       const orphaId = panel ? re.exec(panel)[0] : '';
 
-      // return (<span>{on.panel ? on.panel : null}</span>);
       return (
         <Link
           url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${dataId}&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
@@ -720,7 +719,6 @@ class VariantDetailsScreen extends React.Component {
 
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g) => {
-        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
         const lis = g.hpo ? g.hpo.map((h) => {
           const re = /(?<=HP:)\d+(\.\d*)?/;
           const hpoId = re.exec(h)[0];
