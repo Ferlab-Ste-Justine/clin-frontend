@@ -18,9 +18,9 @@
         padding-bottom: 16px;
         .labelTitle{
             color: rgb(35, 55, 80);
-            font-size: 16px;
+            font-size: $medium-font;
             font-family: $font;
-            font-weight: 500;
+            font-weight: $font-weight-medium;
             letter-spacing: 0.15px;
             display: inline;
             margin: 0;
@@ -57,9 +57,9 @@
                 border: none;
                 border-radius: 2px;
                 color: #233750;
-                font-size: 14px;
+                font-size: $small-font;
                 font-family: $font;
-                letter-spacing: 0.25px;
+                letter-spacing: $small-letter-spacing;
                 line-height: 20px;
                 &::placeholder{
                     color: rgba(35, 55, 80, 0.38);
@@ -89,7 +89,7 @@
             height: auto;
             span{
                 color: rgba(35, 55, 80, 0.78);
-                font-size: 12px;
+                font-size: $little-font;
                 font-family: $font;
                 text-decoration: underline;
                 letter-spacing: 0.4px;
@@ -190,15 +190,17 @@
                 input{
                     height: 20px;
                     color: rgb(35, 55, 80);
-                    font-size: 14px;
+                    font-size: $small-font;
                     font-family: $font;
-                    letter-spacing: 0.25px;
+                    letter-spacing: $small-letter-spacing;
                     margin: 2px 0;
                     padding-left: 8px;
                     padding-right: 14px;
                     &:focus{
                         outline: none;
                     }
+
+
                     
                 }
 
@@ -271,7 +273,7 @@
                     color: rgba(35, 55, 80, 0.78);
                     background-color: #f0f2f5;
                     font-family: $font;
-                    font-size: 12px;
+                    font-size: $little-font;
                     letter-spacing: 0.4px;
                     line-height:12.5px;
                     text-align: center;
@@ -279,7 +281,11 @@
                     border: none;
                     border-radius: 2px;
                     height: 18px;
-              }
+                 } 
+                 .valueCountDisabled{
+                    background-color: #fff;
+                    color: rgba(35, 55, 80, 0.38);
+                 }
             }
 
         }
@@ -366,7 +372,7 @@
             }
             span{
                 color: rgba(35, 55, 80, 0.78);
-                font-size: 12px;
+                font-size: $little-font;
                 font-family: $font;
                 letter-spacing: 0.4px;
             }
@@ -414,14 +420,25 @@
 
                 span{
                     color: rgb(255, 255, 255);
-                    font-size: 12px;
+                    font-size: $little-font;
                     font-family: $font;
-                    font-weight: 500;
-                    letter-spacing: 0.25px;
+                    font-weight: $font-weight-medium;
+                    letter-spacing:$small-letter-spacing;
                 }
 
                 &:hover{
-                    background-color:rgba(27, 122, 178, 0.92)
+                    background-color:rgba(27, 122, 178, 0.92);
+                }
+
+                &:disabled{
+                    background: rgba(35, 55, 80,0.12);
+                    span{
+                        color: $color-disable;
+                    }
+                    i svg{
+                        color: $color-disable;
+                    }
+                    
                 }
             }
 
@@ -435,13 +452,19 @@
             border-radius: 2px;
             span{
                 color: rgb(255, 255, 255);
-                font-size: 12px;
+                font-size: $little-font;
                 font-family: $font;
-                font-weight: 500;
-                letter-spacing: 0.25px;
+                font-weight: $font-weight-medium;
+                letter-spacing: $small-letter-spacing;
             }
             &:hover{
                 background-color:rgba(27, 122, 178, 0.92)
+            }
+            &:disabled{
+                background: rgba(35, 55, 80,0.12);
+                span{
+                    color: $color-disable;
+                }                
             }
         }
     }
@@ -457,7 +480,7 @@
         div:nth-child(2){
             background-color: #e7ebef;
             color: rgba(35, 55, 80, 0.78);
-            font-size: 12px;
+            font-size: $little-font;
             font-family: $font;
             letter-spacing: 0.4px;
             line-height: 16px;
@@ -476,9 +499,9 @@
         display: flex;
         padding:4px 8px;
         color: rgb(35, 55, 80);
-        font-size: 14px;
+        font-size: $small-font;
         font-family: $font;
-        letter-spacing: 0.25px;
+        letter-spacing:$small-letter-spacing;
         align-items: center;
         .graySvgIcon{
             margin-right: 8px;

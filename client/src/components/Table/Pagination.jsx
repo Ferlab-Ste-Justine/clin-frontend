@@ -45,7 +45,7 @@ DataTablePagination.defaultProps = {
   size: 25,
   defaultPage: 1,
   defaultSize: 25,
-  sizeOptions: ['25', '50', '100', '250', '500', '1000'],
+  sizeOptions: ['25', '50', '100', '200'],
   canChangeSize: true,
   isDisabled: false,
   pageChangeCallback: () => {},

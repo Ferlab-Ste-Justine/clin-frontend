@@ -6,6 +6,7 @@ import watchedAppSagas from './app';
 import watchedUserSagas from './user';
 import watchedPatientSagas from './patient';
 import watchedVariantSagas from './variant';
+import watchedVariantDetailsSagas from './variantDetails';
 import watchedRouterSagas from './router';
 
 
@@ -28,6 +29,7 @@ const rootSagas = [
   watchedUserSagas,
   watchedPatientSagas,
   watchedVariantSagas,
+  watchedVariantDetailsSagas,
   watchedRouterSagas,
 ].map(makeRestartable);
 

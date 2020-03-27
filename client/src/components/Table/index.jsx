@@ -6,12 +6,14 @@ import {
   Table, Cell, RenderMode, Column, Utils,
 } from '@blueprintjs/table';
 import {
-  Badge, Button, Typography,
+  Badge, Button, Typography, Checkbox, Tooltip,
 } from 'antd';
 import { cloneDeep } from 'lodash';
+import IconKit from 'react-icons-kit';
+import {
+  ic_info_outline,
+} from 'react-icons-kit/md';
 import './style.scss';
-
-import styleTable from './style.module.scss';
 
 
 export const createCellRenderer = (type, getData, options = {}) => {
@@ -26,17 +28,32 @@ export const createCellRenderer = (type, getData, options = {}) => {
       case 'paragraph':
         valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
         break;
+      case 'capitalText':
+        valueRenderer = value => (
+          <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{value}</Typography.Text>);
+        break;
       case 'link':
         valueRenderer = value => (
-          <Button
+          <a
             type="link"
-            size={options.size}
-            shape={options.shape}
-            icon={options.icon}
             href={(options.renderer ? options.renderer(value) : '#')}
+            className="link"
           >
             {value}
-          </Button>
+          </a>
+        );
+        break;
+      case 'wrapTextLink':
+        valueRenderer = value => (
+          <div className="wrapTextLinkContainer">
+            <a
+              type="link"
+              href={(options.renderer ? options.renderer(value) : '#')}
+              className="wrapTextLink"
+            >
+              {value}
+            </a>
+          </div>
         );
         break;
       case 'button':
@@ -48,9 +65,27 @@ export const createCellRenderer = (type, getData, options = {}) => {
             icon={options.icon}
             onClick={options.handler}
             data-id={value}
+            className="button"
           >
             {options.label || value}
           </Button>
+        );
+        break;
+      case 'tooltipButton':
+        valueRenderer = value => (
+          <Tooltip title={options.label || value} mouseEnterDelay={1}>
+            <Button
+              type={options.type}
+              size={options.size}
+              shape={options.shape}
+              icon={options.icon}
+              onClick={options.handler}
+              data-id={value}
+              className="button"
+            >
+              {options.label || value}
+            </Button>
+          </Tooltip>
         );
         break;
       case 'badge':
@@ -62,15 +97,17 @@ export const createCellRenderer = (type, getData, options = {}) => {
       case 'custom':
         valueRenderer = options.renderer;
         break;
+      case 'checkbox':
+        valueRenderer = () => (<Checkbox />);
+        break;
     }
 
     return (row) => {
       try {
         const dataSet = getData();
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
-
         return (
-          <Cell className={row % 2 !== 0 ? `${styleTable.cellValue} ${styleTable.evenRow}` : `${styleTable.cellValue}`}>
+          <Cell className="cellValue">
             {valueRenderer(value)}
           </Cell>
         );
@@ -85,9 +122,20 @@ export const createCellRenderer = (type, getData, options = {}) => {
 
 const DataTable = (props) => {
   const {
-    columns, size, total, enableReordering, enableResizing, renderContextMenuCallback, reorderColumnsCallback, resizeColumnCallback,
-    numFrozenColumns, enableGhostCells, copyCallback,
+    columns,
+    size,
+    total,
+    enableReordering,
+    enableResizing,
+    renderContextMenuCallback,
+    reorderColumnsCallback,
+    resizeColumnCallback,
+    numFrozenColumns,
+    enableGhostCells,
+    copyCallback,
+    enableRowHeader,
   } = props;
+  let { rowHeight } = props;
   const rowsCount = size <= total ? size : total;
   const handleColumnsReordered = (oldIndex, newIndex, length) => {
     if (oldIndex === newIndex) {
@@ -96,6 +144,15 @@ const DataTable = (props) => {
 
     reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
   };
+  rowHeight = rowsCount === 0 ? [] : rowHeight;
+  if (rowsCount < rowHeight.length) {
+    rowHeight = rowHeight.slice(0, rowsCount);
+  }
+  if (rowHeight.length < rowsCount) {
+    const bufferArray = Array(rowsCount - rowHeight.length).fill(32);
+    rowHeight = [...rowHeight, ...bufferArray];
+  }
+  const renderColumnHeader = (name, index) => (<div className="tooltipHeader">{intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} /></div>);
   return (
     <Table
       key={shortid.generate()}
@@ -108,15 +165,17 @@ const DataTable = (props) => {
       bodyContextMenuRenderer={renderContextMenuCallback}
       onColumnsReordered={handleColumnsReordered}
       onColumnWidthChanged={resizeColumnCallback}
-      defaultRowHeight={36}
+      rowHeights={rowHeight}
       getCellClipboardData={copyCallback}
-      className={styleTable.table}
+      columnWidths={columns.map(c => c.columnWidth)}
+      enableRowHeader={enableRowHeader}
     >
       { columns.map(definition => (
         <Column
           id={definition.key}
-          name={intl.get(definition.label)}
+          name={definition.description ? definition.description : intl.get(definition.label)}
           cellRenderer={definition.renderer}
+          nameRenderer={definition.description ? renderColumnHeader : null}
         />
       )) }
     </Table>
@@ -135,6 +194,8 @@ DataTable.propTypes = {
   reorderColumnsCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
   copyCallback: PropTypes.func,
+  rowHeight: PropTypes.shape([]),
+  enableRowHeader: PropTypes.bool,
 };
 
 DataTable.defaultProps = {
@@ -149,6 +210,8 @@ DataTable.defaultProps = {
   reorderColumnsCallback: () => {},
   resizeColumnCallback: () => {},
   copyCallback: null,
+  rowHeight: [],
+  enableRowHeader: true,
 };
 
 export default DataTable;

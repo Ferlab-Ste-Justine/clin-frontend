@@ -16,6 +16,7 @@ import NoMatchScreen from '../../components/screens/NoMatch';
 import PatientScreen from '../../components/screens/Patient';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
 import PatientVariantScreen from '../../components/screens/PatientVariant';
+import VariantDetailsScreen from '../../components/screens/VariantDetails';
 import PrivateRoute from '../PrivateRoute';
 import {
   ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT,
@@ -69,7 +70,7 @@ export class App extends React.Component {
                 <PrivateRoute exact path={pathPatientSearch} Component={PatientSearchScreen} key="route-patient-search" />
                 <PrivateRoute exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
                 <PrivateRoute exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
-                <PrivateRoute exact path={pathVariantPage} Component={MaintenanceScreen} key="route-variant" />
+                <PrivateRoute exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
                 <Route component={NoMatchScreen} key="route-nomatch" />
               </Switch>
             </ConnectedRouter>

@@ -186,9 +186,60 @@ class InteractiveTable extends React.Component {
     }
   }
 
+  rrenderColumnWidth() {
+    const {
+      orderedColumns, visibleColumns,
+    } = this.state;
+    const filteredColumns = orderedColumns.filter(column => visibleColumns.indexOf(column.label) !== -1);
+    const columnWidth = Array(filteredColumns.length).fill(150);
+    // eslint-disable-next-line array-callback-return
+    filteredColumns.map((column, index) => {
+      switch (column.key) {
+        case 'mutationId':
+          columnWidth[index] = 200;
+          break;
+        case 'type':
+          columnWidth[index] = 90;
+          break;
+        case 'consequences':
+          columnWidth[index] = 250;
+          break;
+        case 'exomiser':
+          columnWidth[index] = 100;
+          break;
+
+        case 'clinvar':
+          columnWidth[index] = 160;
+          break;
+        case 'zygosity':
+          columnWidth[index] = 90;
+          break;
+        case 'seq':
+          columnWidth[index] = 80;
+          break;
+        case 'dbsnp':
+          columnWidth[index] = 120;
+          break;
+        case 'frequencies':
+          columnWidth[index] = 120;
+          break;
+        case 'cadd':
+          columnWidth[index] = 90;
+          break;
+        case 'gnomAD':
+          columnWidth[index] = 120;
+          break;
+        default:
+          columnWidth[index] = 150;
+          break;
+      }
+    });
+    return columnWidth;
+  }
+
   render() {
     const {
-      size, page, total, isLoading, numFrozenColumns, copyCallback,
+      size, page, total, isLoading, numFrozenColumns, copyCallback, rowHeight,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -198,7 +249,6 @@ class InteractiveTable extends React.Component {
     const isSelectable = this.isSelectable();
     const isExportable = this.isExportable();
     const filteredColumns = orderedColumns.filter(column => visibleColumns.indexOf(column.label) !== -1);
-
     const content = (
       <Card
         className={`${styleTable.columnFilter}`}
@@ -285,6 +335,7 @@ class InteractiveTable extends React.Component {
               columns={filteredColumns}
               copyCallback={copyCallback}
               enableGhostCells
+              rowHeight={rowHeight}
             />
           </Col>
         </Row>
@@ -322,6 +373,7 @@ InteractiveTable.propTypes = {
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
   copyCallback: PropTypes.func,
+  rowHeight: PropTypes.number,
 };
 
 InteractiveTable.defaultProps = {
@@ -337,6 +389,7 @@ InteractiveTable.defaultProps = {
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},
   copyCallback: () => {},
+  rowHeight: null,
 };
 
 export default InteractiveTable;

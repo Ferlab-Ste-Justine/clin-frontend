@@ -52,6 +52,10 @@ export class ApiError extends Error {
   }
 }
 
+const getVariantDetails = id => axios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
+  .then(successCallback)
+  .catch(errorCallback);
+
 const getVariantSchema = () => axios.get(`${window.CLIN.variantServiceApiUrl}/schema`)
   .then(successCallback)
   .catch(errorCallback);
@@ -137,6 +141,7 @@ export default {
   getPatientById,
   getPatientsByAutoComplete,
   searchPatients,
+  getVariantDetails,
   getVariantSchema,
   searchVariantsForPatient,
   searchFacetsForPatient,

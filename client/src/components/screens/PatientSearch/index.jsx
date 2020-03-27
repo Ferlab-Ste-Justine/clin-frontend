@@ -28,6 +28,9 @@ import { navigateToPatientScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
 import { appShape } from '../../../reducers/app';
 
+const COLUMN_WIDTHS = {
+  DEFAULT: 150,
+};
 
 class PatientSearchScreen extends React.Component {
   constructor(props) {
@@ -61,16 +64,76 @@ class PatientSearchScreen extends React.Component {
       'screen.patientsearch.table.status',
     ];
     this.columnPreset = [
-      { key: 'patientId', label: 'screen.patientsearch.table.patientId', renderer: createCellRenderer('button', this.getData, { key: 'id', handler: this.handleGoToPatientScreen }) },
-      { key: 'organization', label: 'screen.patientsearch.table.organization', renderer: createCellRenderer('text', this.getData, { key: 'organization' }) },
-      { key: 'firstName', label: 'screen.patientsearch.table.firstName', renderer: createCellRenderer('text', this.getData, { key: 'firstName' }) },
-      { key: 'lastName', label: 'screen.patientsearch.table.lastName', renderer: createCellRenderer('text', this.getData, { key: 'lastName' }) },
-      { key: 'dob', label: 'screen.patientsearch.table.dob', renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }) },
-      { key: 'familyComposition', label: 'screen.patientsearch.table.familyComposition', renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' }) },
-      { key: 'position', label: 'screen.patientsearch.table.position', renderer: createCellRenderer('text', this.getData, { key: 'proband' }) },
-      { key: 'practitioner', label: 'screen.patientsearch.table.practitioner', renderer: createCellRenderer('text', this.getData, { key: 'practitioner' }) },
-      { key: 'request', label: 'screen.patientsearch.table.request', renderer: createCellRenderer('text', this.getData, { key: 'request' }) },
-      { key: 'status', label: 'screen.patientsearch.table.status', renderer: createCellRenderer('dot', this.getData, { key: 'status', renderer: (value) => { if (value === 'completed') { return 'success'; } return 'default'; } }) },
+      {
+        key: 'patientId',
+        label: 'screen.patientsearch.table.patientId',
+        renderer: createCellRenderer('button', this.getData, {
+          key: 'id',
+          handler: this.handleGoToPatientScreen,
+        }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'organization',
+        label: 'screen.patientsearch.table.organization',
+        renderer: createCellRenderer('text', this.getData, { key: 'organization' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'firstName',
+        label: 'screen.patientsearch.table.firstName',
+        renderer: createCellRenderer('text', this.getData, { key: 'firstName' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'lastName',
+        label: 'screen.patientsearch.table.lastName',
+        renderer: createCellRenderer('text', this.getData, { key: 'lastName' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'dob',
+        label: 'screen.patientsearch.table.dob',
+        renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'familyComposition',
+        label: 'screen.patientsearch.table.familyComposition',
+        renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'position',
+        label: 'screen.patientsearch.table.position',
+        renderer: createCellRenderer('text', this.getData, { key: 'proband' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'practitioner',
+        label: 'screen.patientsearch.table.practitioner',
+        renderer: createCellRenderer('text', this.getData, { key: 'practitioner' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'request',
+        label: 'screen.patientsearch.table.request',
+        renderer: createCellRenderer('text', this.getData, { key: 'request' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'status',
+        label: 'screen.patientsearch.table.status',
+        renderer: createCellRenderer('dot', this.getData, {
+          key: 'status',
+          renderer: (value) => {
+            if (value === 'completed') {
+              return 'success';
+            } return 'default';
+          },
+        }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
     ];
     this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
   }
@@ -254,7 +317,7 @@ class PatientSearchScreen extends React.Component {
 
     const { Title } = Typography;
     const placeholderText = intl.get('screen.patientsearch.placeholder');
-
+    const rowHeight = Array(size).fill(36);
     const autoCompleteResults = search.autocomplete.results.map(result => ({
       value: result.id,
       text: (
@@ -337,12 +400,14 @@ class PatientSearchScreen extends React.Component {
                   page={page}
                   total={total}
                   schema={this.columnPreset}
+                  columnWidth={this.columnPreset.map(c => c.columnWidth)}
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
                   exportCallback={this.exportToTsv}
                   numFrozenColumns={1}
                   isLoading={showSubloadingAnimation}
                   copyCallback={this.handleCopy}
+                  rowHeight={rowHeight}
                 />
               </Card>
             </Col>

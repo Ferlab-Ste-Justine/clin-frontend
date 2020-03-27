@@ -5,7 +5,7 @@ const LOGGED_IN = 'logged_in';
 export const ROUTE_NAME_PATIENT = 'patient';
 export const PATIENT_SUBROUTE_SEARCH = 'search';
 export const PATIENT_SUBROUTE_VARIANT = 'variant';
-export const ROUTE_NAME_VARIANT = 'variant';
+export const ROUTE_NAME_VARIANT = 'variantDetails';
 
 const patientSearchRoutePattern = new RegExp(`/${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`, 'gi');
 const patientPageRoutePattern = new RegExp(`/${ROUTE_NAME_PATIENT}/PA[0-9]{1,}`, 'gi');
@@ -26,14 +26,14 @@ export const setAsLoggedOut = () => {
 
 export const isPatientSearchRoute = location => patientSearchRoutePattern.test(location);
 
-export const isPatientPageRoutePattern = location => patientPageRoutePattern.test(location);
+export const isPatientPageRoute = location => patientPageRoutePattern.test(location);
 
-export const isPatientVariantPageRoutePattern = location => patientVariantPageRoutePattern.test(location);
+export const isPatientVariantPageRoute = location => patientVariantPageRoutePattern.test(location);
 
-export const isVariantPageRoutePattern = location => variantPageRoutePattern.test(location);
+export const isVariantPageRoute = location => variantPageRoutePattern.test(location);
 
 export const getPatientIdFromPatientPageRoute = location => location.match(patientIdMatch);
 
 export const getPatientIdFromPatientVariantPageRoute = location => location.match(patientIdMatch);
 
-export const getVariantIfFromVariantPageRoutePattern = location => location.match(variantIdMatch);
+export const getVariantIdFromVariantPageRoute = location => location.match(variantIdMatch);

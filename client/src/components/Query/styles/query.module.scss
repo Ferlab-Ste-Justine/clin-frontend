@@ -114,7 +114,7 @@
 color: rgb(229, 107, 26);
 font-family:$font;
 font-size: $little-font;
-font-weight: 500;
+font-weight: $font-weight-medium;
 letter-spacing:$small-letter-spacing;
 margin: 8px 0;
 
@@ -140,7 +140,7 @@ margin: 8px 0;
                         >div{
                             padding:0;
                             color: rgba(35, 55, 80, 0.78);
-                            font-size: 14px;
+                            font-size: $small-font;
                             font-family: $font;
                             letter-spacing: 0.25px;
                             line-height: 20px;
@@ -153,7 +153,7 @@ margin: 8px 0;
                             border-radius:2px;
                             text-shadow:none;
                             box-shadow:none;
-                            font-size: 14px;
+                            font-size: $small-font;
                             font-family: $font;
                             text-align: center;
                             letter-spacing: 0.25px;

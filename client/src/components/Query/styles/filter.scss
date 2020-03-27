@@ -14,3 +14,20 @@
 .divider:last-of-type{
     display: none;
 }
+
+.ant-slider-disabled{
+    .ant-slider-track{
+        background-color: #d4dbe2 !important;
+    }
+    .ant-slider-handle{
+        background-color: #d4dbe2 !important;
+    }
+}
+
+.ant-input-number-disabled{
+    border: 1px solid rgba(171, 179, 188, 0.5) !important;
+    background: rgba(35, 55, 80, 0.14) !important;
+    input{
+        color: rgba(35, 55, 80, 0.38) !important;
+    }
+}
