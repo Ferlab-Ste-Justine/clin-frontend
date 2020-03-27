@@ -222,10 +222,24 @@
                     margin: 0;
                     li{
                         list-style-type: none;
+                        display: flex;
+                        align-items: center;
                         a{
                             padding: 0;
                         }
-
+                        .consequenceTerm{
+                            color: #858E99;
+                        }
+                        .impact{
+                            width: inherit;
+                            margin: 0 8px;
+                            span{
+                                height: 8px;
+                                width: 8px;
+                                margin: 0;
+                            }
+                    
+                        }
 
                     }
                 }
