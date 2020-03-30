@@ -670,16 +670,19 @@ class VariantDetailsScreen extends React.Component {
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
 
     const orphanetLink = (on) => {
-      const re = /(?<=Orph:)\d+(\.\d*)?/;
-      const orphaId = (on.panel ? re.exec(on.panel)[0] : '');
+      const {
+        dataId, panel,
+      } = on;
 
-      return (<span>{on.panel ? on.panel : null}</span>);
-      // return (
-      //   <Link
-      //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
-      //     text={on}
-      //   />
-      // );
+      const re = /(?<=Orph:)\d+(\.\d*)?/;
+      const orphaId = panel ? re.exec(panel)[0] : '';
+
+      return (
+        <Link
+          url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${dataId}&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+          text={panel}
+        />
+      );
     };
 
     const orphphanetLine = gene => (
@@ -716,7 +719,6 @@ class VariantDetailsScreen extends React.Component {
 
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g) => {
-        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
         const lis = g.hpo ? g.hpo.map((h) => {
           const re = /(?<=HP:)\d+(\.\d*)?/;
           const hpoId = re.exec(h)[0];
@@ -761,13 +763,15 @@ class VariantDetailsScreen extends React.Component {
       assemblyVersion,
       refAllele,
       altAllele,
-      clinvar_clinsig,
       clinvar,
       lastAnnotationUpdate,
       bdExt,
       frequencies,
       consequences,
     } = data;
+
+    const clinvar_clinsig = clinvar ? clinvar.clinvar_clinsig : '';
+
     const {
       consequencesColumnPreset,
       internalCohortsFrequenciesColumnPreset,
