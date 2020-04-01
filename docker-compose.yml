@@ -26,7 +26,7 @@ services:
 
         root /usr/share/nginx/html;
         index index.html
-        error_page 404 = @notfoundredirect;
+        #error_page 404 = @notfoundredirect;
         #log_not_found off;
 
         add_header X-Frame-Options "SAMEORIGIN";
@@ -35,13 +35,13 @@ services:
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         # Directives for clin-frontend
-        location @notfoundredirect {
-          return 302 /;
-        }
+        #location @notfoundredirect {
+        #  return 302 /;
+        #}
 
         location / {
           # Match URI, Redirect to SPA or return 404
-          try_files $uri $uri/ index.html?$args;
+          try_files $uri $uri/ index index.html;
         }
 
         # Directives for clin-proxy-api
