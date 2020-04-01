@@ -28,16 +28,13 @@ services:
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        # NOTE: Single Page App
         location @singlepageapp {
-          return 200 index.html
+          return 200 index.html;
         }
 
         location / {
-             try_files $uri $uri/ @singlepageapp;
+          try_files $uri $uri/ @singlepageapp;
         }
-
-        # NOTE: Proxy API Services
 
         location /api/auth {  ### this service is defined in clin-proxy-api
             proxy_pass https://auth:3000/auth;
