@@ -31,7 +31,7 @@ services:
 
         # error page location redirect 301
         location @notfound {
-          return 301 index.html;
+          return 301 /index.html;
         }
 
         server_name clin.cr-ste-justine.xyz;
