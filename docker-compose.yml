@@ -21,15 +21,14 @@ services:
     command: |
       /bin/bash -c "echo '
       server {
+        server_name clin.cr-ste-justine.xyz;
         listen 443 ssl;
-        add_header X-Frame-Options "SAMEORIGIN";
+        ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
         root /usr/share/nginx/html;
         index index.html;
         error_page 404 = @notfound;
-
-        server_name clin.cr-ste-justine.xyz;
-        ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
+        add_header X-Frame-Options "SAMEORIGIN";
 
         # error page location redirect 301
         location @notfound {
@@ -37,6 +36,7 @@ services:
         }
 
         location /api/ {
+
           proxy_http_version 1.1;
           proxy_set_header Connection keep-alive;
           proxy_set_header Upgrade $$http_upgrade;
@@ -47,16 +47,21 @@ services:
           location /api/auth {  ### this service is defined in clin-proxy-api
             proxy_pass https://auth:3000/auth;
           }
+
           location /api/patient {  ### this service is defined in clin-proxy-api
             proxy_pass https://patient:4000/patient;
           }
+
           location /api/variant {  ### this service is defined in clin-proxy-api
             proxy_pass https://variant:5001/variant;
           }
+
           location /api/meta {  ### this service is defined in clin-proxy-api
             proxy_pass https://meta:7000/meta;
           }
+
         }
+
       }' | tee /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
