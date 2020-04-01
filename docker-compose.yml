@@ -25,13 +25,12 @@ services:
         listen 443 ssl;
         root /usr/share/nginx/html;
         index index.html;
-        error_page index.html;
+        error_page 404 index.html;
 
         add_header X-Frame-Options "SAMEORIGIN";
 
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
-
 
 
         # Directives for clin-frontend
