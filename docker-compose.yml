@@ -35,33 +35,6 @@ services:
           try_files index index.html
         }
 
-        location /api/ {
-
-          proxy_http_version 1.1;
-          proxy_set_header Connection keep-alive;
-          proxy_set_header Upgrade $$http_upgrade;
-          proxy_set_header Host $$host;
-          proxy_set_header X-Real-IP $$remote_addr;
-          proxy_cache_bypass $$http_upgrade;
-
-          location /api/auth {  ### this service is defined in clin-proxy-api
-            proxy_pass https://auth:3000/auth;
-          }
-
-          location /api/patient {  ### this service is defined in clin-proxy-api
-            proxy_pass https://patient:4000/patient;
-          }
-
-          location /api/variant {  ### this service is defined in clin-proxy-api
-            proxy_pass https://variant:5001/variant;
-          }
-
-          location /api/meta {  ### this service is defined in clin-proxy-api
-            proxy_pass https://meta:7000/meta;
-          }
-
-        }
-
       }' | tee /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
