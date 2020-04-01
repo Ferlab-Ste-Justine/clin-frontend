@@ -37,7 +37,7 @@ services:
         }
 
         location / {
-          try_files $uri $uri/ spa;
+          try_files $uri $uri/ @spa;
         }
 
         server_name clin.cr-ste-justine.xyz;
