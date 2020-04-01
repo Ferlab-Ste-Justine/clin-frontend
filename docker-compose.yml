@@ -34,7 +34,7 @@ services:
         }
 
         location @spa {
-          try_files index.html;
+          try_files /PLACEHOLDER index.html;
         }
 
         location /api/auth {  ### this service is defined in clin-proxy-api
