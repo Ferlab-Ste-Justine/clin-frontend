@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -61,6 +61,7 @@ const Link = ({ url, text }) => (
     size={25}
     href={url}
     target="_blank"
+    className="link"
   >
     {text}
   </Button>
@@ -231,6 +232,14 @@ class VariantDetailsScreen extends React.Component {
             const lis = data.transcripts.map(t => (
               <li>
                 <Link url={`${baseUrl}&t=${t.featureId}`} text={t.featureId} />
+                {
+                  t.canonical ? (
+                    <svg className="canonicalIcon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#1D8BC6" />
+                      <path d="M12.1872 10.3583C12.1087 11.1889 11.8021 11.8378 11.2674 12.3048C10.7326 12.7683 10.0214 13 9.13369 13C8.51337 13 7.96613 12.8538 7.49198 12.5615C7.02139 12.2656 6.65775 11.8467 6.40107 11.3048C6.14439 10.7629 6.0107 10.1337 6 9.41711V8.68984C6 7.95544 6.13012 7.30838 6.39037 6.74866C6.65062 6.18895 7.02317 5.75758 7.50802 5.45455C7.99643 5.15152 8.55971 5 9.19786 5C10.057 5 10.7487 5.23351 11.2727 5.70053C11.7968 6.16756 12.1016 6.82709 12.1872 7.67914H10.8396C10.7754 7.11943 10.6114 6.71658 10.3476 6.47059C10.0873 6.22103 9.7041 6.09626 9.19786 6.09626C8.60963 6.09626 8.15686 6.31194 7.83957 6.74332C7.52585 7.17112 7.36542 7.80036 7.35829 8.63102V9.32086C7.35829 10.1622 7.50802 10.8039 7.80749 11.246C8.11052 11.6881 8.55258 11.9091 9.13369 11.9091C9.66488 11.9091 10.0642 11.7897 10.3316 11.5508C10.5989 11.3119 10.7683 10.9144 10.8396 10.3583H12.1872Z" fill="#EAF3FA" />
+                    </svg>
+                  ) : ''
+                }
               </li>
             ));
             return <ul>{lis}</ul>;
@@ -292,7 +301,12 @@ class VariantDetailsScreen extends React.Component {
         key: 'AF',
         label: 'screen.variantDetails.frequenciesTab.frequencies',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
-          renderer: (data) => { try { return data.AF; } catch (e) { return ''; } },
+          renderer: (data) => {
+            try {
+              const af = data.AF.toExponential(5);
+              return af;
+            } catch (e) { return ''; }
+          },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
@@ -602,6 +616,7 @@ class VariantDetailsScreen extends React.Component {
       const rows = internalCohortsKeys.map((key) => {
         const frequency = frequencies[key];
         frequency.key = key === 'interne' ? 'Total' : key;
+        frequency.AF = Number.parseFloat(frequency.AF).toExponential(5);
         return frequency;
       });
 
@@ -629,6 +644,7 @@ class VariantDetailsScreen extends React.Component {
       const rows = externalCohortsKeys.map((key) => {
         const frequency = frequencies[key];
         frequency.key = key;
+        frequency.AF = Number.parseFloat(frequency.AF).toExponential(5);
         frequency.info = (
           <Link
             url={url}
@@ -668,12 +684,11 @@ class VariantDetailsScreen extends React.Component {
   getAssociationData() {
     const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
-
     const orphanetLink = (on) => {
       const re = /(?<=Orph:)\d+(\.\d*)?/;
       const orphaId = (on.panel ? re.exec(on.panel)[0] : '');
 
-      return (<span>{on.panel ? on.panel : null}</span>);
+      return (on.panel ? on.panel : null);
       // return (
       //   <Link
       //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
@@ -682,31 +697,13 @@ class VariantDetailsScreen extends React.Component {
       // );
     };
 
-    const orphphanetLine = gene => (
-      <li><span>{gene.geneSymbol}</span><span>{gene.orphanet.map(on => (orphanetLink(on)))}</span></li>
-    );
-
-    const radboudumcLine = gene => (
-      <li><span>{gene.geneSymbol}</span><span>{` ${gene.radboudumc.join(', ')}`}</span></li>
-    );
-
-    const orphanetInfo = (
-      <ul>{genesOrphanet.map(g => orphphanetLine(g))}</ul>
-    );
-    const radboudumcInfo = (
-      <ul>{genesRadboudumc.map(g => radboudumcLine(g))}</ul>
-    );
-
-    return [
-      {
-        label: 'Orphanet',
-        value: orphanetInfo,
-      },
-      {
-        label: 'Radboudumc',
-        value: radboudumcInfo,
-      },
-    ];
+    return this.getGenes().map((g) => {
+      // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+      const radboudumcLine = g.radboudumc ? g.radboudumc.join(', ') : '--';
+      const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
+      const orphphanetLine = test ? test.join(', ') : '--';
+      return { geneSymbol: g.geneSymbol, orphanet: orphphanetLine, radboudumc: radboudumcLine };
+    });
   }
 
   getHPODataSource() {
@@ -777,7 +774,6 @@ class VariantDetailsScreen extends React.Component {
       HPOColumnPreset,
       donorsColumnPreset,
     } = this.state;
-
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
     return (
       <Content>
@@ -870,13 +866,13 @@ class VariantDetailsScreen extends React.Component {
                     dataSource={[
                       {
                         label: 'Clin Var',
-                        value: bdExt ? (
+                        value: bdExt && bdExt.clinvar ? (
                           <Link
                             url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.clinvar}`}
-                            text={bdExt.clinvar}
+                            text={`PATATE ${bdExt.clinvar}`}
                           />
                         ) : (
-                          ''
+                          '--'
                         ),
                       },
                       {
@@ -888,7 +884,7 @@ class VariantDetailsScreen extends React.Component {
                               text={bdExt.omim}
                             />
                           ) : (
-                            ''
+                            '--'
                           ),
                       },
                       {
@@ -900,7 +896,7 @@ class VariantDetailsScreen extends React.Component {
                               text={bdExt.dbSNP}
                             />
                           ) : (
-                            ''
+                            '--'
                           ),
                       },
                       {
@@ -913,7 +909,7 @@ class VariantDetailsScreen extends React.Component {
                                 text={p}
                               />
                             ))
-                            : '',
+                            : '--',
                       },
                     ]}
                   />
@@ -941,7 +937,7 @@ class VariantDetailsScreen extends React.Component {
                       },
                       {
                         label: 'Fréquences',
-                        value: `${frequencies.interne.AF.toFixed(5)}`,
+                        value: `${Number.parseFloat(frequencies.interne.AF).toExponential(5)}`,
                       },
                     ]}
                   />
@@ -963,6 +959,9 @@ class VariantDetailsScreen extends React.Component {
                 <Col>
                   <Table
                     pagination={false}
+                    locale={{
+                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                    }}
                     dataSource={this.getConsequencesData()}
                     columns={consequencesColumnPreset.map(
                       columnPresetToColumn,
@@ -982,35 +981,45 @@ class VariantDetailsScreen extends React.Component {
                 </span>
                   )}
             >
-              <Row>
-                <Col>{header('Cohortes internes')}</Col>
-              </Row>
-              <Row type="flex" gutter={32}>
-                <Col>
-                  <Table
-                    pagination={false}
-                    dataSource={this.getInternalCohortFrequencies()}
-                    columns={internalCohortsFrequenciesColumnPreset.map(
-                      columnPresetToColumn,
-                    )}
-                  />
+              <Row type="flex" className="frequenciesTab">
+                <Col className="cohorteInt">
+                  <Row>
+                    <Col>{header('Cohortes internes')}</Col>
+                  </Row>
+                  <Row>
+                    <Table
+                      pagination={false}
+                      locale={{
+                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                      }}
+                      dataSource={this.getInternalCohortFrequencies()}
+                      columns={internalCohortsFrequenciesColumnPreset.map(
+                        columnPresetToColumn,
+                      )}
+                    />
+                  </Row>
+                </Col>
+                <Col className="cohorteExt">
+                  <Row>
+                    <Col>{header('Cohortes externes')}</Col>
+                  </Row>
+                  <Row type="flex">
+                    <Col>
+                      <Table
+                        pagination={false}
+                        locale={{
+                          emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                        }}
+                        dataSource={this.getExternalCohortFrequencies()}
+                        columns={externalCohortsFrequenciesColumnPreset.map(
+                          columnPresetToColumn,
+                        )}
+                      />
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
               <Row />
-              <Row>
-                <Col>{header('Cohortes externes')}</Col>
-              </Row>
-              <Row type="flex" gutter={32}>
-                <Col>
-                  <Table
-                    pagination={false}
-                    dataSource={this.getExternalCohortFrequencies()}
-                    columns={externalCohortsFrequenciesColumnPreset.map(
-                      columnPresetToColumn,
-                    )}
-                  />
-                </Col>
-              </Row>
             </Tabs.TabPane>
 
             <Tabs.TabPane
@@ -1023,24 +1032,19 @@ class VariantDetailsScreen extends React.Component {
                 </span>
 )}
             >
-              <Row type="flex" gutter={32}>
+              <Row type="flex" className="clinVarTable">
                 <Col>
                   <DataList
                     title="Clin Var"
+                    extraInfo={clinvar ? (
+                      <Link
+                        url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
+                        text={clinvar.clinvar_id}
+                      />
+                    ) : null}
                     dataSource={
                       clinvar
                         ? [
-                          {
-                            label: intl.get(
-                              'screen.variantDetails.clinicalAssociationsTab.ClinVarID',
-                            ),
-                            value: (
-                              <Link
-                                url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
-                                text={clinvar.clinvar_id}
-                              />
-                            ),
-                          },
                           {
                             label: intl.get(
                               'screen.variantDetails.clinicalAssociationsTab.signification',
@@ -1063,19 +1067,31 @@ class VariantDetailsScreen extends React.Component {
               <Row>
                 <Col>{header('Association/Condition')}</Col>
               </Row>
-              <Row type="flex" gutter={32}>
+              <Row type="flex" className="AssCondTable">
                 <Col>
-                  <DataList dataSource={this.getAssociationData()} />
+                  <Table
+                    pagination={false}
+                    locale={{
+                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                    }}
+                    dataSource={this.getAssociationData()}
+                    columns={associationColumnPreset.map(
+                      columnPresetToColumn,
+                    )}
+                  />
                 </Col>
               </Row>
 
               <Row>
                 <Col>{header('Human Phenotype Ontology (HPO)')}</Col>
               </Row>
-              <Row type="flex" gutter={32}>
+              <Row type="flex" className="hpoTable">
                 <Col>
                   <Table
                     pagination={false}
+                    locale={{
+                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                    }}
                     dataSource={this.getHPODataSource()}
                     columns={HPOColumnPreset.map(columnPresetToColumn)}
                   />

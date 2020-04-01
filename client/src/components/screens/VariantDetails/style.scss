@@ -60,6 +60,15 @@
         padding: 0 24px 24px 24px;
     }
 
+    .link{
+        padding: 0;
+        span{
+            font-family: $font;
+            font-size: 14px;
+            color: #1D8BC6;
+        }
+    }
+
     .datalist{
         border: none;
         border-radius: 2px;
@@ -98,7 +107,7 @@
                     color: #536377;
                 }
                 .rowTitle{
-                    width: 48%;
+                    max-width: 48%;
         
                 }
         
@@ -106,7 +115,7 @@
                     display: flex;
                     justify-content: right;
                     margin: 0;
-                    width: 48%;
+                    max-width: 48%;
                     span{
                        text-align: right; 
                        width: 100%;
@@ -119,12 +128,6 @@
 
                            }
                        }
-                    }
-                    a{
-                        padding: 0;
-                        span{
-                            color: #1D8BC6;
-                        }
                     }
                     .impact{
                         width: inherit;
@@ -141,6 +144,16 @@
 
         }
 
+        .ant-list-empty-text{
+            padding: 24px 0;
+            .ant-empty-image{
+                display: none;
+            }
+            .ant-empty.ant-empty-normal{
+                margin: 0;
+            }
+        }
+
 
 
     }
@@ -154,6 +167,96 @@
         background: #F8FAFC;
         padding: 12px 16px;
         border-bottom: 2px solid #e8e8e8;
+        border-radius:2px 2px 0 0;
+    }
+    .ant-table-body{
+        table{
+            border-radius: 0;
+        }
+        .ant-table-thead > tr:first-child > th:first-child ,
+        .ant-table-thead > tr:first-child > th:last-child{
+            border-radius: 0;
+        }
+        th{
+            background: #F8FAFC;
+            .ant-table-column-title{
+                font-family: $font;
+                font-weight: 500;
+                font-size: 14px;
+                color: #233750;
+            }
+        }
+        tr{
+            &:not(.ant-table-expanded-row):not(.ant-table-row-selected){
+                td{
+                    background: #fff;
+                }
+            }
+            &:last-child{
+                td{
+                    border: none;
+                    &:first-of-type{
+                        border-radius: 0 0 0 2px;
+                    }
+                    &:last-of-type{
+                        border-radius: 0 0 2px 0;
+                    }
+                }
+            }
+            td{
+                background: #fff;
+                font-family: $font;
+                font-size: 14px;
+                color: #536377;
+                line-height: 22px;
+                .capitalize{
+                    text-transform: capitalize;
+                }
+                ul{
+                    padding: 0;
+                    margin: 0;
+                    li{
+                        list-style-type: none;
+                        display: flex;
+                        align-items: center;
+                        line-height: 0;
+                        .consequenceTerm{
+                            color: #858E99;
+                            line-height: 0;
+                            font-size: 14px;
+                        }
+                        .impact{
+                            height: 8px;
+                            width: 8px;
+                            margin: 0 8px;
+                            font-size: 14px;
+                            line-height: 0;
+                            display: flex;
+                            align-items: center;
+                            .ant-badge-status-dot{
+                                height: 8px;
+                                width: 8px;
+                            }
+                            .ant-badge-status-text{
+                                display: none;
+                            }
+                        }
+                        .canonicalIcon{
+                            margin-left: 8px;
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+    }
+    .ant-table-placeholder{
+        border-bottom:none;
+        .ant-empty-image{
+            display: none;
+        }
     }
 
     .resumeDataList{
@@ -193,70 +296,37 @@
         }
     }
 
-    .ant-table-body{
-        th{
-            background: #F8FAFC;
-            .ant-table-column-title{
-                font-family: $font;
-                font-weight: 500;
-                font-size: 14px;
-                color: #233750;
+    .frequenciesTab{
+        .cohorteInt{
+            margin-right: 24px;
+        }
+        >.ant-col{
+            width: calc(50% - 12px);
+
+
+            .ant-col{
+                width: 100%;
             }
         }
-        tr{
-            &:not(.ant-table-expanded-row):not(.ant-table-row-selected){
-                td{
-                    background: #fff;
-                }
-            }
-            td{
-                background: #fff;
-                font-family: $font;
-                font-size: 14px;
-                color: #536377;
-                .capitalize{
-                    text-transform: capitalize;
-                }
-                ul{
-                    padding: 0;
-                    margin: 0;
-                    li{
-                        list-style-type: none;
-                        display: flex;
-                        align-items: center;
-                        a{
-                            padding: 0;
-                        }
-                        .consequenceTerm{
-                            color: #858E99;
-                        }
-                        .impact{
-                            width: inherit;
-                            margin: 0 8px;
-                            span{
-                                height: 8px;
-                                width: 8px;
-                                margin: 0;
-                            }
-                    
-                        }
-
-                    }
-                }
-                a{
-                    span{
-                        background: #fff;
-                        font-family: $font;
-                        font-size: 14px;
-                        color: #1D8BC6;; 
-                    }
-                }
-
-            }
-        }
-
     }
 
+    .clinVarTable{
+        margin-bottom: 24px;
+        .datalist{
+            min-width: 448px;
+        }
+    }
 
+    .AssCondTable{
+        margin-bottom: 24px; 
+        .ant-col{
+            width: 100%;
+        }
+    }
 
+    .hpoTable{
+        .ant-col{
+            width: 100%;
+        } 
+    }
 }
