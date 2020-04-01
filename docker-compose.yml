@@ -22,6 +22,7 @@ services:
         listen 443 ssl;
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
+        index index.html
         error_page 404 = @spa;
 
         server_name clin.cr-ste-justine.xyz;
@@ -33,7 +34,7 @@ services:
         #}
 
         location @spa {
-          return 301 index.html;
+          return 301 index;
         }
 
         location /api/auth {  ### this service is defined in clin-proxy-api
