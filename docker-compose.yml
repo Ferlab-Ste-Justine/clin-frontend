@@ -41,7 +41,7 @@ services:
 
         location / {
           # Match URI, Redirect to SPA or return 404
-          try_files /dev/null index.html; #?$args;
+          try_files $uri $uri/ index.html?$args;
         }
 
         # Directives for clin-proxy-api
