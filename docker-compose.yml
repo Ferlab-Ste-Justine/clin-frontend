@@ -35,9 +35,9 @@ services:
 
 
         # Directives for clin-frontend
-        location ~ / {
+        location ^~ / {
           # Match URI, Redirect to SPA or return 404
-          try_files $uri index index.html ; # /index.html?$args
+          try_files $uri index index.html; # /index.html?$args
         }
 
         # Directives for clin-proxy-api
