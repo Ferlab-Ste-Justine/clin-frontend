@@ -13,7 +13,7 @@ services:
     ports:
       - 443:443
     deploy:
-      replicas: 2
+      replicas: 1
       placement:
         constraints: [node.labels.node_role == devops]
     networks:
