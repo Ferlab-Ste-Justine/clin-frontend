@@ -26,16 +26,16 @@ services:
 
         root /usr/share/nginx/html;
         index index.html;
-        error_page 404 = @notfound;
+        #error_page 404 = @notfound;
 
         add_header X-Frame-Options "SAMEORIGIN";
 
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        location @notfound {
-          try_files $uri $uri/ index.html?$args;
-        }
+        #location @notfound {
+        #  try_files $uri $uri/ index.html?$args;
+        #}
 
         # Directives for clin-frontend
         location / {
