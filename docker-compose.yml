@@ -29,7 +29,15 @@ services:
 
         # error page location redirect 301
         location @notfound {
-            return 301 /;
+            return 302 /;
+        }
+
+        location @spa {
+          return 200 index.html;
+        }
+
+        location / {
+          try_files $uri $uri/ spa;
         }
 
         server_name clin.cr-ste-justine.xyz;
