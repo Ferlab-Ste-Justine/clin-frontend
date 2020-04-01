@@ -33,6 +33,10 @@ services:
           return 301 /;
         }
 
+        location @spa {
+          return 200 index.html;
+        }
+
         location / {
           try_files $uri $uri/ spa;
         }
