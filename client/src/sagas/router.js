@@ -89,18 +89,27 @@ function* manualUserNavigation(action) {
   if (isFirstRendering) {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.START_SUBLOADING_ANIMATION });
-    const location = action.payload.location.pathname.replace('/#/', '/');
+    const { location } = action.payload;
+    const { pathname, hash } = location;
+    const urlIsRewrite = (pathname === '/' && hash !== '');
+    const route = urlIsRewrite ? hash.substring(2) : pathname + hash;
 
-    if (isPatientSearchRoute(location) === true) {
+    console.log(`+ route ${JSON.stringify(route)}`);
+
+    // @NOTE urlIsRewrite === true  -> https://localhost:2000/#/patient/PA14923#test
+    // @NOTE urlIsRewrite === false -> https://localhost:2000/patient/PA14923#test
+    // both of them return route -> patient/PA14923#test
+
+    if (isPatientSearchRoute(route) === true) {
       yield navigateToPatientSearchScreen();
-    } else if (isPatientVariantPageRoute(location) === true) {
-      const patientId = getPatientIdFromPatientVariantPageRoute(location);
+    } else if (isPatientVariantPageRoute(route) === true) {
+      const patientId = getPatientIdFromPatientVariantPageRoute(route);
       yield navigateToPatientVariantScreen({ payload: { uid: patientId } });
-    } else if (isPatientPageRoute(location) === true) {
-      const patientId = getPatientIdFromPatientPageRoute(location);
+    } else if (isPatientPageRoute(route) === true) {
+      const patientId = getPatientIdFromPatientPageRoute(route);
       yield navigateToPatientScreen({ payload: { uid: patientId } });
-    } else if (isVariantPageRoute(location) === true) {
-      const variantId = getVariantIdFromVariantPageRoute(location);
+    } else if (isVariantPageRoute(route) === true) {
+      const variantId = getVariantIdFromVariantPageRoute(route);
       yield navigateToVariantDetailsScreen({ payload: { uid: variantId } });
     }
     yield put({ type: actions.STOP_SUBLOADING_ANIMATION });

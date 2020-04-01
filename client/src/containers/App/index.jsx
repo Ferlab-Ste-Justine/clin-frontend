@@ -59,6 +59,12 @@ export class App extends React.Component {
     const pathPatientVariants = `/${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
     const pathVariantPage = `/${ROUTE_NAME_VARIANT}/:uid`;
 
+    // @NOTE test react route v4 regexp
+    // const pathPatientSearch = `/(#\\/)${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`;
+    // const pathPatientPage = `/(#\\/)${ROUTE_NAME_PATIENT}/:uid`;
+    // const pathPatientVariants = `/(#\\/)${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
+    // const pathVariantPage = `/(#\\/)${ROUTE_NAME_VARIANT}/:uid`;
+
     const { app, history } = this.props;
     return (
       <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
