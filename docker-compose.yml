@@ -34,7 +34,7 @@ services:
 
         # Redirect All 404s to SPA
         location @notfound {
-          try_files _ index.html
+          try_files index index.html
         }
 
         location /api/ {
