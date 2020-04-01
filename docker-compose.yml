@@ -23,6 +23,7 @@ services:
       server {
         server_name clin.cr-ste-justine.xyz;
         listen 443 ssl;
+        error_page 404;
 
         add_header X-Frame-Options "SAMEORIGIN";
 
@@ -33,7 +34,7 @@ services:
         location / {
           root /usr/share/nginx/html;
           index index.html;
-          error_page index.html
+          error_page index.html;
 
 
           # Match URI, Redirect to SPA or return 404
