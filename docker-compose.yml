@@ -37,7 +37,7 @@ services:
              try_files $uri $uri/ @singlepageapp;
         }
 
-        // Note: Proxy API Services
+        # NOTE: Proxy API Services
 
         location /api/auth {  ### this service is defined in clin-proxy-api
             proxy_pass https://auth:3000/auth;
