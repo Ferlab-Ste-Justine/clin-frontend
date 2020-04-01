@@ -22,19 +22,19 @@ services:
         listen 443 ssl;
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
-        index index.html
-        error_page 404 = @spa;
+        index index.html;
+        error_page 404 = @notfound;
 
         server_name clin.cr-ste-justine.xyz;
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        #location / {
-        #  try_files $uri $uri/ spa;
-        #}
+        location @notfound {
+          return 301 /;
+        }
 
-        location @spa {
-          return 301 index;
+        location / {
+          try_files $uri $uri/ spa;
         }
 
         location /api/auth {  ### this service is defined in clin-proxy-api
