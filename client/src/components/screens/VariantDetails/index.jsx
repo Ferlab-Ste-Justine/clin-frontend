@@ -191,10 +191,13 @@ class VariantDetailsScreen extends React.Component {
         label:
           'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn',
         renderer: (c) => {
-          const valueArray = c.consequence[0].split('_');
-          const arrayFilter = valueArray.filter(item => item !== 'variant');
-          const finalString = arrayFilter.join(' ');
-          return <span className="capitalize">{finalString}</span>;
+          const lis = c.consequence.map((cc) => {
+            const valueArray = cc.split('_');
+            const arrayFilter = valueArray.filter(item => item !== 'variant');
+            const finalString = arrayFilter.join(' ');
+            return <li className="capitalize">{finalString}</li>;
+          });
+          return (<ul>{lis}</ul>);
         },
       },
       {
