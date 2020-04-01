@@ -31,11 +31,7 @@ services:
 
         # error page location redirect 301
         location @notfound {
-            return 302 index.html;
-        }
-
-        location / {
-          try_files $uri $uri/ index.html;
+          return 200 index.html;
         }
 
         server_name clin.cr-ste-justine.xyz;
