@@ -36,7 +36,7 @@ services:
           try_files index index.html
         }
 
-        location ^~ /api {
+        location /api/ {
           proxy_http_version 1.1;
           proxy_set_header Connection keep-alive;
           proxy_set_header Upgrade $$http_upgrade;
