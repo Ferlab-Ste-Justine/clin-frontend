@@ -28,9 +28,9 @@ services:
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        #location / {
-        #  try_files /dev/null/ $uri @spa;
-        #}
+        location / {
+          try_files $uri $uri/ spa =404;
+        }
 
         location @spa {
           try_files $uri $uri/ index.html;
