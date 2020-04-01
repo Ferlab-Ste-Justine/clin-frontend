@@ -7,8 +7,8 @@ services:
       dockerfile: Dockerfile-static
     image: localhost:5000/clin-frontend-nginx
     volumes:
-#     - ./data/certbot/conf:/etc/letsencrypt  --for local usage
-#      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
+      #     - ./data/certbot/conf:/etc/letsencrypt  --for local usage
+      #      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
       - "sshvolume:/etc/letsencrypt"
     ports:
       - 443:443
@@ -23,16 +23,23 @@ services:
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
         index index.html
-        error_page 404 = @singlepageapp;
 
         server_name clin.cr-ste-justine.xyz;
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        # NOTE: Single Page App Router
-        location @singlepageapp {
-          return 301 index.html?$uri;
+        # NOTE: Single Page App Service
+
+        location / {
+            error_page 404 = @404;
+            try_files $uri =404;
         }
+
+        location @404 {
+            return 200 index.html
+        }
+
+        // Note: Proxy API Services
 
         location /api/auth {  ### this service is defined in clin-proxy-api
             proxy_pass https://auth:3000/auth;
