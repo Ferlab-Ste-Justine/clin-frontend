@@ -22,8 +22,8 @@ services:
         listen 443 ssl;
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
+        index 200 = @index
         error_page 404 = @notfound;
-        index index.html;
 
         server_name clin.cr-ste-justine.xyz;
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
@@ -31,7 +31,11 @@ services:
 
         # NOTE: Single Page App Router
         location @notfound {
-           return 200 index;
+           return 301 index;
+        }
+
+        location @index {
+          return 200 index.html
         }
 
         location /api/auth {  ### this service is defined in clin-proxy-api
