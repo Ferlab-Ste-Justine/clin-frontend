@@ -31,7 +31,7 @@ services:
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         # Directives for clin-frontend
-        location / {
+        location ^~ / {
           root /usr/share/nginx/html;
           index index.html;
           error_page index.html;
