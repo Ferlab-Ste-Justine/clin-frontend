@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -71,22 +71,45 @@ Link.propTypes = {
   text: PropTypes.string.isRequired,
 };
 
+const getImpactTag = (impact) => {
+  switch (impact) {
+    case 'HIGH':
+      return (
+        <Badge className="impact" color="#f5646c" />
+      );
+    case 'MODERATE':
+      return (
+        <Badge className="impact" color="#ffa812" />
+      );
+    case 'LOW':
+      return (
+        <Badge className="impact" color="#52c41a" />
+      );
+    case 'MODIFIER':
+      return (
+        <Badge className="impact" color="#b5b5b5" />
+      );
+    default:
+      return null;
+  }
+};
+
 const impactSummary = (c) => {
   if (canonicalTranscript(c)) {
-    const impactScore = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
+    const impactScore = c.impact ? (getImpactTag(c.impact)) : null;
     const items = [impactScore].filter(item => !!item);
     return (
       <>
         <div>
-          <span>
+          <Row>
             <Link
               url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedSymbol}`}
               text={c.geneAffectedSymbol}
             />
-          </span>
-          <span>{`- ${canonicalTranscript(c).featureId}`}</span>
+            {impactScore}
+            {c.impact}
+          </Row>
         </div>
-        <ul>{items}</ul>
       </>
     );
   }
@@ -95,35 +118,36 @@ const impactSummary = (c) => {
 };
 
 const impact = (c) => {
-  const vep = c.impact ? (<li>{`VEP: ${c.impact}`}</li>) : null;
+  const vep = c.impact ? (<li><span className="consequenceTerm">VEP: </span>{getImpactTag(c.impact)} {c.impact}</li>) : null;
 
   let items = [vep];
 
   if (c.predictions) {
     const sift = c.predictions.SIFT
-      ? (<li>{`SIFT: ${c.predictions.SIFT} - ${c.predictions.SIFT_score}`}</li>) : null;
+      ? (<li><span className="consequenceTerm">SIFT: </span>{c.predictions.SIFT} - {c.predictions.SIFT_score}</li>) : null;
 
     const polyphen2 = c.predictions.Polyphen2_HVAR_score
       ? (
         <li>
-          {`Polyphen2_HVAR: ${c.predictions.Polyphen2_HVAR_score} - ${c.predictions.Polyphen2_HVAR_pred}`}
+          <span className="consequenceTerm">Polyphen2: </span>
+          {c.predictions.Polyphen2_HVAR_score} - {c.predictions.Polyphen2_HVAR_pred}
         </li>
       ) : null;
 
     const lrt = c.predictions.LRT_Pred
-      ? (<li>{`LRT: ${c.predictions.LRT_Pred} - ${c.predictions.LRT_score}`}</li>) : null;
+      ? (<li><span className="consequenceTerm">LRT: </span>{c.predictions.LRT_Pred} - {c.predictions.LRT_score}</li>) : null;
 
     const fathmm = c.predictions.FATHMM
-      ? (<li>{`FATHMM: ${c.predictions.FATHMM} - ${c.predictions.FATHMM_score}`}</li>) : null;
+      ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.FATHMM} - {c.predictions.FATHMM_score}</li>) : null;
 
     const cadd = c.predictions.CADD_Score
-      ? (<li>{`CADD score: ${c.predictions.CADD_Score}}`}</li>) : null;
+      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_Score}</li>) : null;
 
     const dann = c.predictions && c.predictions.DANN_Score
-      ? (<li>{`CADD score: ${c.predictions.DANN_Score}}`}</li>) : null;
+      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_Score}</li>) : null;
 
     const revel = c.predictions && c.predictions.REVEL_Score
-      ? (<li>{`REVEL score: ${c.predictions.REVEL_Score}}`}</li>) : null;
+      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_Score}</li>) : null;
 
     items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
   }
@@ -155,7 +179,7 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
-        renderer: c => c.geneAffectedSymbol || '',
+        renderer: c => <Link url="#" text={c.geneAffectedSymbol} /> || '',
       },
       {
         key: 'aaChange',
@@ -166,13 +190,21 @@ class VariantDetailsScreen extends React.Component {
         key: 'consequence',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn',
-        renderer: c => c.consequence[0].split('_variant')[0],
+        renderer: (c) => {
+          const lis = c.consequence.map((cc) => {
+            const valueArray = cc.split('_');
+            const arrayFilter = valueArray.filter(item => item !== 'variant');
+            const finalString = arrayFilter.join(' ');
+            return <li className="capitalize">{finalString}</li>;
+          });
+          return (<ul>{lis}</ul>);
+        },
       },
       {
         key: 'cdnaChange',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.CDNAChangeColumn',
-        renderer: c => c.dnaChange || '',
+        renderer: c => c.cdnaChange || '',
       },
       {
         key: 'strand',
@@ -204,7 +236,7 @@ class VariantDetailsScreen extends React.Component {
                 <Link url={`${baseUrl}&t=${t.featureId}`} text={t.featureId} />
               </li>
             ));
-            return data.transcripts.map(t => <ul>{lis}</ul>);
+            return <ul>{lis}</ul>;
           } catch (e) {
             return '';
           }
@@ -641,16 +673,19 @@ class VariantDetailsScreen extends React.Component {
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
 
     const orphanetLink = (on) => {
-      const re = /(?<=Orph:)\d+(\.\d*)?/;
-      const orphaId = (on.panel ? re.exec(on.panel)[0] : '');
+      const {
+        dataId, panel,
+      } = on;
 
-      return (<span>{on.panel ? on.panel : null}</span>);
-      // return (
-      //   <Link
-      //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
-      //     text={on}
-      //   />
-      // );
+      const re = /(?<=Orph:)\d+(\.\d*)?/;
+      const orphaId = panel ? re.exec(panel)[0] : '';
+
+      return (
+        <Link
+          url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${dataId}&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+          text={panel}
+        />
+      );
     };
 
     const orphphanetLine = gene => (
@@ -687,7 +722,6 @@ class VariantDetailsScreen extends React.Component {
 
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g) => {
-        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
         const lis = g.hpo ? g.hpo.map((h) => {
           const re = /(?<=HP:)\d+(\.\d*)?/;
           const hpoId = re.exec(h)[0];
@@ -732,13 +766,14 @@ class VariantDetailsScreen extends React.Component {
       assemblyVersion,
       refAllele,
       altAllele,
-      clinvar_clinsig,
       clinvar,
       lastAnnotationUpdate,
       bdExt,
       frequencies,
       consequences,
     } = data;
+
+    const clinvar_clinsig = clinvar ? clinvar.clinvar_clinsig : '';
 
     const {
       consequencesColumnPreset,
@@ -823,7 +858,7 @@ class VariantDetailsScreen extends React.Component {
                           </ul>
                         ),
                       },
-                      { label: 'Impact(s)', value: <ul>{impactsSummary}</ul> },
+                      { label: 'Impact VEP', value: <ul>{impactsSummary}</ul> },
                       {
                         label: 'Signification clinique (Clinvar)',
                         value: clinvar_clinsig,

@@ -2,6 +2,7 @@ import { all, put, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
+import { setAsLoggedIn, setAsLoggedOut } from '../helpers/route';
 
 
 function* login(action) {
@@ -11,6 +12,7 @@ function* login(action) {
       throw new ApiError(response.error);
     }
 
+    setAsLoggedIn();
     yield put({ type: actions.USER_LOGIN_SUCCEEDED, payload: response.payload });
     yield put({ type: actions.USER_PROFILE_REQUESTED });
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
@@ -25,6 +27,8 @@ function* logout() {
     if (response.error) {
       throw new ApiError(response.error);
     }
+
+    setAsLoggedOut();
     yield put({ type: actions.USER_LOGOUT_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.USER_LOGOUT_FAILED, payload: e });
