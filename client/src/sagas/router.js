@@ -89,7 +89,7 @@ function* manualUserNavigation(action) {
   if (isFirstRendering) {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.START_SUBLOADING_ANIMATION });
-    const location = action.payload.location.pathname;
+    const location = action.payload.location.pathname.replace('/#/', '/');
 
     if (isPatientSearchRoute(location) === true) {
       yield navigateToPatientSearchScreen();
