@@ -29,8 +29,6 @@ services:
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        # NOTE: Single Page App Service
-
         # NOTE: Single Page App
 
         location @singlepageapp {
