@@ -29,13 +29,8 @@ services:
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         # NOTE: Single Page App
-        location @singlepageapp {
-            return 200 index.html
-        }
-
-        # NOTE: Single Page App
         location / {
-            try_files $uri $uri/ $uri.html @singlepageapp;
+            try_files $uri $uri/ $uri.html index.html;
         }
 
         // Note: Proxy API Services
