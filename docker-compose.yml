@@ -39,7 +39,7 @@ services:
         }
 
         # Directives for clin-proxy-api
-        location ^~ /api/ {
+        location ^~ /api/ { # when block is best non-regular expression match, don't evaluate other regexp blocks
           proxy_http_version 1.1;
           proxy_set_header Connection keep-alive;
           proxy_set_header Upgrade $$http_upgrade;
