@@ -23,18 +23,18 @@ services:
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
         index index.html
-        #error_page 404 = @spa;
+        error_page 404 = @spa;
 
         server_name clin.cr-ste-justine.xyz;
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        location / {
-          try_files /dev/null/ $uri @spa;
-        }
+        #location / {
+        #  try_files /dev/null/ $uri @spa;
+        #}
 
         location @spa {
-          try_files /dev/null index.html =404;
+          try_files /dev/null index index.html =404;
         }
 
         location /api/auth {  ### this service is defined in clin-proxy-api
