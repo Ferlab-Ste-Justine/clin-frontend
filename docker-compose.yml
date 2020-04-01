@@ -23,19 +23,15 @@ services:
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
         index index.html
-        error_page 404 = @notfound;
+        error_page 404 = @singlepageapp;
 
         server_name clin.cr-ste-justine.xyz;
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         # NOTE: Single Page App Router
-        location @notfound {
-           return 301 /;
-        }
-
-        location / {
-          try_files $uri $uri/ $uri.html index =404;
+        location @singlepageapp {
+          try_files $uri $uri/ $uri.html @singlepageapp;
         }
 
         location /api/auth {  ### this service is defined in clin-proxy-api
