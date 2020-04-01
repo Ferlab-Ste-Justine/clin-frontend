@@ -31,11 +31,7 @@ services:
 
         # error page location redirect 301
         location @notfound {
-            return 302 /;
-        }
-
-        location @spa {
-          return 200 index.html;
+            return 302 index.html;
         }
 
         location / {
