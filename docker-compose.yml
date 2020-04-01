@@ -31,7 +31,7 @@ services:
 
         # NOTE: Single Page App Router
         location @singlepageapp {
-          try_files $uri $uri/ $uri.html index.html;
+          return 301 index.html?$uri;
         }
 
         location /api/auth {  ### this service is defined in clin-proxy-api
