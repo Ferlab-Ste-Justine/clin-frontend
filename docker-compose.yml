@@ -34,11 +34,10 @@ services:
         location / {
           root /usr/share/nginx/html;
           index index.html;
-          error_page 404 index.html;
 
 
           # Match URI, Redirect to SPA or return 404
-          try_files $uri $uri/ index.html; # /index.html?$args
+          try_files $uri $uri/ index.html?$args;
         }
 
         # Directives for clin-proxy-api
