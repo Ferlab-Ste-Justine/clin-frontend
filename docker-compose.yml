@@ -33,7 +33,7 @@ services:
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         location @notfound {
-          return 301 /;
+          return 302 index.html
         }
 
         # Directives for clin-frontend
