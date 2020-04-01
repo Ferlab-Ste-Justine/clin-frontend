@@ -24,7 +24,7 @@ services:
         server_name clin.cr-ste-justine.xyz;
         listen 443 ssl;
         root /usr/share/nginx/html;
-        #index index.html;
+        index index.html;
         #error_page 404 = @notfound;
 
         add_header X-Frame-Options "SAMEORIGIN";
