@@ -39,7 +39,7 @@ services:
         }
 
         # Directives for clin-proxy-api
-        location ^~ /api/ { # when block is best non-regular expression match, don't evaluate other regexp blocks
+        location ^~ /api/ {
           proxy_http_version 1.1;
           proxy_set_header Connection keep-alive;
           proxy_set_header Upgrade $$http_upgrade;
@@ -59,7 +59,7 @@ services:
             proxy_pass https://meta:7000/meta;
           }
         }
-      }' | tee -i /etc/nginx/conf.d/clinfrontend.conf && nginx -g 'daemon off;' -c /etc/nginx/conf.d/clinfrontend.conf"
+      }' | tee -i /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
   proxy:
