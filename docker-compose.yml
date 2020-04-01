@@ -26,7 +26,7 @@ services:
 
         root /usr/share/nginx/html;
         index index.html;
-        error_page 404;
+        error_page 404 = index.html;
 
         add_header X-Frame-Options "SAMEORIGIN";
 
@@ -36,7 +36,7 @@ services:
         # Directives for clin-frontend
         location / {
           # Match URI, Redirect to SPA or return 404
-          try_files $uri $uri/ index.html; #?$args;
+          try_files $uri $uri/index.html $uri.html index.html; #?$args;
         }
 
         # Directives for clin-proxy-api
