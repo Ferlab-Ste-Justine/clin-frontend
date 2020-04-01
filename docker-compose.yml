@@ -23,22 +23,19 @@ services:
       server {
         server_name clin.cr-ste-justine.xyz;
         listen 443 ssl;
-        root /usr/share/nginx/html;
-        index index.html;
-        error_page 404 = @notfound;
 
         add_header X-Frame-Options "SAMEORIGIN";
 
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        location @notfound {
-          return 200 index.html;
-        }
-
-
         # Directives for clin-frontend
         location / {
+          root /usr/share/nginx/html;
+          index index.html;
+          error_page index.html
+
+
           # Match URI, Redirect to SPA or return 404
           try_files $uri $uri/ index.html; # /index.html?$args
         }
