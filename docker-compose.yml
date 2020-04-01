@@ -34,7 +34,7 @@ services:
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         location @notfound {
-          try_files index index.html;
+          try_files $uri $uri/ index.html;
         }
 
 
