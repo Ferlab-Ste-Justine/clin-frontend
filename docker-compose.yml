@@ -25,21 +25,17 @@ services:
         listen 443 ssl;
 
         root /usr/share/nginx/html;
-        index index.html;
+        error_page 404 =200 @spa;
 
         add_header X-Frame-Options "SAMEORIGIN";
 
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
-        location @notfound {
-          return 404;
-        }
-
         # Directives for clin-frontend
-        location / {
+        location @spa {
           # Match URI, Redirect to SPA or return 404
-          try_files $uri $uri/ index.html; #?$args;
+          try_files /dev/null index.html; #?$args;
         }
 
         # Directives for clin-proxy-api
