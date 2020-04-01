@@ -7,13 +7,15 @@ services:
       dockerfile: Dockerfile-static
     image: localhost:5000/clin-frontend-nginx
     volumes:
-#     - ./data/certbot/conf:/etc/letsencrypt  --for local usage
-#      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
+      #     - ./data/certbot/conf:/etc/letsencrypt  --for local usage
+      #      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
       - "sshvolume:/etc/letsencrypt"
     ports:
       - 443:443
     deploy:
-      replicas: 2
+      replicas: 1
+      placement:
+        constraints: [node.labels.node_role == devops]
     networks:
       - proxy
     command: |
@@ -29,7 +31,7 @@ services:
 
         # error page location redirect 301
         location @notfound {
-            return 301 /;
+          try_files index index.html
         }
 
         server_name clin.cr-ste-justine.xyz;
