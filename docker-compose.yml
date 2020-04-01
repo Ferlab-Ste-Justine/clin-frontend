@@ -26,7 +26,6 @@ services:
 
         root /usr/share/nginx/html;
         index index.html;
-        error_page 404 = @notfound;
 
         add_header X-Frame-Options "SAMEORIGIN";
 
@@ -34,7 +33,7 @@ services:
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         location @notfound {
-          return 404 index.html;
+          return 404;
         }
 
         # Directives for clin-frontend
