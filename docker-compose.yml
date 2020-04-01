@@ -34,15 +34,14 @@ services:
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         location @notfound {
-          try_files $uri $uri/ index.html;
+          try_files $uri $uri/ index.html?$args;
         }
 
-
         # Directives for clin-frontend
-        #location / {
+        location / {
           # Match URI, Redirect to SPA or return 404
-        #  try_files $uri $uri/index.html $uri.html index.html; #?$args;
-        #}
+          try_files $uri $uri/ index.html; #?$args;
+        }
 
         # Directives for clin-proxy-api
         location ^~ /api/ {
