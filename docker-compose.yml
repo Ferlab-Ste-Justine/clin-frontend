@@ -23,16 +23,19 @@ services:
         add_header X-Frame-Options "SAMEORIGIN";
         root /usr/share/nginx/html;
         index index.html
-        error_page 404 = @singlepageapp;
 
         server_name clin.cr-ste-justine.xyz;
         ssl_certificate /etc/letsencrypt/live/clin.cr-ste-justine.xyz/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/clin.cr-ste-justine.xyz/privkey.pem;
 
         # NOTE: Single Page App
-
         location @singlepageapp {
             return 200 index.html
+        }
+
+        # NOTE: Single Page App
+        location / {
+            try_files $uri $uri/ $uri.html @singlepageapp;
         }
 
         // Note: Proxy API Services
