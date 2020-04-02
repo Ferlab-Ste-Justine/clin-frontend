@@ -1,5 +1,5 @@
 import {
-  all, put, debounce, takeLatest,
+  all, put, debounce, takeLatest, select,
 } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
@@ -8,6 +8,8 @@ import Api, { ApiError } from '../helpers/api';
 
 function* fetch(action) {
   try {
+    const { defaultStatement } = yield select(state => state.user.profile);
+    yield put({ type: actions.PATIENT_VARIANT_SET_ACTIVE_STATEMENT, payload: defaultStatement || '' });
     const patientResponse = yield Api.getPatientById(action.payload.uid);
     if (patientResponse.error) {
       throw new ApiError(patientResponse.error);
