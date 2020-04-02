@@ -29,7 +29,7 @@ services:
 
         # Directive for clin-frontend
         location @notfound {
-          return 302 /#$uri;
+          return 302 /#$$uri$$is_args$$args;
         }
 
         server_name clin.cr-ste-justine.xyz;

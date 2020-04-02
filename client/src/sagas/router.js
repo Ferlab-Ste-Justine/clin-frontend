@@ -92,13 +92,7 @@ function* manualUserNavigation(action) {
     const { location } = action.payload;
     const { pathname, hash } = location;
     const urlIsRewrite = (pathname === '/' && hash !== '');
-    const route = urlIsRewrite ? hash.substring(2) : pathname + hash;
-
-    console.log(`+ route ${JSON.stringify(route)}`);
-
-    // @NOTE urlIsRewrite === true  -> https://localhost:2000/#/patient/PA14923#test
-    // @NOTE urlIsRewrite === false -> https://localhost:2000/patient/PA14923#test
-    // both of them return route -> patient/PA14923#test
+    const route = urlIsRewrite ? hash.substring(1) : pathname + hash;
 
     if (isPatientSearchRoute(route) === true) {
       yield navigateToPatientSearchScreen();
@@ -112,8 +106,6 @@ function* manualUserNavigation(action) {
       const variantId = getVariantIdFromVariantPageRoute(route);
       yield navigateToVariantDetailsScreen({ payload: { uid: variantId } });
     }
-    yield put({ type: actions.STOP_SUBLOADING_ANIMATION });
-    yield put({ type: actions.STOP_LOADING_ANIMATION });
   }
 }
 
