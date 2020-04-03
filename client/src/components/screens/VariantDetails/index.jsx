@@ -187,11 +187,9 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
-        renderer: (c) => {
-          return (
-            <Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedId}`} text={c.geneAffectedSymbol} /> || ''
-          );
-        },
+        renderer: c => (
+          <Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedId}`} text={c.geneAffectedSymbol} /> || ''
+        ),
       },
       {
         key: 'aaChange',
@@ -968,12 +966,17 @@ class VariantDetailsScreen extends React.Component {
                                   text={p}
                                 />
                               ))}
-                                <Button className="seeMore" onClick={this.handleMorePubmed}>
-                                  <span>{morePubmed ? 'Voir moins' : 'Voir plus'}</span>
-                                  <span className="iconPlus">
-                                    <Icon type={morePubmed ? 'minus' : 'plus'} />
-                                  </span>
-                                </Button>
+                                {
+                                  bdExt.pubmed.length > 5 ? (
+                                    <Button className="seeMore" onClick={this.handleMorePubmed}>
+                                      <span>{morePubmed ? 'Voir moins' : 'Voir plus'}</span>
+                                      <span className="iconPlus">
+                                        <Icon type={morePubmed ? 'minus' : 'plus'} />
+                                      </span>
+                                    </Button>
+                                  ) : null
+                                }
+
 
                               </div>
                             )
