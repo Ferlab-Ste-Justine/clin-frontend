@@ -75,6 +75,12 @@ function* getStatements() {
       throw new ApiError(statementResponse.error);
     }
 
+    const { defaultStatement } = yield select(state => state.user.profile);
+    const { activeStatement } = yield select(state => state.variant);
+    if (!activeStatement || activeStatement === 'draft') {
+      yield put({ type: actionTypes.PATIENT_VARIANT_SET_ACTIVE_STATEMENT, payload: defaultStatement });
+    }
+    yield put({ type: actionTypes.PATIENT_VARIANT_SET_DEFAULT_STATEMENT, payload: defaultStatement });
     yield put({ type: actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
   } catch (e) {
     yield put({ type: actionTypes.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
