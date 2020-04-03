@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge,
 } from 'antd';
+import { SelectionModes } from '@blueprintjs/table';
 import IconKit from 'react-icons-kit';
 import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
@@ -81,7 +82,8 @@ class PatientVariantScreen extends React.Component {
     this.handleColumnVisibilityChange = this.handleColumnVisibilityChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
-    this.handleCopy = this.handleCopy.bind(this);
+    this.handleCopyVariantTable = this.handleCopyVariantTable.bind(this);
+    this.handleVariantTableSelection = this.handleVariantTableSelection.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.handleGetStatements = this.handleGetStatements.bind(this);
     this.handleCreateDraftStatement = this.handleCreateDraftStatement.bind(this);
@@ -107,6 +109,7 @@ class PatientVariantScreen extends React.Component {
             handler: this.handleNavigationToVariantDetailsScreen,
             renderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
           }),
+          excelRenderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.MUTATION_ID,
         },
         {
@@ -120,6 +123,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => { try { return data.type; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.TYPE,
         },
         {
@@ -141,6 +145,7 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => { try { return data.bdExt.dbSNP; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.DBSNP,
         },
         {
@@ -184,6 +189,20 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              data.consequences.map((consequence) => {
+                const valueArray = consequence.consequence[0].split('_');
+                const arrayFilter = valueArray.filter(item => item !== 'variant');
+                const finalString = arrayFilter.join(' ');
+                consequence.consequence[0] = finalString;
+                return consequence.consequence[0];
+              });
+              return data.consequences.map(consequence => (consequence.pick === true
+                ? `${consequence.consequence[0]} ${consequence.geneAffectedSymbol ? consequence.geneAffectedSymbol : ''} ${consequence.aaChange ? consequence.aaChange : ''}`
+                : ''));
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.CONSEQUENCES,
         },
         {
@@ -202,6 +221,13 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              const { variant } = this.props;
+              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+              return `${data.donors[donorIndex].exomiserScore}\n`;
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.EXOMISER,
         },
         {
@@ -228,6 +254,11 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              return `${data.clinvar.clinvar_clinsig}\n${data.clinvar.clinvar_id}`;
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.CLINVAR,
         },
         {
@@ -247,6 +278,15 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              return data.consequences.map(consequence => (
+                consequence.pick === true
+                  ? `${consequence.predictions.CADD_score}`
+                  : ''
+              )).join('\n');
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.CADD,
         },
         {
@@ -266,6 +306,12 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              const frequenciesAN = data.frequencies.interne.AN / 2;
+              return `${data.frequencies.interne.PN} / ${frequenciesAN}`;
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.FREQUENCIES,
         },
         {
@@ -291,6 +337,11 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              return `${data.frequencies.gnomAD_exomes.AF.toExponential()}`;
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.GNOMAD,
         },
         {
@@ -309,6 +360,13 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            const { variant } = this.props;
+            const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+            try {
+              return `${data.donors[donorIndex].zygosity}`;
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.ZYGOSITY,
         },
         {
@@ -329,6 +387,13 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            const { variant } = this.props;
+            const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+            try {
+              return `${data.donors[donorIndex].transmission.join(', ')} \n ${data.donors[donorIndex].genotypeFamily}`;
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
         {
@@ -348,6 +413,13 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              const { variant } = this.props;
+              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+              return `${data.donors[donorIndex].adAlt}/${data.donors[donorIndex].adTotal}`;
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.SEQ,
         },
         {
@@ -388,11 +460,18 @@ class PatientVariantScreen extends React.Component {
               } catch (e) { return ''; }
             },
           }),
+          excelRenderer: (data) => {
+            try {
+              return data.bdExt.pubmed.join(', ');
+            } catch (e) { return ''; }
+          },
           columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
       ],
       [GENE_TAB]: [],
     };
+
+    this.variantTableSelectedRegion = null;
 
     const { actions, variant } = props;
     const { schema } = variant;
@@ -677,9 +756,53 @@ class PatientVariantScreen extends React.Component {
     });
   }
 
-  handleCopy(row) {
-    const data = this.getData();
-    return JSON.stringify(data[row]);
+  handleVariantTableSelection(sel) {
+    const selection = sel[0];
+    const rowStart = selection.rows[0];
+    const rowEnd = selection.rows[selection.rows.length - 1];
+    const colStart = selection.cols[0];
+    const colEnd = selection.cols[selection.cols.length - 1];
+
+    const {
+      columnPreset,
+    } = this.state;
+
+    const array = [];
+    for (let row = rowStart; row <= rowEnd; row += 1) {
+      const newRow = [];
+      for (let col = colStart; col <= colEnd; col += 1) {
+        const renderer = columnPreset[VARIANT_TAB][col].excelRenderer;
+        const output = (`${renderer(this.getData()[row])}`).replace(/[\n\t]+/g, ' ');
+        newRow.push(output);
+      }
+      array.push(newRow);
+    }
+
+    this.regionSelectedArray = array;
+  }
+
+  handleCopyVariantTable() {
+    if (this.regionSelectedArray) {
+      const copyTextToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+        }, (err) => {
+          console.log('Could not copy text: ', err);
+        });
+      };
+      const copyArrayToClipboard = (array) => {
+        let csv = '';
+        array.forEach((row, rowIdx) => {
+          row.forEach((cell, cellIdx) => {
+            csv += (`${cell}`).replace(/[\n\t]+/g, ' ');
+            if (cellIdx + 1 < row.length) csv += '\t';
+          });
+          if (rowIdx + 1 < array.length) csv += '\n';
+        });
+        copyTextToClipboard(csv);
+      };
+
+      copyArrayToClipboard(this.regionSelectedArray);
+    }
   }
 
   handleGetStatements() {
@@ -1055,7 +1178,9 @@ class PatientVariantScreen extends React.Component {
                     page={page}
                     total={total}
                     schema={columnPreset[VARIANT_TAB]}
-                    copyCallback={this.handleCopy}
+                    selectionModes={SelectionModes.ROWS_AND_CELLS}
+                    copyCallback={this.handleCopyVariantTable}
+                    selectionCallback={this.handleVariantTableSelection}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     isExportable={false}
@@ -1075,7 +1200,7 @@ class PatientVariantScreen extends React.Component {
                     schema={columnPreset[GENE_TAB]}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
-                    copyCallback={this.handleCopy}
+                    copyCallback={() => {}}
                     isExportable={false}
                   />
                 )}

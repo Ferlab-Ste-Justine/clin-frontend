@@ -3,8 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Table, Cell, RenderMode, Column, Utils,
+  Table, Cell, RenderMode, Column, Utils, SelectionModes,
 } from '@blueprintjs/table';
+
 import {
   Badge, Button, Typography, Checkbox, Tooltip,
 } from 'antd';
@@ -14,7 +15,9 @@ import {
   ic_info_outline,
 } from 'react-icons-kit/md';
 import './style.scss';
+// import { relativeTimeThreshold } from 'moment';
 
+// https://github.com/warpech/sheetclip
 
 export const createCellRenderer = (type, getData, options = {}) => {
   try {
@@ -133,7 +136,9 @@ const DataTable = (props) => {
     numFrozenColumns,
     enableGhostCells,
     copyCallback,
+    selectionCallback,
     enableRowHeader,
+    selectionMode,
   } = props;
   let { rowHeight } = props;
   const rowsCount = size <= total ? size : total;
@@ -166,9 +171,13 @@ const DataTable = (props) => {
       onColumnsReordered={handleColumnsReordered}
       onColumnWidthChanged={resizeColumnCallback}
       rowHeights={rowHeight}
-      getCellClipboardData={copyCallback}
+      getCellClipboardData={(row, col) => `(${row}, ${col})`}
+      // onCopy={copyCallback}
       columnWidths={columns.map(c => c.columnWidth)}
       enableRowHeader={enableRowHeader}
+      selectionMode={selectionMode}
+      onCopy={copyCallback}
+      onSelection={selectionCallback}
     >
       { columns.map(definition => (
         <Column
@@ -194,8 +203,10 @@ DataTable.propTypes = {
   reorderColumnsCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
   copyCallback: PropTypes.func,
+  selectionCallback: PropTypes.func,
   rowHeight: PropTypes.shape([]),
   enableRowHeader: PropTypes.bool,
+  selectionMode: PropTypes.number,
 };
 
 DataTable.defaultProps = {
@@ -210,8 +221,10 @@ DataTable.defaultProps = {
   reorderColumnsCallback: () => {},
   resizeColumnCallback: () => {},
   copyCallback: null,
+  selectionCallback: null,
   rowHeight: [],
   enableRowHeader: true,
+  selectionMode: SelectionModes.NONE,
 };
 
 export default DataTable;
