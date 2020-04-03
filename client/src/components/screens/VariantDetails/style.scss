@@ -62,6 +62,8 @@
 
     .link{
         padding: 0;
+        height: 22px;
+        line-height: 22px;
         span{
             font-family: $font;
             font-size: 14px;
@@ -115,7 +117,6 @@
                     display: flex;
                     justify-content: right;
                     margin: 0;
-                    max-width: 48%;
                     span{
                        text-align: right; 
                        width: 100%;
@@ -125,19 +126,40 @@
                             margin: 0;
                             padding: 0;
                             list-style-type: none;
+                            .impactRow{
+                                display: flex;
+                                justify-content: flex-end;
+                                align-items: center;
+                                .link{
+                                    padding: 0;
+                                    span{
+                                        font-family: $font;
+                                        font-size: 14px;
+                                        color: #1D8BC6;
+                                    }
+                                }
+                            }
+
 
                            }
                        }
                     }
                     .impact{
-                        width: inherit;
+                        height: 8px;
+                        width: 8px;
                         margin: 0 8px;
-                        span{
+                        font-size: 14px;
+                        line-height: 0;
+                        display: flex;
+                        align-items: center;
+                        margin-top: 1px;
+                        .ant-badge-status-dot{
                             height: 8px;
                             width: 8px;
-                            margin: 0;
                         }
-                
+                        .ant-badge-status-text{
+                            display: none;
+                        }
                     }
                 }
             }
@@ -222,7 +244,7 @@
                         line-height: 0;
                         .consequenceTerm{
                             color: #858E99;
-                            line-height: 0;
+                            line-height: 22px;
                             font-size: 14px;
                         }
                         .impact{
@@ -322,11 +344,78 @@
         .ant-col{
             width: 100%;
         }
+        .orphanetValue{
+                .orphanetLink{
+                    &:not(:last-of-type)
+                    a span{
+                        &::after{
+                            content:", ";
+                            padding-right: 4px;
+                        }
+                    }
+
+                }
+        }
     }
 
     .hpoTable{
         .ant-col{
             width: 100%;
-        } 
+        }
+        tr{
+            font-size: 14px;
+            display: grid;
+            grid-template-columns: 160px 1fr 120px;
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--color-grey-2); 
+            }
+            td{
+
+                .hpoRow{
+                    display: grid;
+                    grid-template-columns: 1fr 48px;
+                    grid-gap: 8px;
+                    .hpoValue{
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+    
+                        a {
+                          text-decoration: none;
+                          color: #1D8BC6;
+                          &::after{
+                              content: ", ";
+                              padding-right: 4px;
+                          }
+                        }
+                    }
+                    .iconPlus{
+                        width: 16px;
+                        border: 1px solid #D7DBDF;
+                        padding: 4px;
+                        margin: 3px 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 16px;
+                        i{
+                            font-size: 12px;
+                        }
+
+                        &:hover{
+                            border: 1px solid #1D8BC6;
+                            i{
+                                color: #1D8BC6;
+                            }
+                        }
+                    }
+                    .openHpo{
+                        white-space: normal;
+                    }
+                }
+                
+            }
+            
+        }
     }
 }

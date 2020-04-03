@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty, Icon,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -102,10 +102,11 @@ const impactSummary = (c) => {
     return (
       <>
         <div>
-          <Row>
+          <Row className="impactRow">
             <Link
               url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedSymbol}`}
               text={c.geneAffectedSymbol}
+              className="link"
             />
             {impactScore}
             {c.impact}
@@ -685,24 +686,31 @@ class VariantDetailsScreen extends React.Component {
     const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
     const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
     const orphanetLink = (on) => {
-      const re = /(?<=Orph:)\d+(\.\d*)?/;
-      const orphaId = (on.panel ? re.exec(on.panel)[0] : '');
+      const {
+        dataId, panel,
+      } = on;
 
-      return (on.panel ? on.panel : null);
-      // return (
-      //   <Link
-      //     url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=1738&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
-      //     text={on}
-      //   />
-      // );
+      const re = /(?<=Orph:)\d+(\.\d*)?/;
+      const orphaId = panel ? re.exec(panel)[0] : '';
+
+      return (
+        <span className="orphanetLink">
+          <Link
+            url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${dataId}&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+            text={panel}
+          />
+        </span>
+
+      );
     };
 
     return this.getGenes().map((g) => {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
       const radboudumcLine = g.radboudumc ? g.radboudumc.join(', ') : '--';
       const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
-      const orphphanetLine = test ? test.join(', ') : '--';
-      return { geneSymbol: g.geneSymbol, orphanet: orphphanetLine, radboudumc: radboudumcLine };
+      console.log('Test', test);
+      const orphphanetLine = test || '--';
+      return { geneSymbol: g.geneSymbol, orphanet: (<span className="orphanetValue">{orphphanetLine}</span>), radboudumc: radboudumcLine };
     });
   }
 
@@ -712,15 +720,26 @@ class VariantDetailsScreen extends React.Component {
     const { genes } = data;
 
     if (genes.filter(g => !!g.hpo).length > 0) {
-      return genes.map((g) => {
-        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+      return genes.map((g, index) => {
         const lis = g.hpo ? g.hpo.map((h) => {
           const re = /(?<=HP:)\d+(\.\d*)?/;
           const hpoId = re.exec(h)[0];
           const url = `https://hpo.jax.org/app/browse/term/HP:${hpoId}`;
-          return (<li><Link url={url} text={h} /></li>);
-        }) : [];
-        return { geneSymbol: g.geneSymbol, trait: (<ul>{lis}</ul>), donors: '' };
+          return (<a href={url}>{h}</a>);
+        }) : '--';
+        const value = (
+          <span className="hpoRow">
+            <span className="hpoValue">{lis}</span>
+            {
+              lis !== '--' ? (
+                <span className="iconPlus">
+                  <Icon onClick={() => this.handleMoreHpo(index)} type="plus" />
+                </span>
+              ) : null
+            }
+          </span>
+        );
+        return { geneSymbol: g.geneSymbol, trait: value, donors: '' };
       });
     }
 
@@ -741,6 +760,20 @@ class VariantDetailsScreen extends React.Component {
     return [];
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  handleMoreHpo(key) {
+    const hpoRow = document.getElementsByClassName('hpoRow')[key];
+    const hpoValue = hpoRow.querySelector('.hpoValue');
+    const hpoIcon = hpoRow.querySelector('.iconPlus');
+    const allClassName = hpoValue.className.split(' ');
+    console.log('hpoIcon', hpoIcon);
+    if (allClassName.includes('openHpo')) {
+      hpoValue.classList.remove('openHpo');
+    } else {
+      hpoValue.classList.add('openHpo');
+    }
+  }
+
   render() {
     const {
       currentTab,
@@ -758,13 +791,15 @@ class VariantDetailsScreen extends React.Component {
       assemblyVersion,
       refAllele,
       altAllele,
-      clinvar_clinsig,
       clinvar,
       lastAnnotationUpdate,
       bdExt,
       frequencies,
       consequences,
     } = data;
+
+    const clinvar_clinsig = clinvar ? clinvar.clinvar_clinsig : '';
+
     const {
       consequencesColumnPreset,
       internalCohortsFrequenciesColumnPreset,
