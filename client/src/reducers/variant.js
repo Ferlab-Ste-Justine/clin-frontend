@@ -40,6 +40,7 @@ export const variantShape = {
   facets: PropTypes.shape({}),
   statements: PropTypes.shape({}),
   activeStatementId: PropTypes.String,
+  defaultStatement: PropTypes.String,
   activeStatementTotals: PropTypes.shape({}),
 };
 
@@ -147,6 +148,10 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.draftQueries = action.payload.queries;
       break;
 
+    case actions.PATIENT_VARIANT_SET_ACTIVE_STATEMENT:
+      draft.activeStatementId = action.payload;
+      break;
+
     case actions.PATIENT_VARIANT_STATEMENT_SORT:
       draft.draftQueries = action.payload.statement;
       break;
@@ -187,17 +192,20 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
             queries: JSON.parse(hit._source.queries),
           };
         });
-        if (!state.activeStatementId) {
-          draft.activeStatementId = DRAFT_STATEMENT_UID;
-          draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
-          draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
-          draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
-          draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
+
+        const activeStatementId = state.activeStatementId ? state.activeStatementId : state.defaultStatement;
+        if (!activeStatementId) {
+          const statementId = DRAFT_STATEMENT_UID;
+          draft.activeStatementId = statementId;
+          draft.statements[statementId] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
+          draft.activeQuery = head(draft.statements[statementId].queries).key;
+          draft.originalQueries = draft.statements[statementId].queries;
+          draft.draftQueries = draft.statements[statementId].queries;
           draft.draftHistory = [];
         } else {
-          draft.activeQuery = head(draft.statements[state.activeStatementId].queries).key;
-          draft.originalQueries = draft.statements[state.activeStatementId].queries;
-          draft.draftQueries = draft.statements[state.activeStatementId].queries;
+          draft.activeQuery = head(draft.statements[activeStatementId].queries).key;
+          draft.originalQueries = draft.statements[activeStatementId].queries;
+          draft.draftQueries = draft.statements[activeStatementId].queries;
           draft.draftHistory = [];
         }
       }
