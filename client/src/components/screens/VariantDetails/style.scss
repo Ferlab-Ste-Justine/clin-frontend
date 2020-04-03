@@ -53,6 +53,7 @@
 
         i{
             padding-right: 8px;
+            margin-bottom: 1px;
         }
     }
 
@@ -117,6 +118,19 @@
                     display: flex;
                     justify-content: right;
                     margin: 0;
+                    .link{
+                        padding: 0;
+                        height: 22px;
+                        line-height: 22px;
+                        span{
+                            font-family: $font;
+                            font-size: 14px;
+                            color: #1D8BC6;
+                        }
+                    }
+                    .pubmedList{
+                        background-color: red;
+                    }
                     span{
                        text-align: right; 
                        width: 100%;
@@ -290,6 +304,49 @@
             }
         }
 
+        .refExt{
+            .link{
+                display: block;
+            }
+            .seeMore{
+                display: flex;
+                margin-left: auto;
+                border:0;
+                padding: 0;
+                box-shadow: none;
+                .iconPlus{
+                    width: 16px !important;
+                    border: 1px solid #D7DBDF;
+                    padding: 4px;
+                    margin: 3px 0 3px 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 16px;
+                    i{
+                        font-size: 12px;
+                    }
+    
+                    &:hover{
+                        border: 1px solid #1D8BC6;
+                        i{
+                            color: #1D8BC6;
+                        }
+                    }
+                }
+                &:hover{
+                    span{
+                        color: #1D8BC6;
+                    }
+                    i{
+                        color: #536377;;
+                    }
+                    
+                }
+            }
+            
+        }
+
     }
 
     .consequencesTable{
@@ -297,25 +354,7 @@
             width: 100%;
         }
 
-        .bp3-table-column-header-cell{
-            background-color: #F8FAFC ;
-            border-bottom: 1px solid #e8e8e8;
-        }
-    
-        .bp3-table-row-name{
-            border-right: none;
-        }
-        .bp3-table-menu{
-            background-color: #e3ebf2 ;
-            border-right: none;
-        }
-        .bp3-table-column-name{
-            border-right: none;
-        }
-        .bp3-table-cell{
-            border-right: none;
-            border-bottom: 1px solid #e8e8e8;
-        }
+        
     }
 
     .frequenciesTab{
@@ -336,6 +375,13 @@
         margin-bottom: 24px;
         .datalist{
             min-width: 448px;
+            .listRow{
+                >div{
+                    display: grid;
+                    grid-template-columns: 80px 1fr;
+                    grid-column-gap: 8px
+                }
+            }
         }
     }
 
@@ -416,6 +462,48 @@
                 
             }
             
+        }
+    }
+
+    .patientTable{
+        width: 100%;
+        .bp3-table-column-header-cell{
+            background-color: #F8FAFC ;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .bp3-table-column-headers{
+            background-color: #F8FAFC ;
+        }
+        .bp3-table-menu .bp3-table-selection-enabled{
+            background-color: #F8FAFC;
+        }
+    
+        .bp3-table-row-name{
+            border-right: none;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .bp3-table-cell-ledger-odd{
+            background-color: #fff;
+        }
+        .bp3-table-menu{
+            background-color: #F8FAFC ;
+            border-right: none;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .bp3-table-column-name{
+            border-right: none;
+        }
+        .bp3-table-cell{
+            border-right: none;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .bp3-table-row-headers .bp3-table-row-headers-cells-container .bp3-table-header .bp3-table-row-name{
+            border-right: none;
+        }
+        .bp3-table-row-headers .bp3-table-row-headers-cells-container .bp3-table-header:nth-child(even){
+            background-color: #fff ;
+
         }
     }
 }

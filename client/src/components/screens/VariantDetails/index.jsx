@@ -37,8 +37,12 @@ const PATIENTS_TAB = 'screen.variantdetails.tab.patients';
 const COLUMN_WIDTH = {
   TINY: 65,
   NARROW: 80,
+  SMALL: 90,
+  NORMAL: 100,
+  SMALLMEDIUM: 120,
   MEDIUM: 150,
   WIDE: 200,
+
 };
 
 const columnPresetToColumn = c => ({
@@ -168,6 +172,7 @@ class VariantDetailsScreen extends React.Component {
     super(props);
     this.state = {
       currentTab: SUMMARY_TAB,
+      morePubmed: false,
     };
 
     this.getConsequences = this.getConsequences.bind(this);
@@ -176,12 +181,17 @@ class VariantDetailsScreen extends React.Component {
     this.getGenes = this.getGenes.bind(this);
     this.getDonors = this.getDonors.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
+    this.handleMorePubmed = this.handleMorePubmed.bind(this);
 
     this.state.consequencesColumnPreset = [
       {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
-        renderer: c => <Link url="#" text={c.geneAffectedSymbol} /> || '',
+        renderer: (c) => {
+          return (
+            <Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedId}`} text={c.geneAffectedSymbol} /> || ''
+          );
+        },
       },
       {
         key: 'aaChange',
@@ -437,7 +447,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.patientId; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.NARROW,
+        columnWidth: COLUMN_WIDTH.NORMAL,
       },
       {
         key: 'organizationId',
@@ -445,7 +455,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.organizationId; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.NARROW,
+        columnWidth: COLUMN_WIDTH.NORMAL,
       },
       {
         key: 'studyId',
@@ -461,7 +471,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.relation; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.NARROW,
+        columnWidth: COLUMN_WIDTH.SMALL,
       },
       {
         key: 'familyId',
@@ -469,7 +479,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.familyId; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        columnWidth: COLUMN_WIDTH.NORMAL,
       },
       {
         key: 'sequencingStrategy',
@@ -485,7 +495,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.zygosity; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
+        columnWidth: COLUMN_WIDTH.SMALL,
       },
       {
         key: 'transmission',
@@ -525,7 +535,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.adFreq; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.TINY,
+        columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
       },
       {
         key: 'exomiserScore',
@@ -708,7 +718,6 @@ class VariantDetailsScreen extends React.Component {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
       const radboudumcLine = g.radboudumc ? g.radboudumc.join(', ') : '--';
       const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
-      console.log('Test', test);
       const orphphanetLine = test || '--';
       return { geneSymbol: g.geneSymbol, orphanet: (<span className="orphanetValue">{orphphanetLine}</span>), radboudumc: radboudumcLine };
     });
@@ -766,12 +775,19 @@ class VariantDetailsScreen extends React.Component {
     const hpoValue = hpoRow.querySelector('.hpoValue');
     const hpoIcon = hpoRow.querySelector('.iconPlus');
     const allClassName = hpoValue.className.split(' ');
-    console.log('hpoIcon', hpoIcon);
     if (allClassName.includes('openHpo')) {
       hpoValue.classList.remove('openHpo');
     } else {
       hpoValue.classList.add('openHpo');
     }
+  }
+
+  handleMorePubmed() {
+    const { morePubmed } = this.state;
+
+    this.setState({
+      morePubmed: !morePubmed,
+    });
   }
 
   render() {
@@ -808,8 +824,10 @@ class VariantDetailsScreen extends React.Component {
       associationColumnPreset,
       HPOColumnPreset,
       donorsColumnPreset,
+      morePubmed,
     } = this.state;
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
+    const pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
     return (
       <Content>
         <Header />
@@ -885,7 +903,7 @@ class VariantDetailsScreen extends React.Component {
                       { label: 'Impact VEP', value: <ul>{impactsSummary}</ul> },
                       {
                         label: 'Signification clinique (Clinvar)',
-                        value: clinvar_clinsig,
+                        value: clinvar_clinsig ? clinvar_clinsig.join(', ') : '--',
                       },
                       {
                         label: 'Date des annotations',
@@ -895,16 +913,17 @@ class VariantDetailsScreen extends React.Component {
                   />
                 </Col>
 
-                <Col>
+                <Col className="refExt">
                   <DataList
                     title="Références externes"
-                    dataSource={[
+
+                    dataSource={bdExt ? [
                       {
                         label: 'Clin Var',
                         value: bdExt && bdExt.clinvar ? (
                           <Link
                             url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.clinvar}`}
-                            text={`PATATE ${bdExt.clinvar}`}
+                            text={`${bdExt.clinvar}`}
                           />
                         ) : (
                           '--'
@@ -915,6 +934,7 @@ class VariantDetailsScreen extends React.Component {
                         value:
                           bdExt && bdExt.omim ? (
                             <Link
+                              className="link"
                               url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.omim}`}
                               text={bdExt.omim}
                             />
@@ -938,15 +958,30 @@ class VariantDetailsScreen extends React.Component {
                         label: 'Pubmed',
                         value:
                           bdExt && bdExt.pubmed
-                            ? bdExt.pubmed.map(p => (
-                              <Link
-                                url={`https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=citation&id=${p}`}
-                                text={p}
-                              />
-                            ))
+                            ? (
+                              <div>
+                                {
+                              pubmed.map(p => (
+                                <Link
+                                  className="pubmedList"
+                                  url={`https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=citation&id=${p}`}
+                                  text={p}
+                                />
+                              ))}
+                                <Button className="seeMore" onClick={this.handleMorePubmed}>
+                                  <span>{morePubmed ? 'Voir moins' : 'Voir plus'}</span>
+                                  <span className="iconPlus">
+                                    <Icon type={morePubmed ? 'minus' : 'plus'} />
+                                  </span>
+                                </Button>
+
+                              </div>
+                            )
+
+
                             : '--',
                       },
-                    ]}
+                    ] : []}
                   />
                 </Col>
                 <Col>
@@ -1084,7 +1119,7 @@ class VariantDetailsScreen extends React.Component {
                             label: intl.get(
                               'screen.variantDetails.clinicalAssociationsTab.signification',
                             ),
-                            value: clinvar.clinvar_clinsig,
+                            value: clinvar.clinvar_clinsig ? clinvar.clinvar_clinsig.join(', ') : null,
                           },
                           {
                             label: intl.get(
@@ -1157,16 +1192,16 @@ class VariantDetailsScreen extends React.Component {
                 <Col>{header('Patients')}</Col>
               </Row>
               <Row type="flex" gutter={32}>
-                <Col>
+                <Col className="patientTable">
                   <DataTable
                     size={this.getDonors().length}
                     total={this.getDonors().length}
                     reorderColumnsCallback={this.handleColumnsReordered}
                     resizeColumnsCallback={this.handleColumnResized}
-                    numFrozenColumns={donorsColumnPreset.length}
                     columns={donorsColumnPreset}
                     copyCallback={this.handleCopy}
                     enableGhostCells
+                    enableResizing
                   />
                 </Col>
               </Row>
