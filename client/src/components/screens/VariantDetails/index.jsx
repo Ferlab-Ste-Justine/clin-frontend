@@ -827,7 +827,9 @@ class VariantDetailsScreen extends React.Component {
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
     let pubmed = [];
     if (bdExt) {
-      pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
+      if (bdExt.pubmed) {
+        pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
+      }
     }
     return (
       <Content>
