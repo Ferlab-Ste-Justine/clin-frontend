@@ -89,6 +89,7 @@ function* manualUserNavigation(action) {
   if (isFirstRendering) {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.START_SUBLOADING_ANIMATION });
+    yield put({ type: actions.USER_IDENTITY_REQUESTED });
     const { location } = action.payload;
     const { pathname, hash } = location;
     const urlIsRewrite = (pathname === '/' && hash !== '');

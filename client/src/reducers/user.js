@@ -34,10 +34,12 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
+    case actions.USER_IDENTITY_FAILED:
       draft.username = null;
       break;
 
     case actions.USER_LOGIN_SUCCEEDED:
+    case actions.USER_IDENTITY_SUCCEEDED:
       draft.username = action.payload.data.data.user.username;
       draft.firstName = action.payload.data.data.user.firstName;
       draft.lastName = action.payload.data.data.user.lastName;
