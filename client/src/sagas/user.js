@@ -48,6 +48,7 @@ function* identity() {
   try {
     const response = yield Api.identity();
     if (response.error) {
+      setAsLoggedOut();
       throw new ApiError(response.error);
     }
 
