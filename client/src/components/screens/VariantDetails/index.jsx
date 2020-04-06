@@ -58,6 +58,11 @@ const canonicalTranscript = (c) => {
   return canonical;
 };
 
+const pickTranscript = (c) => {
+  const pick = c.transcripts.find(t => t.pick);
+  return pick;
+};
+
 const Link = ({ url, text }) => (
   <Button
     key={uuidv1()}
@@ -100,7 +105,7 @@ const getImpactTag = (impact) => {
 };
 
 const impactSummary = (c) => {
-  if (canonicalTranscript(c)) {
+  if (pickTranscript(c)) {
     const impactScore = c.impact ? (getImpactTag(c.impact)) : null;
     const items = [impactScore].filter(item => !!item);
     return (
