@@ -8,7 +8,6 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge,
 } from 'antd';
-import { SelectionModes } from '@blueprintjs/table';
 import IconKit from 'react-icons-kit';
 import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
@@ -82,8 +81,6 @@ class PatientVariantScreen extends React.Component {
     this.handleColumnVisibilityChange = this.handleColumnVisibilityChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
-    this.handleCopyVariantTable = this.handleCopyVariantTable.bind(this);
-    this.handleVariantTableSelection = this.handleVariantTableSelection.bind(this);
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.handleGetStatements = this.handleGetStatements.bind(this);
     this.handleCreateDraftStatement = this.handleCreateDraftStatement.bind(this);
@@ -756,55 +753,6 @@ class PatientVariantScreen extends React.Component {
     });
   }
 
-  handleVariantTableSelection(sel) {
-    const selection = sel[0];
-    const rowStart = selection.rows[0];
-    const rowEnd = selection.rows[selection.rows.length - 1];
-    const colStart = selection.cols[0];
-    const colEnd = selection.cols[selection.cols.length - 1];
-
-    const {
-      columnPreset,
-    } = this.state;
-
-    const array = [];
-    for (let row = rowStart; row <= rowEnd; row += 1) {
-      const newRow = [];
-      for (let col = colStart; col <= colEnd; col += 1) {
-        const renderer = columnPreset[VARIANT_TAB][col].excelRenderer;
-        const output = (`${renderer(this.getData()[row])}`).replace(/[\n\t]+/g, ' ');
-        newRow.push(output);
-      }
-      array.push(newRow);
-    }
-
-    this.regionSelectedArray = array;
-  }
-
-  handleCopyVariantTable() {
-    if (this.regionSelectedArray) {
-      const copyTextToClipboard = (text) => {
-        navigator.clipboard.writeText(text).then(() => {
-        }, (err) => {
-          console.log('Could not copy text: ', err);
-        });
-      };
-      const copyArrayToClipboard = (array) => {
-        let csv = '';
-        array.forEach((row, rowIdx) => {
-          row.forEach((cell, cellIdx) => {
-            csv += (`${cell}`).replace(/[\n\t]+/g, ' ');
-            if (cellIdx + 1 < row.length) csv += '\t';
-          });
-          if (rowIdx + 1 < array.length) csv += '\n';
-        });
-        copyTextToClipboard(csv);
-      };
-
-      copyArrayToClipboard(this.regionSelectedArray);
-    }
-  }
-
   handleGetStatements() {
     const { actions } = this.props;
     actions.getStatements();
@@ -1178,14 +1126,12 @@ class PatientVariantScreen extends React.Component {
                     page={page}
                     total={total}
                     schema={columnPreset[VARIANT_TAB]}
-                    selectionModes={SelectionModes.ROWS_AND_CELLS}
-                    copyCallback={this.handleCopyVariantTable}
-                    selectionCallback={this.handleVariantTableSelection}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     isExportable={false}
                     rowHeight={rowHeight}
                     numFrozenColumns={1}
+                    getData={this.getData}
                   />
                 )}
               </Tabs.TabPane>
@@ -1200,7 +1146,6 @@ class PatientVariantScreen extends React.Component {
                     schema={columnPreset[GENE_TAB]}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
-                    copyCallback={() => {}}
                     isExportable={false}
                   />
                 )}

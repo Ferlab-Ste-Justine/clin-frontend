@@ -7,7 +7,6 @@ import {
 import {
   cloneDeep, isEqual, filter, pullAll, findIndex, find,
 } from 'lodash';
-import { SelectionModes } from '@blueprintjs/table';
 
 import IconKit from 'react-icons-kit';
 import {
@@ -240,7 +239,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      size, page, total, isLoading, numFrozenColumns, copyCallback, selectionCallback, rowHeight, selectionMode,
+      size, page, total, isLoading, numFrozenColumns, rowHeight, getData,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -332,13 +331,11 @@ class InteractiveTable extends React.Component {
               enableReordering={(isReorderable && columnReordererIsActive)}
               reorderColumnsCallback={this.handleColumnsReordered}
               resizeColumnsCallback={this.handleColumnResized}
+              getData={getData}
               numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
-              copyCallback={copyCallback}
-              selectionCallback={selectionCallback}
               enableGhostCells
               rowHeight={rowHeight}
-              selectionMode={selectionMode}
             />
           </Col>
         </Row>
@@ -370,14 +367,12 @@ InteractiveTable.propTypes = {
   isReorderable: PropTypes.bool,
   isResizable: PropTypes.bool,
   isSelectable: PropTypes.bool,
-  selectionMode: PropTypes.number,
   isExportable: PropTypes.bool,
   exportCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
-  copyCallback: PropTypes.func,
-  selectionCallback: PropTypes.func,
+  getData: PropTypes.func,
   rowHeight: PropTypes.number,
 };
 
@@ -387,15 +382,13 @@ InteractiveTable.defaultProps = {
   isReorderable: true,
   isResizable: true,
   isSelectable: true,
-  selectionMode: SelectionModes.NONE,
   isExportable: true,
   numFrozenColumns: 0,
   exportCallback: () => {},
   resizeColumnCallback: () => {},
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},
-  copyCallback: () => {},
-  selectionCallback: () => {},
+  getData: () => {},
   rowHeight: null,
 };
 
