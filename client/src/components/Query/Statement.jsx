@@ -12,7 +12,7 @@ import uuidv1 from 'uuid/v1';
 import DragSortableList from 'react-drag-sortable';
 import IconKit from 'react-icons-kit';
 import {
-  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_edit, ic_add
+  ic_folder, ic_delete, ic_content_copy, ic_save, ic_note_add, ic_share, ic_edit, ic_add, ic_unfold_less, ic_unfold_more
 } from 'react-icons-kit/md';
 import Query from './index';
 import {
@@ -55,7 +55,8 @@ class Statement extends React.Component {
       dropDownIsOpen: false,
       modalIsOpen: false,
       dropdownClickValue: null,
-      draftTitle:null
+      draftTitle:null,
+      openFilter:true,
     };
     this.isCopyable = this.isCopyable.bind(this);
     this.isEditable = this.isEditable.bind(this);
@@ -106,6 +107,7 @@ class Statement extends React.Component {
     this.handleTitleInputFocus = this.handleTitleInputFocus.bind(this)
     this.closeModal = this.closeModal.bind(this)
     this.handleTitleChange = this.handleTitleChange.bind(this)
+    this.handleFilterView = this.handleFilterView.bind(this)
   }
 
   isEditable() {
@@ -640,12 +642,20 @@ class Statement extends React.Component {
     this.setState({ draftTitle : value})
   }
 
+  handleFilterView(){
+    const { openFilter } = this.state;
+
+    this.setState({
+      openFilter: !openFilter,
+    })
+  }
+
   render() {
     const { data, activeStatementId, statements, defaultStatementId } = this.props;
     const activeStatement = statements[activeStatementId];
     const { Text } = Typography;
     if (!data || !activeStatement) return null;
-    const { dropDownIsOpen, dropdownClickValue } = this.state;
+    const { dropDownIsOpen, dropdownClickValue, openFilter } = this.state;
     if (!data) return null;
     const {
       activeQuery, externalData, options, facets, categories, searchData, target, activeStatementTotals,
@@ -793,6 +803,21 @@ class Statement extends React.Component {
             <div className={styleStatement.navigation}>
               <div>
                 <div className={styleStatement.title}>
+                  <Tooltip overlayClassName={styleStatement.tooltip} title={openFilter ? "Masquer" : "Ouvrir"}>
+                  <Button
+                      type="default"
+                      className={`${styleStatement.button} ${styleStatement.foldButton}`}
+                      dataid={(activeStatement.uid === defaultStatementId) ? '' : activeStatement.uid}
+                      onClick={this.handleFilterView}
+                      disabled={activeStatementId == null}
+                    >
+                        <IconKit
+                        icon={openFilter ? ic_unfold_less : ic_unfold_more}
+                        size={24}
+                        className={`${styleStatement.icon} ${styleStatement.iconFold}`}
+                        />
+                    </Button>
+                  </Tooltip>
                   <Tooltip overlayClassName={styleStatement.tooltip} title={editTitleText}>
                     <div>
                       <Button onClick={this.showModal} className={styleStatement.editTitleButton}>
@@ -982,68 +1007,75 @@ class Statement extends React.Component {
                 </div>
               </div>
             </div>
-            <Divider className={styleStatement.dividerHorizontal} />
+            {openFilter ? (<Divider className={styleStatement.dividerHorizontal} />) : null}
           </Row>
         </div>
-        <div className={styleStatement.body}>
-          {reorderable
-            ? (
-              <DragSortableList
-                key="sortable"
-                type="vertical"
-                items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
-                onSort={this.handleReorder}
-                className={styleStatement.draggableContainer}
-              />
-            ) : queries
-          }
-        </div>
-        <div className={styleStatement.footer}>
-          <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery} className={styleStatement.newQueryButton}>
-            <IconKit size={20} icon={ic_add} />
-            {newQueryText}
-          </Button>
-          <Row type="flex" className={styleStatement.toolbar}>
-            <Menu onClick={this.handleCombine} mode="horizontal" className={styleStatement.menuCombine}>
-              <Menu.Item key={OPERATOR_TYPE_AND} disabled={checkedQueriesCount < 2}>
-                <Button
-                  className={`${styleStatement.button} ${styleStatement.combineBtn}`}
-                  disabled={checkedQueriesCount < 2}
-                >
-                  <svg>
-                    { getSvgPathFromOperatorType(OPERATOR_TYPE_AND) }
-                  </svg>
-                  { intl.get('components.query.instruction.subquery.operator.and') }
-                </Button>
-              </Menu.Item>
-              <Menu.Item key={OPERATOR_TYPE_OR} disabled={checkedQueriesCount < 2}>
-                <Button
-                  className={`${styleStatement.button} ${styleStatement.combineBtn}`}
-                  disabled={checkedQueriesCount < 2}
-                >
-                  <svg>
-                    { getSvgPathFromOperatorType(OPERATOR_TYPE_OR) }
-                  </svg>
-                  { intl.get('components.query.instruction.subquery.operator.or') }
-                </Button>
-              </Menu.Item>
-              { /* Not implement in clin-proxy-api yet
-              <Menu.Item key={OPERATOR_TYPE_AND_NOT} disabled={checkedQueriesCount < 2}>
-                <Button
-                  className={`${styleStatement.button} ${styleStatement.combineBtn}`}
-                  disabled={checkedQueriesCount < 2}
-                >
-                  <svg>
-                    { getSvgPathFromOperatorType(OPERATOR_TYPE_AND_NOT) }
-                  </svg>
-                  { intl.get('components.query.instruction.subquery.operator.andNot') }
-                </Button>
-              </Menu.Item>
-              */ }
-            </Menu>
+        {
+          openFilter ? (
+            <>
+            <div className={styleStatement.body}>
+            {reorderable
+              ? (
+                <DragSortableList
+                  key="sortable"
+                  type="vertical"
+                  items={queries.map((query, index) => ({ id: query.key, content: query, index }))}
+                  onSort={this.handleReorder}
+                  className={styleStatement.draggableContainer}
+                />
+              ) : queries
+            }
+          </div>
+          <div className={styleStatement.footer}>
+            <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery} className={styleStatement.newQueryButton}>
+              <IconKit size={20} icon={ic_add} />
+              {newQueryText}
+            </Button>
+            <Row type="flex" className={styleStatement.toolbar}>
+              <Menu onClick={this.handleCombine} mode="horizontal" className={styleStatement.menuCombine}>
+                <Menu.Item key={OPERATOR_TYPE_AND} disabled={checkedQueriesCount < 2}>
+                  <Button
+                    className={`${styleStatement.button} ${styleStatement.combineBtn}`}
+                    disabled={checkedQueriesCount < 2}
+                  >
+                    <svg>
+                      { getSvgPathFromOperatorType(OPERATOR_TYPE_AND) }
+                    </svg>
+                    { intl.get('components.query.instruction.subquery.operator.and') }
+                  </Button>
+                </Menu.Item>
+                <Menu.Item key={OPERATOR_TYPE_OR} disabled={checkedQueriesCount < 2}>
+                  <Button
+                    className={`${styleStatement.button} ${styleStatement.combineBtn}`}
+                    disabled={checkedQueriesCount < 2}
+                  >
+                    <svg>
+                      { getSvgPathFromOperatorType(OPERATOR_TYPE_OR) }
+                    </svg>
+                    { intl.get('components.query.instruction.subquery.operator.or') }
+                  </Button>
+                </Menu.Item>
+                { /* Not implement in clin-proxy-api yet
+                <Menu.Item key={OPERATOR_TYPE_AND_NOT} disabled={checkedQueriesCount < 2}>
+                  <Button
+                    className={`${styleStatement.button} ${styleStatement.combineBtn}`}
+                    disabled={checkedQueriesCount < 2}
+                  >
+                    <svg>
+                      { getSvgPathFromOperatorType(OPERATOR_TYPE_AND_NOT) }
+                    </svg>
+                    { intl.get('components.query.instruction.subquery.operator.andNot') }
+                  </Button>
+                </Menu.Item>
+                */ }
+              </Menu>
+  
+            </Row>
+          </div>
+          </>
+          ) :null
+        }
 
-          </Row>
-        </div>
       </div>
     );
   }
