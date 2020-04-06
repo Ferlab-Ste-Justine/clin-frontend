@@ -238,7 +238,7 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <div className="clinvar">
-                    <Row>{data.clinvar.clinvar_clinsig}</Row>
+                    <Row>{data.clinvar.clinvar_clinsig.join(', ')}</Row>
                     <Row>
                       <a
                         href={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${data.clinvar.clinvar_id}/`}
