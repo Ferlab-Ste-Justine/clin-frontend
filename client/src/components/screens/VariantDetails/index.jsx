@@ -28,7 +28,7 @@ import './style.scss';
 import style from './style.module.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
-import { navigateToVariantDetailsScreen } from '../../../actions/router';
+import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';
@@ -187,6 +187,7 @@ class VariantDetailsScreen extends React.Component {
     this.getDonors = this.getDonors.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
     this.handleMorePubmed = this.handleMorePubmed.bind(this);
+    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
 
     this.state.consequencesColumnPreset = [
@@ -448,8 +449,9 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'patientId',
         label: 'screen.variantDetails.patientsTab.donor',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.patientId; } catch (e) { return ''; } },
+        renderer: createCellRenderer('button', this.getDonors, {
+          key: 'patientId',
+          handler: this.handleGoToPatientScreen,
         }),
         columnWidth: COLUMN_WIDTH.NORMAL,
       },
@@ -705,6 +707,7 @@ class VariantDetailsScreen extends React.Component {
       } = on;
 
       const re = /(?<=Orph:)\d+(\.\d*)?/;
+
       const orphaId = panel ? re.exec(panel)[0] : '';
 
       return (
@@ -794,12 +797,22 @@ class VariantDetailsScreen extends React.Component {
     });
   }
 
+  handleGoToPatientScreen(e) {
+    const { actions } = this.props;
+    const value = e.target.getAttribute('data-id');
+    actions.navigateToPatientScreen(value);
+  }
+
   handleTabNavigation(tab) {
     const { actions, variantDetails } = this.props;
     actions.navigateToVariantDetailsScreen(variantDetails.variantID, tab);
   }
 
   render() {
+    const {
+      currentTab,
+    } = this.state;
+
     const { variantDetails, router } = this.props;
     const { data } = variantDetails;
     const { hash } = router.location;
@@ -1240,6 +1253,7 @@ VariantDetailsScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     fetchVariantDetails,
+    navigateToPatientScreen,
     navigateToVariantDetailsScreen,
   }, dispatch),
 });
