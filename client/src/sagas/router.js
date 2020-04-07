@@ -98,9 +98,9 @@ function* manualUserNavigation(action) {
     yield put({ type: actions.START_SUBLOADING_ANIMATION });
     yield put({ type: actions.USER_IDENTITY_REQUESTED });
     const { location } = action.payload;
-    const { pathname, hash } = location;
-    const urlIsRewrite = (pathname === '/' && hash !== '');
-    const route = urlIsRewrite ? hash.substring(1) : pathname + hash;
+    const { pathname, search, hash } = location;
+    const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
+    const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : pathname + hash;
     const tab = hash.replace('#', '');
 
     if (isPatientSearchRoute(route) === true) {
