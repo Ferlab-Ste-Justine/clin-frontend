@@ -28,6 +28,7 @@ import './style.scss';
 import style from './style.module.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
+import { navigateToVariantDetailsScreen } from '../../../actions/router';
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';
@@ -171,7 +172,6 @@ class VariantDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentTab: SUMMARY_TAB,
       morePubmed: false,
     };
 
@@ -182,6 +182,7 @@ class VariantDetailsScreen extends React.Component {
     this.getDonors = this.getDonors.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
     this.handleMorePubmed = this.handleMorePubmed.bind(this);
+    this.handleTabNavigation = this.handleTabNavigation.bind(this);
 
     this.state.consequencesColumnPreset = [
       {
@@ -788,13 +789,15 @@ class VariantDetailsScreen extends React.Component {
     });
   }
 
-  render() {
-    const {
-      currentTab,
-    } = this.state;
+  handleTabNavigation(tab) {
+    const { actions, variantDetails } = this.props;
+    actions.navigateToVariantDetailsScreen(variantDetails.variantID, tab);
+  }
 
-    const { variantDetails } = this.props;
+  render() {
+    const { variantDetails, router } = this.props;
     const { data } = variantDetails;
+    const { hash } = router.location;
 
     if (!data) return null;
 
@@ -858,12 +861,12 @@ class VariantDetailsScreen extends React.Component {
           </div>
           <Tabs
             key="..."
-            defaultActiveKey={SUMMARY_TAB}
+            defaultActiveKey={(hash ? hash.replace('#', '') : SUMMARY_TAB)}
             className="tabs"
-            onChange={this.handleTabChange}
+            onChange={this.handleTabNavigation}
           >
             <Tabs.TabPane
-              key={SUMMARY_TAB}
+              key="summary"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1050,7 +1053,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
 
             <Tabs.TabPane
-              key={FREQUENCIES_TAB}
+              key="frequencies"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1101,7 +1104,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
 
             <Tabs.TabPane
-              key={CLINICAL_ASSOCIATIONS_TAB}
+              key="clinical_associations"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1178,7 +1181,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
 
             <Tabs.TabPane
-              key={PATIENTS_TAB}
+              key="patients"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1225,17 +1228,20 @@ class VariantDetailsScreen extends React.Component {
 VariantDetailsScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   match: PropTypes.shape({}).isRequired,
+  router: PropTypes.shape({}).isRequired,
   variantDetails: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     fetchVariantDetails,
+    navigateToVariantDetailsScreen,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
   app: state.app,
+  router: state.router,
   user: state.user,
   patient: state.patient,
   variant: state.variant,

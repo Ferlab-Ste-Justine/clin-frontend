@@ -13,6 +13,7 @@ const patientVariantPageRoutePattern = new RegExp(`/${ROUTE_NAME_PATIENT}/PA[0-9
 const variantPageRoutePattern = RegExp(`${ROUTE_NAME_VARIANT}/[a-f0-9]{32}`, 'gi');
 const patientIdMatch = new RegExp('PA[0-9]{1,}', 'gi');
 const variantIdMatch = new RegExp('[a-f0-9]{32}', 'gi');
+const tabIdMatch = new RegExp('//.*[#]([\\w+]{1,})', 'gi');
 
 export const isLoggedIn = () => LocalStorage.read(LOGGED_IN) !== undefined;
 
@@ -34,6 +35,12 @@ export const isVariantPageRoute = location => variantPageRoutePattern.test(locat
 
 export const getPatientIdFromPatientPageRoute = location => location.match(patientIdMatch);
 
+export const getTabIdFromPatientPageRoute = location => location.match(tabIdMatch);
+
 export const getPatientIdFromPatientVariantPageRoute = location => location.match(patientIdMatch);
 
+export const getTabIdFromPatientVariantPageRoute = location => location.match(tabIdMatch);
+
 export const getVariantIdFromVariantPageRoute = location => location.match(variantIdMatch);
+
+export const getTabIdFromVariantPageRoute = location => location.match(tabIdMatch);
