@@ -28,6 +28,7 @@ import './style.scss';
 import style from './style.module.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
+import { navigateToPatientScreen } from '../../../actions/router';
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';
@@ -182,6 +183,7 @@ class VariantDetailsScreen extends React.Component {
     this.getDonors = this.getDonors.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
     this.handleMorePubmed = this.handleMorePubmed.bind(this);
+    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
 
     this.state.consequencesColumnPreset = [
       {
@@ -442,8 +444,9 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'patientId',
         label: 'screen.variantDetails.patientsTab.donor',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.patientId; } catch (e) { return ''; } },
+        renderer: createCellRenderer('button', this.getDonors, {
+          key: 'patientId',
+          handler: this.handleGoToPatientScreen,
         }),
         columnWidth: COLUMN_WIDTH.NORMAL,
       },
@@ -699,6 +702,7 @@ class VariantDetailsScreen extends React.Component {
       } = on;
 
       const re = /(?<=Orph:)\d+(\.\d*)?/;
+
       const orphaId = panel ? re.exec(panel)[0] : '';
 
       return (
@@ -786,6 +790,12 @@ class VariantDetailsScreen extends React.Component {
     this.setState({
       morePubmed: !morePubmed,
     });
+  }
+
+  handleGoToPatientScreen(e) {
+    const { actions } = this.props;
+    const value = e.target.getAttribute('data-id');
+    actions.navigateToPatientScreen(value);
   }
 
   render() {
@@ -1231,6 +1241,7 @@ VariantDetailsScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     fetchVariantDetails,
+    navigateToPatientScreen,
   }, dispatch),
 });
 
