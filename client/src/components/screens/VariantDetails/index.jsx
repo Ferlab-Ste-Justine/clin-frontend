@@ -28,6 +28,7 @@ import './style.scss';
 import style from './style.module.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
+import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';
@@ -56,6 +57,11 @@ const header = title => (
 const canonicalTranscript = (c) => {
   const canonical = c.transcripts.find(t => t.canonical);
   return canonical;
+};
+
+const pickTranscript = (c) => {
+  const pick = c.transcripts.find(t => t.pick);
+  return pick;
 };
 
 const Link = ({ url, text }) => (
@@ -100,7 +106,7 @@ const getImpactTag = (impact) => {
 };
 
 const impactSummary = (c) => {
-  if (canonicalTranscript(c)) {
+  if (pickTranscript(c)) {
     const impactScore = c.impact ? (getImpactTag(c.impact)) : null;
     const items = [impactScore].filter(item => !!item);
     return (
@@ -171,7 +177,6 @@ class VariantDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentTab: SUMMARY_TAB,
       morePubmed: false,
     };
 
@@ -182,6 +187,8 @@ class VariantDetailsScreen extends React.Component {
     this.getDonors = this.getDonors.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
     this.handleMorePubmed = this.handleMorePubmed.bind(this);
+    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
+    this.handleTabNavigation = this.handleTabNavigation.bind(this);
 
     this.state.consequencesColumnPreset = [
       {
@@ -442,8 +449,9 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'patientId',
         label: 'screen.variantDetails.patientsTab.donor',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.patientId; } catch (e) { return ''; } },
+        renderer: createCellRenderer('button', this.getDonors, {
+          key: 'patientId',
+          handler: this.handleGoToPatientScreen,
         }),
         columnWidth: COLUMN_WIDTH.NORMAL,
       },
@@ -699,6 +707,7 @@ class VariantDetailsScreen extends React.Component {
       } = on;
 
       const re = /(?<=Orph:)\d+(\.\d*)?/;
+
       const orphaId = panel ? re.exec(panel)[0] : '';
 
       return (
@@ -788,13 +797,25 @@ class VariantDetailsScreen extends React.Component {
     });
   }
 
+  handleGoToPatientScreen(e) {
+    const { actions } = this.props;
+    const value = e.target.getAttribute('data-id');
+    actions.navigateToPatientScreen(value);
+  }
+
+  handleTabNavigation(tab) {
+    const { actions, variantDetails } = this.props;
+    actions.navigateToVariantDetailsScreen(variantDetails.variantID, tab);
+  }
+
   render() {
     const {
       currentTab,
     } = this.state;
 
-    const { variantDetails } = this.props;
+    const { variantDetails, router } = this.props;
     const { data } = variantDetails;
+    const { hash } = router.location;
 
     if (!data) return null;
 
@@ -825,7 +846,12 @@ class VariantDetailsScreen extends React.Component {
       morePubmed,
     } = this.state;
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
-    const pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
+    let pubmed = [];
+    if (bdExt) {
+      if (bdExt.pubmed) {
+        pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
+      }
+    }
     return (
       <Content>
         <Header />
@@ -853,12 +879,12 @@ class VariantDetailsScreen extends React.Component {
           </div>
           <Tabs
             key="..."
-            defaultActiveKey={SUMMARY_TAB}
+            defaultActiveKey={(hash ? hash.replace('#', '') : SUMMARY_TAB)}
             className="tabs"
-            onChange={this.handleTabChange}
+            onChange={this.handleTabNavigation}
           >
             <Tabs.TabPane
-              key={SUMMARY_TAB}
+              key="summary"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1045,7 +1071,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
 
             <Tabs.TabPane
-              key={FREQUENCIES_TAB}
+              key="frequencies"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1096,7 +1122,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
 
             <Tabs.TabPane
-              key={CLINICAL_ASSOCIATIONS_TAB}
+              key="clinical_associations"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1173,7 +1199,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
 
             <Tabs.TabPane
-              key={PATIENTS_TAB}
+              key="patients"
               style={{ height: '100%' }}
               tab={(
                 <span className="tabName">
@@ -1211,6 +1237,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
           </Tabs>
         </div>
+        <Footer />
       </Content>
     );
   }
@@ -1219,17 +1246,21 @@ class VariantDetailsScreen extends React.Component {
 VariantDetailsScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   match: PropTypes.shape({}).isRequired,
+  router: PropTypes.shape({}).isRequired,
   variantDetails: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     fetchVariantDetails,
+    navigateToPatientScreen,
+    navigateToVariantDetailsScreen,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
   app: state.app,
+  router: state.router,
   user: state.user,
   patient: state.patient,
   variant: state.variant,

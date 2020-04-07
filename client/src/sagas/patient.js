@@ -5,7 +5,6 @@ import {
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 
-
 function* fetch(action) {
   try {
     const { defaultStatement } = yield select(state => state.user.profile);

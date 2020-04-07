@@ -31,6 +31,7 @@ class PatientScreen extends React.Component {
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
     this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
+    this.handleTabNavigation = this.handleTabNavigation.bind(this);
   }
 
   handleNavigationToPatientScreen(e) {
@@ -48,12 +49,18 @@ class PatientScreen extends React.Component {
     actions.navigateToPatientSearchScreen(false);
   }
 
+  handleTabNavigation(tab) {
+    const { actions, patient } = this.props;
+    actions.navigateToPatientScreen(patient.details.id, tab);
+  }
+
   render() {
     const {
-      app, patient, actions,
+      app, router, patient, actions,
     } = this.props;
 
     const { showSubloadingAnimation } = app;
+    const { hash } = router.location;
     const identifier = intl.get('screen.patient.details.id');
     const mrn = intl.get('screen.patient.details.mrn');
     const ramq = intl.get('screen.patient.details.ramq');
@@ -150,9 +157,9 @@ class PatientScreen extends React.Component {
             )}
           />
           <br />
-          <Tabs key={patient.details.id} defaultActiveKey="patient" className="tabs">
+          <Tabs key={patient.details.id} onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs">
             <Tabs.TabPane
-              key="patient"
+              key="personal"
               style={{ height: '100%' }}
               tab={(
                 <span>
@@ -262,7 +269,7 @@ class PatientScreen extends React.Component {
               </Row>
             </Tabs.TabPane>
             <Tabs.TabPane
-              key="clinique"
+              key="clinical"
               tab={(
                 <span>
                     <Icon type="reconciliation" />
@@ -385,6 +392,7 @@ class PatientScreen extends React.Component {
 
 PatientScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
+  router: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
@@ -400,6 +408,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   app: state.app,
+  router: state.router,
   patient: state.patient,
   search: state.search,
 });

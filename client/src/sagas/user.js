@@ -44,6 +44,20 @@ function* recover(action) {
   }
 }
 
+function* identity() {
+  try {
+    const response = yield Api.identity();
+    if (response.error) {
+      setAsLoggedOut();
+      throw new ApiError(response.error);
+    }
+
+    yield put({ type: actions.USER_IDENTITY_SUCCEEDED, payload: response.payload });
+  } catch (e) {
+    yield put({ type: actions.USER_IDENTITY_FAILED, payload: e });
+  }
+}
+
 function* getUserProfile() {
   try {
     let response = yield Api.getUserProfile();
@@ -92,6 +106,10 @@ function* watchUserRecover() {
   yield takeLatest(actions.USER_RECOVERY_REQUESTED, recover);
 }
 
+function* watchUserIdentity() {
+  yield takeLatest(actions.USER_IDENTITY_REQUESTED, identity);
+}
+
 function* watchGetUserProfile() {
   yield takeLatest(actions.USER_PROFILE_REQUESTED, getUserProfile);
 }
@@ -103,6 +121,7 @@ function* watchUpdateUserProfile() {
 export default function* watchedUserSagas() {
   yield all([
     watchUserLogin(),
+    watchUserIdentity(),
     watchUserRecover(),
     watchUserLogout(),
     watchGetUserProfile(),
