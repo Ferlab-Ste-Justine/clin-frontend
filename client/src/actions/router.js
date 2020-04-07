@@ -8,24 +8,27 @@ export const navigate = location => ({
   },
 });
 
-export const navigateToPatientScreen = uid => ({
+export const navigateToPatientScreen = (uid, tab = null) => ({
   type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
   payload: {
     uid,
+    tab,
   },
 });
 
-export const navigateToPatientVariantScreen = uid => ({
+export const navigateToPatientVariantScreen = (uid, tab = null) => ({
   type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED,
   payload: {
     uid,
+    tab,
   },
 });
 
-export const navigateToVariantDetailsScreen = uid => ({
+export const navigateToVariantDetailsScreen = (uid, tab = null) => ({
   type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED,
   payload: {
     uid,
+    tab,
   },
 });
 

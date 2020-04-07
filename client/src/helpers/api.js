@@ -14,6 +14,10 @@ const login = (username, password) => axios.post(`${window.CLIN.authServiceApiUr
   .then(successCallback)
   .catch(errorCallback);
 
+const identity = () => axios.get(`${window.CLIN.authServiceApiUrl}`)
+  .then(successCallback)
+  .catch(errorCallback);
+
 const logout = () => axios.delete(`${window.CLIN.authServiceApiUrl}`)
   .then(successCallback)
   .catch(errorCallback);
@@ -137,6 +141,7 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
 
 export default {
   login,
+  identity,
   logout,
   getPatientById,
   getPatientsByAutoComplete,
