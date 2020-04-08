@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-dev
-      #dockerfile: Dockerfile
     image: localhost:5000/clin-frontend-dev
     volumes:
       - /code/node_modules
@@ -14,7 +13,6 @@ services:
       - 2000:2000
     deploy:
       replicas: 2
-    #command: ["pnpm", "run", "start"]
     networks:
       - proxy
 
