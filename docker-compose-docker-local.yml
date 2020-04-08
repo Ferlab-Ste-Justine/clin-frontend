@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    image: localhost:5000/clin-frontend-dev
+    volumes:
+      - .:/code
+    ports:
+      - 443:443
+    deploy:
+      replicas: 2
+    command: ["pnpm", "run", "start"]
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
