@@ -1,7 +1,11 @@
-FROM node:10.14.1-alpine
-ADD . /code
+FROM node:10.14.1-stretch
+
 WORKDIR /code
 RUN npm install -g pnpm
+
+COPY package.json /code/package.json
 RUN pnpm install
+
+COPY . /code
 
 CMD ["pnpm", "run", "start"]
