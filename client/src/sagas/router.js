@@ -97,6 +97,7 @@ function* manualUserNavigation(action) {
     yield put({ type: actions.START_LOADING_ANIMATION });
     yield put({ type: actions.START_SUBLOADING_ANIMATION });
     yield put({ type: actions.USER_IDENTITY_REQUESTED });
+    yield put({ type: actions.USER_PROFILE_REQUESTED });
     const { location } = action.payload;
     const { pathname, search, hash } = location;
     const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
