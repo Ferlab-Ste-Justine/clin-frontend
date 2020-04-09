@@ -68,7 +68,18 @@ export class App extends React.Component {
           <Layout id="layout" key="layout">
             <ConnectedRouter key="connected-router" history={history}>
               <Switch key="switch">
-                <Route exact path={pathRootPage} component={() => (<Spin size="large" spinning />)} key="route-loading" />
+                <Route
+                  exact
+                  path={pathRootPage}
+                  component={() => (
+                    <div style={{
+                      display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',
+                    }}
+                    ><Spin size="large" spinning />
+                    </div>
+                  )}
+                  key="route-loading"
+                />
                 <Route exact path={pathLoginPage} component={LoginScreen} key="route-login" />
                 <PrivateRoute exact path={pathPatientSearch} Component={PatientSearchScreen} key="route-patient-search" />
                 <PrivateRoute exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />

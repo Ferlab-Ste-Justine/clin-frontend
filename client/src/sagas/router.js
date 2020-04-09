@@ -138,7 +138,11 @@ function* watchManualUserNavigation() {
 }
 
 function* watchNavigateToLoginScreen() {
-  yield takeLatest(actions.NAVIGATION_LOGIN_SCREEN_REQUESTED, navigateToLoginScreen);
+  yield takeLatest([
+    actions.NAVIGATION_LOGIN_SCREEN_REQUESTED,
+    actions.USER_LOGOUT_SUCCEEDED,
+    actions.USER_LOGOUT_FAILED,
+  ], navigateToLoginScreen);
 }
 
 function* watchNavigateToPatientScreen() {
