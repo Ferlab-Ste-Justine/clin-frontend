@@ -106,10 +106,8 @@ function* navigateToPatientSearchScreen() {
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
   if (isFirstRendering) {
-    yield put({ type: actions.START_LOADING_ANIMATION });
-    yield put({ type: actions.START_SUBLOADING_ANIMATION });
-    yield put({ type: actions.USER_IDENTITY_REQUESTED });
     yield put({ type: actions.USER_PROFILE_REQUESTED });
+    yield put({ type: actions.USER_IDENTITY_REQUESTED });
     const { location } = action.payload;
     const { pathname, search, hash } = location;
     const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
@@ -140,9 +138,9 @@ function* watchManualUserNavigation() {
 function* watchNavigateToLoginScreen() {
   yield takeLatest([
     actions.NAVIGATION_LOGIN_SCREEN_REQUESTED,
+    actions.USER_SESSION_HAS_EXPIRED,
     actions.USER_LOGOUT_SUCCEEDED,
     actions.USER_LOGOUT_FAILED,
-    actions.USER_IDENTITY_FAILED,
   ], navigateToLoginScreen);
 }
 
