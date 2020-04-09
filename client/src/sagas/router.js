@@ -128,7 +128,7 @@ function* manualUserNavigation(action) {
       const variantId = getVariantIdFromVariantPageRoute(route);
       yield navigateToVariantDetailsScreen({ payload: { uid: variantId, tab } });
     } else {
-      yield navigateToLoginScreen();
+      yield navigateToPatientSearchScreen();
     }
   }
 }
@@ -142,6 +142,7 @@ function* watchNavigateToLoginScreen() {
     actions.NAVIGATION_LOGIN_SCREEN_REQUESTED,
     actions.USER_LOGOUT_SUCCEEDED,
     actions.USER_LOGOUT_FAILED,
+    actions.USER_IDENTITY_FAILED,
   ], navigateToLoginScreen);
 }
 
