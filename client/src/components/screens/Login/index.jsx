@@ -15,7 +15,7 @@ import { appShape } from '../../../reducers/app';
 import './style.scss';
 
 
-const HomeScreen = ({ app, actions }) => {
+const LoginScreen = ({ app, actions }) => {
   const { showLoadingAnimation } = app;
   const { Paragraph } = Typography;
   return (
@@ -47,7 +47,7 @@ const HomeScreen = ({ app, actions }) => {
   );
 };
 
-HomeScreen.propTypes = {
+LoginScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   app: PropTypes.shape(appShape).isRequired,
 };
@@ -66,4 +66,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(HomeScreen);
+)(LoginScreen);
