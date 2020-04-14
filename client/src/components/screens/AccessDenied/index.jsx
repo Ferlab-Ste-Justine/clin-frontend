@@ -8,6 +8,10 @@ import Footer from '../../Footer';
 
 import './style.scss';
 
+const goBack = () => {
+  // @NOTE Path is: denied resource -> access-denied; we must go back before the denied resource location
+  window.history.go(-3);
+};
 
 const AccessDeniedScreen = () => (
   <Content type="auto">
@@ -17,7 +21,7 @@ const AccessDeniedScreen = () => (
         <Col span={12} className="gutter-row">
           {intl.get('screen.accessdenied.title')}
           {intl.get('screen.accessdenied.description')}
-          {intl.get('screen.accessdenied.button')}
+          {window.history.length > 2 ? <button type="button" onClick={goBack}>{intl.get('screen.accessdenied.button')}</button> : null }
         </Col>
       </Row>
     </Card>
