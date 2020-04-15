@@ -20,6 +20,7 @@ import {
   ROUTE_NAME_VARIANT,
 } from '../helpers/route';
 
+
 function* navigateToLoginScreen() {
   try {
     yield put(push(`${ROUTE_NAME_ROOT}${ROUTE_NAME_LOGIN}`));
@@ -103,6 +104,15 @@ function* navigateToPatientSearchScreen() {
   }
 }
 
+function* navigateToAccessDeniedScreen() {
+  try {
+    yield put(push('/access-denied'));
+    yield put({ type: actions.NAVIGATION_ACCESS_DENIED_SCREEN_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.NAVIGATION_ACCESS_DENIED_SCREEN_FAILED });
+  }
+}
+
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
   if (isFirstRendering) {
@@ -160,6 +170,10 @@ function* watchNavigateToVariantDetailsScreen() {
   yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToVariantDetailsScreen);
 }
 
+function* watchNavigationToAccessDeniedScreen() {
+  yield takeLatest(actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED, navigateToAccessDeniedScreen);
+}
+
 export default function* watchedRouterSagas() {
   yield all([
     watchNavigateToLoginScreen(),
@@ -167,6 +181,7 @@ export default function* watchedRouterSagas() {
     watchNavigateToPatientSearchScreen(),
     watchNavigateToPatientVariantScreen(),
     watchNavigateToVariantDetailsScreen(),
+    watchNavigationToAccessDeniedScreen(),
     watchManualUserNavigation(),
   ]);
 }

@@ -12,7 +12,7 @@ import './style.scss';
 
 import LoginScreen from '../../components/screens/Login';
 import MaintenanceScreen from '../../components/screens/Maintenance';
-import NoMatchScreen from '../../components/screens/NoMatch';
+import AccessDenied from '../../components/screens/AccessDenied';
 import PatientScreen from '../../components/screens/Patient';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
 import PatientVariantScreen from '../../components/screens/PatientVariant';
@@ -85,7 +85,7 @@ export class App extends React.Component {
                 <PrivateRoute exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
                 <PrivateRoute exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
                 <PrivateRoute exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
-                <Route component={NoMatchScreen} key="route-nomatch" />
+                <Route component={AccessDenied} key="route-access-denied" />
               </Switch>
             </ConnectedRouter>
           </Layout>
