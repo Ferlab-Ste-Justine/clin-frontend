@@ -10,12 +10,13 @@ import Footer from '../../Footer';
 import './style.scss';
 
 
-const MaintenanceScreen = () => (
+const MaintenanceScreen = error => (
   <Content type="stretched-centered">
     <Header />
     <Navigation />
     <Card>
       <h1>Under Maintenance</h1>
+      <div style={{ display: 'none' }}>{error}</div>
     </Card>
     <Footer />
   </Content>

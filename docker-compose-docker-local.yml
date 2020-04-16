@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    image: localhost:5000/clin-frontend-dev
+    volumes:
+      - /code/node_modules
+      - .:/code
+    ports:
+      - 2000:2000
+    deploy:
+      replicas: 2
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+

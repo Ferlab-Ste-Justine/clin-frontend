@@ -4,6 +4,8 @@ import { produce } from 'immer';
 import moment from 'moment';
 import 'moment/locale/fr';
 import 'moment/locale/en-ca';
+import { LOCATION_CHANGE } from 'connected-react-router';
+
 import * as frFr from 'antd/lib/locale-provider/fr_FR';
 import * as enUS from 'antd/lib/locale-provider/en_US';
 import * as actions from '../actions/type';
@@ -16,6 +18,7 @@ export const initialAppState = {
     lang: null,
     antd: null,
   },
+  referrer: null,
 };
 
 // @TODO
@@ -26,6 +29,7 @@ export const appShape = {
     lang: PropTypes.string,
     antd: PropTypes.shape({}),
   }).isRequired,
+  referrer: PropTypes.string,
 };
 
 const appReducer = (state = Object.assign({}, initialAppState), action) => produce(state, (draft) => {
@@ -101,6 +105,12 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
         draft.locale.lang = action.payload.language;
         draft.locale.antd = enUS;
         moment.locale(`${action.payload.language}-ca`);
+      }
+      break;
+
+    case LOCATION_CHANGE:
+      if (!state.referrer) {
+        draft.referrer = action.payload;
       }
       break;
 
