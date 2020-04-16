@@ -162,15 +162,15 @@ class DataTable extends React.Component {
       getData,
     } = this.props;
 
-    const selection = sel[0];
-    const rowStart = selection.rows[0];
-    const rowEnd = selection.rows[selection.rows.length - 1];
-    const colStart = selection.cols[0];
-    const colEnd = selection.cols[selection.cols.length - 1];
-
     const {
       columns,
     } = this.props;
+
+    const selection = sel[0];
+    const rowStart = selection.rows ? selection.rows[0] : 0;
+    const rowEnd = selection.rows ? selection.rows[selection.rows.length - 1] : getData().length - 1;
+    const colStart = selection.cols ? selection.cols[0] : 0;
+    const colEnd = selection.cols ? selection.cols[selection.cols.length - 1] : columns.length - 1;
 
     const array = [];
     for (let row = rowStart; row <= rowEnd; row += 1) {
