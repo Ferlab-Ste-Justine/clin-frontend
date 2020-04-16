@@ -16,6 +16,8 @@
 
 ### Development Set-up
 
+#### Directly On Your Machine
+
 Install [Redux Devtools Chrome Extension](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en)
 Install Node.js LTS 10.14.1 using [nvm](https://github.com/creationix/nvm/blob/master/README.md) and run
 ```
@@ -24,6 +26,42 @@ npm install -g pnpm
 pnpm install
 pnpm start
 ```
+
+#### With Docker
+
+Run:
+
+```
+cp env.docker.development .env
+docker-compose -f docker-compose-docker-local.yml up -d
+```
+
+To stop, run:
+
+```
+docker-compose -f docker-compose-docker-local.yml down
+```
+
+Additionally, if you edited your **/etc/hosts** file to point the **dev.chusj-clin-dev.org** domain to your local, you can edit the following entries in the **.env** file:
+
+```
+REACT_APP_AUTH_SERVICE_URL=https://localhost:3000/auth
+REACT_APP_PATIENT_SERVICE_URL=https://localhost:4000/patient
+REACT_APP_VARIANT_SERVICE_URL=https://localhost:5001/variant
+REACT_APP_META_SERVICE_URL=https://localhost:7000/meta
+```
+
+To:
+
+```
+REACT_APP_AUTH_SERVICE_URL=https://dev.chusj-clin-dev.org:3000/auth
+REACT_APP_PATIENT_SERVICE_URL=https://dev.chusj-clin-dev.org:4000/patient
+REACT_APP_VARIANT_SERVICE_URL=https://dev.chusj-clin-dev.org:5001/variant
+REACT_APP_META_SERVICE_URL=https://dev.chusj-clin-dev.org:7000/meta
+```
+
+This may give you a more reliable behavior in some environments.
+
 
 ### Production Set-up
 

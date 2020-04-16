@@ -25,6 +25,7 @@ export const initialVariantState = {
   facets: {},
   statements: {},
   activeStatementId: null,
+  defaultStatement: null,
   activeStatementTotals: {},
 };
 
@@ -176,38 +177,34 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
-      if (action.payload.data.total < 1) {
-        draft.activeStatementId = DRAFT_STATEMENT_UID;
-        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
-        draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
-        draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
-        draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
-        draft.draftHistory = [];
-      } else {
-        action.payload.data.hits.forEach((hit) => {
-          draft.statements[hit._id] = {
-            uid: hit._id,
-            title: hit._source.title,
-            description: hit._source.description,
-            queries: JSON.parse(hit._source.queries),
-          };
-        });
+      // @NOTE Normalize and update with retrieved statements
+      action.payload.data.hits.forEach((hit) => {
+        draft.statements[hit._id] = {
+          uid: hit._id,
+          title: hit._source.title,
+          description: hit._source.description,
+          queries: JSON.parse(hit._source.queries),
+        };
+      });
 
-        const activeStatementId = state.activeStatementId ? state.activeStatementId : state.defaultStatement;
-        if (!activeStatementId) {
-          const statementId = DRAFT_STATEMENT_UID;
-          draft.activeStatementId = statementId;
-          draft.statements[statementId] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
-          draft.activeQuery = head(draft.statements[statementId].queries).key;
-          draft.originalQueries = draft.statements[statementId].queries;
-          draft.draftQueries = draft.statements[statementId].queries;
-          draft.draftHistory = [];
-        } else {
-          draft.activeQuery = head(draft.statements[activeStatementId].queries).key;
-          draft.originalQueries = draft.statements[activeStatementId].queries;
-          draft.draftQueries = draft.statements[activeStatementId].queries;
+      // @CASE: No default statement or default statement not part of retrieved statements
+      if (!state.defaultStatement || !draft.statements[state.defaultStatement]) {
+        // @NOTE Don't override draft if one exists
+        if (!draft.statements[DRAFT_STATEMENT_UID]) {
+          draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
+          draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
+          draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
+          draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
           draft.draftHistory = [];
         }
+        draft.activeStatementId = DRAFT_STATEMENT_UID;
+      } else {
+        const activeStatementId = state.activeStatementId ? state.activeStatementId : state.defaultStatement;
+        draft.activeStatementId = activeStatementId;
+        draft.activeQuery = head(draft.statements[activeStatementId].queries).key;
+        draft.originalQueries = draft.statements[activeStatementId].queries;
+        draft.draftQueries = draft.statements[activeStatementId].queries;
+        draft.draftHistory = [];
       }
       break;
 

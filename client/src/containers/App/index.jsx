@@ -10,24 +10,24 @@ import { Spin, Layout, ConfigProvider } from 'antd';
 import 'antd/dist/antd.less';
 import './style.scss';
 
-import HomeScreen from '../../components/screens/Home';
+import LoginScreen from '../../components/screens/Login';
 import MaintenanceScreen from '../../components/screens/Maintenance';
-import NoMatchScreen from '../../components/screens/NoMatch';
+import AccessDenied from '../../components/screens/AccessDenied';
 import PatientScreen from '../../components/screens/Patient';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
 import PatientVariantScreen from '../../components/screens/PatientVariant';
 import VariantDetailsScreen from '../../components/screens/VariantDetails';
 import PrivateRoute from '../PrivateRoute';
 import {
-  ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT,
+  ROUTE_NAME_ROOT, ROUTE_NAME_LOGIN, ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT,
 } from '../../helpers/route';
-import { loadApp, error, warning } from '../../actions/app';
+import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
 
 export class App extends React.Component {
   constructor() {
     super();
-    this.state = { caughtError: false };
+    this.state = { caughtError: false, errorDetail: null };
   }
 
   componentDidMount() {
@@ -40,24 +40,26 @@ export class App extends React.Component {
     return { caughtError: true };
   }
 
+  // eslint-disable-next-line no-unused-vars
   componentDidCatch(e, info) {
-    error(e.toString());
-    warning(info);
+    this.setState({ caughtError: true, errorDetail: e.toString() });
   }
 
   render() {
-    const { caughtError } = this.state;
+    const { caughtError, errorDetail } = this.state;
     if (caughtError) {
       return (
-        <MaintenanceScreen />
+        <MaintenanceScreen error={errorDetail} />
       );
     }
 
     // @NOTE In case we use intl for routes later on...
-    const pathPatientSearch = `/${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`;
-    const pathPatientPage = `/${ROUTE_NAME_PATIENT}/:uid`;
-    const pathPatientVariants = `/${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
-    const pathVariantPage = `/${ROUTE_NAME_VARIANT}/:uid`;
+    const pathRootPage = `${ROUTE_NAME_ROOT}`;
+    const pathLoginPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_LOGIN}`;
+    const pathPatientSearch = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`;
+    const pathPatientPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/:uid`;
+    const pathPatientVariants = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
+    const pathVariantPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_VARIANT}/:uid`;
 
     const { app, history } = this.props;
     return (
@@ -66,12 +68,24 @@ export class App extends React.Component {
           <Layout id="layout" key="layout">
             <ConnectedRouter key="connected-router" history={history}>
               <Switch key="switch">
-                <Route exact path="/" component={HomeScreen} key="route-home" />
+                <Route
+                  exact
+                  path={pathRootPage}
+                  component={() => (
+                    <div style={{
+                      display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',
+                    }}
+                    ><Spin size="large" spinning />
+                    </div>
+                  )}
+                  key="route-loading"
+                />
+                <Route exact path={pathLoginPage} component={LoginScreen} key="route-login" />
                 <PrivateRoute exact path={pathPatientSearch} Component={PatientSearchScreen} key="route-patient-search" />
                 <PrivateRoute exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
                 <PrivateRoute exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
                 <PrivateRoute exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
-                <Route component={NoMatchScreen} key="route-nomatch" />
+                <Route component={AccessDenied} key="route-access-denied" />
               </Switch>
             </ConnectedRouter>
           </Layout>
