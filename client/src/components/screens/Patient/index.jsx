@@ -5,12 +5,16 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Col, Row, Tabs, PageHeader, Typography, Button, Spin, Table, Empty, Tag,
+  Col, Row, Tabs, PageHeader, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List,
 } from 'antd';
+import {
+  find,
+} from 'lodash';
+
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_done, ic_close,
+  ic_person, ic_assignment, ic_done, ic_close, ic_add,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -58,6 +62,14 @@ class PatientScreen extends React.Component {
       {
         key: 'labo',
         label: 'screen.patient.details.labo',
+      },
+      {
+        key: 'test',
+        label: 'screen.patient.details.test',
+      },
+      {
+        key: 'status',
+        label: 'screen.patient.details.status',
       },
     ];
 
@@ -124,23 +136,28 @@ class PatientScreen extends React.Component {
   getRequest() {
     const { patient } = this.props;
     const { requests } = patient;
-
     if (requests) {
-      return requests.map(r => ({
-        id: r.id, date: r.date, requester: r.requester, labo: r.organization,
-      }));
+      return requests.map((r) => {
+        const status = <span><Badge className="impact" color={r.status === 'active' ? '#FA8C16' : '#52c41a'} />{r.status}</span>;
+        return {
+          id: r.id, date: r.date, requester: r.requester, labo: r.organization, test: r.type, status,
+        };
+      });
     }
     return [];
   }
 
   getExtendedlRequest() {
     const { patient } = this.props;
-    const { requests } = patient;
+    const { requests, samples } = patient;
 
     if (requests) {
-      return requests.map(r => ({
-        specimen: r.specimen, externalId: '', type: r.type, specimenIdExt: '', sourceTissue: '', tissueType: '',
-      }));
+      return requests.map((r) => {
+        const sample = find(samples, { request: r.id });
+        return {
+          specimen: r.specimen, externalId: sample ? sample.barcode : '--', type: sample.type, specimenIdExt: '', sourceTissue: '', tissueType: '',
+        };
+      });
     }
 
     return [];
@@ -165,8 +182,9 @@ class PatientScreen extends React.Component {
             {o.code}
           </Button>
         );
+        const note = o.note ? o.note : '--';
         return {
-          ontology: o.ontology, code, term: o.term, notes: '', observed, consultation: o.consultation_date, apparition: o.apparition_date,
+          ontology: o.ontology, code, term: o.term, notes: note, observed, consultation: o.consultation_date, apparition: o.apparition_date,
         };
       });
     }
@@ -210,7 +228,6 @@ class PatientScreen extends React.Component {
     const study = intl.get('screen.patient.details.study');
     const proband = intl.get('screen.patient.details.proband');
     const preferringPractitioner = intl.get('screen.patient.details.referringPractitioner');
-    const mln = intl.get('screen.patient.details.mln');
     const ageAtConsultation = intl.get('screen.patient.details.ageAtConsultation');
     const consultation = intl.get('screen.patient.details.consultation');
     const notes = intl.get('screen.patient.details.notes');
@@ -358,13 +375,25 @@ class PatientScreen extends React.Component {
                     />
                   </Col>
                   <Col>
-                    <DataList
-                      title={referringPractitioner}
-                      dataSource={[
-                        { label: preferringPractitioner, value: patient.practitioner.name },
-                        { label: mln, value: patient.practitioner.mln },
-                      ]}
-                    />
+                    <Card className="datalist" title={referringPractitioner} type="inner" size="small" hoverable>
+                      <List
+                        size="small"
+                        dataSource={[
+                          `${patient.practitioner.name} | ${patient.practitioner.mln} `,
+                          '--',
+                        ]}
+                        locale={{
+                          emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                        }}
+                        renderItem={item => (
+                          <List.Item className="listRow">
+                            <Row type="flex" justify="space-between" style={{ width: '100%' }}>
+                              <Typography.Text>{item}</Typography.Text>
+                            </Row>
+                          </List.Item>
+                        )}
+                      />
+                    </Card>
                     {
                     patient.consultations.map(pConsultation => (
                       <DataList
@@ -384,7 +413,7 @@ class PatientScreen extends React.Component {
                 <Row type="flex">
                   <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">
                     {requests}
-                    <Button className="newRequestButton">+ {newRequest}</Button>
+                    <Button className="newRequestButton"><IconKit className="iconPos" size={20} icon={ic_add} /> {newRequest}</Button>
                   </Typography.Title>
                   <Table
                     pagination={false}
@@ -392,6 +421,7 @@ class PatientScreen extends React.Component {
                       emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
                     }}
                     dataSource={this.getRequest()}
+                    defaultExpandAllRows
                     expandedRowRender={() => <Table className="expandedTable" pagination={false} columns={extendRequestColumnPreset.map(columnPresetToColumn)} dataSource={this.getExtendedlRequest()} />}
                     columns={requestColumnPreset.map(
                       columnPresetToColumn,
@@ -419,25 +449,6 @@ class PatientScreen extends React.Component {
                     dataSource={this.getClinical()}
                   />
                 </Row>
-                {/*               <br />
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{indications}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={[
-                    { title: notes, dataIndex: 'note', key: 'note' },
-                    { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
-                  ]}
-                  dataSource={patient.indications}
-                  size="small"
-                  rowKey="consultation"
-                />
-              </Row>
-              <br />
-              <br /> */}
                 <Row type="flex" gutter={24}>
                   <Col span={12}>
                     <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{generalObservations}</Typography.Title>
