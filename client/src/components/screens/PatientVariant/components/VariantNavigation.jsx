@@ -280,6 +280,7 @@ class VariantNavigation extends React.Component {
   }
 
   handleAutoCompleteChange(e) {
+    e = !e ? '' : e;
     this.setState({ searchValue: e });
   }
 
@@ -389,11 +390,11 @@ class VariantNavigation extends React.Component {
   render() {
     const { schema } = this.props;
     const {
-      activeFilterId, searchResults, searchSelection,
+      activeFilterId, searchResults, searchSelection, searchValue,
     } = this.state;
     let autocompletesCount = 0;
 
-    const autocompletes = searchResults.filter(group => group.label !== '').map((group) => {
+    const autocompletes = searchValue !== '' ? searchResults.filter(group => group.label !== '').map((group) => {
       autocompletesCount += group.matches.length;
       return (
         <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong className="label">{group.label}</Typography.Text>)}>
@@ -412,7 +413,7 @@ class VariantNavigation extends React.Component {
           ))}
         </AutoComplete.OptGroup>
       );
-    });
+    }) : [];
     if (autocompletesCount > 0) {
       autocompletes.unshift((
         <AutoComplete.Option key="count" disabled>
