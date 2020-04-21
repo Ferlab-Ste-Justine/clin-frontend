@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty, Icon,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty, Icon, Tooltip,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -851,6 +851,14 @@ class VariantDetailsScreen extends React.Component {
         pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
       }
     }
+    let mutationIdTitle = '';
+    if (data.mutationId.length > 31) {
+      const mutationIdTitleStart = data.mutationId.substring(0, 15);
+      const mutationIdTitleEnd = data.mutationId.substring(data.mutationId.length - 15);
+      mutationIdTitle = `${mutationIdTitleStart} ... ${mutationIdTitleEnd}`;
+    } else {
+      mutationIdTitle = data.mutationId;
+    }
     return (
       <Content>
         <Header />
@@ -872,9 +880,13 @@ class VariantDetailsScreen extends React.Component {
                 fill="#EAF3FA"
               />
             </svg>
-            <Typography.Text className="mutationID">
-              {data.mutationId}
-            </Typography.Text>
+            <Tooltip title={data.mutationId} overlayClassName="tooltip">
+              <span>
+                <Typography.Text className="mutationID">
+                  {mutationIdTitle}
+                </Typography.Text>
+              </span>
+            </Tooltip>
           </div>
           <Tabs
             key="..."
