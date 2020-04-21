@@ -1,21 +1,26 @@
-/* eslint-disable */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import uuidv1 from 'uuid/v1';
 import {
-  Card, Col, Row, Tabs, PageHeader, Typography, Icon, Button, Spin,
+  Col, Row, Tabs, PageHeader, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List,
 } from 'antd';
-import ResizableAntdTable from 'resizable-antd-table';
+import {
+  find,
+} from 'lodash';
 
+
+import IconKit from 'react-icons-kit';
+import {
+  ic_person, ic_assignment, ic_done, ic_close, ic_add,
+} from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import DataList from '../../DataList';
 import { patientShape } from '../../../reducers/patient';
-import { searchShape } from '../../../reducers/search';
 import { appShape } from '../../../reducers/app';
 import {
   navigateToPatientScreen, navigateToPatientVariantScreen,
@@ -24,14 +29,167 @@ import {
 
 import './style.scss';
 
+const columnPresetToColumn = c => ({
+  key: c.key, title: intl.get(c.label), dataIndex: c.key,
+});
 
 class PatientScreen extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
+    this.getRequest = this.getRequest.bind(this);
+    this.getExtendedlRequest = this.getExtendedlRequest.bind(this);
+    this.getClinical = this.getClinical.bind(this);
     this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
     this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
+
+    this.state.requestColumnPreset = [
+      {
+        key: 'id',
+        label: 'screen.patient.details.id',
+      },
+      {
+        key: 'date',
+        label: 'screen.patient.details.date',
+      },
+      {
+        key: 'requester',
+        label: 'screen.patient.details.author',
+      },
+      {
+        key: 'labo',
+        label: 'screen.patient.details.labo',
+      },
+      {
+        key: 'test',
+        label: 'screen.patient.details.test',
+      },
+      {
+        key: 'status',
+        label: 'screen.patient.details.status',
+      },
+    ];
+
+    this.state.extendRequestColumnPreset = [
+      {
+        key: 'specimen',
+        label: 'screen.patient.details.specimen',
+      },
+      {
+        key: 'externalId',
+        label: 'screen.patient.details.externalId',
+      },
+      {
+        key: 'type',
+        label: 'screen.patient.details.type',
+      },
+      {
+        key: 'specimenIdExt',
+        label: 'screen.patient.details.specimenExternalId',
+      },
+      {
+        key: 'sourceTissue',
+        label: 'screen.patient.details.sourceTissue',
+      },
+      {
+        key: 'tissueType',
+        label: 'screen.patient.details.tissueType',
+      },
+    ];
+
+    this.state.clinicalColumnPreset = [
+      {
+        key: 'ontology',
+        label: 'screen.patient.details.ontology',
+      },
+      {
+        key: 'code',
+        label: 'screen.patient.details.code',
+      },
+      {
+        key: 'term',
+        label: 'screen.patient.details.term',
+      },
+      {
+        key: 'notes',
+        label: 'screen.patient.details.notes',
+      },
+      {
+        key: 'observed',
+        label: 'screen.patient.details.observed',
+      },
+      {
+        key: 'consultation',
+        label: 'screen.patient.details.consultation',
+      },
+      {
+        key: 'apparition',
+        label: 'screen.patient.details.apparition',
+      },
+    ];
+  }
+
+
+  getRequest() {
+    const { patient } = this.props;
+    const { requests } = patient;
+    if (requests) {
+      return requests.map((r) => {
+        const status = <span><Badge className="impact" color={r.status === 'active' ? '#FA8C16' : '#52c41a'} />{r.status}</span>;
+        return {
+          id: r.id, date: r.date, requester: r.requester, labo: r.organization, test: r.type, status,
+        };
+      });
+    }
+    return [];
+  }
+
+  getExtendedlRequest() {
+    const { patient } = this.props;
+    const { requests, samples } = patient;
+
+    if (requests) {
+      return requests.map((r) => {
+        const sample = find(samples, { request: r.id });
+        return {
+          specimen: r.specimen, externalId: sample ? sample.barcode : '--', type: sample.type, specimenIdExt: '', sourceTissue: '', tissueType: '',
+        };
+      });
+    }
+
+    return [];
+  }
+
+  getClinical() {
+    const { patient } = this.props;
+    const { ontology } = patient;
+
+    if (ontology) {
+      return ontology.map((o) => {
+        const observed = o.observed === 'POS' ? <IconKit className="iconPos" size={24} icon={ic_done} /> : <IconKit className="iconNeg" size={24} icon={ic_close} />;
+        const code = (
+          <Button
+            key={uuidv1()}
+            type="link"
+            size={25}
+            href="#"
+            target="_blank"
+            className="link"
+          >
+            {o.code}
+          </Button>
+        );
+        const note = o.note ? o.note : '--';
+        return {
+          ontology: o.ontology, code, term: o.term, notes: note, observed, consultation: o.consultation_date, apparition: o.apparition_date,
+        };
+      });
+    }
+
+    return [];
   }
 
   handleNavigationToPatientScreen(e) {
@@ -56,333 +214,272 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      app, router, patient, actions,
+      app, router, patient,
     } = this.props;
-
+    const { requestColumnPreset, extendRequestColumnPreset, clinicalColumnPreset } = this.state;
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
-    const identifier = intl.get('screen.patient.details.id');
     const mrn = intl.get('screen.patient.details.mrn');
     const ramq = intl.get('screen.patient.details.ramq');
     const dateOfBirth = intl.get('screen.patient.details.dob');
     const organization = intl.get('screen.patient.details.organization');
-    const firstName = intl.get('screen.patient.details.firstName');
-    const lastName = intl.get('screen.patient.details.lastName');
     const gender = intl.get('screen.patient.details.gender');
-    const pfamily = intl.get('screen.patient.details.family');
     const ethnicity = intl.get('screen.patient.details.ethnicity');
     const study = intl.get('screen.patient.details.study');
     const proband = intl.get('screen.patient.details.proband');
-    const position = intl.get('screen.patient.details.position');
     const preferringPractitioner = intl.get('screen.patient.details.referringPractitioner');
-    const mln = intl.get('screen.patient.details.mln');
-    const id = intl.get('screen.patient.details.id');
-    const practitioner = intl.get('screen.patient.details.practitioner');
-    const date = intl.get('screen.patient.details.date');
     const ageAtConsultation = intl.get('screen.patient.details.ageAtConsultation');
-    const type = intl.get('screen.patient.details.type');
-    const author = intl.get('screen.patient.details.author');
-    const specimen = intl.get('screen.patient.details.specimen');
     const consultation = intl.get('screen.patient.details.consultation');
-    const status = intl.get('screen.patient.details.status');
-    const request = intl.get('screen.patient.details.request');
-    const barcode = intl.get('screen.patient.details.barcode');
-    const code = intl.get('screen.patient.details.code');
-    const term = intl.get('screen.patient.details.term');
     const notes = intl.get('screen.patient.details.notes');
     const mother = intl.get('screen.patient.details.mother');
     const father = intl.get('screen.patient.details.father');
-    const familyId = intl.get('screen.patient.details.familyId');
-    const configuration = intl.get('screen.patient.details.configuration');
     const dateAndTime = intl.get('screen.patient.details.dateAndTime');
-    const ontology = intl.get('screen.patient.details.ontology');
-    const observed = intl.get('screen.patient.details.observed');
-    const apparition = intl.get('screen.patient.details.apparition');
-    const identification = intl.get('screen.patient.header.identification');
     const additionalInformation = intl.get('screen.patient.header.additionalInformation');
     const referringPractitioner = intl.get('screen.patient.header.referringPractitioner');
-    const geneticalConsultations = intl.get('screen.patient.header.geneticalConsultations');
     const requests = intl.get('screen.patient.header.requests');
-    const samples = intl.get('screen.patient.header.samples');
     const clinicalSigns = intl.get('screen.patient.header.clinicalSigns');
-    const indications = intl.get('screen.patient.header.indications');
     const generalObservations = intl.get('screen.patient.header.generalObservations');
     const family = intl.get('screen.patient.header.family');
     const familyHistory = intl.get('screen.patient.header.familyHistory');
-    const generalInformation = intl.get('screen.patient.header.generalInformation');
-    const familyMembers = intl.get('screen.patient.header.familyMembers');
     const patientTab = intl.get('screen.patient.tab.patient');
     const clinicalTab = intl.get('screen.patient.tab.clinical');
-    const motherLink = patient.family.members.mother ? (
-          <a /* eslint-disable-line */
-            data-patient-id={patient.family.members.mother}
-            onClick={(e) => {
-              actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
-            }}
-          >
-            {patient.family.members.mother}
-          </a>) : '';
-    const fatherLink = patient.family.members.father ? (
-          <a /* eslint-disable-line */
-            data-patient-id={patient.family.members.father}
-            onClick={(e) => {
-              actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
-            }}
-          >
-            {patient.family.members.father}
-          </a>) : '';
+    const familyType = intl.get('screen.patient.details.familyType');
+    const newRequest = intl.get('screen.patient.header.newRequests');
 
+    const name = `${patient.details.lastName},  ${patient.details.firstName}`;
+
+    const probandTag = patient.details.proband === 'Proband' ? <Tag className="probandTag">{patient.details.proband}</Tag> : <Tag>{patient.details.proband}</Tag>;
+
+    const getFamilyTypeIcon = () => {
+      if (patient.family.composition === 'trio') {
+        return (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 6C12.6569 6 14 4.65685 14 3C14 1.34315 12.6569 0 11 0C9.34315 0 8 1.34315 8 3C8 4.65685 9.34315 6 11 6Z" fill="#13C2C2" />
+            <path d="M3 6C4.65685 6 6 4.65685 6 3C6 1.34315 4.65685 0 3 0C1.34315 0 0 1.34315 0 3C0 4.65685 1.34315 6 3 6Z" fill="#13C2C2" />
+            <path d="M7 14C8.65685 14 10 12.6569 10 11C10 9.34315 8.65685 8 7 8C5.34315 8 4 9.34315 4 11C4 12.6569 5.34315 14 7 14Z" fill="#13C2C2" />
+          </svg>
+        );
+      }
+      if (patient.family.composition === 'duo') {
+        return (
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 6C8.65685 6 10 4.65685 10 3C10 1.34315 8.65685 0 7 0C5.34315 0 4 1.34315 4 3C4 4.65685 5.34315 6 7 6Z" fill="#13C2C2" />
+            <path d="M7 14C8.65685 14 10 12.6569 10 11C10 9.34315 8.65685 8 7 8C5.34315 8 4 9.34315 4 11C4 12.6569 5.34315 14 7 14Z" fill="#13C2C2" />
+          </svg>
+        );
+      }
+
+      return (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 10C8.65685 10 10 8.65685 10 7C10 5.34315 8.65685 4 7 4C5.34315 4 4 5.34315 4 7C4 8.65685 5.34315 10 7 10Z" fill="#13C2C2" />
+        </svg>
+      );
+    };
+    const familyTypeTag = <Tag className="familyTypeTag">{getFamilyTypeIcon()}{patient.family.composition}</Tag>;
+
+    const Link = ({ url, text }) => (
+      <Button
+        key={uuidv1()}
+        type="link"
+        size={25}
+        href={url}
+        target="_blank"
+        className="link"
+      >
+        {text}
+      </Button>
+    );
+
+    const motherButton = (
+      <a href="#" data-patient-id={patient.family.members.mother} className="familyLink" onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
+        {patient.family.members.mother}
+      </a>
+    );
+    const fatherButton = (
+      <a href="#" data-patient-id={patient.family.members.father} className="familyLink" onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
+        {patient.family.members.father}
+      </a>
+    );
     return (
       <Content type="auto">
         <Header />
         <Spin spinning={showSubloadingAnimation}>
-          <Card className="entity">
-          <PageHeader
-            title={(
-              <div>
-                <Typography.Title level={2} style={{ display: 'inline' }}>
-                  {`${patient.details.firstName} ${patient.details.lastName}`}
-                </Typography.Title>
-                <Typography.Title level={2} style={{ fontWeight: 'normal', display: 'inline' }}>
-                  {`, ${patient.details.birthDate}`}
-                </Typography.Title>
-              </div>
+          <div className="patientPage">
+            <PageHeader
+              className="patientHeader"
+              title={(
+                <div>
+                  <Typography.Text className="patientName">
+                    {`${patient.details.firstName} ${patient.details.lastName}`}
+                  </Typography.Text>
+                </div>
             )}
-            extra={(
-              <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientVariantScreen}>
-                <Button type="primary">
+              extra={(
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientVariantScreen}>
+                  <Button type="primary">
                   Variant Interpreter
-                </Button>
-              </a>
+                  </Button>
+                </a>
             )}
-          />
-          <br />
-          <Tabs key={patient.details.id} onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs">
-            <Tabs.TabPane
-              key="personal"
-              style={{ height: '100%' }}
-              tab={(
-                <span>
-                    <Icon type="profile" />
-                  {patientTab}
+            />
+            <Tabs key={patient.details.id} onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs">
+              <Tabs.TabPane
+                key="personal"
+                style={{ height: '100%' }}
+                tab={(
+                  <span className="tabName">
+                    <IconKit size={24} icon={ic_person} />
+                    {patientTab}
                   </span>
               )}
-            >
-              <br />
-              <Row type="flex" gutter={32}>
-                <Col span={12} className="gutter-row">
-                  <DataList
-                    title={identification}
-                    dataSource={[
-                      { label: identifier, value: patient.details.id },
-                      { label: mrn, value: patient.details.mrn },
-                      { label: ramq, value: patient.details.ramq },
-                      { label: organization, value: patient.organization.name },
-                      { label: firstName, value: patient.details.firstName },
-                      { label: lastName, value: patient.details.lastName },
-                      { label: dateOfBirth, value: patient.details.birthDate },
-                      { label: gender, value: patient.details.gender },
-                    ]}
-                  />
-                </Col>
-                <Col span={12} className="gutter-row">
-                  <DataList
-                    title={additionalInformation}
-                    dataSource={[
-                      { label: ethnicity, value: patient.details.ethnicity },
-                      { label: pfamily, value: patient.family.id },
-                      { label: position, value: patient.details.proband },
-                      { label: study, value: patient.study.name },
-                    ]}
-                  />
-                  <DataList
-                    style={{ marginTop: '10px' }}
-                    title={referringPractitioner}
-                    dataSource={[
-                      { label: preferringPractitioner, value: patient.practitioner.name },
-                      { label: mln, value: patient.practitioner.mln },
-                    ]}
-                  />
-                </Col>
-              </Row>
-              <br />
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{geneticalConsultations}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={[
-                    { title: id, dataIndex: 'id', key: 'id' },
-                    { title: practitioner, dataIndex: 'assessor', key: 'assessor' },
-                    { title: organization, dataIndex: 'organization', key: 'organization' },
-                    { title: date, dataIndex: 'date', key: 'date' },
-                    { title: ageAtConsultation, dataIndex: 'age', key: 'age' },
-                  ]}
-                  dataSource={patient.consultations}
-                  size="small"
-                  rowKey="id"
-                />
-              </Row>
-              <br />
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{requests}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={[
-                    { title: id, dataIndex: 'id', key: 'id' },
-                    { title: date, dataIndex: 'date', key: 'date' },
-                    { title: type, dataIndex: 'type', key: 'type' },
-                    { title: author, dataIndex: 'requester', key: 'requester' },
-                    { title: organization, dataIndex: 'organization', key: 'organization' },
-                    { title: specimen, dataIndex: 'specimen', key: 'specimen' },
-                    { title: consultation, dataIndex: 'consulation', key: 'consulation' },
-                    { title: status, dataIndex: 'status', key: 'status' },
-                  ]}
-                  dataSource={patient.requests}
-                  size="small"
-                  rowKey="id"
-                />
-              </Row>
-              <br />
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{samples}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={[
-                    { title: id, dataIndex: 'id', key: 'id' },
-                    { title: barcode, dataIndex: 'barcode', key: 'barcode' },
-                    { title: type, dataIndex: 'type', key: 'type' },
-                    { title: request, dataIndex: 'request', key: 'request' },
-                  ]}
-                  dataSource={patient.samples}
-                  size="small"
-                  rowKey="id"
-                />
-              </Row>
-            </Tabs.TabPane>
-            <Tabs.TabPane
-              key="clinical"
-              tab={(
-                <span>
-                    <Icon type="reconciliation" />
-                  {clinicalTab}
-                  </span>
-              )}
-              style={{ height: '100%' }}
-            >
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{clinicalSigns}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={
-                    [
-                      { title: ontology, dataIndex: 'ontology', key: 'ontology' },
-                      { title: code, dataIndex: 'code', key: 'code' },
-                      { title: term, dataIndex: 'term', key: 'term' },
-                      { title: observed, dataIndex: 'observed', key: 'observed' },
-                      { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
-                      { title: apparition, dataIndex: 'apparition_date', key: 'apparition_date' },
-                    ]
+              >
+                <Row type="flex" className="personalInfo">
+                  <Col>
+                    <DataList
+                      title={name}
+                      extraInfo={(
+                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
+                        <Link
+                          url="#"
+                          className="extraInfoLink"
+                          text={`${patient.details.id}`}
+                        />
+)}
+                      dataSource={[
+                        { label: ramq, value: patient.details.ramq },
+                        { label: mrn, value: patient.details.mrn },
+                        { label: organization, value: patient.organization.name },
+                        { label: dateOfBirth, value: patient.details.birthDate },
+                        { label: gender, value: patient.details.gender },
+                        { label: proband, value: probandTag },
+                        { label: study, value: patient.study.name },
+                      ]}
+                    />
+                  </Col>
+                  <Col className="gutter-row">
+                    <DataList
+                      title={additionalInformation}
+                      dataSource={[
+                        { label: ethnicity, value: patient.details.ethnicity },
+                      ]}
+                    />
+
+                    <DataList
+                      title={family}
+                      dataSource={[
+                        { label: familyType, value: familyTypeTag },
+                        { label: father, value: fatherButton },
+                        { label: mother, value: motherButton },
+                      ]}
+                    />
+                  </Col>
+                  <Col>
+                    <Card className="datalist" title={referringPractitioner} type="inner" size="small" hoverable>
+                      <List
+                        size="small"
+                        dataSource={[
+                          `${patient.practitioner.name} | ${patient.practitioner.mln} `,
+                          '--',
+                        ]}
+                        locale={{
+                          emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                        }}
+                        renderItem={item => (
+                          <List.Item className="listRow">
+                            <Row type="flex" justify="space-between" style={{ width: '100%' }}>
+                              <Typography.Text>{item}</Typography.Text>
+                            </Row>
+                          </List.Item>
+                        )}
+                      />
+                    </Card>
+                    {
+                    patient.consultations.map(pConsultation => (
+                      <DataList
+                        title={consultation}
+                        extraInfo={<span className="extraInfo">{pConsultation.date}</span>}
+                        dataSource={[
+                          { label: preferringPractitioner, value: pConsultation.assessor },
+                          { label: organization, value: pConsultation.organization },
+                          { label: ageAtConsultation, value: pConsultation.age },
+                        ]}
+                      />
+                    ))
                   }
-                  dataSource={patient.ontology}
-                  size="small"
-                  rowKey="code"
-                />
-              </Row>
-              <br />
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{indications}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={[
-                    { title: notes, dataIndex: 'note', key: 'note' },
-                    { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
-                  ]}
-                  dataSource={patient.indications}
-                  size="small"
-                  rowKey="consultation"
-                />
-              </Row>
-              <br />
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{generalObservations}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={[
-                    { title: notes, dataIndex: 'note', key: 'note' },
-                    { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
-                  ]}
-                  dataSource={patient.observations}
-                  size="small"
-                  rowKey="consultation"
-                />
-              </Row>
-              <br />
-              <br />
-              <Row type="flex">
-                <br />
-                <Col span={24}>
-                  <Typography.Title level={4}>{family}</Typography.Title>
-                </Col>
-              </Row>
-              <Row type="flex" gutter={32}>
-                <Col span={12} className="gutter-row">
-                  <DataList
-                    title={generalInformation}
-                    dataSource={[
-                      { label: familyId, value: patient.family.id },
-                      { label: configuration, value: patient.family.composition },
-                    ]}
+
+                  </Col>
+                </Row>
+                <Row type="flex">
+                  <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">
+                    {requests}
+                    <Button className="newRequestButton"><IconKit className="iconPos" size={20} icon={ic_add} /> {newRequest}</Button>
+                  </Typography.Title>
+                  <Table
+                    pagination={false}
+                    locale={{
+                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                    }}
+                    dataSource={this.getRequest()}
+                    defaultExpandAllRows
+                    expandedRowRender={() => <Table className="expandedTable" pagination={false} columns={extendRequestColumnPreset.map(columnPresetToColumn)} dataSource={this.getExtendedlRequest()} />}
+                    columns={requestColumnPreset.map(
+                      columnPresetToColumn,
+                    )}
                   />
-                </Col>
-                <Col span={12} className="gutter-row">
-                  <DataList
-                    title={familyMembers}
-                    dataSource={[
-                      { label: proband, value: patient.family.members.proband },
-                      { label: father, value: fatherLink },
-                      { label: mother, value: motherLink },
-                    ]}
+                </Row>
+              </Tabs.TabPane>
+              <Tabs.TabPane
+                key="clinical"
+                tab={(
+                  <span className="tabName">
+                    <IconKit size={24} icon={ic_assignment} />
+                    {clinicalTab}
+                  </span>
+              )}
+                style={{ height: '100%' }}
+              >
+                <Row type="flex" className="clinicalSigns">
+                  <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{clinicalSigns}</Typography.Title>
+                  <Table
+                    pagination={false}
+                    columns={clinicalColumnPreset.map(
+                      columnPresetToColumn,
+                    )}
+                    dataSource={this.getClinical()}
                   />
-                </Col>
-              </Row>
-              <br />
-              <Row type="flex">
-                <Typography.Title level={4}>{familyHistory}</Typography.Title>
-                <ResizableAntdTable
-                  bordered
-                  style={{ width: '100%' }}
-                  pagination={false}
-                  columns={[
-                    { title: notes, dataIndex: 'note', key: 'note' },
-                    { title: dateAndTime, dataIndex: 'date', key: 'date' },
-                  ]}
-                  dataSource={patient.familyHistory}
-                  size="small"
-                  rowKey="date"
-                />
-              </Row>
-            </Tabs.TabPane>
-          </Tabs>
-        </Card>
-        <Footer />
+                </Row>
+                <Row type="flex" gutter={24}>
+                  <Col span={12}>
+                    <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{generalObservations}</Typography.Title>
+                    <Table
+                      pagination={false}
+                      columns={[
+                        { title: notes, dataIndex: 'note', key: 'note' },
+                        { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
+                      ]}
+                      dataSource={patient.observations}
+                    />
+                  </Col>
+
+
+                  <Col span={12}>
+                    <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{familyHistory}</Typography.Title>
+                    <Table
+                      pagination={false}
+                      columns={[
+                        { title: notes, dataIndex: 'note', key: 'note' },
+                        { title: dateAndTime, dataIndex: 'date', key: 'date' },
+                      ]}
+                      dataSource={patient.familyHistory}
+                    />
+                  </Col>
+                </Row>
+
+              </Tabs.TabPane>
+            </Tabs>
+          </div>
+          <Footer />
         </Spin>
 
       </Content>
@@ -394,7 +491,6 @@ PatientScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
   router: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape(patientShape).isRequired,
-  search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
 

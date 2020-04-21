@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty, Icon,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty, Icon, Tooltip,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -706,8 +706,9 @@ class VariantDetailsScreen extends React.Component {
         dataId, panel,
       } = on;
 
-      const re = RegExp(/([Orph:])\d+(\.\d*)?/, 'i');
-      const orphaId = 123; // panel ? re.exec(panel)[0] : '';
+      const re = /(?<=Orph:)\d+(\.\d*)?/;
+
+      const orphaId = panel ? re.exec(panel)[0] : '';
 
       return (
         <span className="orphanetLink">
@@ -737,7 +738,7 @@ class VariantDetailsScreen extends React.Component {
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g, index) => {
         const lis = g.hpo ? g.hpo.map((h) => {
-          const re = RegExp(/([HP:])\d+(\.\d*)?/, 'i');
+          const re = /(?<=HP:)\d+(\.\d*)?/;
           const hpoId = re.exec(h)[0];
           const url = `https://hpo.jax.org/app/browse/term/HP:${hpoId}`;
           return (<a href={url}>{h}</a>);
@@ -851,6 +852,14 @@ class VariantDetailsScreen extends React.Component {
         pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
       }
     }
+    let mutationIdTitle = '';
+    if (data.mutationId.length > 31) {
+      const mutationIdTitleStart = data.mutationId.substring(0, 15);
+      const mutationIdTitleEnd = data.mutationId.substring(data.mutationId.length - 15);
+      mutationIdTitle = `${mutationIdTitleStart} ... ${mutationIdTitleEnd}`;
+    } else {
+      mutationIdTitle = data.mutationId;
+    }
     return (
       <Content>
         <Header />
@@ -872,9 +881,13 @@ class VariantDetailsScreen extends React.Component {
                 fill="#EAF3FA"
               />
             </svg>
-            <Typography.Text className="mutationID">
-              {data.mutationId}
-            </Typography.Text>
+            <Tooltip title={data.mutationId} overlayClassName="tooltip">
+              <span>
+                <Typography.Text className="mutationID">
+                  {mutationIdTitle}
+                </Typography.Text>
+              </span>
+            </Tooltip>
           </div>
           <Tabs
             key="..."

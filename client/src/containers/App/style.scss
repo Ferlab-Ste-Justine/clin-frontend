@@ -106,30 +106,6 @@ nav#navigation {
     height: 42px;
   }
 
-  div.ant-tabs-nav-wrap {
-    position: relative;
-    top: -3px;
-  }
-
-  div.ant-tabs-bar {
-    border-bottom: none;
-  }
-
-  div.ant-tabs-tab {
-    color: $link-color;
-    margin-right: 10px;
-    background-color: $navigation-tab;
-    border: none;
-  }
-
-  div.ant-tabs-top {
-    overflow: visible;
-  }
-
-  div.ant-tabs-tab-active {
-    background-color: $navigation-tab-active;
-    border: none;
-  }
 
 }
 
@@ -263,7 +239,6 @@ div.datalist {
 }
 
 div.ant-page-header {
-  padding: 0px;
   span.ant-page-header-title-view-extra {
     top: 5px;
     right: 0px;
@@ -282,9 +257,6 @@ div.ant-card {
   flex: 1;
 }
 
-div.ant-tabs-nav .ant-tabs-tab-active {
-  color: $link-color;
-}
 
 .clippy, .clippy-balloon {
   z-index: 10000;
