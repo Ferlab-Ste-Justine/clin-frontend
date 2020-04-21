@@ -19,6 +19,7 @@ export const initialAppState = {
     antd: null,
   },
   referrer: null,
+  loginMessage: '',
 };
 
 // @TODO
@@ -70,8 +71,13 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
         const agentIdle = ['IdleScratch', 'IdleStretch', 'IdleTailWagA', 'IdleTailWagB', 'IdleTailWagC', 'IdleTailWagD', 'IdleTwitch', 'IdleYawn', 'IdleButterFly', 'IdleCleaning', 'IdleLegLick', 'GetArtsy'];
         window.agent.play(agentIdle[Math.floor((Math.random() * agentIdle.length))]);
       }
+      if (action.type === actions.USER_LOGIN_FAILED) {
+        draft.loginMessage = action.payload.message;
+      }
+      if (action.type === actions.USER_LOGIN_SUCCEEDED) {
+        draft.loginMessage = '';
+      }
       break;
-
     case actions.START_SUBLOADING_ANIMATION:
     case actions.PATIENT_SEARCH_REQUESTED:
     case actions.PATIENT_FETCH_REQUESTED:

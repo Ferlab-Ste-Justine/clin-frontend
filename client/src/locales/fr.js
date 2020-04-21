@@ -47,6 +47,8 @@ const fr = {
   'form.login.submitButton': 'Connexion',
   'form.login.forgotPassword': 'Mot de passe oublié ?',
   'form.login.howToRegister': 'Pour obtenir un compte, nous écrire à xx@ksks.org',
+  'form.login.connectionError.title': 'Connection échouée',
+  'form.login.connectionError.description': 'Il y a une erreur avec votre nom d\'utilisateur ou votre mot de passe. Veuillez rééessayer.',
   'screen.accessdenied.title': 'Accès Refusé',
   'screen.accessdenied.description': "Nous sommes désolés, mais vous n'êtes pas authorizés à voir ce contenu.",
   'screen.accessdenied.button': 'Retourner à la page précédente',
