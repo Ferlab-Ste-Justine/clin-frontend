@@ -31,6 +31,7 @@ export const appShape = {
     antd: PropTypes.shape({}),
   }).isRequired,
   referrer: PropTypes.string,
+  loginMessage: PropTypes.string,
 };
 
 const appReducer = (state = Object.assign({}, initialAppState), action) => produce(state, (draft) => {
