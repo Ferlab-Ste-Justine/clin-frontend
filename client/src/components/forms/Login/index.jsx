@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Card, Row, Col, Form, Input, Button, Typography,
+  Card, Row, Col, Form, Input, Button, Typography, Alert,
 } from 'antd';
 import intl from 'react-intl-universal';
 import IconKit from 'react-icons-kit';
@@ -60,7 +60,7 @@ class LoginForm extends React.Component {
   }
 
   render() {
-    const { appIsLoading, form } = this.props;
+    const { appIsLoading, form, loginMessage } = this.props;
     const { submitLoading, forgotLoading } = this.state;
     const { Text } = Typography;
 
@@ -76,6 +76,8 @@ class LoginForm extends React.Component {
     const connexionTitle = intl.get('form.login.headline5');
     const createAccount = intl.get('form.login.createAccount');
     const introText = intl.get('form.login.introText');
+    const alertTitle = intl.get('form.login.connectionError.title');
+    const alertDescription = intl.get('form.login.connectionError.description');
     const usernameError = form.isFieldTouched('username') && form.getFieldError('username');
     const passwordError = form.isFieldTouched('password') && form.getFieldError('password');
 
@@ -84,6 +86,17 @@ class LoginForm extends React.Component {
         <Row type="flex" justify="end">
           <a className="newAccount">{createAccount}</a>
         </Row>
+        {loginMessage
+          ? (
+            <Row className="loginAlert">
+              <Alert
+                message={alertTitle}
+                description={alertDescription}
+                type="error"
+                closable
+              />
+            </Row>
+          ) : null }
         <Row>
           <Text type="primary" className="loginTitle">{connexionTitle}</Text>
         </Row>
@@ -155,6 +168,7 @@ LoginForm.propTypes = {
   form: PropTypes.shape({}).isRequired,
   handleAuthentication: PropTypes.func.isRequired,
   handlePasswordRecovery: PropTypes.func.isRequired,
+  loginMessage: PropTypes.string.isRequired,
 };
 
 export default Form.create()(LoginForm);

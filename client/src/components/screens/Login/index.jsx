@@ -16,7 +16,7 @@ import './style.scss';
 
 
 const LoginScreen = ({ app, actions }) => {
-  const { showLoadingAnimation } = app;
+  const { showLoadingAnimation, loginMessage } = app;
   const { Paragraph } = Typography;
   return (
     <Content>
@@ -26,6 +26,7 @@ const LoginScreen = ({ app, actions }) => {
           appIsLoading={showLoadingAnimation}
           handleAuthentication={actions.loginUser}
           handlePasswordRecovery={actions.recoverUser}
+          loginMessage={loginMessage}
         />
         <div className="content">
           <img className="logo" alt={intl.get('header.title')} src="/assets/logos/cqgc-color.svg" />
