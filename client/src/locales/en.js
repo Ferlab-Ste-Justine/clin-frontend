@@ -47,6 +47,8 @@ const en = {
   'form.login.submitButton': 'Connect',
   'form.login.forgotPassword': 'Forgotten Password',
   'form.login.howToRegister': 'To obtain an account, write to us at xx@ksks.org',
+  'form.login.connectionError.title': 'Connection error',
+  'form.login.connectionError.description': 'Bad username or password. Please retry.',
   'screen.accessdenied.title': 'Access Denied',
   'screen.accessdenied.description': 'We are sorry but you are not allowed to view this content.',
   'screen.accessdenied.button': 'Go Back to Previous Page',

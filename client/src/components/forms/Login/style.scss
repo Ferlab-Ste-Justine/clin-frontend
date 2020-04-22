@@ -36,6 +36,10 @@ div#login {
       color:$medium-blue;
   }
 
+  .alertMessage{
+    height: 32px;
+  }
+
   .loginTitle{
       display:inline-block;
       font-family: $font;

@@ -84,7 +84,7 @@
             background: #F8FAFC;
             padding: 12px 16px;
             margin-bottom:0;
-            border-bottom: 2px solid #e8e8e8;
+            border-bottom: 2px solid #EDF0F3;
 
             .ant-card-head-title{
                 padding: 0;
@@ -103,6 +103,7 @@
 
             .listRow{
                 padding: 8px 16px;
+                border-bottom: 1px solid #EDF0F3;
                 span{
                     font-family: $font;
                     font-size: 14px;
@@ -118,6 +119,8 @@
                     display: flex;
                     justify-content: right;
                     margin: 0;
+                    word-break: break-all;
+                    flex-grow: 2;
                     .link{
                         padding: 0;
                         height: 22px;
@@ -202,7 +205,7 @@
         color: #125A90;
         background: #F8FAFC;
         padding: 12px 16px;
-        border-bottom: 2px solid #e8e8e8;
+        border-bottom: 2px solid #EDF0F3;
         border-radius:2px 2px 0 0;
     }
     .ant-table-body{
@@ -215,6 +218,7 @@
         }
         th{
             background: #F8FAFC;
+            border-bottom: 1px solid #EDF0F3;
             .ant-table-column-title{
                 font-family: $font;
                 font-weight: 500;
@@ -225,6 +229,7 @@
         tr{
             &:not(.ant-table-expanded-row):not(.ant-table-row-selected){
                 td{
+                    border-bottom: 1px solid #EDF0F3;
                     background: #fff;
                 }
             }
@@ -290,6 +295,7 @@
     }
     .ant-table-placeholder{
         border-bottom:none;
+        border-top: 1px solid #EDF0F3;
         .ant-empty-image{
             display: none;
         }
@@ -469,7 +475,7 @@
         width: 100%;
         .bp3-table-column-header-cell{
             background-color: #F8FAFC ;
-            border-bottom: 1px solid #e8e8e8;
+            border-bottom: 1px solid #EDF0F3;
         }
         .bp3-table-column-headers{
             background-color: #F8FAFC ;
@@ -480,7 +486,7 @@
     
         .bp3-table-row-name{
             border-right: none;
-            border-bottom: 1px solid #e8e8e8;
+            border-bottom: 1px solid #EDF0F3;
         }
         .bp3-table-cell-ledger-odd{
             background-color: #fff;
@@ -488,14 +494,14 @@
         .bp3-table-menu{
             background-color: #F8FAFC ;
             border-right: none;
-            border-bottom: 1px solid #e8e8e8;
+            border-bottom: 1px solid #EDF0F3;
         }
         .bp3-table-column-name{
             border-right: none;
         }
         .bp3-table-cell{
             border-right: none;
-            border-bottom: 1px solid #e8e8e8;
+            border-bottom: 1px solid #EDF0F3;
         }
 
         .bp3-table-row-headers .bp3-table-row-headers-cells-container .bp3-table-header .bp3-table-row-name{
@@ -506,4 +512,5 @@
 
         }
     }
+
 }
