@@ -42,6 +42,9 @@ class PatientScreen extends React.Component {
     this.getRequest = this.getRequest.bind(this);
     this.getExtendedlRequest = this.getExtendedlRequest.bind(this);
     this.getClinical = this.getClinical.bind(this);
+    this.getIndication = this.getIndication.bind(this);
+    this.getObservations = this.getObservations.bind(this);
+    this.getHistorical = this.getHistorical.bind(this);
     this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
     this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
@@ -130,8 +133,29 @@ class PatientScreen extends React.Component {
         label: 'screen.patient.details.apparition',
       },
     ];
-  }
 
+    this.state.notesColumnPreset = [
+      {
+        key: 'notes',
+        label: 'screen.patient.details.notes',
+      },
+      {
+        key: 'consultation',
+        label: 'screen.patient.details.consultation',
+      },
+    ];
+
+    this.state.familyHistoryColumnPreset = [
+      {
+        key: 'notes',
+        label: 'screen.patient.details.notes',
+      },
+      {
+        key: 'date',
+        label: 'screen.patient.details.dateAndTime',
+      },
+    ];
+  }
 
   getRequest() {
     const { patient } = this.props;
@@ -183,12 +207,56 @@ class PatientScreen extends React.Component {
           </Button>
         );
         const note = o.note ? o.note : '--';
+        const dateC = o.consultation_date.split('T');
+        const dateA = o.apparition_date.split('T');
         return {
-          ontology: o.ontology, code, term: o.term, notes: note, observed, consultation: o.consultation_date, apparition: o.apparition_date,
+          ontology: o.ontology, code, term: o.term, notes: note, observed, consultation: dateC[0], apparition: dateA[0],
         };
       });
     }
 
+    return [];
+  }
+
+  getIndication() {
+    const { patient } = this.props;
+    const { indications } = patient;
+    if (indications) {
+      return indications.map((i) => {
+        const date = i.consultation_date.split('T');
+        return {
+          notes: i.note, consultation: date[0],
+        };
+      });
+    }
+    return [];
+  }
+
+  getObservations() {
+    const { patient } = this.props;
+    const { observations } = patient;
+    if (observations) {
+      return observations.map((o) => {
+        const date = o.consultation_date.split('T');
+        return {
+          notes: o.note, consultation: date[0],
+        };
+      });
+    }
+    return [];
+  }
+
+  getHistorical() {
+    const { patient } = this.props;
+    const { familyHistory } = patient;
+    if (familyHistory) {
+      return familyHistory.map((f) => {
+        const date = f.date.split('T')[0];
+        return {
+          notes: f.note, date,
+        };
+      });
+    }
     return [];
   }
 
@@ -216,7 +284,9 @@ class PatientScreen extends React.Component {
     const {
       app, router, patient,
     } = this.props;
-    const { requestColumnPreset, extendRequestColumnPreset, clinicalColumnPreset } = this.state;
+    const {
+      requestColumnPreset, extendRequestColumnPreset, clinicalColumnPreset, notesColumnPreset, familyHistoryColumnPreset,
+    } = this.state;
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
     const mrn = intl.get('screen.patient.details.mrn');
@@ -224,20 +294,22 @@ class PatientScreen extends React.Component {
     const dateOfBirth = intl.get('screen.patient.details.dob');
     const organization = intl.get('screen.patient.details.organization');
     const gender = intl.get('screen.patient.details.gender');
+    const male = intl.get('screen.patient.details.male');
+    const female = intl.get('screen.patient.details.female');
     const ethnicity = intl.get('screen.patient.details.ethnicity');
+    const consanguinity = intl.get('screen.patient.details.consanguinity');
     const study = intl.get('screen.patient.details.study');
     const proband = intl.get('screen.patient.details.proband');
     const preferringPractitioner = intl.get('screen.patient.details.referringPractitioner');
     const ageAtConsultation = intl.get('screen.patient.details.ageAtConsultation');
     const consultation = intl.get('screen.patient.details.consultation');
-    const notes = intl.get('screen.patient.details.notes');
     const mother = intl.get('screen.patient.details.mother');
     const father = intl.get('screen.patient.details.father');
-    const dateAndTime = intl.get('screen.patient.details.dateAndTime');
     const additionalInformation = intl.get('screen.patient.header.additionalInformation');
     const referringPractitioner = intl.get('screen.patient.header.referringPractitioner');
     const requests = intl.get('screen.patient.header.requests');
     const clinicalSigns = intl.get('screen.patient.header.clinicalSigns');
+    const indication = intl.get('screen.patient.header.indications');
     const generalObservations = intl.get('screen.patient.header.generalObservations');
     const family = intl.get('screen.patient.header.family');
     const familyHistory = intl.get('screen.patient.header.familyHistory');
@@ -276,7 +348,7 @@ class PatientScreen extends React.Component {
       );
     };
     const familyTypeTag = <Tag className="familyTypeTag">{getFamilyTypeIcon()}{patient.family.composition}</Tag>;
-
+    const headerPractitioner = (<Typography.Title level={4} className="datalisteHeader" style={{ marginBottom: 0 }}>{referringPractitioner}</Typography.Title>);
     const Link = ({ url, text }) => (
       <Button
         key={uuidv1()}
@@ -300,6 +372,16 @@ class PatientScreen extends React.Component {
         {patient.family.members.father}
       </a>
     );
+    const studyLink = (
+      // eslint-disable-next-line jsx-a11y/anchor-is-valid
+      <Link url="#" text={`${patient.study.name}`} />
+    );
+
+    const formatDate = (date) => {
+      const fDate = date.split('T');
+      return fDate[0];
+    };
+
     return (
       <Content type="auto">
         <Header />
@@ -351,9 +433,9 @@ class PatientScreen extends React.Component {
                         { label: mrn, value: patient.details.mrn },
                         { label: organization, value: patient.organization.name },
                         { label: dateOfBirth, value: patient.details.birthDate },
-                        { label: gender, value: patient.details.gender },
+                        { label: gender, value: patient.details.gender === 'male' ? male : female },
                         { label: proband, value: probandTag },
-                        { label: study, value: patient.study.name },
+                        { label: study, value: studyLink },
                       ]}
                     />
                   </Col>
@@ -362,6 +444,7 @@ class PatientScreen extends React.Component {
                       title={additionalInformation}
                       dataSource={[
                         { label: ethnicity, value: patient.details.ethnicity },
+                        { label: consanguinity, value: '--' },
                       ]}
                     />
 
@@ -375,7 +458,7 @@ class PatientScreen extends React.Component {
                     />
                   </Col>
                   <Col>
-                    <Card className="datalist" title={referringPractitioner} type="inner" size="small" hoverable>
+                    <Card className="datalist" title={headerPractitioner} type="inner" size="small" hoverable>
                       <List
                         size="small"
                         dataSource={[
@@ -398,11 +481,11 @@ class PatientScreen extends React.Component {
                     patient.consultations.map(pConsultation => (
                       <DataList
                         title={consultation}
-                        extraInfo={<span className="extraInfo">{pConsultation.date}</span>}
+                        extraInfo={<span className="extraInfo">{formatDate(pConsultation.date)}</span>}
                         dataSource={[
                           { label: preferringPractitioner, value: pConsultation.assessor },
                           { label: organization, value: pConsultation.organization },
-                          { label: ageAtConsultation, value: pConsultation.age },
+                          { label: ageAtConsultation, value: `${pConsultation.age} jours` },
                         ]}
                       />
                     ))
@@ -413,7 +496,7 @@ class PatientScreen extends React.Component {
                 <Row type="flex">
                   <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">
                     {requests}
-                    <Button className="newRequestButton"><IconKit className="iconPos" size={20} icon={ic_add} /> {newRequest}</Button>
+                    <Button className="newRequestButton"><IconKit size={14} icon={ic_add} /> {newRequest}</Button>
                   </Typography.Title>
                   <Table
                     pagination={false}
@@ -422,6 +505,7 @@ class PatientScreen extends React.Component {
                     }}
                     dataSource={this.getRequest()}
                     defaultExpandAllRows
+                    className="requestTable"
                     expandedRowRender={() => <Table className="expandedTable" pagination={false} columns={extendRequestColumnPreset.map(columnPresetToColumn)} dataSource={this.getExtendedlRequest()} />}
                     columns={requestColumnPreset.map(
                       columnPresetToColumn,
@@ -439,6 +523,18 @@ class PatientScreen extends React.Component {
               )}
                 style={{ height: '100%' }}
               >
+                <Row type="flex" className="indications" gutter={24}>
+                  <Col span={12}>
+                    <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{indication}</Typography.Title>
+                    <Table
+                      pagination={false}
+                      columns={notesColumnPreset.map(
+                        columnPresetToColumn,
+                      )}
+                      dataSource={this.getIndication()}
+                    />
+                  </Col>
+                </Row>
                 <Row type="flex" className="clinicalSigns">
                   <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{clinicalSigns}</Typography.Title>
                   <Table
@@ -454,11 +550,10 @@ class PatientScreen extends React.Component {
                     <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{generalObservations}</Typography.Title>
                     <Table
                       pagination={false}
-                      columns={[
-                        { title: notes, dataIndex: 'note', key: 'note' },
-                        { title: consultation, dataIndex: 'consultation_date', key: 'consultation_date' },
-                      ]}
-                      dataSource={patient.observations}
+                      columns={notesColumnPreset.map(
+                        columnPresetToColumn,
+                      )}
+                      dataSource={this.getObservations()}
                     />
                   </Col>
 
@@ -467,11 +562,10 @@ class PatientScreen extends React.Component {
                     <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{familyHistory}</Typography.Title>
                     <Table
                       pagination={false}
-                      columns={[
-                        { title: notes, dataIndex: 'note', key: 'note' },
-                        { title: dateAndTime, dataIndex: 'date', key: 'date' },
-                      ]}
-                      dataSource={patient.familyHistory}
+                      columns={familyHistoryColumnPreset.map(
+                        columnPresetToColumn,
+                      )}
+                      dataSource={this.getHistorical()}
                     />
                   </Col>
                 </Row>
