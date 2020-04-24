@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+@import '../../../containers/App/variables.scss';
 
-$font: 'Roboto', sans-serif;
+
 $primary-color: #125a90;
 $medium-blue: #1b7ab2;
 $dark-color: #233750;
@@ -40,6 +40,39 @@ div#login {
     height: 32px;
   }
 
+  .loginAlert{
+    background: #FFF1F0;
+    border: 1px solid #FFA39E;
+    border-radius: 2px;
+    padding: 16px;
+    margin:24px 0;
+    span{
+      font-family: $font;
+    }
+
+    .ant-alert-message{
+      font-size: 16px;
+      line-height: 24px;
+      color: #233750;
+    }
+
+    .ant-alert-description{
+      font-family: Roboto;
+      font-size: 14px;
+      line-height: 22px;
+      letter-spacing: 0.25px;
+      color: #536377;
+    }
+
+    .ant-alert-close-icon{
+      font-size: 16px;
+      i{
+        color: #536377;
+      }
+
+    }
+  }
+
   .loginTitle{
       display:inline-block;
       font-family: $font;
@@ -57,7 +90,7 @@ div#login {
     font-family: $font;
     letter-spacing: 0.5px;
     line-height: 28px;
-    margin-bottom:40px;
+    margin-bottom:32px;
   }
 
   .ant-form-item-control{
