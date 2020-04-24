@@ -88,8 +88,9 @@ class LoginForm extends React.Component {
         </Row>
         {loginMessage
           ? (
-            <Row className="loginAlert">
+            <Row>
               <Alert
+                className="loginAlert"
                 message={alertTitle}
                 description={alertDescription}
                 type="error"
