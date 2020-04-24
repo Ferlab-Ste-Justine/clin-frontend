@@ -24,6 +24,10 @@ export const getUserProfile = () => ({
   type: actions.USER_PROFILE_REQUESTED,
 });
 
+export const checkUserSession = () => ({
+  type: actions.USER_SESSION_CHECK_REQUESTED,
+});
+
 export const updateUserProfile = (id, defaultStatement, patientTableConfig, variantTableConfig) => ({
   type: actions.USER_PROFILE_UPDATE_REQUESTED,
   payload: {
