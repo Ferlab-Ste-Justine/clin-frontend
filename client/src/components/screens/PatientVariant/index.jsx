@@ -425,34 +425,28 @@ class PatientVariantScreen extends React.Component {
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
-                const menu = (
-                  <Menu>
-                    {data.bdExt.pubmed.map(value => (
-                      <Menu.Item>
-                        <a
-                          href={`https://www.ncbi.nlm.nih.gov/pubmed/${value}`}
-                          rel="noopener noreferrer"
-                          target="_blank"
-                          className="link"
-                        >
-                          {value}
-                        </a>
-                      </Menu.Item>
-                    ))}
-                  </Menu>
-                );
+                if (data.bdExt.pubmed.length === 1) {
+                  return (
+                    <a
+                      href={`https://www.ncbi.nlm.nih.gov/pubmed?term=${data.bdExt.pubmed[0]}`}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      className="link"
+                    >
+                      {`${data.bdExt.pubmed.length} publication`}
+                    </a>
+                  );
+                }
+
                 return (
-                  <div>
-                    {
-                      <Dropdown overlay={menu} trigger={['click']} placement="bottomCenter" overlayClassName="pubmedDropdown">
-                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                        <a>
-                          {data.bdExt.pubmed[0]}
-                          <IconKit size={16} icon={ic_arrow_drop_down} />
-                        </a>
-                      </Dropdown>
-                    }
-                  </div>
+                  <a
+                    href={`https://www.ncbi.nlm.nih.gov/pubmed?term=${data.bdExt.pubmed.join('+')}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="link"
+                  >
+                    {`${data.bdExt.pubmed.length} publications`}
+                  </a>
                 );
               } catch (e) { return ''; }
             },
