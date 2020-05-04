@@ -12,6 +12,7 @@ services:
       - "sshvolume:/etc/letsencrypt"
     ports:
       - 443:443
+      - 8443:8443
       - 10000:10000
       - 10001:10001
     deploy:
@@ -21,9 +22,9 @@ services:
     networks:
       - proxy
     configs:
-      - clin-external-proxy-v1
+      - clin-external-proxy-v2
     command: |
-      /bin/bash -c "cp /clin-external-proxy-v1 /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+      /bin/bash -c "cp /clin-external-proxy-v2 /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
   proxy:
@@ -34,5 +35,5 @@ volumes:
     external: true
 
 configs:
-  clin-external-proxy-v1:
+  clin-external-proxy-v2:
     external: true
