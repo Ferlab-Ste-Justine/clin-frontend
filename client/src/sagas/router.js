@@ -115,14 +115,67 @@ function* navigateToAccessDeniedScreen() {
 
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
-  if (isFirstRendering) {
+  if (isFirstRendering || action.type === actions.USER_LOGIN_SUCCEEDED) {
     yield put({ type: actions.USER_PROFILE_REQUESTED });
     yield put({ type: actions.USER_IDENTITY_REQUESTED });
-    const { location } = action.payload;
+    const { referrer } = yield select(state => state.app);
+    const location = !referrer.location ? action.payload : referrer.location;
+
     const { pathname, search, hash } = location;
     const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
     const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : pathname + hash;
     const tab = hash.replace('#', '');
+
+    console.log(`+ ICITTE ${JSON.stringify(location)}`);
+    console.log('+ ICITTE TABERN');
+
+
+    /*
+    yield delay(250);
+
+
+    // https://localhost:2000/patient/PA14941
+
+
+    const { referrer } = yield select(state => state.app);
+
+
+    console.log(`+ referrer ${JSON.stringify(referrer)}`);
+
+
+    const hasRedirect = referrer.location.pathname.indexOf(`${ROUTE_NAME_ROOT}${ROUTE_NAME_LOGIN}`) === -1;
+
+
+    console.log(`+ hasRedirect ${JSON.stringify(hasRedirect)}`);
+
+
+    if (!hasRedirect) {
+      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
+    } else {
+      const route = referrer.location.pathname;
+      const tab = referrer.location.hash.replace('#', '');
+
+      if (isPatientSearchRoute(route) === true) {
+        yield call(navigateToPatientSearchScreen);
+      } else if (isPatientVariantPageRoute(route) === true) {
+        const patientId = getPatientIdFromPatientVariantPageRoute(route);
+        yield call(navigateToPatientVariantScreen, { payload: { uid: patientId, tab } });
+      } else if (isPatientPageRoute(route) === true) {
+        const patientId = getPatientIdFromPatientPageRoute(route);
+        yield call(navigateToPatientScreen, { payload: { uid: patientId, tab } });
+      } else if (isVariantPageRoute(route) === true) {
+        const variantId = getVariantIdFromVariantPageRoute(route);
+        yield call(navigateToVariantDetailsScreen, { payload: { uid: variantId, tab } });
+      } else {
+        yield call(navigateToPatientSearchScreen);
+      }
+
+
+      console.log('+ Apply the funks.');
+      console.log(`+ ${JSON.stringify(referrer)}`);
+    }
+     */
+
 
     if (isPatientSearchRoute(route) === true) {
       yield navigateToPatientSearchScreen();
@@ -142,7 +195,10 @@ function* manualUserNavigation(action) {
 }
 
 function* watchManualUserNavigation() {
-  yield takeEvery(LOCATION_CHANGE, manualUserNavigation);
+  yield takeEvery([
+    LOCATION_CHANGE,
+    actions.USER_LOGIN_SUCCEEDED,
+  ], manualUserNavigation);
 }
 
 function* watchNavigateToLoginScreen() {
