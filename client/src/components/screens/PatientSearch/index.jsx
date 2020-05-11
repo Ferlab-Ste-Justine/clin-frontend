@@ -9,7 +9,7 @@ import {
 import { ExportToCsv } from 'export-to-csv';
 import IconKit from 'react-icons-kit';
 import {
-  ic_add, ic_keyboard_arrow_right, ic_tune, ic_close, ic_search,
+  ic_add, ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
 import {
   debounce,
@@ -400,7 +400,7 @@ class PatientSearchScreen extends React.Component {
                     key={type}
                     title={(
                       <span className="subMenuTitle">
-                        <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
+                        <IconKit size={24} icon={this.isCategorieFacetOpen(type) ? ic_keyboard_arrow_down : ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
                         <div className="titleName">
                           <span className="value">{intl.get(`screen.patientsearch.table.${type}`)}</span>
                           {

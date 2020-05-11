@@ -129,6 +129,7 @@ div.ant-tag {
                 font-family: $font;
                 color: rgb(35, 55, 80);
                 font-size: 14px;
+                font-weight: 500;
                 letter-spacing: 0.25px;
                 line-height: 20px;
                 display: flex;
@@ -217,6 +218,7 @@ div.ant-tag {
                         padding: 8px 16px;
                         line-height: 0 !important;
 
+
                         &:hover{
                             background-color: rgba(29, 139, 198,0.08);
                             .checkboxValue{
@@ -224,6 +226,10 @@ div.ant-tag {
                                     background-color: #fff;
                                     
                               }
+                            }
+
+                            .ant-checkbox-checked::after{
+                                border: none;
                             }
                         }
 
