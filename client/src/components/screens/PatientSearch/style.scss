@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 @import '../../../containers/App/variables.scss';
+@import './variables.scss';
 
 div.bp3-table-container {
   height: auto;
@@ -36,7 +37,7 @@ div.ant-tag {
 
     .searchNav{
 
-        .filter{
+        .facet{
             display:flex;
             justify-content:space-between;
             color:$blue-800;
@@ -45,15 +46,20 @@ div.ant-tag {
             line-height: 16px;
             font-size: 14px;
             font-weight: 500;
-
-            >i{
-                margin:0;
+            width: 120px;
+            margin-right: 24px;
+            border:none;
+            .btnIcon{
+                margin-right:8px;
             }
         }
 
-        .filter:disabled{
+        .facet:disabled{
             color:#AAAAAA;
             background:#ffffff;
+        }
+        .openFacet{
+            width: 280px;
         }
 
         .ant-btn{
@@ -106,52 +112,137 @@ div.ant-tag {
         }
     }
 
-    .category{
+    .menuCaterogy{
         width:280px;
-        margin-top:24px;
-        padding:8px 16px;
+        background-color: transparent;
+        border: none;
+        
+
+        .category{
+            margin-top:24px;
+            padding:8px 16px;
+            background-color: #ffffff;
+            padding: 0 !important;
+            width:280px;
+
+            .ant-menu-submenu-title{
+                font-family: $font;
+                color: rgb(35, 55, 80);
+                font-size: 14px;
+                letter-spacing: 0.25px;
+                line-height: 20px;
+                display: flex;
+                align-items: center;
+                padding: 0 16px !important;
+                margin:0;
+
+                .subMenuTitle{
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+
+                    .titleName{
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        width: 100%;
+                        button{
+                            border:none;
+                            padding: 0;
+                            box-shadow: none;
+                            height: auto;
+                            i{
+                                color:rgba(35, 55, 80, 0.38);
+                            }
+                        }
+                    }
 
 
-        .ant-card-body{
-            padding:0;
 
-
-            .ant-checkbox{
-               padding-left:4px;
+                    .iconRightArrowDropDown{
+                        margin-right: 8px;
+                        color: #1d8bc6;
+                    }
+                }
             }
 
-            .ant-checkbox-group{
-            border-top: 1px solid $disabledColor;
-            padding-top:16px;
-            width:100%;
-            margin-top:16px;
-            }
-        }
-
-        .ant-card-head{
-            padding:0;
-            border:none;
-            min-height:0;
-
-            .ant-card-head-title{
-                padding:0;
+            .ant-menu-submenu-arrow{
+                display: none;
             }
 
-            a{
-                color:#233750;
-                display:flex;
-                justify-content:space-between;
-            }
+            .ant-card-body{
+                border-top: 1px solid rgba(18, 90, 144, 0.12);
+                padding: 0;
+                margin-bottom:16px;
 
-            a:hover{
-                text-decoration:none;
-            }
+                .selectionToolBar{
+                    margin:16px;
+                    button{
+                        border:none;
+                        padding: 0;
+                        box-shadow: none;
+                        height: auto;
+                        span{
+                            color: rgba(35, 55, 80, 0.78);
+                            font-size: 14px;
+                            font-family: $font;
+                            text-decoration: underline;
+                            letter-spacing: 0.4px;
+                        }
+                        &:hover{
+                            span{
+                                color: rgb(35, 55, 80);  
+                                text-decoration: none;
+                            }
+                        }
+            
+            
+                        &:after{
+                            animation: 0s !important;
+                           } 
+                    }
+                    >div{
+                        margin: 0 4px;
+                    }
+                }
 
-            svg{
-              color:#1d8bc6;
+                .checkboxGroup{
+                    .checkboxLabel{
+                        display: flex;
+                        align-items: center;
+                        padding: 2px 0;
+                        font-family: $font;
+                        color: rgba(35, 55, 80, 0.78);
+                        font-size: 14px;
+                        padding: 8px 16px;
+                        line-height: 0 !important;
+
+                        &:hover{
+                            background-color: rgba(29, 139, 198,0.08);
+                            .checkboxValue{
+                                .valueCount{
+                                    background-color: #fff;
+                                    
+                              }
+                            }
+                        }
+
+                        .ant-checkbox-inner{
+                            border: 2px solid rgba(35,55,80,.38);
+                        }
+
+                        .ant-checkbox-checked {
+                            .ant-checkbox-inner{
+                                background-color: #1d8bc6;
+                                border: 1px solid #1d8bc6;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
+
 
     .table{
         width:100%;

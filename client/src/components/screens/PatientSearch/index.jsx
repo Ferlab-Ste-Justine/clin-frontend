@@ -4,12 +4,12 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Typography, Button,
+  Card, AutoComplete, Row, Col, Input, Icon, Typography, Button, Menu, Divider, Checkbox,
 } from 'antd';
 import { ExportToCsv } from 'export-to-csv';
 import IconKit from 'react-icons-kit';
 import {
-  ic_add, ic_keyboard_arrow_right, ic_keyboard_arrow_down,
+  ic_add, ic_keyboard_arrow_right, ic_tune, ic_close, ic_search,
 } from 'react-icons-kit/md';
 import {
   debounce,
@@ -42,7 +42,6 @@ class PatientSearchScreen extends React.Component {
       isFacetOpen: false,
       facetFilterOpen: [],
       facet: [],
-      data: [],
     };
     this.handleAutoCompleteChange = debounce(this.handleAutoCompleteChange.bind(this), 250, { leading: true });
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -51,16 +50,18 @@ class PatientSearchScreen extends React.Component {
     this.handlePageSizeChange = this.handlePageSizeChange.bind(this);
     this.exportToTsv = this.exportToTsv.bind(this);
     this.handleOpenFacet = this.handleOpenFacet.bind(this);
-    this.getCardCategoryTitle = this.getCardCategoryTitle.bind(this);
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
-    this.changeFacetFilterOpen = this.changeFacetFilterOpen.bind(this);
-    this.getData = this.getData.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
+    this.getValue = this.getValue.bind(this);
+    this.handleCategoriesOpenChange = this.handleCategoriesOpenChange.bind(this);
 
     // @NOTE Initialize Component State
     this.state.facet = [
-      'screen.patientsearch.table.practitioner',
-      'screen.patientsearch.table.status',
+      'practitioner',
+      'status',
+      'familyComposition',
+      'position',
+      'organization',
     ];
     this.columnPreset = [
       {
@@ -172,19 +173,31 @@ class PatientSearchScreen extends React.Component {
     return state;
   }
 
-  getData() {
+  getValue(type) {
     const { data } = this.state;
-    return data;
+    let value = [];
+    if (type === 'practitioner') {
+      data.map(d => (
+        !value.includes(d.practitioner) ? value.push(d.practitioner) : null
+      ));
+    } else if (type === 'status') {
+      data.map(d => (
+        !value.includes(d.status) ? value.push(d.status) : null
+      ));
+    } else if (type === 'familyComposition') {
+      value = ['solo', 'duo', 'trio'];
+    } else if (type === 'position') {
+      value = ['Proband', 'Parent'];
+    }
+
+
+    return value;
   }
 
-  getCardCategoryTitle(name, index) {
-    const open = this.isCategorieFacetOpen(index);
-    return (
-      <a onClick={this.changeFacetFilterOpen.bind(null, index)} key={index}> { /* eslint-disable-line */ }
-        {intl.get(name)}
-        {!open ? <IconKit size={24} icon={ic_keyboard_arrow_right} /> : <IconKit size={24} icon={ic_keyboard_arrow_down} />}
-      </a>
-    );
+  handleCategoriesOpenChange(e) {
+    this.setState({
+      facetFilterOpen: e,
+    });
   }
 
   handleAutoCompletePressEnter(e) {
@@ -285,18 +298,9 @@ class PatientSearchScreen extends React.Component {
     csvExporter.generateCsv(data);
   }
 
-  changeFacetFilterOpen(index) {
-    const { facetFilterOpen } = this.state;
-
-    facetFilterOpen[index] = !facetFilterOpen[index];
-    this.setState({
-      facetFilterOpen,
-    });
-  }
-
   isCategorieFacetOpen(index) {
     const { facetFilterOpen } = this.state;
-    return facetFilterOpen[index];
+    return !!facetFilterOpen.includes(index);
   }
 
   render() {
@@ -309,7 +313,11 @@ class PatientSearchScreen extends React.Component {
     } = this.state;
 
     const { Title } = Typography;
+    const { SubMenu } = Menu;
     const placeholderText = intl.get('screen.patientsearch.placeholder');
+    const selectAll = intl.get('screen.patientvariant.filter.selection.all');
+    const selectNone = intl.get('screen.patientvariant.filter.selection.none');
+
     const rowHeight = Array(size).fill(36);
     const autoCompleteResults = search.autocomplete.results.map(result => ({
       value: result.id,
@@ -342,17 +350,17 @@ class PatientSearchScreen extends React.Component {
             </Col>
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
-            {/* <Col>
-              <Button disabled className={`${style.btn} filter`} style={isFacetOpen ? { width: 280 } : { width: 'auto' }} onClick={this.handleOpenFacet}>
+            <Col>
+              <Button className={isFacetOpen ? 'facet openFacet' : 'facet'} onClick={this.handleOpenFacet}>
                 <div>
-                  <IconKit size={16} icon={ic_tune} />
+                  <IconKit className="btnIcon" size={16} icon={ic_tune} />
                   Filtrer
                 </div>
                 { isFacetOpen && (
-                     <IconKit size={16} icon={ic_close} />
+                <IconKit className="btnClose" size={16} icon={ic_close} />
                 )}
               </Button>
-            </Col> */}
+            </Col>
             <Col className="autoSearch">
               <AutoComplete
                 size="large"
@@ -380,9 +388,57 @@ class PatientSearchScreen extends React.Component {
           <Row type="flex" justify="space-between">
             { isFacetOpen && (
             <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
-              {facet.map((column, index) => (
-                <Card bordered={false} className="category" title={this.getCardCategoryTitle(column, index)} />
-              ))}
+              <Menu
+                onClick={this.handleClick}
+                mode="inline"
+                className="menuCaterogy"
+                onOpenChange={this.handleCategoriesOpenChange}
+              >{
+                facet.map(type => (
+                  <SubMenu
+                    className="category"
+                    key={type}
+                    title={(
+                      <span className="subMenuTitle">
+                        <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
+                        <div className="titleName">
+                          <span className="value">{intl.get(`screen.patientsearch.table.${type}`)}</span>
+                          {
+                            this.isCategorieFacetOpen(type) ? (
+                              <Button className="iconSearch" onClick={this.handleInputView}>
+                                <IconKit size={24} icon={ic_search} />
+                              </Button>
+                            ) : null
+                          }
+
+                        </div>
+                      </span>
+                    )}
+                  >
+                    <Card bordered={false}>
+                      <Row className="selectionToolBar">
+                        <Button onClick={this.handleSelectAll}>{selectAll}</Button>
+                        <Divider type="vertical" />
+                        <Button onClick={this.handleSelectNone}>{selectNone}</Button>
+                      </Row>
+                      <Row>
+                        <Col span={24}>
+                          <Checkbox.Group className="checkboxGroup" onChange={this.handleSelectionChange}>
+                            { this.getValue(type).map(option => (
+                              <Row>
+                                <Col>
+                                  <Checkbox className="checkboxLabel" value={option}>{ option }</Checkbox>
+                                </Col>
+                              </Row>
+                            )) }
+                          </Checkbox.Group>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </SubMenu>
+                ))
+              }
+              </Menu>
             </Col>
             )}
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
