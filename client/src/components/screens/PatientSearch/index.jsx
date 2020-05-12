@@ -194,6 +194,10 @@ class PatientSearchScreen extends React.Component {
       value = ['solo', 'duo', 'trio'];
     } else if (type === 'position') {
       value = ['Proband', 'Parent'];
+    } else if (type === 'organization') {
+      data.map(d => (
+        !value.includes(d.organization) ? value.push(d.organization) : null
+      ));
     }
 
 
@@ -434,7 +438,7 @@ class PatientSearchScreen extends React.Component {
                             { this.getValue(type).map(option => (
                               <Row>
                                 <Col>
-                                  <Checkbox className="checkboxLabel" value={option}>{ option }</Checkbox>
+                                  <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{ option }</span></Checkbox>
                                 </Col>
                               </Row>
                             )) }
