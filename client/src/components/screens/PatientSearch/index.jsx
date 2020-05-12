@@ -252,6 +252,7 @@ class PatientSearchScreen extends React.Component {
         page: 1,
       });
       actions.searchPatientsByQuery(null, 1, size);
+      actions.autoCompletePatients('partial', null, 1, size);
     }
   }
 
