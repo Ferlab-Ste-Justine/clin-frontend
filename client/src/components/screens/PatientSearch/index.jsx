@@ -53,6 +53,7 @@ class PatientSearchScreen extends React.Component {
     this.isCategorieFacetOpen = this.isCategorieFacetOpen.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.getValue = this.getValue.bind(this);
+    this.getData = this.getData.bind(this);
     this.handleCategoriesOpenChange = this.handleCategoriesOpenChange.bind(this);
 
     // @NOTE Initialize Component State
@@ -171,6 +172,11 @@ class PatientSearchScreen extends React.Component {
     }
 
     return state;
+  }
+
+  getData() {
+    const { data } = this.state;
+    return data;
   }
 
   getValue(type) {
