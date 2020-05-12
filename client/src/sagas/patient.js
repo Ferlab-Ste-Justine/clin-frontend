@@ -29,6 +29,17 @@ function* autoComplete(action) {
   try {
     if (!isAutocomplete) {
       yield put({ type: actions.START_SUBLOADING_ANIMATION });
+    } else if (!action.payload.query) {
+      const emptyPayload = {
+        data: {
+          data: {
+            hits: [],
+          },
+        },
+      };
+
+      yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: emptyPayload });
+      return;
     }
 
     const response = yield Api.getPatientsByAutoComplete(
