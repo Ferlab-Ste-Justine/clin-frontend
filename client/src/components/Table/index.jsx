@@ -167,7 +167,6 @@ class DataTable extends React.Component {
     } = this.props;
 
     const selection = sel[0];
-    console.log('selection', selection);
     if (selection) {
       const rowStart = selection.rows ? selection.rows[0] : 0;
       const rowEnd = selection.rows ? selection.rows[selection.rows.length - 1] : getData.length - 1;
