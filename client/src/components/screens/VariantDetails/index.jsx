@@ -136,30 +136,30 @@ const impact = (c) => {
 
   if (c.predictions) {
     const sift = c.predictions.SIFT
-      ? (<li><span className="consequenceTerm">SIFT: </span>{c.predictions.SIFT} - {c.predictions.SIFT_score}</li>) : null;
+      ? (<li><span className="consequenceTerm">SIFT: &nbsp;</span>{c.predictions.SIFT} - {c.predictions.SIFT_score}</li>) : null;
 
     const polyphen2 = c.predictions.Polyphen2_HVAR_score
       ? (
         <li>
-          <span className="consequenceTerm">Polyphen2: </span>
+          <span className="consequenceTerm">Polyphen2: &nbsp;</span>
           {c.predictions.Polyphen2_HVAR_score} - {c.predictions.Polyphen2_HVAR_pred}
         </li>
       ) : null;
 
     const lrt = c.predictions.LRT_Pred
-      ? (<li><span className="consequenceTerm">LRT: </span>{c.predictions.LRT_Pred} - {c.predictions.LRT_score}</li>) : null;
+      ? (<li><span className="consequenceTerm">LRT: &nbsp;</span>{c.predictions.LRT_Pred} - {c.predictions.LRT_score}</li>) : null;
 
     const fathmm = c.predictions.FATHMM
-      ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.FATHMM} - {c.predictions.FATHMM_score}</li>) : null;
+      ? (<li><span className="consequenceTerm">FATHMM: &nbsp;</span>{c.predictions.FATHMM} - {c.predictions.FATHMM_score}</li>) : null;
 
-    const cadd = c.predictions.CADD_Score
-      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_Score}</li>) : null;
+    const cadd = c.predictions.CADD_score
+      ? (<li><span className="consequenceTerm">CADD score: &nbsp;</span>{c.predictions.CADD_score}</li>) : null;
 
-    const dann = c.predictions && c.predictions.DANN_Score
-      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_Score}</li>) : null;
+    const dann = c.predictions && c.predictions.DANN_score
+      ? (<li><span className="consequenceTerm">DANN score: &nbsp;</span>{c.predictions.DANN_score}</li>) : null;
 
-    const revel = c.predictions && c.predictions.REVEL_Score
-      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_Score}</li>) : null;
+    const revel = c.predictions && c.predictions.REVEL_score
+      ? (<li><span className="consequenceTerm">REVEL score: &nbsp;</span>{c.predictions.REVEL_score}</li>) : null;
 
     items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
   }
