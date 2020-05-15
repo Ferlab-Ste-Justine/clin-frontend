@@ -4,8 +4,10 @@ import {
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
-import { setAsLoggedIn, setAsLoggedOut } from '../helpers/route';
-
+import {
+  setAsLoggedIn,
+  setAsLoggedOut,
+} from '../helpers/route';
 
 function* login(action) {
   try {
@@ -17,7 +19,6 @@ function* login(action) {
     setAsLoggedIn();
     yield put({ type: actions.USER_LOGIN_SUCCEEDED, payload: response.payload });
     yield put({ type: actions.USER_PROFILE_REQUESTED });
-    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
   } catch (e) {
     yield put({ type: actions.USER_LOGIN_FAILED, payload: e });
   }

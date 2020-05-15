@@ -177,7 +177,6 @@ class VariantDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      morePubmed: false,
     };
 
     this.getConsequences = this.getConsequences.bind(this);
@@ -186,7 +185,6 @@ class VariantDetailsScreen extends React.Component {
     this.getGenes = this.getGenes.bind(this);
     this.getDonors = this.getDonors.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
-    this.handleMorePubmed = this.handleMorePubmed.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
 
@@ -789,14 +787,6 @@ class VariantDetailsScreen extends React.Component {
     }
   }
 
-  handleMorePubmed() {
-    const { morePubmed } = this.state;
-
-    this.setState({
-      morePubmed: !morePubmed,
-    });
-  }
-
   handleGoToPatientScreen(e) {
     const { actions } = this.props;
     const value = e.target.getAttribute('data-id');
@@ -843,15 +833,8 @@ class VariantDetailsScreen extends React.Component {
       associationColumnPreset,
       HPOColumnPreset,
       donorsColumnPreset,
-      morePubmed,
     } = this.state;
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
-    let pubmed = [];
-    if (bdExt) {
-      if (bdExt.pubmed) {
-        pubmed = bdExt.pubmed.length > 5 && !morePubmed ? bdExt.pubmed.slice(0, 5) : bdExt.pubmed;
-      }
-    }
     let mutationIdTitle = '';
     if (data.mutationId.length > 31) {
       const mutationIdTitleStart = data.mutationId.substring(0, 15);
@@ -860,6 +843,7 @@ class VariantDetailsScreen extends React.Component {
     } else {
       mutationIdTitle = data.mutationId;
     }
+    console.log('pubmed', bdExt);
     return (
       <Content>
         <Header />
@@ -995,31 +979,27 @@ class VariantDetailsScreen extends React.Component {
                         value:
                           bdExt && bdExt.pubmed
                             ? (
-                              <div>
+                              <>
                                 {
-                              pubmed.map(p => (
-                                <Link
-                                  className="pubmedList"
-                                  url={`https://api.ncbi.nlm.nih.gov/lit/ctxp/v1/pubmed/?format=citation&id=${p}`}
-                                  text={p}
-                                />
-                              ))}
-                                {
-                                  bdExt.pubmed.length > 5 ? (
-                                    <Button className="seeMore" onClick={this.handleMorePubmed}>
-                                      <span>{morePubmed ? 'Voir moins' : 'Voir plus'}</span>
-                                      <span className="iconPlus">
-                                        <Icon type={morePubmed ? 'minus' : 'plus'} />
-                                      </span>
-                                    </Button>
-                                  ) : null
-                                }
+                                bdExt.pubmed.length === 1
+                                  ? (
+                                    <Link
+                                      className="link"
+                                      url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${bdExt.pubmed[0]}`}
+                                      text={`${bdExt.pubmed.length} publication`}
+                                    />
+                                  )
+                                  : (
+                                    <Link
+                                      className="link"
+                                      url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${bdExt.pubmed.join('+')}`}
+                                      text={`${bdExt.pubmed.length} publications`}
+                                    />
+                                  )
+                              }
+                              </>
 
-
-                              </div>
                             )
-
-
                             : '--',
                       },
                     ] : []}

@@ -12,6 +12,7 @@ import {
   getPatientIdFromPatientPageRoute,
   getPatientIdFromPatientVariantPageRoute,
   getVariantIdFromVariantPageRoute,
+  isLoggedIn,
   ROUTE_NAME_ROOT,
   ROUTE_NAME_LOGIN,
   ROUTE_NAME_PATIENT,
@@ -115,34 +116,43 @@ function* navigateToAccessDeniedScreen() {
 
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
-  if (isFirstRendering) {
-    yield put({ type: actions.USER_PROFILE_REQUESTED });
-    yield put({ type: actions.USER_IDENTITY_REQUESTED });
-    const { location } = action.payload;
-    const { pathname, search, hash } = location;
-    const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
-    const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : pathname + hash;
-    const tab = hash.replace('#', '');
-
-    if (isPatientSearchRoute(route) === true) {
-      yield navigateToPatientSearchScreen();
-    } else if (isPatientVariantPageRoute(route) === true) {
-      const patientId = getPatientIdFromPatientVariantPageRoute(route);
-      yield navigateToPatientVariantScreen({ payload: { uid: patientId, tab } });
-    } else if (isPatientPageRoute(route) === true) {
-      const patientId = getPatientIdFromPatientPageRoute(route);
-      yield navigateToPatientScreen({ payload: { uid: patientId, tab } });
-    } else if (isVariantPageRoute(route) === true) {
-      const variantId = getVariantIdFromVariantPageRoute(route);
-      yield navigateToVariantDetailsScreen({ payload: { uid: variantId, tab } });
+  if (isFirstRendering || action.type === actions.USER_LOGIN_SUCCEEDED) {
+    if (!isLoggedIn()) {
+      yield navigateToLoginScreen();
     } else {
-      yield navigateToPatientSearchScreen();
+      const { referrer } = yield select(state => state.app);
+      const location = !referrer.location ? action.payload : referrer.location;
+      const { pathname, search, hash } = location;
+      const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
+      const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : pathname + hash;
+      const tab = hash.replace('#', '');
+
+      yield put({ type: actions.USER_PROFILE_REQUESTED });
+      yield put({ type: actions.USER_IDENTITY_REQUESTED });
+
+      if (isPatientSearchRoute(route) === true) {
+        yield navigateToPatientSearchScreen();
+      } else if (isPatientVariantPageRoute(route) === true) {
+        const patientId = getPatientIdFromPatientVariantPageRoute(route);
+        yield navigateToPatientVariantScreen({ payload: { uid: patientId, tab } });
+      } else if (isPatientPageRoute(route) === true) {
+        const patientId = getPatientIdFromPatientPageRoute(route);
+        yield navigateToPatientScreen({ payload: { uid: patientId, tab } });
+      } else if (isVariantPageRoute(route) === true) {
+        const variantId = getVariantIdFromVariantPageRoute(route);
+        yield navigateToVariantDetailsScreen({ payload: { uid: variantId, tab } });
+      } else {
+        yield navigateToPatientSearchScreen();
+      }
     }
   }
 }
 
 function* watchManualUserNavigation() {
-  yield takeEvery(LOCATION_CHANGE, manualUserNavigation);
+  yield takeEvery([
+    LOCATION_CHANGE,
+    actions.USER_LOGIN_SUCCEEDED,
+  ], manualUserNavigation);
 }
 
 function* watchNavigateToLoginScreen() {
