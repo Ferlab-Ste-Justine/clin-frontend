@@ -95,7 +95,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         valueRenderer = value => (<Badge count={value} />);
         break;
       case 'dot':
-        valueRenderer = value => (<Badge status={options.renderer(value)} text={value} />);
+        valueRenderer = value => (<Badge className="badge" color={options.renderer(value)} text={value} />);
         break;
       case 'custom':
         valueRenderer = options.renderer;
