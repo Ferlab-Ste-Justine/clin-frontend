@@ -177,6 +177,14 @@
         }
     }
 
+    .badge{
+        .ant-badge-status-dot{
+            height: 8px;
+            width: 8px;
+        }
+
+    }
+
     .dbsnp{
         text-transform: lowercase;
     }

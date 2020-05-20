@@ -79,10 +79,12 @@ class InteractiveTable extends React.Component {
     return isExportable;
   }
 
-  toggleColumnReorderer() {
+  toggleColumnReorderer(e) {
     if (this.isReorderable()) {
       const { columnReordererIsActive } = this.state;
-
+      if (columnReordererIsActive) {
+        e.currentTarget.blur();
+      }
       this.setState({
         columnReordererIsActive: !columnReordererIsActive,
       });
@@ -291,7 +293,7 @@ class InteractiveTable extends React.Component {
               { isReorderable && (
                 <Col>
                   <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
-                  <IconKit size={16} icon={ic_swap_horiz} /> { /* eslint-disable-line */ }
+                    <IconKit size={16} icon={ic_swap_horiz} />
                     {intl.get('components.table.action.organize')}
                   </Button>
                 </Col>
@@ -305,7 +307,7 @@ class InteractiveTable extends React.Component {
                     onVisibleChange={this.handleColumnsVisible}
                   >
                     <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
-                          <IconKit size={16} icon={ic_view_column} /> { /* eslint-disable-line */ }
+                      <IconKit size={16} icon={ic_view_column} />
                       {intl.get('components.table.action.display')}
                     </Button>
                   </Popover>
@@ -314,7 +316,7 @@ class InteractiveTable extends React.Component {
               { isExportable && (
                 <Col>
                   <Button onClick={this.handleExport} className={`${style.btn} ${style.btnSec}`}>
-                    <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.export')} { /* eslint-disable-line */ }
+                    <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.export')}
                   </Button>
                 </Col>
               ) }

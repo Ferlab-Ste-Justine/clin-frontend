@@ -129,8 +129,8 @@ class PatientSearchScreen extends React.Component {
           key: 'status',
           renderer: (value) => {
             if (value === 'completed') {
-              return 'success';
-            } return 'default';
+              return '#52c41a';
+            } return '#ffa812';
           },
         }),
         columnWidth: COLUMN_WIDTHS.DEFAULT,

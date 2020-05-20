@@ -152,14 +152,14 @@ const impact = (c) => {
     const fathmm = c.predictions.FATHMM
       ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.FATHMM} - {c.predictions.FATHMM_score}</li>) : null;
 
-    const cadd = c.predictions.CADD_Score
-      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_Score}</li>) : null;
+    const cadd = c.predictions.CADD_score
+      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_score}</li>) : null;
 
-    const dann = c.predictions && c.predictions.DANN_Score
-      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_Score}</li>) : null;
+    const dann = c.predictions && c.predictions.DANN_score
+      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_score}</li>) : null;
 
-    const revel = c.predictions && c.predictions.REVEL_Score
-      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_Score}</li>) : null;
+    const revel = c.predictions && c.predictions.REVEL_score
+      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_score}</li>) : null;
 
     items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
   }
