@@ -139,12 +139,15 @@ class SpecificFilter extends Filter {
 
   handleSearchByQuery(values) {
     const { dataSet, externalDataSet } = this.props;
+
     let allOptions = cloneDeep(dataSet);
     allOptions = sortOptions(externalDataSet)(allOptions);
 
     const search = values.toLowerCase();
-    const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
-    pullAllBy(allOptions, cloneDeep(toRemove), 'value');
+    const toKeep = filter(allOptions, o => (search === '' || o.value.toLowerCase().startsWith(search)));
+
+    allOptions.length = 0;
+    allOptions.push(...toKeep);
 
     const page = 1;
     const loadedOptions = allOptions.slice(
@@ -158,22 +161,6 @@ class SpecificFilter extends Filter {
       loadedOptions,
     });
   }
-
-  // handleSearchByQuery(values) {
-  //   const { dataSet, externalDataSet } = this.props;
-
-  //   // const allOptions = sortOptions(externalDataSet)(cloneDeep(dataSet));
-
-  //   const search = values.toLowerCase();
-  //   const toRemove = filter(cloneDeep(dataSet), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
-
-  //   pullAllBy(dataSet, cloneDeep(toRemove), 'value');
-
-  //   const sortedDataSet = sortOptions(externalDataSet)(dataSet).slice(0, 100);
-  //   this.setState({
-  //     sortedDataSet,
-  //   });
-  // }
 
   handlePageChange(page, size) {
     this.setState({
@@ -277,38 +264,6 @@ class SpecificFilter extends Filter {
     this.setState({ currentFacetPage: page, loadedOptions: [...loadedOptions, ...newlyLoadedOptions] });
   }
 
-  // allOptions() {
-  //   const {
-  //     draft, size, page, allOptions,
-  //   } = this.state;
-
-  //   const options = allOptions.slice(minValue, maxValue).map((option) => {
-  //     const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
-  //     const observedPos = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS');
-  //     const observedNeg = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '');
-  //     const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
-  //     const code = option.value.match(hpoRegexp).toString();
-  //     const isObservePos = find(observedPos, { code });
-  //     const isObserveNeg = find(observedNeg, { code });
-  //     return {
-  //       label: (
-  //         <span className={styleFilter.checkboxValue}>
-  //           <div className={styleFilter.valueInfo}>
-  //             <Tooltip title={option.value}>
-  //               {value}
-  //             </Tooltip>
-  //             {(isObservePos || isObserveNeg) && (
-  //               <Badge color={isObservePos ? '#52c41a' : '#f5646c'} className={styleFilter.tag} />
-  //             )}
-  //           </div>
-  //           <Tag className={styleFilter.valueCount}>{intl.get('components.query.count', { count: option.count })}</Tag>
-  //         </span>
-  //       ),
-  //       value: option.value,
-  //     };
-  //   });
-  // }
-
   getEditor() {
     const { renderCustomDataSelector, externalDataSet } = this.props;
     const {
@@ -325,10 +280,7 @@ class SpecificFilter extends Filter {
 
     const loadedOptionsClone = loadedOptions.length ? [...loadedOptions] : allOptions.slice(0, Math.min(10, allOptions.length));
 
-    let options = loadedOptionsClone.map((option) => {
-      // const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
-      // const isObservePos = optionObservedPos(externalDataSet)(option);
-      // const isObserveNeg = optionObservedNeg(externalDataSet)(option);
+    const options = loadedOptionsClone.map((option) => {
       const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
       const observedPos = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS');
       const observedNeg = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '');
@@ -353,10 +305,6 @@ class SpecificFilter extends Filter {
         value: option.value,
       };
     });
-
-    if (options.length < 11) {
-      options = options.concat(options);
-    }
 
     const dataSelector = renderCustomDataSelector(
       this.handleSelectorChange,
@@ -391,7 +339,7 @@ class SpecificFilter extends Filter {
                   <InfiniteScroll
                     pageStart={0}
                     loadMore={this.loadMoreFacets}
-                    hasMore
+                    hasMore={allOptions.length > loadedOptions.length}
                     loader={<div className="loader" key={0}>Loading ...</div>}
                     useWindow={false}
                     getScrollParent={() => this.scrollParentRef}
@@ -405,8 +353,6 @@ class SpecificFilter extends Filter {
                     )) }
                   </InfiniteScroll>
                 </div>
-
-
               </Checkbox.Group>
             </Col>
           </Row>
