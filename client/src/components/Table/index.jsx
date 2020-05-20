@@ -95,7 +95,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         valueRenderer = value => (<Badge count={value} />);
         break;
       case 'dot':
-        valueRenderer = value => (<Badge status={options.renderer(value)} text={value} />);
+        valueRenderer = value => (<Badge className="badge" color={options.renderer(value)} text={value} />);
         break;
       case 'custom':
         valueRenderer = options.renderer;
@@ -167,25 +167,27 @@ class DataTable extends React.Component {
     } = this.props;
 
     const selection = sel[0];
-    const rowStart = selection.rows ? selection.rows[0] : 0;
-    const rowEnd = selection.rows ? selection.rows[selection.rows.length - 1] : getData().length - 1;
-    const colStart = selection.cols ? selection.cols[0] : 0;
-    const colEnd = selection.cols ? selection.cols[selection.cols.length - 1] : columns.length - 1;
+    if (selection) {
+      const rowStart = selection.rows ? selection.rows[0] : 0;
+      const rowEnd = selection.rows ? selection.rows[selection.rows.length - 1] : getData.length - 1;
+      const colStart = selection.cols ? selection.cols[0] : 0;
+      const colEnd = selection.cols ? selection.cols[selection.cols.length - 1] : columns.length - 1;
 
-    const array = [];
-    for (let row = rowStart; row <= rowEnd; row += 1) {
-      const newRow = [];
-      for (let col = colStart; col <= colEnd; col += 1) {
-        const renderer = columns[col].excelRenderer;
-        if (renderer) {
-          const output = (`${renderer(getData()[row])}`).replace(/[\n\t]+/g, ' ');
-          newRow.push(output);
+      const array = [];
+      for (let row = rowStart; row <= rowEnd; row += 1) {
+        const newRow = [];
+        for (let col = colStart; col <= colEnd; col += 1) {
+          const renderer = columns[col].excelRenderer;
+          if (renderer) {
+            const output = (`${renderer(getData()[row])}`).replace(/[\n\t]+/g, ' ');
+            newRow.push(output);
+          }
         }
+        array.push(newRow);
       }
-      array.push(newRow);
-    }
 
-    this.regionSelectedArray = array;
+      this.regionSelectedArray = array;
+    }
   }
 
   render() {

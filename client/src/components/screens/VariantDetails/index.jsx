@@ -152,14 +152,14 @@ const impact = (c) => {
     const fathmm = c.predictions.FATHMM
       ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.FATHMM} - {c.predictions.FATHMM_score}</li>) : null;
 
-    const cadd = c.predictions.CADD_Score
-      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_Score}</li>) : null;
+    const cadd = c.predictions.CADD_score
+      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_score}</li>) : null;
 
-    const dann = c.predictions && c.predictions.DANN_Score
-      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_Score}</li>) : null;
+    const dann = c.predictions && c.predictions.DANN_score
+      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_score}</li>) : null;
 
-    const revel = c.predictions && c.predictions.REVEL_Score
-      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_Score}</li>) : null;
+    const revel = c.predictions && c.predictions.REVEL_score
+      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_score}</li>) : null;
 
     items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
   }
@@ -187,6 +187,7 @@ class VariantDetailsScreen extends React.Component {
     this.getHPODataSource = this.getHPODataSource.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
+    this.goToPatientTab = this.goToPatientTab.bind(this);
 
     this.state.consequencesColumnPreset = [
       {
@@ -774,6 +775,11 @@ class VariantDetailsScreen extends React.Component {
     return [];
   }
 
+  goToPatientTab() {
+    const { actions, variantDetails } = this.props;
+    actions.navigateToVariantDetailsScreen(variantDetails.variantID, 'patients');
+  }
+
   // eslint-disable-next-line class-methods-use-this
   handleMoreHpo(key) {
     const hpoRow = document.getElementsByClassName('hpoRow')[key];
@@ -799,10 +805,6 @@ class VariantDetailsScreen extends React.Component {
   }
 
   render() {
-    const {
-      currentTab,
-    } = this.state;
-
     const { variantDetails, router } = this.props;
     const { data } = variantDetails;
     const { hash } = router.location;
@@ -843,7 +845,6 @@ class VariantDetailsScreen extends React.Component {
     } else {
       mutationIdTitle = data.mutationId;
     }
-    console.log('pubmed', bdExt);
     return (
       <Content>
         <Header />
@@ -875,7 +876,7 @@ class VariantDetailsScreen extends React.Component {
           </div>
           <Tabs
             key="..."
-            defaultActiveKey={(hash ? hash.replace('#', '') : SUMMARY_TAB)}
+            activeKey={(hash ? hash.replace('#', '') : 'summary')}
             className="tabs"
             onChange={this.handleTabNavigation}
           >
@@ -1011,8 +1012,11 @@ class VariantDetailsScreen extends React.Component {
                     dataSource={[
                       {
                         label: 'Nb de patients (i)',
-                        value: `${frequencies.interne.PN}/${frequencies.interne
-                          .AN / 2}`,
+                        value: (
+                          <span>
+                            <Button className="patientLink" onClick={this.goToPatientTab}>{frequencies.interne.PN}</Button>
+                            /{frequencies.interne.AN / 2}
+                          </span>),
                       },
                       {
                         label: "Nb d'alleles ALT",
