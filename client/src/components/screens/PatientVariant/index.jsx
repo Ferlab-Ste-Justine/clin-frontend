@@ -94,6 +94,7 @@ class PatientVariantScreen extends React.Component {
     this.getRowHeight = this.getRowHeight.bind(this);
     this.getImpactTag = this.getImpactTag.bind(this);
     this.calculateTitleWidth = this.calculateTitleWidth.bind(this);
+    this.goToVariantPatientTab = this.goToVariantPatientTab.bind(this);
 
     // @NOTE Initialize Component State
     this.state.columnPreset = {
@@ -296,8 +297,7 @@ class PatientVariantScreen extends React.Component {
                 const frequenciesAN = data.frequencies.interne.AN / 2;
                 return (
                   <>
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                    <Row><a className="link">{data.frequencies.interne.PN}</a><span> / </span>{frequenciesAN}</Row>
+                    <Row><Button className="frequenciesLink" data-id={data.mutationId} onClick={this.goToVariantPatientTab}>{data.frequencies.interne.PN}</Button><span> / </span>{frequenciesAN}</Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -538,6 +538,25 @@ class PatientVariantScreen extends React.Component {
       return results[activeQuery];
     }
     return [];
+  }
+
+  goToVariantPatientTab(e) {
+    const {
+      variant,
+      actions,
+    } = this.props;
+
+    const {
+      activeQuery,
+      results,
+    } = variant;
+
+    const mutationId = e.target.getAttribute('data-id');
+    const mutation = results[activeQuery].find(r => r.mutationId === mutationId);
+
+    if (mutation) {
+      actions.navigateToVariantDetailsScreen(mutation.id, 'patients');
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
