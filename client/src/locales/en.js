@@ -435,6 +435,7 @@ const en = {
   'components.table.action.reset': 'Reset',
   'components.table.action.display': 'Display',
   'components.table.action.export': 'Export',
+  'components.table.action.createReport': 'Create Report',
   'components.table.action.columns': 'Columns',
   'components.table.action.organize': 'Organize',
 };

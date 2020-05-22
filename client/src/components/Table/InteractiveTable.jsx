@@ -46,6 +46,7 @@ class InteractiveTable extends React.Component {
     this.isReorderable = this.isReorderable.bind(this);
     this.isExportable = this.isExportable.bind(this);
     this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
+    this.handleCreateReport = this.handleCreateReport.bind(this);
 
     // @NOTE Initialize Component State
     this.state.orderedColumns = cloneDeep(props.schema);
@@ -188,6 +189,11 @@ class InteractiveTable extends React.Component {
     }
   }
 
+  handleCreateReport() {
+    const { createReportCallback } = this.props;
+    createReportCallback();
+  }
+
   rrenderColumnWidth() {
     const {
       orderedColumns, visibleColumns,
@@ -241,7 +247,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      size, page, total, isLoading, numFrozenColumns, rowHeight, getData,
+      size, page, total, isLoading, numFrozenColumns, rowHeight, getData, isReportAvailable,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -320,6 +326,11 @@ class InteractiveTable extends React.Component {
                   </Button>
                 </Col>
               ) }
+              <Col>
+                <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
+                  <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.createReport')}
+                </Button>
+              </Col>
             </Row>
             <br />
           </>
@@ -371,6 +382,8 @@ InteractiveTable.propTypes = {
   isSelectable: PropTypes.bool,
   isExportable: PropTypes.bool,
   exportCallback: PropTypes.func,
+  isReportAvailable: PropTypes.bool,
+  createReportCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
@@ -385,8 +398,10 @@ InteractiveTable.defaultProps = {
   isResizable: true,
   isSelectable: true,
   isExportable: true,
+  isReportAvailable: false,
   numFrozenColumns: 0,
   exportCallback: () => {},
+  createReportCallback: () => {},
   resizeColumnCallback: () => {},
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},

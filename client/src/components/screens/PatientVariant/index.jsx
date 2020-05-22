@@ -6,15 +6,18 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, /* Checkbox, */
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import {
-  sortBy, findIndex, filter,
+  sortBy, findIndex, filter, cloneDeep, includes,
 } from 'lodash';
+
+import XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -59,6 +62,7 @@ const COLUMN_WIDTHS = {
   ZYGOSITY: 90,
   SEQ: 80,
   DEFAULT: 150,
+  TINY: 50,
 };
 
 class PatientVariantScreen extends React.Component {
@@ -95,10 +99,43 @@ class PatientVariantScreen extends React.Component {
     this.getImpactTag = this.getImpactTag.bind(this);
     this.calculateTitleWidth = this.calculateTitleWidth.bind(this);
     this.goToVariantPatientTab = this.goToVariantPatientTab.bind(this);
+    this.handleSelectVariant = this.handleSelectVariant.bind(this);
+    this.handleCreateReport = this.handleCreateReport.bind(this);
+
+    this.state.selectedVariants = {};
 
     // @NOTE Initialize Component State
     this.state.columnPreset = {
       [VARIANT_TAB]: [
+        {
+          key: 'someKey',
+          label: 'Select',
+          renderer: createCellRenderer('custom', this.getData, {
+            // key: 'mutationId',
+            handler: this.handleSelectVariant,
+            renderer: (data) => {
+              try {
+                const {
+                  selectedVariants,
+                } = this.state;
+                return (
+                  <input
+                    type="checkbox"
+                    id={data.mutationId}
+                    value={data.mutationId}
+                    checked={!!selectedVariants[data.mutationId]}
+                    onChange={this.handleSelectVariant}
+                  />
+                );
+              } catch (e) {
+                console.log('Exception while trying to render checkbox: ', e);
+                return '';
+              }
+            },
+          }),
+          excelRenderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
+          columnWidth: COLUMN_WIDTHS.TINY,
+        },
         {
           key: 'mutationId',
           label: 'screen.variantsearch.table.variant',
@@ -835,6 +872,96 @@ class PatientVariantScreen extends React.Component {
     }
   }
 
+  handleSelectVariant(event) {
+    const {
+      selectedVariants,
+    } = this.state;
+
+    const {
+      currentTarget,
+    } = event;
+
+    const mutationId = currentTarget.value;
+
+    const selection = cloneDeep(selectedVariants);
+    if (selection[mutationId]) {
+      delete selection[mutationId];
+    } else {
+      selection[mutationId] = true;
+    }
+
+    this.setState({ selectedVariants: selection });
+
+    console.log('Selected variants: ', selection);
+  }
+
+  isReportAvailable() {
+    const {
+      selectedVariants,
+    } = this.state;
+
+    return Object.keys(selectedVariants).length > 0;
+  }
+
+  handleCreateReport() {
+    const {
+      selectedVariants,
+    } = this.state;
+
+    const variantIds = Object.keys(selectedVariants);
+    const variants = this.getData().filter(v => includes(variantIds, v.mutationId));
+
+    console.log('Creating report for variants: ', variants);
+
+    // const data = {
+    //   cols: [{ name: 'A', key: 0 }, { name: 'B', key: 1 }, { name: 'C', key: 2 }],
+    //   data: [
+    //     ['id', 'name', 'value'],
+    //     [1, 'sheetjs', 7262],
+    //     [2, 'js-xlsx', 6969],
+    //   ],
+    // };
+
+    const wb = XLSX.utils.book_new();
+
+    wb.Props = {
+      Title: 'SheetJS Tutorial',
+      Subject: 'Test',
+      Author: 'Red Stapler',
+      CreatedDate: new Date(2017, 12, 19),
+    };
+
+    const sheetName = 'Rapport';
+    wb.SheetNames.push(sheetName);
+    // const ws_data = [['hello', 'world']];
+    // const ws_columns = [['hello', 'world']];
+    // const ws = XLSX.utils.aoa_to_sheet(data);
+    // const ws = XLSX.utils.json_to_sheet(data);
+    const ws = XLSX.utils.json_to_sheet([
+      {
+        A: 1, B: 2, C: 3,
+      },
+      {
+        A: 11, B: 21, C: 31,
+      },
+    ]);
+
+    wb.Sheets[sheetName] = ws;
+
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+    function s2ab(s) {
+      const buf = new ArrayBuffer(s.length); // convert s to arrayBuffer
+      const view = new Uint8Array(buf); // create uint8array as viewer
+      // eslint-disable-next-line no-bitwise
+      for (let i = 0; i < s.length; i += 1) view[i] = s.charCodeAt(i) & 0xFF; // convert to octet
+      return buf;
+    }
+
+    // eslint-disable-next-line no-undef
+    saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), 'test.xlsx');
+  }
+
   render() {
     const {
       app, variant, patient, user,
@@ -959,6 +1086,8 @@ class PatientVariantScreen extends React.Component {
         }
       </Menu>
     );
+
+    const reportAvailable = this.isReportAvailable();
 
     return (
       <Content>
@@ -1141,7 +1270,9 @@ class PatientVariantScreen extends React.Component {
                     schema={columnPreset[VARIANT_TAB]}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
+                    createReportCallback={this.handleCreateReport}
                     isExportable={false}
+                    isReportAvailable={reportAvailable}
                     rowHeight={rowHeight}
                     numFrozenColumns={1}
                     getData={this.getData}
