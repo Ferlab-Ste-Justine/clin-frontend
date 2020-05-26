@@ -17,7 +17,7 @@ services:
     deploy:
       replicas: 1
       placement:
-        constraints: [node.labels.node_role == devops]
+        constraints: [node.labels.app_role == generic]
       resources:
         limits:
           cpus: '2.00'
