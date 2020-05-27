@@ -140,3 +140,11 @@ export const duplicateStatement = id => ({
     id,
   },
 });
+
+export const fetchGenesByAutocomplete = (type = 'partial', query) => ({
+  type: actions.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_REQUESTED,
+  payload: {
+    type,
+    query,
+  },
+});

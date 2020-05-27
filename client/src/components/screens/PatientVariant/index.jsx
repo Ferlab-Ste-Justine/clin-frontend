@@ -880,6 +880,7 @@ class PatientVariantScreen extends React.Component {
     }
 
     const tokenizedSearchData = searchData.reduce((accumulator, group) => {
+      console.log('groupe', group);
       if (group.data) {
         group.data.forEach((datum) => {
           accumulator.push({
