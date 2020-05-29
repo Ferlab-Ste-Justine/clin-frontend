@@ -983,6 +983,24 @@ class PatientVariantScreen extends React.Component {
       return '';
     };
 
+    const inSilicoPredictions = (variant) => {
+      if (!variant.consequences || !variant.consequences.predictions) {
+        return '';
+      }
+
+      const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(notNull));
+      return preds ? `SIFT: ${preds}` : '';
+    };
+
+    const clinVar = (variant) => {
+      if (!variant.clinvar) {
+        return '';
+      }
+
+      const cvcs = `${getValue('clinvar_clinsig')(variant.clinvar)}, ${getValue('clinvar_id')(variant.clinvar)}`;
+      return cvcs || '';
+    };
+
     // eslint-disable-next-line arrow-body-style
     const geneOfVariantToRow = variant => gene => (
       [
@@ -1000,6 +1018,16 @@ class PatientVariantScreen extends React.Component {
           // label: REPORT_HEADER_ALLELIC_FREQUENCY,
           type: 'string',
           value: allelicFrequency(variant),
+        },
+        {
+          // label: REPORT_HEADER_SILICO_PREDICTION,
+          type: 'string',
+          value: inSilicoPredictions(variant),
+        },
+        {
+          // label: REPORT_HEADER_CLIN_VAR,
+          type: 'string',
+          value: clinVar(variant),
         },
       ]
     );
