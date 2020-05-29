@@ -1,3 +1,8 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable no-confusing-arrow */
+/* eslint-disable no-undef */
+/* eslint-disable quotes */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
@@ -16,8 +21,9 @@ import {
   sortBy, findIndex, filter, cloneDeep, includes,
 } from 'lodash';
 
-import XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import Api from '../../../helpers/api'; // Only to get an excel file from data that is already available from the frontend
+
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -64,6 +70,13 @@ const COLUMN_WIDTHS = {
   DEFAULT: 150,
   TINY: 50,
 };
+
+const REPORT_HEADER_NUCLEOTIDIC_VARIATION = 'Variation nucléotidique';
+const REPORT_HEADER_STATUS_PARENTAL_ORIGIN = 'Statut (origine parentale)';
+const REPORT_HEADER_ALLELIC_FREQUENCY = 'Fréquence allélique';
+const REPORT_HEADER_SILICO_PREDICTION = 'Prédiction in silico';
+const REPORT_HEADER_CLIN_VAR = 'ClinVar';
+const REPORT_HEADER_OMIM_TRANSMISSION_MODE = 'OMIM (Mode de transmission';
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
@@ -577,6 +590,11 @@ class PatientVariantScreen extends React.Component {
     return [];
   }
 
+  getVariantData(mutationId) {
+    const variants = this.getData().filter(v => v.mutationId === mutationId);
+    return variants.length ? variants[0] : null;
+  }
+
   goToVariantPatientTab(e) {
     const {
       variant,
@@ -887,7 +905,7 @@ class PatientVariantScreen extends React.Component {
     if (selection[mutationId]) {
       delete selection[mutationId];
     } else {
-      selection[mutationId] = true;
+      selection[mutationId] = this.getVariantData(mutationId);
     }
 
     this.setState({ selectedVariants: selection });
@@ -908,58 +926,104 @@ class PatientVariantScreen extends React.Component {
       selectedVariants,
     } = this.state;
 
-    const variantIds = Object.keys(selectedVariants);
-    const variants = this.getData().filter(v => includes(variantIds, v.mutationId));
+    const variants = Object.values(selectedVariants);
 
-    console.log('Creating report for variants: ', variants);
-
-    // const data = {
-    //   cols: [{ name: 'A', key: 0 }, { name: 'B', key: 1 }, { name: 'C', key: 2 }],
-    //   data: [
-    //     ['id', 'name', 'value'],
-    //     [1, 'sheetjs', 7262],
-    //     [2, 'js-xlsx', 6969],
-    //   ],
-    // };
-
-    const wb = XLSX.utils.book_new();
-
-    wb.Props = {
-      Title: 'SheetJS Tutorial',
-      Subject: 'Test',
-      Author: 'Red Stapler',
-      CreatedDate: new Date(2017, 12, 19),
+    const p = {
+      Title: 'Rapport de variants',
+      Subject: 'Rapport',
+      Author: 'Clin',
+      CreatedDate: new Date(),
     };
 
-    const sheetName = 'Rapport';
-    wb.SheetNames.push(sheetName);
-    // const ws_data = [['hello', 'world']];
-    // const ws_columns = [['hello', 'world']];
-    // const ws = XLSX.utils.aoa_to_sheet(data);
-    // const ws = XLSX.utils.json_to_sheet(data);
-    const ws = XLSX.utils.json_to_sheet([
-      {
-        A: 1, B: 2, C: 3,
+    const headerRow = [
+      REPORT_HEADER_NUCLEOTIDIC_VARIATION,
+      REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
+      REPORT_HEADER_ALLELIC_FREQUENCY,
+      REPORT_HEADER_SILICO_PREDICTION,
+      REPORT_HEADER_CLIN_VAR,
+      REPORT_HEADER_OMIM_TRANSMISSION_MODE,
+    ].map(h => ({ value: h, type: 'string' }));
+
+    const getValue = f => value => value[f] ? value[f] : '';
+    const notNull = x => !!x;
+    const join = sep => a => a && a.length ? a.join(sep) : '';
+    const isCanonical = t => t.canonical;
+
+    const nucleotidicVariation = (variant, gene) => {
+      const bdExtString = variant.bdExt && variant.bdExt.dbsnp ? variant.bdExt.dbsnp.join('\n') : '';
+
+      const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(notNull));
+      const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(notNull));
+
+      const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(notNull));
+      const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(notNull));
+
+      const str = `${variant.mutationId} ${bdExtString} gène:${getValue('geneSymbol')(gene)} \n ${refTranscriptString}: ${cdnChange} \
+                   ${aaChange}`;
+      return str;
+    };
+
+    const zygosity = donor => getValue('zygosity')(donor);
+    const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
+    const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
+    const parentalOrigin = variant => join(' ')(variant.donors.map(parentalOriginForDonor).filter(notNull));
+
+    // eslint-disable-next-line arrow-body-style
+    const geneOfVariantToRow = variant => gene => (
+      [
+        {
+          // label: REPORT_HEADER_NUCLEOTIDIC_VARIATION,
+          type: 'string',
+          value: nucleotidicVariation(variant, gene),
+        },
+        {
+          // label: REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
+          type: 'string',
+          value: parentalOrigin(variant),
+        },
+      ]
+    );
+
+    const variantRows = variant => variant.genes.map(geneOfVariantToRow(variant));
+
+    const dataRows = variants.flatMap(variantRows);
+
+    const xlObject = {
+      filename: 'Rapport-variants',
+      style: {
+        font: {
+          color: '#000000',
+          size: 12,
+        },
+        numberFormat: '0.00; (0.00); -',
+        alignment: {
+          wrapText: true,
+          vertical: 'top',
+        },
       },
-      {
-        A: 11, B: 21, C: 31,
+      sheet: {
+        data: [
+          headerRow,
+          ...dataRows,
+        ],
       },
-    ]);
+    };
 
-    wb.Sheets[sheetName] = ws;
+    Api.convertToExcelData(xlObject).then((response) => {
+      function s2ab(s) {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        // eslint-disable-next-line no-bitwise
+        for (let i = 0; i !== s.length; i += 1) view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
+      }
 
-    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+      const blob = new Blob([s2ab(atob(response.payload.data))], {
+        type: '',
+      });
 
-    function s2ab(s) {
-      const buf = new ArrayBuffer(s.length); // convert s to arrayBuffer
-      const view = new Uint8Array(buf); // create uint8array as viewer
-      // eslint-disable-next-line no-bitwise
-      for (let i = 0; i < s.length; i += 1) view[i] = s.charCodeAt(i) & 0xFF; // convert to octet
-      return buf;
-    }
-
-    // eslint-disable-next-line no-undef
-    saveAs(new Blob([s2ab(wbout)], { type: 'application/octet-stream' }), 'test.xlsx');
+      saveAs(blob, `${xlObject.filename}.xlsx`);
+    });
   }
 
   render() {

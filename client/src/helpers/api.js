@@ -139,6 +139,10 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
+const convertToExcelData = data => axios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
+  .then(successCallback)
+  .catch(errorCallback);
+
 export default {
   login,
   identity,
@@ -158,4 +162,5 @@ export default {
   getUserProfile,
   createUserProfile,
   updateUserProfile,
+  convertToExcelData,
 };
