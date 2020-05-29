@@ -967,6 +967,21 @@ class PatientVariantScreen extends React.Component {
     const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
     const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
     const parentalOrigin = variant => join(' ')(variant.donors.map(parentalOriginForDonor).filter(notNull));
+    const allelicFrequency = (variant) => {
+      if (!variant.frequencies) {
+        return '';
+      }
+
+      if (variant.frequencies.gnomAD_exomes) {
+        return getValue('AC')(variant.frequencies.gnomAD_exomes);
+      }
+
+      if (variant.frequencies.gnomAD_genomes) {
+        return getValue('AC')(variant.frequencies.gnomAD_genomes);
+      }
+
+      return '';
+    };
 
     // eslint-disable-next-line arrow-body-style
     const geneOfVariantToRow = variant => gene => (
@@ -980,6 +995,11 @@ class PatientVariantScreen extends React.Component {
           // label: REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
           type: 'string',
           value: parentalOrigin(variant),
+        },
+        {
+          // label: REPORT_HEADER_ALLELIC_FREQUENCY,
+          type: 'string',
+          value: allelicFrequency(variant),
         },
       ]
     );
