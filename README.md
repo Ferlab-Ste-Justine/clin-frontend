@@ -1,3 +1,6 @@
+![](https://github.com/cr-ste-justine/clin-frontend/workflows/Build/badge.svg)
+![](https://github.com/cr-ste-justine/clin-frontend/workflows/Publish/badge.svg)
+
 # CLIN Frontend
 
 ### Available Scripts
