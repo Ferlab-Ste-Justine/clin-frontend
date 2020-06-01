@@ -204,13 +204,12 @@ function* refreshFacets() {
 }
 
 function* fetchGenebyAutocomplete(action) {
-  console.log('patateSaga');
   try {
     const {
-      type, query,
+      query, type,
     } = action.payload;
-    const variantResponse = yield Api.searchVariantsForPatient(type, query);
-
+    const variantResponse = yield Api.getGeneAutocomplete(query, type);
+    console.log('coucou');
     if (variantResponse.error) {
       throw new ApiError(variantResponse.error);
     }
