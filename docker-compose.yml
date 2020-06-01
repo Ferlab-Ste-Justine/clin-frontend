@@ -1,21 +1,10 @@
 version: '3.3'
 services:
 
-  nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile-static
-    image: localhost:5000/clin-frontend-nginx
-    volumes:
-      #     - ./data/certbot/conf:/etc/letsencrypt  --for local usage
-      #      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
-      - "sshvolume:/etc/letsencrypt"
-    ports:
-      - 443:443
-      - 10000:10000
-      - 10001:10001
+  frontend:
+    image: chusj/clin-frontend:1.4.16
     deploy:
-      replicas: 1
+      replicas: 2
       placement:
         constraints: [node.labels.app_role == generic]
       resources:
@@ -27,19 +16,8 @@ services:
           memory: 512M
     networks:
       - proxy
-    configs:
-      - clin-external-proxy-v6
-    command: |
-      /bin/bash -c "cp /clin-external-proxy-v6 /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    command: nginx -g 'daemon off;'
 
 networks:
   proxy:
-    external: true
-
-volumes:
-  sshvolume:
-    external: true
-
-configs:
-  clin-external-proxy-v6:
     external: true
