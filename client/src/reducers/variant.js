@@ -58,7 +58,6 @@ const createDraftStatement = (title, description = '', queries = null) => ({
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
   const { draftQueries, draftHistory } = draft;
   const { payload } = action;
-  console.log('draft', action.type);
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:

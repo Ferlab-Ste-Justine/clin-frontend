@@ -89,11 +89,13 @@ export const FILTER_TYPE_NUMERICAL_COMPARISON = 'numcomparison';
 export const FILTER_TYPE_COMPOSITE = 'composite';
 export const FILTER_TYPE_GENERICBOOL = 'genericbool';
 export const FILTER_TYPE_SPECIFIC = 'specific';
+export const FILTER_TYPE_AUTOCOMPLETE = 'autocomplete';
 export const FILTER_TYPES = [
   FILTER_TYPE_GENERIC,
   FILTER_TYPE_NUMERICAL_COMPARISON,
   FILTER_TYPE_COMPOSITE,
   FILTER_TYPE_SPECIFIC,
+  FILTER_TYPE_AUTOCOMPLETE,
 ];
 
 export const createFilter = type => ({
@@ -274,9 +276,14 @@ class Filter extends React.Component {
   pillOuterOperatorIcon() {
     const { data, editor } = this.props;
     const { operand } = data;
-
+    const editorLabels = editor.getLabels();
+    const actionLabel = editorLabels.action;
     if (this.hasOperands()) {
       return PillOuterIconForOperand(operand)();
+    }
+
+    if (this.isAutocompleteFilter()) {
+      return PillOuterIconForOperand(editor.getLabels().action)();
     }
 
     if (this.isNumericalComparisonFilter() || this.isCompositeFilter()) {
@@ -286,8 +293,7 @@ class Filter extends React.Component {
       return getPillOuterIcon();
     }
 
-    const editorLabels = editor.getLabels();
-    const actionLabel = editorLabels.action;
+
     return actionLabel;
   }
 
@@ -297,7 +303,6 @@ class Filter extends React.Component {
 
     const editorLabels = editor.getLabels();
     const actionTargets = editorLabels.targets;
-
     return (
       <div className={style.termList}>
         {actionTargets.map((target, index) => (
@@ -324,6 +329,12 @@ class Filter extends React.Component {
     const { type } = this.props;
 
     return type === FILTER_TYPE_COMPOSITE;
+  }
+
+  isAutocompleteFilter() {
+    const { type } = this.props;
+
+    return type === FILTER_TYPE_AUTOCOMPLETE;
   }
 
   render() {

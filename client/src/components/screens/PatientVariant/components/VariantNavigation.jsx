@@ -1,6 +1,4 @@
-/* eslint-disable prefer-const */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
@@ -10,7 +8,7 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Menu, Input, AutoComplete, Tag, Typography, Col, Tooltip, Button, List,
+  Menu, Input, AutoComplete, Tag, Typography, Col, Tooltip, Button,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -30,6 +28,7 @@ import SpecificFilter from '../../../Query/Filter/Specific';
 import NumericalComparisonFilter from '../../../Query/Filter/NumericalComparison';
 import GenericBooleanFilter from '../../../Query/Filter/GenericBoolean';
 import CompositeFilter from '../../../Query/Filter/Composite';
+import AutoCompleteFilter from '../../../Query/Filter/Autocomplete';
 import { sanitizeInstructions } from '../../../Query/helpers/query';
 import {
   FILTER_TYPE_GENERIC,
@@ -87,7 +86,6 @@ class VariantNavigation extends React.Component {
       searchResults: [],
       searchValue: '',
       searchGeneValue: '',
-      searchGeneResults: [],
       geneSearch: false,
     };
     this.searchQuery = '';
@@ -103,6 +101,7 @@ class VariantNavigation extends React.Component {
     this.getHighlightSearchGene = this.getHighlightSearchGene.bind(this);
     this.handleGeneAutoCompleteChange = this.handleGeneAutoCompleteChange.bind(this);
     this.handleGeneSearch = this.handleGeneSearch.bind(this);
+    this.handleGeneSelection = this.handleGeneSelection.bind(this);
   }
 
   getHighlightSearch(value) {
@@ -188,23 +187,30 @@ class VariantNavigation extends React.Component {
 
   handleGeneSearch(query) {
     if (query && query.length > 2) {
-      const { actions } = this.props;
-      const test = actions.fetchGenesByAutocomplete(query);
       this.setState({
         geneSearch: true,
       });
     } else {
       this.searchGeneQuery = query;
       this.setState({
-        searchGeneResults: [],
         geneSearch: false,
       });
     }
   }
 
+  handleGeneSelection(key) {
+    const { searchGeneValue } = this.state;
+    const { variant } = this.props;
+    const match = variant.geneResult.hits;
+    const selection = [key.key];
+    const filter = AutoCompleteFilter.structFromArgs('gene_symbol', 'generic', searchGeneValue, match, selection);
+    this.handleFilterChange(filter);
+  }
+
   handleNavigationSelection(datum) {
     this.searchQuery = '';
     const selection = JSON.parse(datum);
+    console.log('selection', selection);
     if (selection.type !== 'filter') {
       this.setState({
         activeFilterId: null,
@@ -285,7 +291,6 @@ class VariantNavigation extends React.Component {
 
   handleFilterChange(filter) {
     const { onEditCallback } = this.props;
-    console.log('filter', filter);
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
       const query = find(queries, { key: activeQuery });
@@ -342,9 +347,7 @@ class VariantNavigation extends React.Component {
 
 
   handleGeneAutoCompleteChange(e) {
-    console.log('e', e);
     const query = !e ? '' : e;
-    console.log('query', query);
     this.setState({ searchGeneValue: query });
   }
 
@@ -455,14 +458,10 @@ class VariantNavigation extends React.Component {
     // eslint-disable-next-line react/prop-types
     const { schema, variant } = this.props;
     const {
-      activeFilterId, searchResults, searchSelection, searchValue, searchGeneValue, searchGeneResults,
-    } = this.state;
-    let {
-      geneSearch,
+      activeFilterId, searchResults, searchSelection, searchValue, geneSearch,
     } = this.state;
     let autocompletesCount = 0;
-    let autocompletesGeneCount = 0;
-    let geneItem = [];
+    const geneItem = [];
     if (variant.geneResult.hits) {
       variant.geneResult.hits.map((item, index) => {
         if (index <= 4) {
@@ -506,15 +505,6 @@ class VariantNavigation extends React.Component {
     }) : [];
     if (autocompletesCount > 0) {
       autocompletes.unshift((
-        <AutoComplete.Option key="count" disabled>
-          <Typography.Text className="totalCount">
-            {autocompletesCount}{' '}result(s)
-          </Typography.Text>
-        </AutoComplete.Option>
-      ));
-    }
-    if (autocompletesGeneCount > 0) {
-      autocompletesGene.unshift((
         <AutoComplete.Option key="count" disabled>
           <Typography.Text className="totalCount">
             {autocompletesCount}{' '}result(s)
@@ -667,7 +657,7 @@ class VariantNavigation extends React.Component {
                   >
                     {
                     geneItem.map(item => (
-                      <Menu.Item key={item.geneSymbol}>
+                      <Menu.Item key={item.geneSymbol} onClick={this.handleGeneSelection}>
                         <div className="geneSymbol">{this.getHighlightSearchGene(item.geneSymbol)}</div>
                         <div className="alias">{this.getHighlightSearchGene(item.alias)}</div>
                       </Menu.Item>
