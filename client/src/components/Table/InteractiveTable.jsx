@@ -247,7 +247,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      size, page, total, isLoading, numFrozenColumns, rowHeight, getData, isReportAvailable,
+      size, page, total, isLoading, numFrozenColumns, rowHeight, getData, isReportAvailable, canCreateReport,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -326,11 +326,16 @@ class InteractiveTable extends React.Component {
                   </Button>
                 </Col>
               ) }
-              <Col>
-                <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
-                  <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.createReport')}
-                </Button>
-              </Col>
+
+              {
+                canCreateReport && (
+                <Col>
+                  <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
+                    <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.createReport')}
+                  </Button>
+                </Col>
+                )
+              }
             </Row>
             <br />
           </>
@@ -381,6 +386,7 @@ InteractiveTable.propTypes = {
   isResizable: PropTypes.bool,
   isSelectable: PropTypes.bool,
   isExportable: PropTypes.bool,
+  canCreateReport: PropTypes.bool,
   exportCallback: PropTypes.func,
   isReportAvailable: PropTypes.bool,
   createReportCallback: PropTypes.func,
@@ -398,6 +404,7 @@ InteractiveTable.defaultProps = {
   isResizable: true,
   isSelectable: true,
   isExportable: true,
+  canCreateReport: false,
   isReportAvailable: false,
   numFrozenColumns: 0,
   exportCallback: () => {},

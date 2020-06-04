@@ -1,7 +1,3 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-confusing-arrow */
-/* eslint-disable no-undef */
-/* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
@@ -18,12 +14,8 @@ import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import {
-  sortBy, findIndex, filter, cloneDeep, includes,
+  sortBy, findIndex, filter, cloneDeep,
 } from 'lodash';
-
-import { saveAs } from 'file-saver';
-import Api from '../../../helpers/api'; // Only to get an excel file from data that is already available from the frontend
-
 
 import Header from '../../Header';
 import Content from '../../Content';
@@ -32,6 +24,8 @@ import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import VariantNavigation from './components/VariantNavigation';
 import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
+import exportToExcel from '../../../helpers/Excel/export';
+
 import { appShape } from '../../../reducers/app';
 import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
@@ -76,7 +70,99 @@ const REPORT_HEADER_STATUS_PARENTAL_ORIGIN = 'Statut (origine parentale)';
 const REPORT_HEADER_ALLELIC_FREQUENCY = 'Fréquence allélique';
 const REPORT_HEADER_SILICO_PREDICTION = 'Prédiction in silico';
 const REPORT_HEADER_CLIN_VAR = 'ClinVar';
-const REPORT_HEADER_OMIM_TRANSMISSION_MODE = 'OMIM (Mode de transmission';
+
+const getValue = f => value => (value[f] ? value[f] : '');
+const notNull = x => !!x;
+const join = sep => a => (a && a.length ? a.join(sep) : '');
+const isCanonical = t => t.canonical;
+
+// Cell generator for Nucleotidic variation
+const nucleotidicVariation = (variant, gene) => {
+  const bdExtString = variant.bdExt && variant.bdExt.dbsnp ? variant.bdExt.dbsnp.join('\n') : '';
+
+  const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(notNull));
+  const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(notNull));
+
+  const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(notNull));
+  const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(notNull));
+
+  const str = `${variant.mutationId} ${bdExtString} gène:${getValue('geneSymbol')(gene)} \n ${refTranscriptString}: ${cdnChange} \
+               ${aaChange}`;
+  return str;
+};
+
+// Cell generator for Parental Origin
+const zygosity = donor => getValue('zygosity')(donor);
+const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
+const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
+const parentalOrigin = (variant, _gene) => join(' ')(variant.donors.map(parentalOriginForDonor).filter(notNull));
+
+// Cell generator for Allelic Frequency
+const allelicFrequency = (variant, _gene) => {
+  if (!variant.frequencies) {
+    return '';
+  }
+
+  if (variant.frequencies.gnomAD_exomes) {
+    return getValue('AC')(variant.frequencies.gnomAD_exomes);
+  }
+
+  if (variant.frequencies.gnomAD_genomes) {
+    return getValue('AC')(variant.frequencies.gnomAD_genomes);
+  }
+
+  return '';
+};
+
+// Cell generator for In Silico Predictions
+const inSilicoPredictions = (variant, _gene) => {
+  if (!variant.consequences || !variant.consequences.predictions) {
+    return '';
+  }
+
+  const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(notNull));
+  return preds ? `SIFT: ${preds}` : '';
+};
+
+// Cell generator for Clinvar
+const clinVar = (variant, _gene) => {
+  if (!variant.clinvar) {
+    return '';
+  }
+
+  const cvcs = `${getValue('clinvar_clinsig')(variant.clinvar)}, ${getValue('clinvar_id')(variant.clinvar)}`;
+  return cvcs || '';
+};
+
+// Schema for Variant table report
+// cellGenerator has the following signature: (variant, gene) => { ... }
+const REPORT_SCHEMA = [
+  {
+    header: REPORT_HEADER_NUCLEOTIDIC_VARIATION,
+    type: 'string',
+    cellGenerator: nucleotidicVariation,
+  },
+  {
+    header: REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
+    type: 'string',
+    cellGenerator: parentalOrigin,
+  },
+  {
+    header: REPORT_HEADER_ALLELIC_FREQUENCY,
+    type: 'string',
+    cellGenerator: allelicFrequency,
+  },
+  {
+    header: REPORT_HEADER_SILICO_PREDICTION,
+    type: 'string',
+    cellGenerator: inSilicoPredictions,
+  },
+  {
+    header: REPORT_HEADER_CLIN_VAR,
+    type: 'string',
+    cellGenerator: clinVar,
+  },
+];
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
@@ -909,8 +995,6 @@ class PatientVariantScreen extends React.Component {
     }
 
     this.setState({ selectedVariants: selection });
-
-    console.log('Selected variants: ', selection);
   }
 
   isReportAvailable() {
@@ -928,150 +1012,19 @@ class PatientVariantScreen extends React.Component {
 
     const variants = Object.values(selectedVariants);
 
-    const p = {
-      Title: 'Rapport de variants',
-      Subject: 'Rapport',
-      Author: 'Clin',
-      CreatedDate: new Date(),
-    };
+    const headerRow = REPORT_SCHEMA.map(h => ({
+      value: h.header, type: h.type,
+    }));
 
-    const headerRow = [
-      REPORT_HEADER_NUCLEOTIDIC_VARIATION,
-      REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
-      REPORT_HEADER_ALLELIC_FREQUENCY,
-      REPORT_HEADER_SILICO_PREDICTION,
-      REPORT_HEADER_CLIN_VAR,
-      REPORT_HEADER_OMIM_TRANSMISSION_MODE,
-    ].map(h => ({ value: h, type: 'string' }));
+    const reportRow = variant => gene => REPORT_SCHEMA.map(c => ({
+      type: c.type,
+      value: c.cellGenerator(variant, gene),
+    }));
 
-    const getValue = f => value => value[f] ? value[f] : '';
-    const notNull = x => !!x;
-    const join = sep => a => a && a.length ? a.join(sep) : '';
-    const isCanonical = t => t.canonical;
-
-    const nucleotidicVariation = (variant, gene) => {
-      const bdExtString = variant.bdExt && variant.bdExt.dbsnp ? variant.bdExt.dbsnp.join('\n') : '';
-
-      const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(notNull));
-      const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(notNull));
-
-      const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(notNull));
-      const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(notNull));
-
-      const str = `${variant.mutationId} ${bdExtString} gène:${getValue('geneSymbol')(gene)} \n ${refTranscriptString}: ${cdnChange} \
-                   ${aaChange}`;
-      return str;
-    };
-
-    const zygosity = donor => getValue('zygosity')(donor);
-    const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
-    const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
-    const parentalOrigin = variant => join(' ')(variant.donors.map(parentalOriginForDonor).filter(notNull));
-    const allelicFrequency = (variant) => {
-      if (!variant.frequencies) {
-        return '';
-      }
-
-      if (variant.frequencies.gnomAD_exomes) {
-        return getValue('AC')(variant.frequencies.gnomAD_exomes);
-      }
-
-      if (variant.frequencies.gnomAD_genomes) {
-        return getValue('AC')(variant.frequencies.gnomAD_genomes);
-      }
-
-      return '';
-    };
-
-    const inSilicoPredictions = (variant) => {
-      if (!variant.consequences || !variant.consequences.predictions) {
-        return '';
-      }
-
-      const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(notNull));
-      return preds ? `SIFT: ${preds}` : '';
-    };
-
-    const clinVar = (variant) => {
-      if (!variant.clinvar) {
-        return '';
-      }
-
-      const cvcs = `${getValue('clinvar_clinsig')(variant.clinvar)}, ${getValue('clinvar_id')(variant.clinvar)}`;
-      return cvcs || '';
-    };
-
-    // eslint-disable-next-line arrow-body-style
-    const geneOfVariantToRow = variant => gene => (
-      [
-        {
-          // label: REPORT_HEADER_NUCLEOTIDIC_VARIATION,
-          type: 'string',
-          value: nucleotidicVariation(variant, gene),
-        },
-        {
-          // label: REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
-          type: 'string',
-          value: parentalOrigin(variant),
-        },
-        {
-          // label: REPORT_HEADER_ALLELIC_FREQUENCY,
-          type: 'string',
-          value: allelicFrequency(variant),
-        },
-        {
-          // label: REPORT_HEADER_SILICO_PREDICTION,
-          type: 'string',
-          value: inSilicoPredictions(variant),
-        },
-        {
-          // label: REPORT_HEADER_CLIN_VAR,
-          type: 'string',
-          value: clinVar(variant),
-        },
-      ]
-    );
-
-    const variantRows = variant => variant.genes.map(geneOfVariantToRow(variant));
-
+    const variantRows = variant => variant.genes.map(reportRow(variant));
     const dataRows = variants.flatMap(variantRows);
 
-    const xlObject = {
-      filename: 'Rapport-variants',
-      style: {
-        font: {
-          color: '#000000',
-          size: 12,
-        },
-        numberFormat: '0.00; (0.00); -',
-        alignment: {
-          wrapText: true,
-          vertical: 'top',
-        },
-      },
-      sheet: {
-        data: [
-          headerRow,
-          ...dataRows,
-        ],
-      },
-    };
-
-    Api.convertToExcelData(xlObject).then((response) => {
-      function s2ab(s) {
-        const buf = new ArrayBuffer(s.length);
-        const view = new Uint8Array(buf);
-        // eslint-disable-next-line no-bitwise
-        for (let i = 0; i !== s.length; i += 1) view[i] = s.charCodeAt(i) & 0xFF;
-        return buf;
-      }
-
-      const blob = new Blob([s2ab(atob(response.payload.data))], {
-        type: '',
-      });
-
-      saveAs(blob, `${xlObject.filename}.xlsx`);
-    });
+    exportToExcel('Rapport variants', headerRow, dataRows);
   }
 
   render() {
@@ -1120,6 +1073,7 @@ class PatientVariantScreen extends React.Component {
       });
     }
 
+    // TODO: optimize this takes around 70 ms to compute
     if (facets[activeQuery]) {
       Object.keys(facets[activeQuery])
         .forEach((key) => {
@@ -1153,12 +1107,15 @@ class PatientVariantScreen extends React.Component {
 
       return accumulator;
     }, []);
+
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const allOntology = sortBy(patient.ontology, 'term');
     const rowHeight = this.getRowHeight();
+
     const visibleOntology = allOntology.filter((ontology => ontology.observed === 'POS')).slice(0, 4);
+
     const familyMenu = (
       <Menu>
         <Menu.ItemGroup title={familyText} className={style.menuGroup}>
@@ -1384,6 +1341,7 @@ class PatientVariantScreen extends React.Component {
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     createReportCallback={this.handleCreateReport}
                     isExportable={false}
+                    canCreateReport
                     isReportAvailable={reportAvailable}
                     rowHeight={rowHeight}
                     numFrozenColumns={1}
