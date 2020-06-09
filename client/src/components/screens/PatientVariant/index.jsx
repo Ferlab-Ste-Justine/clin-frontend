@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, /* Checkbox, */
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, notification, /* Checkbox, */
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -24,7 +24,7 @@ import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import VariantNavigation from './components/VariantNavigation';
 import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
-import exportToExcel from '../../../helpers/Excel/export';
+import exportToExcel from '../../../helpers/excel/export';
 
 import { appShape } from '../../../reducers/app';
 import { patientShape } from '../../../reducers/patient';
@@ -163,6 +163,16 @@ const REPORT_SCHEMA = [
     cellGenerator: clinVar,
   },
 ];
+
+const showNotification = (message, description) => {
+  notification.open({
+    message,
+    description,
+    onClick: () => {
+      console.log('Notification Clicked!');
+    },
+  });
+};
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
@@ -1005,7 +1015,7 @@ class PatientVariantScreen extends React.Component {
     return Object.keys(selectedVariants).length > 0;
   }
 
-  handleCreateReport() {
+  async handleCreateReport() {
     const {
       selectedVariants,
     } = this.state;
@@ -1024,7 +1034,12 @@ class PatientVariantScreen extends React.Component {
     const variantRows = variant => variant.genes.map(reportRow(variant));
     const dataRows = variants.flatMap(variantRows);
 
-    exportToExcel('Rapport variants', headerRow, dataRows);
+    try {
+      await exportToExcel('Rapport variants', headerRow, dataRows);
+    } catch (e) {
+      showNotification('Error', 'Could not create report');
+      console.log('Error: ', e);
+    }
   }
 
   render() {
