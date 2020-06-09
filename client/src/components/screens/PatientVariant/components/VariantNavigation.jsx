@@ -187,6 +187,8 @@ class VariantNavigation extends React.Component {
 
   handleGeneSearch(query) {
     if (query && query.length > 2) {
+      const { actions } = this.props;
+      actions.fetchGenesByAutocomplete(query);
       this.setState({
         geneSearch: true,
       });
@@ -200,17 +202,41 @@ class VariantNavigation extends React.Component {
 
   handleGeneSelection(key) {
     const { searchGeneValue } = this.state;
-    const { variant } = this.props;
+    const { variant, activeQuery } = this.props;
     const match = variant.geneResult.hits;
-    const selection = [key.key];
-    const filter = AutoCompleteFilter.structFromArgs('gene_symbol', 'generic', searchGeneValue, match, selection);
-    this.handleFilterChange(filter);
+    const draftSelection = find(variant.draftQueries, { key: activeQuery });
+    let selectionValue = [];
+
+    const instruction = find(draftSelection.instructions, (o) => {
+      if (o.data.id === 'gene_symbol') {
+        return o;
+      }
+      return null;
+    });
+
+    if (instruction === undefined) {
+      selectionValue.push(key.key);
+    } else {
+      const { data } = instruction;
+      const { selection } = data;
+      if (!selection.includes(key.key)) {
+        selectionValue = selection.concat(key.key);
+      } else {
+        selectionValue = selection;
+      }
+    }
+
+    const geneFilter = AutoCompleteFilter.structFromArgs('gene_symbol', 'generic', searchGeneValue, match, selectionValue);
+    this.handleFilterChange(geneFilter);
+    this.setState({
+      geneSearch: false,
+      searchGeneValue: null,
+    });
   }
 
   handleNavigationSelection(datum) {
     this.searchQuery = '';
     const selection = JSON.parse(datum);
-    console.log('selection', selection);
     if (selection.type !== 'filter') {
       this.setState({
         activeFilterId: null,
@@ -347,8 +373,8 @@ class VariantNavigation extends React.Component {
 
 
   handleGeneAutoCompleteChange(e) {
-    const query = !e ? '' : e;
-    this.setState({ searchGeneValue: query });
+    e = !e ? null : e;
+    this.setState({ searchGeneValue: e });
   }
 
   renderFilterType(categoryData) {
@@ -458,7 +484,7 @@ class VariantNavigation extends React.Component {
     // eslint-disable-next-line react/prop-types
     const { schema, variant } = this.props;
     const {
-      activeFilterId, searchResults, searchSelection, searchValue, geneSearch,
+      activeFilterId, searchResults, searchSelection, searchValue, geneSearch, searchGeneValue,
     } = this.state;
     let autocompletesCount = 0;
     const geneItem = [];
@@ -609,9 +635,9 @@ class VariantNavigation extends React.Component {
                     allowClear
                     size="large"
                     onSearch={this.handleGeneSearch}
-                    className="autocomplete"
-                    dropdownClassName="geneAutocomplete"
+                    className="geneAutocomplete"
                     onChange={this.handleGeneAutoCompleteChange}
+                    value={searchGeneValue}
                     open
                   >
                     <Input placeholder="Recherche de filtres" />
@@ -658,8 +684,11 @@ class VariantNavigation extends React.Component {
                     {
                     geneItem.map(item => (
                       <Menu.Item key={item.geneSymbol} onClick={this.handleGeneSelection}>
-                        <div className="geneSymbol">{this.getHighlightSearchGene(item.geneSymbol)}</div>
-                        <div className="alias">{this.getHighlightSearchGene(item.alias)}</div>
+                        <div className="geneValues">
+                          <div className="geneSymbol">{this.getHighlightSearchGene(item.geneSymbol)}</div>
+                          <div className="alias">{this.getHighlightSearchGene(item.alias)}</div>
+                        </div>
+
                       </Menu.Item>
                     ))
                     }

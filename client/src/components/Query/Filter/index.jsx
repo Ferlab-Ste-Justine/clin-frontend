@@ -211,14 +211,19 @@ class Filter extends React.Component {
       } = this.props;
       const instruction = editor.getDraftInstruction();
       instruction.index = index;
-
       this.setState({
         opened: false,
       }, () => {
-        if (
-          (!instruction.values && !instruction.value)
+        if (instruction.type !== 'autocomplete') {
+          if (
+            (!instruction.values && !instruction.value)
           || (instruction.values && instruction.values.length === 0)
           || (instruction.value && instruction.value.length === 0)) {
+            this.handleClose(true);
+          } else {
+            onEditCallback(instruction);
+          }
+        } else if (instruction.selection.length === 0) {
           this.handleClose(true);
         } else {
           onEditCallback(instruction);
@@ -412,6 +417,9 @@ class Filter extends React.Component {
 
     // const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
+    if (data.id === 'gene_symbol') {
+      actionTargets.sort();
+    }
     const overlay = (
       <Popover
         visible={this.isOpened()}

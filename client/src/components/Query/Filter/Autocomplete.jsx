@@ -3,7 +3,7 @@ import {
   Row, Col, Checkbox, Tooltip,
 } from 'antd';
 import {
-  cloneDeep, pull, orderBy, pullAllBy, filter,
+  cloneDeep, pull, pullAllBy, filter, pullAll, orderBy,
 } from 'lodash';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
@@ -90,7 +90,7 @@ class AutocompleteFilter extends React.Component {
     const minValue = size * (page - 1);
     const maxValue = size * page;
     pullAllBy(allOptions, [{ selection: '' }], 'selection');
-
+    allOptions.sort();
     const options = allOptions.slice(minValue, maxValue).map((option) => {
       const value = option.length < 30 ? option : `${option.substring(0, 25)} ...`;
       return {
@@ -131,9 +131,8 @@ class AutocompleteFilter extends React.Component {
 
   getEditorDraftInstruction() {
     const { draft } = this.state;
-    const { id, operand, values } = draft;
-
-    return AutocompleteFilter.structFromArgs(id, values, operand);
+    const { id, matches, values } = draft;
+    return AutocompleteFilter.structFromArgs(id, 'generic', '', matches, values);
   }
 
   getEditorInstruction() {
@@ -157,8 +156,7 @@ class AutocompleteFilter extends React.Component {
     const allOptions = cloneDeep(dataSet);
     const search = values.toLowerCase();
     const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.toLowerCase().startsWith(search) : null));
-
-    pullAllBy(allOptions, cloneDeep(toRemove), 'value');
+    pullAll(allOptions, toRemove);
     this.setState({
       allOptions,
     });
