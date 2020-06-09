@@ -209,7 +209,6 @@ function* fetchGenebyAutocomplete(action) {
       query, type,
     } = action.payload;
     const variantResponse = yield Api.getGeneAutocomplete(query, type);
-    console.log('coucou');
     if (variantResponse.error) {
       throw new ApiError(variantResponse.error);
     }

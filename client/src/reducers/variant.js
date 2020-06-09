@@ -278,7 +278,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.draftHistory = [];
       break;
     case 'PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_SUCCEEDED':
-      console.log('action', payload);
       draft.geneResult = action.payload.data;
       break;
     default:
