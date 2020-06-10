@@ -664,19 +664,6 @@ class VariantNavigation extends React.Component {
                   />
                 ))}
                 { geneSearch && variant.geneResult.hits && category.label === 'category_genomic' && (
-                /*                   <List
-                    itemLayout="horizontal"
-                    dataSource={geneItem}
-                    renderItem={item => (
-                      <List.Item>
-                        <List.Item.Meta
-                          title={item.geneSymbol}
-                          description={item.alias}
-                        />
-                      </List.Item>
-                    )}
-                  /> */
-
                   <Menu
                     className="geneMenuList"
                     onSelect={this.handleGeneSelect}

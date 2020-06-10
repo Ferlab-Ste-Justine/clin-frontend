@@ -415,7 +415,6 @@ class Filter extends React.Component {
     const valueText = intl.get('screen.patientvariant.filter.pagination.value');
     const editorLabels = editor.getLabels();
 
-    // const actionLabel = editorLabels.action;
     const actionTargets = editorLabels.targets;
     if (data.id === 'gene_symbol') {
       actionTargets.sort();
