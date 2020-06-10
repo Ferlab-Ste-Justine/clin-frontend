@@ -87,6 +87,7 @@ class VariantNavigation extends React.Component {
       searchValue: '',
       searchGeneValue: '',
       geneSearch: false,
+      activeMenu: [],
     };
     this.searchQuery = '';
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -102,6 +103,7 @@ class VariantNavigation extends React.Component {
     this.handleGeneAutoCompleteChange = this.handleGeneAutoCompleteChange.bind(this);
     this.handleGeneSearch = this.handleGeneSearch.bind(this);
     this.handleGeneSelection = this.handleGeneSelection.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   getHighlightSearch(value) {
@@ -152,6 +154,14 @@ class VariantNavigation extends React.Component {
         { index === 0 ? null : <span className="highlight">{highlightValue[index - 1]}</span>}{stringPart}
       </React.Fragment>
     ));
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  handleClick(e) {
+    console.log('patate', e);
+    this.setState({
+      activeMenu: [e.key],
+    });
   }
 
   handleNavigationSearch(query) {
@@ -484,7 +494,7 @@ class VariantNavigation extends React.Component {
     // eslint-disable-next-line react/prop-types
     const { schema, variant } = this.props;
     const {
-      activeFilterId, searchResults, searchSelection, searchValue, geneSearch, searchGeneValue,
+      activeFilterId, searchResults, searchSelection, searchValue, geneSearch, searchGeneValue, activeMenu,
     } = this.state;
     let autocompletesCount = 0;
     const geneItem = [];
@@ -545,6 +555,7 @@ class VariantNavigation extends React.Component {
             mode="horizontal"
             onOpenChange={this.handleCategoryOpenChange}
             className="menu"
+            openKeys={activeMenu}
           >
             {children}
           </Menu>
@@ -591,6 +602,7 @@ class VariantNavigation extends React.Component {
             return (
               <Menu.SubMenu
                 key={id}
+                onTitleClick={this.handleClick}
                 title={(
                   <span className="subMenuTitle">
                     <div>
