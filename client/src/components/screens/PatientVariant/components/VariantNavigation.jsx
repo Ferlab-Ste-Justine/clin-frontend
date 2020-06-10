@@ -78,6 +78,7 @@ class VariantNavigation extends React.Component {
       searchSelection: {},
       searchResults: [],
       searchValue: '',
+      activeMenu: [],
     };
     this.searchQuery = '';
     this.handleFilterSelection = this.handleFilterSelection.bind(this);
@@ -89,6 +90,7 @@ class VariantNavigation extends React.Component {
     this.renderFilterType = this.renderFilterType.bind(this);
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.getHighlightSearch = this.getHighlightSearch.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   getHighlightSearch(value) {
@@ -114,6 +116,14 @@ class VariantNavigation extends React.Component {
         { index === 0 ? null : <span className="highlight">{highlightValue[index - 1]}</span>}{stringPart}
       </React.Fragment>
     ));
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  handleClick(e) {
+    console.log('patate', e);
+    this.setState({
+      activeMenu: [e.key],
+    });
   }
 
   handleNavigationSearch(query) {
@@ -390,10 +400,10 @@ class VariantNavigation extends React.Component {
   render() {
     const { schema } = this.props;
     const {
-      activeFilterId, searchResults, searchSelection, searchValue,
+      activeFilterId, searchResults, searchSelection, searchValue, activeMenu,
     } = this.state;
     let autocompletesCount = 0;
-
+    console.log('searchSelection', searchSelection);
     const autocompletes = searchValue !== '' ? searchResults.filter(group => group.label !== '').map((group) => {
       autocompletesCount += group.matches.length;
       return (
@@ -431,6 +441,7 @@ class VariantNavigation extends React.Component {
             mode="horizontal"
             onOpenChange={this.handleCategoryOpenChange}
             className="menu"
+            openKeys={activeMenu}
           >
             {children}
           </Menu>
@@ -477,6 +488,7 @@ class VariantNavigation extends React.Component {
             return (
               <Menu.SubMenu
                 key={id}
+                onTitleClick={this.handleClick}
                 title={(
                   <span className="subMenuTitle">
                     <div>
