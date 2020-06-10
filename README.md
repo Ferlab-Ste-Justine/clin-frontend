@@ -1,3 +1,6 @@
+![](https://github.com/cr-ste-justine/clin-frontend/workflows/Build/badge.svg)
+![](https://github.com/cr-ste-justine/clin-frontend/workflows/Publish/badge.svg)
+
 # CLIN Frontend
 
 ### Available Scripts
@@ -29,7 +32,9 @@ pnpm start
 
 #### With Docker
 
-Run:
+Make sure you followed the instructions to have a Dockerized setup for the clin proxy api services: https://github.com/cr-ste-justine/clin-proxy-api#dockerized-version
+
+Then, run:
 
 ```
 cp env.docker.development .env
@@ -42,103 +47,36 @@ To stop, run:
 docker-compose -f docker-compose-docker-local.yml down
 ```
 
-Additionally, if you edited your **/etc/hosts** file to point the **dev.chusj-clin-dev.org** domain to your local, you can edit the following entries in the **.env** file:
+#### Prod-like Local Setup with Docker
 
-```
-REACT_APP_AUTH_SERVICE_URL=https://localhost:3000/auth
-REACT_APP_PATIENT_SERVICE_URL=https://localhost:4000/patient
-REACT_APP_VARIANT_SERVICE_URL=https://localhost:5001/variant
-REACT_APP_META_SERVICE_URL=https://localhost:7000/meta
-```
+- Follow the instructions for a production setup below.
 
-To:
-
-```
-REACT_APP_AUTH_SERVICE_URL=https://dev.chusj-clin-dev.org:3000/auth
-REACT_APP_PATIENT_SERVICE_URL=https://dev.chusj-clin-dev.org:4000/patient
-REACT_APP_VARIANT_SERVICE_URL=https://dev.chusj-clin-dev.org:5001/variant
-REACT_APP_META_SERVICE_URL=https://dev.chusj-clin-dev.org:7000/meta
-```
-
-This may give you a more reliable behavior in some environments.
-
+- Follow the instructions to have a running external proxy (if you don't want to launch all the services the external proxy points to, you can remove entries in its **external-proxy.conf** configuration file): https://github.com/cr-ste-justine/clin-external-proxy
 
 ### Production Set-up
 
-##### Manual Mode
-
-Install Node.js LTS 10.14.1 using [nvm](https://github.com/creationix/nvm/blob/master/README.md) and run
-```
-cp -p .env.production .env
-npm install -g pnpm
-pnpm install
-pnpm build
-pnpm serve
-```
-
-##### Docker Mode
-
 `cp -p docker.env .env`
 
-```
-#Obtain certificate from letsencrypt
-#Copy certificate to sshvolume
-##ssh to manager box
-#Install sshfs
-sudo apt-get install sshfs
-##copy certbot to sshvolume and configure
-sudo cp -r certbot /home/ubuntu/sshvolume
-sudo chown -R ubuntu:root certbot
-sudo chmod  -R 0771 certbot
-# Create the proxy network to connect all necessary services together
-docker network create -d overlay --attachable proxy
-# Install on all box sshfs docker volume pluggin
-docker plugin install vieux/sshfs DEBUG=1 sshkey.source=/home/ubuntu/.ssh/
-# (Optional) Tot test the sshvolume with vieux/sshfs (does not work on macosx)
-# Create the volumen sshvolume on all box
-docker volume create -d vieux/sshfs -o sshcmd=ubuntu@10.10.0.19:/home/ubuntu/sshvolume/certbot/conf -o allow_other sshvolume
-# To Test (does not work on docker for macosx)
-docker run -it -v sshvolume:/sshvolume busybox ls /sshvolume
-```
+Fill in any missing secret (ignore the certificate entries, they are no longer needed).
 
-###### Local Environment
-
-`
-copy docker.env .env
-docker-compose up --build`
-
-```Edit docker-compose to comment sshfs docker volume and uncomment local volume```
-
-###### Pushing Changes to Qa/Prod
+Then, type:
 
 ```
-copy docker.env .env
-docker-compose build 
-docker push localhost:5000/clin-frontend-nginx:latest
+./apply.sh
+```
 
-docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.1.2
+### Production Update
 
-docker push localhost:5000/clin-frontend-nginx:1.1.2
+We are transitioning toward a gitops workflow. 
 
-docker stack deploy -c docker-compose.yml qaFront
-docker service update qaFront_nginx --image localhost:5000/clin-frontend-nginx:1.1.2
+The current procedure is as follows:
+
+- Make sure you increment the version number in **package.json** and get your changes merged in **dev**.
+
+- Make any orchestration modification you need to make in **docker-compose.yml** (including changing the image version) and get it merged in **dev**.
+
+- Update the repo dev branch on **workflow** and run:
 
 ```
-#### Update a service to another version i.e. (1.1)
-
-```
-copy docker.env .env
-
-nano .env -- fix environment
-docker-compose build
-docker tag localhost:5000/clin-frontend-nginx:latest localhost:5000/clin-frontend-nginx:1.1.2
-docker push localhost:5000/clin-frontend-nginx:1.1
-docker service update qaFront_nginx --image localhost:5000/clin-frontend-nginx:1.1.2
-
-```
-To scale the service up or down...
-```
-docker service scale qa-frontend_nginx=3
-or
-use portainer (port 9000)
+./apply.sh
 ```
