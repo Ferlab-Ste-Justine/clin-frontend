@@ -104,6 +104,11 @@ class VariantNavigation extends React.Component {
     this.handleGeneSearch = this.handleGeneSearch.bind(this);
     this.handleGeneSelection = this.handleGeneSelection.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+  }
+
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
   }
 
   getHighlightSearch(value) {
@@ -131,37 +136,23 @@ class VariantNavigation extends React.Component {
     ));
   }
 
-  getHighlightSearchGene(value) {
-    const { searchGeneValue } = this.state;
-    const regex = new RegExp(searchGeneValue, 'i');
-    let tempoValue = value;
-    const highlightValue = [];
-    const highlightPart = value.split(regex);
-    let haveMoreValue = true;
-
-    while (haveMoreValue) {
-      const matchValue = tempoValue.match(regex);
-      if (matchValue) {
-        highlightValue.push(matchValue[0]);
-        tempoValue = tempoValue.slice(matchValue.index + matchValue[0].length);
-      } else {
-        haveMoreValue = false;
-      }
-    }
-
-    return highlightPart.map((stringPart, index) => (
-      <React.Fragment>
-        { index === 0 ? null : <span className="highlight">{highlightValue[index - 1]}</span>}{stringPart}
-      </React.Fragment>
-    ));
+  handleClick(e) {
+    console.log('patate', e);
+    let { activeMenu } = this.state;
+    console.log('activeMenu[0]', activeMenu[0]);
+    activeMenu = activeMenu[0] === e.key ? [] : [e.key];
+    this.setState({
+      activeMenu,
+    });
   }
 
   // eslint-disable-next-line class-methods-use-this
-  handleClick(e) {
-    console.log('patate', e);
-    this.setState({
-      activeMenu: [e.key],
-    });
+  handleClickOutside(event) {
+    console.log('evnet', event.target);
+    console.log('this.wrapperRef', this.wrapperRef);
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      alert('You clicked outside of me!');
+    }
   }
 
   handleNavigationSearch(query) {
@@ -556,6 +547,7 @@ class VariantNavigation extends React.Component {
             onOpenChange={this.handleCategoryOpenChange}
             className="menu"
             openKeys={activeMenu}
+            onDeselect={() => { console.log('bye bye'); }}
           >
             {children}
           </Menu>
