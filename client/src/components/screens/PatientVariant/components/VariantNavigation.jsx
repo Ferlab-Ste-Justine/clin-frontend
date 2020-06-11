@@ -91,6 +91,11 @@ class VariantNavigation extends React.Component {
     this.handleAutoCompleteChange = this.handleAutoCompleteChange.bind(this);
     this.getHighlightSearch = this.getHighlightSearch.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handleClickOutside = this.handleClickOutside.bind(this);
+  }
+
+  componentDidMount() {
+    document.addEventListener('mousedown', this.handleClickOutside);
   }
 
   getHighlightSearch(value) {
@@ -118,12 +123,23 @@ class VariantNavigation extends React.Component {
     ));
   }
 
-  // eslint-disable-next-line class-methods-use-this
   handleClick(e) {
     console.log('patate', e);
+    let { activeMenu } = this.state;
+    console.log('activeMenu[0]', activeMenu[0]);
+    activeMenu = activeMenu[0] === e.key ? [] : [e.key];
     this.setState({
-      activeMenu: [e.key],
+      activeMenu,
     });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  handleClickOutside(event) {
+    console.log('evnet', event.target);
+    console.log('this.wrapperRef', this.wrapperRef);
+    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+      alert('You clicked outside of me!');
+    }
   }
 
   handleNavigationSearch(query) {
@@ -442,6 +458,7 @@ class VariantNavigation extends React.Component {
             onOpenChange={this.handleCategoryOpenChange}
             className="menu"
             openKeys={activeMenu}
+            onDeselect={() => { console.log('bye bye'); }}
           >
             {children}
           </Menu>
