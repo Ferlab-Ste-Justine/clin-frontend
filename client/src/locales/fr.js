@@ -437,7 +437,7 @@ const fr = {
   'components.table.action.export': 'Exporter',
   'components.table.action.createReport': 'Créer Rapport',
   'components.table.action.columns': 'Columns',
-  'Fcomponents.table.action.organize': 'Organizer',
+  'components.table.action.organize': 'Organizer',
 };
 
 export default fr;

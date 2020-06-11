@@ -7,14 +7,14 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, notification, /* Checkbox, */
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, notification,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import {
-  sortBy, findIndex, filter, cloneDeep,
+  sortBy, findIndex, filter, cloneDeep, get, curryRight, isNil, isArray, has, curry,
 } from 'lodash';
 
 import Header from '../../Header';
@@ -71,20 +71,20 @@ const REPORT_HEADER_ALLELIC_FREQUENCY = 'Fréquence allélique';
 const REPORT_HEADER_SILICO_PREDICTION = 'Prédiction in silico';
 const REPORT_HEADER_CLIN_VAR = 'ClinVar';
 
-const getValue = f => value => (value[f] ? value[f] : '');
-const notNull = x => !!x;
-const join = sep => a => (a && a.length ? a.join(sep) : '');
+const getValue = curryRight(get)('');
+const valuePresent = x => (x !== undefined && x.trim());
+const join = sep => a => (isArray(a) ? a.join(sep) : '');
 const isCanonical = t => t.canonical;
 
 // Cell generator for Nucleotidic variation
 const nucleotidicVariation = (variant, gene) => {
-  const bdExtString = variant.bdExt && variant.bdExt.dbsnp ? variant.bdExt.dbsnp.join('\n') : '';
+  const bdExtString = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp.join('\n') : '';
 
-  const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(notNull));
-  const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(notNull));
+  const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(valuePresent));
+  const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(valuePresent));
 
-  const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(notNull));
-  const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(notNull));
+  const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(valuePresent));
+  const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(valuePresent));
 
   const str = `${variant.mutationId} ${bdExtString} gène:${getValue('geneSymbol')(gene)} \n ${refTranscriptString}: ${cdnChange} \
                ${aaChange}`;
@@ -95,24 +95,23 @@ const nucleotidicVariation = (variant, gene) => {
 const zygosity = donor => getValue('zygosity')(donor);
 const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
 const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
-const parentalOrigin = (variant, _gene) => join(' ')(variant.donors.map(parentalOriginForDonor).filter(notNull));
+const parentalOrigin = (variant, _gene) => join(' ')(variant.donors.map(parentalOriginForDonor).filter(valuePresent));
 
 // Cell generator for Allelic Frequency
 const allelicFrequency = (variant, _gene) => {
-  if (!variant.frequencies) {
-    return '';
+  const getAC = getValue('AC');
+
+  if (has(variant, 'frequencies.gnomAD_exomes')) {
+    return getAC(variant.frequencies.gnomAD_exomes);
   }
 
-  if (variant.frequencies.gnomAD_exomes) {
-    return getValue('AC')(variant.frequencies.gnomAD_exomes);
-  }
-
-  if (variant.frequencies.gnomAD_genomes) {
-    return getValue('AC')(variant.frequencies.gnomAD_genomes);
+  if (has(variant, 'variant.frequencies.gnomAD_genomes')) {
+    return getAC(variant.frequencies.gnomAD_genomes);
   }
 
   return '';
 };
+
 
 // Cell generator for In Silico Predictions
 const inSilicoPredictions = (variant, _gene) => {
@@ -120,7 +119,7 @@ const inSilicoPredictions = (variant, _gene) => {
     return '';
   }
 
-  const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(notNull));
+  const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(valuePresent));
   return preds ? `SIFT: ${preds}` : '';
 };
 
@@ -168,9 +167,7 @@ const showNotification = (message, description) => {
   notification.open({
     message,
     description,
-    onClick: () => {
-      console.log('Notification Clicked!');
-    },
+    onClick: () => {},
   });
 };
 
@@ -237,7 +234,6 @@ class PatientVariantScreen extends React.Component {
                   />
                 );
               } catch (e) {
-                console.log('Exception while trying to render checkbox: ', e);
                 return '';
               }
             },
@@ -1026,10 +1022,10 @@ class PatientVariantScreen extends React.Component {
       value: h.header, type: h.type,
     }));
 
-    const reportRow = variant => gene => REPORT_SCHEMA.map(c => ({
+    const reportRow = curry((variant, gene) => REPORT_SCHEMA.map(c => ({
       type: c.type,
       value: c.cellGenerator(variant, gene),
-    }));
+    })));
 
     const variantRows = variant => variant.genes.map(reportRow(variant));
     const dataRows = variants.flatMap(variantRows);
@@ -1088,7 +1084,11 @@ class PatientVariantScreen extends React.Component {
       });
     }
 
-    // TODO: optimize this takes around 70 ms to compute
+    /*
+      This loop has been seen to take 70 ms to complete.
+      This is something that will have to be addressed before going to prod alongside a more generalized performance problem:
+      the whole cycle from setState to the end of rendering the page may take 360 ms on average.
+    */
     if (facets[activeQuery]) {
       Object.keys(facets[activeQuery])
         .forEach((key) => {
