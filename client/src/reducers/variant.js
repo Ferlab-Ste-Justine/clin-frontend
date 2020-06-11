@@ -27,6 +27,7 @@ export const initialVariantState = {
   activeStatementId: null,
   defaultStatement: null,
   activeStatementTotals: {},
+  geneResult: [],
 };
 
 // @TODO
@@ -43,6 +44,7 @@ export const variantShape = {
   activeStatementId: PropTypes.String,
   defaultStatement: PropTypes.String,
   activeStatementTotals: PropTypes.shape({}),
+  geneResult: PropTypes.array,
 };
 
 export const DRAFT_STATEMENT_UID = 'draft';
@@ -56,7 +58,6 @@ const createDraftStatement = (title, description = '', queries = null) => ({
 const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
   const { draftQueries, draftHistory } = draft;
   const { payload } = action;
-
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_SESSION_HAS_EXPIRED:
@@ -276,7 +277,9 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
       draft.draftHistory = [];
       break;
-
+    case 'PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_SUCCEEDED':
+      draft.geneResult = action.payload.data;
+      break;
     default:
       break;
   }

@@ -15,7 +15,7 @@
     }
     .fieldHeader{
         border-bottom: 1px solid rgba(35, 55, 80,0.12);
-        margin: 16px 16px 0 16px;
+        margin: 16px;
         padding-bottom: 16px;
         .labelTitle{
             color: rgb(35, 55, 80);
@@ -82,7 +82,7 @@
     }
 
     .selectionToolBar{
-        margin: 16px;
+        margin:0 16px 16px 16px;
         button{
             border:none;
             padding: 0;
