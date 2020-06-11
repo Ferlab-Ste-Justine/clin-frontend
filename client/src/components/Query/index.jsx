@@ -21,20 +21,21 @@ import {
   FILTER_TYPE_GENERICBOOL,
   FILTER_TYPE_COMPOSITE,
   FILTER_TYPE_SPECIFIC,
+  FILTER_TYPE_AUTOCOMPLETE,
 } from './Filter/index';
 import GenericFilter from './Filter/Generic';
 import SpecificFilter from './Filter/Specific';
 import NumericalComparisonFilter from './Filter/NumericalComparison';
 import CompositeFilter from './Filter/Composite';
 import GenericBooleanFilter from './Filter/GenericBoolean';
+import styleQuery from './styles/query.module.scss';
+import AutocompleteFilter from './Filter/Autocomplete';
 import Operator, {
   INSTRUCTION_TYPE_OPERATOR,
   OPERATOR_TYPE_AND_NOT,
 } from './Operator';
 import Subquery, { INSTRUCTION_TYPE_SUBQUERY } from './Subquery';
 import { sanitizeInstructions, calculateTitleWidth } from './helpers/query';
-import styleQuery from './styles/query.module.scss';
-
 
 const QUERY_ACTION_COPY = 'copy';
 const QUERY_ACTION_UNDO_ALL = 'undo-all';
@@ -488,9 +489,23 @@ class Query extends React.Component {
                           key={uuidv1()}
                         />
                       );
+                    } if (type === FILTER_TYPE_AUTOCOMPLETE) {
+                      return (
+                        <AutocompleteFilter
+                          index={index}
+                          options={options}
+                          autoSelect={active}
+                          data={item.data}
+                          dataSet={item.data.selection}
+                          category={category}
+                          onEditCallback={this.handleFilterChange}
+                          onRemoveCallback={this.handleFilterRemoval}
+                          onSelectCallback={onSelectCallback}
+                          key={uuidv1()}
+                        />
+                      );
                     }
                     break;
-
                   case INSTRUCTION_TYPE_SUBQUERY:
                     const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null; /* eslint-disable-line no-case-declarations */
                     const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null; /* eslint-disable-line no-case-declarations */

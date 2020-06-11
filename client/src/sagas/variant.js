@@ -203,6 +203,22 @@ function* refreshFacets() {
   });
 }
 
+function* fetchGenebyAutocomplete(action) {
+  try {
+    const {
+      query, type,
+    } = action.payload;
+    const variantResponse = yield Api.getGeneAutocomplete(query, type);
+    if (variantResponse.error) {
+      throw new ApiError(variantResponse.error);
+    }
+    yield put({ type: actionTypes.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_SUCCEEDED, payload: variantResponse.payload.data });
+  } catch (e) {
+    yield put({ type: actionTypes.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_FAILED, payload: e });
+  }
+}
+
+
 function* watchVariantSchemaFetch() {
   yield takeLatest(actionTypes.VARIANT_SCHEMA_REQUESTED, fetchSchema);
 }
@@ -241,6 +257,10 @@ function* watchDeleteStatement() {
 
 function* watchSelectStatement() {
   yield takeLatest(actionTypes.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED, selectStatement);
+}
+
+function* watchGeneByAutocomplete() {
+  yield takeLatest(actionTypes.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_REQUESTED, fetchGenebyAutocomplete);
 }
 
 function* watchRefreshCount() {
@@ -299,5 +319,6 @@ export default function* watchedVariantSagas() {
     watchRefreshCount(),
     watchRefreshResults(),
     watchRefreshFacets(),
+    watchGeneByAutocomplete(),
   ]);
 }
