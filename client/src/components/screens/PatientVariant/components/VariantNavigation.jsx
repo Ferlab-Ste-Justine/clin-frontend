@@ -577,7 +577,6 @@ class VariantNavigation extends React.Component {
             onOpenChange={this.handleCategoryOpenChange}
             className="menu"
             openKeys={activeMenu}
-            onDeselect={() => { console.log('bye bye'); }}
           >
             {children}
           </Menu>
