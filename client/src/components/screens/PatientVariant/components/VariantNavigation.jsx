@@ -103,7 +103,7 @@ class VariantNavigation extends React.Component {
     this.handleGeneAutoCompleteChange = this.handleGeneAutoCompleteChange.bind(this);
     this.handleGeneSearch = this.handleGeneSearch.bind(this);
     this.handleGeneSelection = this.handleGeneSelection.bind(this);
-    this.handleClick = this.handleClick.bind(this);
+    this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
   }
 
@@ -136,22 +136,51 @@ class VariantNavigation extends React.Component {
     ));
   }
 
-  handleClick(e) {
-    console.log('patate', e);
+  getHighlightSearchGene(value) {
+    const { searchGeneValue } = this.state;
+    const regex = new RegExp(searchGeneValue, 'i');
+    let tempoValue = value;
+    const highlightValue = [];
+    const highlightPart = value.split(regex);
+    let haveMoreValue = true;
+
+    while (haveMoreValue) {
+      const matchValue = tempoValue.match(regex);
+      if (matchValue) {
+        highlightValue.push(matchValue[0]);
+        tempoValue = tempoValue.slice(matchValue.index + matchValue[0].length);
+      } else {
+        haveMoreValue = false;
+      }
+    }
+
+    return highlightPart.map((stringPart, index) => (
+      <React.Fragment>
+        { index === 0 ? null : <span className="highlight">{highlightValue[index - 1]}</span>}{stringPart}
+      </React.Fragment>
+    ));
+  }
+
+  handleMenuSelection(e) {
     let { activeMenu } = this.state;
-    console.log('activeMenu[0]', activeMenu[0]);
     activeMenu = activeMenu[0] === e.key ? [] : [e.key];
     this.setState({
       activeMenu,
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   handleClickOutside(event) {
-    console.log('evnet', event.target);
-    console.log('this.wrapperRef', this.wrapperRef);
-    if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-      alert('You clicked outside of me!');
+    const openMenu = document.querySelector('.submenuOpen');
+    const clickX = event.clientX;
+    const clickY = event.clientY;
+    if (openMenu) {
+      const menuX = Number(openMenu.style.left.replace('px', ''));
+      const menuY = Number(openMenu.style.top.replace('px', ''));
+      if (clickX < menuX || clickX > (menuX + 300) || clickY < menuY || clickY > menuY + openMenu.offsetHeight) {
+        this.setState({
+          activeMenu: [],
+        });
+      }
     }
   }
 
@@ -232,6 +261,7 @@ class VariantNavigation extends React.Component {
     this.setState({
       geneSearch: false,
       searchGeneValue: null,
+      activeMenu: [],
     });
   }
 
@@ -594,7 +624,7 @@ class VariantNavigation extends React.Component {
             return (
               <Menu.SubMenu
                 key={id}
-                onTitleClick={this.handleClick}
+                onTitleClick={this.handleMenuSelection}
                 title={(
                   <span className="subMenuTitle">
                     <div>
@@ -604,7 +634,7 @@ class VariantNavigation extends React.Component {
                     <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
                   </span>
                 )}
-                popupClassName="menuDropdown"
+                popupClassName={activeMenu.includes(id) ? 'submenuOpen menuDropdown' : 'menuDropdown'}
               >
                 {activeFilterId === null && category.label === 'category_variant' && (
                   <div className="variantsHeader">
@@ -670,7 +700,6 @@ class VariantNavigation extends React.Component {
                 { geneSearch && variant.geneResult.hits && category.label === 'category_genomic' && (
                   <Menu
                     className="geneMenuList"
-                    onSelect={this.handleGeneSelect}
                   >
                     {
                     geneItem.map(item => (
