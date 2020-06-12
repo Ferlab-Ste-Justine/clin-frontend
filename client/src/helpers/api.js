@@ -139,6 +139,17 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
+const getGeneAutocomplete = (query, type) => axios.get(
+  'https://localhost:5002/gene/autocomplete', {
+    params: {
+      type,
+      query,
+    },
+  },
+)
+  .then(successCallback)
+  .catch(errorCallback);
+
 export default {
   login,
   identity,
@@ -158,4 +169,5 @@ export default {
   getUserProfile,
   createUserProfile,
   updateUserProfile,
+  getGeneAutocomplete,
 };

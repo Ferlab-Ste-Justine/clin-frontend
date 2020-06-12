@@ -5,6 +5,7 @@
     min-width: 300px;
     max-width: 420px;
     border:none;
+    position: absolute;
     box-shadow: 0px 6px 10px 0px rgba(89, 121, 144, 0.14),
                 0px 1px 18px 0px rgba(89, 121, 144, 0.12),
                 0px 3px 5px -1px rgba(89, 121, 144, 0.2);
@@ -14,7 +15,7 @@
     }
     .fieldHeader{
         border-bottom: 1px solid rgba(35, 55, 80,0.12);
-        margin: 16px 16px 0 16px;
+        margin: 16px;
         padding-bottom: 16px;
         .labelTitle{
             color: rgb(35, 55, 80);
@@ -81,7 +82,7 @@
     }
 
     .selectionToolBar{
-        margin: 16px;
+        margin:0 16px 16px 16px;
         button{
             border:none;
             padding: 0;
