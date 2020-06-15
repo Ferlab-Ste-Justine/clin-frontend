@@ -1,6 +1,6 @@
 {
   "name": "clin-frontend",
-  "version": "1.4.16",
+  "version": "1.5.0",
   "versionName": "Alpha Strain",
   "dependencies": {
     "@babel/core": "7.2.2",
@@ -74,6 +74,7 @@
     "react-drag-sortable": "^1.0.6",
     "react-hot-loader": "^4.6.5",
     "react-icons-kit": "^1.3.1",
+    "react-infinite-scroller": "^1.2.4",
     "react-intl-universal": "^2.2.2",
     "react-redux": "^6.0.0",
     "react-responsive": "^6.1.2",

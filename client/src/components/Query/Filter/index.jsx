@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Pagination, Input, Icon, Tooltip,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Input, Icon, Tooltip,
 } from 'antd';
 import {
   cloneDeep,
@@ -358,7 +358,7 @@ class Filter extends React.Component {
       canApply,
     } = this.props;
     const {
-      allOptions, size, page, visibleInput, selected,
+      allOptions, size, visibleInput, selected,
     } = this.state;
 
     const handleMenuClick = (e) => {
@@ -466,17 +466,6 @@ class Filter extends React.Component {
               ? (
                 <Row className={styleFilter.paginationInfo} type="flex" align="middle" justify="space-between">
                   <Col className={styleFilter.valueCount}>{allOptions.length} {valueText}</Col>
-                  <Col>
-                    <Pagination
-                      className={styleFilter.pagination}
-                      total={allOptions.length}
-                      pageSize={size}
-                      current={page}
-                      pageSizeOptions={['10', '25', '50', '100']}
-                      onChange={this.handlePageChange}
-                      size="small"
-                    />
-                  </Col>
                 </Row>
               ) : null
           )}
