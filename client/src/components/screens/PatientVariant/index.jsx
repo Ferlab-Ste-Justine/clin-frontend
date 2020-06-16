@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
@@ -6,14 +7,14 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, notification,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import {
-  sortBy, findIndex, filter,
+  sortBy, findIndex, filter, cloneDeep, get, curryRight, isNil, isArray, has, curry,
 } from 'lodash';
 
 import Header from '../../Header';
@@ -23,6 +24,8 @@ import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import VariantNavigation from './components/VariantNavigation';
 import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
+import exportToExcel from '../../../helpers/excel/export';
+
 import { appShape } from '../../../reducers/app';
 import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
@@ -59,6 +62,113 @@ const COLUMN_WIDTHS = {
   ZYGOSITY: 90,
   SEQ: 80,
   DEFAULT: 150,
+  TINY: 50,
+};
+
+const REPORT_HEADER_NUCLEOTIDIC_VARIATION = 'Variation nucléotidique';
+const REPORT_HEADER_STATUS_PARENTAL_ORIGIN = 'Statut (origine parentale)';
+const REPORT_HEADER_ALLELIC_FREQUENCY = 'Fréquence allélique';
+const REPORT_HEADER_SILICO_PREDICTION = 'Prédiction in silico';
+const REPORT_HEADER_CLIN_VAR = 'ClinVar';
+
+const getValue = curryRight(get)('');
+const valuePresent = x => (x !== undefined && x.trim());
+const join = sep => a => (isArray(a) ? a.join(sep) : '');
+const isCanonical = t => t.canonical;
+
+// Cell generator for Nucleotidic variation
+const nucleotidicVariation = (variant, gene) => {
+  const bdExtString = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp.join('\n') : '';
+
+  const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(valuePresent));
+  const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(valuePresent));
+
+  const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(valuePresent));
+  const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(valuePresent));
+
+  const str = `${variant.mutationId} ${bdExtString} gène:${getValue('geneSymbol')(gene)} \n ${refTranscriptString}: ${cdnChange} \
+               ${aaChange}`;
+  return str;
+};
+
+// Cell generator for Parental Origin
+const zygosity = donor => getValue('zygosity')(donor);
+const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
+const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
+const parentalOrigin = (variant, _gene) => join(' ')(variant.donors.map(parentalOriginForDonor).filter(valuePresent));
+
+// Cell generator for Allelic Frequency
+const allelicFrequency = (variant, _gene) => {
+  const getAC = getValue('AC');
+
+  if (has(variant, 'frequencies.gnomAD_exomes')) {
+    return getAC(variant.frequencies.gnomAD_exomes);
+  }
+
+  if (has(variant, 'variant.frequencies.gnomAD_genomes')) {
+    return getAC(variant.frequencies.gnomAD_genomes);
+  }
+
+  return '';
+};
+
+
+// Cell generator for In Silico Predictions
+const inSilicoPredictions = (variant, _gene) => {
+  if (!variant.consequences || !variant.consequences.predictions) {
+    return '';
+  }
+
+  const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(valuePresent));
+  return preds ? `SIFT: ${preds}` : '';
+};
+
+// Cell generator for Clinvar
+const clinVar = (variant, _gene) => {
+  if (!variant.clinvar) {
+    return '';
+  }
+
+  const cvcs = `${getValue('clinvar_clinsig')(variant.clinvar)}, ${getValue('clinvar_id')(variant.clinvar)}`;
+  return cvcs || '';
+};
+
+// Schema for Variant table report
+// cellGenerator has the following signature: (variant, gene) => { ... }
+const REPORT_SCHEMA = [
+  {
+    header: REPORT_HEADER_NUCLEOTIDIC_VARIATION,
+    type: 'string',
+    cellGenerator: nucleotidicVariation,
+  },
+  {
+    header: REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
+    type: 'string',
+    cellGenerator: parentalOrigin,
+  },
+  {
+    header: REPORT_HEADER_ALLELIC_FREQUENCY,
+    type: 'string',
+    cellGenerator: allelicFrequency,
+  },
+  {
+    header: REPORT_HEADER_SILICO_PREDICTION,
+    type: 'string',
+    cellGenerator: inSilicoPredictions,
+  },
+  {
+    header: REPORT_HEADER_CLIN_VAR,
+    type: 'string',
+    cellGenerator: clinVar,
+  },
+];
+
+const showNotification = (message, description) => {
+  notification.open({
+    message,
+    description,
+    onClick: () => {},
+  });
 };
 
 class PatientVariantScreen extends React.Component {
@@ -95,10 +205,42 @@ class PatientVariantScreen extends React.Component {
     this.getImpactTag = this.getImpactTag.bind(this);
     this.calculateTitleWidth = this.calculateTitleWidth.bind(this);
     this.goToVariantPatientTab = this.goToVariantPatientTab.bind(this);
+    this.handleSelectVariant = this.handleSelectVariant.bind(this);
+    this.handleCreateReport = this.handleCreateReport.bind(this);
+
+    this.state.selectedVariants = {};
 
     // @NOTE Initialize Component State
     this.state.columnPreset = {
       [VARIANT_TAB]: [
+        {
+          key: 'someKey',
+          label: 'Select',
+          renderer: createCellRenderer('custom', this.getData, {
+            // key: 'mutationId',
+            handler: this.handleSelectVariant,
+            renderer: (data) => {
+              try {
+                const {
+                  selectedVariants,
+                } = this.state;
+                return (
+                  <input
+                    type="checkbox"
+                    id={data.mutationId}
+                    value={data.mutationId}
+                    checked={!!selectedVariants[data.mutationId]}
+                    onChange={this.handleSelectVariant}
+                  />
+                );
+              } catch (e) {
+                return '';
+              }
+            },
+          }),
+          excelRenderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
+          columnWidth: COLUMN_WIDTHS.TINY,
+        },
         {
           key: 'mutationId',
           label: 'screen.variantsearch.table.variant',
@@ -540,6 +682,11 @@ class PatientVariantScreen extends React.Component {
     return [];
   }
 
+  getVariantData(mutationId) {
+    const variants = this.getData().filter(v => v.mutationId === mutationId);
+    return variants.length ? variants[0] : null;
+  }
+
   goToVariantPatientTab(e) {
     const {
       variant,
@@ -835,6 +982,62 @@ class PatientVariantScreen extends React.Component {
     }
   }
 
+  handleSelectVariant(event) {
+    const {
+      selectedVariants,
+    } = this.state;
+
+    const {
+      currentTarget,
+    } = event;
+
+    const mutationId = currentTarget.value;
+
+    const selection = cloneDeep(selectedVariants);
+    if (selection[mutationId]) {
+      delete selection[mutationId];
+    } else {
+      selection[mutationId] = this.getVariantData(mutationId);
+    }
+
+    this.setState({ selectedVariants: selection });
+  }
+
+  isReportAvailable() {
+    const {
+      selectedVariants,
+    } = this.state;
+
+    return Object.keys(selectedVariants).length > 0;
+  }
+
+  async handleCreateReport() {
+    const {
+      selectedVariants,
+    } = this.state;
+
+    const variants = Object.values(selectedVariants);
+
+    const headerRow = REPORT_SCHEMA.map(h => ({
+      value: h.header, type: h.type,
+    }));
+
+    const reportRow = curry((variant, gene) => REPORT_SCHEMA.map(c => ({
+      type: c.type,
+      value: c.cellGenerator(variant, gene),
+    })));
+
+    const variantRows = variant => variant.genes.map(reportRow(variant));
+    const dataRows = variants.flatMap(variantRows);
+
+    try {
+      await exportToExcel('Rapport variants', headerRow, dataRows);
+    } catch (e) {
+      showNotification('Error', 'Could not create report');
+      console.log('Error: ', e);
+    }
+  }
+
   render() {
     const {
       app, variant, patient, user,
@@ -881,6 +1084,11 @@ class PatientVariantScreen extends React.Component {
       });
     }
 
+    /*
+      This loop has been seen to take 70 ms to complete.
+      This is something that will have to be addressed before going to prod alongside a more generalized performance problem:
+      the whole cycle from setState to the end of rendering the page may take 360 ms on average.
+    */
     if (facets[activeQuery]) {
       Object.keys(facets[activeQuery])
         .forEach((key) => {
@@ -914,12 +1122,15 @@ class PatientVariantScreen extends React.Component {
 
       return accumulator;
     }, []);
+
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const allOntology = sortBy(patient.ontology, 'term');
     const rowHeight = this.getRowHeight();
+
     const visibleOntology = allOntology.filter((ontology => ontology.observed === 'POS')).slice(0, 4);
+
     const familyMenu = (
       <Menu>
         <Menu.ItemGroup title={familyText} className={style.menuGroup}>
@@ -959,6 +1170,8 @@ class PatientVariantScreen extends React.Component {
         }
       </Menu>
     );
+
+    const reportAvailable = this.isReportAvailable();
 
     return (
       <Content>
@@ -1141,7 +1354,10 @@ class PatientVariantScreen extends React.Component {
                     schema={columnPreset[VARIANT_TAB]}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
+                    createReportCallback={this.handleCreateReport}
                     isExportable={false}
+                    canCreateReport
+                    isReportAvailable={reportAvailable}
                     rowHeight={rowHeight}
                     numFrozenColumns={1}
                     getData={this.getData}
