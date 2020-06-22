@@ -162,10 +162,9 @@ class VariantNavigation extends React.Component {
   }
 
   handleMenuSelection(e) {
-    let { activeMenu } = this.state;
+    const { activeMenu } = this.state;
     let activeMenuClone = cloneDeep(activeMenu);
     activeMenuClone = activeMenuClone[0] === e.key ? [] : [e.key];
-    activeMenu = activeMenu[0] === e.key ? [] : [e.key];
     this.setState({
       activeMenu: activeMenuClone,
     });
