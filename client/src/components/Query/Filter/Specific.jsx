@@ -4,6 +4,7 @@ import {
   Row, Col, Checkbox, Tag, Tooltip, Divider, Button, Badge,
 } from 'antd';
 import intl from 'react-intl-universal';
+import InfiniteScroll from 'react-infinite-scroller';
 import {
   cloneDeep, orderBy, pullAllBy, filter, find,
 } from 'lodash';
@@ -25,6 +26,44 @@ const SELECTOR_INTERSECTION = 'intersection';
 const SELECTOR_DIFFERENCE = 'difference';
 const SELECTOR_DEFAULT = SELECTOR_NONE;
 const SELECTORS = [SELECTOR_ALL, SELECTOR_NONE, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
+
+const isObservedPos = (ontology) => {
+  if (ontology.observed === 'POS') {
+    return true;
+  }
+
+  return false;
+};
+
+const isObservedNeg = (ontology) => {
+  if (ontology.observed === 'NEG' || ontology.observed === '') {
+    return true;
+  }
+  return false;
+};
+
+const optionObservedPos = externalDataSet => (option) => {
+  const observedPos = externalDataSet.ontology.filter(isObservedPos);
+  const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
+  const code = option.value.match(hpoRegexp).toString();
+  const obsPos = find(observedPos, { code });
+  return obsPos;
+};
+
+const optionObservedNeg = externalDataSet => (option) => {
+  const observedNeg = externalDataSet.ontology.filter(isObservedNeg);
+  const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
+  const code = option.value.match(hpoRegexp).toString();
+  const obsNeg = find(observedNeg, { code });
+  return obsNeg;
+};
+
+const sortOptions = externalDataSet => (options) => {
+  const observedPos = options.filter(optionObservedPos(externalDataSet));
+  const observedNeg = options.filter(optionObservedNeg(externalDataSet));
+  const notObserved = options.filter(o => !optionObservedPos(externalDataSet)(o) && !optionObservedNeg(externalDataSet)(o));
+  return [...observedPos, ...observedNeg, ...notObserved];
+};
 
 class SpecificFilter extends Filter {
   /* @NOTE SQON Struct Sample
@@ -57,6 +96,7 @@ class SpecificFilter extends Filter {
       size: null,
       page: null,
       allOptions: null,
+      loadedOptions: [],
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
@@ -67,16 +107,20 @@ class SpecificFilter extends Filter {
     this.handleSelectorChange = this.handleSelectorChange.bind(this);
     this.handleSelectionChange = this.handleSelectionChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.loadMoreFacets = this.loadMoreFacets.bind(this);
 
     // @NOTE Initialize Component State
-    const { data, dataSet } = props;
+    const { data, dataSet, externalDataSet } = props;
 
     this.state.draft = cloneDeep(data);
     this.state.selector = SELECTOR_DEFAULT;
     this.state.selection = data.values ? cloneDeep(data.values) : [];
     this.state.page = 1;
     this.state.size = 10;
-    this.state.allOptions = cloneDeep(dataSet);
+
+    const dataSetDeepClone = cloneDeep(dataSet);
+
+    this.state.allOptions = sortOptions(externalDataSet)(dataSetDeepClone);
 
     const { selection, allOptions } = this.state;
     if (selection.length > 0) {
@@ -94,14 +138,27 @@ class SpecificFilter extends Filter {
   }
 
   handleSearchByQuery(values) {
-    const { dataSet } = this.props;
-    const allOptions = cloneDeep(dataSet);
-    const search = values.toLowerCase();
-    const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
+    const { dataSet, externalDataSet } = this.props;
 
-    pullAllBy(allOptions, cloneDeep(toRemove), 'value');
+    let allOptions = cloneDeep(dataSet);
+    allOptions = sortOptions(externalDataSet)(allOptions);
+
+    const search = values.toLowerCase();
+    const toKeep = filter(allOptions, o => (search === '' || o.value.toLowerCase().startsWith(search)));
+
+    allOptions.length = 0;
+    allOptions.push(...toKeep);
+
+    const page = 1;
+    const loadedOptions = allOptions.slice(
+      0,
+      Math.min(allOptions.length, page * 10),
+    );
+
     this.setState({
       allOptions,
+      currentFacetPage: page,
+      loadedOptions,
     });
   }
 
@@ -137,7 +194,7 @@ class SpecificFilter extends Filter {
           selectedValues = dataSet;
           break;
         case SELECTOR_INTERSECTION:
-          selectorDataSet = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS')
+          selectorDataSet = externalDataSet.ontology.filter(isObservedPos)
             .map(ontology => ontology.code);
           selectedValues = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
@@ -145,7 +202,7 @@ class SpecificFilter extends Filter {
           });
           break;
         case SELECTOR_DIFFERENCE:
-          selectorDataSet = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '')
+          selectorDataSet = externalDataSet.ontology.filter(isObservedNeg)
             .map(ontology => ontology.code);
           selectedValues = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
@@ -193,22 +250,37 @@ class SpecificFilter extends Filter {
     };
   }
 
+  loadMoreFacets(page) {
+    const {
+      allOptions,
+      loadedOptions,
+    } = this.state;
+
+    const newlyLoadedOptions = allOptions.slice(
+      loadedOptions.length,
+      Math.min(allOptions.length, loadedOptions.length + page * 10),
+    );
+
+    this.setState({ currentFacetPage: page, loadedOptions: [...loadedOptions, ...newlyLoadedOptions] });
+  }
+
   getEditor() {
     const { renderCustomDataSelector, externalDataSet } = this.props;
     const {
-      draft, size, page, allOptions,
+      draft, allOptions,
+      loadedOptions,
     } = this.state;
     const { selector } = draft;
     const selectorAll = intl.get('screen.patientvariant.filter.specific.selector.all');
     const selectorNone = intl.get('screen.patientvariant.filter.specific.selector.none');
     const selectorIntersection = intl.get('screen.patientvariant.filter.specific.selector.intersection');
     const selectorDifference = intl.get('screen.patientvariant.filter.specific.selector.difference');
-    const minValue = size * (page - 1);
-    const maxValue = size * page;
 
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
-    const options = allOptions.slice(minValue, maxValue).map((option) => {
+    const loadedOptionsClone = loadedOptions.length ? [...loadedOptions] : allOptions.slice(0, Math.min(10, allOptions.length));
+
+    const options = loadedOptionsClone.map((option) => {
       const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
       const observedPos = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS');
       const observedNeg = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '');
@@ -254,14 +326,33 @@ class SpecificFilter extends Filter {
           { dataSelector || null }
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options} className={`${styleFilter.checkboxGroup} `} value={draft.values}>
-                { options.map(option => (
-                  <Row>
-                    <Col>
-                      <Checkbox className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
-                    </Col>
-                  </Row>
-                )) }
+              <Checkbox.Group
+                onChange={this.handleSelectionChange}
+                option={options}
+                className={`${styleFilter.checkboxGroup} `}
+                value={draft.values}
+              >
+                <div
+                  style={{ overflow: 'auto', height: 250 }}
+                  ref={(ref) => { this.scrollParentRef = ref; }}
+                >
+                  <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.loadMoreFacets}
+                    hasMore={allOptions.length > loadedOptions.length}
+                    loader={<div className="loader" key={0}>Loading ...</div>}
+                    useWindow={false}
+                    getScrollParent={() => this.scrollParentRef}
+                  >
+                    { options.map(option => (
+                      <Row>
+                        <Col>
+                          <Checkbox className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                        </Col>
+                      </Row>
+                    )) }
+                  </InfiniteScroll>
+                </div>
               </Checkbox.Group>
             </Col>
           </Row>

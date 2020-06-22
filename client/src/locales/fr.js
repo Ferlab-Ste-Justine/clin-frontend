@@ -436,6 +436,7 @@ const fr = {
   'components.table.action.reset': 'Réinitialiser',
   'components.table.action.display': 'Afficher',
   'components.table.action.export': 'Exporter',
+  'components.table.action.createReport': 'Créer Rapport',
   'components.table.action.columns': 'Columns',
   'components.table.action.organize': 'Organizer',
 };
