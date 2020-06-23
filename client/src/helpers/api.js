@@ -139,6 +139,8 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
+const convertToExcelData = data => axios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data);
+
 const getGeneAutocomplete = (query, type) => axios.get(
   'https://localhost:5002/gene/autocomplete', {
     params: {
@@ -169,5 +171,6 @@ export default {
   getUserProfile,
   createUserProfile,
   updateUserProfile,
+  convertToExcelData,
   getGeneAutocomplete,
 };
