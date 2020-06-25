@@ -122,12 +122,23 @@
 .checkbox{
     &:hover{
         .ant-checkbox-inner{
-            border:1px solid #1D8BC6;  
+            border:1px solid #1D8BC6 !important;  
+        }
+        .ant-checkbox-checked .ant-checkbox-inner{
+            background-color: #1D8BC6;
+            border-color: #1D8BC6;
+        }
+
+        .ant-checkbox-checked::after{
+            border: none;
         }
     }
     .ant-checkbox-inner{
         height: 16px;
-        border-radius: 2px
+        border-radius: 2px;
+        &:hover{
+            border:1px solid #1D8BC6;  
+        }
     }
     .ant-checkbox-checked .ant-checkbox-inner{
         background-color: #1D8BC6;
