@@ -129,7 +129,6 @@ class DataTable extends React.Component {
 
     this.copyCallback = this.copyCallback.bind(this);
     this.selectionCallback = this.selectionCallback.bind(this);
-
     this.regionSelectedArray = [];
   }
 
@@ -224,6 +223,19 @@ class DataTable extends React.Component {
     const renderColumnHeader = (name, index) => (
       <div className="tooltipHeader">{intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} /></div>
     );
+
+    const getColumnTitle = (label) => {
+      if (label === 'Select') {
+        return (
+          <Checkbox
+            className="checkbox checkboxTitle"
+            disabled
+          />
+        );
+      }
+      return intl.get(label);
+    };
+
     return (
       <Table
         key={shortid.generate()}
@@ -248,7 +260,7 @@ class DataTable extends React.Component {
         { columns.map(definition => (
           <Column
             id={definition.key}
-            name={definition.description ? definition.description : intl.get(definition.label)}
+            name={definition.description ? definition.description : getColumnTitle(definition.label)}
             cellRenderer={definition.renderer}
             nameRenderer={definition.description ? renderColumnHeader : null}
           />

@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, notification,
+  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, notification, Checkbox,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -62,7 +62,7 @@ const COLUMN_WIDTHS = {
   ZYGOSITY: 90,
   SEQ: 80,
   DEFAULT: 150,
-  TINY: 50,
+  TINY: 52,
 };
 
 const REPORT_HEADER_NUCLEOTIDIC_VARIATION = 'Variation nucléotidique';
@@ -225,12 +225,11 @@ class PatientVariantScreen extends React.Component {
                   selectedVariants,
                 } = this.state;
                 return (
-                  <input
-                    type="checkbox"
+                  <Checkbox
+                    className="checkbox"
                     id={data.mutationId}
-                    value={data.mutationId}
-                    checked={!!selectedVariants[data.mutationId]}
                     onChange={this.handleSelectVariant}
+                    checked={!!selectedVariants[data.mutationId]}
                   />
                 );
               } catch (e) {
@@ -986,12 +985,11 @@ class PatientVariantScreen extends React.Component {
     const {
       selectedVariants,
     } = this.state;
-
     const {
-      currentTarget,
+      target,
     } = event;
 
-    const mutationId = currentTarget.value;
+    const mutationId = target.id;
 
     const selection = cloneDeep(selectedVariants);
     if (selection[mutationId]) {
