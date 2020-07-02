@@ -1,6 +1,10 @@
 {
   "name": "clin-frontend",
+<<<<<<< HEAD
   "version": "2.4.0",
+=======
+  "version": "2.2.0",
+>>>>>>> Nouveau tableau Omim (#229)
   "versionName": "Alpha Strain",
   "dependencies": {
     "@babel/core": "7.2.2",
