@@ -1,8 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-
-/* eslint-disable no-unused-vars */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
@@ -10,7 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Typography, Table, Badge, Empty, Icon, Tooltip,
+  Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Icon, Tooltip,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -21,11 +18,9 @@ import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import DataList from '../../DataList';
-import InteractiveTable from '../../Table/InteractiveTable';
 import DataTable, { createCellRenderer } from '../../Table/index';
 
 import './style.scss';
-import style from './style.module.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
 import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
@@ -53,11 +48,6 @@ const columnPresetToColumn = c => ({
 const header = title => (
   <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>
 );
-
-const canonicalTranscript = (c) => {
-  const canonical = c.transcripts.find(t => t.canonical);
-  return canonical;
-};
 
 const pickTranscript = (c) => {
   const pick = c.transcripts.find(t => t.pick);
@@ -108,7 +98,6 @@ const getImpactTag = (impact) => {
 const impactSummary = (c) => {
   if (pickTranscript(c)) {
     const impactScore = c.impact ? (getImpactTag(c.impact)) : null;
-    const items = [impactScore].filter(item => !!item);
     return (
       <>
         <div>
@@ -125,19 +114,14 @@ const impactSummary = (c) => {
       </>
     );
   }
-
   return null;
 };
-
 const impact = (c) => {
   const vep = c.impact ? (<li><span className="consequenceTerm">VEP: </span>{getImpactTag(c.impact)} {c.impact}</li>) : null;
-
   let items = [vep];
-
   if (c.predictions) {
     const sift = c.predictions.SIFT
       ? (<li><span className="consequenceTerm">SIFT: </span>{c.predictions.SIFT} - {c.predictions.SIFT_score}</li>) : null;
-
     const polyphen2 = c.predictions.Polyphen2_HVAR_score
       ? (
         <li>
@@ -145,25 +129,18 @@ const impact = (c) => {
           {c.predictions.Polyphen2_HVAR_score} - {c.predictions.Polyphen2_HVAR_pred}
         </li>
       ) : null;
-
     const lrt = c.predictions.LRT_Pred
       ? (<li><span className="consequenceTerm">LRT: </span>{c.predictions.LRT_Pred} - {c.predictions.LRT_score}</li>) : null;
-
     const fathmm = c.predictions.FATHMM
       ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.FATHMM} - {c.predictions.FATHMM_score}</li>) : null;
-
     const cadd = c.predictions.CADD_score
       ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_score}</li>) : null;
-
     const dann = c.predictions && c.predictions.DANN_score
       ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_score}</li>) : null;
-
     const revel = c.predictions && c.predictions.REVEL_score
       ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_score}</li>) : null;
-
     items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
   }
-
   return (
     <>
       <ul>
@@ -172,23 +149,21 @@ const impact = (c) => {
     </>
   );
 };
-
 class VariantDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
     };
-
     this.getConsequences = this.getConsequences.bind(this);
     this.getInternalCohortFrequencies = this.getInternalCohortFrequencies.bind(this);
     this.getExternalCohortFrequencies = this.getExternalCohortFrequencies.bind(this);
     this.getGenes = this.getGenes.bind(this);
     this.getDonors = this.getDonors.bind(this);
+    this.getOmimData = this.getOmimData.bind(this);
     this.getHPODataSource = this.getHPODataSource.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
     this.goToPatientTab = this.goToPatientTab.bind(this);
-
     this.state.consequencesColumnPreset = [
       {
         key: 'geneAffectedId',
@@ -371,6 +346,47 @@ class VariantDetailsScreen extends React.Component {
                 />
               );
             } catch (e) { return ''; }
+          },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+    ];
+
+    this.state.omimColumnPreset = [
+      {
+        key: 'geneLocus',
+        label: 'screen.variantDetails.clinicalAssociationsTab.geneLocus',
+        renderer: createCellRenderer('custom', this.getGenes, {
+          renderer: (data) => { try { return data.geneSymbol; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'phenotype',
+        label: 'screen.variantDetails.clinicalAssociationsTab.phenotype',
+        renderer: createCellRenderer('custom', this.getGenes, {
+          renderer: (data) => {
+            try {
+              const lis = data.orphanet.map(o => (<li>{o}</li>));
+              return (<ul>{lis}</ul>);
+            } catch (e) {
+              return '';
+            }
+          },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'transmission',
+        label: 'screen.variantDetails.clinicalAssociationsTab.transmission',
+        renderer: createCellRenderer('custom', this.getGenes, {
+          renderer: (data) => {
+            try {
+              const lis = data.radboudumc.map(r => (<li>{r}</li>));
+              return (<ul>{lis}</ul>);
+            } catch (e) {
+              return '';
+            }
           },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
@@ -686,10 +702,6 @@ class VariantDetailsScreen extends React.Component {
       } = data;
 
       if (genes) {
-        const {
-          geneSymbol, orphanet,
-        } = genes;
-
         return genes;
       }
     }
@@ -698,8 +710,6 @@ class VariantDetailsScreen extends React.Component {
   }
 
   getAssociationData() {
-    const genesOrphanet = this.getGenes().filter(g => !!g.orphanet);
-    const genesRadboudumc = this.getGenes().filter(g => !!g.radboudumc);
     const orphanetLink = (on) => {
       const {
         dataId, panel,
@@ -726,6 +736,25 @@ class VariantDetailsScreen extends React.Component {
       const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
       const orphphanetLine = test || '--';
       return { geneSymbol: g.geneSymbol, orphanet: (<span className="orphanetValue">{orphphanetLine}</span>), radboudumc: radboudumcLine };
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getOmimData() {
+    return this.getGenes().map((g) => {
+      // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+      const geneLine = `${g.geneSymbol} ${g.geneMim ? `(MIN ${g.geneMim[0]})` : ''}`;
+      const phenotype = g.omim ? g.omim.map(o => (
+        <li>
+          {o.phenotype} (MIN {o.phenotypeMim})
+        </li>
+      )) : '--';
+      const transmission = g.omim ? g.omim.map(o => (
+        <li>
+          {o.inheritance.join(',')}
+        </li>
+      )) : '--';
+      return { geneLocus: (<span className="orphanetValue">{geneLine}</span>), phenotype: (<ul className="omimValue">{phenotype}</ul>), transmission: <ul className="omimValue">{transmission}</ul> };
     });
   }
 
@@ -784,7 +813,6 @@ class VariantDetailsScreen extends React.Component {
   handleMoreHpo(key) {
     const hpoRow = document.getElementsByClassName('hpoRow')[key];
     const hpoValue = hpoRow.querySelector('.hpoValue');
-    const hpoIcon = hpoRow.querySelector('.iconPlus');
     const allClassName = hpoValue.className.split(' ');
     if (allClassName.includes('openHpo')) {
       hpoValue.classList.remove('openHpo');
@@ -831,7 +859,7 @@ class VariantDetailsScreen extends React.Component {
       consequencesColumnPreset,
       internalCohortsFrequenciesColumnPreset,
       externalCohortsFrequenciesColumnPreset,
-      clinVarColumnPreset,
+      omimColumnPreset,
       associationColumnPreset,
       HPOColumnPreset,
       donorsColumnPreset,
@@ -999,7 +1027,6 @@ class VariantDetailsScreen extends React.Component {
                                   )
                               }
                               </>
-
                             )
                             : '--',
                       },
@@ -1065,7 +1092,6 @@ class VariantDetailsScreen extends React.Component {
                 </Col>
               </Row>
             </Tabs.TabPane>
-
             <Tabs.TabPane
               key="frequencies"
               style={{ height: '100%' }}
@@ -1116,7 +1142,6 @@ class VariantDetailsScreen extends React.Component {
               </Row>
               <Row />
             </Tabs.TabPane>
-
             <Tabs.TabPane
               key="clinical_associations"
               style={{ height: '100%' }}
@@ -1178,6 +1203,24 @@ class VariantDetailsScreen extends React.Component {
               </Row>
 
               <Row>
+                <Col>{header('OMIM')}</Col>
+              </Row>
+              <Row type="flex" className="omimTable">
+                <Col>
+                  <Table
+                    pagination={false}
+                    locale={{
+                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                    }}
+                    dataSource={this.getOmimData()}
+                    columns={omimColumnPreset.map(
+                      columnPresetToColumn,
+                    )}
+                  />
+                </Col>
+              </Row>
+
+              <Row>
                 <Col>{header('Human Phenotype Ontology (HPO)')}</Col>
               </Row>
               <Row type="flex" className="hpoTable">
@@ -1193,7 +1236,6 @@ class VariantDetailsScreen extends React.Component {
                 </Col>
               </Row>
             </Tabs.TabPane>
-
             <Tabs.TabPane
               key="patients"
               style={{ height: '100%' }}
@@ -1238,14 +1280,12 @@ class VariantDetailsScreen extends React.Component {
     );
   }
 }
-
 VariantDetailsScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
   match: PropTypes.shape({}).isRequired,
   router: PropTypes.shape({}).isRequired,
   variantDetails: PropTypes.shape({}).isRequired,
 };
-
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     fetchVariantDetails,
@@ -1253,7 +1293,6 @@ const mapDispatchToProps = dispatch => ({
     navigateToVariantDetailsScreen,
   }, dispatch),
 });
-
 const mapStateToProps = state => ({
   app: state.app,
   router: state.router,
@@ -1262,7 +1301,6 @@ const mapStateToProps = state => ({
   variant: state.variant,
   variantDetails: state.variantDetails,
 });
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
