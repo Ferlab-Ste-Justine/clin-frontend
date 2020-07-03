@@ -337,6 +337,7 @@ class VariantNavigation extends React.Component {
     this.setState({
       activeFilterId: key,
       searchSelection: {},
+      activeMenu: [],
     });
   }
 
