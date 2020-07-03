@@ -1,6 +1,10 @@
 {
   "name": "clin-frontend",
+<<<<<<< HEAD
   "version": "2.2.2",
+=======
+  "version": "2.2.1",
+>>>>>>> Fix/gene search (#230)
   "versionName": "Alpha Strain",
   "dependencies": {
     "@babel/core": "7.2.2",
