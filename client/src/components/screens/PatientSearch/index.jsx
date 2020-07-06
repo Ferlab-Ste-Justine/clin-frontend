@@ -81,15 +81,15 @@ class PatientSearchScreen extends React.Component {
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
-        key: 'firstName',
-        label: 'screen.patientsearch.table.firstName',
-        renderer: createCellRenderer('text', this.getData, { key: 'firstName' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
-      },
-      {
         key: 'lastName',
         label: 'screen.patientsearch.table.lastName',
         renderer: createCellRenderer('text', this.getData, { key: 'lastName' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'firstName',
+        label: 'screen.patientsearch.table.firstName',
+        renderer: createCellRenderer('text', this.getData, { key: 'firstName' }),
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {

@@ -318,7 +318,7 @@ class PatientScreen extends React.Component {
     const familyType = intl.get('screen.patient.details.familyType');
     const newRequest = intl.get('screen.patient.header.newRequests');
 
-    const name = `${patient.details.firstName} ${patient.details.lastName}`;
+    const name = `${patient.details.lastName}, ${patient.details.firstName} `;
 
     const probandTag = patient.details.proband === 'Proband' ? <Tag className="probandTag">{patient.details.proband}</Tag> : <Tag>{patient.details.proband}</Tag>;
 
@@ -392,7 +392,7 @@ class PatientScreen extends React.Component {
               title={(
                 <div>
                   <Typography.Text className="patientName">
-                    {`${patient.details.firstName} ${patient.details.lastName}`}
+                    {`${patient.details.lastName}, ${patient.details.firstName} `}
                   </Typography.Text>
                 </div>
             )}
