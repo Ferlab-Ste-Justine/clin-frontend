@@ -1123,7 +1123,7 @@ class PatientVariantScreen extends React.Component {
 
     const searchDataTokenizer = tokenizeObjectByKeys();
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
-    const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
+    const completName = `${patient.details.firstName} ${patient.details.lastName}`;
     const allOntology = sortBy(patient.ontology, 'term');
     const rowHeight = this.getRowHeight();
 
