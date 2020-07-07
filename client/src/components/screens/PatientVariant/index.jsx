@@ -65,72 +65,123 @@ const COLUMN_WIDTHS = {
   TINY: 52,
 };
 
-const REPORT_HEADER_NUCLEOTIDIC_VARIATION = 'Variation nucléotidique';
+const REPORT_HEADER_NUCLEOTIDIC_VARIATION = 'Variation Nucléotidique (GRChv38)';
 const REPORT_HEADER_STATUS_PARENTAL_ORIGIN = 'Statut (origine parentale)';
 const REPORT_HEADER_ALLELIC_FREQUENCY = 'Fréquence allélique';
-const REPORT_HEADER_SILICO_PREDICTION = 'Prédiction in silico';
+const REPORT_HEADER_SILICO_PREDICTION = 'Prédiction in silico (Sift)';
 const REPORT_HEADER_CLIN_VAR = 'ClinVar';
 
+const CR = () => '\n';
+
 const getValue = curryRight(get)('');
-const valuePresent = x => (x !== undefined && x.trim());
+const valuePresent = x => (x !== undefined && x !== '' && x !== null);
 const join = sep => a => (isArray(a) ? a.join(sep) : '');
 const isCanonical = t => t.canonical;
+const insertCR = lines => lines.flatMap(l => [...l, '\n']);
+const _has = curryRight(has);
 
 // Cell generator for Nucleotidic variation
 const nucleotidicVariation = (variant, gene) => {
-  const bdExtString = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp.join('\n') : '';
+  const lines = [variant.mutationId, '\n'];
 
-  const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(valuePresent));
-  const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(valuePresent));
+  const bdExts = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp : [];
+  lines.push(...insertCR(bdExts));
 
-  const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(valuePresent));
-  const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(valuePresent));
+  const geneLine = [
+    'Gène: ',
+    {
+      bold: true,
+      value: `${getValue('geneSymbol')(gene)}`,
+    },
+    {
+      bold: false,
+    },
+    '\n',
+  ];
 
-  const str = `${variant.mutationId} ${bdExtString} gène:${getValue('geneSymbol')(gene)} \n ${refTranscriptString}: ${cdnChange} \
-               ${aaChange}`;
-  return str;
+  lines.push(...geneLine);
+
+  const transcriptsRefSeqIds = c => c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(valuePresent);
+  const refTranscripts = variant.consequences.filter(valuePresent).map(transcriptsRefSeqIds).filter(valuePresent);
+  lines.push(...insertCR(refTranscripts));
+
+  // For some reason, point form doesn't work in filter for the _ghas function ...
+  const cdnaChanges = variant.consequences.filter(c => _has('cdnaChange', c)).map(c => `c.${getValue('cdnaChange')(c)}`);
+  lines.push(...insertCR(cdnaChanges));
+
+  // Same as above ...
+  const aaChanges = variant.consequences.filter(c => _has('aaChange')(c)).map(c => `p.(${getValue('aaChange')(c)})`);
+  lines.push(...insertCR(aaChanges));
+
+  return lines;
 };
 
 // Cell generator for Parental Origin
-const zygosity = donor => getValue('zygosity')(donor);
-const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
-const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
-const parentalOrigin = (variant, _gene) => join(' ')(variant.donors.map(parentalOriginForDonor).filter(valuePresent));
+
+const zygoCode = donor => getValue('zygosity')(donor);
+const zygosity = donor => (
+  zygoCode(donor) === 'HOM'
+    ? intl.get('screen.variantDetails.homozygote')
+    : intl.get('screen.variantDetails.homozygote')
+);
+
+const coverage = donor => [
+  intl.get('screen.patientvariant.parentalOrigin.variantConverage'),
+  `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
+];
+
+const origin = (d) => {
+  switch (d.origin) {
+    case 'FTH':
+      return `(${intl.get('screen.patientvariant.header.family.father')})`;
+    case 'MTH':
+      return `(${intl.get('screen.patientvariant.header.family.mother')})`;
+    default:
+      return '(-)';
+  }
+};
+const parentalOriginForDonor = d => [zygosity(d), origin(d), ...coverage(d)];
+const parentalOriginLines = (variant, _gene) => insertCR(variant.donors.flatMap(parentalOriginForDonor).filter(valuePresent));
 
 // Cell generator for Allelic Frequency
 const allelicFrequency = (variant, _gene) => {
-  const getAC = getValue('AC');
+  const getAF = getValue('AF');
+
+  if (has(variant, 'frequencies.ExAc')) {
+    return getAF(variant.frequencies.ExAc);
+  }
 
   if (has(variant, 'frequencies.gnomAD_exomes')) {
-    return getAC(variant.frequencies.gnomAD_exomes);
+    return getAF(variant.frequencies.gnomAD_exomes);
   }
 
   if (has(variant, 'variant.frequencies.gnomAD_genomes')) {
-    return getAC(variant.frequencies.gnomAD_genomes);
+    return getAF(variant.frequencies.gnomAD_genomes);
   }
 
-  return '';
+  return 0;
 };
 
 
 // Cell generator for In Silico Predictions
 const inSilicoPredictions = (variant, _gene) => {
-  if (!variant.consequences || !variant.consequences.predictions) {
-    return '';
-  }
+  const preds = variant.consequences
+    .map(c => (c.predictions ? c.predictions.SIFT : null))
+    .filter(valuePresent)
+    .join(', ');
 
-  const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(valuePresent));
-  return preds ? `SIFT: ${preds}` : '';
+  return preds ? `${preds}` : '';
 };
 
 // Cell generator for Clinvar
 const clinVar = (variant, _gene) => {
   if (!variant.clinvar) {
-    return '';
+    return 0;
   }
 
-  const cvcs = `${getValue('clinvar_clinsig')(variant.clinvar)}, ${getValue('clinvar_id')(variant.clinvar)}`;
-  return cvcs || '';
+  const clinvarLabel = intl.get(`clinvar.value.${getValue('clinvar_clinsig')(variant.clinvar)}`);
+  const cvcs = `${clinvarLabel} (${intl.get('screen.patientvariant.clinVarVariationId')}: ${getValue('clinvar_id')(variant.clinvar)})`;
+  return cvcs || 0;
 };
 
 // Schema for Variant table report
@@ -144,7 +195,7 @@ const REPORT_SCHEMA = [
   {
     header: REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
     type: 'string',
-    cellGenerator: parentalOrigin,
+    cellGenerator: parentalOriginLines,
   },
   {
     header: REPORT_HEADER_ALLELIC_FREQUENCY,
