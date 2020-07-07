@@ -63,6 +63,11 @@ const fr = {
   'clinvar.value.Association': 'Association',
   'clinvar.value.Affects': 'Effets non pathologiques',
   'clinvar.value.Other': 'Autre',
+  'variant.report.header_value.Nucleotidic_variation_GRChv38': 'Variation Nucléotidique (GRChv38)',
+  'variant.report.header_value.Parental_origin': 'Statut (origine parentale)',
+  'variant.report.header_value.Allelic_frequency': 'Fréquence allélique',
+  'variant.report.header_value.Prediction_in_silico_sift': 'Prédiction in silico (Sift)',
+  'variant.report.header_value.ClinVar': 'ClinVar',
   'screen.accessdenied.title': 'Accès Refusé',
   'screen.accessdenied.description': "Nous sommes désolés, mais vous n'êtes pas authorisés à voir ce contenu.",
   'screen.accessdenied.button': 'Retourner à la page précédente',
@@ -461,11 +466,6 @@ const fr = {
   'components.table.action.createReport': 'Créer Rapport',
   'components.table.action.columns': 'Columns',
   'components.table.action.organize': 'Organizer',
-  'variant.report.header_value.Nucleotidic_variation_GRChv38': 'Variation Nucléotidique (GRChv38)',
-  'variant.report.header_value.Parental_origin': 'Statut (origine parentale)',
-  'variant.report.header_value.Allelic_frequency': 'Fréquence allélique',
-  'variant.report.header_value.Prediction_in_silico_sift': 'Prédiction in silico (Sift)',
-  'variant.report.header_value.ClinVar': 'ClinVar',
 };
 
 export default fr;
