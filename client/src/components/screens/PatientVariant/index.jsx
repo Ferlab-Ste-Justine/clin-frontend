@@ -86,7 +86,7 @@ const nucleotidicVariation = (variant, gene) => {
     'Gène: ',
     {
       bold: true,
-      value: `${gene.geneSymbol}`,
+      value: `${getValue(gene, 'geneSymbol')}`,
     },
     {
       bold: false,
@@ -96,16 +96,16 @@ const nucleotidicVariation = (variant, gene) => {
 
   lines.push(...geneLine);
 
-  const transcriptsRefSeqIds = c => c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(valuePresent);
+  const transcriptsRefSeqIds = c => c.transcripts.filter(isCanonical).map(t => getValue(t, 'refSeqId')).filter(valuePresent);
   const refTranscripts = variant.consequences.filter(valuePresent).map(transcriptsRefSeqIds).filter(valuePresent);
   lines.push(...insertCR(refTranscripts));
 
   // For some reason, point form doesn't work in filter for the _ghas function ...
-  const cdnaChanges = variant.consequences.filter(c => _has('cdnaChange', c)).map(c => `c.${getValue('cdnaChange')(c)}`);
+  const cdnaChanges = variant.consequences.filter(c => _has('cdnaChange')(c)).map(c => `c.${getValue(c, 'cdnaChange')}`);
   lines.push(...insertCR(cdnaChanges));
 
   // Same as above ...
-  const aaChanges = variant.consequences.filter(c => _has('aaChange')(c)).map(c => `p.(${getValue('aaChange')(c)})`);
+  const aaChanges = variant.consequences.filter(c => _has('aaChange')(c)).map(c => `p.(${getValue(c, 'aaChange')}`);
   lines.push(...insertCR(aaChanges));
 
   return lines;
@@ -118,7 +118,7 @@ const nucleotidicVariation = (variant, gene) => {
  */
 const parentalOriginLines = (variant, _gene) => {
   const zygosity = (donor) => {
-    const zygoCode = d => getValue('zygosity', d);
+    const zygoCode = d => getValue(d, 'zygosity');
     return zygoCode(donor) === 'HOM'
       ? intl.get('screen.variantDetails.homozygote')
       : intl.get('screen.variantDetails.homozygote');
@@ -126,7 +126,7 @@ const parentalOriginLines = (variant, _gene) => {
 
   const coverage = donor => [
     intl.get('screen.patientvariant.parentalOrigin.variantConverage'),
-    `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
+    `${getValue(donor, 'adAlt')}/${getValue(donor, 'adTotal')} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
   ];
 
   const origin = (d) => {
@@ -190,8 +190,8 @@ const clinVar = (variant, _gene) => {
     return 0;
   }
 
-  const clinvarLabel = intl.get(`clinvar.value.${getValue('clinvar_clinsig')(variant.clinvar)}`);
-  const cvcs = `${clinvarLabel} (${intl.get('screen.patientvariant.clinVarVariationId')}: ${getValue('clinvar_id')(variant.clinvar)})`;
+  const clinvarLabel = intl.get(`clinvar.value.${getValue(variant.clinvar, 'clinvar_clinsig')}`);
+  const cvcs = `${clinvarLabel} (${intl.get('screen.patientvariant.clinVarVariationId')}: ${getValue(variant.clinvar, 'clinvar_id')})`;
   return cvcs || 0;
 };
 
