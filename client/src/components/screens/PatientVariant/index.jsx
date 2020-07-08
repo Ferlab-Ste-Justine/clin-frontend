@@ -149,18 +149,16 @@ const parentalOriginLines = (variant, _gene) => {
  * @param {*} gene
  */
 const allelicFrequency = (variant, _gene) => {
-  const getAF = getValue('AF');
-
   if (has(variant, 'frequencies.ExAc')) {
-    return getAF(variant.frequencies.ExAc);
+    return getValue(variant.frequencies.ExAc, 'AF');
   }
 
   if (has(variant, 'frequencies.gnomAD_exomes')) {
-    return getAF(variant.frequencies.gnomAD_exomes);
+    return getValue(variant.frequencies.gnomAD_exomes, 'AF');
   }
 
   if (has(variant, 'variant.frequencies.gnomAD_genomes')) {
-    return getAF(variant.frequencies.gnomAD_genomes);
+    return getValue(variant.frequencies.gnomAD_genomes, 'AF');
   }
 
   return 0;
