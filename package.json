@@ -1,6 +1,10 @@
 {
   "name": "clin-frontend",
+<<<<<<< HEAD
   "version": "2.2.0",
+=======
+  "version": "2.3.1",
+>>>>>>> Update version
   "versionName": "Alpha Strain",
   "dependencies": {
     "@babel/core": "7.2.2",
