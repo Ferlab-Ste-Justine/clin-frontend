@@ -11,7 +11,6 @@ const exportToExcel = async (filename, headerRow, dataRows) => {
         color: '#000000',
         size: 12,
       },
-      numberFormat: '0.00; (0.00); -',
       alignment: {
         wrapText: true,
         vertical: 'top',
