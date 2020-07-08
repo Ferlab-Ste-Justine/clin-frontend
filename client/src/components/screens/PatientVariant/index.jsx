@@ -86,7 +86,7 @@ const nucleotidicVariation = (variant, gene) => {
     'Gène: ',
     {
       bold: true,
-      value: `${getValue('geneSymbol')(gene)}`,
+      value: `${gene.geneSymbol}`,
     },
     {
       bold: false,
@@ -118,7 +118,7 @@ const nucleotidicVariation = (variant, gene) => {
  */
 const parentalOriginLines = (variant, _gene) => {
   const zygosity = (donor) => {
-    const zygoCode = d => getValue('zygosity')(d);
+    const zygoCode = d => getValue('zygosity', d);
     return zygoCode(donor) === 'HOM'
       ? intl.get('screen.variantDetails.homozygote')
       : intl.get('screen.variantDetails.homozygote');
