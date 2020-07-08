@@ -65,99 +65,157 @@ const COLUMN_WIDTHS = {
   TINY: 52,
 };
 
-const REPORT_HEADER_NUCLEOTIDIC_VARIATION = 'Variation nucléotidique';
-const REPORT_HEADER_STATUS_PARENTAL_ORIGIN = 'Statut (origine parentale)';
-const REPORT_HEADER_ALLELIC_FREQUENCY = 'Fréquence allélique';
-const REPORT_HEADER_SILICO_PREDICTION = 'Prédiction in silico';
-const REPORT_HEADER_CLIN_VAR = 'ClinVar';
-
 const getValue = curryRight(get)('');
-const valuePresent = x => (x !== undefined && x.trim());
-const join = sep => a => (isArray(a) ? a.join(sep) : '');
+const valuePresent = x => (!isNil(x) && x !== '');
 const isCanonical = t => t.canonical;
+const insertCR = lines => lines.flatMap(l => [...l, '\n']);
+const _has = curryRight(has);
 
-// Cell generator for Nucleotidic variation
+/**
+ * Cell generator for Nucleotidic variation column
+ * @param {*} variant
+ * @param {*} gene
+ */
 const nucleotidicVariation = (variant, gene) => {
-  const bdExtString = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp.join('\n') : '';
+  const lines = [variant.mutationId, '\n'];
 
-  const transcriptsRefSeqIds = c => join(' ')(c.transcripts.filter(isCanonical).map(t => getValue('refSeqId')(t)).filter(valuePresent));
-  const refTranscriptString = join(' ')(variant.consequences.map(transcriptsRefSeqIds).filter(valuePresent));
+  const bdExts = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp : [];
+  lines.push(...insertCR(bdExts));
 
-  const cdnChange = join(', ')(variant.consequences.map(c => getValue('cdnaChange')(c)).filter(valuePresent));
-  const aaChange = join(', ')(variant.consequences.map(c => getValue('aaChange')(c)).filter(valuePresent));
+  const geneLine = [
+    'Gène: ',
+    {
+      bold: true,
+      value: `${getValue(gene, 'geneSymbol')}`,
+    },
+    {
+      bold: false,
+    },
+    '\n',
+  ];
 
-  const str = `${variant.mutationId} ${bdExtString} gène:${getValue('geneSymbol')(gene)} \n ${refTranscriptString}: ${cdnChange} \
-               ${aaChange}`;
-  return str;
+  lines.push(...geneLine);
+
+  const transcriptsRefSeqIds = c => c.transcripts.filter(isCanonical).map(t => getValue(t, 'refSeqId')).filter(valuePresent);
+  const refTranscripts = variant.consequences.filter(valuePresent).map(transcriptsRefSeqIds).filter(valuePresent);
+  lines.push(...insertCR(refTranscripts));
+
+  // For some reason, point form doesn't work in filter for the _ghas function ...
+  const cdnaChanges = variant.consequences.filter(c => _has('cdnaChange')(c)).map(c => `c.${getValue(c, 'cdnaChange')}`);
+  lines.push(...insertCR(cdnaChanges));
+
+  // Same as above ...
+  const aaChanges = variant.consequences.filter(c => _has('aaChange')(c)).map(c => `p.(${getValue(c, 'aaChange')}`);
+  lines.push(...insertCR(aaChanges));
+
+  return lines;
 };
 
-// Cell generator for Parental Origin
-const zygosity = donor => getValue('zygosity')(donor);
-const coverage = donor => `${getValue('adAlt')(donor)}/${getValue('adTotal')(donor)}`;
-const parentalOriginForDonor = d => `${zygosity(d)}\n${coverage(d)}`;
-const parentalOrigin = (variant, _gene) => join(' ')(variant.donors.map(parentalOriginForDonor).filter(valuePresent));
+/**
+ * Cell generator for parental origin column
+ * @param {*} variant
+ * @param {*} gene
+ */
+const parentalOriginLines = (variant, _gene) => {
+  const zygosity = (donor) => {
+    const zygoCode = d => getValue(d, 'zygosity');
+    return zygoCode(donor) === 'HOM'
+      ? intl.get('screen.variantDetails.homozygote')
+      : intl.get('screen.variantDetails.homozygote');
+  };
 
-// Cell generator for Allelic Frequency
+  const coverage = donor => [
+    intl.get('screen.patientvariant.parentalOrigin.variantConverage'),
+    `${getValue(donor, 'adAlt')}/${getValue(donor, 'adTotal')} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
+  ];
+
+  const origin = (d) => {
+    switch (d.origin) {
+      case 'FTH':
+        return `(${intl.get('screen.patientvariant.header.family.father')})`;
+      case 'MTH':
+        return `(${intl.get('screen.patientvariant.header.family.mother')})`;
+      default:
+        return '(-)';
+    }
+  };
+  const parentalOriginForDonor = d => [zygosity(d), origin(d), ...coverage(d)];
+  return insertCR(variant.donors.flatMap(parentalOriginForDonor).filter(valuePresent));
+};
+
+/**
+ * Cell generator for allelic frequency column
+ * @param {*} variant
+ * @param {*} gene
+ */
 const allelicFrequency = (variant, _gene) => {
-  const getAC = getValue('AC');
+  if (has(variant, 'frequencies.ExAc')) {
+    return getValue(variant.frequencies.ExAc, 'AF');
+  }
 
   if (has(variant, 'frequencies.gnomAD_exomes')) {
-    return getAC(variant.frequencies.gnomAD_exomes);
+    return getValue(variant.frequencies.gnomAD_exomes, 'AF');
   }
 
   if (has(variant, 'variant.frequencies.gnomAD_genomes')) {
-    return getAC(variant.frequencies.gnomAD_genomes);
+    return getValue(variant.frequencies.gnomAD_genomes, 'AF');
   }
 
-  return '';
+  return 0;
 };
 
-
-// Cell generator for In Silico Predictions
+/**
+ * Cell generator for in silico predictions (Sift) column
+ * @param {*} variant
+ * @param {*} gene
+ */
 const inSilicoPredictions = (variant, _gene) => {
-  if (!variant.consequences || !variant.consequences.predictions) {
-    return '';
-  }
+  const preds = variant.consequences
+    .map(c => (c.predictions ? c.predictions.SIFT : null))
+    .filter(valuePresent)
+    .join(', ');
 
-  const preds = join(', ')(variant.consequences.predictions.map(pred => getValue('sift')(pred)).filter(valuePresent));
-  return preds ? `SIFT: ${preds}` : '';
+  return preds ? `${preds}` : '';
 };
 
-// Cell generator for Clinvar
+/**
+ * Cell generator for Clinvar column
+ * @param {*} variant
+ * @param {*} gene
+ */
 const clinVar = (variant, _gene) => {
   if (!variant.clinvar) {
-    return '';
+    return 0;
   }
 
-  const cvcs = `${getValue('clinvar_clinsig')(variant.clinvar)}, ${getValue('clinvar_id')(variant.clinvar)}`;
-  return cvcs || '';
+  const clinvarLabel = intl.get(`clinvar.value.${getValue(variant.clinvar, 'clinvar_clinsig')}`);
+  const cvcs = `${clinvarLabel} (${intl.get('screen.patientvariant.clinVarVariationId')}: ${getValue(variant.clinvar, 'clinvar_id')})`;
+  return cvcs || 0;
 };
 
-// Schema for Variant table report
-// cellGenerator has the following signature: (variant, gene) => { ... }
-const REPORT_SCHEMA = [
+const reportSchema = () => [
   {
-    header: REPORT_HEADER_NUCLEOTIDIC_VARIATION,
+    header: intl.get('variant.report.header_value.Nucleotidic_variation_GRChv38'),
     type: 'string',
     cellGenerator: nucleotidicVariation,
   },
   {
-    header: REPORT_HEADER_STATUS_PARENTAL_ORIGIN,
+    header: intl.get('variant.report.header_value.Parental_origin'),
     type: 'string',
-    cellGenerator: parentalOrigin,
+    cellGenerator: parentalOriginLines,
   },
   {
-    header: REPORT_HEADER_ALLELIC_FREQUENCY,
+    header: intl.get('variant.report.header_value.Allelic_frequency'),
     type: 'string',
     cellGenerator: allelicFrequency,
   },
   {
-    header: REPORT_HEADER_SILICO_PREDICTION,
+    header: intl.get('variant.report.header_value.Prediction_in_silico_sift'),
     type: 'string',
     cellGenerator: inSilicoPredictions,
   },
   {
-    header: REPORT_HEADER_CLIN_VAR,
+    header: intl.get('variant.report.header_value.ClinVar'),
     type: 'string',
     cellGenerator: clinVar,
   },
@@ -1016,11 +1074,11 @@ class PatientVariantScreen extends React.Component {
 
     const variants = Object.values(selectedVariants);
 
-    const headerRow = REPORT_SCHEMA.map(h => ({
+    const headerRow = reportSchema().map(h => ({
       value: h.header, type: h.type,
     }));
 
-    const reportRow = curry((variant, gene) => REPORT_SCHEMA.map(c => ({
+    const reportRow = curry((variant, gene) => reportSchema().map(c => ({
       type: c.type,
       value: c.cellGenerator(variant, gene),
     })));
@@ -1032,7 +1090,6 @@ class PatientVariantScreen extends React.Component {
       await exportToExcel('Rapport variants', headerRow, dataRows);
     } catch (e) {
       showNotification('Error', 'Could not create report');
-      console.log('Error: ', e);
     }
   }
 
