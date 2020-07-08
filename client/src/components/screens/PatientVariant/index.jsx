@@ -66,7 +66,7 @@ const COLUMN_WIDTHS = {
 };
 
 const getValue = curryRight(get)('');
-const valuePresent = x => (x !== undefined && x !== '' && x !== null);
+const valuePresent = x => (!isNil(x) && x !== '');
 const isCanonical = t => t.canonical;
 const insertCR = lines => lines.flatMap(l => [...l, '\n']);
 const _has = curryRight(has);
