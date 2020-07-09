@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Col, Row, Tabs, PageHeader, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List, Steps, message,
+  Steps, Card, Form, Input, Button,
 } from 'antd';
 import {
   find,
@@ -100,39 +100,30 @@ class PatientSoumissionScreen extends React.Component {
       <Content type="auto">
         <Header />
         <div>
-          <Steps current={currentPageIndex}>
-            {this.pages.map(item => <Step key={item.title} title={item.title} />)}
-            <div className="submission-form-page">{pageContent}</div>
+          <Steps current={0}>
+            <Step title="Informations patient" />
+            <Step title="Informations cliniques" />
+            <Step title="Approbation" />
           </Steps>
-          <div className="submission-form-actions">
-            {(
-              <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
-                {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-              </Button>
-            )}
-            {(
-              <Button style={{ marginLeft: 8 }} onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-              </Button>
-            )}
-            {(
-              <Button
-                type="primary"
-                onClick={() => message.success('Saved ...')}
-              >
-                {intl.get('screen.clinicalSubmission.saveButtonTitle')}
-              </Button>
-            )}
-            {(
-              <Button
-                type="primary"
-                onClick={() => message.success('Cancelled ...')}
-              >
-                {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
-              </Button>
-            )}
-          </div>
         </div>
+        <Card title="Patient" bordered={false}>
+          <Form>
+            <Form.Item label="Nom">
+              <Input placeholder="Nom de famille" />
+            </Form.Item>
+            <Form.Item label="Prénom">
+              <Input placeholder="Nom de famille" />
+            </Form.Item>
+            <Form.Item label="Prénom">
+              <Input placeholder="Nom de famille" />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+            Register
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
       </Content>
     );
   }

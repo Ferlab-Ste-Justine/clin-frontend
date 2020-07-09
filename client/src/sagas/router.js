@@ -42,7 +42,6 @@ function* navigateToVariantDetailsScreen(action) {
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
   } catch (e) {
-    console.log('oh non');
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_FAILED, message: e.message });
   }
 }
