@@ -19,11 +19,7 @@ function* fetchVariantDetails(action) {
     yield put({ type: actionTypes.VARIANT_DETAILS_SUCCEEDED, payload: variantDetailsResponse.payload.data.data });
   } catch (e) {
     yield put({ type: actionTypes.VARIANT_DETAILS_FAILED, payload: e });
-    if (variantDetailsResponse.error.response && variantDetailsResponse.error.response.status === 404) {
-      yield put({ type: actionTypes.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
-    } else {
-      yield put({ type: actionTypes.USER_SESSION_HAS_EXPIRED });
-    }
+    yield put({ type: actionTypes.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
   }
 }
 

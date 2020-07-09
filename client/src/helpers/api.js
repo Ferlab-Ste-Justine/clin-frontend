@@ -7,21 +7,6 @@ const errorCallback = error => ({ error });
 axios.defaults.withCredentials = true;
 axios.defaults.crossdomain = true;
 
-const login = (username, password) => axios.post(`${window.CLIN.authServiceApiUrl}`, {
-  username,
-  password,
-})
-  .then(successCallback)
-  .catch(errorCallback);
-
-const identity = () => axios.get(`${window.CLIN.authServiceApiUrl}`)
-  .then(successCallback)
-  .catch(errorCallback);
-
-const logout = () => axios.delete(`${window.CLIN.authServiceApiUrl}`)
-  .then(successCallback)
-  .catch(errorCallback);
-
 const getPatientById = uid => axios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
   .then(successCallback)
   .catch(errorCallback);
@@ -153,9 +138,6 @@ const getGeneAutocomplete = (query, type) => axios.get(
   .catch(errorCallback);
 
 export default {
-  login,
-  identity,
-  logout,
   getPatientById,
   getPatientsByAutoComplete,
   searchPatients,

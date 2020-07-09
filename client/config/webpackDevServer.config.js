@@ -6,7 +6,7 @@ const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const fs = require('fs');
 const paths = require('./paths');
 
-const protocol = (process.env.SSL_CERTIFICATE_PATH && process.env.SSL_CERTIFICATE_KEY_PATH) ? 'https' : 'http';
+const protocol = process.env.HTTPS !== 'false' && (process.env.HTTPS === 'true' || (process.env.SSL_CERTIFICATE_PATH && process.env.SSL_CERTIFICATE_KEY_PATH)) ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
 
 module.exports = function (proxy, allowedHost) {

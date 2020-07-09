@@ -76,7 +76,8 @@ checkBrowsers(paths.appPath, isInteractive)
         return;
       }
       const config = configFactory('development');
-      const protocol = (process.env.HTTPS === 'true' || (process.env.SSL_CERTIFICATE_PATH && process.env.SSL_CERTIFICATE_KEY_PATH)) ? 'https' : 'http';
+      const protocol = process.env.HTTPS !== 'false' && (process.env.HTTPS === 'true' || (process.env.SSL_CERTIFICATE_PATH && process.env.SSL_CERTIFICATE_KEY_PATH)) ? 'https' : 'http';
+
       const appName = require(paths.appPackageJson).name;
       const urls = prepareUrls(protocol, HOST, port);
       // Create a webpack compiler that is configured with custom messages.
@@ -100,7 +101,7 @@ checkBrowsers(paths.appPath, isInteractive)
         }
         console.log('\nRunning as ' + process.env.NODE_ENV + ' environment, using:');
         console.log(JSON.stringify(paths));
-        console.log(chalk.cyan('\nDevelopment Server started.\n'));
+        console.log(chalk.cyan('\nDevelopment Server started on port ' + port + '.\n'));
         openBrowser(urls.localUrlForBrowser);
       });
 

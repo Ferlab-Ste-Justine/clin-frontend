@@ -50,7 +50,6 @@ export const searchShape = {
 const searchReducer = (state = Object.assign({}, initialSearchState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
-    case actions.USER_SESSION_HAS_EXPIRED:
       draft = Object.assign({}, initialSearchState);
       break;
 

@@ -65,7 +65,6 @@ export const patientShape = {
 const patientReducer = (state = Object.assign({}, initialPatientState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
-    case actions.USER_SESSION_HAS_EXPIRED:
       draft = Object.assign({}, initialPatientState);
       break;
 

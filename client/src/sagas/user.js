@@ -1,5 +1,5 @@
 import {
-  all, put, takeLatest, select,
+  all, put, takeLatest,
 } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
@@ -44,21 +44,6 @@ function* recover(action) {
     yield put({ type: actions.USER_RECOVERY_SUCCEEDED, payload: action.payload });
   } catch (e) {
     yield put({ type: actions.USER_RECOVERY_FAILED, payload: e });
-  }
-}
-
-function* checkSession() {
-  try {
-    const { profile } = yield select(state => state.user);
-    const { uid } = profile;
-    if (uid) {
-      const response = yield Api.identity();
-      if (response.error) {
-        throw new ApiError(response.error);
-      }
-    }
-  } catch (e) {
-    yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
 
@@ -128,10 +113,6 @@ function* watchUserIdentity() {
   yield takeLatest(actions.USER_IDENTITY_REQUESTED, identity);
 }
 
-function* watchUserSession() {
-  yield takeLatest(actions.USER_SESSION_CHECK_REQUESTED, checkSession);
-}
-
 function* watchGetUserProfile() {
   yield takeLatest(actions.USER_PROFILE_REQUESTED, getUserProfile);
 }
@@ -144,7 +125,6 @@ export default function* watchedUserSagas() {
   yield all([
     watchUserLogin(),
     watchUserIdentity(),
-    watchUserSession(),
     watchUserRecover(),
     watchUserLogout(),
     watchGetUserProfile(),
