@@ -42,6 +42,7 @@ function* navigateToVariantDetailsScreen(action) {
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
   } catch (e) {
+    console.log('oh non');
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_FAILED, message: e.message });
   }
 }
@@ -91,6 +92,16 @@ function* navigateToPatientVariantScreen(action) {
     yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED, message: e.message });
+  }
+}
+
+function* navigateToSoumissionScreen() {
+  try {
+    yield put(push(yield put(push('/soumission'))));
+    window.scrollTo(0, 0);
+    yield put({ type: actions.NAVIGATION_SOUMISSION_SCREEN_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.NAVIGATION_SOUMISSION_SCREEN_FAILED, message: e.message });
   }
 }
 
@@ -180,6 +191,11 @@ function* watchNavigateToVariantDetailsScreen() {
   yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToVariantDetailsScreen);
 }
 
+function* watchNavigateToSoumissionScreen() {
+  yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToSoumissionScreen);
+}
+
+
 function* watchNavigationToAccessDeniedScreen() {
   yield takeLatest(actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED, navigateToAccessDeniedScreen);
 }
@@ -193,5 +209,6 @@ export default function* watchedRouterSagas() {
     watchNavigateToVariantDetailsScreen(),
     watchNavigationToAccessDeniedScreen(),
     watchManualUserNavigation(),
+    watchNavigateToSoumissionScreen(),
   ]);
 }
