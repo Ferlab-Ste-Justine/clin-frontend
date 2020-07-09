@@ -27,6 +27,7 @@ import {
   navigateToPatientScreen, navigateToPatientVariantScreen,
   navigateToPatientSearchScreen,
 } from '../../../actions/router';
+import './style.scss';
 
 const { Step } = Steps;
 
@@ -99,79 +100,78 @@ class PatientSoumissionScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <div>
+        <div className="steps">
           <Steps current={currentPageIndex}>
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
-            <div className="submission-form-page">{pageContent}</div>
           </Steps>
         </div>
-        <Card title="Patient" bordered={false}>
-          <div className="submission-form-actions">
-            <Form>
-              <Form.Item label="Nom">
-                <Input placeholder="Nom de famille" />
-              </Form.Item>
-              <Form.Item label="Prénom">
-                <Input placeholder="Prénom" />
-              </Form.Item>
-              <Form.Item label="Sexe">
-                <Radio.Group buttonStyle="solid">
-                  <Radio.Button value="a">Masculin</Radio.Button>
-                  <Radio.Button value="b">Féminin</Radio.Button>
-                  <Radio.Button value="c">Autre</Radio.Button>
-                  <Radio.Button value="d">Inconnu</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item label="Date de naissance">
-                <DatePicker />
-              </Form.Item>
-              <Form.Item label="RAMQ">
-                <Input placeholder="ABCD 0000 0000" />
-              </Form.Item>
-              <Form.Item label="MRN">
-                <Input placeholder="12345678" />
-              </Form.Item>
-              <Form.Item label="Hôpital">
-                <Select defaultValue="CHUSJ">
-                  <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-                  <Select.Option value="CHUM">CHUM</Select.Option>
-                  <Select.Option value="CUSM">CUSM</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item label="Ethnicité" placeholder="Selectionner">
-                <Select>
-                  <Select.Option value="CF">Canadien-Français</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item label="Consanguinité">
-                <Radio.Group buttonStyle="solid">
-                  <Radio.Button value="o">Oui</Radio.Button>
-                  <Radio.Button value="n">Non</Radio.Button>
-                </Radio.Group>
-              </Form.Item>
-            </Form>
+        <Card title="Patient" bordered={false} className="patientContent">
 
-            <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
-              {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-            </Button>
-            <Button style={{ marginLeft: 8 }} onClick={() => this.previous()} disabled={this.isFirstPage()}>
-              {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => message.success('Saved ...')}
-            >
-              {intl.get('screen.clinicalSubmission.saveButtonTitle')}
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => message.success('Cancelled ...')}
-            >
-              {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
-            </Button>
-
-          </div>
+          <Form>
+            <Form.Item label="Nom">
+              <Input placeholder="Nom de famille" />
+            </Form.Item>
+            <Form.Item label="Prénom">
+              <Input placeholder="Prénom" />
+            </Form.Item>
+            <Form.Item label="Sexe">
+              <Radio.Group buttonStyle="solid">
+                <Radio.Button value="a">Masculin</Radio.Button>
+                <Radio.Button value="b">Féminin</Radio.Button>
+                <Radio.Button value="c">Autre</Radio.Button>
+                <Radio.Button value="d">Inconnu</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item label="Date de naissance">
+              <DatePicker />
+            </Form.Item>
+            <Form.Item label="RAMQ">
+              <Input placeholder="ABCD 0000 0000" />
+            </Form.Item>
+            <Form.Item label="MRN">
+              <Input placeholder="12345678" />
+            </Form.Item>
+            <Form.Item label="Hôpital">
+              <Select defaultValue="CHUSJ">
+                <Select.Option value="CHUSJ">CHUSJ</Select.Option>
+                <Select.Option value="CHUM">CHUM</Select.Option>
+                <Select.Option value="CUSM">CUSM</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Ethnicité" placeholder="Selectionner">
+              <Select>
+                <Select.Option value="CF">Canadien-Français</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Consanguinité">
+              <Radio.Group buttonStyle="solid">
+                <Radio.Button value="o">Oui</Radio.Button>
+                <Radio.Button value="n">Non</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+          </Form>
         </Card>
+
+        <div className="submission-form-actions">
+          <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
+            {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+          </Button>
+          <Button style={{ marginLeft: 8 }} onClick={() => this.previous()} disabled={this.isFirstPage()}>
+            {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => message.success('Saved ...')}
+          >
+            {intl.get('screen.clinicalSubmission.saveButtonTitle')}
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => message.success('Cancelled ...')}
+          >
+            {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
+          </Button>
+        </div>
       </Content>
     );
   }

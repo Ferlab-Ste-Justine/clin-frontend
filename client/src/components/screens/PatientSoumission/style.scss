@@ -1,0 +1,70 @@
+@import './variables.scss';
+
+.ant-layout{
+    background: #EDF0F3;
+}
+
+.steps{
+    background-color: #FFFFFF;
+    padding: 24px 32px;
+}
+
+.patientContent{
+    margin:24px 32px;
+
+    .ant-card-head{
+        background: #F6F8FB;
+        .ant-card-head-title{
+            font-family: $font;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0.15px;
+            color: #125A90;
+        }
+    }
+
+    .ant-form-item{
+        display: flex;
+
+        .ant-form-item-label{
+            width: 180px;
+            text-align: left;
+            label{
+                font-family: $font;
+                font-size: 14px;
+                line-height: 22px;
+                letter-spacing: 0.25px;
+                color: #233750;
+                margin: 8px 0px;
+            }
+        }
+        .ant-input{
+            border-radius: 2px;
+            border: 1px solid #ABBED3;
+            &::placeholder{
+                font-family: $font;
+                font-size: 14px;
+                line-height: 22px;
+                letter-spacing: 0.25px;
+                color: #ABB3BC;;
+            }
+        }
+
+        .ant-radio-button-wrapper:first-child{
+            border-radius: 2px 0 0 2px;
+        }
+
+        .ant-radio-button-wrapper:last-child {
+            border-radius: 0 2px 2px 0;
+        }
+
+        .ant-calendar-picker-input.ant-input{
+            font-family: $font;
+            font-size: 14px;
+            line-height: 22px;
+            letter-spacing: 0.25px;
+            color: #536377;
+        }
+    }
+}
