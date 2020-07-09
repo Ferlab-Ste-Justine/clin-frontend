@@ -294,11 +294,9 @@ class PatientSearchScreen extends React.Component {
     actions.navigateToPatientScreen(value);
   }
 
-  handleGotoSoumissionPage(e) {
-    console.log('coucou');
+  handleGotoSoumissionPage() {
     const { actions } = this.props;
-    const value = e.target.getAttribute('data-id');
-    actions.navigateToSoumissionScreen(value);
+    actions.navigateToSoumissionScreen();
   }
 
   exportToTsv() {

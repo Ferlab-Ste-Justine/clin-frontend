@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Col, Row, Tabs, PageHeader, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List,
+  Steps, Card, Form, Input, Button,
 } from 'antd';
 import {
   find,
@@ -43,9 +43,37 @@ class PatientSoumissionScreen extends React.Component {
 
 
   render() {
+    const { Step } = Steps;
+    // eslint-disable-next-line react/prop-types
+
     return (
       <Content type="auto">
         <Header />
+        <div>
+          <Steps current={0}>
+            <Step title="Informations patient" />
+            <Step title="Informations cliniques" />
+            <Step title="Approbation" />
+          </Steps>
+        </div>
+        <Card title="Patient" bordered={false}>
+          <Form>
+            <Form.Item label="Nom">
+              <Input placeholder="Nom de famille" />
+            </Form.Item>
+            <Form.Item label="Prénom">
+              <Input placeholder="Nom de famille" />
+            </Form.Item>
+            <Form.Item label="Prénom">
+              <Input placeholder="Nom de famille" />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+            Register
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
       </Content>
     );
   }

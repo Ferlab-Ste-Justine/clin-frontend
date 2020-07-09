@@ -80,10 +80,8 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       }
       break;
     case actions.NAVIGATION_SOUMISSION_SCREEN_SUCCEEDED:
-      console.log('ok');
       break;
     case actions.NAVIGATION_SOUMISSION_SCREEN_FAILED:
-      console.log('fail');
       break;
     case actions.START_SUBLOADING_ANIMATION:
     case actions.PATIENT_SEARCH_REQUESTED:
