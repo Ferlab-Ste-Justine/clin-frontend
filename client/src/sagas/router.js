@@ -192,7 +192,7 @@ function* watchNavigateToVariantDetailsScreen() {
 }
 
 function* watchNavigateToSoumissionScreen() {
-  yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToSoumissionScreen);
+  yield takeLatest(actions.NAVIGATION_SOUMISSION_SCREEN_REQUESTED, navigateToSoumissionScreen);
 }
 
 
