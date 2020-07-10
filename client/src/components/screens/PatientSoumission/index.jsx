@@ -31,6 +31,74 @@ import './style.scss';
 
 const { Step } = Steps;
 
+const PatientInformation = props => (
+  <Card title="Patient" bordered={false} className="patientContent">
+    <Form>
+      <Form.Item label="Nom">
+        <Input placeholder="Nom de famille" />
+      </Form.Item>
+      <Form.Item label="Prénom">
+        <Input placeholder="Prénom" />
+      </Form.Item>
+      <Form.Item label="Sexe">
+        <Radio.Group buttonStyle="solid">
+          <Radio.Button value="a">Masculin</Radio.Button>
+          <Radio.Button value="b">Féminin</Radio.Button>
+          <Radio.Button value="c">Autre</Radio.Button>
+          <Radio.Button value="d">Inconnu</Radio.Button>
+        </Radio.Group>
+      </Form.Item>
+      <Form.Item label="Date de naissance">
+        <DatePicker />
+      </Form.Item>
+      <Form.Item label="RAMQ">
+        <Input placeholder="ABCD 0000 0000" />
+      </Form.Item>
+      <Form.Item label="MRN">
+        <Input placeholder="12345678" />
+      </Form.Item>
+      <Form.Item label="Hôpital">
+        <Select defaultValue="CHUSJ">
+          <Select.Option value="CHUSJ">CHUSJ</Select.Option>
+          <Select.Option value="CHUM">CHUM</Select.Option>
+          <Select.Option value="CUSM">CUSM</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item label="Ethnicité" placeholder="Selectionner">
+        <Select>
+          <Select.Option value="CF">Canadien-Français</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item label="Consanguinité">
+        <Radio.Group buttonStyle="solid">
+          <Radio.Button value="o">Oui</Radio.Button>
+          <Radio.Button value="n">Non</Radio.Button>
+        </Radio.Group>
+      </Form.Item>
+    </Form>
+  </Card>
+);
+
+const ClinicalInformation = props => (
+  <Card title="Informations cliniques" bordered={false} className="patientContent">
+    <Form>
+      <Form.Item label="Lorem ipsum">
+        <Input placeholder="bla bla" />
+      </Form.Item>
+    </Form>
+  </Card>
+);
+
+const Approval = props => (
+  <Card title="Approbation" bordered={false} className="patientContent">
+    <Form>
+      <Form.Item label="Some field">
+        <Input placeholder="a placeholder ..." />
+      </Form.Item>
+    </Form>
+  </Card>
+);
+
 class PatientSoumissionScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -42,25 +110,19 @@ class PatientSoumissionScreen extends React.Component {
       {
         title: intl.get('screen.clinicalSubmission.patientInformation'),
         content: (
-          <div style={{ height: '100%', width: '100%' }}>
-            Insert Patient Information page component ...
-          </div>
+          <PatientInformation />
         ),
       },
       {
         title: intl.get('screen.clinicalSubmission.clinicalInformation'),
         content: (
-          <div style={{ height: '100%', width: '100%' }}>
-            Insert Clinical Information page component ...
-          </div>
+          <ClinicalInformation />
         ),
       },
       {
         title: intl.get('screen.clinicalSubmission.approval'),
         content: (
-          <div style={{ height: '100%', width: '100%' }}>
-            Insert approval page page component ...
-          </div>
+          <Approval />
         ),
       },
     ];
@@ -94,7 +156,7 @@ class PatientSoumissionScreen extends React.Component {
 
   render() {
     const { currentPageIndex } = this.state;
-    const [currentPage] = this.pages;
+    const currentPage = this.pages[currentPageIndex];
     const pageContent = currentPage.content;
 
     return (
@@ -105,52 +167,8 @@ class PatientSoumissionScreen extends React.Component {
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
         </div>
-        <Card title="Patient" bordered={false} className="patientContent">
 
-          <Form>
-            <Form.Item label="Nom">
-              <Input placeholder="Nom de famille" />
-            </Form.Item>
-            <Form.Item label="Prénom">
-              <Input placeholder="Prénom" />
-            </Form.Item>
-            <Form.Item label="Sexe">
-              <Radio.Group buttonStyle="solid">
-                <Radio.Button value="a">Masculin</Radio.Button>
-                <Radio.Button value="b">Féminin</Radio.Button>
-                <Radio.Button value="c">Autre</Radio.Button>
-                <Radio.Button value="d">Inconnu</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item label="Date de naissance">
-              <DatePicker />
-            </Form.Item>
-            <Form.Item label="RAMQ">
-              <Input placeholder="ABCD 0000 0000" />
-            </Form.Item>
-            <Form.Item label="MRN">
-              <Input placeholder="12345678" />
-            </Form.Item>
-            <Form.Item label="Hôpital">
-              <Select defaultValue="CHUSJ">
-                <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-                <Select.Option value="CHUM">CHUM</Select.Option>
-                <Select.Option value="CUSM">CUSM</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Ethnicité" placeholder="Selectionner">
-              <Select>
-                <Select.Option value="CF">Canadien-Français</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Consanguinité">
-              <Radio.Group buttonStyle="solid">
-                <Radio.Button value="o">Oui</Radio.Button>
-                <Radio.Button value="n">Non</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-          </Form>
-        </Card>
+        {pageContent}
 
         <div className="submission-form-actions">
           <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
