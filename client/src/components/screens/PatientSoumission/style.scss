@@ -7,6 +7,9 @@
 .steps{
     background-color: #FFFFFF;
     padding: 24px 32px;
+    .ant-steps-item{
+        flex: none;
+    }
     .ant-steps-item-container{
         display: flex;
         align-items: center;
@@ -39,8 +42,13 @@
                 background-color: #E1E8EF !important;
                 top:12px;
                 height: 2px;
+                max-width: 180px;
             }
         }
+    }
+
+    .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item{
+        padding-right: 180px;
     }
     .ant-steps-item-process {
         .ant-steps-item-icon{
@@ -78,7 +86,9 @@
 
     .ant-card-head{
         background: #FFFFFF;
+        padding: 12px 16px;
         .ant-card-head-title{
+            padding: 0;
             font-family: $font;
             font-weight: 500;
             font-size: 16px;
@@ -86,6 +96,9 @@
             letter-spacing: 0.15px;
             color: #125A90;
         }
+    }
+    .ant-card-body{
+        padding: 16px;
     }
 
     .ant-form-item{
@@ -136,6 +149,9 @@
 
         .ant-radio-button-wrapper{
             border: 1px solid #ABBED3;
+            transition:none;
+            outline: none !important;
+            box-shadow:none;
             &:not(:first-child){
                 &::before{
                     background-color: transparent;
@@ -156,11 +172,16 @@
                 color: #536377;
                 
             }
-
         }
 
-        .radio-button-wrapper-checked{
-            background-color: red;
+        .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled){
+            background-color: #1D8BC6;
+            border:1px solid #1D8BC6;
+            box-shadow:none;
+            .radioText{
+                color: #ffffff;
+            }
+            
         }
 
         .ant-calendar-picker-input.ant-input{
