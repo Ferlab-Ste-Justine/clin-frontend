@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select,
+  Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select, Tree,
 } from 'antd';
 import {
   find,
@@ -30,6 +30,8 @@ import {
 import './style.scss';
 
 const { Step } = Steps;
+const { TextArea } = Input;
+const { TreeNode } = Tree;
 
 const PatientInformation = props => (
   <Card title="Patient" bordered={false} className="patientContent">
@@ -81,23 +83,85 @@ const PatientInformation = props => (
 );
 
 const ClinicalInformation = props => (
-  <Card title="Informations cliniques" bordered={false} className="patientContent">
-    <Form>
-      <Form.Item label="Lorem ipsum">
-        <Input placeholder="bla bla" />
-      </Form.Item>
-    </Form>
-  </Card>
+  <div>
+    <Card title="Informations cliniques" bordered={false} className="patientContent">
+      <Form>
+        <Form.Item label="Type d’analyse">
+          <Radio.Group buttonStyle="solid">
+            <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
+            <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
+            <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+      </Form>
+    </Card>
+    <Card title="Résumé de l’investigation" bordered={false} className="patientContent">
+      <Form>
+        <Form.Item label="CGH">
+          <Radio.Group buttonStyle="solid">
+            <Radio.Button value="negatif"><span className="radioText">Négatif</span></Radio.Button>
+            <Radio.Button value="anormal"><span className="radioText">Anormal</span></Radio.Button>
+            <Radio.Button value="so"><span className="radioText">Sans objet</span></Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label="Résumé">
+          <TextArea rows={4} />
+        </Form.Item>
+      </Form>
+    </Card>
+    <Card title="Histoire familiale" bordered={false} className="patientContent">
+      <Form>
+        <Form.Item>
+          <Input placeholder="Ajouter une note…" className="large" />
+        </Form.Item>
+        <Form.Item>
+          <Select className="large" placeholder="Spécifier un membre" dropdownClassName="selectDropdown">
+            <Select.Option value="m">Mère</Select.Option>
+            <Select.Option value="p">Père</Select.Option>
+            <Select.Option value="o">Oncle</Select.Option>
+          </Select>
+        </Form.Item>
+        <Button>
+          -
+        </Button>
+        <Button>
+          +Ajouter
+        </Button>
+      </Form>
+    </Card>
+    <Card title="Signes cliniques" bordered={false} className="patientContent">
+      <Form>
+        <Form.Item>
+          <Input placeholder="Ajouter une note…" className="large" />
+        </Form.Item>
+        <Tree>
+          <TreeNode title="parent 1" key="0-0">
+            <TreeNode title="parent 1-0" key="0-0-0" disabled>
+              <TreeNode title="leaf" key="0-0-0-0" disableCheckbox />
+              <TreeNode title="leaf" key="0-0-0-1" />
+            </TreeNode>
+            <TreeNode title="parent 1-1" key="0-0-1">
+              <TreeNode title={<span style={{ color: '#1890ff' }}>sss</span>} key="0-0-1-0" />
+            </TreeNode>
+          </TreeNode>
+        </Tree>
+      </Form>
+    </Card>
+  </div>
+
 );
 
 const Approval = props => (
-  <Card title="Approbation" bordered={false} className="patientContent">
-    <Form>
-      <Form.Item label="Some field">
-        <Input placeholder="a placeholder ..." />
-      </Form.Item>
-    </Form>
-  </Card>
+  <div>
+    <Card title="Analyse demandée" bordered={false} className="patientContent">
+      <Form>
+        <Form.Item label="Some field">
+          <Input placeholder="a placeholder ..." />
+        </Form.Item>
+      </Form>
+    </Card>
+  </div>
+
 );
 
 class PatientSoumissionScreen extends React.Component {
