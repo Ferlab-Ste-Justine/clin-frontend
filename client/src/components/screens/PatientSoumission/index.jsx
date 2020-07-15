@@ -7,11 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-<<<<<<< HEAD
-  Steps, Card, Form, Input, Button, Radio, Select,
-=======
   Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select, Tree,
->>>>>>> WIP page 2
 } from 'antd';
 import {
   find,
