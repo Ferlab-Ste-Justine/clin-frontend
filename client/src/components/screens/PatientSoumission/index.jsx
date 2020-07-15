@@ -82,74 +82,86 @@ const PatientInformation = props => (
   </Card>
 );
 
-const ClinicalInformation = props => (
-  <div>
-    <Card title="Informations cliniques" bordered={false} className="patientContent">
+const ClinicalInformation = (props) => {
+  const familyItem = (
+    <>
+      <Form.Item>
+        <Input placeholder="Ajouter une note…" className="small" />
+      </Form.Item>
+      <Form.Item>
+        <Radio.Group buttonStyle="solid">
+          <Radio.Button value="m"><span className="radioText">Maternel</span></Radio.Button>
+          <Radio.Button value="p"><span className="radioText">Paternel</span></Radio.Button>
+        </Radio.Group>
+      </Form.Item>
+      <Form.Item>
+        <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
+          <Select.Option value="CF">Canadien-Français</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item>
+        <Button>-</Button>
+      </Form.Item>
+    </>
+  );
+  return (
+    <div>
       <Form>
-        <Form.Item label="Type d’analyse">
-          <Radio.Group buttonStyle="solid">
-            <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
-            <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
-            <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-      </Form>
-    </Card>
-    <Card title="Résumé de l’investigation" bordered={false} className="patientContent">
-      <Form>
-        <Form.Item label="CGH">
-          <Radio.Group buttonStyle="solid">
-            <Radio.Button value="negatif"><span className="radioText">Négatif</span></Radio.Button>
-            <Radio.Button value="anormal"><span className="radioText">Anormal</span></Radio.Button>
-            <Radio.Button value="so"><span className="radioText">Sans objet</span></Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="Résumé">
-          <TextArea rows={4} />
-        </Form.Item>
-      </Form>
-    </Card>
-    <Card title="Histoire familiale" bordered={false} className="patientContent">
-      <Form>
-        <Form.Item>
-          <Input placeholder="Ajouter une note…" className="large" />
-        </Form.Item>
-        <Form.Item>
-          <Select className="large" placeholder="Spécifier un membre" dropdownClassName="selectDropdown">
-            <Select.Option value="m">Mère</Select.Option>
-            <Select.Option value="p">Père</Select.Option>
-            <Select.Option value="o">Oncle</Select.Option>
-          </Select>
-        </Form.Item>
-        <Button>
-          -
-        </Button>
-        <Button>
-          +Ajouter
-        </Button>
-      </Form>
-    </Card>
-    <Card title="Signes cliniques" bordered={false} className="patientContent">
-      <Form>
-        <Form.Item>
-          <Input placeholder="Ajouter une note…" className="large" />
-        </Form.Item>
-        <Tree>
-          <TreeNode title="parent 1" key="0-0">
-            <TreeNode title="parent 1-0" key="0-0-0" disabled>
-              <TreeNode title="leaf" key="0-0-0-0" disableCheckbox />
-              <TreeNode title="leaf" key="0-0-0-1" />
-            </TreeNode>
-            <TreeNode title="parent 1-1" key="0-0-1">
-              <TreeNode title={<span style={{ color: '#1890ff' }}>sss</span>} key="0-0-1-0" />
-            </TreeNode>
-          </TreeNode>
-        </Tree>
-      </Form>
-    </Card>
-  </div>
+        <Card title="Informations cliniques" bordered={false} className="patientContent">
 
-);
+          <Form.Item label="Type d’analyse">
+            <Radio.Group buttonStyle="solid">
+              <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
+              <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
+              <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        </Card>
+        <Card title="Résumé de l’investigation" bordered={false} className="patientContent">
+          <Form.Item label="CGH">
+            <Radio.Group buttonStyle="solid">
+              <Radio.Button value="negatif"><span className="radioText">Négatif</span></Radio.Button>
+              <Radio.Button value="anormal"><span className="radioText">Anormal</span></Radio.Button>
+              <Radio.Button value="so"><span className="radioText">Sans objet</span></Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="Résumé">
+            <TextArea rows={4} />
+          </Form.Item>
+        </Card>
+        <Card title="Histoire familiale" bordered={false} className="patientContent">
+          {familyItem}
+          <Form.Item>
+            <Button type="dashed" style={{ width: '60%' }}>
+            Ajouter
+            </Button>
+          </Form.Item>
+        </Card>
+        <Card title="Signes cliniques" bordered={false} className="patientContent">
+          <Form.Item>
+            <Input placeholder="Ajouter une note…" className="large" />
+          </Form.Item>
+          <Tree>
+            <TreeNode title="parent 1" key="0-0">
+              <TreeNode title="parent 1-0" key="0-0-0" disabled>
+                <TreeNode title="leaf" key="0-0-0-0" disableCheckbox />
+                <TreeNode title="leaf" key="0-0-0-1" />
+              </TreeNode>
+              <TreeNode title="parent 1-1" key="0-0-1">
+                <TreeNode title={<span style={{ color: '#1890ff' }}>sss</span>} key="0-0-1-0" />
+              </TreeNode>
+            </TreeNode>
+          </Tree>
+        </Card>
+        <Card title="Indications" bordered={false} className="patientContent">
+          <Form.Item label="Hypothèse(s) de diagnostique">
+            <Input placeholder="Ajouter une note…" className="large" />
+          </Form.Item>
+        </Card>
+      </Form>
+    </div>
+  );
+};
 
 const Approval = props => (
   <div>
