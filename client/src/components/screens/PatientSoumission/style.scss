@@ -152,6 +152,7 @@
             transition:none;
             outline: none !important;
             box-shadow:none;
+            line-height: 33px;
             &:not(:first-child){
                 &::before{
                     background-color: transparent;
