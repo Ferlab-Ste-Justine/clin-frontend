@@ -164,12 +164,10 @@ class VariantNavigation extends React.Component {
   handleMenuSelection(e) {
     const { activeMenu } = this.state;
     const newActiveMenu = activeMenu === e.key ? [] : [e.key];
-    if (activeMenu.length > 0) {
-      if (activeMenu[0].includes('overflowed-indicator')) {
-        this.setState({
-          activeMenu: [activeMenu[0], e.key],
-        });
-      }
+    if (activeMenu.length > 0 && activeMenu[0].includes('overflowed-indicator')) {
+      this.setState({
+        activeMenu: [activeMenu[0], e.key],
+      });
     } else {
       this.setState({
         activeMenu: newActiveMenu,
