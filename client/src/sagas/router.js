@@ -94,13 +94,13 @@ function* navigateToPatientVariantScreen(action) {
   }
 }
 
-function* navigateToSoumissionScreen() {
+function* navigateToSubmissionScreen() {
   try {
-    yield put(push(yield put(push('/soumission'))));
+    yield put(push(yield put(push('/submission'))));
     window.scrollTo(0, 0);
-    yield put({ type: actions.NAVIGATION_SOUMISSION_SCREEN_SUCCEEDED });
+    yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
-    yield put({ type: actions.NAVIGATION_SOUMISSION_SCREEN_FAILED, message: e.message });
+    yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
   }
 }
 
@@ -190,8 +190,8 @@ function* watchNavigateToVariantDetailsScreen() {
   yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToVariantDetailsScreen);
 }
 
-function* watchNavigateToSoumissionScreen() {
-  yield takeLatest(actions.NAVIGATION_SOUMISSION_SCREEN_REQUESTED, navigateToSoumissionScreen);
+function* watchNavigateToSubmissionScreen() {
+  yield takeLatest(actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED, navigateToSubmissionScreen);
 }
 
 
@@ -208,6 +208,6 @@ export default function* watchedRouterSagas() {
     watchNavigateToVariantDetailsScreen(),
     watchNavigationToAccessDeniedScreen(),
     watchManualUserNavigation(),
-    watchNavigateToSoumissionScreen(),
+    watchNavigateToSubmissionScreen(),
   ]);
 }

@@ -43,6 +43,6 @@ export const navigateToAccessDeniedScreen = () => ({
   type: actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED,
 });
 
-export const navigateToSoumissionScreen = () => ({
-  type: actions.NAVIGATION_SOUMISSION_SCREEN_REQUESTED,
+export const navigateToSubmissionScreen = () => ({
+  type: actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED,
 });

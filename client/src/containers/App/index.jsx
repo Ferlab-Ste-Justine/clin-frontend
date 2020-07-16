@@ -17,10 +17,10 @@ import PatientScreen from '../../components/screens/Patient';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
 import PatientVariantScreen from '../../components/screens/PatientVariant';
 import VariantDetailsScreen from '../../components/screens/VariantDetails';
-import PatientSoumissionScreen from '../../components/screens/PatientSoumission';
+import PatientSubmissionScreen from '../../components/screens/PatientSubmission';
 import PrivateRoute from '../PrivateRoute';
 import {
-  ROUTE_NAME_ROOT, ROUTE_NAME_LOGIN, ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT, ROUTE_NAME_SOUMISSION,
+  ROUTE_NAME_ROOT, ROUTE_NAME_LOGIN, ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT, ROUTE_NAME_SUBMISSION,
 } from '../../helpers/route';
 import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
@@ -62,7 +62,7 @@ export class App extends React.Component {
     const pathPatientVariants = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
     const pathVariantPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_VARIANT}/:uid`;
     // eslint-disable-next-line no-unused-vars
-    const pathSoumissionPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_SOUMISSION}/:uid`;
+    const pathSubmissionPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_SUBMISSION}/:uid`;
 
     const { app, history } = this.props;
     return (
@@ -88,7 +88,7 @@ export class App extends React.Component {
                 <PrivateRoute exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
                 <PrivateRoute exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
                 <PrivateRoute exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
-                <PrivateRoute Component={PatientSoumissionScreen} key="route-patient-soumission" />
+                <PrivateRoute Component={PatientSubmissionScreen} key="route-patient-submission" />
                 <Route component={AccessDenied} key="route-access-denied" />
               </Switch>
             </ConnectedRouter>

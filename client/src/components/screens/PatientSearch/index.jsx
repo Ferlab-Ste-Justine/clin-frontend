@@ -24,7 +24,7 @@ import Footer from '../../Footer';
 import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
-import { navigateToPatientScreen, navigateToSoumissionScreen } from '../../../actions/router';
+import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
 import { appShape } from '../../../reducers/app';
 
@@ -55,7 +55,7 @@ class PatientSearchScreen extends React.Component {
     this.getValue = this.getValue.bind(this);
     this.getData = this.getData.bind(this);
     this.handleCategoriesOpenChange = this.handleCategoriesOpenChange.bind(this);
-    this.handleGotoSoumissionPage = this.handleGotoSoumissionPage.bind(this);
+    this.handleGotoSubmissionPage = this.handleGotoSubmissionPage.bind(this);
 
     // @NOTE Initialize Component State
     this.state.facet = [
@@ -294,9 +294,9 @@ class PatientSearchScreen extends React.Component {
     actions.navigateToPatientScreen(value);
   }
 
-  handleGotoSoumissionPage() {
+  handleGotoSubmissionPage() {
     const { actions } = this.props;
-    actions.navigateToSoumissionScreen();
+    actions.navigateToSubmissionScreen();
   }
 
   exportToTsv() {
@@ -396,7 +396,7 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
             <Col>
-              <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSoumissionPage}>
+              <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
                 <IconKit size={16} icon={ic_add} />
                 { intl.get('screen.patientsearch.button.new') }
               </Button>
@@ -493,7 +493,7 @@ PatientSearchScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
-    navigateToSoumissionScreen,
+    navigateToSubmissionScreen,
     autoCompletePatients,
     searchPatientsByQuery,
   }, dispatch),
