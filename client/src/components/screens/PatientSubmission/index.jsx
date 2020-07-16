@@ -176,7 +176,7 @@ const Approval = props => (
 
 );
 
-class PatientSoumissionScreen extends React.Component {
+class PatientSubmissionScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -273,7 +273,7 @@ class PatientSoumissionScreen extends React.Component {
   }
 }
 
-PatientSoumissionScreen.propTypes = {
+PatientSubmissionScreen.propTypes = {
   router: PropTypes.shape({}).isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
@@ -296,4 +296,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(PatientSoumissionScreen);
+)(PatientSubmissionScreen);
