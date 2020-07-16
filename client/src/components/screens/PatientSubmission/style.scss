@@ -1,0 +1,264 @@
+@import './variables.scss';
+
+.ant-layout{
+    background: #EDF0F3;
+}
+
+.steps{
+    background-color: #FFFFFF;
+    padding: 24px 32px;
+    .ant-steps-item{
+        flex: none;
+    }
+    .ant-steps-item-container{
+        display: flex;
+        align-items: center;
+        .ant-steps-item-icon{
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: $font;
+            font-size: 14px;
+            line-height: 22px;
+            text-align: center;
+            letter-spacing: 0.25px;
+            color: #FFFFFF;
+            
+            .ant-steps-icon{
+                margin-top: 2px;
+            }            
+        }
+        .ant-steps-item-title{
+            font-family: $font;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0.15px;   
+            height: 24px;
+            display: flex;
+
+            &::after{
+                background-color: #E1E8EF !important;
+                top:12px;
+                height: 2px;
+                max-width: 180px;
+            }
+        }
+    }
+
+    .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item{
+        padding-right: 180px;
+    }
+    .ant-steps-item-process {
+        .ant-steps-item-icon{
+            background: #2AABE8;
+            border: 1px solid #2AABE8;
+        }
+        .ant-steps-item-title{
+            font-weight: 500;
+            color: #125A90 !important;
+        }
+
+    }
+    .ant-steps-item-wait {
+        
+        .ant-steps-item-icon{
+            border: 1px solid #ABB3BC;
+        }
+        .ant-steps-item-title{
+            color: #858E99 !important;
+        }
+
+    }
+
+    .ant-steps-item-finish{
+        .ant-steps-item-title{
+            &::after{
+                background-color: #2AABE8 !important;
+            }
+        }
+    }
+}
+
+.patientContent{
+    margin:24px 32px 8px 32px;
+
+    .ant-card-head{
+        background: #FFFFFF;
+        padding: 12px 16px;
+        .ant-card-head-title{
+            padding: 0;
+            font-family: $font;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0.15px;
+            color: #125A90;
+        }
+    }
+    .ant-card-body{
+        padding: 16px;
+    }
+
+    .ant-form-item{
+        display: flex;
+        margin-bottom: 16px;
+        &:last-child{
+            margin-bottom: 0;
+        }
+
+        .large{
+            width: 256px;
+        }
+
+        .small{
+            width: 140px;
+        }
+
+        .ant-form-item-label{
+            width: 180px;
+            text-align: left;
+            line-height: 15px;
+            display: flex;
+            align-items: center;
+            label{
+                font-family: $font;
+                font-size: 14px;
+                letter-spacing: 0.25px;
+                color: #233750;
+                margin: 8px 0px;
+            }
+        }
+
+        .ant-form-item-control{
+            line-height: 0; 
+        }
+        .ant-input{
+            border-radius: 2px;
+            border: 1px solid #ABBED3;
+            font-family: $font;
+            font-size: 14px;
+            line-height: 22px;
+            letter-spacing: 0.25px;
+            color: #536377;
+            &::placeholder{
+                color: #ABB3BC;;
+            }
+        }
+
+        .ant-radio-button-wrapper{
+            border: 1px solid #ABBED3;
+            transition:none;
+            outline: none !important;
+            box-shadow:none;
+            line-height: 33px;
+            &:not(:first-child){
+                &::before{
+                    background-color: transparent;
+                }
+                border-left: none;
+            }
+            &:first-child{
+                border-radius: 2px 0 0 2px;
+            }
+            &:last-child{
+                border-radius: 0 2px 2px 0;
+            }
+            .radioText{
+                font-family: $font;
+                font-size: 14px;
+                line-height: 22px;
+                letter-spacing: 0.25px;
+                color: #536377;
+                
+            }
+        }
+
+        .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled){
+            background-color: #1D8BC6;
+            border:1px solid #1D8BC6;
+            box-shadow:none;
+            .radioText{
+                color: #ffffff;
+            }
+            
+        }
+
+        .ant-calendar-picker-input.ant-input{
+            font-family: $font;
+            font-size: 14px;
+            line-height: 22px;
+            letter-spacing: 0.25px;
+            color: #536377;
+        }
+
+        .ant-select-selection{
+            font-family: $font;
+            font-size: 14px;
+            line-height: 22px;
+            letter-spacing: 0.25px;
+            color: #536377;
+            border: 1px solid #ABBED3;
+            border-radius: 2px;
+            .ant-select-selection__placeholder{
+                padding-left: 0;
+            }
+        }
+    }
+}
+
+.selectDropdown{
+    li{
+        font-family: $font;
+        font-size: 14px;
+        line-height: 22px;
+        letter-spacing: 0.25px;
+        color: #536377;
+    }
+}
+
+.submission-form-actions{
+    margin: 0 32px 24px 32px;
+    background-color: #ffffff;
+    padding: 24px 16px;
+    
+    button{
+        border-radius: 2px;
+        border: 1px solid  #1D8BC6;
+        font-family: $font;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 22px;
+        letter-spacing: 0.25px;
+        color: #1D8BC6;
+        margin-right: 8px;
+        i{
+            margin-right: 4px;
+            svg{
+                vertical-align:top !important;
+            }
+        }
+
+        &:disabled{
+            background-color: transparent;
+            border: 1px solid #D2DBE4;
+            color: #ABB3BC;
+            &:hover{
+                background-color: transparent;
+            }
+        }
+    }
+
+    .ant-btn-primary{
+        background-color:  #1D8BC6;
+        border: 1px solid  #1D8BC6;
+        color: #FFFFFF;
+    }
+
+    .cancelButton{
+        border: none;
+        padding: 0 8px;
+    }
+}

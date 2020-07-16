@@ -24,7 +24,7 @@ import Footer from '../../Footer';
 import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
-import { navigateToPatientScreen } from '../../../actions/router';
+import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
 import { appShape } from '../../../reducers/app';
 
@@ -55,6 +55,7 @@ class PatientSearchScreen extends React.Component {
     this.getValue = this.getValue.bind(this);
     this.getData = this.getData.bind(this);
     this.handleCategoriesOpenChange = this.handleCategoriesOpenChange.bind(this);
+    this.handleGotoSubmissionPage = this.handleGotoSubmissionPage.bind(this);
 
     // @NOTE Initialize Component State
     this.state.facet = [
@@ -293,6 +294,11 @@ class PatientSearchScreen extends React.Component {
     actions.navigateToPatientScreen(value);
   }
 
+  handleGotoSubmissionPage() {
+    const { actions } = this.props;
+    actions.navigateToSubmissionScreen();
+  }
+
   exportToTsv() {
     const { page, size, data } = this.state;
     const { search } = this.props;
@@ -390,7 +396,7 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
             <Col>
-              <Button className={`${style.btnPrimary} ${style.btn}`}>
+              <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
                 <IconKit size={16} icon={ic_add} />
                 { intl.get('screen.patientsearch.button.new') }
               </Button>
@@ -487,6 +493,7 @@ PatientSearchScreen.propTypes = {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
+    navigateToSubmissionScreen,
     autoCompletePatients,
     searchPatientsByQuery,
   }, dispatch),

@@ -47,7 +47,7 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
     case actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED:
       draft.showLoadingAnimation = true;
       break;
-
+    case actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED:
     case actions.APP_CHANGE_LANGUAGE_SUCCEEDED:
     case actions.STOP_LOADING_ANIMATION:
     case actions.APP_FETCH_SUCCEEDED:
@@ -78,6 +78,10 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       if (action.type === actions.USER_LOGIN_SUCCEEDED) {
         draft.loginMessage = '';
       }
+      break;
+    case actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED:
+      break;
+    case actions.NAVIGATION_SUBMISSION_SCREEN_FAILED:
       break;
     case actions.START_SUBLOADING_ANIMATION:
     case actions.PATIENT_SEARCH_REQUESTED:

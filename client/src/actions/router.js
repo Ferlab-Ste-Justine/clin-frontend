@@ -42,3 +42,7 @@ export const navigateToPatientSearchScreen = (reload = true) => ({
 export const navigateToAccessDeniedScreen = () => ({
   type: actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED,
 });
+
+export const navigateToSubmissionScreen = () => ({
+  type: actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED,
+});

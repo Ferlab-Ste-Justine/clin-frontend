@@ -164,19 +164,49 @@ class VariantNavigation extends React.Component {
   handleMenuSelection(e) {
     const { activeMenu } = this.state;
     const newActiveMenu = activeMenu === e.key ? [] : [e.key];
-    this.setState({
-      activeMenu: newActiveMenu,
-    });
+    if (activeMenu.length > 0) {
+      if (activeMenu[0].includes('overflowed-indicator')) {
+        this.setState({
+          activeMenu: [activeMenu[0], e.key],
+        });
+      }
+    } else {
+      this.setState({
+        activeMenu: newActiveMenu,
+      });
+    }
   }
 
   handleClickOutside(event) {
-    const openMenu = document.querySelector('.submenuOpen');
+    const { activeMenu } = this.state;
+    let openMenu = document.querySelector('.submenuOpen');
+    let openOverflowMenu = null;
+    let clickOutside = false;
+    if (activeMenu.length > 0) {
+      if (activeMenu[0].includes('overflowed-indicator') && !openMenu) openMenu = document.getElementById(`${activeMenu[0]}$Menu`);
+      openOverflowMenu = activeMenu.length > 1 ? document.getElementById(`${activeMenu[0]}$Menu`) : null;
+    }
     const clickX = event.clientX;
     const clickY = event.clientY;
     if (openMenu) {
-      const menuX = Number(openMenu.style.left.replace('px', ''));
-      const menuY = Number(openMenu.style.top.replace('px', ''));
-      if (clickX < menuX || clickX > (menuX + openMenu.offsetWidth) || clickY < menuY || clickY > menuY + openMenu.offsetHeight) {
+      const rect = openMenu.getBoundingClientRect();
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+      const menuX = rect.left + scrollLeft;
+      const menuY = rect.top;
+      if ((clickX < menuX || clickX > (menuX + openMenu.offsetWidth) || clickY < menuY || clickY > menuY + openMenu.offsetHeight) && !openOverflowMenu) {
+        clickOutside = true;
+      }
+
+      if (openOverflowMenu) {
+        const rectOverflow = openOverflowMenu.getBoundingClientRect();
+        const menuYOverflow = rectOverflow.top;
+        if (clickX < menuX || clickX > (menuX + openMenu.offsetWidth + openOverflowMenu.offsetWidth + 2) || clickY < menuYOverflow) {
+          clickOutside = true;
+        }
+      }
+
+
+      if (clickOutside) {
         this.setState({
           activeMenu: [],
         });
