@@ -12,6 +12,7 @@
     "alert": true,
     "console": true,
     "document": true,
+    "localStorage": true,
     "it": true,
     "navigator": true,
     "window": true

@@ -76,8 +76,7 @@ checkBrowsers(paths.appPath, isInteractive)
         return;
       }
       const config = configFactory('development');
-      const protocol = process.env.HTTPS !== 'false' && (process.env.HTTPS === 'true' || (process.env.SSL_CERTIFICATE_PATH && process.env.SSL_CERTIFICATE_KEY_PATH)) ? 'https' : 'http';
-
+      const protocol = 'http';
       const appName = require(paths.appPackageJson).name;
       const urls = prepareUrls(protocol, HOST, port);
       // Create a webpack compiler that is configured with custom messages.

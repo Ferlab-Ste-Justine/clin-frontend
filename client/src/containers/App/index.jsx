@@ -10,6 +10,7 @@ import { Spin, Layout, ConfigProvider } from 'antd';
 import 'antd/dist/antd.less';
 import './style.scss';
 
+import AuthRoute from '../../components/Auth';
 import MaintenanceScreen from '../../components/screens/Maintenance';
 import AccessDenied from '../../components/screens/AccessDenied';
 import PatientScreen from '../../components/screens/Patient';
@@ -21,7 +22,6 @@ import {
 } from '../../helpers/route';
 import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
-
 
 export class App extends React.Component {
   constructor() {
@@ -78,7 +78,7 @@ export class App extends React.Component {
                   )}
                   key="route-loading"
                 />
-                <Route exact path={pathPatientSearch} Component={PatientSearchScreen} key="route-patient-search" />
+                <AuthRoute roles={['RealmAdmin']} path={pathPatientSearch} exact Component={PatientSearchScreen} key="route-patient-search" />
                 <Route exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
                 <Route exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
                 <Route exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
