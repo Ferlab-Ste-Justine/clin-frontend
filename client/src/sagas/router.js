@@ -14,7 +14,6 @@ import {
   getVariantIdFromVariantPageRoute,
   isLoggedIn,
   ROUTE_NAME_ROOT,
-  ROUTE_NAME_LOGIN,
   ROUTE_NAME_PATIENT,
   PATIENT_SUBROUTE_SEARCH,
   PATIENT_SUBROUTE_VARIANT,
@@ -24,7 +23,6 @@ import {
 
 function* navigateToLoginScreen() {
   try {
-    yield put(push(`${ROUTE_NAME_ROOT}${ROUTE_NAME_LOGIN}`));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_LOGIN_SCREEN_SUCCEEDED });
   } catch (e) {
@@ -126,10 +124,14 @@ function* navigateToAccessDeniedScreen() {
 
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
+  console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 1');
   if (isFirstRendering || action.type === actions.USER_LOGIN_SUCCEEDED) {
+    console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 2');
     if (!isLoggedIn()) {
+      console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 3');
       yield navigateToLoginScreen();
     } else {
+      console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 4');
       const { referrer } = yield select(state => state.app);
       const location = !referrer.location ? action.payload : referrer.location;
       const { pathname, search, hash } = location;
@@ -141,6 +143,7 @@ function* manualUserNavigation(action) {
       yield put({ type: actions.USER_IDENTITY_REQUESTED });
 
       if (isPatientSearchRoute(route) === true) {
+        console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 5');
         yield navigateToPatientSearchScreen();
       } else if (isPatientVariantPageRoute(route) === true) {
         const patientId = getPatientIdFromPatientVariantPageRoute(route);
@@ -152,6 +155,7 @@ function* manualUserNavigation(action) {
         const variantId = getVariantIdFromVariantPageRoute(route);
         yield navigateToVariantDetailsScreen({ payload: { uid: variantId, tab } });
       } else {
+        console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 6');
         yield navigateToPatientSearchScreen();
       }
     }
@@ -168,7 +172,6 @@ function* watchManualUserNavigation() {
 function* watchNavigateToLoginScreen() {
   yield takeLatest([
     actions.NAVIGATION_LOGIN_SCREEN_REQUESTED,
-    actions.USER_SESSION_HAS_EXPIRED,
     actions.USER_LOGOUT_SUCCEEDED,
     actions.USER_LOGOUT_FAILED,
   ], navigateToLoginScreen);

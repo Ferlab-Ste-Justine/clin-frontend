@@ -27,7 +27,6 @@ const variantDetailsReducer = (state = Object.assign({}, initialVariantDetailsSt
       draft.data = action.payload;
       break;
     case actions.USER_LOGOUT_SUCCEEDED:
-    case actions.USER_SESSION_HAS_EXPIRED:
       break;
     default:
       break;

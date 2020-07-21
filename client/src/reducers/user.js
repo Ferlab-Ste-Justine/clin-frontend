@@ -33,7 +33,6 @@ export const userShape = {
 const userReducer = (state = Object.assign({}, initialUserState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
-    case actions.USER_SESSION_HAS_EXPIRED:
     case actions.USER_IDENTITY_FAILED:
       draft.username = null;
       break;

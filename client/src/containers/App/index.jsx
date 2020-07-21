@@ -6,11 +6,14 @@ import { ConnectedRouter } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Spin, Layout, ConfigProvider } from 'antd';
+import { KeycloakProvider } from '@react-keycloak/web';
+import keycloak, { keycloakProviderInitConfig } from '../../components/Auth/keycloak';
+
 
 import 'antd/dist/antd.less';
 import './style.scss';
 
-import LoginScreen from '../../components/screens/Login';
+import AuthRoute from '../../components/Auth';
 import MaintenanceScreen from '../../components/screens/Maintenance';
 import AccessDenied from '../../components/screens/AccessDenied';
 import PatientScreen from '../../components/screens/Patient';
@@ -18,17 +21,29 @@ import PatientSearchScreen from '../../components/screens/PatientSearch';
 import PatientVariantScreen from '../../components/screens/PatientVariant';
 import VariantDetailsScreen from '../../components/screens/VariantDetails';
 import PatientSubmissionScreen from '../../components/screens/PatientSubmission';
-import PrivateRoute from '../PrivateRoute';
 import {
-  ROUTE_NAME_ROOT, ROUTE_NAME_LOGIN, ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT, ROUTE_NAME_SUBMISSION,
+  ROUTE_NAME_ROOT, ROUTE_NAME_PATIENT, PATIENT_SUBROUTE_SEARCH, PATIENT_SUBROUTE_VARIANT, ROUTE_NAME_VARIANT, ROUTE_NAME_SUBMISSION,
 } from '../../helpers/route';
 import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
+
+// put in class with set state
+const onTokenExpired = () => {
+  keycloak.updateToken(-1)
+    .then(() => {
+      // set state with refreshed token
+    })
+    .catch(() => {
+      // Refresh token expired.  Access token could not be renews
+      keycloak.logout();
+    });
+};
 
 export class App extends React.Component {
   constructor() {
     super();
     this.state = { caughtError: false, errorDetail: null };
+    keycloakProviderInitConfig.onTokenExpired = e => onTokenExpired(e);
   }
 
   componentDidMount() {
@@ -36,14 +51,10 @@ export class App extends React.Component {
     actions.loadApp();
   }
 
+
   // @TODO
   static getDerivedStateFromError() {
     return { caughtError: true };
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  componentDidCatch(e, info) {
-    this.setState({ caughtError: true, errorDetail: e.toString() });
   }
 
   render() {
@@ -56,7 +67,6 @@ export class App extends React.Component {
 
     // @NOTE In case we use intl for routes later on...
     const pathRootPage = `${ROUTE_NAME_ROOT}`;
-    const pathLoginPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_LOGIN}`;
     const pathPatientSearch = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`;
     const pathPatientPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/:uid`;
     const pathPatientVariants = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
@@ -66,35 +76,42 @@ export class App extends React.Component {
 
     const { app, history } = this.props;
     return (
-      <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
-        <ConfigProvider key="locale-antd" locale={app.locale.antd}>
-          <Layout id="layout" key="layout">
-            <ConnectedRouter key="connected-router" history={history}>
-              <Switch key="switch">
-                <Route
-                  exact
-                  path={pathRootPage}
-                  component={() => (
-                    <div style={{
-                      display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',
-                    }}
-                    ><Spin size="large" spinning />
-                    </div>
-                  )}
-                  key="route-loading"
-                />
-                <Route exact path={pathLoginPage} component={LoginScreen} key="route-login" />
-                <PrivateRoute exact path={pathPatientSearch} Component={PatientSearchScreen} key="route-patient-search" />
-                <PrivateRoute exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
-                <PrivateRoute exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
-                <PrivateRoute exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
-                <PrivateRoute Component={PatientSubmissionScreen} key="route-patient-submission" />
-                <Route component={AccessDenied} key="route-access-denied" />
-              </Switch>
-            </ConnectedRouter>
-          </Layout>
-        </ConfigProvider>
-      </Spin>
+      <KeycloakProvider
+        keycloak={keycloak}
+        initConfig={keycloakProviderInitConfig()}
+        onEvent={(t, e) => {
+          console.log('kc onEvent :', e);
+        }}
+      >
+        <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
+          <ConfigProvider key="locale-antd" locale={app.locale.antd}>
+            <Layout id="layout" key="layout">
+              <ConnectedRouter key="connected-router" history={history}>
+                <Switch key="switch">
+                  <Route
+                    exact
+                    path={pathRootPage}
+                    component={() => (
+                      <div style={{
+                        display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',
+                      }}
+                      ><Spin size="large" spinning />
+                      </div>
+                    )}
+                    key="route-loading"
+                  />
+                  <AuthRoute roles={['RealmAdmin']} path={pathPatientSearch} exact Component={PatientSearchScreen} key="route-patient-search" />
+                  <Route exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
+                  <Route exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
+                  <Route exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
+                  <Route Component={PatientSubmissionScreen} key="route-patient-submission" />
+                  <Route component={AccessDenied} key="route-access-denied" />
+                </Switch>
+              </ConnectedRouter>
+            </Layout>
+          </ConfigProvider>
+        </Spin>
+      </KeycloakProvider>
     );
   }
 }
