@@ -1,6 +1,10 @@
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from '@hot-loader/react-dom';
+
+import { KeycloakProvider } from '@react-keycloak/web';
+import keycloak from './keycloak';
+
 import HotConnectedApp, { ConnectedApp } from './containers/App';
 import configureStore, { history, initialState } from './configureStore';
 import { unregister } from './serviceWorker';
@@ -11,9 +15,19 @@ const App = module.hot ? HotConnectedApp : ConnectedApp;
 
 const render = () => {
   ReactDOM.render(
-    <Provider id="provider" store={store}>
-      <App id="app" history={history} />
-    </Provider>,
+    <KeycloakProvider
+      keycloak={keycloak}
+      initConfig={{
+        onLoad: 'login-required',
+      }}
+      onEvent={(t, e) => {
+        console.log('### App/AuthRoute.jsx - KEYCLOAK EVENT : ', e);
+      }}
+    >
+      <Provider id="provider" store={store}>
+        <App id="app" history={history} />
+      </Provider>
+    </KeycloakProvider>,
     document.getElementById('root'),
   );
 };
