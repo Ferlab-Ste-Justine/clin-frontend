@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import { createSavePatientBundle } from './fhir';
+
 
 const successCallback = payload => ({ payload });
 const errorCallback = error => ({ error });
@@ -139,7 +141,9 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
-const convertToExcelData = data => axios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data);
+const convertToExcelData = data => axios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
+  .then(successCallback)
+  .catch(errorCallback);
 
 const getGeneAutocomplete = (query, type) => axios.get(
   `${window.CLIN.geneServiceApiUrl}/autocomplete`, {
@@ -151,6 +155,13 @@ const getGeneAutocomplete = (query, type) => axios.get(
 )
   .then(successCallback)
   .catch(errorCallback);
+
+const savePatient = (patient) => {
+  const data = createSavePatientBundle(patient);
+  return axios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
+    .then(successCallback)
+    .catch(errorCallback);
+};
 
 export default {
   login,
@@ -173,4 +184,5 @@ export default {
   updateUserProfile,
   convertToExcelData,
   getGeneAutocomplete,
+  savePatient,
 };
