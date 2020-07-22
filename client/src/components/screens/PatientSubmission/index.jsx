@@ -239,34 +239,36 @@ class PatientSubmissionScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <div className="steps">
-          <Steps current={currentPageIndex}>
+        <div className="page_headerStatic">
+          <Steps current={currentPageIndex} className="step">
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
         </div>
-
-        {pageContent}
-
-        <div className="submission-form-actions">
-          <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
-            {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-          </Button>
-          <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-            {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-          </Button>
-          <Button
-            onClick={() => message.success('Saved ...')}
-          >
-            <IconKit size={20} icon={ic_save} />
-            {intl.get('screen.clinicalSubmission.saveButtonTitle')}
-          </Button>
-          <Button
-            onClick={() => message.success('Cancelled ...')}
-            className="cancelButton"
-          >
-            {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
-          </Button>
+        <div className="page-static-content">
+          {pageContent}
+          <div className="submission-form-actions">
+            <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
+              {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+            </Button>
+            <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+              {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+            </Button>
+            <Button
+              onClick={() => message.success('Saved ...')}
+            >
+              <IconKit size={20} icon={ic_save} />
+              {intl.get('screen.clinicalSubmission.saveButtonTitle')}
+            </Button>
+            <Button
+              onClick={() => message.success('Cancelled ...')}
+              className="cancelButton"
+            >
+              {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
+            </Button>
+          </div>
         </div>
+
+
         <Footer />
       </Content>
     );
