@@ -27,7 +27,8 @@ const patientSubmissionReducer = (
 ) => produce(state, (draft) => {
   switch (action.type) {
     case actions.PATIENT_SUBMISSION_SAVE_SUCCEEDED:
-      draft.patient = action.payload;
+      draft.patient = { ...draft.patient, ...action.payload.patient };
+      draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest };
       break;
     default:
       break;

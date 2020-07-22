@@ -11,7 +11,7 @@ import {
   Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select, Tree,
 } from 'antd';
 import {
-  find,
+  has,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
@@ -33,69 +33,92 @@ const { Step } = Steps;
 const { TextArea } = Input;
 const { TreeNode } = Tree;
 
-const PatientInformation = ({ getFieldDecorator }) => (
-  <Card title="Patient" bordered={false} className="patientContent">
+const getGenderValues = () => ({
+  male: {
+    value: 'male',
+    label: intl.get('form.patientSubmission.form.genderMale'),
+  },
+  female: {
+    value: 'female',
+    label: intl.get('form.patientSubmission.form.genderFemale'),
+  },
+  other: {
+    value: 'other',
+    label: intl.get('form.patientSubmission.form.genderOther'),
+  },
+  unknown: {
+    value: 'unknown',
+    label: intl.get('form.patientSubmission.form.genderUnknown'),
+  },
+});
 
-    <Form.Item label="Nom">
-      {getFieldDecorator('family', {
-        rules: [{ required: true, message: 'Please input your family name!' }],
-      })(
-        <Input placeholder="Nom de famille" className="large" />,
-      )}
-    </Form.Item>
-    <Form.Item label="Prénom">
-      {getFieldDecorator('given', {
-        rules: [{ required: true, message: 'Please input your given name!' }],
-      })(
-        <Input placeholder="Prénom" className="large" />,
-      )}
-    </Form.Item>
-    <Form.Item label="Sexe">
-      {getFieldDecorator('gender', {
-        rules: [{ required: true, message: 'Please select your gender!' }],
-      })(
+const PatientInformation = ({ getFieldDecorator, patient }) => {
+  const genderValues = getGenderValues();
+  const _has = has;
+  return (
+    <Card title="Patient" bordered={false} className="patientContent">
+      <Form.Item label="Nom">
+        {getFieldDecorator('family', {
+          rules: [{ required: true, message: 'Please input your family name!' }],
+        })(
+          <Input placeholder="Nom de famille" className="large" value={has(patient, 'name.family') ? patient.name.family : ''} />,
+        )}
+      </Form.Item>
+      <Form.Item label="Prénom">
+        {getFieldDecorator('given', {
+          rules: [{ required: true, message: 'Please input your given name!' }],
+        })(
+          <Input placeholder="Prénom" className="large" />,
+        )}
+      </Form.Item>
+      <Form.Item label="Sexe">
+        {getFieldDecorator('gender', {
+          rules: [{ required: true, message: 'Please select your gender!' }],
+        })(
+          <Radio.Group buttonStyle="solid">
+            {
+              Object.values(genderValues).map(gv => (
+                <Radio.Button value={gv.value}><span className="radioText">{gv.label}</span></Radio.Button>
+              ))
+            }
+          </Radio.Group>,
+        )}
+      </Form.Item>
+      <Form.Item label="Date de naissance">
+        {getFieldDecorator('birthDate', {
+          rules: [{ required: true, message: 'Please input your birthdate!' }],
+        })(
+          <DatePicker className="small" />,
+        )}
+      </Form.Item>
+      <Form.Item label="RAMQ">
+        <Input placeholder="ABCD 0000 0000" className="large" />
+      </Form.Item>
+      <Form.Item label="MRN">
+        <Input placeholder="12345678" className="small" />
+      </Form.Item>
+      <Form.Item label="Hôpital">
+        <Select defaultValue="CHUSJ" className="small" dropdownClassName="selectDropdown">
+          <Select.Option value="CHUSJ">CHUSJ</Select.Option>
+          <Select.Option value="CHUM">CHUM</Select.Option>
+          <Select.Option value="CUSM">CUSM</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item label="Ethnicité">
+        <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
+          <Select.Option value="CF">Canadien-Français</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item label="Consanguinité">
         <Radio.Group buttonStyle="solid">
-          <Radio.Button value="a"><span className="radioText">Masculin</span></Radio.Button>
-          <Radio.Button value="b"><span className="radioText">Féminin</span></Radio.Button>
-          <Radio.Button value="c"><span className="radioText">Autre</span></Radio.Button>
-          <Radio.Button value="d"><span className="radioText">Inconnu</span></Radio.Button>
-        </Radio.Group>,
-      )}
-    </Form.Item>
-    <Form.Item label="Date de naissance">
-      {getFieldDecorator('birthDate', {
-        rules: [{ required: true, message: 'Please input your birthdate!' }],
-      })(
-        <DatePicker className="small" />,
-      )}
-    </Form.Item>
-    <Form.Item label="RAMQ">
-      <Input placeholder="ABCD 0000 0000" className="large" />
-    </Form.Item>
-    <Form.Item label="MRN">
-      <Input placeholder="12345678" className="small" />
-    </Form.Item>
-    <Form.Item label="Hôpital">
-      <Select defaultValue="CHUSJ" className="small" dropdownClassName="selectDropdown">
-        <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-        <Select.Option value="CHUM">CHUM</Select.Option>
-        <Select.Option value="CUSM">CUSM</Select.Option>
-      </Select>
-    </Form.Item>
-    <Form.Item label="Ethnicité">
-      <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
-        <Select.Option value="CF">Canadien-Français</Select.Option>
-      </Select>
-    </Form.Item>
-    <Form.Item label="Consanguinité">
-      <Radio.Group buttonStyle="solid">
-        <Radio.Button value="o"><span className="radioText">Oui</span></Radio.Button>
-        <Radio.Button value="n"><span className="radioText">Non</span></Radio.Button>
-        <Radio.Button value="n"><span className="radioText">Inconnu</span></Radio.Button>
-      </Radio.Group>
-    </Form.Item>
-  </Card>
-);
+          <Radio.Button value="o"><span className="radioText">Oui</span></Radio.Button>
+          <Radio.Button value="n"><span className="radioText">Non</span></Radio.Button>
+          <Radio.Button value="n"><span className="radioText">Inconnu</span></Radio.Button>
+        </Radio.Group>
+      </Form.Item>
+    </Card>
+  );
+};
 
 
 const ClinicalInformation = (props) => {
@@ -252,12 +275,14 @@ class PatientSubmissionScreen extends React.Component {
   render() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
+    const { submission } = this.props;
+    const { patient } = submission;
 
     this.pages = [
       {
         title: intl.get('screen.clinicalSubmission.patientInformation'),
         content: (
-          <PatientInformation parentForm={this} getFieldDecorator={getFieldDecorator} />
+          <PatientInformation parentForm={this} getFieldDecorator={getFieldDecorator} patient={patient} />
         ),
         name: 'PatientInformation',
         values: {},
@@ -350,6 +375,7 @@ const mapStateToProps = state => ({
   router: state.router,
   patient: state.patient,
   search: state.search,
+  submission: state.patientSubmission,
 });
 
 const WrappedPatientSubmissionForm = Form.create({ name: 'patient_submission' })(PatientSubmissionScreen);

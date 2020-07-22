@@ -158,6 +158,8 @@ const getGeneAutocomplete = (query, type) => axios.get(
 
 const savePatient = (patient) => {
   const data = createSavePatientBundle(patient);
+  console.log('Bundle to be sent: ', data);
+  console.log('Url to be targeted: ', window.CLIN.fhirBaseUrl);
   return axios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
