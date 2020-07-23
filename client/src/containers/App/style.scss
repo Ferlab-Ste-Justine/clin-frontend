@@ -296,3 +296,122 @@ div.ant-card {
   max-width: 1392px;
   justify-content: center;
 }
+
+
+//DATA ENTRY
+//Input
+.ant-input{
+  border-radius: 2px;
+  border: 1px solid #ABBED3;
+  font-family: $font;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0.25px;
+  color: #536377;
+  &::placeholder{
+      color: #ABB3BC;;
+  }
+
+  &:hover{
+    border: 1px solid #3EB8EA !important;
+  }
+
+  &:focus{
+    border: 1px solid #3EB8EA;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 4px rgba(24, 144, 255, 0.5);
+  }
+}
+
+//Date Picker
+.ant-calendar-picker-input.ant-input{
+  font-family: $font;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0.25px;
+  color: #536377;
+}
+
+.ant-calendar-selected-day .ant-calendar-date{
+  border: 1px solid #2AABE8;
+  background: #B5E6F7;
+  color: #2AABE8;
+}
+
+//RadioButton
+
+.ant-radio-button-wrapper{
+  border: 1px solid #ABBED3;
+  transition:none;
+  outline: none !important;
+  box-shadow:none;
+  line-height: 33px;
+  &:not(:first-child){
+      &::before{
+          background-color: transparent;
+      }
+      border-left: none;
+  }
+  &:first-child{
+      border-radius: 2px 0 0 2px;
+      border-left: 1px solid #ABBED3;;
+  }
+  &:last-child{
+      border-radius: 0 2px 2px 0;
+  }
+  .radioText{
+      font-family: $font;
+      font-size: 14px;
+      line-height: 22px;
+      letter-spacing: 0.25px;
+      color: #536377;
+      
+  }
+
+  &:hover{
+    .radioText{
+      color: #249ED9;
+    }
+  }
+}
+
+.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled){
+  background-color: #1D8BC6 !important;
+  border:1px solid #1D8BC6 !important;
+  box-shadow:none;
+  .radioText{
+      color: #ffffff;
+  }
+
+  &:hover{
+    border:1px solid #249ED9 !important;
+    box-shadow:none;
+    background: #249ED9 !important;
+  }
+  
+}
+
+// Select
+
+.ant-select-selection{
+  font-family: $font;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0.25px;
+  color: #536377;
+  border: 1px solid #ABBED3;
+  border-radius: 2px;
+  .ant-select-selection__placeholder{
+      padding-left: 0;
+  }
+
+  &:hover{
+    border: 1px solid #249ED9;
+  }
+
+  &:focus{
+    border: 1px solid #249ED9;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 4px rgba(24, 144, 255, 0.5);
+  }
+}
