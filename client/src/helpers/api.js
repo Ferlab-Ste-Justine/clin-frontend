@@ -1,17 +1,13 @@
-import axios from 'axios';
-
+import Http from './http-client';
 
 const successCallback = payload => ({ payload });
 const errorCallback = error => ({ error });
 
-axios.defaults.withCredentials = true;
-axios.defaults.crossdomain = true;
-
-const getPatientById = uid => axios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
+const getPatientById = uid => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientsByAutoComplete = (type, query, page, size) => axios.get(
+const getPatientsByAutoComplete = (type, query, page, size) => Http.secureClinAxios.get(
   `${window.CLIN.patientServiceApiUrl}/autocomplete`, {
     params: {
       type,
@@ -24,7 +20,7 @@ const getPatientsByAutoComplete = (type, query, page, size) => axios.get(
   .then(successCallback)
   .catch(errorCallback);
 
-const searchPatients = (query, page, size) => axios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
+const searchPatients = (query, page, size) => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
   params: {
     query,
     page,
@@ -41,15 +37,15 @@ export class ApiError extends Error {
   }
 }
 
-const getVariantDetails = id => axios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
+const getVariantDetails = id => Http.secureClinAxios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
   .then(successCallback)
   .catch(errorCallback);
 
-const getVariantSchema = () => axios.get(`${window.CLIN.variantServiceApiUrl}/schema`)
+const getVariantSchema = () => Http.secureClinAxios.get(`${window.CLIN.variantServiceApiUrl}/schema`)
   .then(successCallback)
   .catch(errorCallback);
 
-const searchVariantsForPatient = (patient, statement, query, page, size, group) => axios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
+const searchVariantsForPatient = (patient, statement, query, page, size, group) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
   patient,
   statement,
   query,
@@ -60,7 +56,7 @@ const searchVariantsForPatient = (patient, statement, query, page, size, group) 
   .then(successCallback)
   .catch(errorCallback);
 
-const searchFacetsForPatient = (patient, statement, query) => axios.post(`${window.CLIN.variantServiceApiUrl}/facet`, {
+const searchFacetsForPatient = (patient, statement, query) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/facet`, {
   patient,
   statement,
   query,
@@ -68,7 +64,7 @@ const searchFacetsForPatient = (patient, statement, query) => axios.post(`${wind
   .then(successCallback)
   .catch(errorCallback);
 
-const countVariantsForPatient = (patient, statement, queries) => axios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
+const countVariantsForPatient = (patient, statement, queries) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
   patient,
   statement,
   queries,
@@ -76,11 +72,11 @@ const countVariantsForPatient = (patient, statement, queries) => axios.post(`${w
   .then(successCallback)
   .catch(errorCallback);
 
-const getStatements = () => axios.get(`${window.CLIN.metaServiceApiUrl}/statement`, {})
+const getStatements = () => Http.secureClinAxios.get(`${window.CLIN.metaServiceApiUrl}/statement`, {})
   .then(successCallback)
   .catch(errorCallback);
 
-const createStatement = (title, description, queries) => axios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const createStatement = (title, description, queries) => Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
   title,
   description,
   queries,
@@ -88,7 +84,7 @@ const createStatement = (title, description, queries) => axios.post(`${window.CL
   .then(successCallback)
   .catch(errorCallback);
 
-const updateStatement = (uid, title, description, queries) => axios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const updateStatement = (uid, title, description, queries) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
   uid,
   title,
   description,
@@ -97,17 +93,17 @@ const updateStatement = (uid, title, description, queries) => axios.put(`${windo
   .then(successCallback)
   .catch(errorCallback);
 
-const deleteStatement = uid => axios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const deleteStatement = uid => Http.secureClinAxios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
   data: { uid },
 })
   .then(successCallback)
   .catch(errorCallback);
 
-const getUserProfile = () => axios.get(`${window.CLIN.metaServiceApiUrl}/profile`, {})
+const getUserProfile = () => Http.secureClinAxios.get(`${window.CLIN.metaServiceApiUrl}/profile`, {})
   .then(successCallback)
   .catch(errorCallback);
 
-const createUserProfile = (defaultStatement = '', patientTableConfig = {}, variantTableConfig = {}) => axios.post(`${window.CLIN.metaServiceApiUrl}/profile`, {
+const createUserProfile = (defaultStatement = '', patientTableConfig = {}, variantTableConfig = {}) => Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/profile`, {
   defaultStatement,
   patientTableConfig,
   variantTableConfig,
@@ -115,7 +111,7 @@ const createUserProfile = (defaultStatement = '', patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
-const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, variantTableConfig = {}) => axios.put(`${window.CLIN.metaServiceApiUrl}/profile`, {
+const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, variantTableConfig = {}) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/profile`, {
   uid,
   defaultStatement,
   patientTableConfig,
@@ -124,9 +120,9 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
-const convertToExcelData = data => axios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data);
+const convertToExcelData = data => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data);
 
-const getGeneAutocomplete = (query, type) => axios.get(
+const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
   `${window.CLIN.geneServiceApiUrl}/autocomplete`, {
     params: {
       type,

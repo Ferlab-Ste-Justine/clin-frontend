@@ -20,9 +20,6 @@ const render = () => {
       initConfig={{
         onLoad: 'login-required',
       }}
-      onEvent={(t, e) => {
-        console.log('### App/AuthRoute.jsx - KEYCLOAK EVENT : ', e);
-      }}
     >
       <Provider id="provider" store={store}>
         <App id="app" history={history} />

@@ -40,10 +40,10 @@ export class App extends React.Component {
 
     const { app, history } = this.props;
     return (
-      <Spin key="spinner" size="large" spinning={app.showLoadingAnimation || !this.initialized}>
+      <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
         <ConfigProvider key="locale-antd" locale={app.locale.antd}>
           <Layout id="layout" key="layout">
-            <AppRouter history={history} />
+            <AppRouter app={app} history={history} />
           </Layout>
         </ConfigProvider>
       </Spin>

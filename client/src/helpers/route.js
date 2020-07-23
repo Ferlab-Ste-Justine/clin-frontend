@@ -20,8 +20,6 @@ const patientIdMatch = new RegExp('PA[0-9]{1,}', 'gi');
 const variantIdMatch = new RegExp('[a-f0-9]{32}', 'gi');
 const tabIdMatch = new RegExp('//.*[#]([\\w+]{1,})', 'gi');
 
-export const isLoggedIn = () => new Date().getTime();
-
 export const setAsLoggedIn = () => {
   LocalStorage.write(LOGGED_IN, new Date().getTime());
 };

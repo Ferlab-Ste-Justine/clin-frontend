@@ -12,7 +12,6 @@ import {
   getPatientIdFromPatientPageRoute,
   getPatientIdFromPatientVariantPageRoute,
   getVariantIdFromVariantPageRoute,
-  isLoggedIn,
   ROUTE_NAME_ROOT,
   ROUTE_NAME_PATIENT,
   PATIENT_SUBROUTE_SEARCH,
@@ -20,15 +19,6 @@ import {
   ROUTE_NAME_VARIANT,
 } from '../helpers/route';
 
-
-function* navigateToLoginScreen() {
-  try {
-    window.scrollTo(0, 0);
-    yield put({ type: actions.NAVIGATION_LOGIN_SCREEN_SUCCEEDED });
-  } catch (e) {
-    yield put({ type: actions.NAVIGATION_LOGIN_SCREEN_FAILED });
-  }
-}
 
 function* navigateToVariantDetailsScreen(action) {
   try {
@@ -124,40 +114,31 @@ function* navigateToAccessDeniedScreen() {
 
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
-  console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 1');
+
   if (isFirstRendering || action.type === actions.USER_LOGIN_SUCCEEDED) {
-    console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 2');
-    if (!isLoggedIn()) {
-      console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 3');
-      yield navigateToLoginScreen();
+    const { referrer } = yield select(state => state.app);
+    const location = !referrer.location ? action.payload : referrer.location;
+    const { pathname, search, hash } = location;
+    const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
+    const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : pathname + hash;
+    const tab = hash.replace('#', '');
+
+    yield put({ type: actions.USER_PROFILE_REQUESTED });
+    yield put({ type: actions.USER_IDENTITY_REQUESTED });
+
+    if (isPatientSearchRoute(route) === true) {
+      yield navigateToPatientSearchScreen();
+    } else if (isPatientVariantPageRoute(route) === true) {
+      const patientId = getPatientIdFromPatientVariantPageRoute(route);
+      yield navigateToPatientVariantScreen({ payload: { uid: patientId, tab } });
+    } else if (isPatientPageRoute(route) === true) {
+      const patientId = getPatientIdFromPatientPageRoute(route);
+      yield navigateToPatientScreen({ payload: { uid: patientId, tab } });
+    } else if (isVariantPageRoute(route) === true) {
+      const variantId = getVariantIdFromVariantPageRoute(route);
+      yield navigateToVariantDetailsScreen({ payload: { uid: variantId, tab } });
     } else {
-      console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 4');
-      const { referrer } = yield select(state => state.app);
-      const location = !referrer.location ? action.payload : referrer.location;
-      const { pathname, search, hash } = location;
-      const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
-      const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : pathname + hash;
-      const tab = hash.replace('#', '');
-
-      yield put({ type: actions.USER_PROFILE_REQUESTED });
-      yield put({ type: actions.USER_IDENTITY_REQUESTED });
-
-      if (isPatientSearchRoute(route) === true) {
-        console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 5');
-        yield navigateToPatientSearchScreen();
-      } else if (isPatientVariantPageRoute(route) === true) {
-        const patientId = getPatientIdFromPatientVariantPageRoute(route);
-        yield navigateToPatientVariantScreen({ payload: { uid: patientId, tab } });
-      } else if (isPatientPageRoute(route) === true) {
-        const patientId = getPatientIdFromPatientPageRoute(route);
-        yield navigateToPatientScreen({ payload: { uid: patientId, tab } });
-      } else if (isVariantPageRoute(route) === true) {
-        const variantId = getVariantIdFromVariantPageRoute(route);
-        yield navigateToVariantDetailsScreen({ payload: { uid: variantId, tab } });
-      } else {
-        console.log('>>>>>>>>>>>>>>>>>>>>>> manualUserNavigation 6');
-        yield navigateToPatientSearchScreen();
-      }
+      yield navigateToPatientSearchScreen();
     }
   }
 }
@@ -167,14 +148,6 @@ function* watchManualUserNavigation() {
     LOCATION_CHANGE,
     actions.USER_LOGIN_SUCCEEDED,
   ], manualUserNavigation);
-}
-
-function* watchNavigateToLoginScreen() {
-  yield takeLatest([
-    actions.NAVIGATION_LOGIN_SCREEN_REQUESTED,
-    actions.USER_LOGOUT_SUCCEEDED,
-    actions.USER_LOGOUT_FAILED,
-  ], navigateToLoginScreen);
 }
 
 function* watchNavigateToPatientScreen() {
@@ -204,7 +177,6 @@ function* watchNavigationToAccessDeniedScreen() {
 
 export default function* watchedRouterSagas() {
   yield all([
-    watchNavigateToLoginScreen(),
     watchNavigateToPatientScreen(),
     watchNavigateToPatientSearchScreen(),
     watchNavigateToPatientVariantScreen(),

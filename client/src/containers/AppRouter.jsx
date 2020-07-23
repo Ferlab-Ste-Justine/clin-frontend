@@ -23,7 +23,7 @@ const AppRouter = ({ history }) => {
   const [, initialized] = useKeycloak();
 
   if (!initialized) {
-    return <h3>Loading ... !!!</h3>;
+    return <div />;
   }
 
   // @NOTE In case we use intl for routes later on...
