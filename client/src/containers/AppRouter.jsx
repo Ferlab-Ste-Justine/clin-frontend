@@ -1,10 +1,11 @@
-import { Route, Switch } from 'react-router';
+import { Route, Switch } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import { useKeycloak } from '@react-keycloak/web';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Spin } from 'antd';
 import AuthRoute from './AuthRoute';
+import PublicRoute from './PublicRoute';
 import AccessDenied from '../components/screens/AccessDenied';
 import PatientScreen from '../components/screens/Patient';
 import PatientSearchScreen from '../components/screens/PatientSearch';
@@ -38,7 +39,7 @@ const AppRouter = ({ history }) => {
   return (
     <ConnectedRouter key="connected-router" history={history}>
       <Switch key="switch">
-        <Route
+        <PublicRoute
           exact
           path={pathRootPage}
           component={() => (

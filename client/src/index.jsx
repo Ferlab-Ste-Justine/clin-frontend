@@ -13,13 +13,30 @@ import './helpers/chromi';
 const store = configureStore(initialState);
 const App = module.hot ? HotConnectedApp : ConnectedApp;
 
+/*
+const onKeycloakEvent = (event, error) => {
+  console.log('onKeycloakEvent', event, error);
+};
+
+const onKeycloakTokens = (tokens) => {
+  console.log('onKeycloakTokens', tokens);
+};
+*/
+
 const render = () => {
   ReactDOM.render(
     <KeycloakProvider
       keycloak={keycloak}
       initConfig={{
-        onLoad: 'login-required',
+        // onLoad: 'login-required',
+        checkLoginIframe: true,
+        checkLoginIframeInterval: 5,
+        timeSkew: 5,
       }}
+      /*
+      onEvent={onKeycloakEvent}
+      onTokens={onKeycloakTokens}
+      */
     >
       <Provider id="provider" store={store}>
         <App id="app" history={history} />
