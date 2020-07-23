@@ -76,7 +76,7 @@ export const createUpdatePatientBundle = (patient, serviceRequest) => (
         },
         request: {
           method: 'POST',
-          url: `ServiceRequest/${serviceRequest.id}`,
+          url: serviceRequest ? `ServiceRequest/${serviceRequest.id}` : '',
         },
       },
     ],

@@ -60,13 +60,15 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Nom">
         {getFieldDecorator('family', {
           rules: [{ required: true, message: 'Please input your family name!' }],
+          initialValue: has(patient, 'name.family') ? patient.name.family : '',
         })(
-          <Input placeholder="Nom de famille" className="large" value={has(patient, 'name.family') ? patient.name.family : ''} />,
+          <Input placeholder="Nom de famille" className="large" />,
         )}
       </Form.Item>
       <Form.Item label="Prénom">
         {getFieldDecorator('given', {
           rules: [{ required: true, message: 'Please input your given name!' }],
+          initialValue: has(patient, 'name.given') ? patient.name.given : '',
         })(
           <Input placeholder="Prénom" className="large" />,
         )}
@@ -74,6 +76,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Sexe">
         {getFieldDecorator('gender', {
           rules: [{ required: true, message: 'Please select your gender!' }],
+          initialValue: has(patient, 'gender') ? patient.gender : '',
         })(
           <Radio.Group buttonStyle="solid">
             {
@@ -87,6 +90,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Date de naissance">
         {getFieldDecorator('birthDate', {
           rules: [{ required: true, message: 'Please input your birthdate!' }],
+          initialValue: has(patient, 'birthDate') ? patient.birthDate : '',
         })(
           <DatePicker className="small" />,
         )}
@@ -231,18 +235,19 @@ class PatientSubmissionScreen extends React.Component {
     form.validateFields((err, values) => {
       if (err) { return; }
 
-      const { actions } = this.props;
+      const { actions, patient } = this.props;
       console.log('Received values of form: ', values);
-      const patient = {
+      const patientData = {
         name: {
           family: values.family,
           given: values.given,
         },
         birthDate: values.birthDate,
         gender: values.gender,
+        id: patient.id,
       };
 
-      actions.savePatient(patient);
+      actions.savePatient(patientData);
     });
   }
 
@@ -275,8 +280,7 @@ class PatientSubmissionScreen extends React.Component {
   render() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
-    const { submission } = this.props;
-    const { patient } = submission;
+    const { patient } = this.props;
 
     this.pages = [
       {
@@ -373,9 +377,8 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   app: state.app,
   router: state.router,
-  patient: state.patient,
+  patient: state.patientSubmission.patient,
   search: state.search,
-  submission: state.patientSubmission,
 });
 
 const WrappedPatientSubmissionForm = Form.create({ name: 'patient_submission' })(PatientSubmissionScreen);

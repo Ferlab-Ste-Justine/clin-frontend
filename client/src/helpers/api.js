@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { createSavePatientBundle } from './fhir';
+import { createSavePatientBundle, createUpdatePatientBundle } from './fhir';
 
 
 const successCallback = payload => ({ payload });
@@ -165,6 +165,15 @@ const savePatient = (patient) => {
     .catch(errorCallback);
 };
 
+const updatePatient = (patient) => {
+  const data = createUpdatePatientBundle(patient);
+  console.log('Bundle to be sent: ', data);
+  console.log('Url to be targeted: ', window.CLIN.fhirBaseUrl);
+  return axios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
+    .then(successCallback)
+    .catch(errorCallback);
+};
+
 export default {
   login,
   identity,
@@ -187,4 +196,5 @@ export default {
   convertToExcelData,
   getGeneAutocomplete,
   savePatient,
+  updatePatient,
 };

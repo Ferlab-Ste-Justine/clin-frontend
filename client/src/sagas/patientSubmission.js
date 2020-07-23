@@ -2,7 +2,7 @@ import {
   all, put, takeLatest,
 } from 'redux-saga/effects';
 
-import { curry } from 'lodash';
+import { curry, omit } from 'lodash';
 
 import * as actionTypes from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
@@ -29,8 +29,14 @@ const isCreate = r => getStatusCode(r) === '201';
 const isUpdate = r => getStatusCode(r) === '200';
 
 const processBundleResponse = curry((result, r) => {
+  const entity = omit(r, 'resourceType');
   if (isUpdate(r)) {
-    console.log('TODO: process update bundle response');
+    if (isPatient(r)) {
+      result.patient = entity;
+    }
+    if (isServiceRequest(r)) {
+      result.serviceRequest = entity;
+    }
   }
   if (isCreate(r)) {
     if (isPatient(r)) {
@@ -53,16 +59,16 @@ function* savePatient(action) {
     },
   });
 
-  let savePatientResponse = null;
+  let response = null;
   try {
-    savePatientResponse = yield Api.savePatient(patient);
-    if (savePatientResponse.error) {
-      throw new ApiError(savePatientResponse.error);
+    response = patient.id ? yield Api.updatePatient(patient) : yield Api.savePatient(patient);
+    if (response.error) {
+      throw new ApiError(response.error);
     }
 
     const {
       entry,
-    } = savePatientResponse.payload.data;
+    } = response.payload.data;
 
     const result = {};
     entry
@@ -74,10 +80,11 @@ function* savePatient(action) {
       payload: result,
     });
   } catch (e) {
+    console.log('Error while attempting to update patient: ', e);
     yield put({ type: actionTypes.PATIENT_SUBMISSION_SAVE_FAILED, payload: e });
-    if (savePatientResponse.error.response && savePatientResponse.error.response.status === 404) {
-      yield put({ type: actionTypes.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
-    }
+    // if (response.error.response && response.error.response.status === 404) {
+    //   yield put({ type: actionTypes.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
+    // }
   }
 }
 
