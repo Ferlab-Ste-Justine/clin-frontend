@@ -324,18 +324,41 @@ div.ant-card {
 }
 
 //Date Picker
+.ant-calendar-date-panel{
+  font-family: $font;
+  font-size: 14px;
+}
+
+.ant-calendar-my-select{
+  a{
+    color: #125A90 !important; 
+  }
+  
+}
+
+.ant-calendar-date{
+  color: #536377;
+}
+
 .ant-calendar-picker-input.ant-input{
   font-family: $font;
   font-size: 14px;
   line-height: 22px;
   letter-spacing: 0.25px;
   color: #536377;
+  border-radius: 2px;
 }
 
 .ant-calendar-selected-day .ant-calendar-date{
   border: 1px solid #2AABE8;
   background: #B5E6F7;
-  color: #2AABE8;
+  color: #1D8BC6 !important;
+}
+
+.ant-calendar-today .ant-calendar-date{
+  border: 1px solid #1D8BC6;
+  font-weight: normal;
+  color: #536377;
 }
 
 //RadioButton
