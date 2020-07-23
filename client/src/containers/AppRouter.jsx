@@ -51,11 +51,11 @@ const AppRouter = ({ history }) => {
           )}
           key="route-loading"
         />
-        <AuthRoute roles={['RealmAdmin']} path={pathPatientSearch} exact Component={PatientSearchScreen} key="route-patient-search" />
-        <Route exact path={pathPatientVariants} Component={PatientVariantScreen} key="route-patient-variant" />
-        <Route exact path={pathPatientPage} Component={PatientScreen} key="route-patient" />
-        <Route exact path={pathVariantPage} Component={VariantDetailsScreen} key="route-variant-details" />
-        <Route Component={PatientSubmissionScreen} key="route-patient-submission" />
+        <AuthRoute roles={[]} path={pathPatientSearch} exact Component={PatientSearchScreen} key="route-patient-search" />
+        <AuthRoute roles={[]} path={pathPatientVariants} exact Component={PatientVariantScreen} key="route-patient-variant" />
+        <AuthRoute roles={[]} path={pathPatientPage} exact Component={PatientScreen} key="route-patient" />
+        <AuthRoute roles={[]} path={pathVariantPage} exact Component={VariantDetailsScreen} key="route-variant-details" />
+        <AuthRoute roles={[]} Component={PatientSubmissionScreen} key="route-patient-submission" />
         <Route component={AccessDenied} key="route-access-denied" />
       </Switch>
     </ConnectedRouter>

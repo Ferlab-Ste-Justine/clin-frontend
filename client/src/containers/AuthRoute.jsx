@@ -7,9 +7,7 @@ const AuthRoute = ({ Component, roles, ...rest }) => {
   const [keycloak] = useKeycloak();
 
   const isAuthorized = (requiredRoles) => {
-    // eslint-disable-next-line no-self-compare
-    if (1 === 1) {
-      // Disable authorization while testing
+    if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }
 
