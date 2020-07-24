@@ -33,6 +33,24 @@ const { Step } = Steps;
 const { TextArea } = Input;
 const { TreeNode } = Tree;
 
+const ramqValue = (patient) => {
+  const { identifier } = patient;
+  if (identifier && identifier.length > 1) {
+    return identifier[1].value;
+  }
+
+  return '';
+};
+
+const mrnValue = (patient) => {
+  const { identifier } = patient;
+  if (identifier && identifier.length) {
+    return identifier[0].value;
+  }
+
+  return '';
+};
+
 const getGenderValues = () => ({
   male: {
     value: 'male',
@@ -59,7 +77,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
     <Card title="Patient" bordered={false} className="patientContent">
       <Form.Item label="Nom">
         {getFieldDecorator('family', {
-          rules: [{ required: true, message: 'Please input your family name!' }],
+          rules: [{ required: true, message: 'Please enter the family name!' }],
           initialValue: has(patient, 'name.family') ? patient.name.family : '',
         })(
           <Input placeholder="Nom de famille" className="large" />,
@@ -67,7 +85,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="Prénom">
         {getFieldDecorator('given', {
-          rules: [{ required: true, message: 'Please input your given name!' }],
+          rules: [{ required: true, message: 'Please enter the given name!' }],
           initialValue: has(patient, 'name.given') ? patient.name.given : '',
         })(
           <Input placeholder="Prénom" className="large" />,
@@ -75,7 +93,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="Sexe">
         {getFieldDecorator('gender', {
-          rules: [{ required: true, message: 'Please select your gender!' }],
+          rules: [{ required: true, message: 'Please select the gender!' }],
           initialValue: has(patient, 'gender') ? patient.gender : '',
         })(
           <Radio.Group buttonStyle="solid">
@@ -89,18 +107,28 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="Date de naissance">
         {getFieldDecorator('birthDate', {
-          rules: [{ required: true, message: 'Please input your birthdate!' }],
+          rules: [{ required: true, message: 'Please enter the birthdate!' }],
           initialValue: has(patient, 'birthDate') ? patient.birthDate : '',
         })(
           <DatePicker className="small" />,
         )}
       </Form.Item>
       <Form.Item label="RAMQ">
-        <Input placeholder="ABCD 0000 0000" className="large" />
+        {getFieldDecorator('ramq', {
+          rules: [{ pattern: RegExp(/^[A-Z]{4}\d{8,9}$/), message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres' }],
+          initialValue: ramqValue(patient),
+        })(
+          <Input placeholder="ABCD 0000 0000" className="large" />,
+        )}
         <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label="MRN">
-        <Input placeholder="12345678" className="small" />
+        {getFieldDecorator('mrn', {
+          rules: [{ required: true, message: 'Please enter the MRN number!' }],
+          initialValue: mrnValue(patient),
+        })(
+          <Input placeholder="12345678" className="small" />,
+        )}
       </Form.Item>
       <Form.Item label="Hôpital">
         <Select defaultValue="CHUSJ" className="small" dropdownClassName="selectDropdown">
@@ -249,6 +277,34 @@ class PatientSubmissionScreen extends React.Component {
         birthDate: values.birthDate,
         gender: values.gender,
         id: patient.id,
+        identifier: [
+          {
+            type: {
+              coding: [
+                {
+                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                  code: 'MR',
+                  display: 'Medical record number',
+                },
+              ],
+              text: 'Numéro du dossier médical',
+            },
+            value: values.mrn,
+          },
+          {
+            type: {
+              coding: [
+                {
+                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                  code: 'JHN',
+                  display: 'Jurisdictional health number (Canada)',
+                },
+              ],
+              text: 'Numéro assurance maladie du Québec',
+            },
+            value: values.ramq,
+          },
+        ],
       };
 
       actions.savePatient(patientData);
