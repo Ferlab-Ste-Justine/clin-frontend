@@ -16,7 +16,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_save,
+  ic_save, ic_remove, ic_add,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -97,6 +97,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="RAMQ">
         <Input placeholder="ABCD 0000 0000" className="large" />
+        <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label="MRN">
         <Input placeholder="12345678" className="small" />
@@ -112,6 +113,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
           <Select.Option value="CF">Canadien-Français</Select.Option>
         </Select>
+        <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label="Consanguinité">
         <Radio.Group buttonStyle="solid">
@@ -127,25 +129,21 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
 
 const ClinicalInformation = (props) => {
   const familyItem = (
-    <>
+    <div className="familyLine">
       <Form.Item>
-        <Input placeholder="Ajouter une note…" className="small" />
+        <Input placeholder="Ajouter une note…" className="noteInput note" />
       </Form.Item>
       <Form.Item>
-        <Radio.Group buttonStyle="solid">
-          <Radio.Button value="m"><span className="radioText">Maternel</span></Radio.Button>
-          <Radio.Button value="p"><span className="radioText">Paternel</span></Radio.Button>
-        </Radio.Group>
-      </Form.Item>
-      <Form.Item>
-        <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
-          <Select.Option value="CF">Canadien-Français</Select.Option>
+        <Select className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
+          <Select.Option value="CF">Inconnu Parental</Select.Option>
         </Select>
       </Form.Item>
       <Form.Item>
-        <Button>-</Button>
+        <Button className="delButton" shape="round">
+          <IconKit size={20} icon={ic_remove} />
+        </Button>
       </Form.Item>
-    </>
+    </div>
   );
   return (
     <div>
@@ -168,15 +166,22 @@ const ClinicalInformation = (props) => {
               <Radio.Button value="so"><span className="radioText">Sans objet</span></Radio.Button>
             </Radio.Group>
           </Form.Item>
+          <Form.Item label="Précision">
+            <Input placeholder="Veuillez préciser…" className="note" />
+          </Form.Item>
           <Form.Item label="Résumé">
-            <TextArea rows={4} />
+            <TextArea className="note" rows={4} />
+            <span className="optional">Facultatif</span>
           </Form.Item>
         </Card>
         <Card title="Histoire familiale" bordered={false} className="patientContent">
-          {familyItem}
+          <div className="familyLines">
+            {familyItem}
+          </div>
           <Form.Item>
-            <Button type="dashed" style={{ width: '60%' }}>
-            Ajouter
+            <Button className="addFamilyButton">
+              <IconKit size={14} icon={ic_add} />
+              Ajouter
             </Button>
           </Form.Item>
         </Card>
@@ -198,7 +203,7 @@ const ClinicalInformation = (props) => {
         </Card>
         <Card title="Indications" bordered={false} className="patientContent">
           <Form.Item label="Hypothèse(s) de diagnostique">
-            <Input placeholder="Ajouter une note…" className="large" />
+            <TextArea className="note" rows={4} />
           </Form.Item>
         </Card>
       </Form>
@@ -236,7 +241,6 @@ class PatientSubmissionScreen extends React.Component {
       if (err) { return; }
 
       const { actions, patient } = this.props;
-      console.log('Received values of form: ', values);
       const patientData = {
         name: {
           family: values.family,
@@ -316,46 +320,41 @@ class PatientSubmissionScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <div className="steps">
-          <Steps current={currentPageIndex}>
+        <div className="page_headerStatic">
+          <Steps current={currentPageIndex} className="step">
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
         </div>
-
-        <Form
-          initialValues={{
-            remember: true,
-          }}
-          onSubmit={this.handleSubmit}
-        >
-          {pageContent}
-          <div className="submission-form-actions">
-            <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
-              {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-            </Button>
-            <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-              {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-            </Button>
-            {/* <Form.Item> */}
-            <Button
-              htmlType="submit"
-            >
-              <IconKit size={20} icon={ic_save} />
-              {intl.get('screen.clinicalSubmission.saveButtonTitle')}
-            </Button>
-            {/* </Form.Item> */}
-
-            <Button
-              htmlType="submit"
-              onClick={() => message.success('Cancelled ...')}
-              className="cancelButton"
-            >
-              {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
-            </Button>
-          </div>
-        </Form>
-
-
+        <div className="page-static-content">
+          <Form
+            initialValues={{
+              remember: true,
+            }}
+            onSubmit={this.handleSubmit}
+          >
+            {pageContent}
+            <div className="submission-form-actions">
+              <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
+                {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+              </Button>
+              <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+              </Button>
+              <Button
+                htmlType="submit"
+              >
+                <IconKit size={20} icon={ic_save} />
+                {intl.get('screen.clinicalSubmission.saveButtonTitle')}
+              </Button>
+              <Button
+                onClick={() => message.success('Cancelled ...')}
+                className="cancelButton"
+              >
+                {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
+              </Button>
+            </div>
+          </Form>
+        </div>
         <Footer />
       </Content>
     );

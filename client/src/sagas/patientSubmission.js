@@ -80,11 +80,7 @@ function* savePatient(action) {
       payload: result,
     });
   } catch (e) {
-    console.log('Error while attempting to update patient: ', e);
     yield put({ type: actionTypes.PATIENT_SUBMISSION_SAVE_FAILED, payload: e });
-    // if (response.error.response && response.error.response.status === 404) {
-    //   yield put({ type: actionTypes.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
-    // }
   }
 }
 
