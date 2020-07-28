@@ -7,6 +7,7 @@ import searchReducer from './search';
 import userReducer from './user';
 import variantReducer from './variant';
 import variantDetailsReducer from './variantDetails';
+import patientSubmissionReducer from './patientSubmission';
 
 const rootReducer = history => combineReducers({
   router: connectRouter(history),
@@ -16,6 +17,7 @@ const rootReducer = history => combineReducers({
   search: searchReducer,
   variant: variantReducer,
   variantDetails: variantDetailsReducer,
+  patientSubmission: patientSubmissionReducer,
 });
 
 export default rootReducer;

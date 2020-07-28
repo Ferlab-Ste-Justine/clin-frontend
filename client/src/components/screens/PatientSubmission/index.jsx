@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable import/named */
 /* eslint-disable no-unused-vars */
 import React from 'react';
@@ -10,54 +11,124 @@ import {
   Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select, Tree,
 } from 'antd';
 import {
-  find,
+  has,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_save,
+  ic_save, ic_remove, ic_add,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import DataList from '../../DataList';
-import { patientShape } from '../../../reducers/patient';
+import { patientSubmissionShape } from '../../../reducers/patientSubmission';
 import { appShape } from '../../../reducers/app';
 import {
-  navigateToPatientScreen, navigateToPatientVariantScreen,
-  navigateToPatientSearchScreen,
-} from '../../../actions/router';
+  savePatient,
+} from '../../../actions/patientSubmission';
 import './style.scss';
 
 const { Step } = Steps;
 const { TextArea } = Input;
 const { TreeNode } = Tree;
 
-const PatientInformation = props => (
-  <Card title="Patient" bordered={false} className="patientContent">
-    <Form>
+const ramqValue = (patient) => {
+  const { identifier } = patient;
+  if (identifier && identifier.length > 1) {
+    return identifier[1].value;
+  }
+
+  return '';
+};
+
+const mrnValue = (patient) => {
+  const { identifier } = patient;
+  if (identifier && identifier.length) {
+    return identifier[0].value;
+  }
+
+  return '';
+};
+
+const getGenderValues = () => ({
+  male: {
+    value: 'male',
+    label: intl.get('form.patientSubmission.form.genderMale'),
+  },
+  female: {
+    value: 'female',
+    label: intl.get('form.patientSubmission.form.genderFemale'),
+  },
+  other: {
+    value: 'other',
+    label: intl.get('form.patientSubmission.form.genderOther'),
+  },
+  unknown: {
+    value: 'unknown',
+    label: intl.get('form.patientSubmission.form.genderUnknown'),
+  },
+});
+
+const PatientInformation = ({ getFieldDecorator, patient }) => {
+  const genderValues = getGenderValues();
+  const _has = has;
+  return (
+    <Card title="Patient" bordered={false} className="patientContent">
       <Form.Item label="Nom">
-        <Input placeholder="Nom de famille" className="large" />
+        {getFieldDecorator('family', {
+          rules: [{ required: true, message: 'Please enter the family name!' }],
+          initialValue: has(patient, 'name.family') ? patient.name.family : '',
+        })(
+          <Input placeholder="Nom de famille" className="large" />,
+        )}
       </Form.Item>
       <Form.Item label="Prénom">
-        <Input placeholder="Prénom" className="large" />
+        {getFieldDecorator('given', {
+          rules: [{ required: true, message: 'Please enter the given name!' }],
+          initialValue: has(patient, 'name.given') ? patient.name.given : '',
+        })(
+          <Input placeholder="Prénom" className="large" />,
+        )}
       </Form.Item>
       <Form.Item label="Sexe">
-        <Radio.Group buttonStyle="solid">
-          <Radio.Button value="a"><span className="radioText">Masculin</span></Radio.Button>
-          <Radio.Button value="b"><span className="radioText">Féminin</span></Radio.Button>
-          <Radio.Button value="c"><span className="radioText">Autre</span></Radio.Button>
-          <Radio.Button value="d"><span className="radioText">Inconnu</span></Radio.Button>
-        </Radio.Group>
+        {getFieldDecorator('gender', {
+          rules: [{ required: true, message: 'Please select the gender!' }],
+          initialValue: has(patient, 'gender') ? patient.gender : '',
+        })(
+          <Radio.Group buttonStyle="solid">
+            {
+              Object.values(genderValues).map(gv => (
+                <Radio.Button value={gv.value}><span className="radioText">{gv.label}</span></Radio.Button>
+              ))
+            }
+          </Radio.Group>,
+        )}
       </Form.Item>
       <Form.Item label="Date de naissance">
-        <DatePicker className="small" />
+        {getFieldDecorator('birthDate', {
+          rules: [{ required: true, message: 'Please enter the birthdate!' }],
+          initialValue: has(patient, 'birthDate') ? patient.birthDate : '',
+        })(
+          <DatePicker className="small" />,
+        )}
       </Form.Item>
       <Form.Item label="RAMQ">
-        <Input placeholder="ABCD 0000 0000" className="large" />
+        {getFieldDecorator('ramq', {
+          rules: [{ pattern: RegExp(/^[A-Z]{4}\d{8,9}$/), message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres' }],
+          initialValue: ramqValue(patient),
+        })(
+          <Input placeholder="ABCD 0000 0000" className="large" />,
+        )}
+        <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label="MRN">
-        <Input placeholder="12345678" className="small" />
+        {getFieldDecorator('mrn', {
+          rules: [{ required: true, message: 'Please enter the MRN number!' }],
+          initialValue: mrnValue(patient),
+        })(
+          <Input placeholder="12345678" className="small" />,
+        )}
       </Form.Item>
       <Form.Item label="Hôpital">
         <Select defaultValue="CHUSJ" className="small" dropdownClassName="selectDropdown">
@@ -70,6 +141,7 @@ const PatientInformation = props => (
         <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
           <Select.Option value="CF">Canadien-Français</Select.Option>
         </Select>
+        <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label="Consanguinité">
         <Radio.Group buttonStyle="solid">
@@ -78,31 +150,28 @@ const PatientInformation = props => (
           <Radio.Button value="n"><span className="radioText">Inconnu</span></Radio.Button>
         </Radio.Group>
       </Form.Item>
-    </Form>
-  </Card>
-);
+    </Card>
+  );
+};
+
 
 const ClinicalInformation = (props) => {
   const familyItem = (
-    <>
+    <div className="familyLine">
       <Form.Item>
-        <Input placeholder="Ajouter une note…" className="small" />
+        <Input placeholder="Ajouter une note…" className="noteInput note" />
       </Form.Item>
       <Form.Item>
-        <Radio.Group buttonStyle="solid">
-          <Radio.Button value="m"><span className="radioText">Maternel</span></Radio.Button>
-          <Radio.Button value="p"><span className="radioText">Paternel</span></Radio.Button>
-        </Radio.Group>
-      </Form.Item>
-      <Form.Item>
-        <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
-          <Select.Option value="CF">Canadien-Français</Select.Option>
+        <Select className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
+          <Select.Option value="CF">Inconnu Parental</Select.Option>
         </Select>
       </Form.Item>
       <Form.Item>
-        <Button>-</Button>
+        <Button className="delButton" shape="round">
+          <IconKit size={20} icon={ic_remove} />
+        </Button>
       </Form.Item>
-    </>
+    </div>
   );
   return (
     <div>
@@ -125,15 +194,22 @@ const ClinicalInformation = (props) => {
               <Radio.Button value="so"><span className="radioText">Sans objet</span></Radio.Button>
             </Radio.Group>
           </Form.Item>
+          <Form.Item label="Précision">
+            <Input placeholder="Veuillez préciser…" className="note" />
+          </Form.Item>
           <Form.Item label="Résumé">
-            <TextArea rows={4} />
+            <TextArea className="note" rows={4} />
+            <span className="optional">Facultatif</span>
           </Form.Item>
         </Card>
         <Card title="Histoire familiale" bordered={false} className="patientContent">
-          {familyItem}
+          <div className="familyLines">
+            {familyItem}
+          </div>
           <Form.Item>
-            <Button type="dashed" style={{ width: '60%' }}>
-            Ajouter
+            <Button className="addFamilyButton">
+              <IconKit size={14} icon={ic_add} />
+              Ajouter
             </Button>
           </Form.Item>
         </Card>
@@ -155,7 +231,7 @@ const ClinicalInformation = (props) => {
         </Card>
         <Card title="Indications" bordered={false} className="patientContent">
           <Form.Item label="Hypothèse(s) de diagnostique">
-            <Input placeholder="Ajouter une note…" className="large" />
+            <TextArea className="note" rows={4} />
           </Form.Item>
         </Card>
       </Form>
@@ -183,26 +259,56 @@ class PatientSubmissionScreen extends React.Component {
       currentPageIndex: 0,
     };
 
-    this.pages = [
-      {
-        title: intl.get('screen.clinicalSubmission.patientInformation'),
-        content: (
-          <PatientInformation />
-        ),
-      },
-      {
-        title: intl.get('screen.clinicalSubmission.clinicalInformation'),
-        content: (
-          <ClinicalInformation />
-        ),
-      },
-      {
-        title: intl.get('screen.clinicalSubmission.approval'),
-        content: (
-          <Approval />
-        ),
-      },
-    ];
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit(e) {
+    const { form } = this.props;
+    e.preventDefault();
+    form.validateFields((err, values) => {
+      if (err) { return; }
+
+      const { actions, patient } = this.props;
+      const patientData = {
+        name: {
+          family: values.family,
+          given: values.given,
+        },
+        birthDate: values.birthDate,
+        gender: values.gender,
+        id: patient.id,
+        identifier: [
+          {
+            type: {
+              coding: [
+                {
+                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                  code: 'MR',
+                  display: 'Medical record number',
+                },
+              ],
+              text: 'Numéro du dossier médical',
+            },
+            value: values.mrn,
+          },
+          {
+            type: {
+              coding: [
+                {
+                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                  code: 'JHN',
+                  display: 'Jurisdictional health number (Canada)',
+                },
+              ],
+              text: 'Numéro assurance maladie du Québec',
+            },
+            value: values.ramq,
+          },
+        ],
+      };
+
+      actions.savePatient(patientData);
+    });
   }
 
   nbPages() {
@@ -232,6 +338,37 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   render() {
+    const { form } = this.props;
+    const { getFieldDecorator } = form;
+    const { patient } = this.props;
+
+    this.pages = [
+      {
+        title: intl.get('screen.clinicalSubmission.patientInformation'),
+        content: (
+          <PatientInformation parentForm={this} getFieldDecorator={getFieldDecorator} patient={patient} />
+        ),
+        name: 'PatientInformation',
+        values: {},
+      },
+      {
+        title: intl.get('screen.clinicalSubmission.clinicalInformation'),
+        content: (
+          <ClinicalInformation parentForm={this} getFieldDecorator={getFieldDecorator} />
+        ),
+        name: 'ClinicalInformation',
+        values: {},
+      },
+      {
+        title: intl.get('screen.clinicalSubmission.approval'),
+        content: (
+          <Approval parentForm={this} getFieldDecorator={getFieldDecorator} />
+        ),
+        name: 'Approval',
+        values: {},
+      },
+    ];
+
     const { currentPageIndex } = this.state;
     const currentPage = this.pages[currentPageIndex];
     const pageContent = currentPage.content;
@@ -239,33 +376,40 @@ class PatientSubmissionScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <div className="steps">
-          <Steps current={currentPageIndex}>
+        <div className="page_headerStatic">
+          <Steps current={currentPageIndex} className="step">
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
         </div>
-
-        {pageContent}
-
-        <div className="submission-form-actions">
-          <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
-            {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-          </Button>
-          <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-            {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-          </Button>
-          <Button
-            onClick={() => message.success('Saved ...')}
+        <div className="page-static-content">
+          <Form
+            initialValues={{
+              remember: true,
+            }}
+            onSubmit={this.handleSubmit}
           >
-            <IconKit size={20} icon={ic_save} />
-            {intl.get('screen.clinicalSubmission.saveButtonTitle')}
-          </Button>
-          <Button
-            onClick={() => message.success('Cancelled ...')}
-            className="cancelButton"
-          >
-            {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
-          </Button>
+            {pageContent}
+            <div className="submission-form-actions">
+              <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
+                {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+              </Button>
+              <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+              </Button>
+              <Button
+                htmlType="submit"
+              >
+                <IconKit size={20} icon={ic_save} />
+                {intl.get('screen.clinicalSubmission.saveButtonTitle')}
+              </Button>
+              <Button
+                onClick={() => message.success('Cancelled ...')}
+                className="cancelButton"
+              >
+                {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
+              </Button>
+            </div>
+          </Form>
         </div>
         <Footer />
       </Content>
@@ -276,24 +420,25 @@ class PatientSubmissionScreen extends React.Component {
 PatientSubmissionScreen.propTypes = {
   router: PropTypes.shape({}).isRequired,
   actions: PropTypes.shape({}).isRequired,
+  // patientInformation: PropTypes.shape(patientSubmissionShape).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
-    navigateToPatientScreen,
-    navigateToPatientVariantScreen,
-    navigateToPatientSearchScreen,
+    savePatient,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
   app: state.app,
   router: state.router,
-  patient: state.patient,
+  patient: state.patientSubmission.patient,
   search: state.search,
 });
+
+const WrappedPatientSubmissionForm = Form.create({ name: 'patient_submission' })(PatientSubmissionScreen);
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(PatientSubmissionScreen);
+)(WrappedPatientSubmissionForm);
