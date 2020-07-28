@@ -11,6 +11,11 @@ div.ant-select-selection__placeholder, div.ant-select-search__field__placeholder
   padding-left: 20px;
 }
 
+.ant-select-auto-complete.ant-select .ant-select-selection__placeholder {
+    margin-right: 12px;
+    margin-left: 31px;
+}
+
 div.ant-tag {
   line-height: initial;
   padding: 1px 0px;

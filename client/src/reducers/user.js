@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
@@ -17,7 +16,6 @@ export const initialUserState = {
   },
 };
 
-// @TODO
 export const userShape = {
   username: PropTypes.string,
   firstName: PropTypes.string,
@@ -37,7 +35,6 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
       draft.username = null;
       break;
 
-    case actions.USER_LOGIN_SUCCEEDED:
     case actions.USER_IDENTITY_SUCCEEDED:
       draft.username = action.payload.username;
       draft.firstName = action.payload.firstName;

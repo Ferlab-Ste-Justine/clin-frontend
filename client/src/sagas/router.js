@@ -148,7 +148,6 @@ function* manualUserNavigation(action) {
 function* watchManualUserNavigation() {
   yield takeEvery([
     LOCATION_CHANGE,
-    actions.USER_LOGIN_SUCCEEDED,
   ], manualUserNavigation);
 }
 

@@ -1,8 +1,3 @@
-import LocalStorage from './storage/local';
-
-
-export const LOGGED_IN = 'logged_in';
-
 export const ROUTE_NAME_ROOT = '/';
 export const ROUTE_NAME_PATIENT = 'patient';
 export const ROUTE_NAME_SUBMISSION = 'submission';
@@ -20,13 +15,6 @@ const patientIdMatch = new RegExp('PA[0-9]{1,}', 'gi');
 const variantIdMatch = new RegExp('[a-f0-9]{32}', 'gi');
 const tabIdMatch = new RegExp('//.*[#]([\\w+]{1,})', 'gi');
 
-export const setAsLoggedIn = () => {
-  LocalStorage.write(LOGGED_IN, new Date().getTime());
-};
-
-export const setAsLoggedOut = () => {
-  LocalStorage.remove(LOGGED_IN);
-};
 
 export const isRootRoute = location => rootRoutePattern.test(location);
 
