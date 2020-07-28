@@ -8,6 +8,7 @@ import {
   setAsLoggedIn,
   setAsLoggedOut,
 } from '../helpers/route';
+import keycloak from '../keycloak';
 
 function* login(action) {
   try {
@@ -49,13 +50,8 @@ function* recover(action) {
 
 function* identity() {
   try {
-    const response = yield Api.identity();
-    if (response.error) {
-      setAsLoggedOut();
-      throw new ApiError(response.error);
-    }
-
-    yield put({ type: actions.USER_IDENTITY_SUCCEEDED, payload: response.payload });
+    const response = yield keycloak.loadUserProfile();
+    yield put({ type: actions.USER_IDENTITY_SUCCEEDED, payload: response });
   } catch (e) {
     yield put({ type: actions.USER_IDENTITY_FAILED, payload: e });
   }

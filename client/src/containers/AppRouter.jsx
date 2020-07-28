@@ -1,4 +1,4 @@
-import { Route, Switch } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import { useKeycloak } from '@react-keycloak/web';
 import PropTypes from 'prop-types';
@@ -57,7 +57,7 @@ const AppRouter = ({ history }) => {
         <AuthRoute roles={[]} path={pathPatientPage} exact Component={PatientScreen} key="route-patient" />
         <AuthRoute roles={[]} path={pathVariantPage} exact Component={VariantDetailsScreen} key="route-variant-details" />
         <AuthRoute roles={[]} Component={PatientSubmissionScreen} key="route-patient-submission" />
-        <Route component={AccessDenied} key="route-access-denied" />
+        <PublicRoute component={AccessDenied} key="route-access-denied" />
       </Switch>
     </ConnectedRouter>
   );

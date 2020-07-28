@@ -39,9 +39,9 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
 
     case actions.USER_LOGIN_SUCCEEDED:
     case actions.USER_IDENTITY_SUCCEEDED:
-      draft.username = action.payload.data.data.user.username;
-      draft.firstName = action.payload.data.data.user.firstName;
-      draft.lastName = action.payload.data.data.user.lastName;
+      draft.username = action.payload.username;
+      draft.firstName = action.payload.firstName;
+      draft.lastName = action.payload.lastName;
       break;
 
     case actions.USER_PROFILE_SUCCEEDED:

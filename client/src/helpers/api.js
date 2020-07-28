@@ -123,7 +123,7 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
-const convertToExcelData = data => Http.secureClinAxios..post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
+const convertToExcelData = data => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
   .then(successCallback)
   .catch(errorCallback);
 
@@ -140,14 +140,14 @@ const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
 
 const savePatient = (patient) => {
   const data = createSavePatientBundle(patient);
-  return axios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
+  return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
 };
 
 const updatePatient = (patient) => {
   const data = createUpdatePatientBundle(patient);
-  return axios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
+  return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
 };

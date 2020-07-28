@@ -115,8 +115,8 @@ function* navigateToAccessDeniedScreen() {
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
 
-  if (isFirstRendering || action.type === actions.USER_LOGIN_SUCCEEDED) {
-    console.log('test 1');
+  if (isFirstRendering) {
+    console.log('test 1', action.type);
     const { referrer } = yield select(state => state.app);
     console.log('test 2');
     const location = !referrer.location ? action.payload : referrer.location;
