@@ -116,9 +116,7 @@ function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
 
   if (isFirstRendering) {
-    console.log('test 1', action.type);
     const { referrer } = yield select(state => state.app);
-    console.log('test 2');
     const location = !referrer.location ? action.payload : referrer.location;
     const { pathname, search, hash } = location;
     const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
