@@ -77,8 +77,6 @@
 }
 
 .patientContent{
-    margin:24px 32px 8px 32px;
-
     .ant-card-head{
         background: #FFFFFF;
         padding: 12px 16px;
@@ -95,7 +93,11 @@
     .ant-card-body{
         padding: 16px;
     }
-
+    .ant-form-item-required{
+        &::before{
+            display: none;
+        }
+    }
     .ant-form-item{
         display: flex;
         margin-bottom: 16px;
@@ -182,6 +184,57 @@
         }
     }
 
+    .separator{
+       
+            display: grid;
+            grid-template-columns: 536px 800px;
+            grid-template-rows: 1fr;
+            gap: 0px 24px;
+            grid-template-areas: ". .";
+    }
+    .phenotypeFirstLine{
+        display: flex;
+        .ant-form-item{
+            margin-bottom: 8px;
+        }
+        .leftBlock{
+            flex:1;
+
+            .hpoTitle{
+                font-family: $font;
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 22px;
+                letter-spacing: 0.25px;
+                color: #536377;
+
+            }
+            .deleteButton{
+                font-size: 12px;
+            }
+        }
+        .rightBlock{
+            display: flex;
+        }
+
+        .select{
+            width: 160px;
+            &:first-child{
+                margin-right: 8px;
+            }
+        }
+    }
+
+    .searchInput{
+        .ant-form-item-control-wrapper{
+            width: 100%;
+            
+        }
+        
+    }
+
+
+
     .note{
         width: 640px;
     }
@@ -207,10 +260,10 @@
 }
 
 .submission-form-actions{
-    margin: 0 32px 24px 32px;
     background-color: #ffffff;
     padding: 24px 16px;
-    
+    width: 1392px;
+    margin-bottom: 24px;
     button{
         border-radius: 2px;
         border: 1px solid  #1D8BC6;

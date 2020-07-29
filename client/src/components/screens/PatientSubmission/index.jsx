@@ -16,7 +16,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_save, ic_remove, ic_add,
+  ic_save, ic_remove, ic_add, ic_visibility, ic_visibility_off,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -30,8 +30,9 @@ import {
 import './style.scss';
 
 const { Step } = Steps;
-const { TextArea } = Input;
+const { TextArea, Search } = Input;
 const { TreeNode } = Tree;
+const { Option, OptGroup } = Select;
 
 const ramqValue = (patient) => {
   const { identifier } = patient;
@@ -70,11 +71,12 @@ const getGenderValues = () => ({
   },
 });
 
+
 const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
   const _has = has;
   return (
-    <Card title="Patient" bordered={false} className="patientContent">
+    <Card title="Patient" bordered={false} className="staticCard patientContent">
       <Form.Item label="Nom">
         {getFieldDecorator('family', {
           rules: [{ required: true, message: 'Please enter the family name!' }],
@@ -173,10 +175,62 @@ const ClinicalInformation = (props) => {
       </Form.Item>
     </div>
   );
+
+  const selectedPhenotype = ['coucou'];
+  const phenotypeItem = (
+    <div className="phenotypeBlock">
+      <div className="phenotypeFirstLine">
+        <div className="leftBlock">
+          <span className="hpoTitle">Abnormal cornea morphology</span>
+          <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
+        </div>
+        <div className="rightBlock">
+          <Form.Item>
+            <Select className="select selectObserved" defaultValue="O" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
+              <Select.Option value="O">Observé</Select.Option>
+              <Select.Option value="NO">Non-observé</Select.Option>
+              <Select.Option value="I">Inconu</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Select className="select selectAge" size="small" placeholder="Âge d’apparition" dropdownClassName="selectDropdown">
+              <OptGroup label="Pediatric onset">
+                <Option value="Juvenile onset">Juvenile</Option>
+                <Option value="Childhood onset">Childhood</Option>
+                <Option value="Infantile onset">Infantile</Option>
+              </OptGroup>
+              <OptGroup label="Adult onset">
+                <Option value="YoungAdult onset">Young adult</Option>
+                <Option value="MiddleAge onset">Middle age</Option>
+                <Option value="Late onset">Late</Option>
+              </OptGroup>
+              <OptGroup label="Antenatal onset">
+                <Option value="Fetal onset">Fetal</Option>
+                <Option value="Embryonal onset">Embryonal</Option>
+              </OptGroup>
+              <OptGroup label="Neonatal onset">
+                <Option value="YoungAdult onset">Neonatal</Option>
+              </OptGroup>
+              <OptGroup label="Congenital onset">
+                <Option value="YoungAdult onset">Congenital</Option>
+              </OptGroup>
+            </Select>
+          </Form.Item>
+        </div>
+      </div>
+
+
+      <Form.Item>
+        <Input placeholder="Ajouter une note…" size="small" className="noteInput note" />
+      </Form.Item>
+    </div>
+
+  );
+
   return (
     <div>
       <Form>
-        <Card title="Informations cliniques" bordered={false} className="patientContent">
+        <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
 
           <Form.Item label="Type d’analyse">
             <Radio.Group buttonStyle="solid">
@@ -186,7 +240,7 @@ const ClinicalInformation = (props) => {
             </Radio.Group>
           </Form.Item>
         </Card>
-        <Card title="Résumé de l’investigation" bordered={false} className="patientContent">
+        <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
           <Form.Item label="CGH">
             <Radio.Group buttonStyle="solid">
               <Radio.Button value="negatif"><span className="radioText">Négatif</span></Radio.Button>
@@ -202,7 +256,7 @@ const ClinicalInformation = (props) => {
             <span className="optional">Facultatif</span>
           </Form.Item>
         </Card>
-        <Card title="Histoire familiale" bordered={false} className="patientContent">
+        <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
           <div className="familyLines">
             {familyItem}
           </div>
@@ -213,23 +267,35 @@ const ClinicalInformation = (props) => {
             </Button>
           </Form.Item>
         </Card>
-        <Card title="Signes cliniques" bordered={false} className="patientContent">
-          <Form.Item>
-            <Input placeholder="Ajouter une note…" className="large" />
-          </Form.Item>
-          <Tree>
-            <TreeNode title="parent 1" key="0-0">
-              <TreeNode title="parent 1-0" key="0-0-0" disabled>
-                <TreeNode title="leaf" key="0-0-0-0" disableCheckbox />
-                <TreeNode title="leaf" key="0-0-0-1" />
-              </TreeNode>
-              <TreeNode title="parent 1-1" key="0-0-1">
-                <TreeNode title={<span style={{ color: '#1890ff' }}>sss</span>} key="0-0-1-0" />
-              </TreeNode>
-            </TreeNode>
-          </Tree>
+        <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
+          <div className="separator">
+            <div className="cardSeparator">
+              <Form.Item className="searchInput">
+                <Search placeholder="Filtrer les signes par titre…" />
+              </Form.Item>
+              <Tree>
+                <TreeNode title="parent 1" key="0-0">
+                  <TreeNode title="parent 1-0" key="0-0-0" disabled>
+                    <TreeNode title="leaf" key="0-0-0-0" disableCheckbox />
+                    <TreeNode title="leaf" key="0-0-0-1" />
+                  </TreeNode>
+                  <TreeNode title="parent 1-1" key="0-0-1">
+                    <TreeNode title="sss" key="0-0-1-0" />
+                  </TreeNode>
+                </TreeNode>
+              </Tree>
+            </div>
+            <div className="cardSeparator">
+              {
+                selectedPhenotype.length === 0
+                  ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
+                  : phenotypeItem
+              }
+            </div>
+          </div>
+
         </Card>
-        <Card title="Indications" bordered={false} className="patientContent">
+        <Card title="Indications" bordered={false} className="staticCard patientContent">
           <Form.Item label="Hypothèse(s) de diagnostique">
             <TextArea className="note" rows={4} />
           </Form.Item>
@@ -241,7 +307,7 @@ const ClinicalInformation = (props) => {
 
 const Approval = props => (
   <div>
-    <Card title="Analyse demandée" bordered={false} className="patientContent">
+    <Card title="Analyse demandée" bordered={false} className="staticCard patientContent">
       <Form>
         <Form.Item label="Some field">
           <Input placeholder="a placeholder ..." />
@@ -261,6 +327,7 @@ class PatientSubmissionScreen extends React.Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
 
   handleSubmit(e) {
     const { form } = this.props;
