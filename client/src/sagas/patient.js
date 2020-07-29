@@ -16,11 +16,7 @@ function* fetch(action) {
     yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientResponse.payload.data });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
-    if (patientResponse.error.response && patientResponse.error.response.status === 404) {
-      yield put({ type: actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
-    } else {
-      yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
-    }
+    yield put({ type: actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
   }
 }
 
@@ -81,7 +77,6 @@ function* search(action) {
     yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
   } catch (e) {
     yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
-    yield put({ type: actions.USER_SESSION_HAS_EXPIRED });
   }
 }
 

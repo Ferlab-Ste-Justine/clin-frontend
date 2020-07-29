@@ -38,9 +38,7 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
   switch (action.type) {
     case actions.START_LOADING_ANIMATION:
     case actions.APP_FETCH_REQUESTED:
-    case actions.USER_LOGIN_REQUESTED:
     case actions.USER_LOGOUT_REQUESTED:
-    case actions.USER_RECOVERY_REQUESTED:
     case actions.ROUTER_NAVIGATION_REQUESTED:
     case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED:
     case actions.NAVIGATION_PATIENT_SCREEN_REQUESTED:
@@ -55,12 +53,8 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
     case actions.APP_CHANGE_LANGUAGE_FAILED:
     case actions.ROUTER_NAVIGATION_SUCCEEDED:
     case actions.ROUTER_NAVIGATION_FAILED:
-    case actions.USER_LOGIN_SUCCEEDED:
-    case actions.USER_LOGIN_FAILED:
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_LOGOUT_FAILED:
-    case actions.USER_RECOVERY_SUCCEEDED:
-    case actions.USER_RECOVERY_FAILED:
     case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED:
     case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED:
     case actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED:
@@ -71,12 +65,6 @@ const appReducer = (state = Object.assign({}, initialAppState), action) => produ
       if (window.agent) {
         const agentIdle = ['IdleScratch', 'IdleStretch', 'IdleTailWagA', 'IdleTailWagB', 'IdleTailWagC', 'IdleTailWagD', 'IdleTwitch', 'IdleYawn', 'IdleButterFly', 'IdleCleaning', 'IdleLegLick', 'GetArtsy'];
         window.agent.play(agentIdle[Math.floor((Math.random() * agentIdle.length))]);
-      }
-      if (action.type === actions.USER_LOGIN_FAILED) {
-        draft.loginMessage = action.payload.message;
-      }
-      if (action.type === actions.USER_LOGIN_SUCCEEDED) {
-        draft.loginMessage = '';
       }
       break;
     case actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED:

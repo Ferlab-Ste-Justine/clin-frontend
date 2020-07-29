@@ -1,24 +1,10 @@
 /* eslint-disable */
 'use strict';
 
-const fs = require('fs');
 const express = require('express');
-const https = require('https');
 const http = require('http');
 
 process.env.NODE_ENV = 'production';
-
-let sslCertificate = null
-let sslCertificateKey = null
-
-if ( process.env.SSL_CERTIFICATE_PATH && process.env.SSL_CERTIFICATE_KEY_PATH ) {
-  try {
-    sslCertificate = fs.readFileSync( process.env.SSL_CERTIFICATE_PATH )
-    sslCertificateKey = fs.readFileSync( process.env.SSL_CERTIFICATE_KEY_PATH )
-  } catch ( e ) {
-    console.error( 'SSL_CERTIFICATE_PATH or SSL_CERTIFICATE_KEY_PATH could not be read.' )
-  }
-}
 
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
@@ -60,14 +46,6 @@ app.get('/*', function(req, res) {
   res.sendFile(__dirname + `${paths.appBuild}/index.html`)
 })
 
-if (!sslCertificate || !sslCertificateKey) {
-  http.createServer({
-    ignoreTrailingSlash: true,
-  }, app).listen(PORT);
-} else {
-  https.createServer({
-    ignoreTrailingSlash: true,
-    key: sslCertificateKey,
-    certificate: sslCertificate,
-  }, app).listen(PORT);
-}
+http.createServer({
+  ignoreTrailingSlash: true,
+}, app).listen(PORT);

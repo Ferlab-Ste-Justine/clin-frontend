@@ -1,10 +1,4 @@
-import LocalStorage from './storage/local';
-
-
-const LOGGED_IN = 'logged_in';
-
 export const ROUTE_NAME_ROOT = '/';
-export const ROUTE_NAME_LOGIN = 'login';
 export const ROUTE_NAME_PATIENT = 'patient';
 export const ROUTE_NAME_SUBMISSION = 'submission';
 export const PATIENT_SUBROUTE_SEARCH = 'search';
@@ -12,7 +6,6 @@ export const PATIENT_SUBROUTE_VARIANT = 'variant';
 export const ROUTE_NAME_VARIANT = 'variantDetails';
 
 const rootRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}`, 'gi');
-const loginRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_LOGIN}`, 'gi');
 const patientSearchRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`, 'gi');
 const patientPageRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/PA[0-9]{1,}`, 'gi');
 const patientVariantPageRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/PA[0-9]{1,}/${PATIENT_SUBROUTE_VARIANT}`, 'gi');
@@ -22,19 +15,8 @@ const patientIdMatch = new RegExp('PA[0-9]{1,}', 'gi');
 const variantIdMatch = new RegExp('[a-f0-9]{32}', 'gi');
 const tabIdMatch = new RegExp('//.*[#]([\\w+]{1,})', 'gi');
 
-export const isLoggedIn = () => LocalStorage.read(LOGGED_IN) !== undefined;
-
-export const setAsLoggedIn = () => {
-  LocalStorage.write(LOGGED_IN, new Date().getTime());
-};
-
-export const setAsLoggedOut = () => {
-  LocalStorage.remove(LOGGED_IN);
-};
 
 export const isRootRoute = location => rootRoutePattern.test(location);
-
-export const isLoginRoute = location => loginRoutePattern.test(location);
 
 export const isPatientSearchRoute = location => patientSearchRoutePattern.test(location);
 

@@ -60,7 +60,6 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
   const { payload } = action;
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
-    case actions.USER_SESSION_HAS_EXPIRED:
       draft = Object.assign({}, initialVariantState);
       break;
 
