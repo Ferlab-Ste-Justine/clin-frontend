@@ -275,13 +275,16 @@ div.ant-card {
 
 .page_headerStatic{
   background-color: #FFFFFF;
-  padding: 24px 32px;
+  padding: 24px 0;
   margin-bottom: 24px;
+  .headerStaticContent{
+    width: 1392px;
+    margin: 0 auto;
+  }
 }
 
 //Page Static Content
 .page-static-content{
-  justify-content: center;
   margin: 0 auto;
 }
 
@@ -304,7 +307,7 @@ div.ant-card {
 
 //DATA ENTRY
 //Input
-.ant-input{
+.input{
   border-radius: 2px;
   border: 1px solid #ABBED3;
   font-family: $font;
@@ -327,11 +330,47 @@ div.ant-card {
   }
 }
 
-//Date Picker
-.ant-calendar-date-panel{
-  font-family: $font;
-  font-size: 14px;
+.searchInput{
+  input{
+    border-radius: 2px;
+    border: 1px solid #ABBED3;
+    font-family: $font;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0.25px;
+    color: #536377;
+    &::placeholder{
+        color: #ABB3BC;;
+    }
+  
+    &:hover{
+      border: 1px solid #3EB8EA !important;
+    }
+  
+    &:focus{
+      border: 1px solid #3EB8EA;
+      box-sizing: border-box;
+      box-shadow: 0px 0px 4px rgba(24, 144, 255, 0.5);
+    }
+  }
 }
+
+//Date Picker
+.ant-calendar-picker{
+  border-radius: 2px;
+  
+  .ant-calendar-picker-input{
+    border: 1px solid #ABBED3 !important;
+    &:hover{
+      border: 1px solid #3EB8EA !important;
+    }
+  }
+  .ant-calendar-date-panel{
+    font-family: $font;
+    font-size: 14px;
+  }
+}
+
 
 .ant-calendar-my-select{
   a{
@@ -429,18 +468,59 @@ div.ant-card {
   border: 1px solid #ABBED3;
   border-radius: 2px;
 
+  .icon{
+    margin-right: 4px;
+    svg{
+      margin-top: -3px;
+    }
+  }
+
+  .selectIcon{
+    margin-top: -3px;
+
+  }
+
+  .ant-select-arrow .ant-select-arrow-icon svg{
+    transition: none;
+  }
+
   .ant-select-selection__placeholder{
       padding-left: 0;
   }
 
   &:hover{
-    border: 1px solid #249ED9;
+    border: 1px solid #3EB8EA !important;
   }
 
   &:focus{
     border: 1px solid #249ED9;
     box-sizing: border-box;
     box-shadow: 0px 0px 4px rgba(24, 144, 255, 0.5);
+  }
+}
+.ant-select-open .ant-select-arrow-icon svg{
+  transform: none !important;
+}
+
+.selectDropdown{
+  li{
+      font-family: $font;
+      font-size: 14px;
+      line-height: 22px;
+      letter-spacing: 0.25px;
+      color: #536377;
+
+      .icon{
+        margin-right: 4px;
+        svg{
+          margin-top: -3px;
+        }
+      }
+    
+      .selectIcon{
+        margin-top: -3px;
+    
+      }
   }
 }
 
@@ -455,9 +535,15 @@ div.ant-card {
   span{
     color: #536377;
   }
-  .ant-tree-title{
-  }
 
+
+}
+
+.ant-tree-child-tree{
+  .ant-tree-title{
+    font-weight: normal;
+  }
+  
 }
 
 //Button

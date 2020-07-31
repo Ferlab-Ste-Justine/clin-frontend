@@ -16,7 +16,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_save, ic_remove, ic_add, ic_visibility, ic_visibility_off,
+  ic_save, ic_remove, ic_add, ic_visibility, ic_visibility_off, ic_help, ic_person,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -71,6 +71,105 @@ const getGenderValues = () => ({
   },
 });
 
+const getRelationValues = () => ({
+  father: {
+    value: 'FTH',
+    label: intl.get('form.patientSubmission.form.father'),
+  },
+  mother: {
+    value: 'MTH',
+    label: intl.get('form.patientSubmission.form.mother'),
+  },
+  brother: {
+    value: 'BRO',
+    label: intl.get('form.patientSubmission.form.brother'),
+  },
+  sister: {
+    value: 'SIS',
+    label: intl.get('form.patientSubmission.form.sister'),
+  },
+  halfBrother: {
+    value: 'HBRO',
+    label: intl.get('form.patientSubmission.form.halfBrother'),
+  },
+  halfSister: {
+    value: 'HSIS',
+    label: intl.get('form.patientSubmission.form.halfSister'),
+  },
+  identicalTwin: {
+    value: 'ITWIN',
+    label: intl.get('form.patientSubmission.form.identicalTwin'),
+  },
+  fraternalTwin: {
+    value: 'FTWIN',
+    label: intl.get('form.patientSubmission.form.fraternalTwin'),
+  },
+  daughter: {
+    value: 'DAUC',
+    label: intl.get('form.patientSubmission.form.daughter'),
+  },
+  son: {
+    value: 'SONC',
+    label: intl.get('form.patientSubmission.form.son'),
+  },
+  maternalAunt: {
+    value: 'MAUNT',
+    label: intl.get('form.patientSubmission.form.maternalAunt'),
+  },
+  paternalAunt: {
+    value: 'PAUNT',
+    label: intl.get('form.patientSubmission.form.paternalAunt'),
+  },
+  maternalUncle: {
+    value: 'MUNCLE',
+    label: intl.get('form.patientSubmission.form.maternalUncle'),
+  },
+  paternalUncle: {
+    value: 'PUNCHE',
+    label: intl.get('form.patientSubmission.form.paternalUncle'),
+  },
+  maternalCousin: {
+    value: 'MCOUSIN',
+    label: intl.get('form.patientSubmission.form.maternalCousin'),
+  },
+  paternalCousin: {
+    value: 'PCOUSIN',
+    label: intl.get('form.patientSubmission.form.paternalCousin'),
+  },
+  maternalGrandfather: {
+    value: 'MGRFTH',
+    label: intl.get('form.patientSubmission.form.maternalGrandfather'),
+  },
+  paternalGrandfather: {
+    value: 'PGRFTH',
+    label: intl.get('form.patientSubmission.form.paternalGrandfather'),
+  },
+  maternalGrandmother: {
+    value: 'MGRMTH',
+    label: intl.get('form.patientSubmission.form.maternalGrandmother'),
+  },
+  paternalGrandmother: {
+    value: 'PGRMTH',
+    label: intl.get('form.patientSubmission.form.paternalGrandmother'),
+  },
+  nephew: {
+    value: 'NEPHEW',
+    label: intl.get('form.patientSubmission.form.nephew'),
+  },
+  niece: {
+    value: 'NIECE',
+    label: intl.get('form.patientSubmission.form.niece'),
+  },
+  maternalMember: {
+    value: 'MATMEM',
+    label: intl.get('form.patientSubmission.form.maternalMember'),
+  },
+  paternalMember: {
+    value: 'PATMEM',
+    label: intl.get('form.patientSubmission.form.paternalMember'),
+  },
+});
+
 
 const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
@@ -82,7 +181,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           rules: [{ required: true, message: 'Please enter the family name!' }],
           initialValue: has(patient, 'name.family') ? patient.name.family : '',
         })(
-          <Input placeholder="Nom de famille" className="large" />,
+          <Input placeholder="Nom de famille" className="input large" />,
         )}
       </Form.Item>
       <Form.Item label="Prénom">
@@ -90,7 +189,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           rules: [{ required: true, message: 'Please enter the given name!' }],
           initialValue: has(patient, 'name.given') ? patient.name.given : '',
         })(
-          <Input placeholder="Prénom" className="large" />,
+          <Input placeholder="Prénom" className="input large" />,
         )}
       </Form.Item>
       <Form.Item label="Sexe">
@@ -120,7 +219,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           rules: [{ pattern: RegExp(/^[A-Z]{4}\d{8,9}$/), message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres' }],
           initialValue: ramqValue(patient),
         })(
-          <Input placeholder="ABCD 0000 0000" className="large" />,
+          <Input placeholder="ABCD 0000 0000" className="input large" />,
         )}
         <span className="optional">Facultatif</span>
       </Form.Item>
@@ -129,7 +228,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           rules: [{ required: true, message: 'Please enter the MRN number!' }],
           initialValue: mrnValue(patient),
         })(
-          <Input placeholder="12345678" className="small" />,
+          <Input placeholder="12345678" className="input small" />,
         )}
       </Form.Item>
       <Form.Item label="Hôpital">
@@ -141,15 +240,22 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="Ethnicité">
         <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
-          <Select.Option value="CF">Canadien-Français</Select.Option>
+          <Select.Option value="Canadien-Français">Canadien-Français</Select.Option>
+          <Select.Option value="Afro-Américaine">Afro-Américaine</Select.Option>
+          <Select.Option value="Caucasienne Européenne">Caucasienne Européenne</Select.Option>
+          <Select.Option value="Hispanique">Hispanique</Select.Option>
+          <Select.Option value="Asiatique">Asiatique</Select.Option>
+          <Select.Option value="Juive">Juive</Select.Option>
+          <Select.Option value="Amérindienne">Amérindienne</Select.Option>
+          <Select.Option value="Autre">Autre</Select.Option>
         </Select>
         <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label="Consanguinité">
         <Radio.Group buttonStyle="solid">
-          <Radio.Button value="o"><span className="radioText">Oui</span></Radio.Button>
-          <Radio.Button value="n"><span className="radioText">Non</span></Radio.Button>
-          <Radio.Button value="n"><span className="radioText">Inconnu</span></Radio.Button>
+          <Radio.Button value="yes"><span className="radioText">Oui</span></Radio.Button>
+          <Radio.Button value="no"><span className="radioText">Non</span></Radio.Button>
+          <Radio.Button value="unknown"><span className="radioText">Inconnu</span></Radio.Button>
         </Radio.Group>
       </Form.Item>
     </Card>
@@ -158,14 +264,17 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
 
 
 const ClinicalInformation = (props) => {
+  const relationrValues = getRelationValues();
   const familyItem = (
     <div className="familyLine">
       <Form.Item>
-        <Input placeholder="Ajouter une note…" className="noteInput note" />
+        <Input placeholder="Ajouter une note…" className="input noteInput note" />
       </Form.Item>
       <Form.Item>
-        <Select className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
-          <Select.Option value="CF">Inconnu Parental</Select.Option>
+        <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
+          {Object.values(relationrValues).map(rv => (
+            <Select.Option value={rv.value}>{rv.label}</Select.Option>
+          ))}
         </Select>
       </Form.Item>
       <Form.Item>
@@ -187,9 +296,9 @@ const ClinicalInformation = (props) => {
         <div className="rightBlock">
           <Form.Item>
             <Select className="select selectObserved" defaultValue="O" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
-              <Select.Option value="O">Observé</Select.Option>
-              <Select.Option value="NO">Non-observé</Select.Option>
-              <Select.Option value="I">Inconu</Select.Option>
+              <Select.Option value="O"><IconKit className="observedIcon icon" size={14} icon={ic_visibility} />Observé</Select.Option>
+              <Select.Option value="NO"><IconKit className="notObservedIcon icon" size={14} icon={ic_visibility_off} />Non-observé</Select.Option>
+              <Select.Option value="I"><IconKit className="unknownIcon icon" size={14} icon={ic_help} />Inconu</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item>
@@ -218,11 +327,12 @@ const ClinicalInformation = (props) => {
           </Form.Item>
         </div>
       </div>
+      <div className="phenotypeSecondLine">
+        <Form.Item>
+          <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />
+        </Form.Item>
+      </div>
 
-
-      <Form.Item>
-        <Input placeholder="Ajouter une note…" size="small" className="noteInput note" />
-      </Form.Item>
     </div>
 
   );
@@ -249,10 +359,10 @@ const ClinicalInformation = (props) => {
             </Radio.Group>
           </Form.Item>
           <Form.Item label="Précision">
-            <Input placeholder="Veuillez préciser…" className="note" />
+            <Input placeholder="Veuillez préciser…" className="input note" />
           </Form.Item>
           <Form.Item label="Résumé">
-            <TextArea className="note" rows={4} />
+            <TextArea className="input note" rows={4} />
             <span className="optional">Facultatif</span>
           </Form.Item>
         </Card>
@@ -271,15 +381,15 @@ const ClinicalInformation = (props) => {
           <div className="separator">
             <div className="cardSeparator">
               <Form.Item className="searchInput">
-                <Search placeholder="Filtrer les signes par titre…" />
+                <Search classeName="searchInput" placeholder="Filtrer les signes par titre…" />
               </Form.Item>
-              <Tree>
-                <TreeNode title="parent 1" key="0-0">
-                  <TreeNode title="parent 1-0" key="0-0-0" disabled>
-                    <TreeNode title="leaf" key="0-0-0-0" disableCheckbox />
+              <Tree checkable selectable={false}>
+                <TreeNode checkable={false} title="Eye Defetcs" key="0-0">
+                  <TreeNode checkable={false} title="Abnormality of the optical nerve" key="0-0-0" disabled>
+                    <TreeNode title="Abnormality of optic chiasm morphology" key="0-0-0-0" disableCheckbox />
                     <TreeNode title="leaf" key="0-0-0-1" />
                   </TreeNode>
-                  <TreeNode title="parent 1-1" key="0-0-1">
+                  <TreeNode checkable={false} title="parent 1-1" key="0-0-1">
                     <TreeNode title="sss" key="0-0-1-0" />
                   </TreeNode>
                 </TreeNode>
@@ -297,7 +407,7 @@ const ClinicalInformation = (props) => {
         </Card>
         <Card title="Indications" bordered={false} className="staticCard patientContent">
           <Form.Item label="Hypothèse(s) de diagnostique">
-            <TextArea className="note" rows={4} />
+            <TextArea className="input note" rows={4} />
           </Form.Item>
         </Card>
       </Form>
@@ -307,10 +417,10 @@ const ClinicalInformation = (props) => {
 
 const Approval = props => (
   <div>
-    <Card title="Analyse demandée" bordered={false} className="staticCard patientContent">
+    <Card title="Consentements" bordered={false} className="staticCard patientContent">
       <Form>
         <Form.Item label="Some field">
-          <Input placeholder="a placeholder ..." />
+          <Input className="input" placeholder="a placeholder ..." />
         </Form.Item>
       </Form>
     </Card>
@@ -444,7 +554,7 @@ class PatientSubmissionScreen extends React.Component {
       <Content type="auto">
         <Header />
         <div className="page_headerStatic">
-          <Steps current={currentPageIndex} className="step">
+          <Steps current={currentPageIndex} className="headerStaticContent step">
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
         </div>
