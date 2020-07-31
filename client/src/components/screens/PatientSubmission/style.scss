@@ -215,17 +215,41 @@
         }
         .rightBlock{
             display: flex;
+            .ant-form-item{
+                &:first-child{
+                    margin-right: 8px;
+                }
+
+                .observedIcon{
+                    color: #52C41A;;
+                }
+                .notObservedIcon{
+                    color: #FF4D4F;;
+                }
+                .unknownIcon{
+                    color:#536377;
+                }
+            }
         }
 
         .select{
             width: 160px;
-            &:first-child{
-                margin-right: 8px;
-            }
+
         }
     }
 
+    .phenotypeSecondLine{
+        .ant-form-item-control-wrapper{
+            width: 100%;
+        }
+        .hpoNote{
+            width: 100%;
+        }
+    }
+
+
     .searchInput{
+       
         .ant-form-item-control-wrapper{
             width: 100%;
             
@@ -251,11 +275,16 @@
 
 .selectDropdown{
     li{
-        font-family: $font;
-        font-size: 14px;
-        line-height: 22px;
-        letter-spacing: 0.25px;
-        color: #536377;
+        .observedIcon{
+            color: #52C41A;;
+        }
+        .notObservedIcon{
+            color: #FF4D4F;;
+        }
+        .unknownIcon{
+            color:#536377;
+        }
+        
     }
 }
 
