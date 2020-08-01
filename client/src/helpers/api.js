@@ -1,7 +1,7 @@
 import Http from './http-client';
+import { createPatientBundle } from './fhir/fhir';
 
-import { createSavePatientBundle, createUpdatePatientBundle } from './fhir';
-
+// import { createSavePatientBundle } from './fhir_back';
 
 const successCallback = payload => ({ payload });
 const errorCallback = error => ({ error });
@@ -139,14 +139,14 @@ const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
   .catch(errorCallback);
 
 const savePatient = (patient) => {
-  const data = createSavePatientBundle(patient);
+  const data = createPatientBundle(patient);
   return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
 };
 
-const updatePatient = (patient) => {
-  const data = createUpdatePatientBundle(patient);
+const updatePatient = (patient, serviceRequest) => {
+  const data = createPatientBundle(patient, serviceRequest);
   return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);

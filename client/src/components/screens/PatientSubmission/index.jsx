@@ -268,7 +268,7 @@ class PatientSubmissionScreen extends React.Component {
     form.validateFields((err, values) => {
       if (err) { return; }
 
-      const { actions, patient } = this.props;
+      const { actions, patient, serviceRequest } = this.props;
       const patientData = {
         name: {
           family: values.family,
@@ -307,7 +307,7 @@ class PatientSubmissionScreen extends React.Component {
         ],
       };
 
-      actions.savePatient(patientData);
+      actions.savePatient(patientData, serviceRequest);
     });
   }
 
