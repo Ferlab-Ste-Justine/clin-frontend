@@ -50,7 +50,7 @@ const processBundleResponse = curry((result, r) => {
 
 function* savePatient(action) {
   const { payload } = action;
-  const { patient } = payload;
+  const { patient, serviceRequest } = payload;
 
   yield put({
     type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,
@@ -61,7 +61,7 @@ function* savePatient(action) {
 
   let response = null;
   try {
-    response = patient.id ? yield Api.updatePatient(patient) : yield Api.savePatient(patient);
+    response = yield Api.savePatient(patient, serviceRequest);
     if (response.error) {
       throw new ApiError(response.error);
     }

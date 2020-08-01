@@ -1,6 +1,6 @@
 import { push, LOCATION_CHANGE } from 'connected-react-router';
 import {
-  all, select, put, takeLatest, takeEvery, delay,
+  all, select, put, takeLatest, delay, takeEvery,
 } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
