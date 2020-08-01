@@ -1,23 +1,10 @@
 $use-all: true;
 @import '/../../../../node_modules/animate-sass/animate';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+@import './variables.scss';
 
 
 
-$text-onprimary-medium: rgba(255, 255, 255, 0.71);
-$font: 'Roboto', sans-serif;
-$icon-size: 24px;
-
-$primary-blue: #095797;
-$header-font-color: #FFFFFF;
-
-$navigation-tab-active: #FFFFFF;
-$navigation-color: #223653;
-$navigation-tab: #FFFFFF;
-
-$link-color: #E88367;
-$footer-background-color: #EEEEEE;
-$footer-font-color: #FFFFFF;
 
 #root {
   display: block;
@@ -288,19 +275,39 @@ div.ant-card {
 
 .page_headerStatic{
   background-color: #FFFFFF;
-  padding: 24px 32px;
+  padding: 24px 0;
+  margin-bottom: 24px;
+  .headerStaticContent{
+    width: 1392px;
+    margin: 0 auto;
+  }
 }
 
 //Page Static Content
 .page-static-content{
-  max-width: 1392px;
-  justify-content: center;
+  margin: 0 auto;
+}
+
+//Card
+.staticCard{
+  width: 1392px;
+  margin-bottom: 8px;
+}
+
+//Inside
+.separator{
+  display: flex;
+  .cardSeparator{
+    border: 1px solid #D2DBE4;
+    padding:16px;
+  }
+  
 }
 
 
 //DATA ENTRY
 //Input
-.ant-input{
+.input{
   border-radius: 2px;
   border: 1px solid #ABBED3;
   font-family: $font;
@@ -323,11 +330,47 @@ div.ant-card {
   }
 }
 
-//Date Picker
-.ant-calendar-date-panel{
-  font-family: $font;
-  font-size: 14px;
+.searchInput{
+  input{
+    border-radius: 2px;
+    border: 1px solid #ABBED3;
+    font-family: $font;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0.25px;
+    color: #536377;
+    &::placeholder{
+        color: #ABB3BC;;
+    }
+  
+    &:hover{
+      border: 1px solid #3EB8EA !important;
+    }
+  
+    &:focus{
+      border: 1px solid #3EB8EA;
+      box-sizing: border-box;
+      box-shadow: 0px 0px 4px rgba(24, 144, 255, 0.5);
+    }
+  }
 }
+
+//Date Picker
+.ant-calendar-picker{
+  border-radius: 2px;
+  
+  .ant-calendar-picker-input{
+    border: 1px solid #ABBED3 !important;
+    &:hover{
+      border: 1px solid #3EB8EA !important;
+    }
+  }
+  .ant-calendar-date-panel{
+    font-family: $font;
+    font-size: 14px;
+  }
+}
+
 
 .ant-calendar-my-select{
   a{
@@ -424,17 +467,92 @@ div.ant-card {
   color: #536377;
   border: 1px solid #ABBED3;
   border-radius: 2px;
+
+  .icon{
+    margin-right: 4px;
+    svg{
+      margin-top: -3px;
+    }
+  }
+
+  .selectIcon{
+    margin-top: -3px;
+
+  }
+
+  .ant-select-arrow .ant-select-arrow-icon svg{
+    transition: none;
+  }
+
   .ant-select-selection__placeholder{
       padding-left: 0;
   }
 
   &:hover{
-    border: 1px solid #249ED9;
+    border: 1px solid #3EB8EA !important;
   }
 
   &:focus{
     border: 1px solid #249ED9;
     box-sizing: border-box;
     box-shadow: 0px 0px 4px rgba(24, 144, 255, 0.5);
+  }
+}
+.ant-select-open .ant-select-arrow-icon svg{
+  transform: none !important;
+}
+
+.selectDropdown{
+  li{
+      font-family: $font;
+      font-size: 14px;
+      line-height: 22px;
+      letter-spacing: 0.25px;
+      color: #536377;
+
+      .icon{
+        margin-right: 4px;
+        svg{
+          margin-top: -3px;
+        }
+      }
+    
+      .selectIcon{
+        margin-top: -3px;
+    
+      }
+  }
+}
+
+//Tree
+
+.ant-tree-node-content-wrapper{
+  font-family: $font;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0.25px;
+  span{
+    color: #536377;
+  }
+
+
+}
+
+.ant-tree-child-tree{
+  .ant-tree-title{
+    font-weight: normal;
+  }
+  
+}
+
+//Button
+//Sans Bordure
+.bordelessButton{
+  border: none;
+  padding: 0 8px;
+  font-family: $font;
+  span{
+    color: $blue-8;
   }
 }
