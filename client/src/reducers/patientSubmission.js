@@ -15,6 +15,13 @@ export const initialPatientSubmissionState = {
     gender: '',
     birthDate: '',
   },
+  clinicalImpression: {
+    investigation: [
+      {
+        item: [],
+      },
+    ],
+  },
 };
 
 export const patientSubmissionShape = {
@@ -29,6 +36,20 @@ const patientSubmissionReducer = (
     case actions.PATIENT_SUBMISSION_SAVE_SUCCEEDED:
       draft.patient = { ...draft.patient, ...action.payload.patient };
       draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest };
+
+      draft.clinicalImpression = {
+        ...draft.clinicalImpression,
+        ...action.payload.clinicalImpression,
+        investigation: !action.payload.observations
+          ? { ...draft.clinicalImpression.investigation }
+          : [
+            {
+              item: action.payload.observations.map((item, index) => ({
+                ...draft.clinicalImpression.investigation[0].item[index], ...item,
+              })),
+            },
+          ],
+      };
       break;
     default:
       break;

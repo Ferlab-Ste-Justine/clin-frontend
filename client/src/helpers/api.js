@@ -1,7 +1,5 @@
 import Http from './http-client';
-import { createPatientBundle } from './fhir/fhir';
-
-// import { createSavePatientBundle } from './fhir_back';
+import { createPatientSubmissionBundle } from './fhir/fhir';
 
 const successCallback = payload => ({ payload });
 const errorCallback = error => ({ error });
@@ -138,15 +136,15 @@ const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
   .then(successCallback)
   .catch(errorCallback);
 
-const savePatient = (patient) => {
-  const data = createPatientBundle(patient);
+const savePatientSubmission = (patientSubmission) => {
+  const data = createPatientSubmissionBundle(patientSubmission);
   return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
 };
 
-const updatePatient = (patient, serviceRequest) => {
-  const data = createPatientBundle(patient, serviceRequest);
+const updatePatientSubmission = (patient, serviceRequest) => {
+  const data = createPatientSubmissionBundle(patient, serviceRequest);
   return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
@@ -170,6 +168,6 @@ export default {
   updateUserProfile,
   convertToExcelData,
   getGeneAutocomplete,
-  savePatient,
-  updatePatient,
+  savePatientSubmission,
+  updatePatientSubmission,
 };

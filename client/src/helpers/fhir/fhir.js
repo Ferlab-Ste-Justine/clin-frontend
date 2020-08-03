@@ -5,6 +5,9 @@ import { curry } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import intl from 'react-intl-universal';
 
+const CGH_CODE = 'cgh';
+
+const isCGH = o => o.code.text === CGH_CODE;
 
 export const createBundle = () => ({
   resourceType: 'Bundle',
@@ -37,6 +40,8 @@ const createEntry = (resource) => {
   };
 };
 
+const getReference = entry => ({ reference: entry.fullUrl });
+
 const createPatientResource = patient => (
   {
     resourceType: 'Patient',
@@ -54,42 +59,65 @@ const createPatientResource = patient => (
   }
 );
 
-const createServiceRequestResource = (patientUrl, serviceRequest) => {
+const createServiceRequestResource = (serviceRequest) => {
   console.log();
 
   return {
     resourceType: 'ServiceRequest',
     id: serviceRequest ? serviceRequest.id : null,
     status: serviceRequest ? serviceRequest.status : 'draft',
-    subject: {
-      reference: patientUrl,
-    },
   };
 };
 
-export const createPatientBundle = (patient, serviceRequest) => {
-  const patientResource = createPatientResource(patient);
-  const patientRequest = createRequest(patientResource);
-  const patientEntry = createEntry(patientResource);
-  const patientUrl = patientEntry.fullUrl;
+export const createClinicalImpressionResource = ({
+  id, status, age, date, assessor,
+}) => {
+  console.log();
 
-  const bundle = createBundle();
-  bundle.entry.push(patientEntry);
+  const resource = {
+    resourceType: RESOURCE_TYPE_CLINICAL_IMPRESSION,
+    id,
+    meta: {
+      profile: [
+        'http://fhir.cqdg.ferlab.bio/StructureDefinition/cqdg-clinical-impression',
+      ],
+    },
 
-  const serviceRequestResource = createServiceRequestResource(patientUrl, serviceRequest);
-  const servicerequestEntry = createEntry(serviceRequestResource);
+    extension: [
+      {
+        url: 'http://fhir.cqdg.ferlab.bio/StructureDefinition/age-at-event',
+        valueAge: {
+          value: age,
+          unit: 'days',
+          system: 'http://unitsofmeasure.org',
+          code: 'd',
+        },
+      },
+    ],
 
-  bundle.entry.push(servicerequestEntry);
+    status,
+    description: 'This source refers to the consultation with the doctor',
+    date,
+    assessor: { reference: assessor },
+    investigation: [
+      {
+        code: {
+          text: 'initial-examination',
+        },
+        item: [],
+      },
+    ],
+  };
 
-  return bundle;
+  return resource;
 };
 
 export const createCGHResource = ({
-  patientUrl, code, categoryCode, categoryCodeDisplay, categoryText, ext, note,
+  id, value, categoryText, note,
 }) => {
   const newObs = {
     resourceType: 'Observation',
-    id: 'cgh-001',
+    id,
     meta: {
       profile: [
         'http://hl7.org/fhir/StructureDefinition/Observation',
@@ -102,20 +130,64 @@ export const createCGHResource = ({
         coding: [
           {
             system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-            code: categoryCode,
-            display: categoryCodeDisplay,
+            code: 'laboratory',
+            display: 'Laboratory',
           },
         ],
         text: categoryText,
       },
     ],
-    code: { text: code },
-    subject: { reference: patientUrl },
-    valueBoolean: true,
+    code: { text: 'cgh' },
+    valueBoolean: value,
     note: [{ text: note }],
   };
 
   return newObs;
+};
+
+export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinicalImpression }) => {
+  const patientResource = createPatientResource(patient);
+  const patientEntry = createEntry(patientResource);
+  const patientReference = getReference(patientEntry);
+
+  const bundle = createBundle();
+  bundle.entry.push(patientEntry);
+
+  const serviceRequestResource = createServiceRequestResource(serviceRequest);
+  serviceRequestResource.subject = patientReference;
+  const servicerequestEntry = createEntry(serviceRequestResource);
+
+  bundle.entry.push(servicerequestEntry);
+
+  if (clinicalImpression) {
+    const {
+      id, status, age, date,
+    } = clinicalImpression;
+
+    const ciParams = {
+      id, status, age, date, assessor: '',
+    };
+    const clinicalImpressionResource = createClinicalImpressionResource(ciParams);
+    clinicalImpressionResource.subject = patientReference;
+    const clinicalImpressionEntry = createEntry(clinicalImpressionResource);
+    bundle.entry.push(clinicalImpressionEntry);
+
+    // CGH
+    const cghObservation = clinicalImpression.investigation[0].item.find(isCGH);
+    const cghParams = {
+      id: cghObservation.id,
+      note: cghObservation.note,
+    };
+    const cghResource = createCGHResource(cghParams);
+    cghResource.subject = patientReference;
+    const cghEntry = createEntry(cghResource);
+    bundle.entry.push(cghEntry);
+    clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
+
+    // TODO: HPO
+  }
+
+  return bundle;
 };
 
 const createHPOResource = () => {
@@ -250,10 +322,10 @@ const createIndicationResource = () => {
 
 const addObservationEntry = curry((bundle, resource) => {
   const url = createFullUrl(resource);
-  const clinicalImpression = bundle.entry.find(e => e.resource.resourceType === 'ClinicalImpression');
+  const clinicalImpressionResource = bundle.entry.find(e => e.resource.resourceType === 'ClinicalImpression');
 
-  if (clinicalImpression) {
-    clinicalImpression.investigation.item.push({
+  if (clinicalImpressionResource) {
+    clinicalImpressionResource.investigation[0].item.push({
       reference: url,
     });
 
@@ -269,68 +341,6 @@ export const STATE_CLINICAL_IMPRESSION = {
   COMPLETED: 'completed',
   ENTERED_IN_ERROR: 'entered-in-error',
 };
-
-const createClinicalImpressionResource = ({
-  id, status, age, subject, date, assessor,
-}) => {
-  console.log();
-
-  const resource = {
-    resourceType: RESOURCE_TYPE_CLINICAL_IMPRESSION,
-    id,
-    meta: {
-      profile: [
-        'http://fhir.cqdg.ferlab.bio/StructureDefinition/cqdg-clinical-impression',
-      ],
-    },
-
-    extension: [
-      {
-        url: 'http://fhir.cqdg.ferlab.bio/StructureDefinition/age-at-event',
-        valueAge: {
-          value: age,
-          unit: 'days',
-          system: 'http://unitsofmeasure.org',
-          code: 'd',
-        },
-      },
-    ],
-
-    status,
-    description: 'This source refers to the consultation with the doctor',
-    subject: { reference: subject },
-    date,
-    assessor: { reference: assessor },
-    investigation: [
-      {
-        code: {
-          text: 'initial-examination',
-        },
-        item: [],
-      },
-    ],
-  };
-};
-
-const createClinicalImpressionBundle = ({ clinicalImpression, cgh, hpo }) => {
-  const bundle = createBundle();
-  const resource = createClinicalImpressionResource(clinicalImpression);
-
-  bundle.entry.push({
-    resource,
-    request: createRequest(resource),
-  });
-
-  const cghResources = createCGHResource(cgh);
-  cghResources.forEach(addObservationEntry(bundle));
-
-  // TODO
-  // const hpoResources = createHPOResource(hpo);
-  // cghResources.forEach(addObservationEntry(bundle));
-
-  return bundle;
-};
-
 
 // const addObservationReference = curry((clinicalImpressionResource, observationResource) => {
 //   const ref =
