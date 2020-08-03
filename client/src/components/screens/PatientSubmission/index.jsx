@@ -1,3 +1,5 @@
+/* eslint-disable prefer-destructuring */
+/* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
 /* eslint-disable import/named */
 /* eslint-disable no-unused-vars */
@@ -12,6 +14,7 @@ import {
 } from 'antd';
 import {
   has,
+  curry,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
@@ -25,7 +28,7 @@ import DataList from '../../DataList';
 import { patientSubmissionShape } from '../../../reducers/patientSubmission';
 import { appShape } from '../../../reducers/app';
 import {
-  savePatient,
+  savePatientSubmission,
 } from '../../../actions/patientSubmission';
 import './style.scss';
 
@@ -51,6 +54,11 @@ const mrnValue = (patient) => {
 
   return '';
 };
+
+const hasObservations = clinicalImpression => clinicalImpression.investigation[0].item.length > 0;
+const addObservation = curry((clinicalImpression, observation) => {
+  clinicalImpression.investigation[0].item.push(observation);
+});
 
 const getGenderValues = () => ({
   male: {
@@ -170,7 +178,6 @@ const getRelationValues = () => ({
   },
 });
 
-
 const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
   const _has = has;
@@ -264,7 +271,9 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
 
 
 const ClinicalInformation = (props) => {
-  const relationrValues = getRelationValues();
+  const { getFieldDecorator, clinicalImpression } = props;
+
+  const relationValues = getRelationValues();
   const familyItem = (
     <div className="familyLine">
       <Form.Item>
@@ -272,7 +281,7 @@ const ClinicalInformation = (props) => {
       </Form.Item>
       <Form.Item>
         <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
-          {Object.values(relationrValues).map(rv => (
+          {Object.values(relationValues).map(rv => (
             <Select.Option value={rv.value}>{rv.label}</Select.Option>
           ))}
         </Select>
@@ -337,6 +346,14 @@ const ClinicalInformation = (props) => {
 
   );
 
+  let cgh;
+  if (clinicalImpression) {
+    const observations = clinicalImpression.investigation[0].item;
+    if (observations.length) {
+      cgh = observations[0];
+    }
+  }
+
   return (
     <div>
       <Form>
@@ -352,14 +369,24 @@ const ClinicalInformation = (props) => {
         </Card>
         <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
           <Form.Item label="CGH">
-            <Radio.Group buttonStyle="solid">
-              <Radio.Button value="negatif"><span className="radioText">Négatif</span></Radio.Button>
-              <Radio.Button value="anormal"><span className="radioText">Anormal</span></Radio.Button>
-              <Radio.Button value="so"><span className="radioText">Sans objet</span></Radio.Button>
-            </Radio.Group>
+            {getFieldDecorator('cgh', {
+              rules: [],
+              initialValue: cgh ? cgh.value : undefined,
+            })(
+              <Radio.Group buttonStyle="solid" onChange={(e) => { console.log('CGH value changed: ', e.target.value); }}>
+                <Radio.Button value={false}><span className="radioText">Négatif</span></Radio.Button>
+                <Radio.Button value={true}><span className="radioText">Anormal</span></Radio.Button>
+                <Radio.Button value={null}><span className="radioText">Sans objet</span></Radio.Button>
+              </Radio.Group>,
+            )}
           </Form.Item>
           <Form.Item label="Précision">
-            <Input placeholder="Veuillez préciser…" className="input note" />
+            {getFieldDecorator('cghNote', {
+              rules: [],
+              initialValue: cgh ? cgh.note : undefined,
+            })(
+              <Input placeholder="Veuillez préciser…" className="input note" />,
+            )}
           </Form.Item>
           <Form.Item label="Résumé">
             <TextArea className="input note" rows={4} />
@@ -384,7 +411,7 @@ const ClinicalInformation = (props) => {
                 <Search classeName="searchInput" placeholder="Filtrer les signes par titre…" />
               </Form.Item>
               <Tree checkable selectable={false}>
-                <TreeNode checkable={false} title="Eye Defetcs" key="0-0">
+                <TreeNode checkable={false} title="Eye Defects" key="0-0">
                   <TreeNode checkable={false} title="Abnormality of the optical nerve" key="0-0-0" disabled>
                     <TreeNode title="Abnormality of optic chiasm morphology" key="0-0-0-0" disableCheckbox />
                     <TreeNode title="leaf" key="0-0-0-1" />
@@ -438,15 +465,13 @@ class PatientSubmissionScreen extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  getPatientData() {
+    const { currentPageIndex } = this.state;
+    const { patient, form } = this.props;
+    const values = form.getFieldsValue();
 
-  handleSubmit(e) {
-    const { form } = this.props;
-    e.preventDefault();
-    form.validateFields((err, values) => {
-      if (err) { return; }
-
-      const { actions, patient, serviceRequest } = this.props;
-      const patientData = {
+    if (currentPageIndex === 0) {
+      return {
         name: {
           family: values.family,
           given: values.given,
@@ -483,8 +508,59 @@ class PatientSubmissionScreen extends React.Component {
           },
         ],
       };
+    }
 
-      actions.savePatient(patientData, serviceRequest);
+    return { ...patient };
+  }
+
+  getClinicalImpressionData() {
+    const { currentPageIndex } = this.state;
+    const { clinicalImpression, form } = this.props;
+    const values = form.getFieldsValue();
+
+    const clinicalImpressionData = { ...clinicalImpression };
+
+    if (currentPageIndex === 1) {
+      const { investigation } = clinicalImpression;
+      const observations = investigation[0].item;
+      if (values.cgh !== undefined) {
+        const oldCGH = observations.length ? observations[0] : {};
+        clinicalImpressionData.investigation[0].item[0] = {
+          ...oldCGH,
+          code: {
+            text: 'cgh',
+          },
+          value: values.cgh,
+          note: values.cghNote,
+        };
+      }
+    }
+
+    return clinicalImpressionData;
+  }
+
+  handleSubmit(e) {
+    const { form } = this.props;
+    e.preventDefault();
+    form.validateFields((err, values) => {
+      if (err) { return; }
+
+      const { actions, serviceRequest } = this.props;
+      const patientData = this.getPatientData();
+
+      const { clinicalImpression } = this.props;
+      const clinicalImpressionData = this.getClinicalImpressionData();
+
+      const submission = {
+        patient: patientData,
+        serviceRequest,
+      };
+
+      if (hasObservations(clinicalImpression)) {
+        submission.clinicalImpression = clinicalImpressionData;
+      }
+
+      actions.savePatientSubmission(submission);
     });
   }
 
@@ -517,7 +593,7 @@ class PatientSubmissionScreen extends React.Component {
   render() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
-    const { patient } = this.props;
+    const { patient, clinicalImpression } = this.props;
 
     this.pages = [
       {
@@ -531,7 +607,7 @@ class PatientSubmissionScreen extends React.Component {
       {
         title: intl.get('screen.clinicalSubmission.clinicalInformation'),
         content: (
-          <ClinicalInformation parentForm={this} getFieldDecorator={getFieldDecorator} />
+          <ClinicalInformation parentForm={this} getFieldDecorator={getFieldDecorator} clinicalImpression={clinicalImpression} />
         ),
         name: 'ClinicalInformation',
         values: {},
@@ -602,7 +678,7 @@ PatientSubmissionScreen.propTypes = {
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
-    savePatient,
+    savePatientSubmission,
   }, dispatch),
 });
 
@@ -610,6 +686,7 @@ const mapStateToProps = state => ({
   app: state.app,
   router: state.router,
   patient: state.patientSubmission.patient,
+  clinicalImpression: state.patientSubmission.clinicalImpression,
   search: state.search,
 });
 

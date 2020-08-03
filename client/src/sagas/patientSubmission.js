@@ -2,8 +2,6 @@ import {
   all, put, takeLatest,
 } from 'redux-saga/effects';
 
-import { curry, omit } from 'lodash';
-
 import * as actionTypes from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 
@@ -11,57 +9,37 @@ const extractResponses = e => e.response;
 const getLocation = response => response.location;
 const getFieldName = (response) => {
   const type = getLocation(response).split('/')[0];
-  switch (type) {
-    case 'Patient':
-      return 'patient';
-    case 'ServiceRequest':
-      return 'serviceRequest';
-    default:
-      return null;
-  }
+  const fieldname = type[0].toLowerCase() + type.substring(1);
+  return fieldname;
 };
 const getId = response => getLocation(response).split('/')[1];
 // const getVersion = response => getLocation(response).split('/')[3];
-const isPatient = response => getFieldName(response) === 'patient';
-const isServiceRequest = r => r.resourceType === 'serviceRequest';
+const isPatient = r => getFieldName(r) === 'patient';
+const isServiceRequest = r => getFieldName(r) === 'serviceRequest';
+const isObservation = r => getFieldName(r) === 'observation';
+const isClinicalImpression = r => getFieldName(r) === 'clinicalImpression';
 const getStatusCode = r => r.status.split(' ')[0];
 const isCreate = r => getStatusCode(r) === '201';
-const isUpdate = r => getStatusCode(r) === '200';
 
-const processBundleResponse = curry((result, r) => {
-  const entity = omit(r, 'resourceType');
-  if (isUpdate(r)) {
-    if (isPatient(r)) {
-      result.patient = entity;
-    }
-    if (isServiceRequest(r)) {
-      result.serviceRequest = entity;
-    }
+const processBundleResponse = (r) => {
+  if (r && isCreate(r)) {
+    return { id: getId(r) };
   }
-  if (isCreate(r)) {
-    if (isPatient(r)) {
-      result.patient = { id: getId(r) };
-    }
-    if (isServiceRequest(r)) {
-      result.serviceRequest = { id: getId(r) };
-    }
-  }
-});
 
-function* savePatient(action) {
+  return {};
+};
+
+function* savePatientSubmission(action) {
   const { payload } = action;
-  const { patient, serviceRequest } = payload;
 
   yield put({
     type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,
-    payload: {
-      patient,
-    },
+    payload,
   });
 
   let response = null;
   try {
-    response = yield Api.savePatient(patient, serviceRequest);
+    response = yield Api.savePatientSubmission(payload);
     if (response.error) {
       throw new ApiError(response.error);
     }
@@ -70,10 +48,13 @@ function* savePatient(action) {
       entry,
     } = response.payload.data;
 
+    const responses = entry.map(extractResponses);
+
     const result = {};
-    entry
-      .map(extractResponses)
-      .forEach(processBundleResponse(result));
+    result.patient = processBundleResponse(responses.find(isPatient));
+    result.serviceRequest = processBundleResponse(responses.find(isServiceRequest));
+    result.clinicalImpression = processBundleResponse(responses.find(isClinicalImpression));
+    result.observations = responses.filter(isObservation).map(processBundleResponse);
 
     yield put({
       type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,
@@ -84,12 +65,12 @@ function* savePatient(action) {
   }
 }
 
-function* watchSavePatient() {
-  yield takeLatest(actionTypes.PATIENT_SUBMISSION_SAVE_REQUESTED, savePatient);
+function* watchSavePatientSubmission() {
+  yield takeLatest(actionTypes.PATIENT_SUBMISSION_SAVE_REQUESTED, savePatientSubmission);
 }
 
 export default function* watchedPatientSubmissionSagas() {
   yield all([
-    watchSavePatient(),
+    watchSavePatientSubmission(),
   ]);
 }
