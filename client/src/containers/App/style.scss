@@ -546,6 +546,40 @@ div.ant-card {
   
 }
 
+//Checkbox
+.checkboxGroup{
+  .ant-row{
+    &:last-child{
+      .checkbox{
+        margin-bottom: 0;
+      }
+      
+    }
+    .checkbox{
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      .ant-checkbox-inner{
+        border: 1px solid #ABBED3;
+        border-radius: 2px;
+      }
+      .ant-checkbox-checked{
+        .ant-checkbox-inner{
+          border: 1px solid #1D8BC6;
+        }
+      }
+      .checkboxText{
+        font-family: $font;
+        font-size: 14px;
+        line-height: 22px;
+        letter-spacing: 0.25px;
+        color: #536377;
+      }
+    }
+  }
+}
+
+
 //Button
 //Sans Bordure
 .bordelessButton{
