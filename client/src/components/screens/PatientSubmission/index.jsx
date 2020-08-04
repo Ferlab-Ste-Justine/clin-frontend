@@ -433,7 +433,7 @@ const ClinicalInformation = (props) => {
 
         </Card>
         <Card title="Indications" bordered={false} className="staticCard patientContent">
-          <Form.Item label="Hypothèse(s) de diagnostique">
+          <Form.Item label="Hypothèse(s) de diagnostic">
             <TextArea className="input note" rows={4} />
           </Form.Item>
         </Card>
