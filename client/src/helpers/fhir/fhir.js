@@ -113,7 +113,7 @@ export const createClinicalImpressionResource = ({
 };
 
 export const createCGHResource = ({
-  id, value, categoryText, note,
+  id, valueBoolean, categoryText, note,
 }) => {
   const newObs = {
     resourceType: 'Observation',
@@ -138,7 +138,7 @@ export const createCGHResource = ({
       },
     ],
     code: { text: 'cgh' },
-    valueBoolean: value,
+    valueBoolean,
     note: [{ text: note }],
   };
 
@@ -175,6 +175,8 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     // CGH
     const cghObservation = clinicalImpression.investigation[0].item.find(isCGH);
     const cghParams = {
+      // valueBoolean: cghObservation.valueBoolean,
+      valueBoolean: cghObservation.valueBoolean,
       id: cghObservation.id,
       note: cghObservation.note,
     };

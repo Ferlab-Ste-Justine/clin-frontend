@@ -530,7 +530,7 @@ class PatientSubmissionScreen extends React.Component {
           code: {
             text: 'cgh',
           },
-          value: values.cgh,
+          valueBoolean: values.cgh,
           note: values.cghNote,
         };
       }
