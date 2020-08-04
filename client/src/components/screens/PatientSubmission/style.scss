@@ -73,6 +73,12 @@
                 background-color: #2AABE8 !important;
             }
         }
+        .ant-steps-item-icon{
+            border: 1px solid #2AABE8;
+            .ant-steps-icon{
+                color:#2AABE8;
+            }
+        }
     }
 }
 
@@ -126,6 +132,9 @@
                 letter-spacing: 0.25px;
                 color: #233750;
                 margin: 8px 0px;
+                &::after{
+                    display: none;
+                }
             }
         }
 
@@ -137,6 +146,15 @@
         .ant-form-item-control{
             line-height: 0; 
         }
+    }
+    .labelTop{
+        .ant-form-item-label{
+            align-items: baseline !important;
+            label{
+                margin:4px 0px;
+            }
+        }
+        
     }
 
     .addFamilyButton{
@@ -248,13 +266,16 @@
     }
 
 
-    .searchInput{
-       
+    .searchInputFull{
         .ant-form-item-control-wrapper{
             width: 100%;
-            
         }
-        
+    }
+
+    .searchInput340{
+        .ant-form-item-control-wrapper{
+            width: 340px;
+        }
     }
 
 
@@ -270,6 +291,17 @@
         letter-spacing: 0.4px;
         color: #858E99;
         margin-left: 8px;
+    }
+
+    .cardDescription{
+        font-family: $font;
+        font-size: 14px;
+        line-height: 22px;
+        display: flex;
+        align-items: center;
+        letter-spacing: 0.25px;
+        color: #858E99;
+        margin-bottom: 24px;
     }
 }
 

@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select, Tree,
+  Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select, Tree, Checkbox, Row,
 } from 'antd';
 import {
   has,
@@ -388,6 +388,8 @@ const ClinicalInformation = (props) => {
               <Input placeholder="Veuillez préciser…" className="input note" />,
             )}
           </Form.Item>
+
+
           <Form.Item label="Résumé">
             <TextArea className="input note" rows={4} />
             <span className="optional">Facultatif</span>
@@ -407,7 +409,7 @@ const ClinicalInformation = (props) => {
         <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
           <div className="separator">
             <div className="cardSeparator">
-              <Form.Item className="searchInput">
+              <Form.Item className="searchInput searchInputFull">
                 <Search classeName="searchInput" placeholder="Filtrer les signes par titre…" />
               </Form.Item>
               <Tree checkable selectable={false}>
@@ -446,8 +448,29 @@ const Approval = props => (
   <div>
     <Card title="Consentements" bordered={false} className="staticCard patientContent">
       <Form>
-        <Form.Item label="Some field">
-          <Input className="input" placeholder="a placeholder ..." />
+        <Form.Item label="Clauses signées" className="labelTop">
+          <Checkbox.Group className="checkboxGroup">
+            <Row>
+              <Checkbox className="checkbox" value="c1"><span className="checkboxText">Clause 1</span></Checkbox>
+            </Row>
+            <Row>
+              <Checkbox className="checkbox" value="c2"><span className="checkboxText">Clause 2</span></Checkbox>
+            </Row>
+            <Row>
+              <Checkbox className="checkbox" value="c3"><span className="checkboxText">Clause 3</span></Checkbox>
+            </Row>
+            <Row>
+              <Checkbox className="checkbox" value="c4"><span className="checkboxText">Clause 4</span></Checkbox>
+            </Row>
+          </Checkbox.Group>
+        </Form.Item>
+      </Form>
+    </Card>
+    <Card title="Approbation" bordered={false} className="staticCard patientContent">
+      <Form>
+        <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
+        <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
+          <Search classeName="searchInput" placeholder="Recherche par nom ou licence…" />
         </Form.Item>
       </Form>
     </Card>
