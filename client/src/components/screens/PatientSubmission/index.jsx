@@ -358,7 +358,7 @@ class PatientSubmissionScreen extends React.Component {
       {
         title: intl.get('screen.clinicalSubmission.clinicalInformation'),
         content: (
-          <ClinicalInformation parentForm={this} getFieldDecorator={getFieldDecorator} clinicalImpression={clinicalImpression} />
+          <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} />
         ),
         name: 'ClinicalInformation',
         values: {},

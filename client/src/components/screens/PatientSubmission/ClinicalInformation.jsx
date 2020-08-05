@@ -18,7 +18,8 @@ class ClinicalInformation extends React.Component {
 
   render() {
     // eslint-disable-next-line react/prop-types
-    const { getFieldDecorator, clinicalImpression } = this.props;
+    const { form, clinicalImpression } = this.props;
+    const { getFieldDecorator, getFieldValue } = form;
 
     const { TextArea, Search } = Input;
     const { TreeNode } = Tree;
@@ -124,7 +125,50 @@ class ClinicalInformation extends React.Component {
     });
 
     const relationValues = getRelationValues();
-    const familyItem = (
+    getFieldDecorator('keys', { initialValue: [] });
+    const keys = getFieldValue('keys');
+    const familyItems = keys.map(k => (
+      <>
+        <Form.Item required={false} key={k}>
+          {getFieldDecorator(`names[${k}]`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            rules: [
+              {
+                required: true,
+                whitespace: true,
+                message: "Please input passenger's name or delete this field.",
+              },
+            ],
+          })(
+            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+          )}
+        </Form.Item>
+        <Form.Item required={false} key={k}>
+          {getFieldDecorator(`names[${k}]`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            rules: [
+              {
+                required: true,
+                whitespace: true,
+                message: "Please input passenger's name or delete this field.",
+              },
+            ],
+          })(
+            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
+              {Object.values(relationValues).map(rv => (
+                <Select.Option value={rv.value}>{rv.label}</Select.Option>
+              ))}
+            </Select>,
+          )}
+        </Form.Item>
+        <Button className="delButton" shape="round">
+          <IconKit size={20} icon={ic_remove} />
+        </Button>
+      </>
+
+    ));
+
+    /*     const familyItems = (
       <div className="familyLine">
         <Form.Item>
           <Input placeholder="Ajouter une note…" className="input noteInput note" />
@@ -142,7 +186,7 @@ class ClinicalInformation extends React.Component {
           </Button>
         </Form.Item>
       </div>
-    );
+    ); */
 
     const selectedPhenotype = ['coucou'];
     const phenotypeItem = (
@@ -230,14 +274,19 @@ class ClinicalInformation extends React.Component {
                 </Radio.Group>,
               )}
             </Form.Item>
-            <Form.Item label="Précision">
-              {getFieldDecorator('cghNote', {
-                rules: [],
-                initialValue: cgh ? cgh.note : undefined,
-              })(
-                <Input placeholder="Veuillez préciser…" className="input note" />,
-              )}
-            </Form.Item>
+            {
+              form.getFieldsValue().cgh === true
+                ? (
+                  <Form.Item label="Précision">
+                    {getFieldDecorator('cghNote', {
+                      rules: [],
+                      initialValue: cgh ? cgh.note : undefined,
+                    })(
+                      <Input placeholder="Veuillez préciser…" className="input note" />,
+                    )}
+                  </Form.Item>
+                ) : null
+            }
 
 
             <Form.Item label="Résumé">
@@ -247,7 +296,7 @@ class ClinicalInformation extends React.Component {
           </Card>
           <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
             <div className="familyLines">
-              {familyItem}
+              {familyItems}
             </div>
             <Form.Item>
               <Button className="addFamilyButton">
