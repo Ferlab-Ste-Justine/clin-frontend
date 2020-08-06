@@ -16,7 +16,6 @@ function* fetch(action) {
     yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientResponse.payload.data });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
-    yield put({ type: actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
   }
 }
 
