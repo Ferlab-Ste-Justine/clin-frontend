@@ -1,6 +1,6 @@
 {
   "name": "clin-frontend",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "versionName": "Alpha Strain",
   "dependencies": {
     "@babel/core": "7.2.2",

@@ -128,6 +128,10 @@ function* manualUserNavigation(action) {
     if (tab && tab.indexOf('&') > -1) {
       tab = tab.substring(0, tab.indexOf('&'));
     }
+    if (tab && tab.indexOf('=') > -1) {
+      // Tab should not be formatted as a 'key=value'; it is not a param.
+      tab = '';
+    }
 
     yield put({ type: actions.USER_PROFILE_REQUESTED });
     yield put({ type: actions.USER_IDENTITY_REQUESTED });
