@@ -742,10 +742,28 @@ class VariantDetailsScreen extends React.Component {
   getOmimData() {
     return this.getGenes().map((g) => {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-      const geneLine = `${g.geneSymbol} ${g.geneMim ? `(MIN ${g.geneMim[0]})` : ''}`;
+      const geneLine = (
+        <span>{g.geneSymbol} {g.geneMim
+          ? (
+            <>
+            (MIM:
+              <Link
+                url={`https://omim.org/entry/${g.geneMim[0]}`}
+                text={g.geneMim[0]}
+              />
+            )
+            </>
+          ) : ''}
+        </span>
+      );
+
       const phenotype = g.omim ? g.omim.map(o => (
         <li>
-          {o.phenotype} (MIN {o.phenotypeMim})
+          {o.phenotype} (MIN:
+          <Link
+            url={`https://omim.org/entry/${o.phenotypeMim}`}
+            text={o.phenotypeMim}
+          />)
         </li>
       )) : '--';
       const transmission = g.omim ? g.omim.map(o => (
