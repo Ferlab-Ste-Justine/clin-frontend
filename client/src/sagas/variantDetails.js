@@ -19,7 +19,6 @@ function* fetchVariantDetails(action) {
     yield put({ type: actionTypes.VARIANT_DETAILS_SUCCEEDED, payload: variantDetailsResponse.payload.data.data });
   } catch (e) {
     yield put({ type: actionTypes.VARIANT_DETAILS_FAILED, payload: e });
-    yield put({ type: actionTypes.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED });
   }
 }
 
