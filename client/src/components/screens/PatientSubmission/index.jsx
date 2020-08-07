@@ -34,6 +34,10 @@ import {
 import ClinicalInformation from './ClinicalInformation';
 import './style.scss';
 
+import {
+  isCGH, isIndication,
+} from '../../../helpers/fhir/fhir';
+
 const { Step } = Steps;
 const { TextArea, Search } = Input;
 const { TreeNode } = Tree;
@@ -172,7 +176,6 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   );
 };
 
-
 const Approval = props => (
   <div>
     <Card title="Consentements" bordered={false} className="staticCard patientContent">
@@ -204,7 +207,6 @@ const Approval = props => (
       </Form>
     </Card>
   </div>
-
 );
 
 class PatientSubmissionScreen extends React.Component {
@@ -265,27 +267,64 @@ class PatientSubmissionScreen extends React.Component {
     return { ...patient };
   }
 
+  getCGHData() {
+    const { form, clinicalImpression } = this.props;
+    const { investigation } = clinicalImpression;
+    const values = form.getFieldsValue();
+
+    if (values.cgh === undefined) {
+      return [];
+    }
+
+    const observations = investigation[0].item;
+    const oldCGH = observations.find(isCGH) || {};
+
+    return [{
+      ...oldCGH,
+      code: {
+        text: 'cgh',
+      },
+      valueCode: values.cgh,
+      valueDisplay: values.cghDisplay,
+      note: values.cghNote,
+    }];
+  }
+
+  getHPOData() { console.log(this); }
+
+  getIndicationData() {
+    const { form, clinicalImpression } = this.props;
+    const { investigation } = clinicalImpression;
+    const values = form.getFieldsValue();
+
+    if (values.indication === undefined) {
+      return [];
+    }
+
+    const observations = investigation[0].item;
+    const oldIndication = observations.find(isIndication) || {};
+
+    return [{
+      ...oldIndication,
+      code: {
+        text: 'indication',
+      },
+      note: values.indication,
+    }];
+  }
+
   getClinicalImpressionData() {
     const { currentPageIndex } = this.state;
     const { clinicalImpression, form } = this.props;
-    const values = form.getFieldsValue();
 
     const clinicalImpressionData = { ...clinicalImpression };
 
     if (currentPageIndex === 1) {
       const { investigation } = clinicalImpression;
-      const observations = investigation[0].item;
-      if (values.cgh !== undefined) {
-        const oldCGH = observations.length ? observations[0] : {};
-        clinicalImpressionData.investigation[0].item[0] = {
-          ...oldCGH,
-          code: {
-            text: 'cgh',
-          },
-          valueBoolean: values.cgh,
-          note: values.cghNote,
-        };
-      }
+      investigation[0].item = [
+        ...this.getCGHData(),
+        ...this.getIndicationData(),
+      ];
     }
 
     return clinicalImpressionData;

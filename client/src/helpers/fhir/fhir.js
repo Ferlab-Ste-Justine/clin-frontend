@@ -5,9 +5,24 @@ import { curry } from 'lodash';
 import uuidv1 from 'uuid/v1';
 import intl from 'react-intl-universal';
 
-const CGH_CODE = 'cgh';
+const OBSERVATION_CGH_CODE = 'cgh';
+const OBSERVATION_INDICATION_CODE = 'indication';
 
-const isCGH = o => o.code.text === CGH_CODE;
+export const isCGH = o => o.code.text === OBSERVATION_CGH_CODE;
+export const isIndication = o => o.code.text === OBSERVATION_INDICATION_CODE;
+
+// TODO: translate/intl
+export const CGH_CODES = {
+  A: 'A',
+  N: 'N',
+};
+export const CGH_VALUES = () => (
+  [
+    { value: CGH_CODES.A, display: 'Anormal' },
+    { value: CGH_CODES.N, display: 'Négatif' },
+    { value: null, display: 'Sans objet' },
+  ]
+);
 
 export const createBundle = () => ({
   resourceType: 'Bundle',
@@ -16,7 +31,6 @@ export const createBundle = () => ({
 });
 
 const RESOURCE_TYPE_CLINICAL_IMPRESSION = 'ClinicalImpression';
-
 
 export const createRequest = (resource) => {
   const {
@@ -113,7 +127,7 @@ export const createClinicalImpressionResource = ({
 };
 
 export const createCGHResource = ({
-  id, valueBoolean, categoryText, note,
+  id, valueCode, valueDisplay, categoryText, note,
 }) => {
   const newObs = {
     resourceType: 'Observation',
@@ -138,11 +152,50 @@ export const createCGHResource = ({
       },
     ],
     code: { text: 'cgh' },
-    valueBoolean,
+    interpretation: [
+      {
+        coding: [
+          {
+            code: valueCode,
+            display: valueDisplay,
+            // "code":"A",
+            // "display":"Abnormal"
+          },
+        ],
+      },
+    ],
     note: [{ text: note }],
   };
 
   return newObs;
+};
+
+const createIndicationResource = (note) => {
+  console.log();
+  return {
+    resourceType: 'Observation',
+    meta: {
+      profile: [
+        'http://hl7.org/fhir/StructureDefinition/Observation',
+      ],
+    },
+
+    status: 'final',
+    category: [
+      {
+        coding: [
+          {
+            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+            code: 'exam',
+            display: 'Exam',
+          },
+        ],
+        text: 'Indications - hypothèse(s) de diagnostic',
+      },
+    ],
+    code: { text: 'INDIC' },
+    note: [{ text: note }],
+  };
 };
 
 export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinicalImpression }) => {
@@ -175,8 +228,8 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     // CGH
     const cghObservation = clinicalImpression.investigation[0].item.find(isCGH);
     const cghParams = {
-      // valueBoolean: cghObservation.valueBoolean,
-      valueBoolean: cghObservation.valueBoolean,
+      valueCode: cghObservation.valueCode,
+      valueDisplay: cghObservation.valueDisplay,
       id: cghObservation.id,
       note: cghObservation.note,
     };
@@ -187,6 +240,18 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
 
     // TODO: HPO
+
+    // Indication
+    const indicationObservation = clinicalImpression.investigation[0].item.find(isIndication);
+    const indicationParams = {
+      id: indicationObservation.id,
+      note: indicationObservation.note,
+    };
+    const indicationResource = createIndicationResource(indicationParams);
+    indicationResource.subject = patientReference;
+    const indicationEntry = createEntry(indicationResource);
+    bundle.entry.push(indicationEntry);
+    clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
   }
 
   return bundle;
@@ -287,56 +352,10 @@ const createInvestigationSummaryResource = () => {
   };
 };
 
-const createIndicationResource = () => {
-  console.log();
-  return {
-    resourceType: 'Observation',
-    id: 'ind-001',
-    meta: {
-      profile: [
-        'http://hl7.org/fhir/StructureDefinition/Observation',
-      ],
-    },
-
-    status: 'final',
-    category: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-            code: 'exam',
-            display: 'Exam',
-          },
-        ],
-        text: 'Indications - hypothèse(s) de diagnostic',
-      },
-    ],
-    code: { text: 'indications' },
-    subject: { reference: 'Patient/pt-001' },
-    note: [{ text: 'Syndrome de microdélétion' }],
-  };
-};
-
 // 1. Create clinicalImpression resource
 // 2. Add clinical impression entry to bundle ({resource:---, request: ---})
 // 3. Create observation resource
 // 4. Add observation entry to bundle (will have to look for clinical impression resource to add reference to observation. Observation resource needs a fullUrl field to serve as reference target)
-
-const addObservationEntry = curry((bundle, resource) => {
-  const url = createFullUrl(resource);
-  const clinicalImpressionResource = bundle.entry.find(e => e.resource.resourceType === 'ClinicalImpression');
-
-  if (clinicalImpressionResource) {
-    clinicalImpressionResource.investigation[0].item.push({
-      reference: url,
-    });
-
-    bundle.entry.add({
-      resource,
-      request: createRequest(resource),
-    });
-  }
-});
 
 export const STATE_CLINICAL_IMPRESSION = {
   IN_PROGRESS: 'in-progress',
