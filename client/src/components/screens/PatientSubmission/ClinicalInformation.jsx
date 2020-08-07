@@ -184,7 +184,7 @@ class ClinicalInformation extends React.Component {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [],
           })(
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
+            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
               {Object.values(relationValues).map(rv => (
                 <Select.Option value={rv.value}>{rv.label}</Select.Option>
               ))}
