@@ -364,6 +364,7 @@ div.ant-card {
     &:hover{
       border: 1px solid #3EB8EA !important;
     }
+
   }
   .ant-calendar-date-panel{
     font-family: $font;
@@ -371,7 +372,11 @@ div.ant-card {
   }
 }
 
-
+.ant-calendar-input {
+  &:focus{
+    outline: none;
+  }
+}
 .ant-calendar-my-select{
   a{
     color: #125A90 !important; 
@@ -521,6 +526,13 @@ div.ant-card {
         margin-top: -3px;
     
       }
+  }
+
+  .ant-select-dropdown-menu-item-group-title{
+    font-family: $font;
+    font-size: 12px;
+    letter-spacing: 0.4px;
+    color: #858E99;
   }
 }
 

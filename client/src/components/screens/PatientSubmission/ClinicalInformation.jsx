@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react/prop-types */
 import React from 'react';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
@@ -18,10 +20,46 @@ class ClinicalInformation extends React.Component {
     super(props);
     this.state = {
     };
+
+    this.addFamilyHistory = this.addFamilyHistory.bind(this);
+    this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
+    this.handleNoteChange = this.handleNoteChange.bind(this);
+  }
+
+  addFamilyHistory() {
+    const { form } = this.props;
+    const keys = form.getFieldValue('familyHistory');
+    const nextKeys = keys.concat(keys.length + 1);
+    form.setFieldsValue({
+      familyHistory: nextKeys,
+    });
+  }
+
+  deleteFamilyHistory(index) {
+    const { form } = this.props;
+    const keys = form.getFieldValue('familyHistory');
+    const notes = form.getFieldValue('note');
+    // eslint-disable-next-line no-unused-vars
+    const relation = form.getFieldValue('relation');
+    notes.splice(index, 1);
+    relation.splice(index, 1);
+    keys.splice(index, 1);
+    if (keys.length === 0) {
+      return;
+    }
+    form.setFieldsValue({
+      familyHistory: keys,
+      note: notes,
+      relation,
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  handleNoteChange(e) {
+    console.log(e);
   }
 
   render() {
-    // eslint-disable-next-line react/prop-types
     const { form, clinicalImpression } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
 
@@ -129,69 +167,39 @@ class ClinicalInformation extends React.Component {
     });
 
     const relationValues = getRelationValues();
-    getFieldDecorator('keys', { initialValue: [] });
-    const keys = getFieldValue('keys');
-    const familyItems = keys.map(k => (
-      <>
-        <Form.Item required={false} key={k}>
-          {getFieldDecorator(`names[${k}]`, {
+
+    getFieldDecorator('familyHistory', {
+      initialValue: [1],
+    });
+    const familyInfo = getFieldValue('familyHistory');
+    const familyItems = familyInfo.map((k, index) => (
+      <div className="familyLine">
+        <Form.Item required={false} key={`note_${index}`}>
+          {getFieldDecorator(`note[${index}]`, {
             validateTrigger: ['onChange', 'onBlur'],
-            rules: [
-              {
-                required: true,
-                whitespace: true,
-                message: "Please input passenger's name or delete this field.",
-              },
-            ],
+            rules: [],
           })(
-            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input onChage={this.handleNoteChange} placeholder="Ajouter une note…" className="input noteInput note" />,
           )}
         </Form.Item>
-        <Form.Item required={false} key={k}>
-          {getFieldDecorator(`names[${k}]`, {
+        <Form.Item required={false} key={`relation_${index}`}>
+          {getFieldDecorator(`relation[${index}]`, {
             validateTrigger: ['onChange', 'onBlur'],
-            rules: [
-              {
-                required: true,
-                whitespace: true,
-                message: "Please input passenger's name or delete this field.",
-              },
-            ],
+            rules: [],
           })(
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
+            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
               {Object.values(relationValues).map(rv => (
                 <Select.Option value={rv.value}>{rv.label}</Select.Option>
               ))}
             </Select>,
           )}
         </Form.Item>
-        <Button className="delButton" shape="round">
+        <Button className="delButton" disabled={!(getFieldValue(`note[${index}]`)) && !(getFieldValue(`relation[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
           <IconKit size={20} icon={ic_remove} />
         </Button>
-      </>
+      </div>
 
     ));
-
-    /*     const familyItems = (
-      <div className="familyLine">
-        <Form.Item>
-          <Input placeholder="Ajouter une note…" className="input noteInput note" />
-        </Form.Item>
-        <Form.Item>
-          <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parental" dropdownClassName="selectDropdown">
-            {Object.values(relationValues).map(rv => (
-              <Select.Option value={rv.value}>{rv.label}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item>
-          <Button className="delButton" shape="round">
-            <IconKit size={20} icon={ic_remove} />
-          </Button>
-        </Form.Item>
-      </div>
-    ); */
-
     const selectedPhenotype = ['coucou'];
     const phenotypeItem = (
       <div className="phenotypeBlock">
@@ -253,6 +261,7 @@ class ClinicalInformation extends React.Component {
     if (clinicalImpression) {
       indication = clinicalImpression.investigation[0].item.find(isIndication) || {};
     }
+
     return (
       <div>
         <Form>
@@ -303,7 +312,7 @@ class ClinicalInformation extends React.Component {
               {familyItems}
             </div>
             <Form.Item>
-              <Button className="addFamilyButton">
+              <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}>
                 <IconKit size={14} icon={ic_add} />
                 Ajouter
               </Button>

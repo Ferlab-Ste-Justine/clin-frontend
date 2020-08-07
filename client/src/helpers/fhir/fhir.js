@@ -257,7 +257,7 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
   return bundle;
 };
 
-const createHPOResource = () => {
+const createHPOResource = (code, display) => {
   console.log();
 
   return {
@@ -273,8 +273,8 @@ const createHPOResource = () => {
       {
         url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
         valueCoding: {
-          code: 'HP:0003577',
-          display: "d'apparition congénitale",
+          code, // ex.: 'HP:0003577',
+          display, // ex.: "d'apparition congénitale",
         },
       },
     ],

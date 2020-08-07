@@ -126,6 +126,7 @@
             display: flex;
             align-items: center;
             white-space: normal;
+            margin-right: 8px;
             label{
                 font-family: $font;
                 font-size: 14px;
@@ -171,6 +172,13 @@
         span, i{
             color: #1D8BC6;
         }
+
+        &:disabled{
+            background-color: white;
+            span, i{
+                color: #ABB3BC;
+            }
+        }
     }
     .familyLines{
         margin-bottom: 16px;
@@ -178,6 +186,7 @@
     .familyLine{
         display: flex;
         align-items: center;
+        margin-bottom: 16px;
         .ant-form-item{
             margin: 0;
         }
@@ -195,6 +204,12 @@
             height: 24px;
             padding: 0;
             border: 1px solid #1D8BC6;
+            &:disabled{
+                border: 1px solid #D2DBE4;
+                i{
+                    color: #ABB3BC;
+                }
+            }
 
             i{
                 color: #1D8BC6;;
