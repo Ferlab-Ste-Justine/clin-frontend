@@ -9,6 +9,10 @@ import {
   ic_add, ic_remove, ic_help, ic_person, ic_visibility, ic_visibility_off,
 } from 'react-icons-kit/md';
 
+import {
+  CGH_CODES, CGH_VALUES, isCGH, isIndication,
+} from '../../../helpers/fhir/fhir';
+
 class ClinicalInformation extends React.Component {
   constructor(props) {
     super(props);
@@ -242,11 +246,12 @@ class ClinicalInformation extends React.Component {
 
     let cgh;
     if (clinicalImpression) {
-      const observations = clinicalImpression.investigation[0].item;
-      if (observations.length) {
-        // eslint-disable-next-line prefer-destructuring
-        cgh = observations[0];
-      }
+      cgh = clinicalImpression.investigation[0].item.find(isCGH) || {};
+    }
+
+    let indication;
+    if (clinicalImpression) {
+      indication = clinicalImpression.investigation[0].item.find(isIndication) || {};
     }
     return (
       <div>
@@ -268,26 +273,25 @@ class ClinicalInformation extends React.Component {
                 initialValue: cgh ? cgh.value : undefined,
               })(
                 <Radio.Group buttonStyle="solid" onChange={(e) => { console.log('CGH value changed: ', e.target.value); }}>
-                  <Radio.Button value={false}><span className="radioText">Négatif</span></Radio.Button>
-                  <Radio.Button value><span className="radioText">Anormal</span></Radio.Button>
-                  <Radio.Button value={null}><span className="radioText">Sans objet</span></Radio.Button>
+                  {CGH_VALUES().map(v => (
+                    <Radio.Button value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
+                  ))}
                 </Radio.Group>,
               )}
             </Form.Item>
             {
-              form.getFieldsValue().cgh === true
-                ? (
-                  <Form.Item label="Précision">
-                    {getFieldDecorator('cghNote', {
-                      rules: [],
-                      initialValue: cgh ? cgh.note : undefined,
-                    })(
-                      <Input placeholder="Veuillez préciser…" className="input note" />,
-                    )}
-                  </Form.Item>
-                ) : null
+              (form.getFieldsValue().cgh === CGH_CODES.A)
+              && (
+              <Form.Item label="Précision">
+                {getFieldDecorator('cghNote', {
+                  rules: [],
+                  initialValue: cgh ? cgh.note : undefined,
+                })(
+                  <Input placeholder="Veuillez préciser…" className="input note" />,
+                )}
+              </Form.Item>
+              )
             }
-
 
             <Form.Item label="Résumé">
               <TextArea className="input note" rows={4} />
@@ -335,7 +339,12 @@ class ClinicalInformation extends React.Component {
           </Card>
           <Card title="Indications" bordered={false} className="staticCard patientContent">
             <Form.Item label="Hypothèse(s) de diagnostic">
-              <TextArea className="input note" rows={4} />
+              {getFieldDecorator('indication', {
+                rules: [],
+                initialValue: indication.note,
+              })(
+                <TextArea className="input note" rows={4} />,
+              )}
             </Form.Item>
           </Card>
         </Form>
