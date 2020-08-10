@@ -176,7 +176,7 @@ class ClinicalInformation extends React.Component {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [],
           })(
-            <Input onChage={this.handleNoteChange} placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input onChange={this.handleNoteChange} placeholder="Ajouter une note…" className="input noteInput note" />,
           )}
         </Form.Item>
         <Form.Item required={false} key={`relation_${index}`}>
