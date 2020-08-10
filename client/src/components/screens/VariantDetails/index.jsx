@@ -758,7 +758,7 @@ class VariantDetailsScreen extends React.Component {
       );
       let phenotype = '--';
       let transmission = '--';
-      if (g.omim) {
+      if (g.omim && g.omim.length > 0) {
         phenotype = g.omim.map(o => (
           <li>
             {o.phenotype} (MIN:
