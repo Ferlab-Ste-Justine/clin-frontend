@@ -882,6 +882,19 @@ class VariantDetailsScreen extends React.Component {
       donorsColumnPreset,
     } = this.state;
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
+
+    const omimLinks = omims => omims.map(omim => (
+      <div className="variantPageContentRow">
+        <Link
+          className="link"
+          url={`https://omim.org/entry/${omim}`}
+          text={omim}
+        />
+        {/* Ignore the comma if it's the last entry */}
+        {omims.length > 1 && omim !== omims[omims.length - 1] ? (<div>,</div>) : (<></>)}
+      </div>
+    ));
+
     let mutationIdTitle = '';
     if (data.mutationId.length > 31) {
       const mutationIdTitleStart = data.mutationId.substring(0, 15);
@@ -999,11 +1012,9 @@ class VariantDetailsScreen extends React.Component {
                         label: 'OMIM',
                         value:
                           bdExt && bdExt.omim ? (
-                            <Link
-                              className="link"
-                              url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.omim}`}
-                              text={bdExt.omim}
-                            />
+                            <div className="variantPageContentRow">
+                              {omimLinks(bdExt.omim)}
+                            </div>
                           ) : (
                             '--'
                           ),
