@@ -756,21 +756,30 @@ class VariantDetailsScreen extends React.Component {
           ) : ''}
         </span>
       );
+      let phenotype = '--';
+      let transmission = '--';
+      if (g.omim) {
+        phenotype = g.omim.map(o => (
+          <li>
+            {o.phenotype} (MIN:
+            <Link
+              url={`https://omim.org/entry/${o.phenotypeMim}`}
+              text={o.phenotypeMim}
+            />)
+          </li>
+        ));
 
-      const phenotype = g.omim ? g.omim.map(o => (
-        <li>
-          {o.phenotype} (MIN:
-          <Link
-            url={`https://omim.org/entry/${o.phenotypeMim}`}
-            text={o.phenotypeMim}
-          />)
-        </li>
-      )) : '--';
-      const transmission = g.omim ? g.omim.map(o => (
-        <li>
-          {o.inheritance.join(',')}
-        </li>
-      )) : '--';
+        transmission = g.omim.map((o) => {
+          if (o.inheritance) {
+            return (
+              <li>
+                {o.inheritance.join(',')}
+              </li>
+            );
+          }
+          return '--';
+        });
+      }
       return { geneLocus: (<span className="orphanetValue">{geneLine}</span>), phenotype: (<ul className="omimValue">{phenotype}</ul>), transmission: <ul className="omimValue">{transmission}</ul> };
     });
   }
