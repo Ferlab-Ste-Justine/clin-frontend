@@ -900,7 +900,7 @@ class VariantDetailsScreen extends React.Component {
           text={omim}
         />
         {/* Ignore the comma if it's the last entry */}
-        {omims.length > 1 && omim !== omims[omims.length - 1] ? (<div>,</div>) : (<></>)}
+        {omims.length > 1 && omim !== omims[omims.length - 1] ? (<div>,&nbsp;</div>) : (<></>)}
       </div>
     ));
 
