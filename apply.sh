@@ -1,1 +1,0 @@
-docker stack deploy --prune -c docker-compose.yml qa-clin-frontend

@@ -9,4 +9,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Ensure we can build the image
-      run: ./build.sh
+      run: docker build -t test:test --target server .
