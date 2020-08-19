@@ -436,6 +436,7 @@ class PatientScreen extends React.Component {
                         { label: gender, value: patient.details.gender === 'male' ? male : female },
                         { label: proband, value: probandTag },
                         { label: study, value: studyLink },
+                        { label: familyType, value: familyTypeTag },
                       ]}
                     />
                   </Col>

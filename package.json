@@ -60,6 +60,7 @@
     "keycloak-js": "^10.0.2",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
+    "less2sass": "^1.0.3",
     "lodash": "^4.17.11",
     "mini-css-extract-plugin": "0.5.0",
     "moment": "^2.24.0",
@@ -110,7 +111,8 @@
     "build": "node ./client/scripts/build.js",
     "serve": "node ./client/scripts/serve.js",
     "test": "node ./client/scripts/test.js",
-    "lint": "eslint --fix --ext .jsx ."
+    "lint": "eslint --fix --ext .jsx .",
+    "theme": "less2sass ./client/src/style/themes/antd-clin-theme.less"
   },
   "eslintConfig": {
     "extends": "react-app"
