@@ -1,0 +1,11 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clin-frontend
+spec:
+  template:
+    spec:
+      containers:
+        - image: chusj/clin-frontend:cd30132718ac468f74e3a5a78d7fed29018aca5b
+          name: clin-frontend
