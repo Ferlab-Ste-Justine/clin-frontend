@@ -7,5 +7,5 @@ spec:
   template:
     spec:
       containers:
-        - image: chusj/clin-frontend:cd30132718ac468f74e3a5a78d7fed29018aca5b
+        - image: chusj/clin-frontend:aefc01277be3a1655fcf24d31afa4da95e923b1c
           name: clin-frontend
