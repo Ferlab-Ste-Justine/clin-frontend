@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: clin-frontend
+  name: clin-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: clin-frontend
+  template:
+    metadata:
+      labels:
+        app: clin-frontend
+    spec:
+      containers:
+        - image: chusj/clin-frontend:__UNDEFINED__
+          name: clin-frontend
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: '0.50'
+            limits:
+              memory: "512Mi"
+              cpu: '1.00'
