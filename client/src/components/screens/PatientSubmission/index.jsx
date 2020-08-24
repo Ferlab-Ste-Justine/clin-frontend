@@ -34,7 +34,8 @@ import ClinicalInformation from './ClinicalInformation';
 import './style.scss';
 
 import {
-  isCGH, isIndication,
+  isCGH, cghDisplay, isIndication,
+  createCGHResource, createIndicationResource, createHpoResource,
 } from '../../../helpers/fhir/fhir';
 
 const { Step } = Steps;
@@ -266,50 +267,9 @@ class PatientSubmissionScreen extends React.Component {
     return { ...patient };
   }
 
-  getCGHData() {
-    const { form, clinicalImpression } = this.props;
-    const { investigation } = clinicalImpression;
-    const values = form.getFieldsValue();
-
-    if (values.cgh === undefined) {
-      return [];
-    }
-
-    const observations = investigation[0].item;
-    const oldCGH = observations.find(isCGH) || {};
-
-    return [{
-      ...oldCGH,
-      code: {
-        text: 'cgh',
-      },
-      valueCode: values.cgh,
-      valueDisplay: values.cghDisplay,
-      note: values.cghNote,
-    }];
-  }
-
-  getHPOData() { console.log(this); }
-
-  getIndicationData() {
-    const { form, clinicalImpression } = this.props;
-    const { investigation } = clinicalImpression;
-    const values = form.getFieldsValue();
-
-    if (values.indication === undefined) {
-      return [];
-    }
-
-    const observations = investigation[0].item;
-    const oldIndication = observations.find(isIndication) || {};
-
-    return [{
-      ...oldIndication,
-      code: {
-        text: 'indication',
-      },
-      note: values.indication,
-    }];
+  getHPOData() {
+    console.log(this);
+    return [];
   }
 
   getClinicalImpressionData() {
@@ -321,12 +281,57 @@ class PatientSubmissionScreen extends React.Component {
     if (currentPageIndex === 1) {
       const { investigation } = clinicalImpression;
       investigation[0].item = [
-        ...this.getCGHData(),
-        ...this.getIndicationData(),
+        ...this.createCGHResourceList(),
+        ...this.createIndicationResourceList(),
       ];
     }
 
     return clinicalImpressionData;
+  }
+
+  createCGHResourceList() {
+    const { form, clinicalImpression } = this.props;
+    const { investigation } = clinicalImpression;
+    const values = form.getFieldsValue();
+
+    if (values.cgh === undefined) {
+      return [];
+    }
+
+    const observations = investigation[0].item;
+    const oldCGH = observations.find(isCGH) || {};
+
+    const {
+      cgh,
+      cghNote,
+    } = values;
+
+    return [{
+      ...oldCGH,
+      ...createCGHResource({ interpretation: { value: cgh, display: cghDisplay(cgh) }, note: cghNote }),
+    }];
+  }
+
+  createIndicationResourceList() {
+    const { form, clinicalImpression } = this.props;
+    const { investigation } = clinicalImpression;
+    const values = form.getFieldsValue();
+
+    if (values.indication === undefined) {
+      return [];
+    }
+
+    const observations = investigation[0].item;
+    const oldIndication = observations.find(isIndication) || {};
+
+    const {
+      indication,
+    } = values;
+
+    return [{
+      ...oldIndication,
+      ...createIndicationResource({ note: indication }),
+    }];
   }
 
   handleSubmit(e) {
@@ -335,10 +340,9 @@ class PatientSubmissionScreen extends React.Component {
     form.validateFields((err, values) => {
       if (err) { return; }
 
-      const { actions, serviceRequest } = this.props;
+      const { actions, serviceRequest, clinicalImpression } = this.props;
       const patientData = this.getPatientData();
 
-      const { clinicalImpression } = this.props;
       const clinicalImpressionData = this.getClinicalImpressionData();
 
       const submission = {

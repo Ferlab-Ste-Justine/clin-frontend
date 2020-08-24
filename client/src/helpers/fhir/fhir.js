@@ -1,15 +1,43 @@
 /* eslint-disable no-unused-vars */
 import moment from 'moment';
-import { curry } from 'lodash';
+import { curry, runInContext } from 'lodash';
 
 import uuidv1 from 'uuid/v1';
 import intl from 'react-intl-universal';
 
-const OBSERVATION_CGH_CODE = 'cgh';
-const OBSERVATION_INDICATION_CODE = 'indication';
+const OBSERVATION_CGH_CODE = 'CGH';
+const OBSERVATION_HPO_CODE = 'PHENO';
+const OBSERVATION_INDICATION_CODE = 'INDIC';
 
-export const isCGH = o => o.code.text === OBSERVATION_CGH_CODE;
-export const isIndication = o => o.code.text === OBSERVATION_INDICATION_CODE;
+export const getResourceCode = r => r.code.coding[0].code;
+export const isCGH = o => getResourceCode(o) === OBSERVATION_CGH_CODE;
+export const isHPO = o => getResourceCode(o) === OBSERVATION_HPO_CODE;
+export const isIndication = o => getResourceCode(o) === OBSERVATION_INDICATION_CODE;
+
+export const cghInterpretation = (cgh) => {
+  if (cgh.interpretation && cgh.interpretation.length) {
+    const [interpretation] = cgh.interpretation;
+    const [interpretationValue] = interpretation.coding;
+    return interpretationValue;
+  }
+  return null;
+};
+
+export const cghNote = (cgh) => {
+  if (cgh.note && cgh.note.length) {
+    return cgh.note[0].text;
+  }
+
+  return null;
+};
+
+export const indicationNote = (indication) => {
+  if (indication.note && indication.note.length) {
+    return indication.note[0].text;
+  }
+
+  return null;
+};
 
 // TODO: translate/intl
 export const CGH_CODES = {
@@ -23,6 +51,15 @@ export const CGH_VALUES = () => (
     { value: null, display: 'Sans objet' },
   ]
 );
+
+export const cghDisplay = (code) => {
+  const item = CGH_VALUES().find(cgh => cgh.value === code);
+  if (item) {
+    return item.display;
+  }
+
+  return '';
+};
 
 export const createBundle = () => ({
   resourceType: 'Bundle',
@@ -127,17 +164,17 @@ export const createClinicalImpressionResource = ({
 };
 
 export const createCGHResource = ({
-  id, valueCode, valueDisplay, categoryText, note,
+  id, interpretation, note,
 }) => {
-  const newObs = {
+  console.log();
+  return {
     resourceType: 'Observation',
     id,
     meta: {
       profile: [
-        'http://hl7.org/fhir/StructureDefinition/Observation',
+        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
       ],
     },
-
     status: 'final',
     category: [
       {
@@ -148,38 +185,42 @@ export const createCGHResource = ({
             display: 'Laboratory',
           },
         ],
-        text: categoryText,
       },
     ],
-    code: { text: 'cgh' },
+    code: {
+      coding: [
+        {
+          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+          code: 'CGH',
+          display: 'cgh',
+        },
+      ],
+    },
     interpretation: [
       {
         coding: [
-          {
-            code: valueCode,
-            display: valueDisplay,
-            // "code":"A",
-            // "display":"Abnormal"
-          },
+          interpretation,
         ],
       },
     ],
-    note: [{ text: note }],
+    note: [
+      {
+        text: note,
+      },
+    ],
   };
-
-  return newObs;
 };
 
-const createIndicationResource = (note) => {
+export const createIndicationResource = ({ id, note }) => {
   console.log();
   return {
     resourceType: 'Observation',
+    id,
     meta: {
       profile: [
-        'http://hl7.org/fhir/StructureDefinition/Observation',
+        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
       ],
     },
-
     status: 'final',
     category: [
       {
@@ -190,11 +231,22 @@ const createIndicationResource = (note) => {
             display: 'Exam',
           },
         ],
-        text: 'Indications - hypothèse(s) de diagnostic',
       },
     ],
-    code: { text: 'INDIC' },
-    note: [{ text: note }],
+    code: {
+      coding: [
+        {
+          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+          code: 'INDIC',
+          display: 'indications',
+        },
+      ],
+    },
+    note: [
+      {
+        text: note,
+      },
+    ],
   };
 };
 
@@ -226,14 +278,7 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     bundle.entry.push(clinicalImpressionEntry);
 
     // CGH
-    const cghObservation = clinicalImpression.investigation[0].item.find(isCGH);
-    const cghParams = {
-      valueCode: cghObservation.valueCode,
-      valueDisplay: cghObservation.valueDisplay,
-      id: cghObservation.id,
-      note: cghObservation.note,
-    };
-    const cghResource = createCGHResource(cghParams);
+    const cghResource = clinicalImpression.investigation[0].item.find(isCGH);
     cghResource.subject = patientReference;
     const cghEntry = createEntry(cghResource);
     bundle.entry.push(cghEntry);
@@ -242,12 +287,7 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     // TODO: HPO
 
     // Indication
-    const indicationObservation = clinicalImpression.investigation[0].item.find(isIndication);
-    const indicationParams = {
-      id: indicationObservation.id,
-      note: indicationObservation.note,
-    };
-    const indicationResource = createIndicationResource(indicationParams);
+    const indicationResource = clinicalImpression.investigation[0].item.find(isIndication);
     indicationResource.subject = patientReference;
     const indicationEntry = createEntry(indicationResource);
     bundle.entry.push(indicationEntry);
@@ -257,7 +297,9 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
   return bundle;
 };
 
-const createHPOResource = (code, display) => {
+const createHPOResource = ({
+  hpoCode, onset, category, interpretation, note,
+}) => {
   console.log();
 
   return {
@@ -265,20 +307,19 @@ const createHPOResource = (code, display) => {
     id: 'ph-001',
     meta: {
       profile: [
-        'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
+        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
       ],
     },
-
     extension: [
       {
         url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
-        valueCoding: {
-          code, // ex.: 'HP:0003577',
-          display, // ex.: "d'apparition congénitale",
-        },
+        valueCoding: onset,
+      },
+      {
+        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/hpo-category',
+        valueCoding: category,
       },
     ],
-
     status: 'final',
     category: [
       {
@@ -289,33 +330,42 @@ const createHPOResource = (code, display) => {
             display: 'Exam',
           },
         ],
-        text: 'Signes cliniques relevés par le praticien lors de la consultation',
       },
     ],
-
-    code: { text: 'phenotype-observation' },
-    subject: { reference: 'Patient/pt-001' },
-
+    code: {
+      coding: [
+        {
+          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+          code: 'PHENO',
+          display: 'phenotype',
+        },
+      ],
+    },
+    subject: {
+      reference: 'Patient/pt-001',
+    },
     valueCodeableConcept: {
       coding: [
         {
           system: 'http://purl.obolibrary.org/obo/hp.owl',
-          code: 'HP:0001252',
-          display: 'Abnormal anatomic location of the heart',
+          ...hpoCode,
         },
       ],
     },
-    note: [{ text: "une note en texte libre sur l'observation" }],
     interpretation: [
       {
         coding: [
           {
             system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
-            code: 'POS',
-            display: 'Positive',
+            ...interpretation,
           },
         ],
         text: 'Observé',
+      },
+    ],
+    note: [
+      {
+        text: note,
       },
     ],
   };
