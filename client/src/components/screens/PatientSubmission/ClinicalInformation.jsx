@@ -12,7 +12,7 @@ import {
 } from 'react-icons-kit/md';
 
 import {
-  CGH_CODES, CGH_VALUES, isCGH, isIndication,
+  CGH_CODES, CGH_VALUES, isCGH, isIndication, cghInterpretation, cghNote, indicationNote,
 } from '../../../helpers/fhir/fhir';
 
 class ClinicalInformation extends React.Component {
@@ -252,14 +252,18 @@ class ClinicalInformation extends React.Component {
 
     );
 
-    let cgh;
+    let cghInterpretationValue;
+    let cghNoteValue;
     if (clinicalImpression) {
-      cgh = clinicalImpression.investigation[0].item.find(isCGH) || {};
+      const cgh = clinicalImpression.investigation[0].item.find(isCGH) || {};
+      cghInterpretationValue = cghInterpretation;
+      cghNoteValue = cghNote(cgh);
     }
 
-    let indication;
+    let indicationNoteValue;
     if (clinicalImpression) {
-      indication = clinicalImpression.investigation[0].item.find(isIndication) || {};
+      const indication = clinicalImpression.investigation[0].item.find(isIndication) || {};
+      indicationNoteValue = indicationNote(indication);
     }
 
     return (
@@ -279,7 +283,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item label="CGH">
               {getFieldDecorator('cgh', {
                 rules: [],
-                initialValue: cgh ? cgh.value : undefined,
+                initialValue: cghInterpretationValue,
               })(
                 <Radio.Group buttonStyle="solid" onChange={(e) => { console.log('CGH value changed: ', e.target.value); }}>
                   {CGH_VALUES().map(v => (
@@ -294,7 +298,7 @@ class ClinicalInformation extends React.Component {
               <Form.Item label="Précision">
                 {getFieldDecorator('cghNote', {
                   rules: [],
-                  initialValue: cgh ? cgh.note : undefined,
+                  initialValue: cghNoteValue,
                 })(
                   <Input placeholder="Veuillez préciser…" className="input note" />,
                 )}
@@ -350,7 +354,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item label="Hypothèse(s) de diagnostic">
               {getFieldDecorator('indication', {
                 rules: [],
-                initialValue: indication.note,
+                initialValue: indicationNoteValue,
               })(
                 <TextArea className="input note" rows={4} />,
               )}
