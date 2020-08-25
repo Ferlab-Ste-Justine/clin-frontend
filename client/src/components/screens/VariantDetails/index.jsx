@@ -645,12 +645,24 @@ class VariantDetailsScreen extends React.Component {
       } = data;
 
       const internalCohortsKeys = Object.keys(frequencies).filter(k => k === 'interne' || k.indexOf('LDx') !== -1);
-      const rows = internalCohortsKeys.map((key) => {
+      const totalKey = 'Total';
+      let totalValue = null;
+      const rows = [];
+      internalCohortsKeys.forEach((key) => {
         const frequency = frequencies[key];
-        frequency.key = key === 'interne' ? 'Total' : key;
+        const isInterne = key === 'interne';
+        frequency.key = isInterne ? totalKey : key;
         frequency.AF = Number.parseFloat(frequency.AF).toExponential(5);
-        return frequency;
+        if (isInterne) {
+          totalValue = frequency;
+        } else {
+          rows.push(frequency);
+        }
       });
+
+      if (totalValue != null) {
+        rows.push(totalValue);
+      }
 
       return rows;
     }
