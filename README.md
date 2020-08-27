@@ -58,8 +58,8 @@ All references to other services point to the QA. A 100% local version will come
 
 See the documentation for our convention on gitflow and docker images: https://www.notion.so/ferlab/Developer-Handbook-ca9d689d8aca4412a78eafa2dfa0f8a8
 
-### Deploying
+### Deployements
 
-Deployment is currently done via manual remote execution of kubernetes manifests.
+Updates to the QA environment are automatically done once a new image is pushed. No action is required.
 
-Automated pipeline to follow very soon when merging to master.
+Procedures to deploy to prod will be fleshed out once we have such an environment.
