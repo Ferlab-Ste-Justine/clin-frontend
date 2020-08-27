@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
@@ -13,7 +14,165 @@ import {
 
 import {
   CGH_CODES, CGH_VALUES, isCGH, isIndication, cghInterpretation, cghNote, indicationNote,
+  createHPOResource, getHPODisplay, getHPOInterpretationDisplay, getHPOOnsetCode, getHPOInterpretationCode,
 } from '../../../helpers/fhir/fhir';
+
+const mockHpoResources = [
+  {
+    hpoCode: { code: 'HP-000001', display: 'Strange head' },
+    onset: { code: 'Neonatal', display: 'NeoNatal' },
+    category: {
+      code: '',
+      display: '',
+    },
+    interpretation: { code: 'O', display: 'Observé' },
+    note: 'Some notes on hpo observation',
+  },
+].map(createHPOResource);
+
+const hpoOnsetValues = [
+  {
+    groupLabel: 'Pediatric onset',
+    options: [
+      {
+        value: 'Juvenile onset',
+        display: 'Juvenile',
+      },
+      {
+        value: 'Childhood onset',
+        display: 'Childhood',
+      },
+      {
+        value: 'Infantile onset',
+        display: 'Infantile',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Adult onset',
+    options: [
+      {
+        value: 'YoungAdult onset',
+        display: 'Young adult',
+      },
+      {
+        value: 'MiddleAge onset',
+        display: 'Middle age',
+      },
+      {
+        value: 'Late onset',
+        display: 'Late',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Antenatal onset',
+    options: [
+      {
+        value: 'Embryonal onset',
+        display: 'Embryonal',
+      },
+      {
+        value: 'Fetal onset',
+        display: 'Fetal',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Neonatal onset',
+    options: [
+      {
+        value: 'Neonatal onset',
+        display: 'Neonatal',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Congenital onset',
+    options: [
+      {
+        value: 'Congenital onset',
+        display: 'Congenital',
+      },
+    ],
+  },
+];
+
+const hpoInterpretationValues = () => {
+  console.log();
+  return [
+    {
+      iconClass: 'observedIcon',
+      icon: ic_visibility,
+      value: 'O',
+      display: 'Observé',
+    },
+    {
+      iconClass: 'notObservedIcon',
+      icon: ic_visibility_off,
+      value: 'NO',
+      display: 'Non-observé',
+    },
+    {
+      iconClass: 'unknownIcon',
+      icon: ic_help,
+      value: 'I',
+      display: 'Inconnu',
+    },
+  ];
+};
+
+const phenotype = ({ hpoResource, getFieldDecorator, hpoIndex }) => {
+  const { Option, OptGroup } = Select;
+  console.log();
+  return (
+    <div className="phenotypeBlock">
+      <div className="phenotypeFirstLine">
+        <div className="leftBlock">
+          <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
+          <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
+        </div>
+        <div className="rightBlock">
+          <Form.Item>
+            {getFieldDecorator(`hpoInterpretation[${hpoIndex}]`, {
+              rules: [],
+              initialValue: getHPOInterpretationCode(hpoResource),
+            })(
+              <Select className="select selectObserved" defaultValue="O" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
+                {hpoInterpretationValues().map(interpretation => (
+                  <Select.Option value={interpretation.value}><IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretation.icon} />{interpretation.display}</Select.Option>
+                ))}
+              </Select>,
+            )}
+          </Form.Item>
+          <Form.Item>
+            {getFieldDecorator(`hpoOnset[${hpoIndex}]`, {
+              rules: [],
+              initialValue: getHPOOnsetCode(hpoResource),
+            })(
+              <Select className="select selectAge" size="small" placeholder="Âge d’apparition" dropdownClassName="selectDropdown">
+                {
+                hpoOnsetValues.map(group => (
+                  <OptGroup label={group.groupLabel}>
+                    {group.options.map(o => (
+                      <Option value={o.value}>{o.display}</Option>
+                    ))}
+                  </OptGroup>
+                ))
+              }
+              </Select>,
+            )}
+          </Form.Item>
+        </div>
+      </div>
+      <div className="phenotypeSecondLine">
+        <Form.Item>
+          <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />
+        </Form.Item>
+      </div>
+    </div>
+  );
+};
 
 class ClinicalInformation extends React.Component {
   constructor(props) {
@@ -65,7 +224,6 @@ class ClinicalInformation extends React.Component {
 
     const { TextArea, Search } = Input;
     const { TreeNode } = Tree;
-    const { Option, OptGroup } = Select;
 
     const getRelationValues = () => ({
       father: {
@@ -179,7 +337,7 @@ class ClinicalInformation extends React.Component {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [],
           })(
-            <Input onChage={this.handleNoteChange} placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input onChange={this.handleNoteChange} placeholder="Ajouter une note…" className="input noteInput note" />,
           )}
         </Form.Item>
         <Form.Item required={false} key={`relation_${index}`}>
@@ -201,56 +359,7 @@ class ClinicalInformation extends React.Component {
 
     ));
     const selectedPhenotype = ['coucou'];
-    const phenotypeItem = (
-      <div className="phenotypeBlock">
-        <div className="phenotypeFirstLine">
-          <div className="leftBlock">
-            <span className="hpoTitle">Abnormal cornea morphology</span>
-            <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
-          </div>
-          <div className="rightBlock">
-            <Form.Item>
-              <Select className="select selectObserved" defaultValue="O" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
-                <Select.Option value="O"><IconKit className="observedIcon icon" size={14} icon={ic_visibility} />Observé</Select.Option>
-                <Select.Option value="NO"><IconKit className="notObservedIcon icon" size={14} icon={ic_visibility_off} />Non-observé</Select.Option>
-                <Select.Option value="I"><IconKit className="unknownIcon icon" size={14} icon={ic_help} />Inconu</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item>
-              <Select className="select selectAge" size="small" placeholder="Âge d’apparition" dropdownClassName="selectDropdown">
-                <OptGroup label="Pediatric onset">
-                  <Option value="Juvenile onset">Juvenile</Option>
-                  <Option value="Childhood onset">Childhood</Option>
-                  <Option value="Infantile onset">Infantile</Option>
-                </OptGroup>
-                <OptGroup label="Adult onset">
-                  <Option value="YoungAdult onset">Young adult</Option>
-                  <Option value="MiddleAge onset">Middle age</Option>
-                  <Option value="Late onset">Late</Option>
-                </OptGroup>
-                <OptGroup label="Antenatal onset">
-                  <Option value="Fetal onset">Fetal</Option>
-                  <Option value="Embryonal onset">Embryonal</Option>
-                </OptGroup>
-                <OptGroup label="Neonatal onset">
-                  <Option value="YoungAdult onset">Neonatal</Option>
-                </OptGroup>
-                <OptGroup label="Congenital onset">
-                  <Option value="YoungAdult onset">Congenital</Option>
-                </OptGroup>
-              </Select>
-            </Form.Item>
-          </div>
-        </div>
-        <div className="phenotypeSecondLine">
-          <Form.Item>
-            <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />
-          </Form.Item>
-        </div>
 
-      </div>
-
-    );
 
     let cghInterpretationValue;
     let cghNoteValue;
@@ -344,7 +453,7 @@ class ClinicalInformation extends React.Component {
                 {
                   selectedPhenotype.length === 0
                     ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
-                    : phenotypeItem
+                    : mockHpoResources.map((hpoResource, hpoIndex) => phenotype({ hpoResource, getFieldDecorator, hpoIndex }))
                 }
               </div>
             </div>

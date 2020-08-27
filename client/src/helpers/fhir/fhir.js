@@ -297,7 +297,7 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
   return bundle;
 };
 
-const createHPOResource = ({
+export const createHPOResource = ({
   hpoCode, onset, category, interpretation, note,
 }) => {
   console.log();
@@ -369,6 +369,38 @@ const createHPOResource = ({
       },
     ],
   };
+};
+
+export const getHPOOnsetCode = (resource) => {
+  try {
+    return resource.extension[0].valueCoding.value;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getHPODisplay = (resource) => {
+  try {
+    return resource.valueCodeableConcept.coding[0].display;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getHPOInterpretationDisplay = (resource) => {
+  try {
+    return resource.interpretation[0].coding[0].display;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getHPOInterpretationCode = (resource) => {
+  try {
+    return resource.interpretation[0].coding[0].code;
+  } catch (e) {
+    return '';
+  }
 };
 
 const createInvestigationSummaryResource = () => {
