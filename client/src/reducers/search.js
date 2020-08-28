@@ -82,6 +82,13 @@ const searchReducer = (state = Object.assign({}, initialSearchState), action) =>
       draft.autocomplete.query = action.payload.query || null;
       break;
 
+    case actions.PATIENT_AUTOCOMPLETE_SELECTED:
+      draft.lastSearchType = 'patient';
+      draft.patient.page = action.payload.page || initialSearchState.patient.page;
+      draft.patient.pageSize = action.payload.size || initialSearchState.patient.pageSize;
+      draft.patient.query = action.payload.query || null;
+      break;
+
     case actions.PATIENT_AUTOCOMPLETE_FAILED:
       draft.autocomplete.total = initialSearchState.autocomplete.total;
       draft.autocomplete.results = initialSearchState.autocomplete.results;
