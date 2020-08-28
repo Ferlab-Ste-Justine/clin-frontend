@@ -18,6 +18,12 @@ export const autoCompletePatients = (type, query, page, size) => ({
   },
 });
 
+
+export const autoCompletePatientsSelected = () => ({
+  type: actions.PATIENT_AUTOCOMPLETE_SELECTED,
+  payload: {},
+});
+
 export const searchPatientsByQuery = (query, page, size) => ({
   type: actions.PATIENT_SEARCH_REQUESTED,
   payload: {
