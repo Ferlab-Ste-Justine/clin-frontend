@@ -25,7 +25,7 @@ import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
-import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
+import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
 import { appShape } from '../../../reducers/app';
 
 const COLUMN_WIDTHS = {
@@ -284,6 +284,7 @@ class PatientSearchScreen extends React.Component {
     const { actions } = this.props;
     const patientId = value.split(' ')[0] || null;
     if (patientId) {
+      actions.autoCompletePatientsSelected();
       actions.navigateToPatientScreen(patientId);
     }
   }
@@ -496,6 +497,7 @@ const mapDispatchToProps = dispatch => ({
     navigateToSubmissionScreen,
     autoCompletePatients,
     searchPatientsByQuery,
+    autoCompletePatientsSelected,
   }, dispatch),
 });
 
