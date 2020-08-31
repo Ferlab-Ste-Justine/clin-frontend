@@ -1,4 +1,6 @@
 @import './variables.scss';
+
+/* @import './variables.scss';
 .patientPage{
   .patientHeader{
     background-color: #fff;
@@ -99,7 +101,6 @@
           cursor: default;
       }
       .ant-card-head{
-          background: #F8FAFC;
           padding: 8px 16px;
           margin-bottom:0;
           border-bottom: 2px solid #EDF0F3;
@@ -115,7 +116,7 @@
           .ant-card-head-title{
               padding: 0;
           }
-          .datalisteHeader{
+          .datalistHeader{
               font-family: $font;
               font-weight: 500;
               font-size: 20px;
@@ -380,3 +381,49 @@
 
 
 
+ */
+
+
+ .patientHeader{
+    background-color: #fff;
+    padding: 24px;
+
+    .patientName{
+      font-family: $font;
+      font-weight: 500;
+      font-size: 24px;
+      color: #125A90;
+    }
+   }
+   .ant-tabs-nav-scroll{
+    background-color: #fff;
+   }
+
+   .halfPageCard{
+       max-width: 684px;
+   }
+   .tierPageCard{
+    max-width: 480px;
+}
+
+   .datalistHeader{
+    font-family: $font !important;
+    font-weight: 500 !important;
+    font-size: 16px !important;
+    margin-bottom: 0;
+    line-height: 28px;
+}
+
+.familyTypeTag{
+    background: #E6FFFB;
+    border: 1px solid #87E8DE;
+    color: #08979C;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: 0;
+    svg{
+        margin-right: 4px;
+    }
+ }

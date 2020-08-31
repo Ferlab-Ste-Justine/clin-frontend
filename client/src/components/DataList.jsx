@@ -9,11 +9,10 @@ const DataList = (props) => {
   const {
     title, dataSource, style, extraInfo,
   } = props;
-  const header = (<Typography.Title level={4} className="datalisteHeader" style={{ marginBottom: 0 }}>{title}</Typography.Title>);
+  const header = (<Typography.Title level={4} className="datalistHeader" style={{ marginBottom: 0 }}>{title}</Typography.Title>);
   return (
-    <Card className="datalist" title={header} type="inner" size="small" extra={extraInfo} hoverable style={style}>
+    <Card className="staticCard" title={header} extra={extraInfo} hoverable style={style} bordered={false}>
       <List
-        size="small"
         dataSource={dataSource}
         locale={{
           emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
