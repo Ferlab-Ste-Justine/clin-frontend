@@ -63,9 +63,12 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       draft = Object.assign({}, initialVariantState);
       break;
 
-    case actions.USER_PROFILE_SUCCEEDED:
-      draft.activeStatementId = action.payload.data.hits[0]._source.defaultStatement;
+    case actions.USER_PROFILE_SUCCEEDED: {
+      const { defaultStatement } = action.payload.data.hits[0]._source;
+      draft.activeStatementId = defaultStatement;
+      draft.defaultStatement = defaultStatement;
       break;
+    }
 
     case actions.VARIANT_SCHEMA_SUCCEEDED:
       draft.schema = action.payload.data;
