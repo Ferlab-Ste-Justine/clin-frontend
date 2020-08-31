@@ -1,11 +1,13 @@
+import '../../style/themes/antd-clin-theme.less';
 import { hot } from 'react-hot-loader/root';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Spin, Layout, ConfigProvider } from 'antd';
 
-import 'antd/dist/antd.less';
+
 import './style.scss';
 
 import MaintenanceScreen from '../../components/screens/Maintenance';
@@ -13,6 +15,7 @@ import MaintenanceScreen from '../../components/screens/Maintenance';
 import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
 import AppRouter from '../AppRouter';
+
 
 export class App extends React.Component {
   constructor() {

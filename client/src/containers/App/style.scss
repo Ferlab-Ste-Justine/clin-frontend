@@ -273,10 +273,21 @@ div.ant-card {
 
 // Page Header Static
 
-.page_headerStatic{
-  background-color: #FFFFFF;
+.page_headerStaticMargin{
+  background-color: #FFFFFF !important;
   padding: 24px 0;
+  font-size: 14px;
   margin-bottom: 24px;
+  .headerStaticContent{
+    width: 1392px;
+    margin: 0 auto;
+  }
+}
+
+.page_headerStaticNoMargin{
+  background-color: #FFFFFF !important;
+  padding: 24px 0;
+  font-size: 14px;
   .headerStaticContent{
     width: 1392px;
     margin: 0 auto;
@@ -286,14 +297,33 @@ div.ant-card {
 //Page Static Content
 .page-static-content{
   margin: 0 auto;
+  width: 1392px;
 }
 
 //Card
 .staticCard{
-  width: 1392px;
-  margin-bottom: 8px;
+  margin-bottom: 24px !important;
+}
+//tabs
+.staticTabs{
+  .ant-tabs-nav-wrap{
+    background-color: #ffffff;
+    .ant-tabs-nav-scroll{
+      max-width: 1392px;
+      margin:0 auto;
+      .ant-tabs-tab{
+        padding: 12px 0;
+      }
+    }
+  }
 }
 
+//logo
+.logoText{
+  display: flex;
+  align-items: center;
+  width: fit-content;
+}
 //Inside
 .separator{
   display: flex;
@@ -601,4 +631,8 @@ div.ant-card {
   span{
     color: $blue-8;
   }
+}
+
+.ant-tabs-tabpane-inactive{
+  height: 0;
 }

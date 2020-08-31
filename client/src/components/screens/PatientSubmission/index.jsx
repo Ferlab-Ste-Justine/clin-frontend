@@ -380,7 +380,10 @@ class PatientSubmissionScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <div className="page_headerStatic">
+        <Button>
+          coucou
+        </Button>
+        <div className="page_headerStaticMargin">
           <Steps current={currentPageIndex} className="headerStaticContent step">
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
