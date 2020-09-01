@@ -741,13 +741,15 @@ class VariantDetailsScreen extends React.Component {
       );
     };
 
-    return this.getGenes().map((g) => {
+    return this.getGenes()
+      .filter(gene => gene.radboudumc != null || gene.orphanet != null)
+      .map((g) => {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-      const radboudumcLine = g.radboudumc ? g.radboudumc.join(', ') : '--';
-      const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
-      const orphphanetLine = test || '--';
-      return { geneSymbol: g.geneSymbol, orphanet: (<span className="orphanetValue">{orphphanetLine}</span>), radboudumc: radboudumcLine };
-    });
+        const radboudumcLine = g.radboudumc ? g.radboudumc.join(', ') : '--';
+        const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
+        const orphphanetLine = test || '--';
+        return { geneSymbol: g.geneSymbol, orphanet: (<span className="orphanetValue">{orphphanetLine}</span>), radboudumc: radboudumcLine };
+      });
   }
 
   // eslint-disable-next-line class-methods-use-this
