@@ -356,26 +356,23 @@ class PatientScreen extends React.Component {
       </Button>
     );
 
-    // const motherButton = (
-    //  <a href="#" data-patient-id={patient.family.members.mother} className="familyLink" onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
-    //    {patient.family.members.mother}
-    //  </a>
-    // );
-    // const fatherButton = (
-    //  <a href="#" data-patient-id={patient.family.members.father} className="familyLink" onClick={this.handleNavigationToPatientScreen}> { /* eslint-disable-line */ }
-    //    {patient.family.members.father}
-    //  </a>
-    // );
-    const studyLink = (
-      // eslint-disable-next-line jsx-a11y/anchor-is-valid
-      <Link url="#" text={`${patient.study.name}`} />
-    );
-
     const formatDate = (date) => {
       const fDate = date.split('T');
       return fDate[0];
     };
+    const lastIndex = patient.requests.length - 1;
+    const lastRequest = patient.requests[lastIndex] ? patient.requests[lastIndex].status : null;
+    console.log('lastRequest', lastRequest);
 
+    const statusBadge = () => {
+      if (lastRequest === 'active') {
+        return (<Badge className="badge" color="#ffa812" text={lastRequest} />);
+      }
+      if (lastRequest === 'completed') {
+        return (<Badge className="badge" color="#52c41a" text={lastRequest} />);
+      }
+      return '';
+    };
     return (
       <Content type="auto">
         <Header />
@@ -386,7 +383,8 @@ class PatientScreen extends React.Component {
                 <Row type="flex" justify="space-between">
                   <Col>
                     <Typography.Title level={3} className="patientName">
-                      {`${patient.details.lastName}, ${patient.details.firstName} (${patient.details.gender}) `}
+                      {`${patient.details.lastName}, ${patient.details.firstName} (${patient.details.gender})  ${patient.details.proband}`}
+                      {statusBadge()}
                     </Typography.Title>
                     <Typography.Title level={4} className="patientName">
                       {patient.details.birthDate}
@@ -463,6 +461,7 @@ class PatientScreen extends React.Component {
                     </Card>
                   </Row>
                 </div>
+<<<<<<< HEAD
                 {/* <Row type="flex" className="personalInfo">
                                      <Col>
                     <DataList
@@ -555,7 +554,10 @@ class PatientScreen extends React.Component {
                     )}
                   />
                 </Row> */}
+=======
+>>>>>>> code refactoring
               </Tabs.TabPane>
+
               <Tabs.TabPane
                 key="clinical"
                 tab={(
@@ -630,6 +632,7 @@ class PatientScreen extends React.Component {
                     </Collapse>
                   </Card>
 
+<<<<<<< HEAD
                   {/* <Row type="flex" className="indications" gutter={24}>
                     <Col span={12}>
                       <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{indication}</Typography.Title>
@@ -677,6 +680,8 @@ class PatientScreen extends React.Component {
                       />
                     </Col>
                   </Row> */}
+=======
+>>>>>>> code refactoring
                 </div>
               </Tabs.TabPane>
             </Tabs>
