@@ -1,7 +1,7 @@
 @import '../../../../node_modules/antd/dist/antd.scss' ;
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 
-$blue-base: #00ACEB;
+$blue-base: #FFFFFF;
 $blue-1: #EAF3FA;
 $blue-2: #B5E6F7;
 $blue-3: #86D5F2;
@@ -63,7 +63,7 @@ $layout-trigger-color-light: $link-color;
 
 // The background colors for active and hover states for things like
 // list items or table cells.
-$item-active-bg: $ray-3;
+$item-active-bg: $gray-3;
 $item-hover-bg: $blue-1;
 
 // Border color

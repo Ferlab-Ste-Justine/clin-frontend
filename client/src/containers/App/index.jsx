@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Spin, Layout, ConfigProvider } from 'antd';
 
-import 'antd/dist/antd.less';
+import '../../style/themes/antd-clin-theme.css';
 import './style.scss';
 
 import MaintenanceScreen from '../../components/screens/Maintenance';

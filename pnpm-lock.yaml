@@ -56,6 +56,7 @@ dependencies:
   keycloak-js: 10.0.2
   less: 3.11.1
   less-loader: 4.1.0_less@3.11.1+webpack@4.28.3
+  less2sass: 1.0.3
   lodash: 4.17.15
   mini-css-extract-plugin: 0.5.0_webpack@4.28.3
   moment: 2.24.0
@@ -1438,6 +1439,7 @@ packages:
       react: ^16.0.0
     resolution:
       integrity: sha512-lJZrmkucz2MrQJTQtJobx5MICXcfQvKihszqv655p557HPi0hMOWxrNpiHv3DWD8ugNWjtWcVWqRnFvwsHq1mQ==
+      tarball: '@hot-loader/react-dom/-/react-dom-16.13.0.tgz'
   /@interactjs/actions/1.9.7_96ca7fa915a46e2569a60df5edb17692:
     dependencies:
       '@interactjs/core': 1.9.7_b1f6280a572d23d3703d38c9dbf182e8
@@ -7593,6 +7595,18 @@ packages:
       source-map: 0.6.1
     resolution:
       integrity: sha512-tlWX341RECuTOvoDIvtFqXsKj072hm3+9ymRBe76/mD6O5ZZecnlAOVDlWAleF2+aohFrxNidXhv2773f6kY7g==
+  /less2sass/1.0.3:
+    dependencies:
+      commander: 2.20.3
+      mkdirp: 0.5.4
+      win-fork: 1.1.1
+    dev: false
+    engines:
+      node: '=0.10.x'
+      npm: '=1.2.x'
+    hasBin: true
+    resolution:
+      integrity: sha1-v3bQXHMm0Vo4NUYQRTbUnBpbu2I=
   /leven/3.1.0:
     dev: false
     engines:
@@ -12900,6 +12914,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-QGkOQc8XL6Bt5PwnsExKBPuMKBxnGxWWW3fU55Xt4feHozMUhdUMaBCk290qpm/wG5u/RSKzwdAC4i51YigihA==
+  /win-fork/1.1.1:
+    dev: false
+    hasBin: true
+    resolution:
+      integrity: sha1-j1jgZW/KAK3IyGoriePNLWotXl4=
   /word-wrap/1.2.3:
     dev: false
     engines:
@@ -13243,6 +13262,7 @@ specifiers:
   keycloak-js: ^10.0.2
   less: ^3.9.0
   less-loader: ^4.1.0
+  less2sass: ^1.0.3
   lodash: ^4.17.11
   mini-css-extract-plugin: 0.5.0
   moment: ^2.24.0
