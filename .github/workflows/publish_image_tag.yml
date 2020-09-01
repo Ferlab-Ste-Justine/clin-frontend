@@ -1,0 +1,22 @@
+name: Publish Image Using Tag
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    name: Publish Image
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Push the frontend image on the docker registry
+      uses: Ferlab-Ste-Justine/action-push-image@master
+      with:
+        username: chusj
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+        image: chusj/clin-frontend
+        tag_source: ref
+        location: .
+        dockerfile: Dockerfile

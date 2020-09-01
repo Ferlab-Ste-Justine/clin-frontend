@@ -45,6 +45,7 @@ div.ant-tag {
         .facet{
             display:flex;
             justify-content:space-between;
+            align-items: center;
             color:$blue-800;
             text-transform: uppercase;
             letter-spacing: 1.25px;
@@ -57,6 +58,10 @@ div.ant-tag {
             box-shadow: none;
             .btnIcon{
                 margin-right:8px;
+            }
+            div{
+                display:flex;
+                align-items: center;
             }
         }
 

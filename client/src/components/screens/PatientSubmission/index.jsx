@@ -35,7 +35,12 @@ import './style.scss';
 
 import {
   isCGH, cghDisplay, isIndication,
-  createCGHResource, createIndicationResource, createHpoResource,
+  isHPO,
+  createCGHResource,
+  getHPOOnsetDisplayFromCode,
+  createIndicationResource,
+  createHPOResource,
+  hpoInterpretationDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 const { Step } = Steps;
@@ -267,11 +272,6 @@ class PatientSubmissionScreen extends React.Component {
     return { ...patient };
   }
 
-  getHPOData() {
-    console.log(this);
-    return [];
-  }
-
   getClinicalImpressionData() {
     const { currentPageIndex } = this.state;
     const { clinicalImpression, form } = this.props;
@@ -282,11 +282,60 @@ class PatientSubmissionScreen extends React.Component {
       const { investigation } = clinicalImpression;
       investigation[0].item = [
         ...this.createCGHResourceList(),
+        ...this.createHPOResourceList(),
         ...this.createIndicationResourceList(),
       ];
     }
 
     return clinicalImpressionData;
+  }
+
+  createHPOResourceList() {
+    const { form, clinicalImpression } = this.props;
+    const { investigation } = clinicalImpression;
+    const values = form.getFieldsValue();
+
+    if (values.cgh === undefined) {
+      return [];
+    }
+
+    // const observations = investigation[0].item;
+    // const oldHpos = observations.find(isHPO).filter(r => r.id) || {};
+
+    // const newHpos = observations.find(isHPO).filter(r => !r.id) || {};
+
+    // const hposToDelete = observations.find(isHPO).filter(r => r.toDelete) || {};
+
+    // oldHpos
+    // new Hpos
+    // hpos to delete
+
+    const {
+      hpoIds,
+      hpoCodes,
+      hpoDisplays,
+      hpoOnsets,
+      hpoNotes,
+      hpoInterpretationCodes,
+    } = values;
+
+    const hpoResources = hpoCodes.map((code, index) => createHPOResource({
+      id: hpoIds[index],
+      hpoCode: { code, display: hpoDisplays[index] },
+      onset: { code: hpoOnsets[index], display: getHPOOnsetDisplayFromCode(hpoOnsets[index]) },
+      category: {
+        code: '',
+        display: '',
+      },
+      interpretation: {
+        code: hpoInterpretationCodes[index],
+        display: hpoInterpretationDisplayForCode(hpoInterpretationCodes[index]),
+      },
+      note: hpoNotes[index],
+      toDelete: false,
+    }));
+
+    return hpoResources;
   }
 
   createCGHResourceList() {
@@ -302,14 +351,14 @@ class PatientSubmissionScreen extends React.Component {
     const oldCGH = observations.find(isCGH) || {};
 
     const {
-      cgh,
+      cghId,
+      cghInterpretationValue,
       cghNote,
     } = values;
 
-    return [{
-      ...oldCGH,
-      ...createCGHResource({ interpretation: { value: cgh, display: cghDisplay(cgh) }, note: cghNote }),
-    }];
+    return [
+      createCGHResource({ id: cghId, interpretation: { value: cghInterpretationValue, display: cghDisplay(cghInterpretationValue) }, note: cghNote }),
+    ];
   }
 
   createIndicationResourceList() {

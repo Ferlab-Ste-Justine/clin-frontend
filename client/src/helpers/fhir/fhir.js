@@ -23,12 +23,21 @@ export const cghInterpretation = (cgh) => {
   return null;
 };
 
+export const getCGHInterpretationCode = (cghResource) => {
+  console.log();
+  try {
+    return cghResource.interpretation[0].coding[0].value;
+  } catch (e) {
+    return null;
+  }
+};
+
 export const cghNote = (cgh) => {
   if (cgh.note && cgh.note.length) {
     return cgh.note[0].text;
   }
 
-  return null;
+  return '';
 };
 
 export const indicationNote = (indication) => {
@@ -36,7 +45,7 @@ export const indicationNote = (indication) => {
     return indication.note[0].text;
   }
 
-  return null;
+  return '';
 };
 
 // TODO: translate/intl
@@ -277,21 +286,33 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     const clinicalImpressionEntry = createEntry(clinicalImpressionResource);
     bundle.entry.push(clinicalImpressionEntry);
 
-    // CGH
-    const cghResource = clinicalImpression.investigation[0].item.find(isCGH);
-    cghResource.subject = patientReference;
-    const cghEntry = createEntry(cghResource);
-    bundle.entry.push(cghEntry);
-    clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
+    clinicalImpression.investigation[0].item.forEach((resource) => {
+      resource.subject = patientReference;
+      const entry = createEntry(resource);
+      bundle.entry.push(entry);
+      clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+    });
 
-    // TODO: HPO
+    // // CGH
+    // const cghResource = clinicalImpression.investigation[0].item.find(isCGH);
+    // cghResource.subject = patientReference;
+    // const cghEntry = createEntry(cghResource);
+    // bundle.entry.push(cghEntry);
+    // clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
 
-    // Indication
-    const indicationResource = clinicalImpression.investigation[0].item.find(isIndication);
-    indicationResource.subject = patientReference;
-    const indicationEntry = createEntry(indicationResource);
-    bundle.entry.push(indicationEntry);
-    clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
+    // // TODO: HPO
+    // const hpoResource = clinicalImpression.investigation[0].item.find(isCGH);
+    // hpoResource.subject = patientReference;
+    // const hpoEntry = createEntry(hpoResource);
+    // bundle.entry.push(hpoEntry);
+    // clinicalImpressionResource.investigation[0].item.push(getReference(hpoEntry));
+
+    // // Indication
+    // const indicationResource = clinicalImpression.investigation[0].item.find(isIndication);
+    // indicationResource.subject = patientReference;
+    // const indicationEntry = createEntry(indicationResource);
+    // bundle.entry.push(indicationEntry);
+    // clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
   }
 
   return bundle;
@@ -371,6 +392,14 @@ export const createHPOResource = ({
   };
 };
 
+export const getHPOId = (resource) => {
+  try {
+    return resource.id;
+  } catch (e) {
+    return '';
+  }
+};
+
 export const getHPOOnsetCode = (resource) => {
   try {
     return resource.extension[0].valueCoding.value;
@@ -387,6 +416,14 @@ export const getHPODisplay = (resource) => {
   }
 };
 
+export const getHPOCode = (resource) => {
+  try {
+    return resource.valueCodeableConcept.coding[0].code;
+  } catch (e) {
+    return '';
+  }
+};
+
 export const getHPOInterpretationDisplay = (resource) => {
   try {
     return resource.interpretation[0].coding[0].display;
@@ -398,6 +435,122 @@ export const getHPOInterpretationDisplay = (resource) => {
 export const getHPOInterpretationCode = (resource) => {
   try {
     return resource.interpretation[0].coding[0].code;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getHPONote = (resource) => {
+  try {
+    return resource.note.text;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const hpoOnsetValues = [
+  {
+    groupLabel: 'Pediatric onset',
+    options: [
+      {
+        value: 'Juvenile onset',
+        display: 'Juvenile',
+      },
+      {
+        value: 'Childhood onset',
+        display: 'Childhood',
+      },
+      {
+        value: 'Infantile onset',
+        display: 'Infantile',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Adult onset',
+    options: [
+      {
+        value: 'YoungAdult onset',
+        display: 'Young adult',
+      },
+      {
+        value: 'MiddleAge onset',
+        display: 'Middle age',
+      },
+      {
+        value: 'Late onset',
+        display: 'Late',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Antenatal onset',
+    options: [
+      {
+        value: 'Embryonal onset',
+        display: 'Embryonal',
+      },
+      {
+        value: 'Fetal onset',
+        display: 'Fetal',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Neonatal onset',
+    options: [
+      {
+        value: 'Neonatal onset',
+        display: 'Neonatal',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Congenital onset',
+    options: [
+      {
+        value: 'Congenital onset',
+        display: 'Congenital',
+      },
+    ],
+  },
+];
+
+export const hpoInterpretationValues = () => {
+  console.log();
+  return [
+    {
+      iconClass: 'observedIcon',
+      value: 'O',
+      display: 'Observé',
+    },
+    {
+      iconClass: 'notObservedIcon',
+      value: 'NO',
+      display: 'Non-observé',
+    },
+    {
+      iconClass: 'unknownIcon',
+      value: 'I',
+      display: 'Inconnu',
+    },
+  ];
+};
+
+export const hpoInterpretationDisplayForCode = (code) => {
+  try {
+    return hpoInterpretationValues().find(v => v.value === code).display;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getHPOOnsetDisplayFromCode = (code) => {
+  try {
+    return hpoOnsetValues()
+      .reduce((acc, group) => [...acc, ...group.options], [])
+      .find(option => option.code === code)
+      .display;
   } catch (e) {
     return '';
   }

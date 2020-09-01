@@ -13,8 +13,23 @@ import {
 } from 'react-icons-kit/md';
 
 import {
-  CGH_CODES, CGH_VALUES, isCGH, isIndication, cghInterpretation, cghNote, indicationNote,
-  createHPOResource, getHPODisplay, getHPOInterpretationDisplay, getHPOOnsetCode, getHPOInterpretationCode,
+  CGH_CODES,
+  CGH_VALUES,
+  isCGH,
+  isIndication,
+  cghInterpretation,
+  cghNote,
+  getCGHInterpretationCode,
+  indicationNote,
+  createHPOResource,
+  hpoOnsetValues,
+  getHPOId,
+  getHPOCode,
+  getHPODisplay,
+  getHPONote,
+  getHPOOnsetCode,
+  getHPOInterpretationCode,
+  hpoInterpretationValues,
 } from '../../../helpers/fhir/fhir';
 
 const mockHpoResources = [
@@ -30,96 +45,22 @@ const mockHpoResources = [
   },
 ].map(createHPOResource);
 
-const hpoOnsetValues = [
-  {
-    groupLabel: 'Pediatric onset',
-    options: [
-      {
-        value: 'Juvenile onset',
-        display: 'Juvenile',
-      },
-      {
-        value: 'Childhood onset',
-        display: 'Childhood',
-      },
-      {
-        value: 'Infantile onset',
-        display: 'Infantile',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Adult onset',
-    options: [
-      {
-        value: 'YoungAdult onset',
-        display: 'Young adult',
-      },
-      {
-        value: 'MiddleAge onset',
-        display: 'Middle age',
-      },
-      {
-        value: 'Late onset',
-        display: 'Late',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Antenatal onset',
-    options: [
-      {
-        value: 'Embryonal onset',
-        display: 'Embryonal',
-      },
-      {
-        value: 'Fetal onset',
-        display: 'Fetal',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Neonatal onset',
-    options: [
-      {
-        value: 'Neonatal onset',
-        display: 'Neonatal',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Congenital onset',
-    options: [
-      {
-        value: 'Congenital onset',
-        display: 'Congenital',
-      },
-    ],
-  },
-];
+/**
+ *
+ * @param {
+ * hpoIds,
+ hpoCodes,
+ hpoDisplays,
+ hpoOnsets,
+ hpoNotes,
+ hpoInterpretationsCode,
+} param
+ */
 
-const hpoInterpretationValues = () => {
-  console.log();
-  return [
-    {
-      iconClass: 'observedIcon',
-      icon: ic_visibility,
-      value: 'O',
-      display: 'Observé',
-    },
-    {
-      iconClass: 'notObservedIcon',
-      icon: ic_visibility_off,
-      value: 'NO',
-      display: 'Non-observé',
-    },
-    {
-      iconClass: 'unknownIcon',
-      icon: ic_help,
-      value: 'I',
-      display: 'Inconnu',
-    },
-  ];
+const interpretationIcon = {
+  O: ic_visibility,
+  NO: ic_visibility_off,
+  I: ic_help,
 };
 
 const phenotype = ({ hpoResource, getFieldDecorator, hpoIndex }) => {
@@ -132,25 +73,47 @@ const phenotype = ({ hpoResource, getFieldDecorator, hpoIndex }) => {
           <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
           <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
         </div>
+
+        {getFieldDecorator(`hpoIds[${hpoIndex}]`, {
+          rules: [],
+          initialValue: getHPOId(hpoResource),
+        })(
+          <Input size="small" type="hidden" />,
+        )}
+
+        {getFieldDecorator(`hpoCodes[${hpoIndex}]`, {
+          rules: [],
+          initialValue: getHPOCode(hpoResource),
+        })(
+          <Input size="small" type="hidden" />,
+        )}
+
+        {getFieldDecorator(`hpoDisplays[${hpoIndex}]`, {
+          rules: [],
+          initialValue: getHPODisplay(hpoResource),
+        })(
+          <Input size="small" type="hidden" />,
+        )}
+
         <div className="rightBlock">
           <Form.Item>
-            {getFieldDecorator(`hpoInterpretation[${hpoIndex}]`, {
+            {getFieldDecorator(`hpoInterpretationCodes[${hpoIndex}]`, {
               rules: [],
               initialValue: getHPOInterpretationCode(hpoResource),
             })(
               <Select className="select selectObserved" defaultValue="O" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
                 {hpoInterpretationValues().map(interpretation => (
-                  <Select.Option value={interpretation.value}><IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretation.icon} />{interpretation.display}</Select.Option>
+                  <Select.Option value={interpretation.value}><IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />{interpretation.display}</Select.Option>
                 ))}
               </Select>,
             )}
           </Form.Item>
           <Form.Item>
-            {getFieldDecorator(`hpoOnset[${hpoIndex}]`, {
+            {getFieldDecorator(`hpoOnsets[${hpoIndex}]`, {
               rules: [],
               initialValue: getHPOOnsetCode(hpoResource),
             })(
-              <Select className="select selectAge" size="small" placeholder="Âge d’apparition" dropdownClassName="selectDropdown">
+              <Select className="select selectAge" size="small" placeholder="Age d’apparition" dropdownClassName="selectDropdown">
                 {
                 hpoOnsetValues.map(group => (
                   <OptGroup label={group.groupLabel}>
@@ -167,7 +130,12 @@ const phenotype = ({ hpoResource, getFieldDecorator, hpoIndex }) => {
       </div>
       <div className="phenotypeSecondLine">
         <Form.Item>
-          <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />
+          {getFieldDecorator(`hpoNotes[${hpoIndex}]`, {
+            rules: [],
+            initialValue: getHPONote(hpoResource),
+          })(
+            <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />,
+          )}
         </Form.Item>
       </div>
     </div>
@@ -330,43 +298,48 @@ class ClinicalInformation extends React.Component {
       initialValue: [1],
     });
     const familyInfo = getFieldValue('familyHistory');
-    const familyItems = familyInfo.map((k, index) => (
-      <div className="familyLine">
-        <Form.Item required={false} key={`note_${index}`}>
-          {getFieldDecorator(`note[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            rules: [],
-          })(
-            <Input onChange={this.handleNoteChange} placeholder="Ajouter une note…" className="input noteInput note" />,
-          )}
-        </Form.Item>
-        <Form.Item required={false} key={`relation_${index}`}>
-          {getFieldDecorator(`relation[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            rules: [],
-          })(
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-              {Object.values(relationValues).map(rv => (
-                <Select.Option value={rv.value}>{rv.label}</Select.Option>
-              ))}
-            </Select>,
-          )}
-        </Form.Item>
-        <Button className="delButton" disabled={!(getFieldValue(`note[${index}]`)) && !(getFieldValue(`relation[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
-          <IconKit size={20} icon={ic_remove} />
-        </Button>
-      </div>
+    // const familyItems = familyInfo.map((k, index) => (
+    //   <div className="familyLine">
+    //     <Form.Item required={false} key={`note_${index}`}>
+    //       {getFieldDecorator(`note[${index}]`, {
+    //         validateTrigger: ['onChange', 'onBlur'],
+    //         rules: [],
+    //       })(
+    //         <Input onChange={this.handleNoteChange} placeholder="Ajouter une note…" className="input noteInput note" />,
+    //       )}
+    //     </Form.Item>
+    //     <Form.Item required={false} key={`relation_${index}`}>
+    //       {getFieldDecorator(`relation[${index}]`, {
+    //         validateTrigger: ['onChange', 'onBlur'],
+    //         rules: [],
+    //       })(
+    //         <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
+    //           {Object.values(relationValues).map(rv => (
+    //             <Select.Option value={rv.value}>{rv.label}</Select.Option>
+    //           ))}
+    //         </Select>,
+    //       )}
+    //     </Form.Item>
+    //     <Button className="delButton" disabled={!(getFieldValue(`note[${index}]`)) && !(getFieldValue(`relation[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
+    //       <IconKit size={20} icon={ic_remove} />
+    //     </Button>
+    //   </div>
 
-    ));
+    // ));
     const selectedPhenotype = ['coucou'];
 
 
     let cghInterpretationValue;
     let cghNoteValue;
+    let cghResource = {};
+    let cghId = null;
     if (clinicalImpression) {
-      const cgh = clinicalImpression.investigation[0].item.find(isCGH) || {};
-      cghInterpretationValue = cghInterpretation;
-      cghNoteValue = cghNote(cgh);
+      cghResource = clinicalImpression.investigation[0].item.find(isCGH) || {};
+      // if (cghResource) {
+      cghId = cghResource.id;
+      cghInterpretationValue = getCGHInterpretationCode(cghResource);
+      cghNoteValue = cghNote(cghResource);
+      // }
     }
 
     let indicationNoteValue;
@@ -377,32 +350,38 @@ class ClinicalInformation extends React.Component {
 
     return (
       <div>
-        <Form>
-          <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
+        <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
 
-            <Form.Item label="Type d’analyse">
-              <Radio.Group buttonStyle="solid">
-                <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
-                <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
-                <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-          </Card>
-          <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
-            <Form.Item label="CGH">
-              {getFieldDecorator('cgh', {
-                rules: [],
-                initialValue: cghInterpretationValue,
-              })(
-                <Radio.Group buttonStyle="solid" onChange={(e) => { console.log('CGH value changed: ', e.target.value); }}>
-                  {CGH_VALUES().map(v => (
-                    <Radio.Button value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
-                  ))}
-                </Radio.Group>,
-              )}
-            </Form.Item>
-            {
-              (form.getFieldsValue().cgh === CGH_CODES.A)
+          {getFieldDecorator('cghId', {
+            rules: [],
+            initialValue: cghId,
+          })(
+            <Input size="small" type="hidden" />,
+          )}
+
+          <Form.Item label="Type d’analyse">
+            <Radio.Group buttonStyle="solid">
+              <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
+              <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
+              <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        </Card>
+        <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
+          <Form.Item label="CGH">
+            {getFieldDecorator('cghInterpretationValue', {
+              rules: [],
+              initialValue: cghInterpretationValue,
+            })(
+              <Radio.Group buttonStyle="solid" onChange={(e) => { console.log('CGH value changed: ', e.target.value); }}>
+                {CGH_VALUES().map(v => (
+                  <Radio.Button key={v.value} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
+                ))}
+              </Radio.Group>,
+            )}
+          </Form.Item>
+          {
+              (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
               && (
               <Form.Item label="Précision">
                 {getFieldDecorator('cghNote', {
@@ -415,12 +394,12 @@ class ClinicalInformation extends React.Component {
               )
             }
 
-            <Form.Item label="Résumé">
-              <TextArea className="input note" rows={4} />
-              <span className="optional">Facultatif</span>
-            </Form.Item>
-          </Card>
-          <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
+          <Form.Item label="Résumé">
+            <TextArea className="input note" rows={4} />
+            <span className="optional">Facultatif</span>
+          </Form.Item>
+        </Card>
+        {/* <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
             <div className="familyLines">
               {familyItems}
             </div>
@@ -458,18 +437,17 @@ class ClinicalInformation extends React.Component {
               </div>
             </div>
 
-          </Card>
-          <Card title="Indications" bordered={false} className="staticCard patientContent">
-            <Form.Item label="Hypothèse(s) de diagnostic">
-              {getFieldDecorator('indication', {
-                rules: [],
-                initialValue: indicationNoteValue,
-              })(
-                <TextArea className="input note" rows={4} />,
-              )}
-            </Form.Item>
-          </Card>
-        </Form>
+          </Card> */}
+        <Card title="Indications" bordered={false} className="staticCard patientContent">
+          <Form.Item label="Hypothèse(s) de diagnostic">
+            {getFieldDecorator('indication', {
+              rules: [],
+              initialValue: indicationNoteValue,
+            })(
+              <TextArea className="input note" rows={4} />,
+            )}
+          </Form.Item>
+        </Card>
       </div>
     );
   }

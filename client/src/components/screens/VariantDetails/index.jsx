@@ -645,12 +645,24 @@ class VariantDetailsScreen extends React.Component {
       } = data;
 
       const internalCohortsKeys = Object.keys(frequencies).filter(k => k === 'interne' || k.indexOf('LDx') !== -1);
-      const rows = internalCohortsKeys.map((key) => {
+      const totalKey = 'Total';
+      let totalValue = null;
+      const rows = [];
+      internalCohortsKeys.forEach((key) => {
         const frequency = frequencies[key];
-        frequency.key = key === 'interne' ? 'Total' : key;
+        const isInterne = key === 'interne';
+        frequency.key = isInterne ? totalKey : key;
         frequency.AF = Number.parseFloat(frequency.AF).toExponential(5);
-        return frequency;
+        if (isInterne) {
+          totalValue = frequency;
+        } else {
+          rows.push(frequency);
+        }
       });
+
+      if (totalValue != null) {
+        rows.push(totalValue);
+      }
 
       return rows;
     }
@@ -742,17 +754,44 @@ class VariantDetailsScreen extends React.Component {
   getOmimData() {
     return this.getGenes().map((g) => {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-      const geneLine = `${g.geneSymbol} ${g.geneMim ? `(MIN ${g.geneMim[0]})` : ''}`;
-      const phenotype = g.omim ? g.omim.map(o => (
-        <li>
-          {o.phenotype} (MIN {o.phenotypeMim})
-        </li>
-      )) : '--';
-      const transmission = g.omim ? g.omim.map(o => (
-        <li>
-          {o.inheritance.join(',')}
-        </li>
-      )) : '--';
+      const geneLine = (
+        <span>{g.geneSymbol} {g.geneMim
+          ? (
+            <>
+            (MIM:
+              <Link
+                url={`https://omim.org/entry/${g.geneMim[0]}`}
+                text={g.geneMim[0]}
+              />
+            )
+            </>
+          ) : ''}
+        </span>
+      );
+      let phenotype = '--';
+      let transmission = '--';
+      if (g.omim && g.omim.length > 0) {
+        phenotype = g.omim.map(o => (
+          <li>
+            {o.phenotype} (MIN:
+            <Link
+              url={`https://omim.org/entry/${o.phenotypeMim}`}
+              text={o.phenotypeMim}
+            />)
+          </li>
+        ));
+
+        transmission = g.omim.map((o) => {
+          if (o.inheritance) {
+            return (
+              <li>
+                {o.inheritance.join(',')}
+              </li>
+            );
+          }
+          return '--';
+        });
+      }
       return { geneLocus: (<span className="orphanetValue">{geneLine}</span>), phenotype: (<ul className="omimValue">{phenotype}</ul>), transmission: <ul className="omimValue">{transmission}</ul> };
     });
   }
@@ -864,6 +903,19 @@ class VariantDetailsScreen extends React.Component {
       donorsColumnPreset,
     } = this.state;
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
+
+    const omimLinks = omims => omims.map(omim => (
+      <div className="variantPageContentRow">
+        <Link
+          className="link"
+          url={`https://omim.org/entry/${omim}`}
+          text={omim}
+        />
+        {/* Ignore the comma if it's the last entry */}
+        {omims.length > 1 && omim !== omims[omims.length - 1] ? (<div>,&nbsp;</div>) : (<></>)}
+      </div>
+    ));
+
     let mutationIdTitle = '';
     if (data.mutationId.length > 31) {
       const mutationIdTitleStart = data.mutationId.substring(0, 15);
@@ -981,11 +1033,9 @@ class VariantDetailsScreen extends React.Component {
                         label: 'OMIM',
                         value:
                           bdExt && bdExt.omim ? (
-                            <Link
-                              className="link"
-                              url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.omim}`}
-                              text={bdExt.omim}
-                            />
+                            <div className="variantPageContentRow">
+                              {omimLinks(bdExt.omim)}
+                            </div>
                           ) : (
                             '--'
                           ),
