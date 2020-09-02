@@ -50,6 +50,8 @@ class InteractiveTable extends React.Component {
 
     // @NOTE Initialize Component State
     this.state.orderedColumns = cloneDeep(props.schema);
+    // eslint-disable-next-line react/destructuring-assignment
+    console.log(this.state.orderedColumns);
   }
 
   componentDidMount() {
@@ -247,7 +249,7 @@ class InteractiveTable extends React.Component {
 
   render() {
     const {
-      size, page, total, isLoading, numFrozenColumns, rowHeight, getData, isReportAvailable, canCreateReport,
+      size, page, total, isLoading, numFrozenColumns, rowHeights, getData, isReportAvailable, canCreateReport,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -281,7 +283,7 @@ class InteractiveTable extends React.Component {
 
           <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map(column => column.key)} className={`${style.checkbox} `} value={cloneDeep(visibleColumns)}>
             { matchingColumns.map(key => (
-              <Row>
+              <Row key={key}>
                 <Col>
                   <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{ intl.get(key) }</Checkbox>
                 </Col>
@@ -353,7 +355,7 @@ class InteractiveTable extends React.Component {
               numFrozenColumns={numFrozenColumns}
               columns={filteredColumns}
               enableGhostCells
-              rowHeight={rowHeight}
+              rowHeights={rowHeights}
             />
           </Col>
         </Row>
@@ -375,12 +377,12 @@ class InteractiveTable extends React.Component {
 }
 
 InteractiveTable.propTypes = {
-  schema: PropTypes.shape({}).isRequired,
+  schema: PropTypes.array.isRequired,
   size: PropTypes.number.isRequired,
   page: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
-  defaultVisibleColumns: PropTypes.shape([]),
-  numFrozenColumns: PropTypes.bool,
+  defaultVisibleColumns: PropTypes.array,
+  numFrozenColumns: PropTypes.number,
   isLoading: PropTypes.bool,
   isReorderable: PropTypes.bool,
   isResizable: PropTypes.bool,
@@ -394,7 +396,7 @@ InteractiveTable.propTypes = {
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
   getData: PropTypes.func,
-  rowHeight: PropTypes.number,
+  rowHeights: PropTypes.array,
 };
 
 InteractiveTable.defaultProps = {
@@ -413,7 +415,7 @@ InteractiveTable.defaultProps = {
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},
   getData: () => {},
-  rowHeight: null,
+  rowHeights: null,
 };
 
 export default InteractiveTable;
