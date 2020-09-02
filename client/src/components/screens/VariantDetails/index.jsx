@@ -100,7 +100,7 @@ const impactSummary = (c) => {
   if (pickTranscript(c)) {
     const impactScore = c.impact ? (getImpactTag(c.impact)) : null;
     return (
-      <>
+      <Fragment key={shortid.generate()}>
         <div>
           <Row className="impactRow">
             <Link
@@ -112,7 +112,7 @@ const impactSummary = (c) => {
             {c.impact}
           </Row>
         </div>
-      </>
+      </Fragment>
     );
   }
   return null;

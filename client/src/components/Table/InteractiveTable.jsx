@@ -50,8 +50,6 @@ class InteractiveTable extends React.Component {
 
     // @NOTE Initialize Component State
     this.state.orderedColumns = cloneDeep(props.schema);
-    // eslint-disable-next-line react/destructuring-assignment
-    console.log(this.state.orderedColumns);
   }
 
   componentDidMount() {
