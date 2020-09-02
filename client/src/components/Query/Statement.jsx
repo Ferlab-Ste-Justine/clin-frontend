@@ -667,7 +667,7 @@ class Statement extends React.Component {
       reorderable,
     } = options;
 
-    const inactiveStatementKeys = Object.keys(statements).filter(key => (key !== 'draft' && key !== activeStatementId));
+    const inactiveStatementKeys = Object.keys(statements).filter(key => key !== 'draft');
     const statementTitle = this.state.statementTitle !== null ? this.state.statementTitle : activeStatement.title;
     const checkedQueriesCount = checkedQueries.length;
     const newText = intl.get('screen.patientvariant.statement.new');
