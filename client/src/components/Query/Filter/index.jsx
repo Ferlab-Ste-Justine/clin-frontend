@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
@@ -12,6 +12,7 @@ import {
   ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down, ic_replay,
 } from 'react-icons-kit/md';
 
+import shortid from 'shortid';
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 
@@ -311,9 +312,9 @@ class Filter extends React.Component {
     return (
       <div className={style.termList}>
         {actionTargets.map((target, index) => (
-          <>
+          <Fragment key={shortid.generate()}>
             {index !== 0 ? PillInnerIconForOperand(operand)() : null}{target}
-          </>
+          </Fragment>
         ))}
       </div>
     );
@@ -368,7 +369,7 @@ class Filter extends React.Component {
     const applyMenu = cfg => (!cfg ? null : (
       <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
         {cfg.operands.map(configOperand => (
-          <Menu.Item key={configOperand}>
+          <Menu.Item key={shortid.generate()}>
             <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
             {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
           </Menu.Item>
@@ -519,7 +520,7 @@ class Filter extends React.Component {
           </div>
           { this.isEditable() && (
             <Dropdown
-              trigger="click"
+              trigger={['click']}
               onVisibleChange={this.toggleMenu}
               overlay={overlay}
               visible={this.isOpened()}
@@ -535,9 +536,9 @@ class Filter extends React.Component {
                   : (
                     <div className={style.termList}>
                       {actionTargets.map((target, index) => (
-                        <>
+                        <Fragment key={shortid.generate()}>
                           {index !== 0 ? PillInnerIconForOperand(savedOperand)() : null}{target}
-                        </>
+                        </Fragment>
                       ))}
                     </div>
                   )
@@ -570,8 +571,6 @@ Filter.propTypes = {
   onPageChangeCallBack: PropTypes.func,
   onOperandChangeCallBack: PropTypes.func,
   editor: PropTypes.shape({}).isRequired,
-  legend: PropTypes.shape({}).isRequired,
-  content: PropTypes.shape({}).isRequired,
   autoOpen: PropTypes.bool,
   overlayOnly: PropTypes.bool,
   visible: PropTypes.bool,

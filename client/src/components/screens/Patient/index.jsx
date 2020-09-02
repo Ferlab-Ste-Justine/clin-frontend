@@ -28,6 +28,7 @@ import {
 } from '../../../actions/router';
 
 import './style.scss';
+import shortid from 'shortid';
 
 const columnPresetToColumn = c => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
@@ -198,7 +199,7 @@ class PatientScreen extends React.Component {
           <Button
             key={uuidv1()}
             type="link"
-            size={25}
+            size="default"
             href="#"
             target="_blank"
             className="link"
@@ -353,7 +354,7 @@ class PatientScreen extends React.Component {
       <Button
         key={uuidv1()}
         type="link"
-        size={25}
+        size="default"
         href={url}
         target="_blank"
         className="link"
@@ -427,7 +428,7 @@ class PatientScreen extends React.Component {
                           className="extraInfoLink"
                           text={`${patient.details.id}`}
                         />
-)}
+                      )}
                       dataSource={[
                         { label: ramq, value: patient.details.ramq },
                         { label: mrn, value: patient.details.mrn },
@@ -480,6 +481,7 @@ class PatientScreen extends React.Component {
                     {
                     patient.consultations.map(pConsultation => (
                       <DataList
+                        key={shortid.generate()}
                         title={consultation}
                         extraInfo={<span className="extraInfo">{formatDate(pConsultation.date)}</span>}
                         dataSource={[
@@ -499,6 +501,7 @@ class PatientScreen extends React.Component {
                     <Button className="newRequestButton"><IconKit size={14} icon={ic_add} /> {newRequest}</Button>
                   </Typography.Title>
                   <Table
+                    rowKey={() => shortid.generate()}
                     pagination={false}
                     locale={{
                       emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
@@ -506,7 +509,15 @@ class PatientScreen extends React.Component {
                     dataSource={this.getRequest()}
                     defaultExpandAllRows
                     className="requestTable"
-                    expandedRowRender={() => <Table className="expandedTable" pagination={false} columns={extendRequestColumnPreset.map(columnPresetToColumn)} dataSource={this.getExtendedlRequest()} />}
+                    expandedRowRender={() => (
+                      <Table
+                        rowKey={() => shortid.generate()}
+                        className="expandedTable"
+                        pagination={false}
+                        columns={extendRequestColumnPreset.map(columnPresetToColumn)}
+                        dataSource={this.getExtendedlRequest()}
+                      />
+                    )}
                     columns={requestColumnPreset.map(
                       columnPresetToColumn,
                     )}
@@ -527,6 +538,7 @@ class PatientScreen extends React.Component {
                   <Col span={12}>
                     <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{indication}</Typography.Title>
                     <Table
+                      rowKey={() => shortid.generate()}
                       pagination={false}
                       columns={notesColumnPreset.map(
                         columnPresetToColumn,
@@ -538,6 +550,7 @@ class PatientScreen extends React.Component {
                 <Row type="flex" className="clinicalSigns">
                   <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{clinicalSigns}</Typography.Title>
                   <Table
+                    rowKey={() => shortid.generate()}
                     pagination={false}
                     columns={clinicalColumnPreset.map(
                       columnPresetToColumn,
@@ -549,6 +562,7 @@ class PatientScreen extends React.Component {
                   <Col span={12}>
                     <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{generalObservations}</Typography.Title>
                     <Table
+                      rowKey={() => shortid.generate()}
                       pagination={false}
                       columns={notesColumnPreset.map(
                         columnPresetToColumn,
@@ -561,6 +575,7 @@ class PatientScreen extends React.Component {
                   <Col span={12}>
                     <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{familyHistory}</Typography.Title>
                     <Table
+                      rowKey={() => shortid.generate()}
                       pagination={false}
                       columns={familyHistoryColumnPreset.map(
                         columnPresetToColumn,
