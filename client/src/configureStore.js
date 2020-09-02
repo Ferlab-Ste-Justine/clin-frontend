@@ -5,14 +5,12 @@ import { cancel } from 'redux-saga/effects';
 import createSagaMonitor from '@clarketm/saga-monitor';
 import { createBrowserHistory } from 'history';
 
-import locales from './locales';
 import createRootReducer from './reducers';
 import createRootSaga from './sagas';
 
 export const history = createBrowserHistory();
 
-export const initialState = {
-};
+export const initialState = {};
 
 const configureStoreDev = (preloadedState = {}) => {
   const monitor = process.env.NODE_ENV === 'development' ? createSagaMonitor({
