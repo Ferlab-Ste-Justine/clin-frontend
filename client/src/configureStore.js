@@ -12,10 +12,6 @@ import createRootSaga from './sagas';
 export const history = createBrowserHistory();
 
 export const initialState = {
-  intl: {
-    locale: 'en',
-    messages: locales.en,
-  },
 };
 
 const configureStoreDev = (preloadedState = {}) => {

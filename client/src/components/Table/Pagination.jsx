@@ -32,7 +32,7 @@ DataTablePagination.propTypes = {
   size: PropTypes.number,
   defaultPage: PropTypes.number,
   defaultSize: PropTypes.number,
-  sizeOptions: PropTypes.shape([]),
+  sizeOptions: PropTypes.array,
   canChangeSize: PropTypes.bool,
   isDisabled: PropTypes.bool,
   pageChangeCallback: PropTypes.func,

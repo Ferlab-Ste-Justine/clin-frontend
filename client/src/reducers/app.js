@@ -30,7 +30,7 @@ export const appShape = {
     lang: PropTypes.string,
     antd: PropTypes.shape({}),
   }).isRequired,
-  referrer: PropTypes.string,
+  referrer: PropTypes.object,
   loginMessage: PropTypes.string,
 };
 
