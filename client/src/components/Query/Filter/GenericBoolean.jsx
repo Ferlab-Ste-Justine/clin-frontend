@@ -1,4 +1,5 @@
 import React from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 
 import {
@@ -9,7 +10,6 @@ import {
 } from 'lodash';
 import intl from 'react-intl-universal';
 
-import shortid from 'shortid';
 import Filter, { FILTER_TYPE_GENERICBOOL } from './index';
 import styleFilter from '../styles/filter.module.scss';
 

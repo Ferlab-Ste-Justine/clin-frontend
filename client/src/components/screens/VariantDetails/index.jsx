@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { Fragment } from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
@@ -24,7 +25,7 @@ import './style.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
 import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
-import shortid from 'shortid';
+
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';

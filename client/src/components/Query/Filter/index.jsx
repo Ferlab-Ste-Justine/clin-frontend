@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
@@ -12,7 +13,6 @@ import {
   ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down, ic_replay,
 } from 'react-icons-kit/md';
 
-import shortid from 'shortid';
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 

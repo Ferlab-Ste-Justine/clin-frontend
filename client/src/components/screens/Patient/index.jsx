@@ -1,4 +1,5 @@
 import React from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
@@ -10,7 +11,6 @@ import {
 import {
   find,
 } from 'lodash';
-import shortid from 'shortid';
 
 
 import IconKit from 'react-icons-kit';

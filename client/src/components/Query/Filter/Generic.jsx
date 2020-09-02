@@ -1,4 +1,5 @@
 import React from 'react';
+import shortid from 'shortid';
 import {
   Row, Col, Checkbox, Tag, Tooltip, Button, Divider,
 } from 'antd';
@@ -7,7 +8,6 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
-import shortid from 'shortid';
 import Filter, {
   FILTER_TYPE_GENERIC,
   FILTER_OPERAND_TYPE_ALL,

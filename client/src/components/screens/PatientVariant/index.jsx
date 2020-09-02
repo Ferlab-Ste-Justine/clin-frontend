@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
@@ -44,7 +45,6 @@ import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../.
 import './style.scss';
 import style from './style.module.scss';
 import { userShape } from '../../../reducers/user';
-import shortid from 'shortid';
 
 
 const VARIANT_TAB = 'VARIANTS';
