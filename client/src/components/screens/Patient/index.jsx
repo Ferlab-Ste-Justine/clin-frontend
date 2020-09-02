@@ -10,6 +10,7 @@ import {
 import {
   find,
 } from 'lodash';
+import shortid from 'shortid';
 
 
 import IconKit from 'react-icons-kit';
@@ -28,7 +29,6 @@ import {
 } from '../../../actions/router';
 
 import './style.scss';
-import shortid from 'shortid';
 
 const columnPresetToColumn = c => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,

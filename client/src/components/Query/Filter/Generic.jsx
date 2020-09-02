@@ -7,6 +7,7 @@ import {
 } from 'lodash';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
+import shortid from 'shortid';
 import Filter, {
   FILTER_TYPE_GENERIC,
   FILTER_OPERAND_TYPE_ALL,
@@ -121,7 +122,7 @@ class GenericFilter extends React.Component {
             <Col span={24}>
               <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
                 { options.map(option => (
-                  <Row>
+                  <Row key={shortid.generate()}>
                     <Col>
                       <Checkbox key={`${option.value}`} className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                     </Col>

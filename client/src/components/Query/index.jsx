@@ -536,15 +536,15 @@ class Query extends React.Component {
 }
 
 Query.propTypes = {
-  draft: PropTypes.shape([]).isRequired,
-  original: PropTypes.shape([]),
+  draft: PropTypes.object.isRequired,
+  original: PropTypes.array,
   display: PropTypes.shape({}),
   options: PropTypes.shape({}),
   active: PropTypes.bool,
   index: PropTypes.number,
   results: PropTypes.number,
   facets: PropTypes.shape({}).isRequired,
-  categories: PropTypes.shape({}).isRequired,
+  categories: PropTypes.array,
   externalData: PropTypes.shape({}),
   onClickCallback: PropTypes.func,
   onCopyCallback: PropTypes.func,
@@ -574,6 +574,7 @@ Query.defaultProps = {
   active: false,
   index: 0,
   results: null,
+  categories: [],
   externalData: {},
   onClickCallback: () => {},
   onCopyCallback: () => {},

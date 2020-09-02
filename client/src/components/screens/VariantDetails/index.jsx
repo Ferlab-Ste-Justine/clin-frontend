@@ -59,7 +59,7 @@ const Link = ({ url, text }) => (
   <Button
     key={uuidv1()}
     type="link"
-    size={25}
+    size="default"
     href={url}
     target="_blank"
     className="link"

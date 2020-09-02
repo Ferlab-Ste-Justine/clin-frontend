@@ -9,6 +9,7 @@ import {
 } from 'lodash';
 import intl from 'react-intl-universal';
 
+import shortid from 'shortid';
 import Filter, { FILTER_TYPE_GENERICBOOL } from './index';
 import styleFilter from '../styles/filter.module.scss';
 
@@ -112,7 +113,7 @@ class GenericBooleanFilter extends React.Component {
             <Col span={24}>
               <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
                 { options.map(option => (
-                  <Row>
+                  <Row key={shortid.generate()}>
                     <Col>
                       <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                     </Col>
