@@ -1,4 +1,4 @@
-import '../../style/themes/antd-clin-theme.less';
+
 import { hot } from 'react-hot-loader/root';
 
 import React from 'react';
@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Spin, Layout, ConfigProvider } from 'antd';
 
-
+import '../../style/themes/antd-clin-theme.css';
 import './style.scss';
 
 import MaintenanceScreen from '../../components/screens/Maintenance';
