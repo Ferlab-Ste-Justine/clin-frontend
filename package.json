@@ -5,8 +5,8 @@
   "dependencies": {
     "@babel/core": "7.2.2",
     "@babel/runtime": "^7.7.4",
-    "@blueprintjs/core": "3.21.0",
-    "@blueprintjs/table": "3.8.0",
+    "@blueprintjs/core": "3.31.0",
+    "@blueprintjs/table": "3.8.13",
     "@clarketm/saga-monitor": "^2.0.1",
     "@hapi/joi": "^15.1.0",
     "@hot-loader/react-dom": "^16.8.3",

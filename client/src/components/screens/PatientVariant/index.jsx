@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
@@ -259,7 +260,7 @@ class PatientVariantScreen extends React.Component {
     this.handleSetDefaultStatement = this.handleSetDefaultStatement.bind(this);
     this.handleNavigationToVariantDetailsScreen = this.handleNavigationToVariantDetailsScreen.bind(this);
     this.getData = this.getData.bind(this);
-    this.getRowHeight = this.getRowHeight.bind(this);
+    this.getRowHeights = this.getRowHeights.bind(this);
     this.getImpactTag = this.getImpactTag.bind(this);
     this.goToVariantPatientTab = this.goToVariantPatientTab.bind(this);
     this.handleSelectVariant = this.handleSelectVariant.bind(this);
@@ -362,7 +363,7 @@ class PatientVariantScreen extends React.Component {
                     {
                     data.consequences.map(consequence => (
                       consequence.pick === true ? (
-                        <Row className="consequences">
+                        <Row className="consequences" key={shortid.generate()}>
                           <Col>{this.getImpactTag(consequence.impact)}</Col>
                           <Col className="consequence">{consequence.consequence[0]}</Col>
                           <Col>
@@ -466,7 +467,7 @@ class PatientVariantScreen extends React.Component {
                 return (
                   data.consequences.map(consequence => (
                     consequence.pick === true ? (
-                      <Row>{consequence.predictions.CADD_score}</Row>
+                      <Row key={shortid.generate()}>{consequence.predictions.CADD_score}</Row>
                     ) : null
 
                   ))
@@ -705,11 +706,11 @@ class PatientVariantScreen extends React.Component {
     }
   }
 
-  getRowHeight() {
+  getRowHeights() {
     const data = this.getData();
     const { size } = this.state;
     const { variant } = this.props;
-    const rowHeight = Array(data ? data.length : size).fill(32);
+    const rowHeights = Array(data ? data.length : size).fill(32);
     if (data) {
       data.map((value, index) => {
         const donorIndex = findIndex(value.donors, { patientId: variant.activePatient });
@@ -717,20 +718,20 @@ class PatientVariantScreen extends React.Component {
         const pick = filter(value.consequences, { pick: true });
         const nbValue = pick.length;
         const singleRowHeight = 20;
-        rowHeight[index] = nbValue <= 1 ? 32 : nbValue * singleRowHeight + 20;
+        rowHeights[index] = nbValue <= 1 ? 32 : nbValue * singleRowHeight + 20;
         if (nbValue <= 1 && (value.clinvar || (value.donors[donorIndex] ? value.donors[donorIndex].transmission : null))) {
-          rowHeight[index] = 2 * singleRowHeight + 20;
+          rowHeights[index] = 2 * singleRowHeight + 20;
         }
         const { mutationId } = value;
-        if (rowHeight[index] < singleRowHeight + 20) {
-          rowHeight[index] = singleRowHeight + 20;
+        if (rowHeights[index] < singleRowHeight + 20) {
+          rowHeights[index] = singleRowHeight + 20;
         }
-        rowHeight[index] = rowHeight[index] === 40 ? 32 : rowHeight[index];
-        return rowHeight;
+        rowHeights[index] = rowHeights[index] === 40 ? 32 : rowHeights[index];
+        return rowHeights;
       });
-      return rowHeight;
+      return rowHeights;
     }
-    return rowHeight;
+    return rowHeights;
   }
 
   getData() {
@@ -1038,7 +1039,8 @@ class PatientVariantScreen extends React.Component {
     const genderMaleIcon = (<path id="gender_mael_24px-a" d="M9,9 C10.29,9 11.5,9.41 12.47,10.11 L17.58,5 L13,5 L13,3 L21,3 L21,11 L19,11 L19,6.41 L13.89,11.5 C14.59,12.5 15,13.7 15,15 C15,18.3137085 12.3137085,21 9,21 C5.6862915,21 3,18.3137085 3,15 C3,11.6862915 5.6862915,9 9,9 M9,11 C6.790861,11 5,12.790861 5,15 C5,17.209139 6.790861,19 9,19 C11.209139,19 13,17.209139 13,15 C13,12.790861 11.209139,11 9,11 Z" />);
     const observedHpoText = intl.get('screen.patientvariant.header.ontology.observed');
 
-    const total = currentTab === VARIANT_TAB ? activeStatementTotals[activeQuery] : [];
+    const total = currentTab === VARIANT_TAB && activeStatementTotals[activeQuery] != null ? activeStatementTotals[activeQuery] : 0;
+
     const searchData = [];
     const reverseCategories = {};
     if (schema.categories) {
@@ -1106,7 +1108,7 @@ class PatientVariantScreen extends React.Component {
     const autocomplete = Autocompleter(tokenizedSearchData, searchDataTokenizer);
     const completName = `${patient.details.lastName}, ${patient.details.firstName}`;
     const allOntology = sortBy(patient.ontology, 'term');
-    const rowHeight = this.getRowHeight();
+    const rowHeights = this.getRowHeights();
 
     const visibleOntology = allOntology.filter((ontology => ontology.observed === 'POS')).slice(0, 4);
 
@@ -1139,7 +1141,7 @@ class PatientVariantScreen extends React.Component {
       <Menu>
         {
           allOntology.map(ontology => (
-            <Menu.Item>
+            <Menu.Item key={shortid.generate()}>
               <a className={style.ontologyItem}> { /* eslint-disable-line */ }
                 {ontology.term}
                 <IconKit className={`${style.iconLink} ${style.iconHover}`} size={14} icon={ic_launch} />
@@ -1233,6 +1235,7 @@ class PatientVariantScreen extends React.Component {
                   {observedHpoText}:
                   {visibleOntology.map(vontology => (
                     <a
+                      key={shortid.generate()}
                       href={`https://hpo.jax.org/app/browse/term/${vontology.code}`}
                       target="_blank"
                     >
@@ -1337,7 +1340,7 @@ class PatientVariantScreen extends React.Component {
                     isExportable={false}
                     canCreateReport
                     isReportAvailable={reportAvailable}
-                    rowHeight={rowHeight}
+                    rowHeights={rowHeights}
                     numFrozenColumns={1}
                     getData={this.getData}
                   />

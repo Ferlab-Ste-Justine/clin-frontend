@@ -37,9 +37,12 @@ const DataList = (props) => {
 
 DataList.propTypes = {
   title: PropTypes.string.isRequired,
-  dataSource: PropTypes.shape([]),
+  dataSource: PropTypes.array,
   style: PropTypes.shape({}),
-  extraInfo: PropTypes.string,
+  extraInfo: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+  ]),
 };
 
 DataList.defaultProps = {

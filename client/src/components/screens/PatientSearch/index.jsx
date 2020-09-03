@@ -336,7 +336,7 @@ class PatientSearchScreen extends React.Component {
     const selectAll = intl.get('screen.patientvariant.filter.selection.all');
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 
-    const rowHeight = Array(size).fill(36);
+    const rowHeights = Array(size).fill(36);
     const autoCompleteResults = search.autocomplete.results.map(result => ({
       value: result.id,
       text: (
@@ -473,7 +473,7 @@ class PatientSearchScreen extends React.Component {
                   exportCallback={this.exportToTsv}
                   numFrozenColumns={1}
                   isLoading={showSubloadingAnimation}
-                  rowHeight={rowHeight}
+                  rowHeights={rowHeights}
                 />
               </Card>
             </Col>

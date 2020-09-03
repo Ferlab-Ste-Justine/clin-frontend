@@ -1,4 +1,5 @@
 import React from 'react';
+import shortid from 'shortid';
 import {
   Row, Col, Checkbox, Tag, Tooltip, Button, Divider,
 } from 'antd';
@@ -121,7 +122,7 @@ class GenericFilter extends React.Component {
             <Col span={24}>
               <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
                 { options.map(option => (
-                  <Row>
+                  <Row key={shortid.generate()}>
                     <Col>
                       <Checkbox key={`${option.value}`} className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                     </Col>

@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
-import React from 'react';
+import React, { Fragment } from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
@@ -24,6 +25,7 @@ import './style.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
 import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
+
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';
@@ -58,7 +60,7 @@ const Link = ({ url, text }) => (
   <Button
     key={uuidv1()}
     type="link"
-    size={25}
+    size="default"
     href={url}
     target="_blank"
     className="link"
@@ -99,7 +101,7 @@ const impactSummary = (c) => {
   if (pickTranscript(c)) {
     const impactScore = c.impact ? (getImpactTag(c.impact)) : null;
     return (
-      <>
+      <Fragment key={shortid.generate()}>
         <div>
           <Row className="impactRow">
             <Link
@@ -111,7 +113,7 @@ const impactSummary = (c) => {
             {c.impact}
           </Row>
         </div>
-      </>
+      </Fragment>
     );
   }
   return null;
@@ -367,7 +369,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.map(o => (<li>{o}</li>));
+              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{o}</li>));
               return (<ul>{lis}</ul>);
             } catch (e) {
               return '';
@@ -382,7 +384,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.radboudumc.map(r => (<li>{r}</li>));
+              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{r}</li>));
               return (<ul>{lis}</ul>);
             } catch (e) {
               return '';
@@ -408,7 +410,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.map(o => (<li>{o}</li>));
+              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{o}</li>));
               return (<ul>{lis}</ul>);
             } catch (e) {
               return '';
@@ -423,7 +425,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.radboudumc.map(r => (<li>{r}</li>));
+              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{r}</li>));
               return (<ul>{lis}</ul>);
             } catch (e) {
               return '';
@@ -733,6 +735,7 @@ class VariantDetailsScreen extends React.Component {
       return (
         <span className="orphanetLink">
           <Link
+            key={shortid.generate()}
             url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${dataId}&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
             text={panel}
           />
@@ -759,14 +762,14 @@ class VariantDetailsScreen extends React.Component {
       const geneLine = (
         <span>{g.geneSymbol} {g.geneMim
           ? (
-            <>
+            <Fragment key={shortid.generate()}>
             (MIM:
               <Link
                 url={`https://omim.org/entry/${g.geneMim[0]}`}
                 text={g.geneMim[0]}
               />
             )
-            </>
+            </Fragment>
           ) : ''}
         </span>
       );
@@ -774,7 +777,7 @@ class VariantDetailsScreen extends React.Component {
       let transmission = '--';
       if (g.omim && g.omim.length > 0) {
         phenotype = g.omim.map(o => (
-          <li>
+          <li key={shortid.generate()}>
             {o.phenotype} (MIN:
             <Link
               url={`https://omim.org/entry/${o.phenotypeMim}`}
@@ -1131,6 +1134,7 @@ class VariantDetailsScreen extends React.Component {
               <Row type="flex" gutter={32} className="consequencesTable">
                 <Col>
                   <Table
+                    rowKey={() => shortid.generate()}
                     pagination={false}
                     locale={{
                       emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
@@ -1160,6 +1164,7 @@ class VariantDetailsScreen extends React.Component {
                   </Row>
                   <Row>
                     <Table
+                      rowKey={() => shortid.generate()}
                       pagination={false}
                       locale={{
                         emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
@@ -1178,6 +1183,7 @@ class VariantDetailsScreen extends React.Component {
                   <Row type="flex">
                     <Col>
                       <Table
+                        rowKey={() => shortid.generate()}
                         pagination={false}
                         locale={{
                           emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
@@ -1241,6 +1247,7 @@ class VariantDetailsScreen extends React.Component {
               <Row type="flex" className="AssCondTable">
                 <Col>
                   <Table
+                    rowKey={() => shortid.generate()}
                     pagination={false}
                     locale={{
                       emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
@@ -1259,6 +1266,7 @@ class VariantDetailsScreen extends React.Component {
               <Row type="flex" className="omimTable">
                 <Col>
                   <Table
+                    rowKey={() => shortid.generate()}
                     pagination={false}
                     locale={{
                       emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
@@ -1277,6 +1285,7 @@ class VariantDetailsScreen extends React.Component {
               <Row type="flex" className="hpoTable">
                 <Col>
                   <Table
+                    rowKey={() => shortid.generate()}
                     pagination={false}
                     locale={{
                       emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
