@@ -30,7 +30,7 @@ import {
   navigateToPatientSearchScreen,
 } from '../../../actions/router';
 
-import '../../../style/themes/antd-clin-theme.less';
+import '../../../style/themes/antd-clin-theme.css';
 import './style.scss';
 
 const columnPresetToColumn = c => ({

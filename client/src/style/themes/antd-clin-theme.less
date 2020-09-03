@@ -1,37 +1,6 @@
 @import '../../../../node_modules/antd/dist/antd.less' ;
-// @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
-
-@theme: default;
-
-// The prefix to use on all css classes from ant.
-@ant-prefix: ant;
-
-// An override for the html selector for theme prefixes
-@html-selector: html;
-
-
-@blue-base: #00ACEB;
-@blue-1: #EAF3FA;
-@blue-2: #B5E6F7;
-@blue-3: #86D5F2;
-@blue-4: #5BC5ED;
-@blue-5: #3EB8EA;
-@blue-6: #2AABE8;
-@blue-7: #249ED9;
-@blue-8: #1D8BC6;
-@blue-9: #1B7AB2;
-@blue-10: #125A90;
-
-@gray-1: #FFFFFF;
-@gray-2: #F8FAFC;
-@gray-3: #F1F5F9;
-@gray-4: #E1E8EF;
-@gray-5: #D2DBE4;
-@gray-6: #A7B4C3;
-@gray-7: #7E8DA0;
-@gray-8: #536377;
-@gray-9: #233750;
-@gray-10: #0F1824;
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+@import './colors.less';
 
 @preset-colors: pink, magenta, red, volcano, orange, yellow, gold, cyan, lime, green, blue, geekblue,
   purple;
@@ -47,9 +16,12 @@
 @border-color-split:@gray-4;
 
 // Text colors
+@font-family: 'Roboto', BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
 @heading-color: @blue-10;
 @text-selection-bg: @gray-3;
-@font-size-base: 14px !important;
+@font-size-base: 14px;
 @font-size-lg: 16px;
 @border-radius-base: 2px;
 
@@ -59,32 +31,13 @@
 @text-color-secondary: @blue-3;
 @text-color: fade(@black, 65%);
 @text-color-secondary: fade(@black, 45%);
-@text-color-inverse: @white;
 
-// Typography
-@typography-title-margin-bottom: 0.5em;
-.ant-typography{
-  color: @gray-8;
-  font-size:14px;
-}
-
-body {
-  color:#1B7AB2 !important;
-}
-
-// Layout
-//@layout-body-background: #f4f5f8;
-//@layout-header-background: @purple-8;
-//@layout-trigger-background: @purple-10;
 
 // Disabled states
 @disabled-color: @gray-6;
-//@disabled-bg: @layout-body-background;
-//@disabled-color-dark: @disabled-color;
 
 // Backgrounds
 @background-color-light: #EDF0F3;
-//@background-color-base: @layout-body-background;
 
 // Layout light theme
 @layout-sider-background-light: #fff;
@@ -98,22 +51,15 @@ body {
 
 // Border color
 @border-color-base: @blue-1;
-//@border-color-split: @gray-4;
 
 // Typography
 @typography-title-font-weight: 500;
 @typography-title-margin-top: 0;
 @typography-title-margin-bottom: 0;
-.ant-typography{
-  color: @gray-8;
-  font-size:14px;
-}
 
 // LINK
 @link-color: @blue-8;
 @link-hover-color: @blue-7;
-///@link-active-color: color(~`colorPalette('@{link-color}', 7) `);
-//@link-hover-decoration: underline;
 
 // Buttons
 @btn-shadow: none;

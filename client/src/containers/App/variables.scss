@@ -1,12 +1,13 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+@import '../../style/themes/colors.scss';
 
-$light: #ffffff;
-$background:#F3F5F7;
+$light: $gray-1;
+$background:$gray-3;
 
 $disabledColor:#E5E7EA;
-$text-color: red;
-$primary: #125a90;
-$blue-800: #1b7ab2;
+
+$primary: $blue-8;
+$blue-800: $blue-9;
 $primary-light:#E4F1F9;
 $primary-dark:#233750;
 $primary-hover:#2B84B8;
