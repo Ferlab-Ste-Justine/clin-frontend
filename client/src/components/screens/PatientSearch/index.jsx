@@ -25,7 +25,7 @@ import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
-import { autoCompletePatients, searchPatientsByQuery } from '../../../actions/patient';
+import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
 import { appShape } from '../../../reducers/app';
 
 const COLUMN_WIDTHS = {
@@ -284,6 +284,7 @@ class PatientSearchScreen extends React.Component {
     const { actions } = this.props;
     const patientId = value.split(' ')[0] || null;
     if (patientId) {
+      actions.autoCompletePatientsSelected();
       actions.navigateToPatientScreen(patientId);
     }
   }
@@ -335,7 +336,7 @@ class PatientSearchScreen extends React.Component {
     const selectAll = intl.get('screen.patientvariant.filter.selection.all');
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 
-    const rowHeight = Array(size).fill(36);
+    const rowHeights = Array(size).fill(36);
     const autoCompleteResults = search.autocomplete.results.map(result => ({
       value: result.id,
       text: (
@@ -472,7 +473,7 @@ class PatientSearchScreen extends React.Component {
                   exportCallback={this.exportToTsv}
                   numFrozenColumns={1}
                   isLoading={showSubloadingAnimation}
-                  rowHeight={rowHeight}
+                  rowHeights={rowHeights}
                 />
               </Card>
             </Col>
@@ -496,6 +497,7 @@ const mapDispatchToProps = dispatch => ({
     navigateToSubmissionScreen,
     autoCompletePatients,
     searchPatientsByQuery,
+    autoCompletePatientsSelected,
   }, dispatch),
 });
 

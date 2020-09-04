@@ -1,5 +1,5 @@
 import shortid from 'shortid';
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
@@ -26,14 +26,24 @@ export const createCellRenderer = (type, getData, options = {}) => {
       default:
       case 'text':
         valueRenderer = value => (
-          <Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>);
+          <Fragment>
+            <Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>
+          </Fragment>
+        );
         break;
       case 'paragraph':
-        valueRenderer = value => (<Typography.Paragraph ellipsis>{value}</Typography.Paragraph>);
+        valueRenderer = value => (
+          <Fragment>
+            <Typography.Paragraph ellipsis>{value}</Typography.Paragraph>
+          </Fragment>
+        );
         break;
       case 'capitalText':
         valueRenderer = value => (
-          <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{value}</Typography.Text>);
+          <Fragment>
+            <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{value}</Typography.Text>
+          </Fragment>
+        );
         break;
       case 'link':
         valueRenderer = value => (
@@ -61,17 +71,19 @@ export const createCellRenderer = (type, getData, options = {}) => {
         break;
       case 'button':
         valueRenderer = value => (
-          <Button
-            type={options.type}
-            size={options.size}
-            shape={options.shape}
-            icon={options.icon}
-            onClick={options.handler}
-            data-id={value}
-            className="button"
-          >
-            {options.label || value}
-          </Button>
+          <Fragment>
+            <Button
+              type={options.type}
+              size={options.size}
+              shape={options.shape}
+              icon={options.icon}
+              onClick={options.handler}
+              data-id={value}
+              className="button"
+            >
+              {options.label || value}
+            </Button>
+          </Fragment>
         );
         break;
       case 'tooltipButton':
@@ -203,7 +215,7 @@ class DataTable extends React.Component {
       enableGhostCells,
       enableRowHeader,
     } = this.props;
-    let { rowHeight } = this.props;
+    let { rowHeights } = this.props;
     const rowsCount = size <= total ? size : total;
     const handleColumnsReordered = (oldIndex, newIndex, length) => {
       if (oldIndex === newIndex) {
@@ -212,13 +224,13 @@ class DataTable extends React.Component {
 
       reorderColumnsCallback(Utils.reorderArray(columns, oldIndex, newIndex, length));
     };
-    rowHeight = rowsCount === 0 ? [] : rowHeight;
-    if (rowsCount < rowHeight.length) {
-      rowHeight = rowHeight.slice(0, rowsCount);
+    rowHeights = rowsCount === 0 ? [] : rowHeights;
+    if (rowsCount < rowHeights.length) {
+      rowHeights = rowHeights.slice(0, rowsCount);
     }
-    if (rowHeight.length < rowsCount) {
-      const bufferArray = Array(rowsCount - rowHeight.length).fill(32);
-      rowHeight = [...rowHeight, ...bufferArray];
+    if (rowHeights.length < rowsCount) {
+      const bufferArray = Array(rowsCount - rowHeights.length).fill(32);
+      rowHeights = [...rowHeights, ...bufferArray];
     }
     const renderColumnHeader = (name, index) => (
       <div className="tooltipHeader">{intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} /></div>
@@ -239,6 +251,7 @@ class DataTable extends React.Component {
     return (
       <Table
         key={shortid.generate()}
+        rowKey={() => shortid.generate()}
         numRows={rowsCount}
         numFrozenColumns={numFrozenColumns}
         enableGhostCells={enableGhostCells}
@@ -248,7 +261,7 @@ class DataTable extends React.Component {
         bodyContextMenuRenderer={renderContextMenuCallback}
         onColumnsReordered={handleColumnsReordered}
         onColumnWidthChanged={resizeColumnCallback}
-        rowHeights={rowHeight}
+        rowHeights={rowHeights}
         getCellClipboardData={(row, col) => `(${row}, ${col})`}
         columnWidths={columns.map(c => c.columnWidth)}
         enableRowHeader={enableRowHeader}
@@ -259,6 +272,7 @@ class DataTable extends React.Component {
       >
         { columns.map(definition => (
           <Column
+            key={shortid.generate()}
             id={definition.key}
             name={definition.description ? definition.description : getColumnTitle(definition.label)}
             cellRenderer={definition.renderer}
@@ -273,7 +287,7 @@ class DataTable extends React.Component {
 DataTable.propTypes = {
   size: PropTypes.number,
   total: PropTypes.number,
-  columns: PropTypes.shape([]),
+  columns: PropTypes.array,
   numFrozenColumns: PropTypes.number,
   enableReordering: PropTypes.bool,
   enableResizing: PropTypes.bool,
@@ -282,7 +296,7 @@ DataTable.propTypes = {
   reorderColumnsCallback: PropTypes.func,
   resizeColumnCallback: PropTypes.func,
   getData: PropTypes.func,
-  rowHeight: PropTypes.shape([]),
+  rowHeights: PropTypes.array,
   enableRowHeader: PropTypes.bool,
 };
 
@@ -298,7 +312,7 @@ DataTable.defaultProps = {
   reorderColumnsCallback: () => {},
   resizeColumnCallback: () => {},
   getData: () => {},
-  rowHeight: [],
+  rowHeights: [],
   enableRowHeader: true,
 };
 

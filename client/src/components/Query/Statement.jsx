@@ -667,7 +667,7 @@ class Statement extends React.Component {
       reorderable,
     } = options;
 
-    const inactiveStatementKeys = Object.keys(statements).filter(key => (key !== 'draft' && key !== activeStatementId));
+    const inactiveStatementKeys = Object.keys(statements).filter(key => key !== 'draft');
     const statementTitle = this.state.statementTitle !== null ? this.state.statementTitle : activeStatement.title;
     const checkedQueriesCount = checkedQueries.length;
     const newText = intl.get('screen.patientvariant.statement.new');
@@ -788,7 +788,7 @@ class Statement extends React.Component {
 
         </Modal>
         <div className={styleStatement.header}>
-          <Row type="flex" align="end" className={styleStatement.toolbar}>
+          <Row type="flex" align={"bottom"} className={styleStatement.toolbar}>
             <div className={styleStatement.message}>
               {this.isDirty() && (
               <>
@@ -1084,7 +1084,7 @@ class Statement extends React.Component {
 Statement.propTypes = {
   statements: PropTypes.shape({}).isRequired,
   data: PropTypes.array.isRequired,
-  original: PropTypes.shape({}).isRequired,
+  original: PropTypes.array.isRequired,
   activeStatementId: PropTypes.string,
   defaultStatementId: PropTypes.string,
   activeQuery: PropTypes.string,

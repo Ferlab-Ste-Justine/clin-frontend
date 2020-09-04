@@ -1,4 +1,5 @@
 import React from 'react';
+import shortid from 'shortid';
 import PropTypes from 'prop-types';
 
 import {
@@ -112,7 +113,7 @@ class GenericBooleanFilter extends React.Component {
             <Col span={24}>
               <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
                 { options.map(option => (
-                  <Row>
+                  <Row key={shortid.generate()}>
                     <Col>
                       <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                     </Col>

@@ -37,7 +37,7 @@ const exportToExcel = async (filename, headerRow, dataRows) => {
     return buf;
   }
 
-  const blob = new Blob([s2ab(atob(response.data))], {
+  const blob = new Blob([s2ab(atob(response.payload.data))], {
     type: '',
   });
   saveAs(blob, `${xlObject.filename}.xlsx`);
