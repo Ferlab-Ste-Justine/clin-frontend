@@ -1,9 +1,5 @@
 /* eslint-disable no-unused-vars */
-import moment from 'moment';
-import { curry, runInContext } from 'lodash';
-
 import uuidv1 from 'uuid/v1';
-import intl from 'react-intl-universal';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
@@ -23,6 +19,14 @@ export const cghInterpretation = (cgh) => {
   return null;
 };
 
+export const getCGHInterpretationCode = (cghResource) => {
+  try {
+    return cghResource.interpretation[0].coding[0].value;
+  } catch (e) {
+    return null;
+  }
+};
+
 export const cghNote = (cgh) => {
   if (cgh.note && cgh.note.length) {
     return cgh.note[0].text;
@@ -31,12 +35,20 @@ export const cghNote = (cgh) => {
   return null;
 };
 
-export const indicationNote = (indication) => {
+export const getIndicationNote = (indication) => {
   if (indication.note && indication.note.length) {
     return indication.note[0].text;
   }
 
   return null;
+};
+
+export const getIndicationId = (indication) => {
+  try {
+    return indication.id;
+  } catch (e) {
+    return null;
+  }
 };
 
 // TODO: translate/intl
@@ -81,15 +93,11 @@ export const createRequest = (resource) => {
 };
 
 const createFullUrl = resource => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuidv1()}`);
-const createEntry = (resource) => {
-  console.log();
-
-  return {
-    fullUrl: createFullUrl(resource),
-    resource,
-    request: createRequest(resource),
-  };
-};
+const createEntry = resource => ({
+  fullUrl: createFullUrl(resource),
+  resource,
+  request: createRequest(resource),
+});
 
 const getReference = entry => ({ reference: entry.fullUrl });
 
@@ -110,21 +118,15 @@ const createPatientResource = patient => (
   }
 );
 
-const createServiceRequestResource = (serviceRequest) => {
-  console.log();
-
-  return {
-    resourceType: 'ServiceRequest',
-    id: serviceRequest ? serviceRequest.id : null,
-    status: serviceRequest ? serviceRequest.status : 'draft',
-  };
-};
+const createServiceRequestResource = serviceRequest => ({
+  resourceType: 'ServiceRequest',
+  id: serviceRequest ? serviceRequest.id : null,
+  status: serviceRequest ? serviceRequest.status : 'draft',
+});
 
 export const createClinicalImpressionResource = ({
   id, status, age, date, assessor,
 }) => {
-  console.log();
-
   const resource = {
     resourceType: RESOURCE_TYPE_CLINICAL_IMPRESSION,
     id,
@@ -165,90 +167,84 @@ export const createClinicalImpressionResource = ({
 
 export const createCGHResource = ({
   id, interpretation, note,
-}) => {
-  console.log();
-  return {
-    resourceType: 'Observation',
-    id,
-    meta: {
-      profile: [
-        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
-      ],
-    },
-    status: 'final',
-    category: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-            code: 'laboratory',
-            display: 'Laboratory',
-          },
-        ],
-      },
+}) => ({
+  resourceType: 'Observation',
+  id,
+  meta: {
+    profile: [
+      'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
     ],
-    code: {
+  },
+  status: 'final',
+  category: [
+    {
       coding: [
         {
-          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
-          code: 'CGH',
-          display: 'cgh',
+          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          code: 'laboratory',
+          display: 'Laboratory',
         },
       ],
     },
-    interpretation: [
+  ],
+  code: {
+    coding: [
       {
-        coding: [
-          interpretation,
-        ],
+        system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+        code: 'CGH',
+        display: 'cgh',
       },
     ],
-    note: [
-      {
-        text: note,
-      },
-    ],
-  };
-};
+  },
+  interpretation: [
+    {
+      coding: [
+        interpretation,
+      ],
+    },
+  ],
+  note: [
+    {
+      text: note,
+    },
+  ],
+});
 
-export const createIndicationResource = ({ id, note }) => {
-  console.log();
-  return {
-    resourceType: 'Observation',
-    id,
-    meta: {
-      profile: [
-        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
-      ],
-    },
-    status: 'final',
-    category: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-            code: 'exam',
-            display: 'Exam',
-          },
-        ],
-      },
+export const createIndicationResource = ({ id, note }) => ({
+  resourceType: 'Observation',
+  id,
+  meta: {
+    profile: [
+      'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
     ],
-    code: {
+  },
+  status: 'final',
+  category: [
+    {
       coding: [
         {
-          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
-          code: 'INDIC',
-          display: 'indications',
+          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          code: 'exam',
+          display: 'Exam',
         },
       ],
     },
-    note: [
+  ],
+  code: {
+    coding: [
       {
-        text: note,
+        system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+        code: 'INDIC',
+        display: 'indications',
       },
     ],
-  };
-};
+  },
+  note: [
+    {
+      text: note,
+    },
+  ],
+});
 
 export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinicalImpression }) => {
   const patientResource = createPatientResource(patient);
@@ -292,6 +288,12 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     const indicationEntry = createEntry(indicationResource);
     bundle.entry.push(indicationEntry);
     clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
+    clinicalImpression.investigation[0].item.forEach((resource) => {
+      resource.subject = patientReference;
+      const entry = createEntry(resource);
+      bundle.entry.push(entry);
+      clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+    });
   }
 
   return bundle;
@@ -299,76 +301,88 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
 
 export const createHPOResource = ({
   hpoCode, onset, category, interpretation, note,
-}) => {
-  console.log();
+}) => ({
+  resourceType: 'Observation',
+  id: 'ph-001',
+  meta: {
+    profile: [
+      'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
+    ],
+  },
+  extension: [
+    {
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
+      valueCoding: onset,
+    },
+    {
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/hpo-category',
+      valueCoding: category,
+    },
+  ],
+  status: 'final',
+  category: [
+    {
+      coding: [
+        {
+          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          code: 'exam',
+          display: 'Exam',
+        },
+      ],
+    },
+  ],
+  code: {
+    coding: [
+      {
+        system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+        code: 'PHENO',
+        display: 'phenotype',
+      },
+    ],
+  },
+  subject: {
+    reference: 'Patient/pt-001',
+  },
+  valueCodeableConcept: {
+    coding: [
+      {
+        system: 'http://purl.obolibrary.org/obo/hp.owl',
+        ...hpoCode,
+      },
+    ],
+  },
+  interpretation: [
+    {
+      coding: [
+        {
+          system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
+          ...interpretation,
+        },
+      ],
+      text: 'Observé',
+    },
+  ],
+  note: [
+    {
+      text: note,
+    },
+  ],
+});
 
-  return {
-    resourceType: 'Observation',
-    id: 'ph-001',
-    meta: {
-      profile: [
-        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
-      ],
-    },
-    extension: [
-      {
-        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
-        valueCoding: onset,
-      },
-      {
-        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/hpo-category',
-        valueCoding: category,
-      },
-    ],
-    status: 'final',
-    category: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-            code: 'exam',
-            display: 'Exam',
-          },
-        ],
-      },
-    ],
-    code: {
-      coding: [
-        {
-          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
-          code: 'PHENO',
-          display: 'phenotype',
-        },
-      ],
-    },
-    subject: {
-      reference: 'Patient/pt-001',
-    },
-    valueCodeableConcept: {
-      coding: [
-        {
-          system: 'http://purl.obolibrary.org/obo/hp.owl',
-          ...hpoCode,
-        },
-      ],
-    },
-    interpretation: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
-            ...interpretation,
-          },
-        ],
-        text: 'Observé',
-      },
-    ],
-    note: [
-      {
-        text: note,
-      },
-    ],
-  };
+export const getHPOId = (resource) => {
+  try {
+    return resource.id;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getResourceToBeDeletedStatus = (resource) => {
+  try {
+    return !!resource.toBeDeleted;
+  } catch (e) {
+    return false;
+  }
 };
 
 export const getHPOOnsetCode = (resource) => {
@@ -403,48 +417,148 @@ export const getHPOInterpretationCode = (resource) => {
   }
 };
 
-const createInvestigationSummaryResource = () => {
-  console.group();
-
-  return {
-    resourceType: 'Observation',
-    id: 'inv-001',
-    meta: {
-      profile: [
-        'http://hl7.org/fhir/StructureDefinition/Observation',
-      ],
-    },
-
-    status: 'final',
-    category: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-            code: 'exam',
-            display: 'Exam',
-          },
-        ],
-        text: 'Indications - hypothèse(s) de diagnostic',
-      },
-    ],
-    code: { text: 'investigations' },
-    subject: { reference: 'Patient/pt-001' },
-    note: [{ text: "Resume de l'investigation clinique et paraclinique realisees" }],
-  };
+export const getHPONote = (resource) => {
+  try {
+    return resource.note.text;
+  } catch (e) {
+    return '';
+  }
 };
 
-// 1. Create clinicalImpression resource
-// 2. Add clinical impression entry to bundle ({resource:---, request: ---})
-// 3. Create observation resource
-// 4. Add observation entry to bundle (will have to look for clinical impression resource to add reference to observation. Observation resource needs a fullUrl field to serve as reference target)
+export const hpoOnsetValues = [
+  {
+    groupLabel: 'Pediatric onset',
+    options: [
+      {
+        value: 'Juvenile onset',
+        display: 'Juvenile',
+      },
+      {
+        value: 'Childhood onset',
+        display: 'Childhood',
+      },
+      {
+        value: 'Infantile onset',
+        display: 'Infantile',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Adult onset',
+    options: [
+      {
+        value: 'YoungAdult onset',
+        display: 'Young adult',
+      },
+      {
+        value: 'MiddleAge onset',
+        display: 'Middle age',
+      },
+      {
+        value: 'Late onset',
+        display: 'Late',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Antenatal onset',
+    options: [
+      {
+        value: 'Embryonal onset',
+        display: 'Embryonal',
+      },
+      {
+        value: 'Fetal onset',
+        display: 'Fetal',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Neonatal onset',
+    options: [
+      {
+        value: 'Neonatal onset',
+        display: 'Neonatal',
+      },
+    ],
+  },
+  {
+    groupLabel: 'Congenital onset',
+    options: [
+      {
+        value: 'Congenital onset',
+        display: 'Congenital',
+      },
+    ],
+  },
+];
+
+export const hpoInterpretationValues = () => [
+  {
+    iconClass: 'observedIcon',
+    value: 'O',
+    display: 'Observé',
+  },
+  {
+    iconClass: 'notObservedIcon',
+    value: 'NO',
+    display: 'Non-observé',
+  },
+  {
+    iconClass: 'unknownIcon',
+    value: 'I',
+    display: 'Inconnu',
+  },
+];
+
+export const hpoInterpretationDisplayForCode = (code) => {
+  try {
+    return hpoInterpretationValues().find(v => v.value === code).display;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getHPOOnsetDisplayFromCode = (code) => {
+  try {
+    return hpoOnsetValues()
+      .reduce((acc, group) => [...acc, ...group.options], [])
+      .find(option => option.code === code)
+      .display;
+  } catch (e) {
+    return '';
+  }
+};
+
+const createInvestigationSummaryResource = () => ({
+  resourceType: 'Observation',
+  id: 'inv-001',
+  meta: {
+    profile: [
+      'http://hl7.org/fhir/StructureDefinition/Observation',
+    ],
+  },
+
+  status: 'final',
+  category: [
+    {
+      coding: [
+        {
+          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          code: 'exam',
+          display: 'Exam',
+        },
+      ],
+      text: 'Indications - hypothèse(s) de diagnostic',
+    },
+  ],
+  code: { text: 'investigations' },
+  subject: { reference: 'Patient/pt-001' },
+  note: [{ text: "Resume de l'investigation clinique et paraclinique realisees" }],
+});
 
 export const STATE_CLINICAL_IMPRESSION = {
   IN_PROGRESS: 'in-progress',
   COMPLETED: 'completed',
   ENTERED_IN_ERROR: 'entered-in-error',
 };
-
-// const addObservationReference = curry((clinicalImpressionResource, observationResource) => {
-//   const ref =
-// });

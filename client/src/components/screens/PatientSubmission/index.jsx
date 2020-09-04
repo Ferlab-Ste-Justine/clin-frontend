@@ -36,7 +36,13 @@ import './style.scss';
 
 import {
   isCGH, cghDisplay, isIndication,
-  createCGHResource, createIndicationResource, createHpoResource,
+  isHPO,
+  createCGHResource,
+  getResourceToBeDeletedId,
+  getHPOOnsetDisplayFromCode,
+  createIndicationResource,
+  createHPOResource,
+  hpoInterpretationDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 const { Step } = Steps;
@@ -290,17 +296,49 @@ class PatientSubmissionScreen extends React.Component {
     return clinicalImpressionData;
   }
 
-  createCGHResourceList() {
-    const { form, clinicalImpression } = this.props;
-    const { investigation } = clinicalImpression;
+  createHPOResourceList() {
+    const { form } = this.props;
     const values = form.getFieldsValue();
 
-    if (values.cgh === undefined) {
+    if (values.hpoCodes === undefined) {
       return [];
     }
 
-    const observations = investigation[0].item;
-    const oldCGH = observations.find(isCGH) || {};
+    const {
+      hpoIds,
+      hpoCodes,
+      hpoDisplays,
+      hpoOnsets,
+      hpoNotes,
+      hpoInterpretationCodes,
+    } = values;
+
+    const hpoResources = hpoCodes.map((code, index) => createHPOResource({
+      id: hpoIds[index],
+      hpoCode: { code, display: hpoDisplays[index] },
+      onset: { code: hpoOnsets[index], display: getHPOOnsetDisplayFromCode(hpoOnsets[index]) },
+      category: {
+        code: '',
+        display: '',
+      },
+      interpretation: {
+        code: hpoInterpretationCodes[index],
+        display: hpoInterpretationDisplayForCode(hpoInterpretationCodes[index]),
+      },
+      note: hpoNotes[index],
+      toDelete: false,
+    }));
+
+    return hpoResources;
+  }
+
+  createCGHResourceList() {
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+
+    if (values.cghInterpretationValue === undefined) {
+      return [];
+    }
 
     const {
       cgh,
@@ -314,24 +352,20 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   createIndicationResourceList() {
-    const { form, clinicalImpression } = this.props;
-    const { investigation } = clinicalImpression;
+    const { form } = this.props;
     const values = form.getFieldsValue();
 
     if (values.indication === undefined) {
       return [];
     }
 
-    const observations = investigation[0].item;
-    const oldIndication = observations.find(isIndication) || {};
-
     const {
       indication,
+      indicationId,
     } = values;
 
     return [{
-      ...oldIndication,
-      ...createIndicationResource({ note: indication }),
+      ...createIndicationResource({ id: indicationId, note: indication }),
     }];
   }
 
