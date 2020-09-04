@@ -1,14 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable no-unused-vars */
+
 import React from 'react';
-import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import uuidv1 from 'uuid/v1';
 import {
-  Col, Row, Tabs, PageHeader, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List, Collapse, Popover,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List, Collapse, Popover,
 } from 'antd';
 import {
   find,
@@ -17,7 +15,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_done, ic_close, ic_add, ic_info, ic_visibility, ic_visibility_off, ic_help,
+  ic_person, ic_assignment, ic_info, ic_visibility, ic_visibility_off, ic_help,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -187,20 +185,7 @@ class PatientScreen extends React.Component {
           return (<IconKit className="unknownIcon icon" size={14} icon={ic_help} />);
         };
         const observed = getObservedIcon(o.observed);
-        const code = (
-          <Button
-            key={uuidv1()}
-            type="link"
-            size="default"
-            href="#"
-            target="_blank"
-            className="link"
-          >
-            {o.code}
-          </Button>
-        );
         const note = o.note ? o.note : '--';
-        const dateC = o.consultation_date.split('T');
         const dateA = o.apparition_date.split('T');
         return {
           observed, category: o.term, term: o.term, apparition: dateA[0], notes: note,
@@ -287,35 +272,21 @@ class PatientScreen extends React.Component {
     const dateOfBirth = intl.get('screen.patient.details.dob');
     const organization = intl.get('screen.patient.details.organization');
     const genderTitle = intl.get('screen.patient.details.gender');
-    const male = intl.get('screen.patient.details.male');
-    const female = intl.get('screen.patient.details.female');
     const ethnicity = intl.get('screen.patient.details.ethnicity');
     const consanguinity = intl.get('screen.patient.details.consanguinity');
-    const study = intl.get('screen.patient.details.study');
     const proband = intl.get('screen.patient.details.proband');
-    const preferringPractitioner = intl.get('screen.patient.details.referringPractitioner');
-    const ageAtConsultation = intl.get('screen.patient.details.ageAtConsultation');
-    const consultation = intl.get('screen.patient.details.consultation');
     /*     const mother = intl.get('screen.patient.details.mother');
     const father = intl.get('screen.patient.details.father');
     const additionalInformation = intl.get('screen.patient.header.additionalInformation'); */
-    const referringPractitioner = intl.get('screen.patient.header.referringPractitioner');
-    const requests = intl.get('screen.patient.header.requests');
-    const clinicalSigns = intl.get('screen.patient.header.clinicalSigns');
-    const indication = intl.get('screen.patient.header.indications');
-    const generalObservations = intl.get('screen.patient.header.generalObservations');
     const family = intl.get('screen.patient.header.family');
-    const familyHistory = intl.get('screen.patient.header.familyHistory');
     const patientTab = intl.get('screen.patient.tab.patient');
     const clinicalTab = intl.get('screen.patient.tab.clinical');
     const familyType = intl.get('screen.patient.details.familyType');
-    const newRequest = intl.get('screen.patient.header.newRequests');
 
     const { Panel } = Collapse;
 
     const name = `${patient.details.lastName}, ${patient.details.firstName} `;
 
-    const probandTag = patient.details.proband === 'Proband' ? <Tag className="probandTag">{patient.details.proband}</Tag> : <Tag>{patient.details.proband}</Tag>;
 
     const getFamilyTypeIcon = () => {
       if (patient.family.composition === 'trio') {
@@ -343,23 +314,7 @@ class PatientScreen extends React.Component {
       );
     };
     const familyTypeTag = <Tag className="familyTypeTag">{getFamilyTypeIcon()}{patient.family.composition}</Tag>;
-    const headerPractitioner = (<Typography.Title level={4} className="datalisteHeader" style={{ marginBottom: 0 }}>{referringPractitioner}</Typography.Title>);
-    const Link = ({ url, text }) => (
-      <Button
-        key={uuidv1()}
-        type="link"
-        size="default"
-        href={url}
-        target="_blank"
-      >
-        {text}
-      </Button>
-    );
 
-    const formatDate = (date) => {
-      const fDate = date.split('T');
-      return fDate[0];
-    };
     const lastIndex = patient.requests.length - 1;
     const lastRequest = patient.requests[lastIndex] ? patient.requests[lastIndex].status : null;
     console.log('lastRequest', lastRequest);
@@ -461,101 +416,6 @@ class PatientScreen extends React.Component {
                     </Card>
                   </Row>
                 </div>
-<<<<<<< HEAD
-                {/* <Row type="flex" className="personalInfo">
-                                     <Col>
-                    <DataList
-                      title={name}
-                      extraInfo={(
-                        // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                        <Link
-                          url="#"
-                          className="extraInfoLink"
-                          text={`${patient.details.id}`}
-                        />
-                      )}
-                      dataSource={[
-                        { label: ramq, value: patient.details.ramq },
-                        { label: mrn, value: patient.details.mrn },
-                        { label: organization, value: patient.organization.name },
-                        { label: dateOfBirth, value: patient.details.birthDate },
-                        { label: gender, value: patient.details.gender === 'male' ? male : female },
-                        { label: proband, value: probandTag },
-                        { label: study, value: studyLink },
-                        { label: familyType, value: familyTypeTag },
-                        { label: ethnicity, value: patient.details.ethnicity },
-                      ]}
-                    />
-                  </Col>
-
-
-                  <Col>
-                    <Card className="datalist" title={headerPractitioner} type="inner" size="small" hoverable>
-                      <List
-                        size="small"
-                        dataSource={[
-                          `${patient.practitioner.name} | ${patient.practitioner.mln} `,
-                          '--',
-                        ]}
-                        locale={{
-                          emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                        }}
-                        renderItem={item => (
-                          <List.Item className="listRow">
-                            <Row type="flex" justify="space-between" style={{ width: '100%' }}>
-                              <Typography.Text>{item}</Typography.Text>
-                            </Row>
-                          </List.Item>
-                        )}
-                      />
-                    </Card>
-                    {
-                    patient.consultations.map(pConsultation => (
-                      <DataList
-                        key={shortid.generate()}
-                        title={consultation}
-                        extraInfo={<span className="extraInfo">{formatDate(pConsultation.date)}</span>}
-                        dataSource={[
-                          { label: preferringPractitioner, value: pConsultation.assessor },
-                          { label: organization, value: pConsultation.organization },
-                          { label: ageAtConsultation, value: `${pConsultation.age} jours` },
-                        ]}
-                      />
-                    ))
-                  }
-
-                  </Col>
-                </Row>
-                <Row type="flex">
-                  <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">
-                    {requests}
-                    <Button className="newRequestButton"><IconKit size={14} icon={ic_add} /> {newRequest}</Button>
-                  </Typography.Title>
-                  <Table
-                    rowKey={() => shortid.generate()}
-                    pagination={false}
-                    locale={{
-                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                    }}
-                    dataSource={this.getRequest()}
-                    defaultExpandAllRows
-                    className="requestTable"
-                    expandedRowRender={() => (
-                      <Table
-                        rowKey={() => shortid.generate()}
-                        className="expandedTable"
-                        pagination={false}
-                        columns={extendRequestColumnPreset.map(columnPresetToColumn)}
-                        dataSource={this.getExtendedlRequest()}
-                      />
-                    )}
-                    columns={requestColumnPreset.map(
-                      columnPresetToColumn,
-                    )}
-                  />
-                </Row> */}
-=======
->>>>>>> code refactoring
               </Tabs.TabPane>
 
               <Tabs.TabPane
@@ -632,56 +492,6 @@ class PatientScreen extends React.Component {
                     </Collapse>
                   </Card>
 
-<<<<<<< HEAD
-                  {/* <Row type="flex" className="indications" gutter={24}>
-                    <Col span={12}>
-                      <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{indication}</Typography.Title>
-                      <Table
-                        pagination={false}
-                        columns={notesColumnPreset.map(
-                          columnPresetToColumn,
-                        )}
-                        dataSource={this.getIndication()}
-                      />
-                    </Col>
-                  </Row>
-                  <Row type="flex" className="clinicalSigns">
-                    <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader">{clinicalSigns}</Typography.Title>
-                    <Table
-                      rowKey={() => shortid.generate()}
-                      pagination={false}
-                      columns={clinicalColumnPreset.map(
-                        columnPresetToColumn,
-                      )}
-                      dataSource={this.getClinical()}
-                    />
-                  </Row>
-                  <Row type="flex" gutter={24}>
-                    <Col span={12}>
-                      <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{generalObservations}</Typography.Title>
-                      <Table
-                        pagination={false}
-                        columns={notesColumnPreset.map(
-                          columnPresetToColumn,
-                        )}
-                        dataSource={this.getObservations()}
-                      />
-                    </Col>
-
-
-                    <Col span={12}>
-                      <Typography.Title level={4} style={{ marginBottom: 0 }} className="tableHeader pageWidth">{familyHistory}</Typography.Title>
-                      <Table
-                        pagination={false}
-                        columns={familyHistoryColumnPreset.map(
-                          columnPresetToColumn,
-                        )}
-                        dataSource={this.getHistorical()}
-                      />
-                    </Col>
-                  </Row> */}
-=======
->>>>>>> code refactoring
                 </div>
               </Tabs.TabPane>
             </Tabs>
