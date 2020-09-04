@@ -317,7 +317,6 @@ class PatientScreen extends React.Component {
 
     const lastIndex = patient.requests.length - 1;
     const lastRequest = patient.requests[lastIndex] ? patient.requests[lastIndex].status : null;
-    console.log('lastRequest', lastRequest);
 
     const statusBadge = () => {
       if (lastRequest === 'active') {
