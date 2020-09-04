@@ -37,6 +37,7 @@ import {
   isCGH, cghDisplay, isIndication,
   isHPO,
   createCGHResource,
+  getResourceToBeDeletedId,
   getHPOOnsetDisplayFromCode,
   createIndicationResource,
   createHPOResource,
@@ -291,24 +292,12 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   createHPOResourceList() {
-    const { form, clinicalImpression } = this.props;
-    const { investigation } = clinicalImpression;
+    const { form } = this.props;
     const values = form.getFieldsValue();
 
-    if (values.cgh === undefined) {
+    if (values.hpoCodes === undefined) {
       return [];
     }
-
-    // const observations = investigation[0].item;
-    // const oldHpos = observations.find(isHPO).filter(r => r.id) || {};
-
-    // const newHpos = observations.find(isHPO).filter(r => !r.id) || {};
-
-    // const hposToDelete = observations.find(isHPO).filter(r => r.toDelete) || {};
-
-    // oldHpos
-    // new Hpos
-    // hpos to delete
 
     const {
       hpoIds,
@@ -339,16 +328,12 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   createCGHResourceList() {
-    const { form, clinicalImpression } = this.props;
-    const { investigation } = clinicalImpression;
+    const { form } = this.props;
     const values = form.getFieldsValue();
 
-    if (values.cgh === undefined) {
+    if (values.cghInterpretationValue === undefined) {
       return [];
     }
-
-    const observations = investigation[0].item;
-    const oldCGH = observations.find(isCGH) || {};
 
     const {
       cghId,
@@ -362,24 +347,20 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   createIndicationResourceList() {
-    const { form, clinicalImpression } = this.props;
-    const { investigation } = clinicalImpression;
+    const { form } = this.props;
     const values = form.getFieldsValue();
 
     if (values.indication === undefined) {
       return [];
     }
 
-    const observations = investigation[0].item;
-    const oldIndication = observations.find(isIndication) || {};
-
     const {
       indication,
+      indicationId,
     } = values;
 
     return [{
-      ...oldIndication,
-      ...createIndicationResource({ note: indication }),
+      ...createIndicationResource({ id: indicationId, note: indication }),
     }];
   }
 
