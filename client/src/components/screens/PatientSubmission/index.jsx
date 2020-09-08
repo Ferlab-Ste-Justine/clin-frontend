@@ -2,32 +2,26 @@
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
 /* eslint-disable import/named */
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import uuidv1 from 'uuid/v1';
 import {
-  Steps, Card, Form, Input, Button, message, Radio, DatePicker, Select, Tree, Checkbox, Row,
+  Steps, Card, Form, Input, Button, Radio, DatePicker, Select, Checkbox, Row,
 } from 'antd';
 import {
   has,
-  curry,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_save, ic_remove, ic_add, ic_visibility, ic_visibility_off, ic_help, ic_person,
+  ic_save,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
-import DataList from '../../DataList';
-import { patientSubmissionShape } from '../../../reducers/patientSubmission';
-import { appShape } from '../../../reducers/app';
 import {
   savePatientSubmission,
 } from '../../../actions/patientSubmission';
@@ -35,10 +29,8 @@ import ClinicalInformation from './ClinicalInformation';
 import './style.scss';
 
 import {
-  isCGH, cghDisplay, isIndication,
-  isHPO,
+  cghDisplay,
   createCGHResource,
-  getResourceToBeDeletedId,
   getHPOOnsetDisplayFromCode,
   createIndicationResource,
   createHPOResource,
@@ -46,9 +38,7 @@ import {
 } from '../../../helpers/fhir/fhir';
 
 const { Step } = Steps;
-const { TextArea, Search } = Input;
-const { TreeNode } = Tree;
-const { Option, OptGroup } = Select;
+const { Search } = Input;
 
 const ramqValue = (patient) => {
   const { identifier } = patient;
@@ -69,9 +59,6 @@ const mrnValue = (patient) => {
 };
 
 const hasObservations = clinicalImpression => clinicalImpression.investigation[0].item.length > 0;
-const addObservation = curry((clinicalImpression, observation) => {
-  clinicalImpression.investigation[0].item.push(observation);
-});
 
 const getGenderValues = () => ({
   male: {
@@ -94,7 +81,6 @@ const getGenderValues = () => ({
 
 const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
-  const _has = has;
   return (
     <Card title="Patient" bordered={false} className="staticCard patientContent">
       <Form.Item label="Nom">
@@ -121,7 +107,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           <Radio.Group buttonStyle="solid">
             {
               Object.values(genderValues).map(gv => (
-                <Radio.Button value={gv.value}><span className="radioText">{gv.label}</span></Radio.Button>
+                <Radio.Button value={gv.value} key={`gender_${gv.value}`}><span className="radioText">{gv.label}</span></Radio.Button>
               ))
             }
           </Radio.Group>,
@@ -183,7 +169,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   );
 };
 
-const Approval = props => (
+const Approval = () => (
   <div>
     <Card title="Consentements" bordered={false} className="staticCard patientContent">
       <Form>
@@ -281,7 +267,7 @@ class PatientSubmissionScreen extends React.Component {
 
   getClinicalImpressionData() {
     const { currentPageIndex } = this.state;
-    const { clinicalImpression, form } = this.props;
+    const { clinicalImpression } = this.props;
 
     const clinicalImpressionData = { ...clinicalImpression };
 
@@ -372,7 +358,7 @@ class PatientSubmissionScreen extends React.Component {
   handleSubmit(e) {
     const { form } = this.props;
     e.preventDefault();
-    form.validateFields((err, values) => {
+    form.validateFields((err) => {
       if (err) { return; }
 
       const { actions, serviceRequest, clinicalImpression } = this.props;
@@ -465,9 +451,6 @@ class PatientSubmissionScreen extends React.Component {
         </div>
         <div className="page-static-content">
           <Form
-            initialValues={{
-              remember: true,
-            }}
             onSubmit={this.handleSubmit}
           >
             {pageContent}
@@ -512,7 +495,6 @@ class PatientSubmissionScreen extends React.Component {
 PatientSubmissionScreen.propTypes = {
   router: PropTypes.shape({}).isRequired,
   actions: PropTypes.shape({}).isRequired,
-  // patientInformation: PropTypes.shape(patientSubmissionShape).isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
