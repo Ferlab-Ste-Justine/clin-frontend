@@ -394,12 +394,22 @@ class PatientSubmissionScreen extends React.Component {
           >
             {pageContent}
             <div className="submission-form-actions">
-              <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
-                {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-              </Button>
-              <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-              </Button>
+              {
+                currentPageIndex !== this.pages.length - 1 && (
+                  <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
+                    {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+                  </Button>
+                )
+              }
+
+              {
+                currentPageIndex !== 0 && (
+                  <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                    {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+                  </Button>
+                )
+              }
+
               <Button
                 htmlType="submit"
               >
