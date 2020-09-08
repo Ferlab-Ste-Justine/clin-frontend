@@ -115,10 +115,10 @@ const phenotype = ({ hpoResource, form, hpoIndex }) => {
             })(
               <Select className="select selectAge" size="small" placeholder="Age d’apparition" dropdownClassName="selectDropdown">
                 {
-                hpoOnsetValues.map(group => (
-                  <OptGroup label={group.groupLabel}>
-                    {group.options.map(o => (
-                      <Option value={o.value}>{o.display}</Option>
+                hpoOnsetValues.map((group, gIndex) => (
+                  <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
+                    {group.options.map((o, oIndex) => (
+                      <Option value={o.value} key={`onsetOption_${oIndex}`}>{o.display}</Option>
                     ))}
                   </OptGroup>
                 ))
