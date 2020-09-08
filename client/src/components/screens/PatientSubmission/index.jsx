@@ -24,6 +24,7 @@ import {
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
+import { navigateToPatientSearchScreen } from '../../../actions/router';
 import DataList from '../../DataList';
 import { patientSubmissionShape } from '../../../reducers/patientSubmission';
 import { appShape } from '../../../reducers/app';
@@ -342,7 +343,7 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   render() {
-    const { form } = this.props;
+    const { form, actions } = this.props;
     const { getFieldDecorator } = form;
     const { patient, clinicalImpression } = this.props;
 
@@ -417,7 +418,7 @@ class PatientSubmissionScreen extends React.Component {
                 {intl.get('screen.clinicalSubmission.saveButtonTitle')}
               </Button>
               <Button
-                onClick={() => message.success('Cancelled ...')}
+                onClick={actions.navigateToPatientSearchScreen}
                 className="cancelButton"
               >
                 {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
@@ -439,6 +440,7 @@ PatientSubmissionScreen.propTypes = {
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
+    navigateToPatientSearchScreen,
     savePatientSubmission,
   }, dispatch),
 });
