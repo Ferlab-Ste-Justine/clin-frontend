@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
 import intl from 'react-intl-universal';
@@ -102,8 +101,8 @@ const phenotype = ({ hpoResource, form, hpoIndex }) => {
               initialValue: getHPOInterpretationCode(hpoResource),
             })(
               <Select className="select selectObserved" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
-                {hpoInterpretationValues().map((interpretation, index) => (
-                  <Select.Option key={`hpoInterpretation_${index}`}><IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />{interpretation.display}</Select.Option>
+                {hpoInterpretationValues().map(interpretation => (
+                  <Select.Option key={`hpoInterpretation_${interpretation.value}`}><IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />{interpretation.display}</Select.Option>
                 ))}
               </Select>,
             )}
@@ -115,10 +114,10 @@ const phenotype = ({ hpoResource, form, hpoIndex }) => {
             })(
               <Select className="select selectAge" size="small" placeholder="Age d’apparition" dropdownClassName="selectDropdown">
                 {
-                hpoOnsetValues.map((group, gIndex) => (
-                  <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
-                    {group.options.map((o, oIndex) => (
-                      <Option value={o.value} key={`onsetOption_${oIndex}`}>{o.display}</Option>
+                hpoOnsetValues.map(group => (
+                  <OptGroup label={group.groupLabel} key={`onsetGroup_${group.groupLabel}`}>
+                    {group.options.map(o => (
+                      <Option value={o.value} key={`onsetOption_${o.value}`}>{o.display}</Option>
                     ))}
                   </OptGroup>
                 ))
@@ -293,7 +292,7 @@ class ClinicalInformation extends React.Component {
     const familyInfo = getFieldValue('familyHistory');
     const familyItems = familyInfo.map((k, index) => (
       <div className="familyLine">
-        <Form.Item required={false} key={`note_${index}`}>
+        <Form.Item required={false} key={`note_${k}`}>
           {getFieldDecorator(`note[${index}]`, {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [],
@@ -301,14 +300,14 @@ class ClinicalInformation extends React.Component {
             <Input placeholder="Ajouter une note…" className="input noteInput note" />,
           )}
         </Form.Item>
-        <Form.Item required={false} key={`relation_${index}`}>
+        <Form.Item required={false} key={`relation_${k}`}>
           {getFieldDecorator(`relation[${index}]`, {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [],
           })(
             <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-              {Object.values(relationValues).map((rv, i) => (
-                <Select.Option value={rv.value} key={`relationship_${i}`}>{rv.label}</Select.Option>
+              {Object.values(relationValues).map(rv => (
+                <Select.Option value={rv.value} key={`relationship_${rv.label}`}>{rv.label}</Select.Option>
               ))}
             </Select>,
           )}
@@ -364,8 +363,8 @@ class ClinicalInformation extends React.Component {
               initialValue: cghInterpretationValue,
             })(
               <Radio.Group buttonStyle="solid">
-                {CGH_VALUES().map((v, index) => (
-                  <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
+                {CGH_VALUES().map(v => (
+                  <Radio.Button key={`cghValue_${v}`} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
                 ))}
               </Radio.Group>,
             )}

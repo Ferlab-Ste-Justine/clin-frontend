@@ -121,7 +121,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           <Radio.Group buttonStyle="solid">
             {
               Object.values(genderValues).map(gv => (
-                <Radio.Button value={gv.value}><span className="radioText">{gv.label}</span></Radio.Button>
+                <Radio.Button value={gv.value} key={`gender_${gv.value}`}><span className="radioText">{gv.label}</span></Radio.Button>
               ))
             }
           </Radio.Group>,
@@ -461,9 +461,6 @@ class PatientSubmissionScreen extends React.Component {
         </div>
         <div className="page-static-content">
           <Form
-            initialValues={{
-              remember: true,
-            }}
             onSubmit={this.handleSubmit}
           >
             {pageContent}
