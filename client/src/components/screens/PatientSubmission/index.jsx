@@ -24,6 +24,7 @@ import {
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
+import { navigateToPatientSearchScreen } from '../../../actions/router';
 import DataList from '../../DataList';
 import { patientSubmissionShape } from '../../../reducers/patientSubmission';
 import { appShape } from '../../../reducers/app';
@@ -415,7 +416,7 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   render() {
-    const { form } = this.props;
+    const { form, actions } = this.props;
     const { getFieldDecorator } = form;
     const { patient, clinicalImpression } = this.props;
 
@@ -453,7 +454,7 @@ class PatientSubmissionScreen extends React.Component {
     return (
       <Content type="auto">
         <Header />
-        <div className="page_headerStatic">
+        <div className="page_headerStaticMargin">
           <Steps current={currentPageIndex} className="headerStaticContent step">
             {this.pages.map(item => <Step key={item.title} title={item.title} />)}
           </Steps>
@@ -467,12 +468,22 @@ class PatientSubmissionScreen extends React.Component {
           >
             {pageContent}
             <div className="submission-form-actions">
-              <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
-                {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-              </Button>
-              <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-              </Button>
+              {
+                currentPageIndex !== this.pages.length - 1 && (
+                  <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
+                    {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+                  </Button>
+                )
+              }
+
+              {
+                currentPageIndex !== 0 && (
+                  <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                    {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+                  </Button>
+                )
+              }
+
               <Button
                 htmlType="submit"
               >
@@ -480,7 +491,7 @@ class PatientSubmissionScreen extends React.Component {
                 {intl.get('screen.clinicalSubmission.saveButtonTitle')}
               </Button>
               <Button
-                onClick={() => message.success('Cancelled ...')}
+                onClick={actions.navigateToPatientSearchScreen}
                 className="cancelButton"
               >
                 {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
@@ -502,6 +513,7 @@ PatientSubmissionScreen.propTypes = {
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
+    navigateToPatientSearchScreen,
     savePatientSubmission,
   }, dispatch),
 });
