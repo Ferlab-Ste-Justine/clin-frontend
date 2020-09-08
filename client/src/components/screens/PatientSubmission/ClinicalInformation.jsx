@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
@@ -17,7 +16,6 @@ import {
   CGH_VALUES,
   isCGH,
   isIndication,
-  cghInterpretation,
   cghNote,
   getCGHInterpretationCode,
   getIndicationNote,
@@ -47,18 +45,6 @@ const mockHpoResources = [
   },
 ].map(createHPOResource);
 
-/**
- *
- * @param {
- * hpoIds,
- hpoCodes,
- hpoDisplays,
- hpoOnsets,
- hpoNotes,
- hpoInterpretationsCode,
-} param
- */
-
 const interpretationIcon = {
   O: ic_visibility,
   NO: ic_visibility_off,
@@ -73,15 +59,12 @@ const phenotype = ({ hpoResource, form, hpoIndex }) => {
     return null;
   }
 
-  const deleteHpo = (index) => {
-    // TODO form.setFieldsValue(`hposToDelete[${index}]`, true);
-  };
   return (
     <div className="phenotypeBlock">
       <div className="phenotypeFirstLine">
         <div className="leftBlock">
           <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
-          <Button type="link" className="bordelessButton deleteButton" onClick={() => deleteHpo(hpoIndex)}>Supprimer</Button>
+          <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
         </div>
 
         {getFieldDecorator(`hpoIds[${hpoIndex}]`, {
@@ -182,7 +165,6 @@ class ClinicalInformation extends React.Component {
     const { form } = this.props;
     const keys = form.getFieldValue('familyHistory');
     const notes = form.getFieldValue('note');
-    // eslint-disable-next-line no-unused-vars
     const relation = form.getFieldValue('relation');
     notes.splice(index, 1);
     relation.splice(index, 1);
@@ -339,7 +321,6 @@ class ClinicalInformation extends React.Component {
     ));
     const selectedPhenotype = ['coucou'];
 
-
     let cghInterpretationValue;
     let cghNoteValue;
     let cghResource = {};
@@ -361,7 +342,6 @@ class ClinicalInformation extends React.Component {
     return (
       <div>
         <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
-
           {getFieldDecorator('cghId', {
             rules: [],
             initialValue: cghId,
