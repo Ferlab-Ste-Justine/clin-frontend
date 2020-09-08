@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import uuidv1 from 'uuid/v1';
 
 const OBSERVATION_CGH_CODE = 'CGH';
@@ -529,33 +528,6 @@ export const getHPOOnsetDisplayFromCode = (code) => {
     return '';
   }
 };
-
-const createInvestigationSummaryResource = () => ({
-  resourceType: 'Observation',
-  id: 'inv-001',
-  meta: {
-    profile: [
-      'http://hl7.org/fhir/StructureDefinition/Observation',
-    ],
-  },
-
-  status: 'final',
-  category: [
-    {
-      coding: [
-        {
-          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-          code: 'exam',
-          display: 'Exam',
-        },
-      ],
-      text: 'Indications - hypothèse(s) de diagnostic',
-    },
-  ],
-  code: { text: 'investigations' },
-  subject: { reference: 'Patient/pt-001' },
-  note: [{ text: "Resume de l'investigation clinique et paraclinique realisees" }],
-});
 
 export const STATE_CLINICAL_IMPRESSION = {
   IN_PROGRESS: 'in-progress',
