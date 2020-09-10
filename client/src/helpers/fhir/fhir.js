@@ -300,73 +300,72 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
 
 export const createHPOResource = ({
   hpoCode, onset, category, interpretation, note,
-}) => ({
-  resourceType: 'Observation',
-  id: 'ph-001',
-  meta: {
-    profile: [
-      'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
+}) => {
+  console.log();
+  return ({
+    resourceType: 'Observation',
+    meta: {
+      profile: [
+        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
+      ],
+    },
+    extension: [
+      {
+        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
+        valueCoding: onset,
+      },
+      {
+        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/hpo-category',
+        valueCoding: category,
+      },
     ],
-  },
-  extension: [
-    {
-      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
-      valueCoding: onset,
-    },
-    {
-      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/hpo-category',
-      valueCoding: category,
-    },
-  ],
-  status: 'final',
-  category: [
-    {
+    status: 'final',
+    category: [
+      {
+        coding: [
+          {
+            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+            code: 'exam',
+            display: 'Exam',
+          },
+        ],
+      },
+    ],
+    code: {
       coding: [
         {
-          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-          code: 'exam',
-          display: 'Exam',
+          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+          code: 'PHENO',
+          display: 'phenotype',
         },
       ],
     },
-  ],
-  code: {
-    coding: [
-      {
-        system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
-        code: 'PHENO',
-        display: 'phenotype',
-      },
-    ],
-  },
-  subject: {
-    reference: 'Patient/pt-001',
-  },
-  valueCodeableConcept: {
-    coding: [
-      {
-        system: 'http://purl.obolibrary.org/obo/hp.owl',
-        ...hpoCode,
-      },
-    ],
-  },
-  interpretation: [
-    {
+    valueCodeableConcept: {
       coding: [
         {
-          system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
-          ...interpretation,
+          system: 'http://purl.obolibrary.org/obo/hp.owl',
+          ...hpoCode,
         },
       ],
-      text: 'Observé',
     },
-  ],
-  note: [
-    {
-      text: note,
-    },
-  ],
-});
+    interpretation: [
+      {
+        coding: [
+          {
+            system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
+            ...interpretation,
+          },
+        ],
+        text: 'Observé',
+      },
+    ],
+    note: [
+      {
+        text: note,
+      },
+    ],
+  });
+};
 
 export const getHPOId = (resource) => {
   try {

@@ -51,6 +51,17 @@ const patientSubmissionReducer = (
           ],
       };
       break;
+    case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
+      draft.clinicalImpression = {
+        ...draft.clinicalImpression,
+        investigation:
+          [
+            {
+              item: [...draft.clinicalImpression.investigation[0].item, action.payload],
+            },
+          ],
+      };
+      break;
     default:
       break;
   }
