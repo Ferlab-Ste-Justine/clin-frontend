@@ -1,20 +1,24 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {
-  Card, Form, Input, Button, Radio, Tree, Select,
+  Card, Form, Input, Button, Radio, Tree, Select, AutoComplete,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_add, ic_remove, ic_help, ic_person, ic_visibility, ic_visibility_off,
 } from 'react-icons-kit/md';
 
+import { map } from 'lodash';
 import {
   CGH_CODES,
   CGH_VALUES,
   isCGH,
+  isHPO,
   isIndication,
   cghNote,
   getCGHInterpretationCode,
@@ -32,7 +36,14 @@ import {
   hpoInterpretationValues,
 } from '../../../helpers/fhir/fhir';
 
-const mockHpoResources = [
+import {
+  addHpoResource,
+} from '../../../actions/patientSubmission';
+
+// eslint-disable-next-line no-unused-vars
+import Api, { ApiError } from '../../../helpers/api';
+
+const allHpos = [
   {
     hpoCode: { code: 'HP-000001', display: 'Strange head' },
     onset: { code: 'Neonatal', display: 'NeoNatal' },
@@ -43,7 +54,20 @@ const mockHpoResources = [
     interpretation: { code: 'O', display: 'Observé' },
     note: 'Some notes on hpo observation',
   },
-].map(createHPOResource);
+  {
+    hpoCode: { code: 'HP-000002', display: 'Cardiovascular anomaly' },
+    onset: { code: 'Neonatal', display: 'NeoNatal' },
+    category: {
+      code: '',
+      display: '',
+    },
+    interpretation: { code: 'O', display: 'Observé' },
+    note: 'Some notes on hpo observation',
+  },
+];
+const selectedHpos = [];
+
+const mockHpoResources = selectedHpos.map(createHPOResource);
 
 const hpoOnsetValues = [
   {
@@ -231,10 +255,13 @@ class ClinicalInformation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      hpoOptions: [],
     };
 
     this.addFamilyHistory = this.addFamilyHistory.bind(this);
     this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
+    this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
+    this.handleHpoOptionSelected = this.handleHpoOptionSelected.bind(this);
   }
 
   addFamilyHistory() {
@@ -264,11 +291,45 @@ class ClinicalInformation extends React.Component {
     });
   }
 
+  handleHpoSearchTermChanged(term) {
+    Api.searchHpos(term).then((response) => {
+      if (response.payload) {
+        const { data } = response.payload.data;
+        const { hits } = data;
+        const results = map(hits, '_source');
+
+        console.log('Received the following HPO results: ', results);
+        this.setState({
+          hpoOptions: results,
+        });
+      }
+    });
+  }
+
+  handleHpoOptionSelected(value) {
+    console.log('Value selected', value, this);
+    const { hpoOptions } = this.state;
+    const { actions } = this.props;
+    const hpo = hpoOptions.find(h => h.name === value);
+    const hpoResource = createHPOResource({
+      hpoCode: {
+        code: hpo.id,
+        display: hpo.name,
+      },
+    });
+
+    actions.addHpoResource(hpoResource);
+    console.log('Newly added hpo resource: ', hpoResource);
+  }
+
   render() {
+    const { hpoOptions } = this.state;
+
+    const hpoOptionsLabels = map(hpoOptions, 'name');
     const { form, clinicalImpression } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
 
-    const { TextArea, Search } = Input;
+    const { TextArea } = Input;
     const { TreeNode } = Tree;
 
     const getRelationValues = () => ({
@@ -422,6 +483,8 @@ class ClinicalInformation extends React.Component {
       indicationNoteValue = getIndicationNote(indicationResource);
     }
 
+    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
+
     return (
       <div>
         <Form>
@@ -489,7 +552,14 @@ class ClinicalInformation extends React.Component {
           <div className="separator">
             <div className="cardSeparator">
               <Form.Item className="searchInput searchInputFull">
-                <Search classeName="searchInput" placeholder="Filtrer les signes par titre…" />
+                <AutoComplete
+                  classeName="searchInput"
+                  placeholder="Chercher un signe clinique ..."
+                  dataSource={hpoOptionsLabels}
+                  onSelect={this.handleHpoOptionSelected}
+                  onChange={this.handleHpoSearchTermChanged}
+                />
+
               </Form.Item>
               <Tree checkable selectable={false}>
                 <TreeNode checkable={false} title="Eye Defects" key="0-0">
@@ -507,7 +577,7 @@ class ClinicalInformation extends React.Component {
               {
                 selectedPhenotype.length === 0
                   ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
-                  : mockHpoResources.map((hpoResource, hpoIndex) => phenotype({ hpoResource, form, hpoIndex }))
+                  : hpoResources.map((hpoResource, hpoIndex) => phenotype({ hpoResource, form, hpoIndex }))
               }
             </div>
           </div>
@@ -536,10 +606,17 @@ class ClinicalInformation extends React.Component {
   }
 }
 
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators({
+    addHpoResource,
+  }, dispatch),
+});
+
 const mapStateToProps = state => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
 });
 
 export default connect(
   mapStateToProps,
+  mapDispatchToProps,
 )(ClinicalInformation);

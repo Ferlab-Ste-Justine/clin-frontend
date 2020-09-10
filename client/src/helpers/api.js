@@ -150,7 +150,16 @@ const updatePatientSubmission = (patient, serviceRequest) => {
     .catch(errorCallback);
 };
 
+const searchHpos = (term) => {
+  console.log();
+  const url = `${window.CLIN.hpoBaseUrl}/autocomplete?prefix=${term}`;
+  return Http.secureClinAxios.get(url)
+    .then(successCallback)
+    .catch(errorCallback);
+};
+
 export default {
+  searchHpos,
   getPatientById,
   getPatientsByAutoComplete,
   searchPatients,
