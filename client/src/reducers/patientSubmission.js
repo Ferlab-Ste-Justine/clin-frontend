@@ -4,6 +4,8 @@ import { produce } from 'immer';
 
 import * as actions from '../actions/type';
 
+import { getHPOCode } from '../helpers/fhir/fhir';
+
 export const initialPatientSubmissionState = {
   patient: {
     name: [
@@ -46,7 +48,7 @@ const patientSubmissionReducer = (
             {
               item: action.payload.observations.map((item, index) => ({
                 ...draft.clinicalImpression.investigation[0].item[index], ...item,
-              })),
+              })).filter(resource => !resource.toDelete),
             },
           ],
       };
@@ -58,6 +60,26 @@ const patientSubmissionReducer = (
           [
             {
               item: [...draft.clinicalImpression.investigation[0].item, action.payload],
+            },
+          ],
+      };
+      break;
+    case actions.PATIENT_SUBMISSION_MARK_HPO_FOR_DELETION:
+      draft.clinicalImpression = {
+        ...draft.clinicalImpression,
+        investigation:
+          [
+            {
+              item: [...draft.clinicalImpression.investigation[0].item.map((resource) => {
+                if (getHPOCode(resource) === action.payload) {
+                  if (resource.id) {
+                    return { ...resource, toDelete: true };
+                  }
+                  return null;
+                }
+                return resource;
+              }).filter(r => r !== null),
+              ],
             },
           ],
       };

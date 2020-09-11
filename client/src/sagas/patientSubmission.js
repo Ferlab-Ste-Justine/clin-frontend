@@ -20,10 +20,15 @@ const isObservation = r => getFieldName(r) === 'observation';
 const isClinicalImpression = r => getFieldName(r) === 'clinicalImpression';
 const getStatusCode = r => r.status.split(' ')[0];
 const isCreate = r => getStatusCode(r) === '201';
+const isDelete = r => getStatusCode(r) === '204';
 
 const processBundleResponse = (r) => {
   if (r && isCreate(r)) {
     return { id: getId(r) };
+  }
+
+  if (r && isDelete(r)) {
+    return { id: getId(r), toDelete: true };
   }
 
   return {};
