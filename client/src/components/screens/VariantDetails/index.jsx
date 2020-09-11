@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import uuidv1 from 'uuid/v1';
 import {
-  Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Icon, Tooltip,
+  Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Icon, Tooltip, Card,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -933,35 +933,37 @@ class VariantDetailsScreen extends React.Component {
       <Content>
         <Header />
         <div className="variantPageContent">
-          <div className="variantPageHeader">
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z"
-                fill="#1D8BC6"
-              />
-              <path
-                d="M16.0587 20.0146L19.6728 8.88889H22.3883L17.2699 23.1111H14.8767L9.77783 8.88889H12.4836L16.0587 20.0146Z"
-                fill="#EAF3FA"
-              />
-            </svg>
-            <Tooltip title={data.mutationId} overlayClassName="tooltip">
-              <span>
-                <Typography.Text className="mutationID">
-                  {mutationIdTitle}
-                </Typography.Text>
-              </span>
-            </Tooltip>
+          <div className="page_headerStaticNoMargin">
+            <div className="headerStaticContent">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z"
+                  fill="#1D8BC6"
+                />
+                <path
+                  d="M16.0587 20.0146L19.6728 8.88889H22.3883L17.2699 23.1111H14.8767L9.77783 8.88889H12.4836L16.0587 20.0146Z"
+                  fill="#EAF3FA"
+                />
+              </svg>
+              <Tooltip title={data.mutationId} overlayClassName="tooltip">
+                <span>
+                  <Typography.Text className="mutationID">
+                    {mutationIdTitle}
+                  </Typography.Text>
+                </span>
+              </Tooltip>
+            </div>
           </div>
           <Tabs
             key="..."
             activeKey={(hash ? hash.replace('#', '') : 'summary')}
-            className="tabs"
+            className="tabs staticTabs"
             onChange={this.handleTabNavigation}
           >
             <Tabs.TabPane
@@ -974,69 +976,70 @@ class VariantDetailsScreen extends React.Component {
                 </span>
 )}
             >
-              <Row type="flex" className="resumeDataList">
-                <Col>
-                  <DataList
-                    title={intl.get(SUMMARY_TAB)}
-                    dataSource={[
-                      { label: 'Variant', value: dnaChange },
-                      {
-                        label: 'Cytobande',
-                        value: genes && genes[0] ? genes[0].location : '',
-                      },
-                      { label: 'Type', value: type },
-                      { label: 'Génome Réf.', value: assemblyVersion },
-                      { label: 'Allele Réf.', value: refAllele },
-                      { label: 'Allele Atl', value: altAllele },
-                      {
-                        label: 'Gène(s)',
-                        value: (
-                          <ul>
-                            {genes.map(g => (
-                              <li key={g.geneSymbol}>
-                                {
-                                  <Link
-                                    url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensemblId}`}
-                                    text={g.geneSymbol}
-                                  />
+              <div className="page-static-content">
+                <Row type="flex" gutter={24} className="resumeDataList">
+                  <Col span={8}>
+                    <DataList
+                      title={intl.get(SUMMARY_TAB)}
+                      dataSource={[
+                        { label: 'Variant', value: dnaChange },
+                        {
+                          label: 'Cytobande',
+                          value: genes && genes[0] ? genes[0].location : '',
+                        },
+                        { label: 'Type', value: type },
+                        { label: 'Génome Réf.', value: assemblyVersion },
+                        { label: 'Allele Réf.', value: refAllele },
+                        { label: 'Allele Atl', value: altAllele },
+                        {
+                          label: 'Gène(s)',
+                          value: (
+                            <ul>
+                              {genes.map(g => (
+                                <li key={g.geneSymbol}>
+                                  {
+                                    <Link
+                                      url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensemblId}`}
+                                      text={g.geneSymbol}
+                                    />
                                 }
-                              </li>
-                            ))}
-                          </ul>
-                        ),
-                      },
-                      { label: 'Impact VEP', value: <ul>{impactsSummary}</ul> },
-                      {
-                        label: 'Signification clinique (Clinvar)',
-                        value: clinvar_clinsig ? clinvar_clinsig.join(', ') : '--',
-                      },
-                      {
-                        label: 'Date des annotations',
-                        value: lastAnnotationUpdate,
-                      },
-                    ]}
-                  />
-                </Col>
+                                </li>
+                              ))}
+                            </ul>
+                          ),
+                        },
+                        { label: 'Impact VEP', value: <ul>{impactsSummary}</ul> },
+                        {
+                          label: 'Signification clinique (Clinvar)',
+                          value: clinvar_clinsig ? clinvar_clinsig.join(', ') : '--',
+                        },
+                        {
+                          label: 'Date des annotations',
+                          value: lastAnnotationUpdate,
+                        },
+                      ]}
+                    />
+                  </Col>
 
-                <Col className="refExt">
-                  <DataList
-                    title="Références externes"
+                  <Col className="refExt" span={8}>
+                    <DataList
+                      title="Références externes"
 
-                    dataSource={bdExt ? [
-                      {
-                        label: 'Clin Var',
-                        value: bdExt && bdExt.clinvar ? (
-                          <Link
-                            url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.clinvar}`}
-                            text={`${bdExt.clinvar}`}
-                          />
-                        ) : (
-                          '--'
-                        ),
-                      },
-                      {
-                        label: 'OMIM',
-                        value:
+                      dataSource={bdExt ? [
+                        {
+                          label: 'Clin Var',
+                          value: bdExt && bdExt.clinvar ? (
+                            <Link
+                              url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.clinvar}`}
+                              text={`${bdExt.clinvar}`}
+                            />
+                          ) : (
+                            '--'
+                          ),
+                        },
+                        {
+                          label: 'OMIM',
+                          value:
                           bdExt && bdExt.omim ? (
                             <div className="variantPageContentRow">
                               {omimLinks(bdExt.omim)}
@@ -1044,10 +1047,10 @@ class VariantDetailsScreen extends React.Component {
                           ) : (
                             '--'
                           ),
-                      },
-                      {
-                        label: 'dbSNP',
-                        value:
+                        },
+                        {
+                          label: 'dbSNP',
+                          value:
                           bdExt && bdExt.dbSNP ? (
                             <Link
                               url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.dbSNP}`}
@@ -1056,10 +1059,10 @@ class VariantDetailsScreen extends React.Component {
                           ) : (
                             '--'
                           ),
-                      },
-                      {
-                        label: 'Pubmed',
-                        value:
+                        },
+                        {
+                          label: 'Pubmed',
+                          value:
                           bdExt && bdExt.pubmed
                             ? (
                               <>
@@ -1083,69 +1086,61 @@ class VariantDetailsScreen extends React.Component {
                               </>
                             )
                             : '--',
-                      },
-                    ] : []}
-                  />
-                </Col>
-                <Col>
-                  <DataList
-                    title="Patients"
-                    dataSource={[
-                      {
-                        label: 'Nb de patients (i)',
-                        value: (
-                          <span>
-                            <Button className="patientLink" onClick={this.goToPatientTab}>{frequencies.interne.PN}</Button>
+                        },
+                      ] : []}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <DataList
+                      title="Patients"
+                      dataSource={[
+                        {
+                          label: 'Nb de patients (i)',
+                          value: (
+                            <span>
+                              <Button className="patientLink" type="link" onClick={this.goToPatientTab}>{frequencies.interne.PN}</Button>
                             /{frequencies.interne.AN / 2}
-                          </span>),
-                      },
-                      {
-                        label: "Nb d'alleles ALT",
-                        value: `${frequencies.interne.AC}`,
-                      },
-                      {
-                        label: "Nb total d'alleles",
-                        value: `${frequencies.interne.AN}`,
-                      },
-                      {
-                        label: "Nb d'homozygotes",
-                        value: `${frequencies.interne.HC}`,
-                      },
-                      {
-                        label: 'Fréquences',
-                        value: `${Number.parseFloat(frequencies.interne.AF).toExponential(5)}`,
-                      },
-                    ]}
-                  />
-                </Col>
-              </Row>
+                            </span>),
+                        },
+                        {
+                          label: "Nb d'alleles ALT",
+                          value: `${frequencies.interne.AC}`,
+                        },
+                        {
+                          label: "Nb total d'alleles",
+                          value: `${frequencies.interne.AN}`,
+                        },
+                        {
+                          label: "Nb d'homozygotes",
+                          value: `${frequencies.interne.HC}`,
+                        },
+                        {
+                          label: 'Fréquences',
+                          value: `${Number.parseFloat(frequencies.interne.AF).toExponential(5)}`,
+                        },
+                      ]}
+                    />
+                  </Col>
+                </Row>
 
-              <Row>
-                <Col>
-                  <Typography.Title
-                    className="tableHeader pageWidth"
-                    level={4}
-                    style={{ marginBottom: 0 }}
-                  >
-                    Conséquences
-                  </Typography.Title>
-                </Col>
-              </Row>
-              <Row type="flex" gutter={32} className="consequencesTable">
-                <Col>
-                  <Table
-                    rowKey={() => shortid.generate()}
-                    pagination={false}
-                    locale={{
-                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                    }}
-                    dataSource={this.getConsequencesData()}
-                    columns={consequencesColumnPreset.map(
-                      columnPresetToColumn,
-                    )}
-                  />
-                </Col>
-              </Row>
+                <Row>
+                  <Card title="Conséquences" className="staticCard" bordered={false}>
+                    <Table
+                      rowKey={() => shortid.generate()}
+                      pagination={false}
+                      locale={{
+                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                      }}
+                      dataSource={this.getConsequencesData()}
+                      columns={consequencesColumnPreset.map(
+                        columnPresetToColumn,
+                      )}
+                    />
+                  </Card>
+
+                </Row>
+              </div>
+
             </Tabs.TabPane>
             <Tabs.TabPane
               key="frequencies"
@@ -1157,47 +1152,42 @@ class VariantDetailsScreen extends React.Component {
                 </span>
                   )}
             >
-              <Row type="flex" className="frequenciesTab">
-                <Col className="cohorteInt">
-                  <Row>
-                    <Col>{header('Cohortes internes')}</Col>
-                  </Row>
-                  <Row>
-                    <Table
-                      rowKey={() => shortid.generate()}
-                      pagination={false}
-                      locale={{
-                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                      }}
-                      dataSource={this.getInternalCohortFrequencies()}
-                      columns={internalCohortsFrequenciesColumnPreset.map(
-                        columnPresetToColumn,
-                      )}
-                    />
-                  </Row>
-                </Col>
-                <Col className="cohorteExt">
-                  <Row>
-                    <Col>{header('Cohortes externes')}</Col>
-                  </Row>
-                  <Row type="flex">
-                    <Col>
+              <div className="page-static-content">
+                <Row type="flex" className="frequenciesTab" gutter={24}>
+                  <Col span={12}>
+                    <Card title="Cohortes internes" className="staticCard" bordered={false}>
                       <Table
                         rowKey={() => shortid.generate()}
                         pagination={false}
                         locale={{
                           emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
                         }}
+                        dataSource={this.getInternalCohortFrequencies()}
+                        columns={internalCohortsFrequenciesColumnPreset.map(
+                          columnPresetToColumn,
+                        )}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card title="Cohortes externes" className="staticCard" bordered={false}>
+                      <Table
+                        rowKey={() => shortid.generate()}
+                        pagination={false}
+                        locale={{
+                          emptyText: (<Empty image={null} description="Aucune donnée disponible" />),
+                        }}
                         dataSource={this.getExternalCohortFrequencies()}
                         columns={externalCohortsFrequenciesColumnPreset.map(
                           columnPresetToColumn,
                         )}
                       />
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <Row />
+                    </Card>
+                  </Col>
+
+                </Row>
+                <Row />
+              </div>
             </Tabs.TabPane>
             <Tabs.TabPane
               key="clinical_associations"
@@ -1209,17 +1199,18 @@ class VariantDetailsScreen extends React.Component {
                 </span>
 )}
             >
-              <Row type="flex" className="clinVarTable">
-                <Col>
-                  <DataList
-                    title="Clin Var"
-                    extraInfo={clinvar ? (
-                      <Link
-                        url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
-                        text={clinvar.clinvar_id}
-                      />
-                    ) : null}
-                    dataSource={
+              <div className="page-static-content">
+                <Row type="flex" className="clinVarTable">
+                  <Col>
+                    <DataList
+                      title="Clin Var"
+                      extraInfo={clinvar ? (
+                        <Link
+                          url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
+                          text={clinvar.clinvar_id}
+                        />
+                      ) : null}
+                      dataSource={
                       clinvar
                         ? [
                           {
@@ -1237,64 +1228,58 @@ class VariantDetailsScreen extends React.Component {
                         ]
                         : []
                     }
-                  />
-                </Col>
-              </Row>
+                    />
+                  </Col>
+                </Row>
+                <Row type="flex" className="AssCondTable">
+                  <Card title="Association/Condition" className="staticCard" bordered={false}>
+                    <Table
+                      rowKey={() => shortid.generate()}
+                      pagination={false}
+                      locale={{
+                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                      }}
+                      dataSource={this.getAssociationData()}
+                      columns={associationColumnPreset.map(
+                        columnPresetToColumn,
+                      )}
+                    />
+                  </Card>
+                </Row>
 
-              <Row>
-                <Col>{header('Association/Condition')}</Col>
-              </Row>
-              <Row type="flex" className="AssCondTable">
-                <Col>
-                  <Table
-                    rowKey={() => shortid.generate()}
-                    pagination={false}
-                    locale={{
-                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                    }}
-                    dataSource={this.getAssociationData()}
-                    columns={associationColumnPreset.map(
-                      columnPresetToColumn,
-                    )}
-                  />
-                </Col>
-              </Row>
+                <Row>
+                  <Col>{header('OMIM')}</Col>
+                </Row>
+                <Row type="flex" className="omimTable">
+                  <Card title="OMIM" className="staticCard" bordered={false}>
+                    <Table
+                      rowKey={() => shortid.generate()}
+                      pagination={false}
+                      locale={{
+                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                      }}
+                      dataSource={this.getOmimData()}
+                      columns={omimColumnPreset.map(
+                        columnPresetToColumn,
+                      )}
+                    />
+                  </Card>
+                </Row>
+                <Row type="flex" className="hpoTable">
+                  <Card title="Human Phenotype Ontology (HPO)" className="staticCard" bordered={false}>
+                    <Table
+                      rowKey={() => shortid.generate()}
+                      pagination={false}
+                      locale={{
+                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                      }}
+                      dataSource={this.getHPODataSource()}
+                      columns={HPOColumnPreset.map(columnPresetToColumn)}
+                    />
+                  </Card>
+                </Row>
+              </div>
 
-              <Row>
-                <Col>{header('OMIM')}</Col>
-              </Row>
-              <Row type="flex" className="omimTable">
-                <Col>
-                  <Table
-                    rowKey={() => shortid.generate()}
-                    pagination={false}
-                    locale={{
-                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                    }}
-                    dataSource={this.getOmimData()}
-                    columns={omimColumnPreset.map(
-                      columnPresetToColumn,
-                    )}
-                  />
-                </Col>
-              </Row>
-
-              <Row>
-                <Col>{header('Human Phenotype Ontology (HPO)')}</Col>
-              </Row>
-              <Row type="flex" className="hpoTable">
-                <Col>
-                  <Table
-                    rowKey={() => shortid.generate()}
-                    pagination={false}
-                    locale={{
-                      emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                    }}
-                    dataSource={this.getHPODataSource()}
-                    columns={HPOColumnPreset.map(columnPresetToColumn)}
-                  />
-                </Col>
-              </Row>
             </Tabs.TabPane>
             <Tabs.TabPane
               key="patients"
@@ -1306,32 +1291,35 @@ class VariantDetailsScreen extends React.Component {
                 </span>
 )}
             >
-              <Row>
-                <Col>
-                  <div>
-                    {`${
-                      this.getDonors().length
-                    } patient(s) sont porteur(s) de ce variant`}
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>{header('Patients')}</Col>
-              </Row>
-              <Row type="flex" gutter={32}>
-                <Col className="patientTable">
-                  <DataTable
-                    size={this.getDonors().length}
-                    total={this.getDonors().length}
-                    reorderColumnsCallback={this.handleColumnsReordered}
-                    resizeColumnsCallback={this.handleColumnResized}
-                    columns={donorsColumnPreset}
-                    copyCallback={this.handleCopy}
-                    enableGhostCells
-                    enableResizing
-                  />
-                </Col>
-              </Row>
+              <div className="page-static-content">
+                <Row type="flex" gutter={32}>
+                  <Card title="Patients" className="staticCard" bordered={false}>
+                    <Row>
+                      <Col>
+                        <div>
+                          {`${
+                            this.getDonors().length
+                          } patient(s) sont porteur(s) de ce variant`}
+                        </div>
+                      </Col>
+                    </Row>
+                    <Col className="patientTable">
+                      <DataTable
+                        size={this.getDonors().length}
+                        total={this.getDonors().length}
+                        reorderColumnsCallback={this.handleColumnsReordered}
+                        resizeColumnsCallback={this.handleColumnResized}
+                        columns={donorsColumnPreset}
+                        copyCallback={this.handleCopy}
+                        enableGhostCells
+                        enableResizing
+                      />
+                    </Col>
+                  </Card>
+
+                </Row>
+              </div>
+
             </Tabs.TabPane>
           </Tabs>
         </div>
