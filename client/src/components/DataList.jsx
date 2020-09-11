@@ -19,7 +19,7 @@ const DataList = (props) => {
         }}
         renderItem={item => (
           <List.Item className="listRow">
-            <Row type="flex" justify="space-between" style={{ width: '100%' }}>
+            <Row type="flex" justify="space-between" align="middle" style={{ width: '100%' }}>
               <Col className="rowTitle">
                 <Typography.Text>{item.label}</Typography.Text>
               </Col>

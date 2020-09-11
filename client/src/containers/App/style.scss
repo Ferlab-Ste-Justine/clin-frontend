@@ -303,6 +303,7 @@ div.ant-card {
 //Card
 .staticCard{
   margin-bottom: 24px !important;
+  max-width: 1392px;
 }
 //tabs
 .staticTabs{
@@ -635,4 +636,14 @@ div.ant-card {
 
 .ant-tabs-tabpane-inactive{
   height: 0;
+}
+
+//Table
+.ant-empty-image{
+  display: none !important;
+}
+
+//Badge
+.ant-badge-status-dot{
+  vertical-align: baseline;
 }
