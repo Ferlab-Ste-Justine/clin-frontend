@@ -84,9 +84,15 @@ export const createRequest = (resource) => {
   const {
     resourceType,
     id,
+    toDelete,
   } = resource;
+
+  let method = id ? 'PUT' : 'POST';
+  if (toDelete) {
+    method = 'DELETE';
+  }
   return {
-    method: id ? 'PUT' : 'POST',
+    method,
     url: id ? `${resourceType}/${id}` : resourceType,
   };
 };
@@ -291,7 +297,9 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
       resource.subject = patientReference;
       const entry = createEntry(resource);
       bundle.entry.push(entry);
-      clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+      if (!resource.toDelete) {
+        clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+      }
     });
   }
 
@@ -299,11 +307,13 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
 };
 
 export const createHPOResource = ({
-  hpoCode, onset, category, interpretation, note,
+  id, toDelete, hpoCode, onset, category, interpretation, note,
 }) => {
   console.log();
   return ({
     resourceType: 'Observation',
+    id,
+    toDelete,
     meta: {
       profile: [
         'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',

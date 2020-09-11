@@ -296,6 +296,7 @@ class PatientSubmissionScreen extends React.Component {
       hpoDisplays,
       hpoOnsets,
       hpoNotes,
+      hposToDelete,
       hpoInterpretationCodes,
     } = values;
 
@@ -312,7 +313,7 @@ class PatientSubmissionScreen extends React.Component {
         display: hpoInterpretationDisplayForCode(hpoInterpretationCodes[index]),
       },
       note: hpoNotes[index],
-      toDelete: false,
+      toDelete: hposToDelete[index],
     }));
 
     return hpoResources;

@@ -38,6 +38,7 @@ import {
 
 import {
   addHpoResource,
+  markHpoResourceForDeletion,
 } from '../../../actions/patientSubmission';
 
 // eslint-disable-next-line no-unused-vars
@@ -165,20 +166,27 @@ const interpretationIcon = {
   I: ic_help,
 };
 
-const phenotype = ({ hpoResource, form, hpoIndex }) => {
+const phenotype = ({
+  hpoResource,
+  form,
+  hpoIndex,
+  deleteHpo,
+}) => {
   const { getFieldDecorator } = form;
   const { Option, OptGroup } = Select;
 
-  if (form.getFieldsValue().hposToDelete && form.getFieldsValue().hposToDelete[hpoIndex]) {
-    return null;
-  }
+  // if (form.getFieldsValue().hposToDelete && form.getFieldsValue().hposToDelete[hpoIndex]) {
+  //   return null;
+  // }
+
+  console.log('HPO id: ', getHPOCode(hpoResource));
 
   return (
     <div className="phenotypeBlock">
       <div className="phenotypeFirstLine">
         <div className="leftBlock">
           <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
-          <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
+          <Button type="link" className="bordelessButton deleteButton" onClick={() => deleteHpo(getHPOCode(hpoResource))}>Supprimer</Button>
         </div>
 
         {getFieldDecorator(`hpoIds[${hpoIndex}]`, {
@@ -190,7 +198,7 @@ const phenotype = ({ hpoResource, form, hpoIndex }) => {
 
         {getFieldDecorator(`hposToDelete[${hpoIndex}]`, {
           rules: [],
-          initialValue: getResourceToBeDeletedStatus(hpoResource) || '',
+          initialValue: hpoResource.toDelete,
         })(
           <Input size="small" type="hidden" />,
         )}
@@ -262,6 +270,7 @@ class ClinicalInformation extends React.Component {
     this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
     this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
     this.handleHpoOptionSelected = this.handleHpoOptionSelected.bind(this);
+    this.handleHpoDeleted = this.handleHpoDeleted.bind(this);
   }
 
   addFamilyHistory() {
@@ -320,6 +329,11 @@ class ClinicalInformation extends React.Component {
 
     actions.addHpoResource(hpoResource);
     console.log('Newly added hpo resource: ', hpoResource);
+  }
+
+  handleHpoDeleted(hpoId) {
+    const { actions } = this.props;
+    actions.markHpoResourceForDeletion(hpoId);
   }
 
   render() {
@@ -577,7 +591,12 @@ class ClinicalInformation extends React.Component {
               {
                 selectedPhenotype.length === 0
                   ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
-                  : hpoResources.map((hpoResource, hpoIndex) => phenotype({ hpoResource, form, hpoIndex }))
+                  : hpoResources.map((hpoResource, hpoIndex) => phenotype({
+                    hpoResource,
+                    form,
+                    hpoIndex,
+                    deleteHpo: this.handleHpoDeleted,
+                  }))
               }
             </div>
           </div>
@@ -609,6 +628,7 @@ class ClinicalInformation extends React.Component {
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     addHpoResource,
+    markHpoResourceForDeletion,
   }, dispatch),
 });
 

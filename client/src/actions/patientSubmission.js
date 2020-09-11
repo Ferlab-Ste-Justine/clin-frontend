@@ -11,3 +11,8 @@ export const addHpoResource = resource => ({
   type: actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE,
   payload: resource,
 });
+
+export const markHpoResourceForDeletion = hpoCode => ({
+  type: actions.PATIENT_SUBMISSION_MARK_HPO_FOR_DELETION,
+  payload: hpoCode,
+});
