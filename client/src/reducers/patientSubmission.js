@@ -71,11 +71,13 @@ const patientSubmissionReducer = (
           [
             {
               item: [...draft.clinicalImpression.investigation[0].item.map((resource) => {
-                if (getHPOCode(resource) === action.payload) {
+                if (getHPOCode(resource) === action.payload.code) {
                   if (resource.id) {
-                    return { ...resource, toDelete: true };
+                    return { ...resource, toDelete: action.payload.toDelete };
                   }
-                  return null;
+                  if (action.payload.toDelete) {
+                    return null;
+                  }
                 }
                 return resource;
               }).filter(r => r !== null),

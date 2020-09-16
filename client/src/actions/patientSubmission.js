@@ -12,7 +12,10 @@ export const addHpoResource = resource => ({
   payload: resource,
 });
 
-export const markHpoResourceForDeletion = hpoCode => ({
+export const setHpoResourceDeletionFlag = ({ code, toDelete }) => ({
   type: actions.PATIENT_SUBMISSION_MARK_HPO_FOR_DELETION,
-  payload: hpoCode,
+  payload: {
+    code,
+    toDelete,
+  },
 });
