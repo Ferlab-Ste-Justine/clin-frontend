@@ -158,8 +158,17 @@ const searchHpos = (term) => {
     .catch(errorCallback);
 };
 
+const searchHpoChildren = (hpoCode) => {
+  console.log();
+  const url = `${window.CLIN.hpoBaseUrl}/descendants?parentHpoId=${hpoCode}`;
+  return Http.secureClinAxios.get(url)
+    .then(successCallback)
+    .catch(errorCallback);
+};
+
 export default {
   searchHpos,
+  searchHpoChildren,
   getPatientById,
   getPatientsByAutoComplete,
   searchPatients,

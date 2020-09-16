@@ -34,11 +34,12 @@ import {
   getHPOOnsetCode,
   getHPOInterpretationCode,
   hpoInterpretationValues,
+  getHPOInterpretationDisplay,
 } from '../../../helpers/fhir/fhir';
 
 import {
   addHpoResource,
-  markHpoResourceForDeletion,
+  setHpoResourceDeletionFlag,
 } from '../../../actions/patientSubmission';
 
 // eslint-disable-next-line no-unused-vars
@@ -166,6 +167,43 @@ const interpretationIcon = {
   I: ic_help,
 };
 
+const HpoHiddenFields = ({
+  hpoResource,
+  form,
+  hpoIndex,
+  getFieldDecorator,
+}) => (
+  <div>
+    {getFieldDecorator(`hpoIds[${hpoIndex}]`, {
+      rules: [],
+      initialValue: getHPOId(hpoResource) || '',
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+
+    {getFieldDecorator(`hposToDelete[${hpoIndex}]`, {
+      rules: [],
+      initialValue: hpoResource.toDelete,
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+
+    {getFieldDecorator(`hpoCodes[${hpoIndex}]`, {
+      rules: [],
+      initialValue: getHPOCode(hpoResource) || '',
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+
+    {getFieldDecorator(`hpoDisplays[${hpoIndex}]`, {
+      rules: [],
+      initialValue: getHPODisplay(hpoResource) || '',
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+  </div>
+);
+
 const phenotype = ({
   hpoResource,
   form,
@@ -175,48 +213,14 @@ const phenotype = ({
   const { getFieldDecorator } = form;
   const { Option, OptGroup } = Select;
 
-  // if (form.getFieldsValue().hposToDelete && form.getFieldsValue().hposToDelete[hpoIndex]) {
-  //   return null;
-  // }
-
-  console.log('HPO id: ', getHPOCode(hpoResource));
-
-  return (
+  return hpoResource.toDelete ? (<HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} getFieldDecorator={getFieldDecorator} />) : (
     <div className="phenotypeBlock">
       <div className="phenotypeFirstLine">
         <div className="leftBlock">
           <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
           <Button type="link" className="bordelessButton deleteButton" onClick={() => deleteHpo(getHPOCode(hpoResource))}>Supprimer</Button>
         </div>
-
-        {getFieldDecorator(`hpoIds[${hpoIndex}]`, {
-          rules: [],
-          initialValue: getHPOId(hpoResource) || '',
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        {getFieldDecorator(`hposToDelete[${hpoIndex}]`, {
-          rules: [],
-          initialValue: hpoResource.toDelete,
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        {getFieldDecorator(`hpoCodes[${hpoIndex}]`, {
-          rules: [],
-          initialValue: getHPOCode(hpoResource) || '',
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        {getFieldDecorator(`hpoDisplays[${hpoIndex}]`, {
-          rules: [],
-          initialValue: getHPODisplay(hpoResource) || '',
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
+        <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} getFieldDecorator={getFieldDecorator} />
         <div className="rightBlock">
           <Form.Item>
             {getFieldDecorator(`hpoInterpretation[${hpoIndex}]`, {
@@ -225,7 +229,12 @@ const phenotype = ({
             })(
               <Select className="select selectObserved" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
                 {hpoInterpretationValues().map((interpretation, index) => (
-                  <Select.Option key={`hpoInterpretation_${index}`}><IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />{interpretation.display}</Select.Option>
+                  <Select.Option
+                    key={`hpoInterpretation_${index}`}
+                  >
+                    <IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />
+                    {interpretation.display}
+                  </Select.Option>
                 ))}
               </Select>,
             )}
@@ -264,6 +273,21 @@ class ClinicalInformation extends React.Component {
     super(props);
     this.state = {
       hpoOptions: [],
+      treeData: [
+        { key: 'HP:0001197', title: 'Anomalie du développement prénatal ou de la naissance', is_leaf: false },
+        { key: 'HP:0001507', title: 'Anomalie de la croissance', is_Leaf: false },
+        { key: 'HP:0000478', title: 'Anomalie oculaire', is_leaf: false },
+        { key: 'HP:0001574', title: 'Anomalie de l\'oreille', is_leaf: false },
+        { key: 'HP:0012519', title: 'Anomalie des téguments', is_leaf: false },
+        { key: 'HP:0001626', title: 'Anomalie du système cardiovasculaire', is_leaf: false },
+        { key: 'HP:0002086', title: 'Anomalie du système respiratoire', is_leaf: false },
+        { key: 'HP:0000924', title: 'Anomalie du système musculo-squelettique', is_leaf: false },
+        { key: 'HP:0003011', title: 'Anomalie de la musculature', is_leaf: false },
+        { key: 'HP:0000119', title: 'Anomalie génito-urinaire', is_leaf: false },
+        { key: 'HP:0025031', title: 'Anomalie du système digestif', is_leaf: false },
+        { key: 'HP:0000152', title: 'Anomalie tête et cou', is_leaf: false },
+        { key: 'HP:0000707', title: 'Anomalie du système nerveux', is_leaf: false },
+      ],
     };
 
     this.addFamilyHistory = this.addFamilyHistory.bind(this);
@@ -271,7 +295,35 @@ class ClinicalInformation extends React.Component {
     this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
     this.handleHpoOptionSelected = this.handleHpoOptionSelected.bind(this);
     this.handleHpoDeleted = this.handleHpoDeleted.bind(this);
+    this.handleHpoNodesChecked = this.handleHpoNodesChecked.bind(this);
+    this.hpoSelected = this.hpoSelected.bind(this);
   }
+
+  onLoadHpoChildren = treeNode => new Promise((resolve) => {
+    const { treeData } = this.state;
+    const { dataRef } = treeNode.props;
+    const { key } = dataRef;
+
+    if (treeNode.props.children) {
+      resolve();
+      return;
+    }
+
+    Api.searchHpoChildren(key).then((response) => {
+      if (response.payload) {
+        const { data } = response.payload.data;
+        const { hits } = data;
+        const results = map(hits, '_source').map(r => ({ title: r.name, key: r.id, checkable: true }));
+
+        console.log('Received the following HPO results: ', results);
+        treeNode.props.dataRef.children = results;
+        this.setState({
+          treeData: [...treeData],
+        });
+        resolve();
+      }
+    });
+  });
 
   addFamilyHistory() {
     const { form } = this.props;
@@ -315,224 +367,257 @@ class ClinicalInformation extends React.Component {
     });
   }
 
-  handleHpoOptionSelected(value) {
-    console.log('Value selected', value, this);
-    const { hpoOptions } = this.state;
+  hpoSelected({ code, display }) {
     const { actions } = this.props;
-    const hpo = hpoOptions.find(h => h.name === value);
     const hpoResource = createHPOResource({
       hpoCode: {
-        code: hpo.id,
-        display: hpo.name,
+        code,
+        display,
       },
     });
 
     actions.addHpoResource(hpoResource);
-    console.log('Newly added hpo resource: ', hpoResource);
+  }
+
+  handleHpoNodesChecked(_, info) {
+    const { actions, clinicalImpression } = this.props;
+
+    const checkedNodes = info.checkedNodes.map(n => ({ code: n.key, display: n.props.title }));
+    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
+    // If in resources: make sure it is not marked as toDelete
+    const nodesPresent = checkedNodes
+      .filter(n => !!hpoResources.find(r => n.code === getHPOCode(r)));
+    nodesPresent.forEach((n) => {
+      actions.setHpoResourceDeletionFlag({ code: n.code, toDelete: false });
+    });
+
+    // If not in resources: add it
+    const nodesToAdd = checkedNodes
+      .filter(n => !hpoResources.find(r => n.code === getHPOCode(r)));
+
+    nodesToAdd.forEach(this.hpoSelected);
+  }
+
+  handleHpoOptionSelected(value) {
+    const { hpoOptions } = this.state;
+    const option = hpoOptions.find(h => h.name === value);
+
+    this.hpoSelected({ code: option.key, display: option.title });
   }
 
   handleHpoDeleted(hpoId) {
     const { actions } = this.props;
-    actions.markHpoResourceForDeletion(hpoId);
+    actions.setHpoResourceDeletionFlag({ code: hpoId, toDelete: true });
   }
 
-  render() {
-    const { hpoOptions } = this.state;
-
-    const hpoOptionsLabels = map(hpoOptions, 'name');
-    const { form, clinicalImpression } = this.props;
-    const { getFieldDecorator, getFieldValue } = form;
-
-    const { TextArea } = Input;
-    const { TreeNode } = Tree;
-
-    const getRelationValues = () => ({
-      father: {
-        value: 'FTH',
-        label: intl.get('form.patientSubmission.form.father'),
-      },
-      mother: {
-        value: 'MTH',
-        label: intl.get('form.patientSubmission.form.mother'),
-      },
-      brother: {
-        value: 'BRO',
-        label: intl.get('form.patientSubmission.form.brother'),
-      },
-      sister: {
-        value: 'SIS',
-        label: intl.get('form.patientSubmission.form.sister'),
-      },
-      halfBrother: {
-        value: 'HBRO',
-        label: intl.get('form.patientSubmission.form.halfBrother'),
-      },
-      halfSister: {
-        value: 'HSIS',
-        label: intl.get('form.patientSubmission.form.halfSister'),
-      },
-      identicalTwin: {
-        value: 'ITWIN',
-        label: intl.get('form.patientSubmission.form.identicalTwin'),
-      },
-      fraternalTwin: {
-        value: 'FTWIN',
-        label: intl.get('form.patientSubmission.form.fraternalTwin'),
-      },
-      daughter: {
-        value: 'DAUC',
-        label: intl.get('form.patientSubmission.form.daughter'),
-      },
-      son: {
-        value: 'SONC',
-        label: intl.get('form.patientSubmission.form.son'),
-      },
-      maternalAunt: {
-        value: 'MAUNT',
-        label: intl.get('form.patientSubmission.form.maternalAunt'),
-      },
-      paternalAunt: {
-        value: 'PAUNT',
-        label: intl.get('form.patientSubmission.form.paternalAunt'),
-      },
-      maternalUncle: {
-        value: 'MUNCLE',
-        label: intl.get('form.patientSubmission.form.maternalUncle'),
-      },
-      paternalUncle: {
-        value: 'PUNCHE',
-        label: intl.get('form.patientSubmission.form.paternalUncle'),
-      },
-      maternalCousin: {
-        value: 'MCOUSIN',
-        label: intl.get('form.patientSubmission.form.maternalCousin'),
-      },
-      paternalCousin: {
-        value: 'PCOUSIN',
-        label: intl.get('form.patientSubmission.form.paternalCousin'),
-      },
-      maternalGrandfather: {
-        value: 'MGRFTH',
-        label: intl.get('form.patientSubmission.form.maternalGrandfather'),
-      },
-      paternalGrandfather: {
-        value: 'PGRFTH',
-        label: intl.get('form.patientSubmission.form.paternalGrandfather'),
-      },
-      maternalGrandmother: {
-        value: 'MGRMTH',
-        label: intl.get('form.patientSubmission.form.maternalGrandmother'),
-      },
-      paternalGrandmother: {
-        value: 'PGRMTH',
-        label: intl.get('form.patientSubmission.form.paternalGrandmother'),
-      },
-      nephew: {
-        value: 'NEPHEW',
-        label: intl.get('form.patientSubmission.form.nephew'),
-      },
-      niece: {
-        value: 'NIECE',
-        label: intl.get('form.patientSubmission.form.niece'),
-      },
-      maternalMember: {
-        value: 'MATMEM',
-        label: intl.get('form.patientSubmission.form.maternalMember'),
-      },
-      paternalMember: {
-        value: 'PATMEM',
-        label: intl.get('form.patientSubmission.form.paternalMember'),
-      },
-    });
-
-    const relationValues = getRelationValues();
-
-    getFieldDecorator('familyHistory', {
-      initialValue: [1],
-    });
-    const familyInfo = getFieldValue('familyHistory');
-    const familyItems = familyInfo.map((k, index) => (
-      <div className="familyLine">
-        <Form.Item required={false} key={`note_${index}`}>
-          {getFieldDecorator(`note[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            rules: [],
-          })(
-            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
-          )}
-        </Form.Item>
-        <Form.Item required={false} key={`relation_${index}`}>
-          {getFieldDecorator(`relation[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            rules: [],
-          })(
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-              {Object.values(relationValues).map((rv, i) => (
-                <Select.Option value={rv.value} key={`relationship_${i}`}>{rv.label}</Select.Option>
-              ))}
-            </Select>,
-          )}
-        </Form.Item>
-        <Button className="delButton" disabled={!(getFieldValue(`note[${index}]`)) && !(getFieldValue(`relation[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
-          <IconKit size={20} icon={ic_remove} />
-        </Button>
-      </div>
-
-    ));
-    const selectedPhenotype = ['coucou'];
-
-    let cghInterpretationValue;
-    let cghNoteValue;
-    if (clinicalImpression) {
-      cghResource = clinicalImpression.investigation[0].item.find(isCGH) || {};
-      cghId = cghResource.id;
-      cghInterpretationValue = getCGHInterpretationCode(cghResource);
-      cghNoteValue = cghNote(cghResource);
-    }
-
-    let indicationNoteValue;
-    let indicationResource;
-    if (clinicalImpression) {
-      indicationResource = clinicalImpression.investigation[0].item.find(isIndication) || {};
-      indicationNoteValue = getIndicationNote(indicationResource);
-    }
-
-    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
-
+renderTreeNodes = data => data.map((item) => {
+  const { TreeNode } = Tree;
+  if (item.children) {
     return (
-      <div>
-        <Form>
-          <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
+      <TreeNode title={item.title} key={item.key} dataRef={item}>
+        {this.renderTreeNodes(item.children)}
+      </TreeNode>
+    );
+  }
+  return <TreeNode key={item.key} {...item} dataRef={item} />;
+});
 
-          {getFieldDecorator('cghId', {
+render() {
+  const { hpoOptions, treeData } = this.state;
+
+  const hpoOptionsLabels = map(hpoOptions, 'name');
+  const { form, clinicalImpression } = this.props;
+  const { getFieldDecorator, getFieldValue } = form;
+
+  const { TextArea } = Input;
+
+  const getRelationValues = () => ({
+    father: {
+      value: 'FTH',
+      label: intl.get('form.patientSubmission.form.father'),
+    },
+    mother: {
+      value: 'MTH',
+      label: intl.get('form.patientSubmission.form.mother'),
+    },
+    brother: {
+      value: 'BRO',
+      label: intl.get('form.patientSubmission.form.brother'),
+    },
+    sister: {
+      value: 'SIS',
+      label: intl.get('form.patientSubmission.form.sister'),
+    },
+    halfBrother: {
+      value: 'HBRO',
+      label: intl.get('form.patientSubmission.form.halfBrother'),
+    },
+    halfSister: {
+      value: 'HSIS',
+      label: intl.get('form.patientSubmission.form.halfSister'),
+    },
+    identicalTwin: {
+      value: 'ITWIN',
+      label: intl.get('form.patientSubmission.form.identicalTwin'),
+    },
+    fraternalTwin: {
+      value: 'FTWIN',
+      label: intl.get('form.patientSubmission.form.fraternalTwin'),
+    },
+    daughter: {
+      value: 'DAUC',
+      label: intl.get('form.patientSubmission.form.daughter'),
+    },
+    son: {
+      value: 'SONC',
+      label: intl.get('form.patientSubmission.form.son'),
+    },
+    maternalAunt: {
+      value: 'MAUNT',
+      label: intl.get('form.patientSubmission.form.maternalAunt'),
+    },
+    paternalAunt: {
+      value: 'PAUNT',
+      label: intl.get('form.patientSubmission.form.paternalAunt'),
+    },
+    maternalUncle: {
+      value: 'MUNCLE',
+      label: intl.get('form.patientSubmission.form.maternalUncle'),
+    },
+    paternalUncle: {
+      value: 'PUNCHE',
+      label: intl.get('form.patientSubmission.form.paternalUncle'),
+    },
+    maternalCousin: {
+      value: 'MCOUSIN',
+      label: intl.get('form.patientSubmission.form.maternalCousin'),
+    },
+    paternalCousin: {
+      value: 'PCOUSIN',
+      label: intl.get('form.patientSubmission.form.paternalCousin'),
+    },
+    maternalGrandfather: {
+      value: 'MGRFTH',
+      label: intl.get('form.patientSubmission.form.maternalGrandfather'),
+    },
+    paternalGrandfather: {
+      value: 'PGRFTH',
+      label: intl.get('form.patientSubmission.form.paternalGrandfather'),
+    },
+    maternalGrandmother: {
+      value: 'MGRMTH',
+      label: intl.get('form.patientSubmission.form.maternalGrandmother'),
+    },
+    paternalGrandmother: {
+      value: 'PGRMTH',
+      label: intl.get('form.patientSubmission.form.paternalGrandmother'),
+    },
+    nephew: {
+      value: 'NEPHEW',
+      label: intl.get('form.patientSubmission.form.nephew'),
+    },
+    niece: {
+      value: 'NIECE',
+      label: intl.get('form.patientSubmission.form.niece'),
+    },
+    maternalMember: {
+      value: 'MATMEM',
+      label: intl.get('form.patientSubmission.form.maternalMember'),
+    },
+    paternalMember: {
+      value: 'PATMEM',
+      label: intl.get('form.patientSubmission.form.paternalMember'),
+    },
+  });
+
+  const relationValues = getRelationValues();
+
+  getFieldDecorator('familyHistory', {
+    initialValue: [1],
+  });
+  const familyInfo = getFieldValue('familyHistory');
+  const familyItems = familyInfo.map((k, index) => (
+    <div className="familyLine">
+      <Form.Item required={false} key={`note_${index}`}>
+        {getFieldDecorator(`note[${index}]`, {
+          validateTrigger: ['onChange', 'onBlur'],
+          rules: [],
+        })(
+          <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+        )}
+      </Form.Item>
+      <Form.Item required={false} key={`relation_${index}`}>
+        {getFieldDecorator(`relation[${index}]`, {
+          validateTrigger: ['onChange', 'onBlur'],
+          rules: [],
+        })(
+          <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
+            {Object.values(relationValues).map((rv, i) => (
+              <Select.Option value={rv.value} key={`relationship_${i}`}>{rv.label}</Select.Option>
+            ))}
+          </Select>,
+        )}
+      </Form.Item>
+      <Button className="delButton" disabled={!(getFieldValue(`note[${index}]`)) && !(getFieldValue(`relation[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
+        <IconKit size={20} icon={ic_remove} />
+      </Button>
+    </div>
+
+  ));
+  const selectedPhenotype = ['coucou'];
+
+  let cghInterpretationValue;
+  let cghNoteValue;
+  let cghResource = {};
+  let cghId = null;
+  if (clinicalImpression) {
+    cghResource = clinicalImpression.investigation[0].item.find(isCGH) || {};
+    cghId = cghResource.id;
+    cghInterpretationValue = getCGHInterpretationCode(cghResource);
+    cghNoteValue = cghNote(cghResource);
+  }
+
+  let indicationNoteValue;
+  let indicationResource;
+  if (clinicalImpression) {
+    indicationResource = clinicalImpression.investigation[0].item.find(isIndication) || {};
+    indicationNoteValue = getIndicationNote(indicationResource);
+  }
+
+  const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
+
+  return (
+    <div>
+      <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
+        {getFieldDecorator('cghId', {
+          rules: [],
+          initialValue: cghId,
+        })(
+          <Input size="small" type="hidden" />,
+        )}
+
+        <Form.Item label="Type d’analyse">
+          <Radio.Group buttonStyle="solid">
+            <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
+            <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
+            <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+      </Card>
+      <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
+        <Form.Item label="CGH">
+          {getFieldDecorator('cghInterpretationValue', {
             rules: [],
-            initialValue: cghId,
+            initialValue: cghInterpretationValue,
           })(
-            <Input size="small" type="hidden" />,
-          )}
-
-          <Form.Item label="Type d’analyse">
             <Radio.Group buttonStyle="solid">
-              <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
-              <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
-              <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-        </Card>
-        <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
-          <Form.Item label="CGH">
-            {getFieldDecorator('cghInterpretationValue', {
-              rules: [],
-              initialValue: cghInterpretationValue,
-            })(
-              <Radio.Group buttonStyle="solid">
-                {CGH_VALUES().map((v, index) => (
-                  <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
-                ))}
-              </Radio.Group>,
-            )}
-          </Form.Item>
-          {
+              {CGH_VALUES().map((v, index) => (
+                <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
+              ))}
+            </Radio.Group>,
+          )}
+        </Form.Item>
+        {
             (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
             && (
             <Form.Item label="Précision">
@@ -546,49 +631,46 @@ class ClinicalInformation extends React.Component {
             )
           }
 
-          <Form.Item label="Résumé">
-            <TextArea className="input note" rows={4} />
-            <span className="optional">Facultatif</span>
-          </Form.Item>
-        </Card>
-        <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
-          <div className="familyLines">
-            {familyItems}
-          </div>
-          <Form.Item>
-            <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}>
-              <IconKit size={14} icon={ic_add} />
+        <Form.Item label="Résumé">
+          <TextArea className="input note" rows={4} />
+          <span className="optional">Facultatif</span>
+        </Form.Item>
+      </Card>
+      <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
+        <div className="familyLines">
+          {familyItems}
+        </div>
+        <Form.Item>
+          <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}>
+            <IconKit size={14} icon={ic_add} />
                 Ajouter
-            </Button>
-          </Form.Item>
-        </Card>
-        <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
-          <div className="separator">
-            <div className="cardSeparator">
-              <Form.Item className="searchInput searchInputFull">
-                <AutoComplete
-                  classeName="searchInput"
-                  placeholder="Chercher un signe clinique ..."
-                  dataSource={hpoOptionsLabels}
-                  onSelect={this.handleHpoOptionSelected}
-                  onChange={this.handleHpoSearchTermChanged}
-                />
+          </Button>
+        </Form.Item>
+      </Card>
+      <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
+        <div className="separator">
+          <div className="cardSeparator">
+            <Form.Item className="searchInput searchInputFull">
+              <AutoComplete
+                classeName="searchInput"
+                placeholder="Chercher un signe clinique ..."
+                dataSource={hpoOptionsLabels}
+                onSelect={this.handleHpoOptionSelected}
+                onChange={this.handleHpoSearchTermChanged}
+              />
 
-              </Form.Item>
-              <Tree checkable selectable={false}>
-                <TreeNode checkable={false} title="Eye Defects" key="0-0">
-                  <TreeNode checkable={false} title="Abnormality of the optical nerve" key="0-0-0" disabled>
-                    <TreeNode title="Abnormality of optic chiasm morphology" key="0-0-0-0" disableCheckbox />
-                    <TreeNode title="leaf" key="0-0-0-1" />
-                  </TreeNode>
-                  <TreeNode checkable={false} title="parent 1-1" key="0-0-1">
-                    <TreeNode title="sss" key="0-0-1-0" />
-                  </TreeNode>
-                </TreeNode>
-              </Tree>
-            </div>
-            <div className="cardSeparator">
-              {
+            </Form.Item>
+            <Tree
+              loadData={this.onLoadHpoChildren}
+              checkStrictly
+              checkable
+              onCheck={this.handleHpoNodesChecked}
+            >
+              {this.renderTreeNodes(treeData)}
+            </Tree>
+          </div>
+          <div className="cardSeparator">
+            {
                 selectedPhenotype.length === 0
                   ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
                   : hpoResources.map((hpoResource, hpoIndex) => phenotype({
@@ -598,37 +680,36 @@ class ClinicalInformation extends React.Component {
                     deleteHpo: this.handleHpoDeleted,
                   }))
               }
-            </div>
           </div>
+        </div>
 
-        </Card>
-        <Card title="Indications" bordered={false} className="staticCard patientContent">
-          {getFieldDecorator('indicationId', {
+      </Card>
+      <Card title="Indications" bordered={false} className="staticCard patientContent">
+        {getFieldDecorator('indicationId', {
+          rules: [],
+          initialValue: getIndicationId(indicationResource) || '',
+        })(
+          <Input size="small" type="hidden" />,
+        )}
+
+        <Form.Item label="Hypothèse(s) de diagnostic">
+          {getFieldDecorator('indication', {
             rules: [],
-            initialValue: getIndicationId(indicationResource) || '',
+            initialValue: indicationNoteValue,
           })(
-            <Input size="small" type="hidden" />,
+            <TextArea className="input note" rows={4} />,
           )}
-
-          <Form.Item label="Hypothèse(s) de diagnostic">
-            {getFieldDecorator('indication', {
-              rules: [],
-              initialValue: indicationNoteValue,
-            })(
-              <TextArea className="input note" rows={4} />,
-            )}
-          </Form.Item>
-        </Card>
-        </Form>
-      </div>
-    );
-  }
+        </Form.Item>
+      </Card>
+    </div>
+  );
+}
 }
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     addHpoResource,
-    markHpoResourceForDeletion,
+    setHpoResourceDeletionFlag,
   }, dispatch),
 });
 
