@@ -290,6 +290,9 @@ class ClinicalInformation extends React.Component {
       ],
     };
 
+    const { treeData } = this.state;
+    this.loadedHpoTreeNodes = treeData.reduce((acc, value) => { acc[value.key] = true; return acc; }, {});
+
     this.addFamilyHistory = this.addFamilyHistory.bind(this);
     this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
     this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
@@ -313,10 +316,14 @@ class ClinicalInformation extends React.Component {
       if (response.payload) {
         const { data } = response.payload.data;
         const { hits } = data;
-        const results = map(hits, '_source').map(r => ({ title: r.name, key: r.id, checkable: true }));
+        const results = map(hits, '_source')
+          .map(r => ({ title: r.name, key: r.id, checkable: true }))
+          .map(r => ({ ...r, checked: true }));
 
-        console.log('Received the following HPO results: ', results);
         treeNode.props.dataRef.children = results;
+
+        results.forEach((r) => { this.loadedHpoTreeNodes[r.key] = true; });
+
         this.setState({
           treeData: [...treeData],
         });
@@ -359,7 +366,6 @@ class ClinicalInformation extends React.Component {
         const { hits } = data;
         const results = map(hits, '_source');
 
-        console.log('Received the following HPO results: ', results);
         this.setState({
           hpoOptions: results,
         });
@@ -585,6 +591,8 @@ render() {
   }
 
   const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
+  const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
+  console.log('hpoCodes from resources: ', hpoCodes);
 
   return (
     <div>
@@ -662,8 +670,10 @@ render() {
             </Form.Item>
             <Tree
               loadData={this.onLoadHpoChildren}
+              onLoad={(keys) => { console.log('Loaded keys: ', keys); }}
               checkStrictly
               checkable
+              checkedKeys={hpoCodes}
               onCheck={this.handleHpoNodesChecked}
             >
               {this.renderTreeNodes(treeData)}
