@@ -1,12 +1,31 @@
 import uuidv1 from 'uuid/v1';
+import intl from 'react-intl-universal';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
 const OBSERVATION_INDICATION_CODE = 'INDIC';
 
-export const getResourceCode = r => r.code.coding[0].code;
+const RESOURCE_TYPE_FAMILY_HISTORY = 'FamilyMemberHistory';
+const RESOURCE_TYPE_CLINICAL_IMPRESSION = 'ClinicalImpression';
+const RESOURCE_TYPE_PATIENT = 'Patient';
+const RESOURCE_TYPE_BUNDLE = 'Bundle';
+const RESOURCE_TYPE_SERVICE_REQUEST = 'ServiceRequest';
+const RESOURCE_TYPE_OBSERVATION = 'Observation';
+
+const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
+
+export const getResourceCode = (r) => {
+  try {
+    return r.code.coding[0].code;
+  } catch (e) {
+    return null;
+  }
+};
+
 export const isCGH = o => getResourceCode(o) === OBSERVATION_CGH_CODE;
 export const isHPO = o => getResourceCode(o) === OBSERVATION_HPO_CODE;
+
+export const isFamilyHistoryResource = resource => resource.resourceType === RESOURCE_TYPE_FAMILY_HISTORY;
 export const isIndication = o => getResourceCode(o) === OBSERVATION_INDICATION_CODE;
 
 export const cghInterpretation = (cgh) => {
@@ -73,12 +92,10 @@ export const cghDisplay = (code) => {
 };
 
 export const createBundle = () => ({
-  resourceType: 'Bundle',
+  resourceType: RESOURCE_TYPE_BUNDLE,
   type: 'transaction',
   entry: [],
 });
-
-const RESOURCE_TYPE_CLINICAL_IMPRESSION = 'ClinicalImpression';
 
 export const createRequest = (resource) => {
   const {
@@ -108,7 +125,7 @@ const getReference = entry => ({ reference: entry.fullUrl });
 
 const createPatientResource = patient => (
   {
-    resourceType: 'Patient',
+    resourceType: RESOURCE_TYPE_PATIENT,
     name: patient.name,
     gender: patient.gender,
     birthDate: patient.birthDate,
@@ -124,7 +141,7 @@ const createPatientResource = patient => (
 );
 
 const createServiceRequestResource = serviceRequest => ({
-  resourceType: 'ServiceRequest',
+  resourceType: RESOURCE_TYPE_SERVICE_REQUEST,
   id: serviceRequest ? serviceRequest.id : null,
   status: serviceRequest ? serviceRequest.status : 'draft',
 });
@@ -137,13 +154,13 @@ export const createClinicalImpressionResource = ({
     id,
     meta: {
       profile: [
-        'http://fhir.cqdg.ferlab.bio/StructureDefinition/cqdg-clinical-impression',
+        `${FERLAB_BASE_URL}/StructureDefinition/cqdg-clinical-impression`,
       ],
     },
 
     extension: [
       {
-        url: 'http://fhir.cqdg.ferlab.bio/StructureDefinition/age-at-event',
+        url: `${FERLAB_BASE_URL}/StructureDefinition/age-at-event`,
         valueAge: {
           value: age,
           unit: 'days',
@@ -173,11 +190,11 @@ export const createClinicalImpressionResource = ({
 export const createCGHResource = ({
   id, interpretation, note,
 }) => ({
-  resourceType: 'Observation',
+  resourceType: RESOURCE_TYPE_OBSERVATION,
   id,
   meta: {
     profile: [
-      'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
+      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
     ],
   },
   status: 'final',
@@ -195,7 +212,7 @@ export const createCGHResource = ({
   code: {
     coding: [
       {
-        system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
         code: 'CGH',
         display: 'cgh',
       },
@@ -216,11 +233,11 @@ export const createCGHResource = ({
 });
 
 export const createIndicationResource = ({ id, note }) => ({
-  resourceType: 'Observation',
+  resourceType: RESOURCE_TYPE_OBSERVATION,
   id,
   meta: {
     profile: [
-      'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
+      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
     ],
   },
   status: 'final',
@@ -238,7 +255,7 @@ export const createIndicationResource = ({ id, note }) => ({
   code: {
     coding: [
       {
-        system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
         code: 'INDIC',
         display: 'indications',
       },
@@ -294,7 +311,14 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     bundle.entry.push(indicationEntry);
     clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
     clinicalImpression.investigation[0].item.forEach((resource) => {
-      resource.subject = patientReference;
+      // Note: this is an exception in the model. All resources should use the same field: subject
+      // Or, familyHistory resources should be stored somewhere else than with observations as it is not of the same kind (resourceType)
+      if (isFamilyHistoryResource(resource)) {
+        resource.patient = patientReference;
+      } else {
+        resource.subject = patientReference;
+      }
+
       const entry = createEntry(resource);
       bundle.entry.push(entry);
       if (!resource.toDelete) {
@@ -306,90 +330,142 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
   return bundle;
 };
 
-export const createHPOResource = ({
-  id, toDelete, hpoCode, onset, category, interpretation, note,
-}) => {
-  console.log();
-  return ({
-    resourceType: 'Observation',
+export const createFamilyHistoryMemberResource = ({
+  id, code, display, note,
+}) => (
+  {
+    resourceType: RESOURCE_TYPE_FAMILY_HISTORY,
     id,
-    toDelete,
     meta: {
       profile: [
-        'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation',
+        `${FERLAB_BASE_URL}/StructureDefinition/cqgc-fmh`,
       ],
     },
-    extension: [
-      {
-        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
-        valueCoding: onset,
-      },
-      {
-        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/hpo-category',
-        valueCoding: category,
-      },
-    ],
-    status: 'final',
-    category: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/observation-category',
-            code: 'exam',
-            display: 'Exam',
-          },
-        ],
-      },
-    ],
-    code: {
+    status: 'completed',
+    patient: {
+      reference: 'Patient/pt-001',
+    },
+    relationship: {
       coding: [
         {
-          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
-          code: 'PHENO',
-          display: 'phenotype',
+          code,
+          display,
         },
       ],
     },
-    valueCodeableConcept: {
-      coding: [
-        {
-          system: 'http://purl.obolibrary.org/obo/hp.owl',
-          ...hpoCode,
-        },
-      ],
-    },
-    interpretation: [
-      {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
-            ...interpretation,
-          },
-        ],
-        text: 'Observé',
-      },
-    ],
     note: [
       {
         text: note,
       },
     ],
-  });
-};
+  }
+);
 
-export const getHPOId = (resource) => {
+export const getFamilyRelationshipCode = (resource) => {
   try {
-    return resource.id;
+    const { relationship } = resource;
+    const { coding } = relationship;
+    const { code } = coding[0];
+    return code;
   } catch (e) {
     return '';
   }
 };
 
-export const getResourceToBeDeletedStatus = (resource) => {
+export const getFamilyRelationshipDisplay = (resource) => {
   try {
-    return !!resource.toBeDeleted;
+    const { relationship } = resource;
+    const { coding } = relationship;
+    const { display } = coding[0];
+    return display;
   } catch (e) {
-    return false;
+    return '';
+  }
+};
+
+export const getFamilyRelationshipNote = (resource) => {
+  try {
+    const { note } = resource;
+    const { text } = note[0];
+    return text;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const createHPOResource = ({
+  id, toDelete, hpoCode, onset, category, interpretation, note,
+}) => ({
+  resourceType: RESOURCE_TYPE_OBSERVATION,
+  id,
+  toDelete,
+  meta: {
+    profile: [
+      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
+    ],
+  },
+  extension: [
+    {
+      url: `${FERLAB_BASE_URL}/StructureDefinition/age-at-onset`,
+      valueCoding: onset,
+    },
+    {
+      url: `${FERLAB_BASE_URL}/StructureDefinition/hpo-category`,
+      valueCoding: category,
+    },
+  ],
+  status: 'final',
+  category: [
+    {
+      coding: [
+        {
+          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          code: 'exam',
+          display: 'Exam',
+        },
+      ],
+    },
+  ],
+  code: {
+    coding: [
+      {
+        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
+        code: 'PHENO',
+        display: 'phenotype',
+      },
+    ],
+  },
+  valueCodeableConcept: {
+    coding: [
+      {
+        system: 'http://purl.obolibrary.org/obo/hp.owl',
+        ...hpoCode,
+      },
+    ],
+  },
+  interpretation: [
+    {
+      coding: [
+        {
+          system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
+          ...interpretation,
+        },
+      ],
+      text: 'Observé',
+    },
+  ],
+  note: [
+    {
+      text: note,
+    },
+  ],
+});
+
+export const getResourceId = (resource) => {
+  try {
+    return resource.id;
+  } catch (e) {
+    return '';
   }
 };
 
@@ -533,6 +609,113 @@ export const getHPOOnsetDisplayFromCode = (code) => {
       .reduce((acc, group) => [...acc, ...group.options], [])
       .find(option => option.code === code)
       .display;
+  } catch (e) {
+    return '';
+  }
+};
+
+export const getFamilyRelationshipValues = () => ({
+  father: {
+    value: 'FTH',
+    label: intl.get('form.patientSubmission.form.father'),
+  },
+  mother: {
+    value: 'MTH',
+    label: intl.get('form.patientSubmission.form.mother'),
+  },
+  brother: {
+    value: 'BRO',
+    label: intl.get('form.patientSubmission.form.brother'),
+  },
+  sister: {
+    value: 'SIS',
+    label: intl.get('form.patientSubmission.form.sister'),
+  },
+  halfBrother: {
+    value: 'HBRO',
+    label: intl.get('form.patientSubmission.form.halfBrother'),
+  },
+  halfSister: {
+    value: 'HSIS',
+    label: intl.get('form.patientSubmission.form.halfSister'),
+  },
+  identicalTwin: {
+    value: 'ITWIN',
+    label: intl.get('form.patientSubmission.form.identicalTwin'),
+  },
+  fraternalTwin: {
+    value: 'FTWIN',
+    label: intl.get('form.patientSubmission.form.fraternalTwin'),
+  },
+  daughter: {
+    value: 'DAUC',
+    label: intl.get('form.patientSubmission.form.daughter'),
+  },
+  son: {
+    value: 'SONC',
+    label: intl.get('form.patientSubmission.form.son'),
+  },
+  maternalAunt: {
+    value: 'MAUNT',
+    label: intl.get('form.patientSubmission.form.maternalAunt'),
+  },
+  paternalAunt: {
+    value: 'PAUNT',
+    label: intl.get('form.patientSubmission.form.paternalAunt'),
+  },
+  maternalUncle: {
+    value: 'MUNCLE',
+    label: intl.get('form.patientSubmission.form.maternalUncle'),
+  },
+  paternalUncle: {
+    value: 'PUNCHE',
+    label: intl.get('form.patientSubmission.form.paternalUncle'),
+  },
+  maternalCousin: {
+    value: 'MCOUSIN',
+    label: intl.get('form.patientSubmission.form.maternalCousin'),
+  },
+  paternalCousin: {
+    value: 'PCOUSIN',
+    label: intl.get('form.patientSubmission.form.paternalCousin'),
+  },
+  maternalGrandfather: {
+    value: 'MGRFTH',
+    label: intl.get('form.patientSubmission.form.maternalGrandfather'),
+  },
+  paternalGrandfather: {
+    value: 'PGRFTH',
+    label: intl.get('form.patientSubmission.form.paternalGrandfather'),
+  },
+  maternalGrandmother: {
+    value: 'MGRMTH',
+    label: intl.get('form.patientSubmission.form.maternalGrandmother'),
+  },
+  paternalGrandmother: {
+    value: 'PGRMTH',
+    label: intl.get('form.patientSubmission.form.paternalGrandmother'),
+  },
+  nephew: {
+    value: 'NEPHEW',
+    label: intl.get('form.patientSubmission.form.nephew'),
+  },
+  niece: {
+    value: 'NIECE',
+    label: intl.get('form.patientSubmission.form.niece'),
+  },
+  maternalMember: {
+    value: 'MATMEM',
+    label: intl.get('form.patientSubmission.form.maternalMember'),
+  },
+  paternalMember: {
+    value: 'PATMEM',
+    label: intl.get('form.patientSubmission.form.paternalMember'),
+  },
+});
+
+export const getFamilyRelationshipDisplayForCode = (code) => {
+  try {
+    return Object.values(getFamilyRelationshipValues()).find(v => v.value === code).label;
   } catch (e) {
     return '';
   }
