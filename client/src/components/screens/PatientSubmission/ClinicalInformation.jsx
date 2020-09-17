@@ -2,7 +2,6 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -13,63 +12,45 @@ import {
   ic_add, ic_remove, ic_help, ic_person, ic_visibility, ic_visibility_off,
 } from 'react-icons-kit/md';
 
-import { map } from 'lodash';
+import {
+  map, difference, includes,
+} from 'lodash';
 import {
   CGH_CODES,
   CGH_VALUES,
   isCGH,
   isHPO,
+  isFamilyHistoryResource,
   isIndication,
   cghNote,
   getCGHInterpretationCode,
   getIndicationNote,
   getIndicationId,
   createHPOResource,
+  createFamilyHistoryMemberResource,
+  getFamilyRelationshipCode,
+  getFamilyRelationshipDisplay,
+  getFamilyRelationshipNote,
   hpoOnsetValues,
-  getHPOId,
-  getResourceToBeDeletedStatus,
+  getResourceId,
   getHPOCode,
   getHPODisplay,
   getHPONote,
   getHPOOnsetCode,
   getHPOInterpretationCode,
   hpoInterpretationValues,
-  getHPOInterpretationDisplay,
+  getFamilyRelationshipValues,
+  getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 import {
   addHpoResource,
   setHpoResourceDeletionFlag,
+  addFamilyHistoryResource,
 } from '../../../actions/patientSubmission';
 
 // eslint-disable-next-line no-unused-vars
-import Api, { ApiError } from '../../../helpers/api';
-
-const allHpos = [
-  {
-    hpoCode: { code: 'HP-000001', display: 'Strange head' },
-    onset: { code: 'Neonatal', display: 'NeoNatal' },
-    category: {
-      code: '',
-      display: '',
-    },
-    interpretation: { code: 'O', display: 'Observé' },
-    note: 'Some notes on hpo observation',
-  },
-  {
-    hpoCode: { code: 'HP-000002', display: 'Cardiovascular anomaly' },
-    onset: { code: 'Neonatal', display: 'NeoNatal' },
-    category: {
-      code: '',
-      display: '',
-    },
-    interpretation: { code: 'O', display: 'Observé' },
-    note: 'Some notes on hpo observation',
-  },
-];
-const selectedHpos = [];
-
-const mockHpoResources = selectedHpos.map(createHPOResource);
+import Api from '../../../helpers/api';
 
 const hpoOnsetValues = [
   {
@@ -176,7 +157,7 @@ const HpoHiddenFields = ({
   <div>
     {getFieldDecorator(`hpoIds[${hpoIndex}]`, {
       rules: [],
-      initialValue: getHPOId(hpoResource) || '',
+      initialValue: getResourceId(hpoResource) || '',
     })(
       <Input size="small" type="hidden" />,
     )}
@@ -268,26 +249,28 @@ const phenotype = ({
   );
 };
 
+const INITIAL_TREE_ROOTS = [
+  { key: 'HP:0001197', title: 'Anomalie du développement prénatal ou de la naissance', is_leaf: false },
+  { key: 'HP:0001507', title: 'Anomalie de la croissance', is_Leaf: false },
+  { key: 'HP:0000478', title: 'Anomalie oculaire', is_leaf: false },
+  { key: 'HP:0001574', title: 'Anomalie de l\'oreille', is_leaf: false },
+  { key: 'HP:0012519', title: 'Anomalie des téguments', is_leaf: false },
+  { key: 'HP:0001626', title: 'Anomalie du système cardiovasculaire', is_leaf: false },
+  { key: 'HP:0002086', title: 'Anomalie du système respiratoire', is_leaf: false },
+  { key: 'HP:0000924', title: 'Anomalie du système musculo-squelettique', is_leaf: false },
+  { key: 'HP:0003011', title: 'Anomalie de la musculature', is_leaf: false },
+  { key: 'HP:0000119', title: 'Anomalie génito-urinaire', is_leaf: false },
+  { key: 'HP:0025031', title: 'Anomalie du système digestif', is_leaf: false },
+  { key: 'HP:0000152', title: 'Anomalie tête et cou', is_leaf: false },
+  { key: 'HP:0000707', title: 'Anomalie du système nerveux', is_leaf: false },
+];
+
 class ClinicalInformation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       hpoOptions: [],
-      treeData: [
-        { key: 'HP:0001197', title: 'Anomalie du développement prénatal ou de la naissance', is_leaf: false },
-        { key: 'HP:0001507', title: 'Anomalie de la croissance', is_Leaf: false },
-        { key: 'HP:0000478', title: 'Anomalie oculaire', is_leaf: false },
-        { key: 'HP:0001574', title: 'Anomalie de l\'oreille', is_leaf: false },
-        { key: 'HP:0012519', title: 'Anomalie des téguments', is_leaf: false },
-        { key: 'HP:0001626', title: 'Anomalie du système cardiovasculaire', is_leaf: false },
-        { key: 'HP:0002086', title: 'Anomalie du système respiratoire', is_leaf: false },
-        { key: 'HP:0000924', title: 'Anomalie du système musculo-squelettique', is_leaf: false },
-        { key: 'HP:0003011', title: 'Anomalie de la musculature', is_leaf: false },
-        { key: 'HP:0000119', title: 'Anomalie génito-urinaire', is_leaf: false },
-        { key: 'HP:0025031', title: 'Anomalie du système digestif', is_leaf: false },
-        { key: 'HP:0000152', title: 'Anomalie tête et cou', is_leaf: false },
-        { key: 'HP:0000707', title: 'Anomalie du système nerveux', is_leaf: false },
-      ],
+      treeData: INITIAL_TREE_ROOTS,
     };
 
     const { treeData } = this.state;
@@ -333,12 +316,9 @@ class ClinicalInformation extends React.Component {
   });
 
   addFamilyHistory() {
-    const { form } = this.props;
-    const keys = form.getFieldValue('familyHistory');
-    const nextKeys = keys.concat(keys.length + 1);
-    form.setFieldsValue({
-      familyHistory: nextKeys,
-    });
+    const familyHistoryResource = createFamilyHistoryMemberResource({ code: '', node: '', display: '' });
+    const { actions } = this.props;
+    actions.addFamilyHistoryResource(familyHistoryResource);
   }
 
   deleteFamilyHistory(index) {
@@ -360,7 +340,7 @@ class ClinicalInformation extends React.Component {
   }
 
   handleHpoSearchTermChanged(term) {
-    Api.searchHpos(term).then((response) => {
+    Api.searchHpos(term.toLowerCase().trim()).then((response) => {
       if (response.payload) {
         const { data } = response.payload.data;
         const { hits } = data;
@@ -389,7 +369,17 @@ class ClinicalInformation extends React.Component {
     const { actions, clinicalImpression } = this.props;
 
     const checkedNodes = info.checkedNodes.map(n => ({ code: n.key, display: n.props.title }));
-    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
+    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO);
+    const hpoResourcesCodes = hpoResources.map(getHPOCode);
+
+    // If some resources are not in the list of checked nodes,
+    // and have corresponding loaded tree nodes, mark them for deletion.
+    // const uncheckedResources = difference(hpoResourcesCodes, checkedNodes)
+    //   .filter(ucr => includes(Object.keys(this.loadedHpoTreeNodes), ucr))
+    //   .forEach((k) => {
+    //     actions.setHpoResourceDeletionFlag({ code: k, toDelete: true });
+    //   });
+
     // If in resources: make sure it is not marked as toDelete
     const nodesPresent = checkedNodes
       .filter(n => !!hpoResources.find(r => n.code === getHPOCode(r)));
@@ -400,7 +390,6 @@ class ClinicalInformation extends React.Component {
     // If not in resources: add it
     const nodesToAdd = checkedNodes
       .filter(n => !hpoResources.find(r => n.code === getHPOCode(r)));
-
     nodesToAdd.forEach(this.hpoSelected);
   }
 
@@ -437,139 +426,56 @@ render() {
 
   const { TextArea } = Input;
 
-  const getRelationValues = () => ({
-    father: {
-      value: 'FTH',
-      label: intl.get('form.patientSubmission.form.father'),
-    },
-    mother: {
-      value: 'MTH',
-      label: intl.get('form.patientSubmission.form.mother'),
-    },
-    brother: {
-      value: 'BRO',
-      label: intl.get('form.patientSubmission.form.brother'),
-    },
-    sister: {
-      value: 'SIS',
-      label: intl.get('form.patientSubmission.form.sister'),
-    },
-    halfBrother: {
-      value: 'HBRO',
-      label: intl.get('form.patientSubmission.form.halfBrother'),
-    },
-    halfSister: {
-      value: 'HSIS',
-      label: intl.get('form.patientSubmission.form.halfSister'),
-    },
-    identicalTwin: {
-      value: 'ITWIN',
-      label: intl.get('form.patientSubmission.form.identicalTwin'),
-    },
-    fraternalTwin: {
-      value: 'FTWIN',
-      label: intl.get('form.patientSubmission.form.fraternalTwin'),
-    },
-    daughter: {
-      value: 'DAUC',
-      label: intl.get('form.patientSubmission.form.daughter'),
-    },
-    son: {
-      value: 'SONC',
-      label: intl.get('form.patientSubmission.form.son'),
-    },
-    maternalAunt: {
-      value: 'MAUNT',
-      label: intl.get('form.patientSubmission.form.maternalAunt'),
-    },
-    paternalAunt: {
-      value: 'PAUNT',
-      label: intl.get('form.patientSubmission.form.paternalAunt'),
-    },
-    maternalUncle: {
-      value: 'MUNCLE',
-      label: intl.get('form.patientSubmission.form.maternalUncle'),
-    },
-    paternalUncle: {
-      value: 'PUNCHE',
-      label: intl.get('form.patientSubmission.form.paternalUncle'),
-    },
-    maternalCousin: {
-      value: 'MCOUSIN',
-      label: intl.get('form.patientSubmission.form.maternalCousin'),
-    },
-    paternalCousin: {
-      value: 'PCOUSIN',
-      label: intl.get('form.patientSubmission.form.paternalCousin'),
-    },
-    maternalGrandfather: {
-      value: 'MGRFTH',
-      label: intl.get('form.patientSubmission.form.maternalGrandfather'),
-    },
-    paternalGrandfather: {
-      value: 'PGRFTH',
-      label: intl.get('form.patientSubmission.form.paternalGrandfather'),
-    },
-    maternalGrandmother: {
-      value: 'MGRMTH',
-      label: intl.get('form.patientSubmission.form.maternalGrandmother'),
-    },
-    paternalGrandmother: {
-      value: 'PGRMTH',
-      label: intl.get('form.patientSubmission.form.paternalGrandmother'),
-    },
-    nephew: {
-      value: 'NEPHEW',
-      label: intl.get('form.patientSubmission.form.nephew'),
-    },
-    niece: {
-      value: 'NIECE',
-      label: intl.get('form.patientSubmission.form.niece'),
-    },
-    maternalMember: {
-      value: 'MATMEM',
-      label: intl.get('form.patientSubmission.form.maternalMember'),
-    },
-    paternalMember: {
-      value: 'PATMEM',
-      label: intl.get('form.patientSubmission.form.paternalMember'),
-    },
-  });
-
-  const relationValues = getRelationValues();
-
+  const relationshipPossibleValues = getFamilyRelationshipValues();
   getFieldDecorator('familyHistory', {
     initialValue: [1],
   });
-  const familyInfo = getFieldValue('familyHistory');
-  const familyItems = familyInfo.map((k, index) => (
+  const familyHistoryResources = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource) || [];
+  const familyItems = familyHistoryResources.map((resource, index) => (
     <div className="familyLine">
-      <Form.Item required={false} key={`note_${index}`}>
-        {getFieldDecorator(`note[${index}]`, {
+
+      {getFieldDecorator(`familyRelationshipIds[${index}]`, {
+        rules: [],
+        initialValue: getResourceId(resource) || '',
+      })(
+        <Input size="small" type="hidden" />,
+      )}
+
+      {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
+        rules: [],
+        initialValue: resource.toDelete,
+      })(
+        <Input size="small" type="hidden" />,
+      )}
+
+      <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
+        {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
           validateTrigger: ['onChange', 'onBlur'],
+          initialValue: getFamilyRelationshipNote(resource),
           rules: [],
         })(
           <Input placeholder="Ajouter une note…" className="input noteInput note" />,
         )}
       </Form.Item>
-      <Form.Item required={false} key={`relation_${index}`}>
-        {getFieldDecorator(`relation[${index}]`, {
+      <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
+        {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
           validateTrigger: ['onChange', 'onBlur'],
+          initialValue: getFamilyRelationshipCode(resource),
           rules: [],
         })(
           <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-            {Object.values(relationValues).map((rv, i) => (
-              <Select.Option value={rv.value} key={`relationship_${i}`}>{rv.label}</Select.Option>
+            {Object.values(relationshipPossibleValues).map((rv, i) => (
+              <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
             ))}
           </Select>,
         )}
       </Form.Item>
-      <Button className="delButton" disabled={!(getFieldValue(`note[${index}]`)) && !(getFieldValue(`relation[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
+      <Button className="delButton" disabled={!(getFieldValue(`familyMemberNotes[${index}]`)) && !(getFieldValue(`familyRelationships[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
         <IconKit size={20} icon={ic_remove} />
       </Button>
     </div>
-
   ));
+
   const selectedPhenotype = ['coucou'];
 
   let cghInterpretationValue;
@@ -592,7 +498,6 @@ render() {
 
   const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
   const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
-  console.log('hpoCodes from resources: ', hpoCodes);
 
   return (
     <div>
@@ -649,7 +554,8 @@ render() {
           {familyItems}
         </div>
         <Form.Item>
-          <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}>
+          {/* <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}> */}
+          <Button className="addFamilyButton" disabled={false} onClick={this.addFamilyHistory}>
             <IconKit size={14} icon={ic_add} />
                 Ajouter
           </Button>
@@ -670,7 +576,6 @@ render() {
             </Form.Item>
             <Tree
               loadData={this.onLoadHpoChildren}
-              onLoad={(keys) => { console.log('Loaded keys: ', keys); }}
               checkStrictly
               checkable
               checkedKeys={hpoCodes}
@@ -720,6 +625,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     addHpoResource,
     setHpoResourceDeletionFlag,
+    addFamilyHistoryResource,
   }, dispatch),
 });
 

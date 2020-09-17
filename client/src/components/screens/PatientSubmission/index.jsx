@@ -35,6 +35,8 @@ import {
   createIndicationResource,
   createHPOResource,
   hpoInterpretationDisplayForCode,
+  createFamilyHistoryMemberResource,
+  getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 const { Step } = Steps;
@@ -275,11 +277,39 @@ class PatientSubmissionScreen extends React.Component {
       const { investigation } = clinicalImpression;
       investigation[0].item = [
         ...this.createCGHResourceList(),
+        ...this.createFamilyRelationshipResourceList(),
+        ...this.createHPOResourceList(),
         ...this.createIndicationResourceList(),
       ];
     }
 
     return clinicalImpressionData;
+  }
+
+  createFamilyRelationshipResourceList() {
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+
+    if (values.familyRelationshipCodes === undefined) {
+      return [];
+    }
+
+    const {
+      familyRelationshipIds,
+      familyRelationshipCodes,
+      familyRelationshipNotes,
+      familyRelationshipsToDelete,
+    } = values;
+
+    const familyRelationshipResources = familyRelationshipCodes.map((code, index) => createFamilyHistoryMemberResource({
+      id: familyRelationshipIds[index],
+      code,
+      display: getFamilyRelationshipDisplayForCode(familyRelationshipCodes[index]),
+      note: familyRelationshipNotes[index],
+      toDelete: familyRelationshipsToDelete[index],
+    }));
+
+    return familyRelationshipResources;
   }
 
   createHPOResourceList() {

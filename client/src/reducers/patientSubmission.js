@@ -86,6 +86,17 @@ const patientSubmissionReducer = (
           ],
       };
       break;
+    case actions.PATIENT_SUBMISSION_ADD_FAMILY_HISTORY_RESOURCE:
+      draft.clinicalImpression = {
+        ...draft.clinicalImpression,
+        investigation:
+          [
+            {
+              item: [...draft.clinicalImpression.investigation[0].item, action.payload],
+            },
+          ],
+      };
+      break;
     default:
       break;
   }
