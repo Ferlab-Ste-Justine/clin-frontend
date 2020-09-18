@@ -331,11 +331,12 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
 };
 
 export const createFamilyHistoryMemberResource = ({
-  id, code, display, note,
+  id, code, display, note, toDelete,
 }) => (
   {
     resourceType: RESOURCE_TYPE_FAMILY_HISTORY,
     id,
+    toDelete,
     meta: {
       profile: [
         `${FERLAB_BASE_URL}/StructureDefinition/cqgc-fmh`,

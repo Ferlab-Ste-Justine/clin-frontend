@@ -17,7 +17,10 @@ const getId = response => getLocation(response).split('/')[1];
 const isPatient = r => getFieldName(r) === 'patient';
 const isServiceRequest = r => getFieldName(r) === 'serviceRequest';
 const isObservation = r => getFieldName(r) === 'observation';
+const isFamilyRelationship = r => getFieldName(r) === 'familyMemberHistory';
+const isInvestigation = r => isObservation(r) || isFamilyRelationship(r);
 const isClinicalImpression = r => getFieldName(r) === 'clinicalImpression';
+
 const getStatusCode = r => r.status.split(' ')[0];
 const isCreate = r => getStatusCode(r) === '201';
 const isDelete = r => getStatusCode(r) === '204';
@@ -59,7 +62,9 @@ function* savePatientSubmission(action) {
     result.patient = processBundleResponse(responses.find(isPatient));
     result.serviceRequest = processBundleResponse(responses.find(isServiceRequest));
     result.clinicalImpression = processBundleResponse(responses.find(isClinicalImpression));
-    result.observations = responses.filter(isObservation).map(processBundleResponse);
+    result.investigations = [
+      ...responses.filter(isInvestigation).map(processBundleResponse),
+    ];
 
     yield put({
       type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,

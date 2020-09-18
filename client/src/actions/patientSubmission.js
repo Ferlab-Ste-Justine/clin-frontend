@@ -21,6 +21,15 @@ export const setHpoResourceDeletionFlag = ({ code, toDelete }) => ({
 });
 
 export const addFamilyHistoryResource = resource => ({
-  type: actions.PATIENT_SUBMISSION_ADD_FAMILY_HISTORY_RESOURCE,
+  type: actions.PATIENT_SUBMISSION_ADD_FAMILY_RELATIONSHIP_RESOURCE,
   payload: resource,
+});
+
+export const setFamilyRelationshipResourceDeletionFlag = ({ id, code, toDelete }) => ({
+  type: actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION,
+  payload: {
+    id,
+    code,
+    toDelete,
+  },
 });

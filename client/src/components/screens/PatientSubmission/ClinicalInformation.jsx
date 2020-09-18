@@ -13,7 +13,7 @@ import {
 } from 'react-icons-kit/md';
 
 import {
-  map, difference, includes,
+  map,
 } from 'lodash';
 import {
   CGH_CODES,
@@ -29,7 +29,6 @@ import {
   createHPOResource,
   createFamilyHistoryMemberResource,
   getFamilyRelationshipCode,
-  getFamilyRelationshipDisplay,
   getFamilyRelationshipNote,
   hpoOnsetValues,
   getResourceId,
@@ -40,12 +39,12 @@ import {
   getHPOInterpretationCode,
   hpoInterpretationValues,
   getFamilyRelationshipValues,
-  getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 import {
   addHpoResource,
   setHpoResourceDeletionFlag,
+  setFamilyRelationshipResourceDeletionFlag,
   addFamilyHistoryResource,
 } from '../../../actions/patientSubmission';
 
@@ -150,7 +149,6 @@ const interpretationIcon = {
 
 const HpoHiddenFields = ({
   hpoResource,
-  form,
   hpoIndex,
   getFieldDecorator,
 }) => (
@@ -185,6 +183,42 @@ const HpoHiddenFields = ({
   </div>
 );
 
+const FamilyRelationshipHiddenFields = ({
+  resource,
+  index,
+  getFieldDecorator,
+}) => (
+  <div>
+    {getFieldDecorator(`familyRelationshipIds[${index}]`, {
+      rules: [],
+      initialValue: getResourceId(resource) || '',
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+
+    {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
+      rules: [],
+      initialValue: getFamilyRelationshipCode(resource) || '',
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+
+    {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
+      rules: [],
+      initialValue: getFamilyRelationshipNote(resource) || '',
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+
+    {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
+      rules: [],
+      initialValue: resource.toDelete,
+    })(
+      <Input size="small" type="hidden" />,
+    )}
+  </div>
+);
+
 const phenotype = ({
   hpoResource,
   form,
@@ -194,7 +228,7 @@ const phenotype = ({
   const { getFieldDecorator } = form;
   const { Option, OptGroup } = Select;
 
-  return hpoResource.toDelete ? (<HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} getFieldDecorator={getFieldDecorator} />) : (
+  return hpoResource.toDelete ? (<HpoHiddenFields hpoResource={hpoResource} hpoIndex={hpoIndex} getFieldDecorator={getFieldDecorator} />) : (
     <div className="phenotypeBlock">
       <div className="phenotypeFirstLine">
         <div className="leftBlock">
@@ -321,22 +355,11 @@ class ClinicalInformation extends React.Component {
     actions.addFamilyHistoryResource(familyHistoryResource);
   }
 
-  deleteFamilyHistory(index) {
-    const { form } = this.props;
-    const keys = form.getFieldValue('familyHistory');
-    const notes = form.getFieldValue('note');
-    const relation = form.getFieldValue('relation');
-    notes.splice(index, 1);
-    relation.splice(index, 1);
-    keys.splice(index, 1);
-    if (keys.length === 0) {
-      return;
-    }
-    form.setFieldsValue({
-      familyHistory: keys,
-      note: notes,
-      relation,
-    });
+  deleteFamilyHistory({ code, id }) {
+    const { actions, clinicalImpression } = this.props;
+    const familymemberResource = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource);
+
+    actions.setFamilyRelationshipResourceDeletionFlag({ code, id, toDelete: true });
   }
 
   handleHpoSearchTermChanged(term) {
@@ -427,54 +450,57 @@ render() {
   const { TextArea } = Input;
 
   const relationshipPossibleValues = getFamilyRelationshipValues();
-  getFieldDecorator('familyHistory', {
-    initialValue: [1],
-  });
   const familyHistoryResources = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource) || [];
-  const familyItems = familyHistoryResources.map((resource, index) => (
-    <div className="familyLine">
-
-      {getFieldDecorator(`familyRelationshipIds[${index}]`, {
-        rules: [],
-        initialValue: getResourceId(resource) || '',
-      })(
-        <Input size="small" type="hidden" />,
-      )}
-
-      {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
-        rules: [],
-        initialValue: resource.toDelete,
-      })(
-        <Input size="small" type="hidden" />,
-      )}
-
-      <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
-        {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
-          validateTrigger: ['onChange', 'onBlur'],
-          initialValue: getFamilyRelationshipNote(resource),
+  const familyItems = familyHistoryResources.map((resource, index) => (resource.toDelete
+    ? <FamilyRelationshipHiddenFields getFieldDecorator={getFieldDecorator} index={index} resource={resource} />
+    : (
+      <div className="familyLine">
+        {getFieldDecorator(`familyRelationshipIds[${index}]`, {
           rules: [],
+          initialValue: getResourceId(resource) || '',
         })(
-          <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+          <Input size="small" type="hidden" />,
         )}
-      </Form.Item>
-      <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
-        {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
-          validateTrigger: ['onChange', 'onBlur'],
-          initialValue: getFamilyRelationshipCode(resource),
+
+        {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
           rules: [],
+          initialValue: resource.toDelete,
         })(
-          <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-            {Object.values(relationshipPossibleValues).map((rv, i) => (
-              <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
-            ))}
-          </Select>,
+          <Input size="small" type="hidden" />,
         )}
-      </Form.Item>
-      <Button className="delButton" disabled={!(getFieldValue(`familyMemberNotes[${index}]`)) && !(getFieldValue(`familyRelationships[${index}]`))} shape="round" onClick={() => this.deleteFamilyHistory(index)}>
-        <IconKit size={20} icon={ic_remove} />
-      </Button>
-    </div>
-  ));
+
+        <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
+          {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            initialValue: getFamilyRelationshipNote(resource),
+            rules: [],
+          })(
+            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+          )}
+        </Form.Item>
+        <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
+          {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            initialValue: getFamilyRelationshipCode(resource),
+            rules: [],
+          })(
+            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
+              {Object.values(relationshipPossibleValues).map((rv, i) => (
+                <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
+              ))}
+            </Select>,
+          )}
+        </Form.Item>
+        <Button
+          className="delButton"
+          disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`))}
+          shape="round"
+          onClick={() => this.deleteFamilyHistory({ code: getFamilyRelationshipCode(resource), id: getResourceId(resource) })}
+        >
+          <IconKit size={20} icon={ic_remove} />
+        </Button>
+      </div>
+    )));
 
   const selectedPhenotype = ['coucou'];
 
@@ -625,6 +651,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     addHpoResource,
     setHpoResourceDeletionFlag,
+    setFamilyRelationshipResourceDeletionFlag,
     addFamilyHistoryResource,
   }, dispatch),
 });
