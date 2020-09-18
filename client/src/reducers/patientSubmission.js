@@ -4,7 +4,7 @@ import { produce } from 'immer';
 
 import * as actions from '../actions/type';
 
-import { getHPOCode } from '../helpers/fhir/fhir';
+import { getHPOCode, getFamilyRelationshipCode } from '../helpers/fhir/fhir';
 
 export const initialPatientSubmissionState = {
   patient: {
@@ -42,11 +42,11 @@ const patientSubmissionReducer = (
       draft.clinicalImpression = {
         ...draft.clinicalImpression,
         ...action.payload.clinicalImpression,
-        investigation: !action.payload.observations
+        investigation: !action.payload.investigations
           ? { ...draft.clinicalImpression.investigation }
           : [
             {
-              item: action.payload.observations.map((item, index) => ({
+              item: action.payload.investigations.map((item, index) => ({
                 ...draft.clinicalImpression.investigation[0].item[index], ...item,
               })).filter(resource => !resource.toDelete),
             },
@@ -86,13 +86,35 @@ const patientSubmissionReducer = (
           ],
       };
       break;
-    case actions.PATIENT_SUBMISSION_ADD_FAMILY_HISTORY_RESOURCE:
+    case actions.PATIENT_SUBMISSION_ADD_FAMILY_RELATIONSHIP_RESOURCE:
       draft.clinicalImpression = {
         ...draft.clinicalImpression,
         investigation:
           [
             {
               item: [...draft.clinicalImpression.investigation[0].item, action.payload],
+            },
+          ],
+      };
+      break;
+    case actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION:
+      draft.clinicalImpression = {
+        ...draft.clinicalImpression,
+        investigation:
+          [
+            {
+              item: [...draft.clinicalImpression.investigation[0].item.map((resource) => {
+                if (action.payload.id) {
+                  if (action.payload.id === resource.id) {
+                    return { ...resource, toDelete: action.payload.toDelete };
+                  }
+                }
+                if (action.payload.code === getFamilyRelationshipCode(resource) && action.payload.toDelete) {
+                  return null;
+                }
+                return resource;
+              }).filter(r => r !== null),
+              ],
             },
           ],
       };
