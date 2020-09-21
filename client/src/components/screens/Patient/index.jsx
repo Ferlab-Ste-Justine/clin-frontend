@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React from 'react';
@@ -6,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List, Collapse, Popover,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List, Collapse, Popover, Icon,
 } from 'antd';
 import {
   find,
@@ -17,10 +18,10 @@ import IconKit from 'react-icons-kit';
 import {
   ic_person, ic_assignment, ic_info, ic_visibility, ic_visibility_off, ic_help,
 } from 'react-icons-kit/md';
+import { mars } from 'react-icons-kit/fa/mars';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import DataList from '../../DataList';
 import { patientShape } from '../../../reducers/patient';
 import { appShape } from '../../../reducers/app';
 import {
@@ -176,13 +177,13 @@ class PatientScreen extends React.Component {
       return ontology.map((o) => {
         const getObservedIcon = (status) => {
           if (status === 'POS') {
-            return (<IconKit className="observedIcon icon" size={14} icon={ic_visibility} />);
+            return (<IconKit className="observedIcon icon" size={16} icon={ic_visibility} />);
           }
           if (status === 'NEG') {
-            return (<IconKit className="notObservedIcon icon" size={14} icon={ic_visibility_off} />);
+            return (<IconKit className="notObservedIcon icon" size={16} icon={ic_visibility_off} />);
           }
 
-          return (<IconKit className="unknownIcon icon" size={14} icon={ic_help} />);
+          return (<IconKit className="unknownIcon icon" size={16} icon={ic_help} />);
         };
         const observed = getObservedIcon(o.observed);
         const note = o.note ? o.note : '--';
@@ -315,18 +316,8 @@ class PatientScreen extends React.Component {
     };
     const familyTypeTag = <Tag className="familyTypeTag">{getFamilyTypeIcon()}{patient.family.composition}</Tag>;
 
-    const lastIndex = patient.requests.length - 1;
-    const lastRequest = patient.requests[lastIndex] ? patient.requests[lastIndex].status : null;
-
-    const statusBadge = () => {
-      if (lastRequest === 'active') {
-        return (<Badge className="badge" color="#ffa812" text={lastRequest} />);
-      }
-      if (lastRequest === 'completed') {
-        return (<Badge className="badge" color="#52c41a" text={lastRequest} />);
-      }
-      return '';
-    };
+    // const genderFemaleIcon = (<path id="gender_female_24px-a" d="M12,3 C15.3137085,3 18,5.6862915 18,9 C18,11.97 15.84,14.44 13,14.92 L13,17 L15,17 L15,19 L13,19 L13,21 L11,21 L11,19 L9,19 L9,17 L11,17 L11,14.92 C8.16,14.44 6,11.97 6,9 C6,5.6862915 8.6862915,3 12,3 M12,5 C9.790861,5 8,6.790861 8,9 C8,11.209139 9.790861,13 12,13 C14.209139,13 16,11.209139 16,9 C16,6.790861 14.209139,5 12,5 Z" />);
+    // const genderMaleIcon = (<svg className="genderIcon"><path id="gender_mael_24px-a" d="M9,9 C10.29,9 11.5,9.41 12.47,10.11 L17.58,5 L13,5 L13,3 L21,3 L21,11 L19,11 L19,6.41 L13.89,11.5 C14.59,12.5 15,13.7 15,15 C15,18.3137085 12.3137085,21 9,21 C5.6862915,21 3,18.3137085 3,15 C3,11.6862915 5.6862915,9 9,9 M9,11 C6.790861,11 5,12.790861 5,15 C5,17.209139 6.790861,19 9,19 C11.209139,19 13,17.209139 13,15 C13,12.790861 11.209139,11 9,11 Z" /> </svg>);
     return (
       <Content type="auto">
         <Header />
@@ -334,15 +325,14 @@ class PatientScreen extends React.Component {
           <div className="patientPage">
             <div className="page_headerStaticNoMargin">
               <div className="headerStaticContent">
-                <Row type="flex" justify="space-between">
+                <Row type="flex" justify="space-between" align="middle">
                   <Col>
                     <Typography.Title level={3} className="patientName">
-                      {`${patient.details.lastName}, ${patient.details.firstName} (${patient.details.gender})  ${patient.details.proband}`}
-                      {statusBadge()}
+                      {`${patient.details.lastName}, ${patient.details.firstName}`}
                     </Typography.Title>
-                    <Typography.Title level={4} className="patientName">
-                      {patient.details.birthDate}
-                    </Typography.Title>
+                    <span className="patientInfo">{patient.details.birthDate} <IconKit size={16} icon={mars} /></span>
+                    <Tag className="patientType" color="red">{patient.details.proband}</Tag>
+
                   </Col>
                   <Col>
                     <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientVariantScreen}>
@@ -362,7 +352,7 @@ class PatientScreen extends React.Component {
                 style={{ height: '100%' }}
                 tab={(
                   <span className="tabName">
-                    <IconKit size={24} icon={ic_person} />
+                    <IconKit size={18} icon={ic_person} />
                     {patientTab}
                   </span>
               )}
@@ -411,6 +401,7 @@ class PatientScreen extends React.Component {
                           columnPresetToColumn,
                         )}
                         dataSource={this.getRequest()}
+                        size="small"
                       />
                     </Card>
                   </Row>
@@ -421,7 +412,7 @@ class PatientScreen extends React.Component {
                 key="clinical"
                 tab={(
                   <span className="tabName">
-                    <IconKit size={24} icon={ic_assignment} />
+                    <IconKit size={18} icon={ic_assignment} />
                     {clinicalTab}
                   </span>
               )}
@@ -429,40 +420,38 @@ class PatientScreen extends React.Component {
               >
                 <div className="page-static-content">
                   <Card bordered={false} className="staticCard">
-                    <Collapse bordered={false} defaultActiveKey={['1']}>
-                      <Panel header="2020-06-05" key="1">
-                        <div className="halfPageCard">
-                          <DataList
-                            title="Informations générales"
-                            dataSource={[
-                              { label: 'Age a la consultation', value: '3 ans' },
-                              {
-                                label: 'Medicin Référant',
-                                value: 'Dre Julie DOUCET',
-                              },
-                            ]}
-                          />
-                        </div>
-                        <div className="halfPageCard">
-                          <DataList
-                            title="Résume de l'investigation"
-                            dataSource={[
-                              { label: 'cgh', value: 'anormal' },
-                              {
-                                label: 'Résumer',
-                                value:
-                'Echographie anormale a 3 mois teste neurologique realise le 2019-03-06 [voir +]',
-                              },
-                            ]}
-                          />
-                        </div>
-                        <Card title="Histoire familiale" bordered={false} className="tierPageCard staticCard">
+                    <Collapse bordered={false} defaultActiveKey={['1']} expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}>
+                      <Panel header="Consultation 2020-06-05" key="1">
+                        <Card className="generalInfo" bordered={false} staticCard>
+                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                            <Col className="title">Medicin Référant</Col>
+                            <Col className="value">Dre Julie DOUCET</Col>
+                          </Row>
+                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                            <Col className="title">Age du patient</Col>
+                            <Col className="value">3 ans</Col>
+                          </Row>
+                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                            <Col className="title">CGH</Col>
+                            <Col className="value neg">Négatif</Col>
+                          </Row>
+                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                            <Col className="title">Résume de l'investigation</Col>
+                            <Col className="value">Echographie anormale a 3 mois teste neurologique realise le 2019-03-06</Col>
+                          </Row>
+                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                            <Col className="title">Hypothèse de diagnostique</Col>
+                            <Col className="value">Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</Col>
+                          </Row>
+                        </Card>
+                        <Card title="Histoire familiale" bordered={false} className="staticCard">
                           <Table
                             pagination={false}
                             columns={familyHistoryColumnPreset.map(
                               columnPresetToColumn,
                             )}
                             dataSource={this.getFamilyHistory()}
+                            size="small"
                           />
                         </Card>
 
@@ -473,20 +462,9 @@ class PatientScreen extends React.Component {
                               columnPresetToColumn,
                             )}
                             dataSource={this.getClinical()}
+                            size="small"
                           />
                         </Card>
-                        <div className="tierPageCard">
-                          <DataList
-                            title="Indications"
-                            dataSource={[
-                              {
-                                label: 'Hypothèse(s) de diagnostic',
-                                value: 'Syndrome de microdeletion',
-                              },
-                            ]}
-                          />
-                        </div>
-
                       </Panel>
                     </Collapse>
                   </Card>
