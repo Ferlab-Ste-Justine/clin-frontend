@@ -9,9 +9,8 @@ const DataList = (props) => {
   const {
     title, dataSource, style, extraInfo,
   } = props;
-  const header = (<Typography.Title level={4} className="datalistHeader" style={{ marginBottom: 0 }}>{title}</Typography.Title>);
   return (
-    <Card className="staticCard" title={header} extra={extraInfo} hoverable style={style} bordered={false}>
+    <Card className="staticCard" title={title} extra={extraInfo} hoverable style={style} bordered={false}>
       <List
         dataSource={dataSource}
         locale={{

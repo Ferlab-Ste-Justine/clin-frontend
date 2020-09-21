@@ -1,14 +1,12 @@
 @import './variables.scss';
+@import '../../../style/themes/colors.scss';
 
  .patientHeader{
     background-color: #fff;
     padding: 24px;
 
     .patientName{
-      font-family: $font;
-      font-weight: 500;
-      font-size: 24px;
-      color: #125A90;
+      color:$blue-10;
     }
    }
    .ant-tabs-nav-scroll{
@@ -23,9 +21,6 @@
 }
 
    .datalistHeader{
-    font-family: $font !important;
-    font-weight: 500 !important;
-    font-size: 16px !important;
     margin-bottom: 0;
     line-height: 28px;
 }
@@ -42,4 +37,45 @@
     svg{
         margin-right: 4px;
     }
- }
+}
+.patientInfo{
+    color: $gray-7;
+    margin:0 12px;
+    font-size: 12px;
+    line-height: 20px;
+    i{
+        vertical-align: text-bottom;
+        margin-left: 12px;
+    }
+    
+}
+.patientType{
+    vertical-align: text-bottom;
+}
+
+.patientName{
+    display: inline;
+}
+
+.generalInfo{
+    line-height: 22px;
+    .title{
+        width: 240px;
+    }
+    .value{
+        flex: 1;
+    }
+    .neg{
+        color: $green-6;
+    }
+}
+
+.observedIcon{
+    color: $green-6;
+}
+.notObservedIcon{
+    color: $red-5;
+}
+.unknownIcon{
+    color: $gray-8;
+}

@@ -2,9 +2,14 @@ $use-all: true;
 @import '/../../../../node_modules/animate-sass/animate';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 @import './variables.scss';
+@import '../../style/themes/colors.scss';
 
 
-
+body{
+  font-family: 'Roboto', BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji' !important;
+}
 
 #root {
   display: block;
@@ -279,17 +284,17 @@ div.ant-card {
   font-size: 14px;
   margin-bottom: 24px;
   .headerStaticContent{
-    width: 1392px;
+    width: $maxWidth;
     margin: 0 auto;
   }
 }
 
 .page_headerStaticNoMargin{
   background-color: #FFFFFF !important;
-  padding: 24px 0;
+  padding: 16px 0;
   font-size: 14px;
   .headerStaticContent{
-    width: 1392px;
+    width: $maxWidth;
     margin: 0 auto;
   }
 }
@@ -297,27 +302,49 @@ div.ant-card {
 //Page Static Content
 .page-static-content{
   margin: 0 auto;
-  width: 1392px;
+  width: $maxWidth;
 }
 
 //Card
 .staticCard{
   margin-bottom: 24px !important;
-  max-width: 1392px;
+  max-width: $maxWidth;
 }
 //tabs
 .staticTabs{
+  .ant-tabs-bar{
+    &:focus{
+      outline: none;
+    }
+  }
   .ant-tabs-nav-wrap{
     background-color: #ffffff;
     .ant-tabs-nav-scroll{
-      max-width: 1392px;
+      max-width: $maxWidth;
       margin:0 auto;
       .ant-tabs-tab{
         padding: 12px 0;
+        .tabName{
+          display: flex;
+          align-items: center;
+        }
+        i{
+          padding-right: 8px;
+          margin-top:-2px;
+
+        }
+
       }
     }
   }
+  .ant-tabs-tab:not(.ant-tabs-tab-active)
+  {
+    i{
+      color:$gray-6;
+    }
+  }
 }
+
 
 //logo
 .logoText{
@@ -642,8 +669,27 @@ div.ant-card {
 .ant-empty-image{
   display: none !important;
 }
+.ant-table-small{
+  border: none;
+}
 
 //Badge
 .ant-badge-status-dot{
   vertical-align: baseline;
+}
+
+//Collapse
+.ant-collapse-item{
+  border: none !important;
+}
+.ant-collapse-item-active{
+  .ant-collapse-header{
+    border-bottom: 1px solid $gray-5;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+.ant-collapse-content-box{
+  padding: 24px !important;
 }
