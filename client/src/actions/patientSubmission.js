@@ -33,3 +33,10 @@ export const setFamilyRelationshipResourceDeletionFlag = ({ id, code, toDelete }
     toDelete,
   },
 });
+
+export const assignServiceRequestPractitioner = resource => (
+  {
+    type: actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER,
+    payload: resource,
+  }
+);

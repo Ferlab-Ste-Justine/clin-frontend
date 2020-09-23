@@ -8,7 +8,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Steps, Card, Form, Input, Button, Radio, DatePicker, Select, Checkbox, Row,
+  Steps, Card, Form, Input, Button, Radio, DatePicker, Select, Checkbox, Row, AutoComplete,
 } from 'antd';
 import {
   has,
@@ -24,8 +24,11 @@ import Footer from '../../Footer';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
 import {
   savePatientSubmission,
+  assignServiceRequestPractitioner,
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './ClinicalInformation';
+import Api from '../../../helpers/api';
+
 import './style.scss';
 
 import {
@@ -34,13 +37,17 @@ import {
   getHPOOnsetDisplayFromCode,
   createIndicationResource,
   createHPOResource,
+  isCGH,
+  isHPO,
+  isFamilyHistoryResource,
+  isIndication,
   hpoInterpretationDisplayForCode,
   createFamilyHistoryMemberResource,
+  createPractitionerResource,
   getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 const { Step } = Steps;
-const { Search } = Input;
 
 const ramqValue = (patient) => {
   const { identifier } = patient;
@@ -171,7 +178,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   );
 };
 
-const Approval = () => (
+const Approval = ({
+  practitionerOptionsLabels,
+  practitionerOptionSelected,
+  practitionerSearchTermChanged,
+  assignedPractitionerLabel,
+}) => (
   <div>
     <Card title="Consentements" bordered={false} className="staticCard patientContent">
       <Form>
@@ -197,21 +209,39 @@ const Approval = () => (
       <Form>
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
-          <Search classeName="searchInput" placeholder="Recherche par nom ou licence…" />
+          <AutoComplete
+            classeName="searchInput"
+            placeholder="Recherche par nom ou licence…"
+            value={assignedPractitionerLabel}
+            dataSource={practitionerOptionsLabels}
+            onSelect={practitionerOptionSelected}
+            onChange={practitionerSearchTermChanged}
+          />
         </Form.Item>
       </Form>
     </Card>
   </div>
 );
 
+const stringifyPractionerOption = po => `${po.family}, ${po.given} License No: ${po.license}`;
+const practitionerOptionFromResource = resource => ({
+  given: resource.name[0].given[0],
+  family: resource.name[0].family,
+  license: resource.identifier[0].value,
+});
+
 class PatientSubmissionScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       currentPageIndex: 0,
+      practitionerOptions: [],
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.isClinicalInformationComplete = this.isClinicalInformationComplete.bind(this);
+    this.handlePractitionerSearchTermChanged = this.handlePractitionerSearchTermChanged.bind(this);
+    this.handlePractitionerOptionSelected = this.handlePractitionerOptionSelected.bind(this);
   }
 
   getPatientData() {
@@ -362,10 +392,16 @@ class PatientSubmissionScreen extends React.Component {
       cghNote,
     } = values;
 
-    return [{
-      ...oldCGH,
-      ...createCGHResource({ interpretation: { value: cgh, display: cghDisplay(cgh) }, note: cghNote }),
-    }];
+    return [
+      createCGHResource({
+        id: cghId,
+        interpretation: {
+          value: cghInterpretationValue,
+          display: cghDisplay(cghInterpretationValue),
+        },
+        note: cghNote,
+      }),
+    ];
   }
 
   createIndicationResourceList() {
@@ -393,6 +429,7 @@ class PatientSubmissionScreen extends React.Component {
       if (err) { return; }
 
       const { actions, serviceRequest, clinicalImpression } = this.props;
+
       const patientData = this.getPatientData();
 
       const clinicalImpressionData = this.getClinicalImpressionData();
@@ -436,10 +473,74 @@ class PatientSubmissionScreen extends React.Component {
     return currentPageIndex === this.nbPages() - 1;
   }
 
+  isClinicalInformationComplete() {
+    const { clinicalImpression } = this.props;
+    const resources = clinicalImpression.investigation[0].item;
+    if (!resources.find(isCGH)) {
+      return false;
+    }
+    if (!resources.find(isHPO)) {
+      return false;
+    }
+    if (!resources.find(isHPO)) {
+      return false;
+    }
+    if (!resources.find(isIndication)) {
+      return false;
+    }
+    if (!resources.find(isFamilyHistoryResource)) {
+      return false;
+    }
+    return true;
+  }
+
+  handlePractitionerOptionSelected(value) {
+    const { actions } = this.props;
+    const { practitionerOptions } = this.state;
+    const option = practitionerOptions.find(o => stringifyPractionerOption(o) === value);
+
+    if (option) {
+      const resource = createPractitionerResource(option);
+      actions.assignServiceRequestPractitioner(resource);
+    }
+  }
+
+  handlePractitionerSearchTermChanged(term) {
+    const normalizedTerm = term.toLowerCase().trim();
+    const params = { given: normalizedTerm, family: normalizedTerm, license: normalizedTerm };
+    Api.searchPractitioners(params).then((response) => {
+      if (response.payload) {
+        const { data } = response.payload;
+
+        // TODO this function is mocking a result. Please replace when data becomes accessible in FHIR
+        // eslint-disable-next-line no-unused-vars
+        const extractPractionerOptions = d => [
+          {
+            family: 'Francis', given: 'Renaud', license: '00000', id: '1393',
+          },
+        ];
+
+        const options = extractPractionerOptions(data);
+
+        this.setState({
+          practitionerOptions: options,
+        });
+      }
+    });
+  }
+
   render() {
     const { form, actions } = this.props;
     const { getFieldDecorator } = form;
-    const { patient, clinicalImpression } = this.props;
+    const { patient, clinicalImpression, serviceRequest } = this.props;
+    const { practitionerOptions, currentPageIndex } = this.state;
+
+    const assignedPractitioner = serviceRequest ? serviceRequest.requester : null;
+    const assignedPractitionerLabel = assignedPractitioner && has(assignedPractitioner, 'resourceType')
+      ? stringifyPractionerOption(practitionerOptionFromResource(assignedPractitioner))
+      : '';
+
+    const practitionerOptionsLabels = practitionerOptions.map(stringifyPractionerOption);
 
     this.pages = [
       {
@@ -449,6 +550,7 @@ class PatientSubmissionScreen extends React.Component {
         ),
         name: 'PatientInformation',
         values: {},
+        isComplete: () => true,
       },
       {
         title: intl.get('screen.clinicalSubmission.clinicalInformation'),
@@ -457,18 +559,25 @@ class PatientSubmissionScreen extends React.Component {
         ),
         name: 'ClinicalInformation',
         values: {},
+        isComplete: this.isClinicalInformationComplete(),
       },
       {
         title: intl.get('screen.clinicalSubmission.approval'),
         content: (
-          <Approval parentForm={this} getFieldDecorator={getFieldDecorator} />
+          <Approval
+            parentForm={this}
+            getFieldDecorator={getFieldDecorator}
+            practitionerOptionsLabels={practitionerOptionsLabels}
+            practitionerOptionSelected={this.handlePractitionerOptionSelected}
+            practitionerSearchTermChanged={this.handlePractitionerSearchTermChanged}
+            assignedPractitionerLabel={assignedPractitionerLabel}
+          />
         ),
         name: 'Approval',
         values: {},
       },
     ];
 
-    const { currentPageIndex } = this.state;
     const currentPage = this.pages[currentPageIndex];
     const pageContent = currentPage.content;
 
@@ -532,12 +641,14 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientSearchScreen,
     savePatientSubmission,
+    assignServiceRequestPractitioner,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
   app: state.app,
   router: state.router,
+  serviceRequest: state.patientSubmission.serviceRequest,
   patient: state.patientSubmission.patient,
   clinicalImpression: state.patientSubmission.clinicalImpression,
   search: state.search,

@@ -1,6 +1,8 @@
 import uuidv1 from 'uuid/v1';
 import intl from 'react-intl-universal';
 
+import { has } from 'lodash';
+
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
 const OBSERVATION_INDICATION_CODE = 'INDIC';
@@ -11,8 +13,12 @@ const RESOURCE_TYPE_PATIENT = 'Patient';
 const RESOURCE_TYPE_BUNDLE = 'Bundle';
 const RESOURCE_TYPE_SERVICE_REQUEST = 'ServiceRequest';
 const RESOURCE_TYPE_OBSERVATION = 'Observation';
+const RESOURCE_TYPE_PRACTITIONER = 'Practitioner';
+
 
 const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
+
+const HL7_CODE_SYSTEM_URL = '';
 
 export const getResourceCode = (r) => {
   try {
@@ -144,6 +150,41 @@ const createServiceRequestResource = serviceRequest => ({
   resourceType: RESOURCE_TYPE_SERVICE_REQUEST,
   id: serviceRequest ? serviceRequest.id : null,
   status: serviceRequest ? serviceRequest.status : 'draft',
+  meta: {
+    profile: [
+      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-service-request`,
+    ],
+  },
+  extension: [
+    {
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression',
+      valueReference: {
+        reference: 'ClinicalImpression/ci-001',
+      },
+    },
+  ],
+  intent: 'order',
+  category: [
+    {
+      text: 'MedicalRequest',
+    },
+  ],
+  priority: 'routine',
+  code: {
+    coding: [
+      {
+        system: `${FERLAB_BASE_URL}/CodeSystem/service-request-code`,
+        code: 'WGS',
+        display: 'Whole Genome Sequencing',
+      },
+    ],
+  },
+  subject: {
+    reference: 'Patient/pt-001',
+  },
+  requester: {
+    reference: 'Practitioner/pr-001',
+  },
 });
 
 export const createClinicalImpressionResource = ({
@@ -202,7 +243,7 @@ export const createCGHResource = ({
     {
       coding: [
         {
-          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
           code: 'laboratory',
           display: 'Laboratory',
         },
@@ -245,7 +286,7 @@ export const createIndicationResource = ({ id, note }) => ({
     {
       coding: [
         {
-          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
           code: 'exam',
           display: 'Exam',
         },
@@ -268,7 +309,60 @@ export const createIndicationResource = ({ id, note }) => ({
   ],
 });
 
-export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinicalImpression }) => {
+export const createPractitionerResource = ({
+  id,
+  family,
+  given,
+  license,
+}) => (
+  {
+    id,
+    resourceType: RESOURCE_TYPE_PRACTITIONER,
+    meta: {
+      profile: [
+        'http://hl7.org/fhir/StructureDefinition/Practitioner',
+      ],
+    },
+    identifier: [
+      {
+        use: 'official',
+        type: {
+          coding: [
+            {
+              system: `${HL7_CODE_SYSTEM_URL}/v2-0203`,
+              code: 'MD',
+              display: 'Medical License number',
+            },
+          ],
+          text: 'Numero de License Médicale du Québec',
+        },
+        value: license,
+      },
+    ],
+    name: [
+      {
+        use: 'official',
+        family,
+        given: [
+          given,
+        ],
+        prefix: [
+          'Dr.',
+        ],
+      },
+    ],
+  }
+);
+
+// TODO: Observations, Family relationships and Practitioner have been converted to resources already in the PatientSubmission form.
+// patient, serviceRequest and clinicalImpression are not converted to FHIR resources yet at this point.
+// They're converted in this method for now but this should be done in the patientSubmission form so that this method only has to create
+// the FHIR bundle and set references right.
+export const createPatientSubmissionBundle = ({
+  patient,
+  serviceRequest,
+  clinicalImpression,
+}) => {
   const patientResource = createPatientResource(patient);
   const patientEntry = createEntry(patientResource);
   const patientReference = getReference(patientEntry);
@@ -278,9 +372,17 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
 
   const serviceRequestResource = createServiceRequestResource(serviceRequest);
   serviceRequestResource.subject = patientReference;
-  const servicerequestEntry = createEntry(serviceRequestResource);
 
-  bundle.entry.push(servicerequestEntry);
+  // We don't need to send a resource of type Practitioner
+  // We only need tocreate the reference
+  if (serviceRequest && has(serviceRequest, 'requester.resourceType')) {
+    const practitionerEntry = createEntry(serviceRequest.requester);
+    const practitionerReference = getReference(practitionerEntry);
+    serviceRequestResource.requester = practitionerReference;
+  }
+
+  const serviceRequestEntry = createEntry(serviceRequestResource);
+  bundle.entry.push(serviceRequestEntry);
 
   if (clinicalImpression) {
     const {
@@ -312,7 +414,8 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
     clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
     clinicalImpression.investigation[0].item.forEach((resource) => {
       // Note: this is an exception in the model. All resources should use the same field: subject
-      // Or, familyHistory resources should be stored somewhere else than with observations as it is not of the same kind (resourceType)
+      // Or, familyHistory resources should be stored somewhere else than with observations as
+      // it is not of the same kind (resourceType)
       if (isFamilyHistoryResource(resource)) {
         resource.patient = patientReference;
       } else {
@@ -325,6 +428,9 @@ export const createPatientSubmissionBundle = ({ patient, serviceRequest, clinica
         clinicalImpressionResource.investigation[0].item.push(getReference(entry));
       }
     });
+
+    // reference from ServiceRequest to ClinicalImpression resource
+    serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
   }
 
   return bundle;
@@ -420,7 +526,7 @@ export const createHPOResource = ({
     {
       coding: [
         {
-          system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
           code: 'exam',
           display: 'Exam',
         },
@@ -448,7 +554,7 @@ export const createHPOResource = ({
     {
       coding: [
         {
-          system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
+          system: `${HL7_CODE_SYSTEM_URL}/v3-ObservationInterpretation`,
           ...interpretation,
         },
       ],
