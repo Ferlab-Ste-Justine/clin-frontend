@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
@@ -355,8 +354,7 @@ class ClinicalInformation extends React.Component {
   }
 
   deleteFamilyHistory({ code, id }) {
-    const { actions, clinicalImpression } = this.props;
-    const familymemberResource = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource);
+    const { actions } = this.props;
 
     actions.setFamilyRelationshipResourceDeletionFlag({ code, id, toDelete: true });
   }
@@ -392,15 +390,6 @@ class ClinicalInformation extends React.Component {
 
     const checkedNodes = info.checkedNodes.map(n => ({ code: n.key, display: n.props.title }));
     const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO);
-    const hpoResourcesCodes = hpoResources.map(getHPOCode);
-
-    // If some resources are not in the list of checked nodes,
-    // and have corresponding loaded tree nodes, mark them for deletion.
-    // const uncheckedResources = difference(hpoResourcesCodes, checkedNodes)
-    //   .filter(ucr => includes(Object.keys(this.loadedHpoTreeNodes), ucr))
-    //   .forEach((k) => {
-    //     actions.setHpoResourceDeletionFlag({ code: k, toDelete: true });
-    //   });
 
     // If in resources: make sure it is not marked as toDelete
     const nodesPresent = checkedNodes
@@ -484,7 +473,7 @@ render() {
             rules: [],
           })(
             <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-              {Object.values(relationshipPossibleValues).map((rv, i) => (
+              {Object.values(relationshipPossibleValues).map(rv => (
                 <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
               ))}
             </Select>,
