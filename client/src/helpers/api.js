@@ -136,31 +136,36 @@ const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
   .then(successCallback)
   .catch(errorCallback);
 
-const savePatientSubmission = (patientSubmission) => {
+const savePatientSubmission = async (patientSubmission) => {
   const data = createPatientSubmissionBundle(patientSubmission);
   return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
 };
 
-const updatePatientSubmission = (patient, serviceRequest) => {
+const updatePatientSubmission = async (patient, serviceRequest) => {
   const data = createPatientSubmissionBundle(patient, serviceRequest);
   return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
     .then(successCallback)
     .catch(errorCallback);
 };
 
-const searchHpos = (term) => {
-  console.log();
+const searchHpos = async (term) => {
   const url = `${window.CLIN.hpoBaseUrl}/autocomplete?prefix=${term}`;
   return Http.secureClinAxios.get(url)
     .then(successCallback)
     .catch(errorCallback);
 };
 
-const searchHpoChildren = (hpoCode) => {
-  console.log();
+const searchHpoChildren = async (hpoCode) => {
   const url = `${window.CLIN.hpoBaseUrl}/descendants?parentHpoId=${hpoCode}`;
+  return Http.secureClinAxios.get(url)
+    .then(successCallback)
+    .catch(errorCallback);
+};
+
+const searchPractitioners = async ({ given, family }) => {
+  const url = `${window.CLIN.fhirBaseUrl}/Practitioner?family=${family}&given=${given}&_pretty=true`;
   return Http.secureClinAxios.get(url)
     .then(successCallback)
     .catch(errorCallback);
@@ -172,6 +177,7 @@ export default {
   getPatientById,
   getPatientsByAutoComplete,
   searchPatients,
+  searchPractitioners,
   getVariantDetails,
   getVariantSchema,
   searchVariantsForPatient,

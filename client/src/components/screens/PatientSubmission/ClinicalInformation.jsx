@@ -48,7 +48,6 @@ import {
   addFamilyHistoryResource,
 } from '../../../actions/patientSubmission';
 
-// eslint-disable-next-line no-unused-vars
 import Api from '../../../helpers/api';
 
 const hpoOnsetValues = [
@@ -502,8 +501,6 @@ render() {
       </div>
     )));
 
-  const selectedPhenotype = ['coucou'];
-
   let cghInterpretationValue;
   let cghNoteValue;
   let cghResource = {};
@@ -612,7 +609,7 @@ render() {
           </div>
           <div className="cardSeparator">
             {
-                selectedPhenotype.length === 0
+                hpoResources.length === 0
                   ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
                   : hpoResources.map((hpoResource, hpoIndex) => phenotype({
                     hpoResource,

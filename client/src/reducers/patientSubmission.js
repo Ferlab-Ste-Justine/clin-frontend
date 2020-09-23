@@ -53,6 +53,12 @@ const patientSubmissionReducer = (
           ],
       };
       break;
+    case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
+      draft.serviceRequest = {
+        ...draft.serviceRequest,
+        requester: action.payload,
+      };
+      break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
       draft.clinicalImpression = {
         ...draft.clinicalImpression,
