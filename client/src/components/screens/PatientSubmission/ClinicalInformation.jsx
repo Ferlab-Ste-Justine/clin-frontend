@@ -317,35 +317,37 @@ class ClinicalInformation extends React.Component {
     this.hpoSelected = this.hpoSelected.bind(this);
   }
 
-  onLoadHpoChildren = treeNode => new Promise((resolve) => {
-    const { treeData } = this.state;
-    const { dataRef } = treeNode.props;
-    const { key } = dataRef;
+  onLoadHpoChildren(treeNode) {
+    return new Promise((resolve) => {
+      const { treeData } = this.state;
+      const { dataRef } = treeNode.props;
+      const { key } = dataRef;
 
-    if (treeNode.props.children) {
-      resolve();
-      return;
-    }
-
-    Api.searchHpoChildren(key).then((response) => {
-      if (response.payload) {
-        const { data } = response.payload.data;
-        const { hits } = data;
-        const results = map(hits, '_source')
-          .map(r => ({ title: r.name, key: r.id, checkable: true }))
-          .map(r => ({ ...r, checked: true }));
-
-        treeNode.props.dataRef.children = results;
-
-        results.forEach((r) => { this.loadedHpoTreeNodes[r.key] = true; });
-
-        this.setState({
-          treeData: [...treeData],
-        });
+      if (treeNode.props.children) {
         resolve();
+        return;
       }
+
+      Api.searchHpoChildren(key).then((response) => {
+        if (response.payload) {
+          const { data } = response.payload.data;
+          const { hits } = data;
+          const results = map(hits, '_source')
+            .map(r => ({ title: r.name, key: r.id, checkable: true }))
+            .map(r => ({ ...r, checked: true }));
+
+          treeNode.props.dataRef.children = results;
+
+          results.forEach((r) => { this.loadedHpoTreeNodes[r.key] = true; });
+
+          this.setState({
+            treeData: [...treeData],
+          });
+          resolve();
+        }
+      });
     });
-  });
+  }
 
   addFamilyHistory() {
     const familyHistoryResource = createFamilyHistoryMemberResource({ code: '', node: '', display: '' });
@@ -416,133 +418,135 @@ class ClinicalInformation extends React.Component {
     actions.setHpoResourceDeletionFlag({ code: hpoId, toDelete: true });
   }
 
-renderTreeNodes = data => data.map((item) => {
-  const { TreeNode } = Tree;
-  if (item.children) {
+  renderTreeNodes(data) {
+    return data.map((item) => {
+      const { TreeNode } = Tree;
+      if (item.children) {
+        return (
+          <TreeNode title={item.title} key={item.key} dataRef={item}>
+            {this.renderTreeNodes(item.children)}
+          </TreeNode>
+        );
+      }
+      return <TreeNode key={item.key} {...item} dataRef={item} />;
+    });
+  }
+
+  render() {
+    const { hpoOptions, treeData } = this.state;
+
+    const hpoOptionsLabels = map(hpoOptions, 'name');
+    const { form, clinicalImpression } = this.props;
+    const { getFieldDecorator, getFieldValue } = form;
+
+    const { TextArea } = Input;
+
+    const relationshipPossibleValues = getFamilyRelationshipValues();
+    const familyHistoryResources = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource) || [];
+    const familyItems = familyHistoryResources.map((resource, index) => (resource.toDelete
+      ? <FamilyRelationshipHiddenFields getFieldDecorator={getFieldDecorator} index={index} resource={resource} />
+      : (
+        <div className="familyLine">
+          {getFieldDecorator(`familyRelationshipIds[${index}]`, {
+            rules: [],
+            initialValue: getResourceId(resource) || '',
+          })(
+            <Input size="small" type="hidden" />,
+          )}
+
+          {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
+            rules: [],
+            initialValue: resource.toDelete,
+          })(
+            <Input size="small" type="hidden" />,
+          )}
+
+          <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
+            {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
+              validateTrigger: ['onChange', 'onBlur'],
+              initialValue: getFamilyRelationshipNote(resource),
+              rules: [],
+            })(
+              <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+            )}
+          </Form.Item>
+          <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
+            {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
+              validateTrigger: ['onChange', 'onBlur'],
+              initialValue: getFamilyRelationshipCode(resource),
+              rules: [],
+            })(
+              <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
+                {Object.values(relationshipPossibleValues).map(rv => (
+                  <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
+                ))}
+              </Select>,
+            )}
+          </Form.Item>
+          <Button
+            className="delButton"
+            disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`))}
+            shape="round"
+            onClick={() => this.deleteFamilyHistory({ code: getFamilyRelationshipCode(resource), id: getResourceId(resource) })}
+          >
+            <IconKit size={20} icon={ic_remove} />
+          </Button>
+        </div>
+      )));
+
+    let cghInterpretationValue;
+    let cghNoteValue;
+    let cghResource = {};
+    let cghId = null;
+    if (clinicalImpression) {
+      cghResource = clinicalImpression.investigation[0].item.find(isCGH) || {};
+      cghId = cghResource.id;
+      cghInterpretationValue = getCGHInterpretationCode(cghResource);
+      cghNoteValue = cghNote(cghResource);
+    }
+
+    let indicationNoteValue;
+    let indicationResource;
+    if (clinicalImpression) {
+      indicationResource = clinicalImpression.investigation[0].item.find(isIndication) || {};
+      indicationNoteValue = getIndicationNote(indicationResource);
+    }
+
+    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
+    const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
+
     return (
-      <TreeNode title={item.title} key={item.key} dataRef={item}>
-        {this.renderTreeNodes(item.children)}
-      </TreeNode>
-    );
-  }
-  return <TreeNode key={item.key} {...item} dataRef={item} />;
-});
-
-render() {
-  const { hpoOptions, treeData } = this.state;
-
-  const hpoOptionsLabels = map(hpoOptions, 'name');
-  const { form, clinicalImpression } = this.props;
-  const { getFieldDecorator, getFieldValue } = form;
-
-  const { TextArea } = Input;
-
-  const relationshipPossibleValues = getFamilyRelationshipValues();
-  const familyHistoryResources = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource) || [];
-  const familyItems = familyHistoryResources.map((resource, index) => (resource.toDelete
-    ? <FamilyRelationshipHiddenFields getFieldDecorator={getFieldDecorator} index={index} resource={resource} />
-    : (
-      <div className="familyLine">
-        {getFieldDecorator(`familyRelationshipIds[${index}]`, {
-          rules: [],
-          initialValue: getResourceId(resource) || '',
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
-          rules: [],
-          initialValue: resource.toDelete,
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
-          {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            initialValue: getFamilyRelationshipNote(resource),
+      <div>
+        <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
+          {getFieldDecorator('cghId', {
             rules: [],
+            initialValue: cghId,
           })(
-            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input size="small" type="hidden" />,
           )}
-        </Form.Item>
-        <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
-          {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            initialValue: getFamilyRelationshipCode(resource),
-            rules: [],
-          })(
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-              {Object.values(relationshipPossibleValues).map(rv => (
-                <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
-              ))}
-            </Select>,
-          )}
-        </Form.Item>
-        <Button
-          className="delButton"
-          disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`))}
-          shape="round"
-          onClick={() => this.deleteFamilyHistory({ code: getFamilyRelationshipCode(resource), id: getResourceId(resource) })}
-        >
-          <IconKit size={20} icon={ic_remove} />
-        </Button>
-      </div>
-    )));
 
-  let cghInterpretationValue;
-  let cghNoteValue;
-  let cghResource = {};
-  let cghId = null;
-  if (clinicalImpression) {
-    cghResource = clinicalImpression.investigation[0].item.find(isCGH) || {};
-    cghId = cghResource.id;
-    cghInterpretationValue = getCGHInterpretationCode(cghResource);
-    cghNoteValue = cghNote(cghResource);
-  }
-
-  let indicationNoteValue;
-  let indicationResource;
-  if (clinicalImpression) {
-    indicationResource = clinicalImpression.investigation[0].item.find(isIndication) || {};
-    indicationNoteValue = getIndicationNote(indicationResource);
-  }
-
-  const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
-  const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
-
-  return (
-    <div>
-      <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
-        {getFieldDecorator('cghId', {
-          rules: [],
-          initialValue: cghId,
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        <Form.Item label="Type d’analyse">
-          <Radio.Group buttonStyle="solid">
-            <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
-            <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
-            <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-      </Card>
-      <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
-        <Form.Item label="CGH">
-          {getFieldDecorator('cghInterpretationValue', {
-            rules: [],
-            initialValue: cghInterpretationValue,
-          })(
+          <Form.Item label="Type d’analyse">
             <Radio.Group buttonStyle="solid">
-              {CGH_VALUES().map((v, index) => (
-                <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
-              ))}
-            </Radio.Group>,
-          )}
-        </Form.Item>
-        {
+              <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
+              <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
+              <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        </Card>
+        <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
+          <Form.Item label="CGH">
+            {getFieldDecorator('cghInterpretationValue', {
+              rules: [],
+              initialValue: cghInterpretationValue,
+            })(
+              <Radio.Group buttonStyle="solid">
+                {CGH_VALUES().map((v, index) => (
+                  <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
+                ))}
+              </Radio.Group>,
+            )}
+          </Form.Item>
+          {
             (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
             && (
             <Form.Item label="Précision">
@@ -556,48 +560,48 @@ render() {
             )
           }
 
-        <Form.Item label="Résumé">
-          <TextArea className="input note" rows={4} />
-          <span className="optional">Facultatif</span>
-        </Form.Item>
-      </Card>
-      <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
-        <div className="familyLines">
-          {familyItems}
-        </div>
-        <Form.Item>
-          {/* <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}> */}
-          <Button className="addFamilyButton" disabled={false} onClick={this.addFamilyHistory}>
-            <IconKit size={14} icon={ic_add} />
-                Ajouter
-          </Button>
-        </Form.Item>
-      </Card>
-      <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
-        <div className="separator">
-          <div className="cardSeparator">
-            <Form.Item className="searchInput searchInputFull">
-              <AutoComplete
-                classeName="searchInput"
-                placeholder="Chercher un signe clinique ..."
-                dataSource={hpoOptionsLabels}
-                onSelect={this.handleHpoOptionSelected}
-                onChange={this.handleHpoSearchTermChanged}
-              />
-
-            </Form.Item>
-            <Tree
-              loadData={this.onLoadHpoChildren}
-              checkStrictly
-              checkable
-              checkedKeys={hpoCodes}
-              onCheck={this.handleHpoNodesChecked}
-            >
-              {this.renderTreeNodes(treeData)}
-            </Tree>
+          <Form.Item label="Résumé">
+            <TextArea className="input note" rows={4} />
+            <span className="optional">Facultatif</span>
+          </Form.Item>
+        </Card>
+        <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
+          <div className="familyLines">
+            {familyItems}
           </div>
-          <div className="cardSeparator">
-            {
+          <Form.Item>
+            {/* <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}> */}
+            <Button className="addFamilyButton" disabled={false} onClick={this.addFamilyHistory}>
+              <IconKit size={14} icon={ic_add} />
+                Ajouter
+            </Button>
+          </Form.Item>
+        </Card>
+        <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
+          <div className="separator">
+            <div className="cardSeparator">
+              <Form.Item className="searchInput searchInputFull">
+                <AutoComplete
+                  classeName="searchInput"
+                  placeholder="Chercher un signe clinique ..."
+                  dataSource={hpoOptionsLabels}
+                  onSelect={this.handleHpoOptionSelected}
+                  onChange={this.handleHpoSearchTermChanged}
+                />
+
+              </Form.Item>
+              <Tree
+                loadData={this.onLoadHpoChildren}
+                checkStrictly
+                checkable
+                checkedKeys={hpoCodes}
+                onCheck={this.handleHpoNodesChecked}
+              >
+                {this.renderTreeNodes(treeData)}
+              </Tree>
+            </div>
+            <div className="cardSeparator">
+              {
                 hpoResources.length === 0
                   ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
                   : hpoResources.map((hpoResource, hpoIndex) => phenotype({
@@ -607,30 +611,30 @@ render() {
                     deleteHpo: this.handleHpoDeleted,
                   }))
               }
+            </div>
           </div>
-        </div>
 
-      </Card>
-      <Card title="Indications" bordered={false} className="staticCard patientContent">
-        {getFieldDecorator('indicationId', {
-          rules: [],
-          initialValue: getIndicationId(indicationResource) || '',
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        <Form.Item label="Hypothèse(s) de diagnostic">
-          {getFieldDecorator('indication', {
+        </Card>
+        <Card title="Indications" bordered={false} className="staticCard patientContent">
+          {getFieldDecorator('indicationId', {
             rules: [],
-            initialValue: indicationNoteValue,
+            initialValue: getIndicationId(indicationResource) || '',
           })(
-            <TextArea className="input note" rows={4} />,
+            <Input size="small" type="hidden" />,
           )}
-        </Form.Item>
-      </Card>
-    </div>
-  );
-}
+
+          <Form.Item label="Hypothèse(s) de diagnostic">
+            {getFieldDecorator('indication', {
+              rules: [],
+              initialValue: indicationNoteValue,
+            })(
+              <TextArea className="input note" rows={4} />,
+            )}
+          </Form.Item>
+        </Card>
+      </div>
+    );
+  }
 }
 
 const mapDispatchToProps = dispatch => ({
