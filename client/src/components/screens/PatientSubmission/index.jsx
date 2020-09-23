@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
 /* eslint-disable import/named */
@@ -512,7 +511,8 @@ class PatientSubmissionScreen extends React.Component {
       if (response.payload) {
         const { data } = response.payload;
 
-        // TODO this function is mocking a result. Please replace when data becomes accessible in FHIR
+        // TODO this function is mocking a result.
+        // Please replace when data becomes accessible in FHIR
         // eslint-disable-next-line no-unused-vars
         const extractPractionerOptions = d => [
           {
