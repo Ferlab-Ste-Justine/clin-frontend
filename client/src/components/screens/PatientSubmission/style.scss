@@ -225,6 +225,9 @@
             gap: 0px 24px;
             grid-template-areas: ". .";
     }
+    .phenotypeBlock:not(:first-child){
+        padding-top:24px;
+    }
     .phenotypeFirstLine{
         display: flex;
         .ant-form-item{

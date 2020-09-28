@@ -20,7 +20,19 @@ export const initialPatientSubmissionState = {
   clinicalImpression: {
     investigation: [
       {
-        item: [],
+        item: [
+          {
+            resourceType: 'FamilyMemberHistory',
+            relationship: {
+              coding: [
+                {
+                  code: '',
+                  display: '',
+                }],
+            },
+            note: [
+              {}],
+          }],
       },
     ],
   },
