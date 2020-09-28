@@ -3,6 +3,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import uuidv1 from 'uuid/v1';
 import {
   Card, Form, Input, Button, Radio, Tree, Select, AutoComplete,
 } from 'antd';
@@ -307,7 +308,7 @@ class ClinicalInformation extends React.Component {
 
     const { treeData } = this.state;
     this.loadedHpoTreeNodes = treeData.reduce((acc, value) => { acc[value.key] = true; return acc; }, {});
-
+    this.onLoadHpoChildren = this.onLoadHpoChildren.bind(this);
     this.addFamilyHistory = this.addFamilyHistory.bind(this);
     this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
     this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
@@ -444,7 +445,7 @@ class ClinicalInformation extends React.Component {
     const relationshipPossibleValues = getFamilyRelationshipValues();
     const familyHistoryResources = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource) || [];
     const familyItems = familyHistoryResources.map((resource, index) => (resource.toDelete
-      ? <FamilyRelationshipHiddenFields getFieldDecorator={getFieldDecorator} index={index} resource={resource} />
+      ? <FamilyRelationshipHiddenFields getFieldDecorator={getFieldDecorator} index={index} resource={resource} key={uuidv1()} />
       : (
         <div className="familyLine">
           {getFieldDecorator(`familyRelationshipIds[${index}]`, {
@@ -485,7 +486,7 @@ class ClinicalInformation extends React.Component {
           </Form.Item>
           <Button
             className="delButton"
-            disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`))}
+            disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
             shape="round"
             onClick={() => this.deleteFamilyHistory({ code: getFamilyRelationshipCode(resource), id: getResourceId(resource) })}
           >

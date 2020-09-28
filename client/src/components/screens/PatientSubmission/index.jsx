@@ -241,6 +241,7 @@ class PatientSubmissionScreen extends React.Component {
     this.isClinicalInformationComplete = this.isClinicalInformationComplete.bind(this);
     this.handlePractitionerSearchTermChanged = this.handlePractitionerSearchTermChanged.bind(this);
     this.handlePractitionerOptionSelected = this.handlePractitionerOptionSelected.bind(this);
+    this.canGoToPage2 = this.canGoToPage2.bind(this);
   }
 
   getPatientData() {
@@ -313,6 +314,15 @@ class PatientSubmissionScreen extends React.Component {
     }
 
     return clinicalImpressionData;
+  }
+
+  canGoToPage2() {
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+    if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
+      return false;
+    }
+    return true;
   }
 
   createFamilyRelationshipResourceList() {
@@ -597,7 +607,7 @@ class PatientSubmissionScreen extends React.Component {
             <div className="submission-form-actions">
               {
                 currentPageIndex !== this.pages.length - 1 && (
-                  <Button type="primary" onClick={() => this.next()} disabled={this.isLastPage()}>
+                  <Button type="primary" onClick={() => this.next()} disabled={this.canGoToPage2()}>
                     {intl.get('screen.clinicalSubmission.nextButtonTitle')}
                   </Button>
                 )
