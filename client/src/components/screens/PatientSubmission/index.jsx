@@ -397,7 +397,8 @@ class PatientSubmissionScreen extends React.Component {
     }
 
     const {
-      cgh,
+      cghId,
+      cghInterpretationValue,
       cghNote,
     } = values;
 

@@ -34,7 +34,6 @@ import {
   getResourceId,
   getHPOCode,
   getHPODisplay,
-  getHPONote,
   getHPOOnsetCode,
   getHPOInterpretationCode,
   hpoInterpretationValues,
@@ -50,96 +49,6 @@ import {
 
 import Api from '../../../helpers/api';
 
-const hpoOnsetValues = [
-  {
-    groupLabel: 'Pediatric onset',
-    options: [
-      {
-        value: 'Juvenile onset',
-        display: 'Juvenile',
-      },
-      {
-        value: 'Childhood onset',
-        display: 'Childhood',
-      },
-      {
-        value: 'Infantile onset',
-        display: 'Infantile',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Adult onset',
-    options: [
-      {
-        value: 'YoungAdult onset',
-        display: 'Young adult',
-      },
-      {
-        value: 'MiddleAge onset',
-        display: 'Middle age',
-      },
-      {
-        value: 'Late onset',
-        display: 'Late',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Antenatal onset',
-    options: [
-      {
-        value: 'Embryonal onset',
-        display: 'Embryonal',
-      },
-      {
-        value: 'Fetal onset',
-        display: 'Fetal',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Neonatal onset',
-    options: [
-      {
-        value: 'Neonatal onset',
-        display: 'Neonatal',
-      },
-    ],
-  },
-  {
-    groupLabel: 'Congenital onset',
-    options: [
-      {
-        value: 'Congenital onset',
-        display: 'Congenital',
-      },
-    ],
-  },
-];
-
-const hpoInterpretationValues = () => {
-  console.log();
-  return [
-    {
-      iconClass: 'observedIcon',
-      icon: ic_visibility,
-      value: 'O',
-      display: 'Observé',
-    },
-    {
-      iconClass: 'notObservedIcon',
-      icon: ic_visibility_off,
-      value: 'NO',
-      display: 'Non-observé',
-    },
-    {
-      iconClass: 'unknownIcon',
-      icon: ic_help,
-      value: 'I',
-      display: 'Inconnu',
-    },
-  ];
 const interpretationIcon = {
   O: ic_visibility,
   NO: ic_visibility_off,
