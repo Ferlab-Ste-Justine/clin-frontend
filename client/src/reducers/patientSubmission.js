@@ -6,6 +6,7 @@ import * as actions from '../actions/type';
 
 import { getHPOCode, getFamilyRelationshipCode } from '../helpers/fhir/fhir';
 
+// @TODO change item values
 export const initialPatientSubmissionState = {
   patient: {
     name: [
