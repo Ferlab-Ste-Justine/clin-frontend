@@ -320,7 +320,7 @@ class ClinicalInformation extends React.Component {
     const { hpoOptions } = this.state;
     const option = hpoOptions.find(h => h.name === value);
 
-    this.hpoSelected({ code: option.key, display: option.title });
+    this.hpoSelected({ code: option.key, display: option.name });
   }
 
   handleHpoDeleted(hpoId) {
