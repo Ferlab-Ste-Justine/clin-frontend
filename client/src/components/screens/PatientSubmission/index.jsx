@@ -10,7 +10,7 @@ import {
   Steps, Card, Form, Input, Button, Radio, DatePicker, Select, Checkbox, Row, AutoComplete,
 } from 'antd';
 import {
-  has,
+  has, find,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
@@ -61,6 +61,24 @@ const mrnValue = (patient) => {
   const { identifier } = patient;
   if (identifier && identifier.length) {
     return identifier[0].value;
+  }
+
+  return '';
+};
+
+const ethnicityValue = (patient) => {
+  const { extension } = patient;
+  if (find(extension, o => o.url.includes('qc-ethnicity') && o.valueCoding.code)) {
+    return find(extension, o => o.url.includes('qc-ethnicity')).valueCoding.code;
+  }
+
+  return undefined;
+};
+
+const consanguinityValue = (patient) => {
+  const { extension } = patient;
+  if (find(extension, o => o.url.includes('blood-relationship') && o.valueCoding.code)) {
+    return find(extension, o => o.url.includes('blood-relationship')).valueCoding.display;
   }
 
   return '';
@@ -147,31 +165,48 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         )}
       </Form.Item>
       <Form.Item label="Hôpital">
-        <Select defaultValue="CHUSJ" className="small" dropdownClassName="selectDropdown">
-          <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-          <Select.Option value="CHUM">CHUM</Select.Option>
-          <Select.Option value="CUSM">CUSM</Select.Option>
-        </Select>
+        {getFieldDecorator('organization', {
+          rules: [{ required: true, message: 'Please select the hospital!' }],
+          initialValue: has(patient, 'managingOrganization') ? patient.managingOrganization : 'CHUSJ',
+        })(
+          <Select className="small" dropdownClassName="selectDropdown">
+            <Select.Option value="CHUSJ">CHUSJ</Select.Option>
+            <Select.Option value="CHUM">CHUM</Select.Option>
+            <Select.Option value="CUSM">CUSM</Select.Option>
+          </Select>,
+        )}
       </Form.Item>
       <Form.Item label="Ethnicité">
-        <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
-          <Select.Option value="Canadien-Français">Canadien-Français</Select.Option>
-          <Select.Option value="Afro-Américaine">Afro-Américaine</Select.Option>
-          <Select.Option value="Caucasienne Européenne">Caucasienne Européenne</Select.Option>
-          <Select.Option value="Hispanique">Hispanique</Select.Option>
-          <Select.Option value="Asiatique">Asiatique</Select.Option>
-          <Select.Option value="Juive">Juive</Select.Option>
-          <Select.Option value="Amérindienne">Amérindienne</Select.Option>
-          <Select.Option value="Autre">Autre</Select.Option>
-        </Select>
+        {getFieldDecorator('ethnicity', {
+          rules: [{ required: false }],
+          initialValue: ethnicityValue(patient),
+        })(
+          <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
+            <Select.Option value="CA-FR">Canadien-Français</Select.Option>
+            <Select.Option value="EU">Caucasienne Européenne</Select.Option>
+            <Select.Option value="AFR">Africain ou caribéen</Select.Option>
+            <Select.Option value="LAT- AM">Hispanique</Select.Option>
+            <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
+            <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
+            <Select.Option value="ABOR">Aboriginal</Select.Option>
+            <Select.Option value="MIX">Origine mixte</Select.Option>
+            <Select.Option value="OTH">Autre</Select.Option>
+          </Select>,
+        )}
         <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label="Consanguinité">
-        <Radio.Group buttonStyle="solid">
-          <Radio.Button value="yes"><span className="radioText">Oui</span></Radio.Button>
-          <Radio.Button value="no"><span className="radioText">Non</span></Radio.Button>
-          <Radio.Button value="unknown"><span className="radioText">Inconnu</span></Radio.Button>
-        </Radio.Group>
+        {getFieldDecorator('consanguinity', {
+          rules: [{ required: false }],
+          initialValue: consanguinityValue(patient),
+        })(
+          <Radio.Group buttonStyle="solid">
+            <Radio.Button value="Yes"><span className="radioText">Oui</span></Radio.Button>
+            <Radio.Button value="No"><span className="radioText">Non</span></Radio.Button>
+            <Radio.Button value="Unknown"><span className="radioText">Inconnu</span></Radio.Button>
+          </Radio.Group>,
+        )}
+        <span className="optional">Facultatif</span>
       </Form.Item>
     </Card>
   );
@@ -249,6 +284,30 @@ class PatientSubmissionScreen extends React.Component {
     const { patient, form } = this.props;
     const values = form.getFieldsValue();
 
+    const getEthnicityDisplay = (ethnicity) => {
+      switch (ethnicity) {
+        case 'CA-FR':
+          return 'French Canadian';
+        case 'EU':
+          return 'European Caucasia';
+        case 'AFR':
+          return 'African or Carabean';
+        case 'LAT- AM':
+          return 'Hispanic and Latino Americans';
+        case 'ES-AS':
+          return 'East and Southeast Asian';
+        case 'SO-AS':
+          return 'South Asian';
+        case 'ABOR':
+          return 'Aboriginal';
+        case 'MIX':
+          return 'Mixted descent';
+        case 'OTH':
+          return 'Other ethnicity';
+        default:
+          return '';
+      }
+    };
     if (currentPageIndex === 0) {
       return {
         name: {
@@ -258,6 +317,25 @@ class PatientSubmissionScreen extends React.Component {
         birthDate: values.birthDate,
         gender: values.gender,
         id: patient.id,
+        managingOrganization: values.organization,
+        extension: [
+          {
+            url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity',
+            valueCoding: {
+              system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity',
+              code: values.ethnicity ? values.ethnicity : '',
+              display: getEthnicityDisplay(values.ethnicity),
+            },
+          },
+          {
+            url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship',
+            valueCoding: {
+              system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/blood-relationship',
+              code: values.consanguinity.charAt(0),
+              display: values.consanguinity,
+            },
+          },
+        ],
         identifier: [
           {
             type: {
