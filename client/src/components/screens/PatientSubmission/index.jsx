@@ -66,22 +66,16 @@ const mrnValue = (patient) => {
   return '';
 };
 
-const ethnicityValue = (patient) => {
+const getValueCoding = (patient, extensionName) => {
   const { extension } = patient;
-  if (find(extension, o => o.url.includes('qc-ethnicity') && o.valueCoding.code)) {
-    return find(extension, o => o.url.includes('qc-ethnicity')).valueCoding.code;
+  const extensionValue = find(extension, o => o.url.includes(extensionName) && o.valueCoding.code);
+  if (extensionValue) {
+    if (extensionName === 'qc-ethnicity') {
+      return extensionValue.valueCoding.code;
+    }
+    return extensionValue.valueCoding.display;
   }
-
   return undefined;
-};
-
-const consanguinityValue = (patient) => {
-  const { extension } = patient;
-  if (find(extension, o => o.url.includes('blood-relationship') && o.valueCoding.code)) {
-    return find(extension, o => o.url.includes('blood-relationship')).valueCoding.display;
-  }
-
-  return '';
 };
 
 const hasObservations = clinicalImpression => clinicalImpression.investigation[0].item.length > 0;
@@ -179,7 +173,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Ethnicité">
         {getFieldDecorator('ethnicity', {
           rules: [{ required: false }],
-          initialValue: ethnicityValue(patient),
+          initialValue: getValueCoding(patient, 'qc-ethnicity'),
         })(
           <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
             <Select.Option value="CA-FR">Canadien-Français</Select.Option>
@@ -198,10 +192,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Consanguinité">
         {getFieldDecorator('consanguinity', {
           rules: [{ required: false }],
-          initialValue: consanguinityValue(patient),
+          initialValue: getValueCoding(patient, 'blood-relationship'),
         })(
           <Radio.Group buttonStyle="solid">
-            <Radio.Button value="Yes"><span className="radioText">Oui</span></Radio.Button>
+            <Radio.Button value="Ye"><span className="radioText">Oui</span></Radio.Button>
             <Radio.Button value="No"><span className="radioText">Non</span></Radio.Button>
             <Radio.Button value="Unknown"><span className="radioText">Inconnu</span></Radio.Button>
           </Radio.Group>,
