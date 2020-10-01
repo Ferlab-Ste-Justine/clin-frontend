@@ -70,10 +70,7 @@ const getValueCoding = (patient, extensionName) => {
   const { extension } = patient;
   const extensionValue = find(extension, o => o.url.includes(extensionName) && o.valueCoding.code);
   if (extensionValue) {
-    if (extensionName === 'qc-ethnicity') {
-      return extensionValue.valueCoding.code;
-    }
-    return extensionValue.valueCoding.display;
+    return extensionValue.valueCoding;
   }
   return undefined;
 };
@@ -101,6 +98,8 @@ const getGenderValues = () => ({
 
 const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
+  const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
+  const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
   return (
     <Card title="Patient" bordered={false} className="staticCard patientContent">
       <Form.Item label="Nom">
@@ -173,7 +172,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Ethnicité">
         {getFieldDecorator('ethnicity', {
           rules: [{ required: false }],
-          initialValue: getValueCoding(patient, 'qc-ethnicity'),
+          initialValue: ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding,
         })(
           <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
             <Select.Option value="CA-FR">Canadien-Français</Select.Option>
@@ -192,7 +191,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Consanguinité">
         {getFieldDecorator('consanguinity', {
           rules: [{ required: false }],
-          initialValue: getValueCoding(patient, 'blood-relationship'),
+          initialValue: consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding,
         })(
           <Radio.Group buttonStyle="solid">
             <Radio.Button value="Ye"><span className="radioText">Oui</span></Radio.Button>
@@ -325,8 +324,8 @@ class PatientSubmissionScreen extends React.Component {
             url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship',
             valueCoding: {
               system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/blood-relationship',
-              code: values.consanguinity.charAt(0),
-              display: values.consanguinity,
+              code: values.consanguinity ? values.consanguinity.charAt(0) : '',
+              display: values.consanguinity ? values.consanguinity : '',
             },
           },
         ],
