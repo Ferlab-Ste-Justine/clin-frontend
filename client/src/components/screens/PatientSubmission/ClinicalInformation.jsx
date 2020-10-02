@@ -183,7 +183,7 @@ const phenotype = ({
         </div>
       </div>
       <div className="phenotypeSecondLine">
-        {/*  ToDo initalValue */}
+        {/*  TODO initalValue */}
         <Form.Item>
           {getFieldDecorator(`hpoNote[${hpoIndex}]`, {
             rules: [],
@@ -441,7 +441,7 @@ class ClinicalInformation extends React.Component {
             <Input size="small" type="hidden" />,
           )}
 
-          {/* ToDo initialValue */}
+          {/* TODO initialValue */}
           <Form.Item label="Type d’analyse">
             {getFieldDecorator('analyse', {
               rules: [],
@@ -468,7 +468,7 @@ class ClinicalInformation extends React.Component {
             )}
           </Form.Item>
           {
-            /* toDo initalValue */
+            /* TODO initalValue */
             (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
             && (
             <Form.Item label="Précision">
