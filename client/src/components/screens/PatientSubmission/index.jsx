@@ -45,6 +45,7 @@ import {
   createPractitionerResource,
   getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
+import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 
 const { Step } = Steps;
 
@@ -302,62 +303,15 @@ class PatientSubmissionScreen extends React.Component {
       }
     };
     if (currentPageIndex === 0) {
-      return {
-        name: {
-          family: values.family,
-          given: values.given,
-        },
-        birthDate: values.birthDate,
-        gender: values.gender,
+      const value = FhirDataManager.initializePatient({
+        ...values,
         id: patient.id,
-        managingOrganization: values.organization,
-        extension: [
-          {
-            url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity',
-            valueCoding: {
-              system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity',
-              code: values.ethnicity ? values.ethnicity : '',
-              display: getEthnicityDisplay(values.ethnicity),
-            },
-          },
-          {
-            url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship',
-            valueCoding: {
-              system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/blood-relationship',
-              code: values.consanguinity ? values.consanguinity.charAt(0) : '',
-              display: values.consanguinity ? values.consanguinity : '',
-            },
-          },
-        ],
-        identifier: [
-          {
-            type: {
-              coding: [
-                {
-                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                  code: 'MR',
-                  display: 'Medical record number',
-                },
-              ],
-              text: 'Numéro du dossier médical',
-            },
-            value: values.mrn,
-          },
-          {
-            type: {
-              coding: [
-                {
-                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                  code: 'JHN',
-                  display: 'Jurisdictional health number (Canada)',
-                },
-              ],
-              text: 'Numéro assurance maladie du Québec',
-            },
-            value: values.ramq,
-          },
-        ],
-      };
+        bloodRelationship: values.consanguinity,
+        ethnicityCode: values.ethnicity ? values.ethnicity : '',
+        ethnicityDisplay: getEthnicityDisplay(values.ethnicity),
+        active: false,
+      });
+      return value;
     }
 
     return { ...patient };
