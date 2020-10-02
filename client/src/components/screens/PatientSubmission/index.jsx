@@ -310,6 +310,7 @@ class PatientSubmissionScreen extends React.Component {
         ethnicityCode: values.ethnicity ? values.ethnicity : '',
         ethnicityDisplay: getEthnicityDisplay(values.ethnicity),
         active: false,
+        birthDate: new Date(values.birthDate.toDate()),
       });
       return value;
     }
