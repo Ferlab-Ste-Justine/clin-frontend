@@ -345,24 +345,16 @@ class PatientSubmissionScreen extends React.Component {
   canGoNextPage(currentPage) {
     const { form } = this.props;
     const values = form.getFieldsValue();
-    console.log('values', values);
     switch (currentPage) {
       case 0:
         if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
           return false;
         }
-        return false;
+        return true;
       case 1: {
         const checkIfEmptyValue = (array) => {
           if (array) {
-            const emptyValue = array.findIndex((element) => {
-              if (!element) {
-                return true;
-              }
-              return false;
-            });
-
-            if (emptyValue !== -1) {
+            if (array.findIndex(element => !element) !== -1) {
               return false;
             }
             return true;
