@@ -270,7 +270,7 @@ class PatientSubmissionScreen extends React.Component {
     this.isClinicalInformationComplete = this.isClinicalInformationComplete.bind(this);
     this.handlePractitionerSearchTermChanged = this.handlePractitionerSearchTermChanged.bind(this);
     this.handlePractitionerOptionSelected = this.handlePractitionerOptionSelected.bind(this);
-    this.canGoToPage2 = this.canGoToPage2.bind(this);
+    this.canGoNextPage = this.canGoNextPage.bind(this);
   }
 
   getPatientData() {
@@ -342,13 +342,62 @@ class PatientSubmissionScreen extends React.Component {
     return clinicalImpressionData;
   }
 
-  canGoToPage2() {
+  canGoNextPage(currentPage) {
     const { form } = this.props;
     const values = form.getFieldsValue();
-    if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
-      return false;
+    console.log('values', values);
+    switch (currentPage) {
+      case 0:
+        if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
+          return false;
+        }
+        return false;
+      case 1: {
+        const checkIfEmptyValue = (array) => {
+          if (array) {
+            const emptyValue = array.findIndex((element) => {
+              if (!element) {
+                return true;
+              }
+              return false;
+            });
+
+            if (emptyValue !== -1) {
+              return false;
+            }
+            return true;
+          }
+          return false;
+        };
+
+        const checkCghInterpretationValue = () => {
+          if (values.cghInterpretationValue) {
+            if (values.cghInterpretationValue !== 'A') {
+              return true;
+            }
+            if (values.cghPrecision !== null) {
+              return true;
+            }
+            return false;
+          }
+          return false;
+        };
+
+        if (values.cghInterpretationValue
+          && values.analyse
+          && checkIfEmptyValue(values.familyRelationshipNotes)
+          && checkIfEmptyValue(values.familyRelationshipCodes)
+          && checkCghInterpretationValue()
+          && checkIfEmptyValue(values.hpoCodes)
+          && checkIfEmptyValue(values.hpoOnset)
+          && values.indication) {
+          return false;
+        }
+        return true;
+      }
+      default:
+        return false;
     }
-    return true;
   }
 
   createFamilyRelationshipResourceList() {
@@ -617,7 +666,7 @@ class PatientSubmissionScreen extends React.Component {
 
     const currentPage = this.pages[currentPageIndex];
     const pageContent = currentPage.content;
-
+    const validation = this.canGoNextPage(currentPageIndex);
     return (
       <Content type="auto">
         <Header />
@@ -634,7 +683,7 @@ class PatientSubmissionScreen extends React.Component {
             <div className="submission-form-actions">
               {
                 currentPageIndex !== this.pages.length - 1 && (
-                  <Button type="primary" onClick={() => this.next()} disabled={this.canGoToPage2()}>
+                  <Button type="primary" onClick={() => this.next()} disabled={validation}>
                     {intl.get('screen.clinicalSubmission.nextButtonTitle')}
                   </Button>
                 )
