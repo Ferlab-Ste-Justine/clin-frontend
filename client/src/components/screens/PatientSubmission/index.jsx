@@ -32,7 +32,6 @@ import './style.scss';
 
 import {
   cghDisplay,
-  createCGHResource,
   getHPOOnsetDisplayFromCode,
   createIndicationResource,
   createHPOResource,
@@ -46,6 +45,7 @@ import {
   getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
+import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 
 const { Step } = Steps;
 
@@ -126,10 +126,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         })(
           <Radio.Group buttonStyle="solid">
             {
-              Object.values(genderValues).map(gv => (
-                <Radio.Button value={gv.value} key={`gender_${gv.value}`}><span className="radioText">{gv.label}</span></Radio.Button>
-              ))
-            }
+                            Object.values(genderValues).map(gv => (
+                              <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
+                                <span className="radioText">{gv.label}</span>
+                              </Radio.Button>
+                            ))
+                        }
           </Radio.Group>,
         )}
       </Form.Item>
@@ -143,7 +145,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="RAMQ">
         {getFieldDecorator('ramq', {
-          rules: [{ pattern: RegExp(/^[A-Z]{4}\d{8,9}$/), message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres' }],
+          rules: [{
+            pattern: RegExp(/^[A-Z]{4}\d{8,9}$/),
+            message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres',
+          }],
           initialValue: ramqValue(patient),
         })(
           <Input placeholder="ABCD 0000 0000" className="input large" />,
@@ -218,16 +223,24 @@ const Approval = ({
         <Form.Item label="Clauses signées" className="labelTop">
           <Checkbox.Group className="checkboxGroup">
             <Row>
-              <Checkbox className="checkbox" value="c1"><span className="checkboxText">Clause 1</span></Checkbox>
+              <Checkbox className="checkbox" value="c1">
+                <span className="checkboxText">Clause 1</span>
+              </Checkbox>
             </Row>
             <Row>
-              <Checkbox className="checkbox" value="c2"><span className="checkboxText">Clause 2</span></Checkbox>
+              <Checkbox className="checkbox" value="c2">
+                <span className="checkboxText">Clause 2</span>
+              </Checkbox>
             </Row>
             <Row>
-              <Checkbox className="checkbox" value="c3"><span className="checkboxText">Clause 3</span></Checkbox>
+              <Checkbox className="checkbox" value="c3">
+                <span className="checkboxText">Clause 3</span>
+              </Checkbox>
             </Row>
             <Row>
-              <Checkbox className="checkbox" value="c4"><span className="checkboxText">Clause 4</span></Checkbox>
+              <Checkbox className="checkbox" value="c4">
+                <span className="checkboxText">Clause 4</span>
+              </Checkbox>
             </Row>
           </Checkbox.Group>
         </Form.Item>
@@ -235,7 +248,9 @@ const Approval = ({
     </Card>
     <Card title="Approbation" bordered={false} className="staticCard patientContent">
       <Form>
-        <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
+        <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id
+                    ligula porta felis euismod semper.
+        </p>
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
           <AutoComplete
             classeName="searchInput"
@@ -428,15 +443,23 @@ class PatientSubmissionScreen extends React.Component {
       cghNote,
     } = values;
 
-    return [
-      createCGHResource({
-        id: cghId,
-        interpretation: {
-          value: cghInterpretationValue,
+    console.log(cghId);
+
+    const builder = new ObservationBuilder('CGH')
+      .withInterpretation({
+        coding: [{
           display: cghDisplay(cghInterpretationValue),
-        },
-        note: cghNote,
-      }),
+          code: cghInterpretationValue,
+        }],
+      })
+      .withStatus('final');
+
+    if (cghNote != null && cghNote.length > 0) {
+      builder.withNote(cghNote);
+    }
+
+    return [
+      builder.build(),
     ];
   }
 
@@ -462,7 +485,9 @@ class PatientSubmissionScreen extends React.Component {
     const { form } = this.props;
     e.preventDefault();
     form.validateFields((err) => {
-      if (err) { return; }
+      if (err) {
+        return;
+      }
 
       const { actions, serviceRequest, clinicalImpression } = this.props;
 
@@ -633,20 +658,20 @@ class PatientSubmissionScreen extends React.Component {
             {pageContent}
             <div className="submission-form-actions">
               {
-                currentPageIndex !== this.pages.length - 1 && (
-                  <Button type="primary" onClick={() => this.next()} disabled={this.canGoToPage2()}>
-                    {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-                  </Button>
-                )
-              }
+                                currentPageIndex !== this.pages.length - 1 && (
+                                <Button type="primary" onClick={() => this.next()} disabled={this.canGoToPage2()}>
+                                  {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+                                </Button>
+                                )
+                            }
 
               {
-                currentPageIndex !== 0 && (
-                  <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                    {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-                  </Button>
-                )
-              }
+                                currentPageIndex !== 0 && (
+                                <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                                  {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+                                </Button>
+                                )
+                            }
 
               <Button
                 htmlType="submit"

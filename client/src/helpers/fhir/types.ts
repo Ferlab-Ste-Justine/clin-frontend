@@ -110,7 +110,6 @@ export interface ClinicalImpression {
 
 export interface FamilyMemberHistory {
     resourceType: ResourceType;
-    id: string;
     meta: Meta;
     status: string;
     patient: Reference;
@@ -134,7 +133,6 @@ export interface ServiceRequest {
 
 export interface Observation {
     resourceType: ResourceType;
-    id: string;
     meta: Meta;
     status: string;
     category: CodeableConcept[];

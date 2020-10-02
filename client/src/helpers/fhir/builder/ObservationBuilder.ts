@@ -116,8 +116,10 @@ export class ObservationBuilder {
         return this;
     }
 
-    public withNote(value: Note) {
-        this.note.push(value);
+    public withNote(value: string) {
+        this.note.push({
+            text: value
+        });
         return this;
     }
 
