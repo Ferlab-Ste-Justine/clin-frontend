@@ -2,6 +2,7 @@ import uuidv1 from 'uuid/v1';
 import intl from 'react-intl-universal';
 
 import { has } from 'lodash';
+import { FhirDataManager } from './fhir_data_manager.ts';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
@@ -9,9 +10,7 @@ const OBSERVATION_INDICATION_CODE = 'INDIC';
 
 const RESOURCE_TYPE_FAMILY_HISTORY = 'FamilyMemberHistory';
 const RESOURCE_TYPE_CLINICAL_IMPRESSION = 'ClinicalImpression';
-const RESOURCE_TYPE_PATIENT = 'Patient';
 const RESOURCE_TYPE_BUNDLE = 'Bundle';
-const RESOURCE_TYPE_SERVICE_REQUEST = 'ServiceRequest';
 const RESOURCE_TYPE_OBSERVATION = 'Observation';
 const RESOURCE_TYPE_PRACTITIONER = 'Practitioner';
 
@@ -128,64 +127,6 @@ const createEntry = resource => ({
 });
 
 const getReference = entry => ({ reference: entry.fullUrl });
-
-const createPatientResource = patient => (
-  {
-    resourceType: RESOURCE_TYPE_PATIENT,
-    name: patient.name,
-    gender: patient.gender,
-    birthDate: patient.birthDate,
-    id: patient.id ? patient.id : null,
-    // TODO
-    // identifier: ...,
-    // ramq: ...,
-    // mrn: ...,
-    // managingOrganization: ...,
-    // ethnicity: ...,
-    // cosanguinity: ...,
-  }
-);
-
-const createServiceRequestResource = serviceRequest => ({
-  resourceType: RESOURCE_TYPE_SERVICE_REQUEST,
-  id: serviceRequest ? serviceRequest.id : null,
-  status: serviceRequest ? serviceRequest.status : 'draft',
-  meta: {
-    profile: [
-      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-service-request`,
-    ],
-  },
-  extension: [
-    {
-      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression',
-      valueReference: {
-        reference: 'ClinicalImpression/ci-001',
-      },
-    },
-  ],
-  intent: 'order',
-  category: [
-    {
-      text: 'MedicalRequest',
-    },
-  ],
-  priority: 'routine',
-  code: {
-    coding: [
-      {
-        system: `${FERLAB_BASE_URL}/CodeSystem/service-request-code`,
-        code: 'WGS',
-        display: 'Whole Genome Sequencing',
-      },
-    ],
-  },
-  subject: {
-    reference: 'Patient/pt-001',
-  },
-  requester: {
-    reference: 'Practitioner/pr-001',
-  },
-});
 
 export const createClinicalImpressionResource = ({
   id, status, age, date, assessor,
@@ -363,14 +304,19 @@ export const createPatientSubmissionBundle = ({
   serviceRequest,
   clinicalImpression,
 }) => {
-  const patientResource = createPatientResource(patient);
+  const patientResource = patient;
   const patientEntry = createEntry(patientResource);
   const patientReference = getReference(patientEntry);
 
   const bundle = createBundle();
   bundle.entry.push(patientEntry);
 
-  const serviceRequestResource = createServiceRequestResource(serviceRequest);
+  const serviceRequestResource = FhirDataManager.createServiceRequest(
+    'PR00101', // TODO: Change to real id once it's supported.
+    patientEntry.fullUrl,
+    serviceRequest != null ? serviceRequest.status : 'draft',
+  );
+
   serviceRequestResource.subject = patientReference;
 
   // We don't need to send a resource of type Practitioner
@@ -384,50 +330,50 @@ export const createPatientSubmissionBundle = ({
   const serviceRequestEntry = createEntry(serviceRequestResource);
   bundle.entry.push(serviceRequestEntry);
 
-  if (clinicalImpression) {
-    const {
-      id, status, age, date,
-    } = clinicalImpression;
-
-    const ciParams = {
-      id, status, age, date, assessor: '',
-    };
-    const clinicalImpressionResource = createClinicalImpressionResource(ciParams);
+  if (clinicalImpression != null) {
+    const clinicalImpressionResource = FhirDataManager.createClinicalImpression(
+      'PR00101', // TODO: Change to real id once it's supported.
+      patientEntry.fullUrl,
+    );
     clinicalImpressionResource.subject = patientReference;
     const clinicalImpressionEntry = createEntry(clinicalImpressionResource);
     bundle.entry.push(clinicalImpressionEntry);
 
     // CGH
     const cghResource = clinicalImpression.investigation[0].item.find(isCGH);
-    cghResource.subject = patientReference;
-    const cghEntry = createEntry(cghResource);
-    bundle.entry.push(cghEntry);
-    clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
+    if (cghResource != null) {
+      cghResource.subject = patientReference;
+      const cghEntry = createEntry(cghResource);
+      bundle.entry.push(cghEntry);
+      clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
+    }
 
     // TODO: HPO
 
     // Indication
     const indicationResource = clinicalImpression.investigation[0].item.find(isIndication);
-    indicationResource.subject = patientReference;
-    const indicationEntry = createEntry(indicationResource);
-    bundle.entry.push(indicationEntry);
-    clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
-    clinicalImpression.investigation[0].item.forEach((resource) => {
-      // Note: this is an exception in the model. All resources should use the same field: subject
-      // Or, familyHistory resources should be stored somewhere else than with observations as
-      // it is not of the same kind (resourceType)
-      if (isFamilyHistoryResource(resource)) {
-        resource.patient = patientReference;
-      } else {
-        resource.subject = patientReference;
-      }
+    if (indicationResource != null) {
+      indicationResource.subject = patientReference;
+      const indicationEntry = createEntry(indicationResource);
+      bundle.entry.push(indicationEntry);
+      clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
+      clinicalImpression.investigation[0].item.forEach((resource) => {
+        // Note: this is an exception in the model. All resources should use the same field: subject
+        // Or, familyHistory resources should be stored somewhere else than with observations as
+        // it is not of the same kind (resourceType)
+        if (isFamilyHistoryResource(resource)) {
+          resource.patient = patientReference;
+        } else {
+          resource.subject = patientReference;
+        }
 
-      const entry = createEntry(resource);
-      bundle.entry.push(entry);
-      if (!resource.toDelete) {
-        clinicalImpressionResource.investigation[0].item.push(getReference(entry));
-      }
-    });
+        const entry = createEntry(resource);
+        bundle.entry.push(entry);
+        if (!resource.toDelete) {
+          clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+        }
+      });
+    }
 
     // reference from ServiceRequest to ClinicalImpression resource
     serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
