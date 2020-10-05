@@ -49,27 +49,31 @@ const patientSubmissionReducer = (
 ) => produce(state, (draft) => {
   switch (action.type) {
     case actions.PATIENT_SUBMISSION_SAVE_SUCCEEDED:
-      draft.patient = { ...draft.patient, ...action.payload.patient };
+      draft.patient = { ...action.payload.patient, ...action.payload.result.patient };
+      draft.serviceRequest = { ...action.payload.serviceRequest, ...action.payload.result.serviceRequest };
       draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest };
+      draft.clinicalImpression = { ...draft.clinicalImpression, ...action.payload.clinicalImpression };
 
-      draft.clinicalImpression = {
-        ...draft.clinicalImpression,
-        ...action.payload.clinicalImpression,
-        investigation: !action.payload.investigations
-          ? { ...draft.clinicalImpression.investigation }
-          : [
-            {
-              item: action.payload.investigations.map((item, index) => ({
-                ...draft.clinicalImpression.investigation[0].item[index], ...item,
-              })).filter(resource => !resource.toDelete),
-            },
-          ],
-      };
+      if (draft.clinicalImpression.investigation == null || draft.clinicalImpression.investigation.length === 0) {
+        draft.clinicalImpression.investigation = [
+          {
+            item: action.payload.investigations.map((item, index) => ({
+              ...draft.clinicalImpression.investigation[0].item[index], ...item,
+            })).filter(resource => !resource.toDelete),
+          },
+        ];
+      }
       break;
     case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
       draft.serviceRequest = {
         ...draft.serviceRequest,
         requester: action.payload,
+      };
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_SAVE_REQUESTED:
+      draft.patient = {
+        ...draft.patient,
+        ...action.payload,
       };
       break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
