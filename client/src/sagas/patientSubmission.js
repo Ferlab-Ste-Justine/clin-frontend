@@ -40,11 +40,6 @@ const processBundleResponse = (r) => {
 function* savePatientSubmission(action) {
   const { payload } = action;
 
-  yield put({
-    type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,
-    payload,
-  });
-
   let response = null;
   try {
     response = yield Api.savePatientSubmission(payload);
@@ -68,7 +63,10 @@ function* savePatientSubmission(action) {
 
     yield put({
       type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,
-      payload: result,
+      payload: {
+        ...payload,
+        result,
+      },
     });
   } catch (e) {
     yield put({ type: actionTypes.PATIENT_SUBMISSION_SAVE_FAILED, payload: e });

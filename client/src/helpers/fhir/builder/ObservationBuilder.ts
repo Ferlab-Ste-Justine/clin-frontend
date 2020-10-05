@@ -24,7 +24,7 @@ interface AgeAtOnset extends Extension {
 }
 
 type SupportedExtensions = HpoCategoryExtension | AgeAtOnset;
-type SupportedCodes = 'CGH';
+type SupportedCodes = 'CGH' | 'INDIC';
 
 export class ObservationBuilder {
     private resourceType: ResourceType = "Observation";
@@ -60,6 +60,17 @@ export class ObservationBuilder {
                             system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
                             code: 'CGH',
                             display: 'cgh',
+                        },
+                    ],
+                }
+                break;
+            case "INDIC":
+                this.code = {
+                    coding: [
+                        {
+                            system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
+                            code: 'INDIC',
+                            display: 'indications',
                         },
                     ],
                 }
