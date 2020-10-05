@@ -1,8 +1,7 @@
 import uuidv1 from 'uuid/v1';
 import intl from 'react-intl-universal';
 
-import { has } from 'lodash';
-import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+import { has, isEmpty } from 'lodash';
 import { FhirDataManager } from './fhir_data_manager.ts';
 
 const OBSERVATION_CGH_CODE = 'CGH';
@@ -305,6 +304,7 @@ export const createPatientSubmissionBundle = ({
   patient,
   serviceRequest,
   clinicalImpression,
+  observations,
 }) => {
   const patientResource = patient;
   const patientEntry = createEntry(patientResource);
@@ -312,17 +312,18 @@ export const createPatientSubmissionBundle = ({
     reference: (patient.id == null) ? patientEntry.fullUrl : `Patient/${patient.id}`,
   };
 
+
   const bundle = createBundle();
-  if (patient.id == null || patient.id.length === 0) {
-    bundle.entry.push(patientEntry);
-  }
+  bundle.entry.push(patientEntry);
 
   const serviceRequestResource = FhirDataManager.createServiceRequest(
     'PR00101', // TODO: Change to real id once it's supported.
     patientEntry.fullUrl,
     'draft',
+    serviceRequest.code,
   );
 
+  serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
   serviceRequestResource.subject = patientReference;
 
   // We don't need to send a resource of type Practitioner
@@ -341,15 +342,16 @@ export const createPatientSubmissionBundle = ({
       'PR00101', // TODO: Change to real id once it's supported.
       patientEntry.fullUrl,
     );
+    clinicalImpressionResource.id = clinicalImpression.id != null ? clinicalImpression.id : undefined;
     clinicalImpressionResource.subject = patientReference;
+
     const clinicalImpressionEntry = createEntry(clinicalImpressionResource);
     bundle.entry.push(clinicalImpressionEntry);
 
     // CGH
-    const cghResource = clinicalImpression.investigation[0].item.find(isCGH);
-    if (cghResource != null) {
-      cghResource.subject = patientReference;
-      const cghEntry = createEntry(cghResource);
+    if (observations.cgh != null && !isEmpty(observations.cgh)) {
+      observations.cgh.subject = patientReference;
+      const cghEntry = createEntry(observations.cgh);
       bundle.entry.push(cghEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
     }
@@ -357,16 +359,21 @@ export const createPatientSubmissionBundle = ({
     // TODO: HPO
 
     // Indication
-    const indicationResource = clinicalImpression.investigation[0].item.find(isIndication);
-    if (indicationResource != null) {
-      indicationResource.subject = patientReference;
-      const indicationEntry = createEntry(indicationResource);
-      bundle.entry.push(indicationEntry);
-      clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
+    if (observations.indic != null && !isEmpty(observations.indic)) {
+      observations.indic.subject = patientReference;
+      const indicEntry = createEntry(observations.indic);
+      bundle.entry.push(indicEntry);
+      clinicalImpressionResource.investigation[0].item.push(getReference(indicEntry));
     }
 
-    const isValid = o => !isIndication(o) && !isCGH(o) && has(o, 'relationship.coding[0].code') && o.relationship.coding[0].code.length > SSL_OP_SSLEAY_080_CLIENT_DH_BUG;
-    clinicalImpression.investigation[0].item.filter(isValid).forEach((resource) => {
+
+    clinicalImpression.investigation[0].item.filter((o) => {
+      try {
+        return !isIndication(o) && !isCGH(o) && o.relationship.coding[0].code.length > 0;
+      } catch (e) {
+        return false;
+      }
+    }).forEach((resource) => {
       // Note: this is an exception in the model. All resources should use the same field: subject
       // Or, familyHistory resources should be stored somewhere else than with observations as
       // it is not of the same kind (resourceType)

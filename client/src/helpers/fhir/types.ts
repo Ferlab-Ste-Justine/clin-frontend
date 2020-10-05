@@ -126,7 +126,7 @@ export interface ServiceRequest {
     authoredOn: string;
     category: Category[];
     priority: string;
-    code: CodeableConcept;
+    code?: CodeableConcept;
     requester: Reference;
     subject: Reference;
 }
