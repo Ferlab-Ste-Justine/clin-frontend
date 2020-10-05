@@ -20,7 +20,6 @@ import {
   CGH_VALUES,
   isCGH,
   isHPO,
-  isFamilyHistoryResource,
   isIndication,
   cghNote,
   getCGHInterpretationCode,
@@ -37,7 +36,7 @@ import {
   getHPOOnsetCode,
   getHPOInterpretationCode,
   hpoInterpretationValues,
-  getFamilyRelationshipValues,
+  getFamilyRelationshipValues, getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 import {
@@ -48,6 +47,7 @@ import {
 } from '../../../actions/patientSubmission';
 
 import Api from '../../../helpers/api';
+import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
 
 const interpretationIcon = {
   O: ic_visibility,
@@ -267,14 +267,74 @@ class ClinicalInformation extends React.Component {
 
   addFamilyHistory() {
     const familyHistoryResource = createFamilyHistoryMemberResource({ code: '', node: '', display: '' });
+
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+    const {
+      familyRelationshipIds,
+      familyRelationshipCodes,
+      familyRelationshipNotes,
+    } = values;
+
+    const index = familyRelationshipCodes.length - 1;
+
+    // const fmh = [];
+    console.log(values);
+    // familyRelationshipCodes.forEach((code, index) => {
+    const code = familyRelationshipCodes[index];
+    const builder = new FamilyMemberHistoryBuilder(code, getFamilyRelationshipDisplayForCode(code));
+    if (familyRelationshipNotes[index] != null) {
+      builder.withNote(familyRelationshipNotes[index]);
+    }
+    const familyHistory = builder.build();
+
+    if (familyRelationshipIds[index] != null) {
+      familyHistory.id = familyRelationshipIds[index];
+    }
+    // fmh.push(familyHistory);
+    // });
     const { actions } = this.props;
-    actions.addFamilyHistoryResource(familyHistoryResource);
+    actions.addFamilyHistoryResource(familyHistory);
   }
 
-  deleteFamilyHistory({ code, id }) {
-    const { actions } = this.props;
+  deleteFamilyHistory({ code }) {
+    const { form, actions } = this.props;
+    const values = form.getFieldsValue();
+    const {
+      familyRelationshipIds,
+      familyRelationshipCodes,
+      familyRelationshipNotes,
+    } = values;
 
-    actions.setFamilyRelationshipResourceDeletionFlag({ code, id, toDelete: true });
+    // const index = familyRelationshipCodes.findIndex(e => e === code);
+    const codes = [];
+    const ids = [];
+    const notes = [];
+
+    familyRelationshipCodes.forEach((c, index) => {
+      if (c !== code) {
+        codes.push(c);
+        ids.push(familyRelationshipIds[index]);
+        notes.push(familyRelationshipNotes[index]);
+      }
+    });
+
+    // if (index !== -1) {
+    //   values.familyRelationshipCodes = familyRelationshipCodes.splice(index, 1).filter(a => a != null);
+    //   values.familyRelationshipIds = familyRelationshipIds.splice(index, 1).filter(a => a != null);
+    //   values.familyRelationshipNotes = familyRelationshipNotes.splice(index, 1).filter(a => a != null);
+    // }
+
+    // console.log(index);
+    // console.log(code);
+    // console.log(values.familyRelationshipCodes);
+    values.familyRelationshipCodes = codes;
+    values.familyRelationshipIds = ids;
+    values.familyRelationshipNotes = notes;
+    console.log(values);
+    form.setFieldsValue(values);
+
+    actions.setFamilyRelationshipResourceDeletionFlag({ code });
   }
 
   handleHpoSearchTermChanged(term) {
@@ -352,63 +412,61 @@ class ClinicalInformation extends React.Component {
     const { hpoOptions, treeData } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
-    const { form, clinicalImpression } = this.props;
+    const { form, clinicalImpression, observations } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
 
     const { TextArea } = Input;
 
     const relationshipPossibleValues = getFamilyRelationshipValues();
-    const familyHistoryResources = clinicalImpression.investigation[0].item.filter(isFamilyHistoryResource) || [];
-    const familyItems = familyHistoryResources.map((resource, index) => (resource.toDelete
-      ? <FamilyRelationshipHiddenFields getFieldDecorator={getFieldDecorator} index={index} resource={resource} key={uuidv1()} />
-      : (
-        <div className="familyLine">
-          {getFieldDecorator(`familyRelationshipIds[${index}]`, {
-            rules: [],
-            initialValue: getResourceId(resource) || '',
-          })(
-            <Input size="small" type="hidden" />,
-          )}
+    const familyHistoryResources = observations.fmh;
+    const familyItems = familyHistoryResources.map((resource, index) => ((
+      <div className="familyLine">
+        {getFieldDecorator(`familyRelationshipIds[${index}]`, {
+          rules: [],
+          initialValue: getResourceId(resource) || '',
+        })(
+          <Input size="small" type="hidden" />,
+        )}
 
-          {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
-            rules: [],
-            initialValue: resource.toDelete,
-          })(
-            <Input size="small" type="hidden" />,
-          )}
+        {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
+          rules: [],
+          initialValue: resource.toDelete,
+        })(
+          <Input size="small" type="hidden" />,
+        )}
 
-          <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
-            {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
-              validateTrigger: ['onChange', 'onBlur'],
-              initialValue: getFamilyRelationshipNote(resource),
-              rules: [],
-            })(
-              <Input placeholder="Ajouter une note…" className="input noteInput note" />,
-            )}
-          </Form.Item>
-          <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
-            {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
-              validateTrigger: ['onChange', 'onBlur'],
-              initialValue: getFamilyRelationshipCode(resource),
-              rules: [],
-            })(
-              <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
-                {Object.values(relationshipPossibleValues).map(rv => (
-                  <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
-                ))}
-              </Select>,
-            )}
-          </Form.Item>
-          <Button
-            className="delButton"
-            disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
-            shape="round"
-            onClick={() => this.deleteFamilyHistory({ code: getFamilyRelationshipCode(resource), id: getResourceId(resource) })}
-          >
-            <IconKit size={20} icon={ic_remove} />
-          </Button>
-        </div>
-      )));
+        <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
+          {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            initialValue: getFamilyRelationshipNote(resource),
+            rules: [],
+          })(
+            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+          )}
+        </Form.Item>
+        <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
+          {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            initialValue: getFamilyRelationshipCode(resource),
+            rules: [],
+          })(
+            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
+              {Object.values(relationshipPossibleValues).map(rv => (
+                <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
+              ))}
+            </Select>,
+          )}
+        </Form.Item>
+        <Button
+          className="delButton"
+          disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
+          shape="round"
+          onClick={() => this.deleteFamilyHistory({ code: getFieldValue(`familyRelationshipCodes[${index}]`) })}
+        >
+          <IconKit size={20} icon={ic_remove} />
+        </Button>
+      </div>
+    )));
 
     let cghInterpretationValue;
     let cghNoteValue;
@@ -574,6 +632,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
+  observations: state.patientSubmission.observations,
 });
 
 export default connect(

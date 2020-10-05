@@ -2,9 +2,10 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
+import { isEmpty } from 'lodash';
 import * as actions from '../actions/type';
 
-import { getHPOCode, getFamilyRelationshipCode } from '../helpers/fhir/fhir';
+import { getHPOCode } from '../helpers/fhir/fhir';
 
 // @TODO change item values
 export const initialPatientSubmissionState = {
@@ -40,7 +41,7 @@ export const initialPatientSubmissionState = {
   observations: {
     cgh: null,
     indic: null,
-    familyHistory: null,
+    fmh: [{}],
   },
 };
 
@@ -114,6 +115,12 @@ const patientSubmissionReducer = (
       };
       break;
     case actions.PATIENT_SUBMISSION_ADD_FAMILY_RELATIONSHIP_RESOURCE:
+      draft.observations.fmh = draft.observations.fmh.filter(fmh => !isEmpty(fmh));
+
+      draft.observations.fmh.push(action.payload);
+      draft.observations.fmh.push({});
+      console.log(draft.observations.fmh);
+
       draft.clinicalImpression = {
         ...draft.clinicalImpression,
         investigation:
@@ -125,26 +132,30 @@ const patientSubmissionReducer = (
       };
       break;
     case actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION:
-      draft.clinicalImpression = {
-        ...draft.clinicalImpression,
-        investigation:
-          [
-            {
-              item: [...draft.clinicalImpression.investigation[0].item.map((resource) => {
-                if (action.payload.id) {
-                  if (action.payload.id === resource.id) {
-                    return { ...resource, toDelete: action.payload.toDelete };
-                  }
-                }
-                if (action.payload.code === getFamilyRelationshipCode(resource) && action.payload.toDelete) {
-                  return null;
-                }
-                return resource;
-              }).filter(r => r !== null),
-              ],
-            },
-          ],
-      };
+      draft.observations.fmh = draft.observations.fmh
+        .filter(fmh => !isEmpty(fmh) && fmh.relationship.coding[0].code !== action.payload.code);
+      draft.observations.fmh.push({});
+      console.log(draft.observations.fmh);
+      // draft.clinicalImpression = {
+      //   ...draft.clinicalImpression,
+      //   investigation:
+      //     [
+      //       {
+      //         item: [...draft.clinicalImpression.investigation[0].item.map((resource) => {
+      //           if (action.payload.id) {
+      //             if (action.payload.id === resource.id) {
+      //               return { ...resource, toDelete: action.payload.toDelete };
+      //             }
+      //           }
+      //           if (action.payload.code === getFamilyRelationshipCode(resource) && action.payload.toDelete) {
+      //             return null;
+      //           }
+      //           return resource;
+      //         }).filter(r => r !== null),
+      //         ],
+      //       },
+      //     ],
+      // };
       break;
     default:
       break;
