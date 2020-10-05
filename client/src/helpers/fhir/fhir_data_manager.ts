@@ -17,6 +17,8 @@ type InitializePatientOptions = {
     organization: string;
 }
 
+type ServiceRequestCoding = 'WXS' | 'WGS' | 'GP' | undefined;
+
 const formatDate = (date: Date): string => {
     const year = date.getFullYear();
     let month = '' + (date.getMonth() + 1);
@@ -123,8 +125,8 @@ export class FhirDataManager {
     }
 
 
-    public static createServiceRequest(requesterId: string, subjectId: string, status: string): ServiceRequest {
-        return {
+    public static createServiceRequest(requesterId: string, subjectId: string, status: string, coding: ServiceRequestCoding): ServiceRequest {
+        const serviceRequest: ServiceRequest = {
             resourceType: 'ServiceRequest',
             status: status,
             meta: {
@@ -147,15 +149,6 @@ export class FhirDataManager {
                 },
             ],
             priority: 'routine',
-            code: {
-                coding: [
-                    {
-                        system: `http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code`,
-                        code: 'WGS',
-                        display: 'Whole Genome Sequencing',
-                    },
-                ],
-            },
             subject: {
                 reference: subjectId.startsWith('urn:') ? subjectId : `Patient/${subjectId}`,
             },
@@ -163,7 +156,50 @@ export class FhirDataManager {
                 reference: `Practitioner/${requesterId}`,
             },
             authoredOn: formatDate(new Date())
+        };
+
+        if(coding != undefined){
+            switch (coding) {
+                case 'WXS':
+                serviceRequest.code = {
+                    coding: [
+                        {
+                            system: `http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code`,
+                            code: 'WXS',
+                            display: 'Whole Exome Sequencing',
+                        },
+                    ],
+                };
+                break;
+            case 'WGS':
+                serviceRequest.code = {
+                    coding: [
+                        {
+                            system: `http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code`,
+                            code: 'WGS',
+                            display: 'Whole Genome Sequencing',
+                        },
+                    ],
+                };
+                break;
+            case 'GP':
+                
+                serviceRequest.code = {
+                    coding: [
+                        {
+                            system: `http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code`,
+                            code: 'GP',
+                            display: 'Gene Panel',
+                        },
+                    ],
+                };
+                break;
+                default:
+                    break;
+            }
         }
+
+        return serviceRequest;
     }
 
     public static createClinicalImpression(assessorId: string, subjectId: string, age: number = 1): ClinicalImpression {
