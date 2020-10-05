@@ -64,10 +64,6 @@ export interface Note {
     text: string;
 }
 
-export interface Relationship {
-    coding: Coding[];
-}
-
 export interface Category {
     text: string;
 }
@@ -113,7 +109,7 @@ export interface FamilyMemberHistory {
     meta: Meta;
     status: string;
     patient: Reference;
-    relationship: Relationship;
+    relationship: CodeableConcept;
     note: Note[];
 }
 

@@ -67,7 +67,12 @@ const patientSubmissionReducer = (
         indic: {
           ...draft.observations.indic, ...action.payload.result.indic,
         },
+        fmh: draft.observations.fmh.filter(fmh => !isEmpty(fmh)).map((fmh, index) => ({
+          ...fmh,
+          ...action.payload.result.fmh[index],
+        })),
       };
+      draft.observations.fmh.push({});
       break;
     case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
       draft.serviceRequest = {

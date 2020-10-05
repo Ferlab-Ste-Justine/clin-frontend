@@ -61,6 +61,14 @@ function* savePatientSubmission(action) {
       result.cgh = processBundleResponse(responses[3]);
       result.indic = processBundleResponse(responses[4]);
     }
+
+    result.fmh = [];
+    if (payload.observations.fmh != null && payload.observations.fmh.length > 1 && responses.length > 5) {
+      for (let i = 0; i < payload.observations.fmh.length; i += 1) {
+        result.fmh.push(processBundleResponse(responses[5 + i]));
+      }
+    }
+
     result.investigations = [
       ...responses.filter(isInvestigation).map(processBundleResponse),
     ];

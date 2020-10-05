@@ -1,4 +1,4 @@
-import uuidv1 from 'uuid/v1';
+import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
 
 import { has, isEmpty } from 'lodash';
@@ -120,7 +120,7 @@ export const createRequest = (resource) => {
   };
 };
 
-const createFullUrl = resource => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuidv1()}`);
+const createFullUrl = resource => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuid()}`);
 const createEntry = resource => ({
   fullUrl: createFullUrl(resource),
   resource,
@@ -366,30 +366,42 @@ export const createPatientSubmissionBundle = ({
       clinicalImpressionResource.investigation[0].item.push(getReference(indicEntry));
     }
 
+    if (observations.fmh != null && observations.fmh.length > 0) {
+      console.log(observations.fmh);
+    }
 
-    clinicalImpression.investigation[0].item.filter((o) => {
-      try {
-        return !isIndication(o) && !isCGH(o) && o.relationship.coding[0].code.length > 0;
-      } catch (e) {
-        return false;
-      }
-    }).forEach((resource) => {
-      // Note: this is an exception in the model. All resources should use the same field: subject
-      // Or, familyHistory resources should be stored somewhere else than with observations as
-      // it is not of the same kind (resourceType)
-      if (isFamilyHistoryResource(resource)) {
-        resource.patient = patientReference;
-      } else {
-        resource.subject = patientReference;
-      }
-
-      const entry = createEntry(resource);
-      bundle.entry.push(entry);
-      if (resource.status !== 'entered-in-error') {
+    console.log(observations);
+    if (observations.fmh != null) {
+      observations.fmh.filter(fmh => !isEmpty(fmh)).forEach((fmh) => {
+        fmh.patient = patientReference;
+        const entry = createEntry(fmh);
+        bundle.entry.push(entry);
         clinicalImpressionResource.investigation[0].item.push(getReference(entry));
-      }
-    });
+      });
+    }
 
+    // clinicalImpression.investigation[0].item.filter((o) => {
+    //   try {
+    //     return !isIndication(o) && !isCGH(o) && o.relationship.coding[0].code.length > 0;
+    //   } catch (e) {
+    //     return false;
+    //   }
+    // }).forEach((resource) => {
+    //   // Note: this is an exception in the model. All resources should use the same field: subject
+    //   // Or, familyHistory resources should be stored somewhere else than with observations as
+    //   // it is not of the same kind (resourceType)
+    //   if (isFamilyHistoryResource(resource)) {
+    //     resource.patient = patientReference;
+    //   } else {
+    //     resource.subject = patientReference;
+    //   }
+
+    //   const entry = createEntry(resource);
+    //   bundle.entry.push(entry);
+    //   if (resource.status !== 'entered-in-error') {
+    //     clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+    //   }
+    // });
 
     // reference from ServiceRequest to ClinicalImpression resource
     serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);

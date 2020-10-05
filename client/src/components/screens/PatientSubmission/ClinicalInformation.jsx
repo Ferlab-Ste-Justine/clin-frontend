@@ -266,8 +266,6 @@ class ClinicalInformation extends React.Component {
   }
 
   addFamilyHistory() {
-    const familyHistoryResource = createFamilyHistoryMemberResource({ code: '', node: '', display: '' });
-
     const { form } = this.props;
     const values = form.getFieldsValue();
     const {
@@ -288,7 +286,7 @@ class ClinicalInformation extends React.Component {
     }
     const familyHistory = builder.build();
 
-    if (familyRelationshipIds[index] != null) {
+    if (familyRelationshipIds[index] != null && familyRelationshipIds[index].length > 0) {
       familyHistory.id = familyRelationshipIds[index];
     }
     // fmh.push(familyHistory);
