@@ -7,24 +7,17 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Steps, Card, Form, Input, Button, Radio, DatePicker, Select, Checkbox, Row, AutoComplete,
+  AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps,
 } from 'antd';
-import {
-  has, find,
-} from 'lodash';
+import { find, has } from 'lodash';
 
 import IconKit from 'react-icons-kit';
-import {
-  ic_save,
-} from 'react-icons-kit/md';
+import { ic_save } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
-import {
-  savePatientSubmission,
-  assignServiceRequestPractitioner,
-} from '../../../actions/patientSubmission';
+import { assignServiceRequestPractitioner, savePatientSubmission, savePatientLocal } from '../../../actions/patientSubmission';
 import ClinicalInformation from './ClinicalInformation';
 import Api from '../../../helpers/api';
 
@@ -32,20 +25,19 @@ import './style.scss';
 
 import {
   cghDisplay,
-  getHPOOnsetDisplayFromCode,
-  createIndicationResource,
   createHPOResource,
-  isCGH,
-  isHPO,
-  isFamilyHistoryResource,
-  isIndication,
-  hpoInterpretationDisplayForCode,
-  createFamilyHistoryMemberResource,
   createPractitionerResource,
   getFamilyRelationshipDisplayForCode,
+  getHPOOnsetDisplayFromCode,
+  hpoInterpretationDisplayForCode,
+  isCGH,
+  isFamilyHistoryResource,
+  isHPO,
+  isIndication,
 } from '../../../helpers/fhir/fhir';
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
+import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
 
 const { Step } = Steps;
 
@@ -381,15 +373,27 @@ class PatientSubmissionScreen extends React.Component {
       familyRelationshipsToDelete,
     } = values;
 
-    const familyRelationshipResources = familyRelationshipCodes.map((code, index) => createFamilyHistoryMemberResource({
-      id: familyRelationshipIds[index],
-      code,
-      display: getFamilyRelationshipDisplayForCode(familyRelationshipCodes[index]),
-      note: familyRelationshipNotes[index],
-      toDelete: familyRelationshipsToDelete[index],
-    }));
-
-    return familyRelationshipResources;
+    return familyRelationshipCodes.map((code, index) => {
+      const id = familyRelationshipIds[index];
+      const toDelete = familyRelationshipsToDelete[index];
+      if (id == null || id.length === 0) {
+        const builder = new FamilyMemberHistoryBuilder({
+          coding: [{
+            code,
+            display: getFamilyRelationshipDisplayForCode(familyRelationshipCodes[index]),
+          }],
+        });
+        const note = familyRelationshipNotes[index];
+        if (note != null && note.length > 0) {
+          builder.withNote(note);
+        }
+        if (toDelete) {
+          builder.withStatus('entered-in-error');
+        }
+        return builder.build();
+      }
+      return null;
+    }).filter(r => r != null);
   }
 
   createHPOResourceList() {
@@ -446,13 +450,17 @@ class PatientSubmissionScreen extends React.Component {
     console.log(cghId);
 
     const builder = new ObservationBuilder('CGH')
-      .withInterpretation({
+      .withStatus('final');
+
+
+    if (cghInterpretationValue != null) {
+      builder.withInterpretation({
         coding: [{
           display: cghDisplay(cghInterpretationValue),
           code: cghInterpretationValue,
         }],
-      })
-      .withStatus('final');
+      });
+    }
 
     if (cghNote != null && cghNote.length > 0) {
       builder.withNote(cghNote);
@@ -473,12 +481,14 @@ class PatientSubmissionScreen extends React.Component {
 
     const {
       indication,
-      indicationId,
     } = values;
 
-    return [{
-      ...createIndicationResource({ id: indicationId, note: indication }),
-    }];
+    const builder = new ObservationBuilder('INDIC');
+    if (indication != null) {
+      builder.withNote(indication);
+    }
+
+    return [builder.build()];
   }
 
   handleSubmit(e) {
@@ -514,7 +524,9 @@ class PatientSubmissionScreen extends React.Component {
 
   next() {
     const { currentPageIndex } = this.state;
+    const { actions } = this.props;
     const pageIndex = currentPageIndex + 1;
+    actions.savePatientLocal(this.getPatientData());
     this.setState({ currentPageIndex: pageIndex });
   }
 
@@ -703,6 +715,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientSearchScreen,
     savePatientSubmission,
+    savePatientLocal,
     assignServiceRequestPractitioner,
   }, dispatch),
 });

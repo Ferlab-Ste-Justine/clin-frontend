@@ -2,6 +2,7 @@ import uuidv1 from 'uuid/v1';
 import intl from 'react-intl-universal';
 
 import { has } from 'lodash';
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { FhirDataManager } from './fhir_data_manager.ts';
 
 const OBSERVATION_CGH_CODE = 'CGH';
@@ -77,7 +78,7 @@ export const getIndicationId = (indication) => {
 // TODO: translate/intl
 export const CGH_CODES = {
   A: 'A',
-  N: 'N',
+  N: 'NEG',
 };
 export const CGH_VALUES = () => (
   [
@@ -306,15 +307,19 @@ export const createPatientSubmissionBundle = ({
 }) => {
   const patientResource = patient;
   const patientEntry = createEntry(patientResource);
-  const patientReference = getReference(patientEntry);
+  const patientReference = {
+    reference: (patient.id == null) ? patientEntry.fullUrl : `Patient/${patient.id}`,
+  };
 
   const bundle = createBundle();
-  bundle.entry.push(patientEntry);
+  if (patient.id == null || patient.id.length === 0) {
+    bundle.entry.push(patientEntry);
+  }
 
   const serviceRequestResource = FhirDataManager.createServiceRequest(
     'PR00101', // TODO: Change to real id once it's supported.
     patientEntry.fullUrl,
-    serviceRequest != null ? serviceRequest.status : 'draft',
+    'draft',
   );
 
   serviceRequestResource.subject = patientReference;
@@ -357,23 +362,26 @@ export const createPatientSubmissionBundle = ({
       const indicationEntry = createEntry(indicationResource);
       bundle.entry.push(indicationEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
-      clinicalImpression.investigation[0].item.forEach((resource) => {
-        // Note: this is an exception in the model. All resources should use the same field: subject
-        // Or, familyHistory resources should be stored somewhere else than with observations as
-        // it is not of the same kind (resourceType)
-        if (isFamilyHistoryResource(resource)) {
-          resource.patient = patientReference;
-        } else {
-          resource.subject = patientReference;
-        }
-
-        const entry = createEntry(resource);
-        bundle.entry.push(entry);
-        if (!resource.toDelete) {
-          clinicalImpressionResource.investigation[0].item.push(getReference(entry));
-        }
-      });
     }
+
+    const isValid = o => !isIndication(o) && !isCGH(o) && has(o, 'relationship.coding[0].code') && o.relationship.coding[0].code.length > SSL_OP_SSLEAY_080_CLIENT_DH_BUG;
+    clinicalImpression.investigation[0].item.filter(isValid).forEach((resource) => {
+      // Note: this is an exception in the model. All resources should use the same field: subject
+      // Or, familyHistory resources should be stored somewhere else than with observations as
+      // it is not of the same kind (resourceType)
+      if (isFamilyHistoryResource(resource)) {
+        resource.patient = patientReference;
+      } else {
+        resource.subject = patientReference;
+      }
+
+      const entry = createEntry(resource);
+      bundle.entry.push(entry);
+      if (resource.status !== 'entered-in-error') {
+        clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+      }
+    });
+
 
     // reference from ServiceRequest to ClinicalImpression resource
     serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
