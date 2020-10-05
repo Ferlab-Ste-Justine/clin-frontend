@@ -37,6 +37,11 @@ export const initialPatientSubmissionState = {
       },
     ],
   },
+  observations: {
+    cgh: null,
+    indic: null,
+    familyHistory: null,
+  },
 };
 
 export const patientSubmissionShape = {
@@ -50,19 +55,18 @@ const patientSubmissionReducer = (
   switch (action.type) {
     case actions.PATIENT_SUBMISSION_SAVE_SUCCEEDED:
       draft.patient = { ...action.payload.patient, ...action.payload.result.patient };
-      draft.serviceRequest = { ...action.payload.serviceRequest, ...action.payload.result.serviceRequest };
-      draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest };
-      draft.clinicalImpression = { ...draft.clinicalImpression, ...action.payload.clinicalImpression };
+      draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest, ...action.payload.result.serviceRequest };
+      draft.clinicalImpression = { ...draft.clinicalImpression, ...action.payload.clinicalImpression, ...action.payload.result.clinicalImpression };
 
-      if (draft.clinicalImpression.investigation == null || draft.clinicalImpression.investigation.length === 0) {
-        draft.clinicalImpression.investigation = [
-          {
-            item: action.payload.investigations.map((item, index) => ({
-              ...draft.clinicalImpression.investigation[0].item[index], ...item,
-            })).filter(resource => !resource.toDelete),
-          },
-        ];
-      }
+      draft.observations = {
+        ...draft.observations,
+        cgh: {
+          ...draft.observations.cgh, ...action.payload.result.cgh,
+        },
+        indic: {
+          ...draft.observations.indic, ...action.payload.result.indic,
+        },
+      };
       break;
     case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
       draft.serviceRequest = {

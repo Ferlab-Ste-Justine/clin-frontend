@@ -57,6 +57,10 @@ function* savePatientSubmission(action) {
     result.patient = processBundleResponse(responses.find(isPatient));
     result.serviceRequest = processBundleResponse(responses.find(isServiceRequest));
     result.clinicalImpression = processBundleResponse(responses.find(isClinicalImpression));
+    if (responses.length > 4) {
+      result.cgh = processBundleResponse(responses[3]);
+      result.indic = processBundleResponse(responses[4]);
+    }
     result.investigations = [
       ...responses.filter(isInvestigation).map(processBundleResponse),
     ];
