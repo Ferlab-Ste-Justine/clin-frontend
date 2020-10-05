@@ -1,4 +1,4 @@
-import {FamilyMemberHistory, Meta, Note, Reference, Relationship, ResourceType} from '../types'
+import {CodeableConcept, FamilyMemberHistory, Meta, Note, Reference, ResourceType} from '../types'
 
 type Status = "partial" | "completed" | "entered-in-error" | "health-unknown";
 
@@ -12,8 +12,18 @@ export class FamilyMemberHistoryBuilder {
   private status: Status = "completed";
   private patient: Reference = null;
   private note: Note[] = [];
+  private readonly relationship: CodeableConcept;
 
-  public constructor(private relationship: Relationship){
+  public constructor(relationshipCode: string, relationshipName: string){
+    this.relationship = {
+      coding: [
+        {
+          code:  relationshipCode,
+          display: relationshipName,
+          system: "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+        }
+      ]
+    };
   }
 
   public build(): FamilyMemberHistory {
@@ -39,11 +49,6 @@ export class FamilyMemberHistoryBuilder {
 
   public withStatus(value: Status) {
     this.status = value;
-    return this;
-  }
-
-  public withRelationship(value: Relationship) {
-    this.relationship = value;
     return this;
   }
 

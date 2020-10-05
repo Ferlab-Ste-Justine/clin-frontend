@@ -493,7 +493,6 @@ class PatientSubmissionScreen extends React.Component {
     }
 
     const {
-      cghId,
       cghInterpretationValue,
       cghNote,
     } = values;
@@ -567,17 +566,18 @@ class PatientSubmissionScreen extends React.Component {
         submission.clinicalImpression = clinicalImpressionData;
       }
 
-      observations.cgh = {
-        ...observations.cgh,
-        ...this.createCGHResourceList(),
-      };
 
-      observations.indic = {
-        ...observations.indic,
-        ...this.createIndicationResourceList(),
+      submission.observations = {
+        ...observations,
+        cgh: {
+          ...observations.cgh,
+          ...this.createCGHResourceList(),
+        },
+        indic: {
+          ...observations.indic,
+          ...this.createIndicationResourceList(),
+        },
       };
-
-      submission.observations = observations;
 
       actions.savePatientSubmission(submission);
     });
