@@ -447,9 +447,9 @@ class ClinicalInformation extends React.Component {
               rules: [],
             })(
               <Radio.Group buttonStyle="solid">
-                <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
-                <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
-                <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+                <Radio.Button value="WXS"><span className="radioText">Exome</span></Radio.Button>
+                <Radio.Button value="WGS"><span className="radioText">Génome</span></Radio.Button>
+                <Radio.Button value="GP"><span className="radioText">Séquençage ciblé</span></Radio.Button>
               </Radio.Group>,
             )}
           </Form.Item>
