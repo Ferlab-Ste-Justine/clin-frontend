@@ -183,8 +183,14 @@ const phenotype = ({
         </div>
       </div>
       <div className="phenotypeSecondLine">
+        {/*  TODO initalValue */}
         <Form.Item>
-          <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />
+          {getFieldDecorator(`hpoNote[${hpoIndex}]`, {
+            rules: [],
+          })(
+            <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />,
+          )}
+
         </Form.Item>
       </div>
     </div>
@@ -435,12 +441,17 @@ class ClinicalInformation extends React.Component {
             <Input size="small" type="hidden" />,
           )}
 
+          {/* TODO initialValue */}
           <Form.Item label="Type d’analyse">
-            <Radio.Group buttonStyle="solid">
-              <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
-              <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
-              <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
-            </Radio.Group>
+            {getFieldDecorator('analyse', {
+              rules: [],
+            })(
+              <Radio.Group buttonStyle="solid">
+                <Radio.Button value="exome"><span className="radioText">Exome</span></Radio.Button>
+                <Radio.Button value="genome"><span className="radioText">Génome</span></Radio.Button>
+                <Radio.Button value="sequencage"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+              </Radio.Group>,
+            )}
           </Form.Item>
         </Card>
         <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
@@ -457,12 +468,12 @@ class ClinicalInformation extends React.Component {
             )}
           </Form.Item>
           {
+            /* TODO initalValue */
             (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
             && (
             <Form.Item label="Précision">
-              {getFieldDecorator('cghNote', {
+              {getFieldDecorator('cghPrecision', {
                 rules: [],
-                initialValue: cghNoteValue,
               })(
                 <Input placeholder="Veuillez préciser…" className="input note" />,
               )}
@@ -471,7 +482,12 @@ class ClinicalInformation extends React.Component {
           }
 
           <Form.Item label="Résumé">
-            <TextArea className="input note" rows={4} />
+            {getFieldDecorator('cghNote', {
+              rules: [],
+              initialValue: cghNoteValue,
+            })(
+              <TextArea className="input note" rows={4} />,
+            )}
             <span className="optional">Facultatif</span>
           </Form.Item>
         </Card>

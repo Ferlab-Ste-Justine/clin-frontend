@@ -79,12 +79,13 @@ export const getIndicationId = (indication) => {
 export const CGH_CODES = {
   A: 'A',
   N: 'NEG',
+  IND: 'IND',
 };
 export const CGH_VALUES = () => (
   [
     { value: CGH_CODES.A, display: 'Anormal' },
-    { value: CGH_CODES.N, display: 'Négatif' },
-    { value: null, display: 'Sans objet' },
+    { value: CGH_CODES.N, display: 'Normal' },
+    { value: CGH_CODES.IND, display: 'Indeterminate' },
   ]
 );
 
@@ -427,9 +428,12 @@ export const getFamilyRelationshipCode = (resource) => {
     const { relationship } = resource;
     const { coding } = relationship;
     const { code } = coding[0];
+    if (code === '') {
+      return undefined;
+    }
     return code;
   } catch (e) {
-    return '';
+    return undefined;
   }
 };
 
@@ -438,9 +442,12 @@ export const getFamilyRelationshipDisplay = (resource) => {
     const { relationship } = resource;
     const { coding } = relationship;
     const { display } = coding[0];
+    if (display === '') {
+      return undefined;
+    }
     return display;
   } catch (e) {
-    return '';
+    return undefined;
   }
 };
 
@@ -534,7 +541,7 @@ export const getHPOOnsetCode = (resource) => {
   try {
     return resource.extension[0].valueCoding.value;
   } catch (e) {
-    return '';
+    return undefined;
   }
 };
 
