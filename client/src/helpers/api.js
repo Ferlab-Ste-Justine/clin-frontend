@@ -143,13 +143,6 @@ const savePatientSubmission = async (patientSubmission) => {
     .catch(errorCallback);
 };
 
-const updatePatientSubmission = async (patient, serviceRequest) => {
-  const data = createPatientSubmissionBundle(patient, serviceRequest);
-  return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true`, data)
-    .then(successCallback)
-    .catch(errorCallback);
-};
-
 const searchHpos = async (term) => {
   const url = `${window.CLIN.hpoBaseUrl}/autocomplete?prefix=${term}`;
   return Http.secureClinAxios.get(url)
@@ -193,5 +186,4 @@ export default {
   convertToExcelData,
   getGeneAutocomplete,
   savePatientSubmission,
-  updatePatientSubmission,
 };
