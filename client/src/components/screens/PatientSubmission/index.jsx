@@ -339,14 +339,24 @@ class PatientSubmissionScreen extends React.Component {
     if (currentPageIndex === 1) {
       const { investigation } = clinicalImpression;
       investigation[0].item = [
-        ...this.createCGHResourceList(),
+        this.createCGHResourceList(),
         ...this.createFamilyRelationshipResourceList(),
         ...this.createHPOResourceList(),
-        ...this.createIndicationResourceList(),
+        this.createIndicationResourceList(),
       ];
     }
 
     return clinicalImpressionData;
+  }
+
+  getServiceRequestCode() {
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+
+    if (values.analyse != null) {
+      return values.analyse;
+    }
+    return undefined;
   }
 
   canGoNextPage(currentPage) {
@@ -479,7 +489,7 @@ class PatientSubmissionScreen extends React.Component {
     const values = form.getFieldsValue();
 
     if (values.cghInterpretationValue === undefined) {
-      return [];
+      return undefined;
     }
 
     const {
@@ -487,8 +497,6 @@ class PatientSubmissionScreen extends React.Component {
       cghInterpretationValue,
       cghNote,
     } = values;
-
-    console.log(cghId);
 
     const builder = new ObservationBuilder('CGH')
       .withStatus('final');
@@ -507,9 +515,7 @@ class PatientSubmissionScreen extends React.Component {
       builder.withNote(cghNote);
     }
 
-    return [
-      builder.build(),
-    ];
+    return builder.build();
   }
 
   createIndicationResourceList() {
@@ -529,8 +535,9 @@ class PatientSubmissionScreen extends React.Component {
       builder.withNote(indication);
     }
 
-    return [builder.build()];
+    return builder.build();
   }
+
 
   handleSubmit(e) {
     const { form } = this.props;
@@ -540,7 +547,9 @@ class PatientSubmissionScreen extends React.Component {
         return;
       }
 
-      const { actions, serviceRequest, clinicalImpression } = this.props;
+      const {
+        actions, serviceRequest, clinicalImpression, observations,
+      } = this.props;
 
       const patientData = this.getPatientData();
 
@@ -551,9 +560,24 @@ class PatientSubmissionScreen extends React.Component {
         serviceRequest,
       };
 
+      submission.serviceRequest = submission.serviceRequest || {};
+      submission.serviceRequest.code = this.getServiceRequestCode();
+
       if (hasObservations(clinicalImpression)) {
         submission.clinicalImpression = clinicalImpressionData;
       }
+
+      observations.cgh = {
+        ...observations.cgh,
+        ...this.createCGHResourceList(),
+      };
+
+      observations.indic = {
+        ...observations.indic,
+        ...this.createIndicationResourceList(),
+      };
+
+      submission.observations = observations;
 
       actions.savePatientSubmission(submission);
     });
@@ -767,6 +791,7 @@ const mapStateToProps = state => ({
   serviceRequest: state.patientSubmission.serviceRequest,
   patient: state.patientSubmission.patient,
   clinicalImpression: state.patientSubmission.clinicalImpression,
+  observations: state.patientSubmission.observations,
   search: state.search,
 });
 
