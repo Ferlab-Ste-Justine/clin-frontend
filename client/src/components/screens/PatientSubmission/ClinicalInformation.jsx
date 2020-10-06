@@ -1,7 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { isEmpty } from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -14,6 +13,7 @@ import {
 
 import {
   map,
+  isEmpty,
 } from 'lodash';
 import {
   CGH_CODES,
@@ -236,9 +236,7 @@ class ClinicalInformation extends React.Component {
     const { form } = this.props;
     const values = form.getFieldsValue();
     const {
-      familyRelationshipIds,
       familyRelationshipCodes,
-      familyRelationshipNotes,
     } = values;
     const index = familyRelationshipCodes.length - 1;
     return familyRelationshipCodes[index] == null || familyRelationshipCodes[index].length === 0;
