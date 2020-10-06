@@ -208,50 +208,52 @@ const Approval = ({
   practitionerOptionSelected,
   practitionerSearchTermChanged,
   assignedPractitionerLabel,
+  getFieldDecorator,
 }) => (
   <div>
     <Card title="Consentements" bordered={false} className="staticCard patientContent">
       <Form>
+        {/* TODO initialValue */}
         <Form.Item label="Clauses signées" className="labelTop">
-          <Checkbox.Group className="checkboxGroup">
-            <Row>
-              <Checkbox className="checkbox" value="c1">
-                <span className="checkboxText">Clause 1</span>
-              </Checkbox>
-            </Row>
-            <Row>
-              <Checkbox className="checkbox" value="c2">
-                <span className="checkboxText">Clause 2</span>
-              </Checkbox>
-            </Row>
-            <Row>
-              <Checkbox className="checkbox" value="c3">
-                <span className="checkboxText">Clause 3</span>
-              </Checkbox>
-            </Row>
-            <Row>
-              <Checkbox className="checkbox" value="c4">
-                <span className="checkboxText">Clause 4</span>
-              </Checkbox>
-            </Row>
-          </Checkbox.Group>
+          {getFieldDecorator('consent', {
+            rules: [{ required: true }],
+          })(
+            <Checkbox.Group className="checkboxGroup">
+              <Row>
+                <Checkbox className="checkbox" value="c1"><span className="checkboxText">Clause 1</span></Checkbox>
+              </Row>
+              <Row>
+                <Checkbox className="checkbox" value="c2"><span className="checkboxText">Clause 2</span></Checkbox>
+              </Row>
+              <Row>
+                <Checkbox className="checkbox" value="c3"><span className="checkboxText">Clause 3</span></Checkbox>
+              </Row>
+              <Row>
+                <Checkbox className="checkbox" value="c4"><span className="checkboxText">Clause 4</span></Checkbox>
+              </Row>
+            </Checkbox.Group>,
+          )}
         </Form.Item>
       </Form>
     </Card>
     <Card title="Approbation" bordered={false} className="staticCard patientContent">
       <Form>
-        <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id
-                    ligula porta felis euismod semper.
-        </p>
+        <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
+        {/* TODO initialValue */}
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
-          <AutoComplete
-            classeName="searchInput"
-            placeholder="Recherche par nom ou licence…"
-            value={assignedPractitionerLabel}
-            dataSource={practitionerOptionsLabels}
-            onSelect={practitionerOptionSelected}
-            onChange={practitionerSearchTermChanged}
-          />
+          {getFieldDecorator('practitioner', {
+            rules: [{ required: true }],
+          })(
+            <AutoComplete
+              classeName="searchInput"
+              placeholder="Recherche par nom ou licence…"
+              value={assignedPractitionerLabel}
+              dataSource={practitionerOptionsLabels}
+              onSelect={practitionerOptionSelected}
+              onChange={practitionerSearchTermChanged}
+            />,
+          )}
+
         </Form.Item>
       </Form>
     </Card>
@@ -404,6 +406,11 @@ class PatientSubmissionScreen extends React.Component {
         }
         return true;
       }
+      case 2:
+        if (values.consent && values.practitioner) {
+          return false;
+        }
+        return true;
       default:
         return false;
     }
@@ -735,6 +742,17 @@ class PatientSubmissionScreen extends React.Component {
           >
             {pageContent}
             <div className="submission-form-actions">
+              {
+                currentPageIndex === this.pages.length - 1 && (
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    disabled={validation}
+                  >
+                    Soumettre
+                  </Button>
+                )
+              }
               {
                 currentPageIndex !== this.pages.length - 1 && (
                   <Button type="primary" onClick={() => this.next()} disabled={validation}>
