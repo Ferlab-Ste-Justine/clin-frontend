@@ -63,7 +63,7 @@ function* savePatientSubmission(action) {
     }
 
     result.fmh = [];
-    if (payload.observations.fmh != null && payload.observations.fmh.length > 1 && responses.length > 5) {
+    if (payload.observations.fmh != null && responses.length > 5) {
       for (let i = 0; i < payload.observations.fmh.length; i += 1) {
         result.fmh.push(processBundleResponse(responses[5 + i]));
       }
