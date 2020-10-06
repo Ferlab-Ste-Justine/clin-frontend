@@ -3,7 +3,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import uuidv1 from 'uuid/v1';
 import {
   Card, Form, Input, Button, Radio, Tree, Select, AutoComplete,
 } from 'antd';
@@ -26,7 +25,6 @@ import {
   getIndicationNote,
   getIndicationId,
   createHPOResource,
-  createFamilyHistoryMemberResource,
   getFamilyRelationshipCode,
   getFamilyRelationshipNote,
   hpoOnsetValues,
@@ -44,6 +42,7 @@ import {
   setHpoResourceDeletionFlag,
   setFamilyRelationshipResourceDeletionFlag,
   addFamilyHistoryResource,
+  addEmptyFamilyHistory,
 } from '../../../actions/patientSubmission';
 
 import Api from '../../../helpers/api';
@@ -91,41 +90,6 @@ const HpoHiddenFields = ({
   </div>
 );
 
-const FamilyRelationshipHiddenFields = ({
-  resource,
-  index,
-  getFieldDecorator,
-}) => (
-  <div>
-    {getFieldDecorator(`familyRelationshipIds[${index}]`, {
-      rules: [],
-      initialValue: getResourceId(resource) || '',
-    })(
-      <Input size="small" type="hidden" />,
-    )}
-
-    {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
-      rules: [],
-      initialValue: getFamilyRelationshipCode(resource) || '',
-    })(
-      <Input size="small" type="hidden" />,
-    )}
-
-    {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
-      rules: [],
-      initialValue: getFamilyRelationshipNote(resource) || '',
-    })(
-      <Input size="small" type="hidden" />,
-    )}
-
-    {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
-      rules: [],
-      initialValue: resource.toDelete,
-    })(
-      <Input size="small" type="hidden" />,
-    )}
-  </div>
-);
 
 const phenotype = ({
   hpoResource,
@@ -231,6 +195,8 @@ class ClinicalInformation extends React.Component {
     this.handleHpoDeleted = this.handleHpoDeleted.bind(this);
     this.handleHpoNodesChecked = this.handleHpoNodesChecked.bind(this);
     this.hpoSelected = this.hpoSelected.bind(this);
+    this.isAddDisabled = this.isAddDisabled.bind(this);
+    this.fmhSelected = this.fmhSelected.bind(this);
   }
 
   onLoadHpoChildren(treeNode) {
@@ -265,7 +231,24 @@ class ClinicalInformation extends React.Component {
     });
   }
 
+  isAddDisabled() {
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+    const {
+      familyRelationshipIds,
+      familyRelationshipCodes,
+      familyRelationshipNotes,
+    } = values;
+    const index = familyRelationshipCodes.length - 1;
+    return familyRelationshipCodes[index] == null || familyRelationshipCodes[index].length === 0;
+  }
+
   addFamilyHistory() {
+    const { actions } = this.props;
+    actions.addEmptyFamilyHistory();
+  }
+
+  fmhSelected(fhmCode, index) {
     const { form } = this.props;
     const values = form.getFieldsValue();
     const {
@@ -274,25 +257,25 @@ class ClinicalInformation extends React.Component {
       familyRelationshipNotes,
     } = values;
 
-    const index = familyRelationshipCodes.length - 1;
 
-    // const fmh = [];
-    console.log(values);
-    // familyRelationshipCodes.forEach((code, index) => {
-    const code = familyRelationshipCodes[index];
-    const builder = new FamilyMemberHistoryBuilder(code, getFamilyRelationshipDisplayForCode(code));
-    if (familyRelationshipNotes[index] != null) {
-      builder.withNote(familyRelationshipNotes[index]);
-    }
-    const familyHistory = builder.build();
+    const fmh = [];
+    familyRelationshipCodes.forEach((c, i) => {
+      const code = i === index ? fhmCode : c;
+      if (code != null && code.length > 0) {
+        const builder = new FamilyMemberHistoryBuilder(code, getFamilyRelationshipDisplayForCode(code));
+        if (familyRelationshipNotes[index] != null) {
+          builder.withNote(familyRelationshipNotes[index]);
+        }
+        const familyHistory = builder.build();
 
-    if (familyRelationshipIds[index] != null && familyRelationshipIds[index].length > 0) {
-      familyHistory.id = familyRelationshipIds[index];
-    }
-    // fmh.push(familyHistory);
-    // });
+        if (familyRelationshipIds[index] != null && familyRelationshipIds[index].length > 0) {
+          familyHistory.id = familyRelationshipIds[index];
+        }
+        fmh.push(familyHistory);
+      }
+    });
     const { actions } = this.props;
-    actions.addFamilyHistoryResource(familyHistory);
+    actions.addFamilyHistoryResource(fmh);
   }
 
   deleteFamilyHistory({ code }) {
@@ -448,7 +431,7 @@ class ClinicalInformation extends React.Component {
             initialValue: getFamilyRelationshipCode(resource),
             rules: [],
           })(
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown">
+            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown" onChange={(event) => { this.fmhSelected(event, index); }}>
               {Object.values(relationshipPossibleValues).map(rv => (
                 <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
               ))}
@@ -553,7 +536,7 @@ class ClinicalInformation extends React.Component {
           </div>
           <Form.Item>
             {/* <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}> */}
-            <Button className="addFamilyButton" disabled={false} onClick={this.addFamilyHistory}>
+            <Button className="addFamilyButton" disabled={this.isAddDisabled()} onClick={this.addFamilyHistory}>
               <IconKit size={14} icon={ic_add} />
                 Ajouter
             </Button>
@@ -625,6 +608,7 @@ const mapDispatchToProps = dispatch => ({
     setHpoResourceDeletionFlag,
     setFamilyRelationshipResourceDeletionFlag,
     addFamilyHistoryResource,
+    addEmptyFamilyHistory,
   }, dispatch),
 });
 

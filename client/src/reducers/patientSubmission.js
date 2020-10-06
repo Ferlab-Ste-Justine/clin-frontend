@@ -120,11 +120,7 @@ const patientSubmissionReducer = (
       };
       break;
     case actions.PATIENT_SUBMISSION_ADD_FAMILY_RELATIONSHIP_RESOURCE:
-      draft.observations.fmh = draft.observations.fmh.filter(fmh => !isEmpty(fmh));
-
-      draft.observations.fmh.push(action.payload);
-      draft.observations.fmh.push({});
-      console.log(draft.observations.fmh);
+      draft.observations.fmh = action.payload;
 
       draft.clinicalImpression = {
         ...draft.clinicalImpression,
@@ -135,6 +131,9 @@ const patientSubmissionReducer = (
             },
           ],
       };
+      break;
+    case actions.PATIENT_SUBMISSION_ADD_EMPTY_FAMILY_RELATIONSHIP:
+      draft.observations.fmh.push({});
       break;
     case actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION:
       draft.observations.fmh = draft.observations.fmh
