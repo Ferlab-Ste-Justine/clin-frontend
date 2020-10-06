@@ -12,7 +12,7 @@ import {
 import { find, has } from 'lodash';
 
 import IconKit from 'react-icons-kit';
-import { ic_save } from 'react-icons-kit/md';
+import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
@@ -764,6 +764,7 @@ class PatientSubmissionScreen extends React.Component {
               {
                                 currentPageIndex !== 0 && (
                                 <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                                  <IconKit size={20} icon={ic_keyboard_arrow_left} />
                                   {intl.get('screen.clinicalSubmission.previousButtonTitle')}
                                 </Button>
                                 )
