@@ -252,13 +252,13 @@ class ClinicalInformation extends React.Component {
     const { form } = this.props;
     const values = form.getFieldsValue();
     const {
-      familyRelationshipIds,
       familyRelationshipCodes,
       familyRelationshipNotes,
     } = values;
 
 
     const fmh = [];
+    const { observations } = this.props;
     familyRelationshipCodes.forEach((c, i) => {
       const code = i === index ? fhmCode : c;
       if (code != null && code.length > 0) {
@@ -268,8 +268,8 @@ class ClinicalInformation extends React.Component {
         }
         const familyHistory = builder.build();
 
-        if (familyRelationshipIds[index] != null && familyRelationshipIds[index].length > 0) {
-          familyHistory.id = familyRelationshipIds[index];
+        if (observations.fmh[i].id != null && observations.fmh[i].id.length > 0) {
+          familyHistory.id = observations.fmh[i].id;
         }
         fmh.push(familyHistory);
       }
