@@ -2,9 +2,10 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
+import { isEmpty } from 'lodash';
 import * as actions from '../actions/type';
 
-import { getHPOCode, getFamilyRelationshipCode } from '../helpers/fhir/fhir';
+import { getHPOCode } from '../helpers/fhir/fhir';
 
 // @TODO change item values
 export const initialPatientSubmissionState = {
@@ -37,6 +38,14 @@ export const initialPatientSubmissionState = {
       },
     ],
   },
+  observations: {
+    cgh: null,
+    indic: null,
+    fmh: [{}],
+  },
+  deleted: {
+    fmh: [],
+  },
 };
 
 export const patientSubmissionShape = {
@@ -49,27 +58,36 @@ const patientSubmissionReducer = (
 ) => produce(state, (draft) => {
   switch (action.type) {
     case actions.PATIENT_SUBMISSION_SAVE_SUCCEEDED:
-      draft.patient = { ...draft.patient, ...action.payload.patient };
-      draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest };
+      draft.patient = { ...action.payload.patient, ...action.payload.result.patient };
+      draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest, ...action.payload.result.serviceRequest };
+      draft.clinicalImpression = { ...draft.clinicalImpression, ...action.payload.clinicalImpression, ...action.payload.result.clinicalImpression };
 
-      draft.clinicalImpression = {
-        ...draft.clinicalImpression,
-        ...action.payload.clinicalImpression,
-        investigation: !action.payload.investigations
-          ? { ...draft.clinicalImpression.investigation }
-          : [
-            {
-              item: action.payload.investigations.map((item, index) => ({
-                ...draft.clinicalImpression.investigation[0].item[index], ...item,
-              })).filter(resource => !resource.toDelete),
-            },
-          ],
+      draft.observations = {
+        ...draft.observations,
+        cgh: {
+          ...draft.observations.cgh, ...action.payload.result.cgh,
+        },
+        indic: {
+          ...draft.observations.indic, ...action.payload.result.indic,
+        },
+        fmh: draft.observations.fmh.filter(fmh => !isEmpty(fmh)).map((fmh, index) => ({
+          ...fmh,
+          ...action.payload.result.fmh[index],
+        })),
       };
+      draft.observations.fmh.push({});
+      draft.deleted.fmh = [];
       break;
     case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
       draft.serviceRequest = {
         ...draft.serviceRequest,
         requester: action.payload,
+      };
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_SAVE_REQUESTED:
+      draft.patient = {
+        ...draft.patient,
+        ...action.payload,
       };
       break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
@@ -106,6 +124,8 @@ const patientSubmissionReducer = (
       };
       break;
     case actions.PATIENT_SUBMISSION_ADD_FAMILY_RELATIONSHIP_RESOURCE:
+      draft.observations.fmh = action.payload;
+
       draft.clinicalImpression = {
         ...draft.clinicalImpression,
         investigation:
@@ -116,27 +136,13 @@ const patientSubmissionReducer = (
           ],
       };
       break;
+    case actions.PATIENT_SUBMISSION_ADD_EMPTY_FAMILY_RELATIONSHIP:
+      draft.observations.fmh.push({});
+      break;
     case actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION:
-      draft.clinicalImpression = {
-        ...draft.clinicalImpression,
-        investigation:
-          [
-            {
-              item: [...draft.clinicalImpression.investigation[0].item.map((resource) => {
-                if (action.payload.id) {
-                  if (action.payload.id === resource.id) {
-                    return { ...resource, toDelete: action.payload.toDelete };
-                  }
-                }
-                if (action.payload.code === getFamilyRelationshipCode(resource) && action.payload.toDelete) {
-                  return null;
-                }
-                return resource;
-              }).filter(r => r !== null),
-              ],
-            },
-          ],
-      };
+      action.payload.deleted.forEach((deleted) => {
+        draft.deleted.fmh.push(deleted);
+      });
       break;
     default:
       break;

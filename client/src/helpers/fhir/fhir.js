@@ -1,7 +1,7 @@
-import uuidv1 from 'uuid/v1';
+import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
 
-import { has } from 'lodash';
+import { has, isEmpty } from 'lodash';
 import { FhirDataManager } from './fhir_data_manager.ts';
 
 const OBSERVATION_CGH_CODE = 'CGH';
@@ -77,7 +77,7 @@ export const getIndicationId = (indication) => {
 // TODO: translate/intl
 export const CGH_CODES = {
   A: 'A',
-  N: 'N',
+  N: 'NEG',
   IND: 'IND',
 };
 export const CGH_VALUES = () => (
@@ -120,7 +120,7 @@ export const createRequest = (resource) => {
   };
 };
 
-const createFullUrl = resource => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuidv1()}`);
+const createFullUrl = resource => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuid()}`);
 const createEntry = resource => ({
   fullUrl: createFullUrl(resource),
   resource,
@@ -304,10 +304,15 @@ export const createPatientSubmissionBundle = ({
   patient,
   serviceRequest,
   clinicalImpression,
+  observations,
+  deleted,
 }) => {
   const patientResource = patient;
   const patientEntry = createEntry(patientResource);
-  const patientReference = getReference(patientEntry);
+  const patientReference = {
+    reference: (patient.id == null) ? patientEntry.fullUrl : `Patient/${patient.id}`,
+  };
+
 
   const bundle = createBundle();
   bundle.entry.push(patientEntry);
@@ -315,9 +320,11 @@ export const createPatientSubmissionBundle = ({
   const serviceRequestResource = FhirDataManager.createServiceRequest(
     'PR00101', // TODO: Change to real id once it's supported.
     patientEntry.fullUrl,
-    serviceRequest != null ? serviceRequest.status : 'draft',
+    'draft',
+    serviceRequest.code,
   );
 
+  serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
   serviceRequestResource.subject = patientReference;
 
   // We don't need to send a resource of type Practitioner
@@ -336,15 +343,16 @@ export const createPatientSubmissionBundle = ({
       'PR00101', // TODO: Change to real id once it's supported.
       patientEntry.fullUrl,
     );
+    clinicalImpressionResource.id = clinicalImpression.id != null ? clinicalImpression.id : undefined;
     clinicalImpressionResource.subject = patientReference;
+
     const clinicalImpressionEntry = createEntry(clinicalImpressionResource);
     bundle.entry.push(clinicalImpressionEntry);
 
     // CGH
-    const cghResource = clinicalImpression.investigation[0].item.find(isCGH);
-    if (cghResource != null) {
-      cghResource.subject = patientReference;
-      const cghEntry = createEntry(cghResource);
+    if (observations.cgh != null && !isEmpty(observations.cgh)) {
+      observations.cgh.subject = patientReference;
+      const cghEntry = createEntry(observations.cgh);
       bundle.entry.push(cghEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
     }
@@ -352,33 +360,34 @@ export const createPatientSubmissionBundle = ({
     // TODO: HPO
 
     // Indication
-    const indicationResource = clinicalImpression.investigation[0].item.find(isIndication);
-    if (indicationResource != null) {
-      indicationResource.subject = patientReference;
-      const indicationEntry = createEntry(indicationResource);
-      bundle.entry.push(indicationEntry);
-      clinicalImpressionResource.investigation[0].item.push(getReference(indicationEntry));
-      clinicalImpression.investigation[0].item.forEach((resource) => {
-        // Note: this is an exception in the model. All resources should use the same field: subject
-        // Or, familyHistory resources should be stored somewhere else than with observations as
-        // it is not of the same kind (resourceType)
-        if (isFamilyHistoryResource(resource)) {
-          resource.patient = patientReference;
-        } else {
-          resource.subject = patientReference;
-        }
+    if (observations.indic != null && !isEmpty(observations.indic)) {
+      observations.indic.subject = patientReference;
+      const indicEntry = createEntry(observations.indic);
+      bundle.entry.push(indicEntry);
+      clinicalImpressionResource.investigation[0].item.push(getReference(indicEntry));
+    }
 
-        const entry = createEntry(resource);
+    if (observations.fmh != null) {
+      observations.fmh.filter(fmh => !isEmpty(fmh)).forEach((fmh) => {
+        fmh.patient = patientReference;
+        const entry = createEntry(fmh);
         bundle.entry.push(entry);
-        if (!resource.toDelete) {
-          clinicalImpressionResource.investigation[0].item.push(getReference(entry));
-        }
+        clinicalImpressionResource.investigation[0].item.push(getReference(entry));
       });
     }
 
     // reference from ServiceRequest to ClinicalImpression resource
     serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
   }
+
+  deleted.fmh.forEach((deletedResource) => {
+    bundle.entry.push({
+      request: {
+        method: 'DELETE',
+        url: `${deletedResource.resourceType}/${deletedResource.id}`,
+      },
+    });
+  });
 
   return bundle;
 };

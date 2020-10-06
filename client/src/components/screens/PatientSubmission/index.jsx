@@ -7,24 +7,17 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Steps, Card, Form, Input, Button, Radio, DatePicker, Select, Checkbox, Row, AutoComplete,
+  AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps,
 } from 'antd';
-import {
-  has, find,
-} from 'lodash';
+import { find, has } from 'lodash';
 
 import IconKit from 'react-icons-kit';
-import {
-  ic_save,
-} from 'react-icons-kit/md';
+import { ic_save } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
-import {
-  savePatientSubmission,
-  assignServiceRequestPractitioner,
-} from '../../../actions/patientSubmission';
+import { assignServiceRequestPractitioner, savePatientSubmission, savePatientLocal } from '../../../actions/patientSubmission';
 import ClinicalInformation from './ClinicalInformation';
 import Api from '../../../helpers/api';
 
@@ -32,20 +25,19 @@ import './style.scss';
 
 import {
   cghDisplay,
-  createCGHResource,
-  getHPOOnsetDisplayFromCode,
-  createIndicationResource,
   createHPOResource,
-  isCGH,
-  isHPO,
-  isFamilyHistoryResource,
-  isIndication,
-  hpoInterpretationDisplayForCode,
-  createFamilyHistoryMemberResource,
   createPractitionerResource,
   getFamilyRelationshipDisplayForCode,
+  getHPOOnsetDisplayFromCode,
+  hpoInterpretationDisplayForCode,
+  isCGH,
+  isFamilyHistoryResource,
+  isHPO,
+  isIndication,
 } from '../../../helpers/fhir/fhir';
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
+import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
+import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
 
 const { Step } = Steps;
 
@@ -126,10 +118,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         })(
           <Radio.Group buttonStyle="solid">
             {
-              Object.values(genderValues).map(gv => (
-                <Radio.Button value={gv.value} key={`gender_${gv.value}`}><span className="radioText">{gv.label}</span></Radio.Button>
-              ))
-            }
+                            Object.values(genderValues).map(gv => (
+                              <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
+                                <span className="radioText">{gv.label}</span>
+                              </Radio.Button>
+                            ))
+                        }
           </Radio.Group>,
         )}
       </Form.Item>
@@ -143,7 +137,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="RAMQ">
         {getFieldDecorator('ramq', {
-          rules: [{ pattern: RegExp(/^[A-Z]{4}\d{8,9}$/), message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres' }],
+          rules: [{
+            pattern: RegExp(/^[A-Z]{4}\d{8,9}$/),
+            message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres',
+          }],
           initialValue: ramqValue(patient),
         })(
           <Input placeholder="ABCD 0000 0000" className="input large" />,
@@ -236,7 +233,6 @@ const Approval = ({
               </Row>
             </Checkbox.Group>,
           )}
-
         </Form.Item>
       </Form>
     </Card>
@@ -345,14 +341,24 @@ class PatientSubmissionScreen extends React.Component {
     if (currentPageIndex === 1) {
       const { investigation } = clinicalImpression;
       investigation[0].item = [
-        ...this.createCGHResourceList(),
+        this.createCGHResourceList(),
         ...this.createFamilyRelationshipResourceList(),
         ...this.createHPOResourceList(),
-        ...this.createIndicationResourceList(),
+        this.createIndicationResourceList(),
       ];
     }
 
     return clinicalImpressionData;
+  }
+
+  getServiceRequestCode() {
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+
+    if (values.analyse != null) {
+      return values.analyse;
+    }
+    return undefined;
   }
 
   canGoNextPage(currentPage) {
@@ -425,15 +431,27 @@ class PatientSubmissionScreen extends React.Component {
       familyRelationshipsToDelete,
     } = values;
 
-    const familyRelationshipResources = familyRelationshipCodes.map((code, index) => createFamilyHistoryMemberResource({
-      id: familyRelationshipIds[index],
-      code,
-      display: getFamilyRelationshipDisplayForCode(familyRelationshipCodes[index]),
-      note: familyRelationshipNotes[index],
-      toDelete: familyRelationshipsToDelete[index],
-    }));
-
-    return familyRelationshipResources;
+    return familyRelationshipCodes.map((code, index) => {
+      const id = familyRelationshipIds[index];
+      const toDelete = familyRelationshipsToDelete[index];
+      if (id == null || id.length === 0) {
+        const builder = new FamilyMemberHistoryBuilder({
+          coding: [{
+            code,
+            display: getFamilyRelationshipDisplayForCode(familyRelationshipCodes[index]),
+          }],
+        });
+        const note = familyRelationshipNotes[index];
+        if (note != null && note.length > 0) {
+          builder.withNote(note);
+        }
+        if (toDelete) {
+          builder.withStatus('entered-in-error');
+        }
+        return builder.build();
+      }
+      return null;
+    }).filter(r => r != null);
   }
 
   createHPOResourceList() {
@@ -478,25 +496,32 @@ class PatientSubmissionScreen extends React.Component {
     const values = form.getFieldsValue();
 
     if (values.cghInterpretationValue === undefined) {
-      return [];
+      return undefined;
     }
 
     const {
-      cghId,
       cghInterpretationValue,
       cghNote,
     } = values;
 
-    return [
-      createCGHResource({
-        id: cghId,
-        interpretation: {
-          value: cghInterpretationValue,
+    const builder = new ObservationBuilder('CGH')
+      .withStatus('final');
+
+
+    if (cghInterpretationValue != null) {
+      builder.withInterpretation({
+        coding: [{
           display: cghDisplay(cghInterpretationValue),
-        },
-        note: cghNote,
-      }),
-    ];
+          code: cghInterpretationValue,
+        }],
+      });
+    }
+
+    if (cghNote != null && cghNote.length > 0) {
+      builder.withNote(cghNote);
+    }
+
+    return builder.build();
   }
 
   createIndicationResourceList() {
@@ -509,21 +534,28 @@ class PatientSubmissionScreen extends React.Component {
 
     const {
       indication,
-      indicationId,
     } = values;
 
-    return [{
-      ...createIndicationResource({ id: indicationId, note: indication }),
-    }];
+    const builder = new ObservationBuilder('INDIC');
+    if (indication != null) {
+      builder.withNote(indication);
+    }
+
+    return builder.build();
   }
+
 
   handleSubmit(e) {
     const { form } = this.props;
     e.preventDefault();
     form.validateFields((err) => {
-      if (err) { return; }
+      if (err) {
+        return;
+      }
 
-      const { actions, serviceRequest, clinicalImpression } = this.props;
+      const {
+        actions, serviceRequest, clinicalImpression, observations, deleted,
+      } = this.props;
 
       const patientData = this.getPatientData();
 
@@ -534,10 +566,27 @@ class PatientSubmissionScreen extends React.Component {
         serviceRequest,
       };
 
+      submission.serviceRequest = submission.serviceRequest || {};
+      submission.serviceRequest.code = this.getServiceRequestCode();
+
       if (hasObservations(clinicalImpression)) {
         submission.clinicalImpression = clinicalImpressionData;
       }
 
+
+      submission.observations = {
+        ...observations,
+        cgh: {
+          ...observations.cgh,
+          ...this.createCGHResourceList(),
+        },
+        indic: {
+          ...observations.indic,
+          ...this.createIndicationResourceList(),
+        },
+      };
+
+      submission.deleted = deleted;
       actions.savePatientSubmission(submission);
     });
   }
@@ -548,7 +597,9 @@ class PatientSubmissionScreen extends React.Component {
 
   next() {
     const { currentPageIndex } = this.state;
+    const { actions } = this.props;
     const pageIndex = currentPageIndex + 1;
+    actions.savePatientLocal(this.getPatientData());
     this.setState({ currentPageIndex: pageIndex });
   }
 
@@ -711,12 +762,12 @@ class PatientSubmissionScreen extends React.Component {
               }
 
               {
-                currentPageIndex !== 0 && (
-                  <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                    {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-                  </Button>
-                )
-              }
+                                currentPageIndex !== 0 && (
+                                <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                                  {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+                                </Button>
+                                )
+                            }
 
               <Button
                 htmlType="submit"
@@ -748,6 +799,7 @@ const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
     navigateToPatientSearchScreen,
     savePatientSubmission,
+    savePatientLocal,
     assignServiceRequestPractitioner,
   }, dispatch),
 });
@@ -758,6 +810,8 @@ const mapStateToProps = state => ({
   serviceRequest: state.patientSubmission.serviceRequest,
   patient: state.patientSubmission.patient,
   clinicalImpression: state.patientSubmission.clinicalImpression,
+  observations: state.patientSubmission.observations,
+  deleted: state.patientSubmission.deleted,
   search: state.search,
 });
 

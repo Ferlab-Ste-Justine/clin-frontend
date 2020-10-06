@@ -64,10 +64,6 @@ export interface Note {
     text: string;
 }
 
-export interface Relationship {
-    coding: Coding[];
-}
-
 export interface Category {
     text: string;
 }
@@ -110,11 +106,10 @@ export interface ClinicalImpression {
 
 export interface FamilyMemberHistory {
     resourceType: ResourceType;
-    id: string;
     meta: Meta;
     status: string;
     patient: Reference;
-    relationship: Relationship;
+    relationship: CodeableConcept;
     note: Note[];
 }
 
@@ -127,14 +122,13 @@ export interface ServiceRequest {
     authoredOn: string;
     category: Category[];
     priority: string;
-    code: CodeableConcept;
+    code?: CodeableConcept;
     requester: Reference;
     subject: Reference;
 }
 
 export interface Observation {
     resourceType: ResourceType;
-    id: string;
     meta: Meta;
     status: string;
     category: CodeableConcept[];

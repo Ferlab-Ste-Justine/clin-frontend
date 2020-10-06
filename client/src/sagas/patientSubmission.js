@@ -40,11 +40,6 @@ const processBundleResponse = (r) => {
 function* savePatientSubmission(action) {
   const { payload } = action;
 
-  yield put({
-    type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,
-    payload,
-  });
-
   let response = null;
   try {
     response = yield Api.savePatientSubmission(payload);
@@ -62,13 +57,28 @@ function* savePatientSubmission(action) {
     result.patient = processBundleResponse(responses.find(isPatient));
     result.serviceRequest = processBundleResponse(responses.find(isServiceRequest));
     result.clinicalImpression = processBundleResponse(responses.find(isClinicalImpression));
+    if (responses.length > 4) {
+      result.cgh = processBundleResponse(responses[3]);
+      result.indic = processBundleResponse(responses[4]);
+    }
+
+    result.fmh = [];
+    if (payload.observations.fmh != null && responses.length > 5) {
+      for (let i = 0; i < payload.observations.fmh.length; i += 1) {
+        result.fmh.push(processBundleResponse(responses[5 + i]));
+      }
+    }
+
     result.investigations = [
       ...responses.filter(isInvestigation).map(processBundleResponse),
     ];
 
     yield put({
       type: actionTypes.PATIENT_SUBMISSION_SAVE_SUCCEEDED,
-      payload: result,
+      payload: {
+        ...payload,
+        result,
+      },
     });
   } catch (e) {
     yield put({ type: actionTypes.PATIENT_SUBMISSION_SAVE_FAILED, payload: e });
