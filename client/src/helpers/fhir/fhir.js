@@ -305,6 +305,7 @@ export const createPatientSubmissionBundle = ({
   serviceRequest,
   clinicalImpression,
   observations,
+  deleted,
 }) => {
   const patientResource = patient;
   const patientEntry = createEntry(patientResource);
@@ -366,11 +367,6 @@ export const createPatientSubmissionBundle = ({
       clinicalImpressionResource.investigation[0].item.push(getReference(indicEntry));
     }
 
-    if (observations.fmh != null && observations.fmh.length > 0) {
-      console.log(observations.fmh);
-    }
-
-    console.log(observations);
     if (observations.fmh != null) {
       observations.fmh.filter(fmh => !isEmpty(fmh)).forEach((fmh) => {
         fmh.patient = patientReference;
@@ -380,32 +376,18 @@ export const createPatientSubmissionBundle = ({
       });
     }
 
-    // clinicalImpression.investigation[0].item.filter((o) => {
-    //   try {
-    //     return !isIndication(o) && !isCGH(o) && o.relationship.coding[0].code.length > 0;
-    //   } catch (e) {
-    //     return false;
-    //   }
-    // }).forEach((resource) => {
-    //   // Note: this is an exception in the model. All resources should use the same field: subject
-    //   // Or, familyHistory resources should be stored somewhere else than with observations as
-    //   // it is not of the same kind (resourceType)
-    //   if (isFamilyHistoryResource(resource)) {
-    //     resource.patient = patientReference;
-    //   } else {
-    //     resource.subject = patientReference;
-    //   }
-
-    //   const entry = createEntry(resource);
-    //   bundle.entry.push(entry);
-    //   if (resource.status !== 'entered-in-error') {
-    //     clinicalImpressionResource.investigation[0].item.push(getReference(entry));
-    //   }
-    // });
-
     // reference from ServiceRequest to ClinicalImpression resource
     serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
   }
+
+  deleted.fmh.forEach((deletedResource) => {
+    bundle.entry.push({
+      request: {
+        method: 'DELETE',
+        url: `${deletedResource.resourceType}/${deletedResource.id}`,
+      },
+    });
+  });
 
   return bundle;
 };

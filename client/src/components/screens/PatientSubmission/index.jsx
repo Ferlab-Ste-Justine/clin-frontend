@@ -547,7 +547,7 @@ class PatientSubmissionScreen extends React.Component {
       }
 
       const {
-        actions, serviceRequest, clinicalImpression, observations,
+        actions, serviceRequest, clinicalImpression, observations, deleted,
       } = this.props;
 
       const patientData = this.getPatientData();
@@ -579,6 +579,7 @@ class PatientSubmissionScreen extends React.Component {
         },
       };
 
+      submission.deleted = deleted;
       actions.savePatientSubmission(submission);
     });
   }
@@ -792,6 +793,7 @@ const mapStateToProps = state => ({
   patient: state.patientSubmission.patient,
   clinicalImpression: state.patientSubmission.clinicalImpression,
   observations: state.patientSubmission.observations,
+  deleted: state.patientSubmission.deleted,
   search: state.search,
 });
 

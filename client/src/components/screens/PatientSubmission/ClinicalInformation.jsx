@@ -1,6 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
+import { isEmpty } from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -287,35 +288,40 @@ class ClinicalInformation extends React.Component {
       familyRelationshipNotes,
     } = values;
 
-    // const index = familyRelationshipCodes.findIndex(e => e === code);
     const codes = [];
     const ids = [];
     const notes = [];
 
-    familyRelationshipCodes.forEach((c, index) => {
+    familyRelationshipCodes.forEach((c, i) => {
       if (c !== code) {
         codes.push(c);
-        ids.push(familyRelationshipIds[index]);
-        notes.push(familyRelationshipNotes[index]);
+        ids.push(familyRelationshipIds[i]);
+        notes.push(familyRelationshipNotes[i]);
       }
     });
 
-    // if (index !== -1) {
-    //   values.familyRelationshipCodes = familyRelationshipCodes.splice(index, 1).filter(a => a != null);
-    //   values.familyRelationshipIds = familyRelationshipIds.splice(index, 1).filter(a => a != null);
-    //   values.familyRelationshipNotes = familyRelationshipNotes.splice(index, 1).filter(a => a != null);
-    // }
-
-    // console.log(index);
-    // console.log(code);
-    // console.log(values.familyRelationshipCodes);
     values.familyRelationshipCodes = codes;
     values.familyRelationshipIds = ids;
     values.familyRelationshipNotes = notes;
-    console.log(values);
     form.setFieldsValue(values);
 
-    actions.setFamilyRelationshipResourceDeletionFlag({ code });
+    const fmh = [];
+    const deleted = [];
+    const { observations } = this.props;
+
+    observations.fmh.forEach((familyHistory) => {
+      if (isEmpty(familyHistory) || familyHistory.relationship.coding[0].code !== code) {
+        fmh.push(familyHistory);
+      } else if (familyHistory.id != null) {
+        deleted.push(familyHistory);
+      }
+    });
+
+    actions.addFamilyHistoryResource(fmh);
+    actions.setFamilyRelationshipResourceDeletionFlag(deleted);
+    if (fmh.length === 0) {
+      actions.addEmptyFamilyHistory();
+    }
   }
 
   handleHpoSearchTermChanged(term) {

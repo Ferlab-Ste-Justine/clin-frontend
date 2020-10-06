@@ -31,17 +31,15 @@ export const addFamilyHistoryResource = resource => ({
 });
 
 
-export const addEmptyFamilyHistory = resource => ({
+export const addEmptyFamilyHistory = () => ({
   type: actions.PATIENT_SUBMISSION_ADD_EMPTY_FAMILY_RELATIONSHIP,
-  payload: resource,
+  payload: {},
 });
 
-export const setFamilyRelationshipResourceDeletionFlag = ({ id, code, toDelete }) => ({
+export const setFamilyRelationshipResourceDeletionFlag = deleted => ({
   type: actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION,
   payload: {
-    id,
-    code,
-    toDelete,
+    deleted,
   },
 });
 
