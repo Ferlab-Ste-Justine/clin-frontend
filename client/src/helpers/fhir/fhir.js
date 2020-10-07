@@ -306,19 +306,25 @@ export const createPatientSubmissionBundle = ({
   clinicalImpression,
   observations,
   deleted,
+  practitionerId,
 }) => {
   const patientResource = patient;
+  if (practitionerId != null) {
+    patientResource.generalPractitioner = [{
+      reference: `Practitioner/${practitionerId}`,
+    }];
+  }
+
   const patientEntry = createEntry(patientResource);
   const patientReference = {
     reference: (patient.id == null) ? patientEntry.fullUrl : `Patient/${patient.id}`,
   };
 
-
   const bundle = createBundle();
   bundle.entry.push(patientEntry);
 
   const serviceRequestResource = FhirDataManager.createServiceRequest(
-    'PR00101', // TODO: Change to real id once it's supported.
+    practitionerId, // TODO: Change to real id once it's supported.
     patientEntry.fullUrl,
     'draft',
     serviceRequest.code,
@@ -340,7 +346,7 @@ export const createPatientSubmissionBundle = ({
 
   if (clinicalImpression != null) {
     const clinicalImpressionResource = FhirDataManager.createClinicalImpression(
-      'PR00101', // TODO: Change to real id once it's supported.
+      'PR0001', // TODO: Change to real id once it's supported.
       patientEntry.fullUrl,
     );
     clinicalImpressionResource.id = clinicalImpression.id != null ? clinicalImpression.id : undefined;
