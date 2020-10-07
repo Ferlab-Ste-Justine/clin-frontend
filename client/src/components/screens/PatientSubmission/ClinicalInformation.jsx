@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Form, Input, Button, Radio, Tree, Select, AutoComplete,
 } from 'antd';
-import uuidv1 from 'uuid/v1';
 import IconKit from 'react-icons-kit';
 import {
   ic_add, ic_remove, ic_help, ic_person, ic_visibility, ic_visibility_off,
@@ -15,7 +14,6 @@ import {
 import {
   map,
   isEmpty,
-  debounce,
 } from 'lodash';
 import {
   CGH_CODES,
@@ -37,7 +35,6 @@ import {
   hpoInterpretationValues,
   getFamilyRelationshipValues,
   getFamilyRelationshipDisplayForCode,
-  hpoInterpretationDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 import {
@@ -256,14 +253,11 @@ class ClinicalInformation extends React.Component {
   }
 
   handleHpoNoteChanged(note, index) {
-    // console.log(arguments);
     const { actions } = this.props;
-    // const debouncedUpdateHpoNote = debounce(actions.updateHpoNote, 500);
     actions.updateHpoNote(note, index);
   }
 
   handleObservationChanged(observationCode, index) {
-    // console.log(arguments);
     const { actions } = this.props;
 
 
@@ -278,7 +272,6 @@ class ClinicalInformation extends React.Component {
   }
 
   handleHpoAgeChanged(code, index) {
-    // console.log(arguments);
     const { actions } = this.props;
     let value = null;
     const keys = Object.keys(hpoOnsetValues);
@@ -420,7 +413,6 @@ class ClinicalInformation extends React.Component {
     const checkedNodes = info.checkedNodes.map(n => ({ code: n.key, display: n.props.title }));
     const hpoResources = observations.hpos;// clinicalImpression.investigation[0].item.filter(isHPO);
 
-    console.log(checkedNodes);
     const toDelete = [];
     const toAdd = [];
     hpoResources.forEach((resource) => {
@@ -436,20 +428,6 @@ class ClinicalInformation extends React.Component {
 
     toDelete.map(r => ({ code: r.valueCodeableConcept.coding[0].code })).forEach(actions.setHpoResourceDeletionFlag);
     toAdd.forEach(this.hpoSelected);
-    // If in resources: make sure it is not marked as toDelete
-    // console.log(arguments);
-    // console.log(toDelete);
-    // const nodesPresent = checkedNodes
-    //   .filter(n => hpoResources.find(r => n.code === getHPOCode(r)));
-    // console.log(nodesPresent);
-    // nodesPresent.forEach((n) => {
-    //   actions.setHpoResourceDeletionFlag({ code: n.code, toDelete: false });
-    // });
-    //
-    // // If not in resources: add it
-    // const nodesToAdd = checkedNodes
-    //   .filter(n => !hpoResources.find(r => n.code === getHPOCode(r)));
-    // nodesToAdd.forEach(this.hpoSelected);
   }
 
   handleHpoOptionSelected(value) {
