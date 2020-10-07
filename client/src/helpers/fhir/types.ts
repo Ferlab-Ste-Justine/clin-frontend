@@ -100,7 +100,7 @@ export interface ClinicalImpression {
     status: 'in-progress' | 'completed' | 'entered-in-error';
     subject: Reference;
     date: string;
-    assessor: Reference;
+    assessor?: Reference;
     investigation: Investigation[];
 }
 
@@ -123,7 +123,7 @@ export interface ServiceRequest {
     category: Category[];
     priority: string;
     code?: CodeableConcept;
-    requester: Reference;
+    requester?: Reference;
     subject: Reference;
 }
 

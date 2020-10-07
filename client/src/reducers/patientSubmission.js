@@ -17,6 +17,7 @@ export const initialPatientSubmissionState = {
     gender: '',
     birthDate: '',
   },
+  practitionerId: null,
   clinicalImpression: {
     investigation: [
       {
@@ -83,8 +84,10 @@ const patientSubmissionReducer = (
 
       draft.observations.fmh.push({});
       draft.deleted.fmh = [];
+      draft.deleted.hpos = [];
       break;
     case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
+      draft.practitionerId = action.payload.id;
       draft.serviceRequest = {
         ...draft.serviceRequest,
         requester: action.payload,
@@ -95,6 +98,12 @@ const patientSubmissionReducer = (
         ...draft.patient,
         ...action.payload,
       };
+      break;
+    case actions.PATIENT_SUBMISSION_OBSERVATIONS_SAVE_REQUESTED:
+      if (action.payload != null) {
+        draft.observations.cgh = action.payload.cgh;
+        draft.observations.indic = action.payload.indic;
+      }
       break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
       draft.observations.hpos.push(action.payload);
