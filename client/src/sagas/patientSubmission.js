@@ -1,6 +1,7 @@
 import {
   all, put, takeLatest,
 } from 'redux-saga/effects';
+import { isEmpty } from 'lodash';
 
 import * as actionTypes from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
@@ -62,12 +63,25 @@ function* savePatientSubmission(action) {
       result.indic = processBundleResponse(responses[4]);
     }
 
+
+    console.log(responses);
     result.fmh = [];
+    result.hpos = [];
     if (payload.observations.fmh != null && responses.length > 5) {
       for (let i = 0; i < payload.observations.fmh.length; i += 1) {
         result.fmh.push(processBundleResponse(responses[5 + i]));
       }
     }
+
+    const fmhLength = payload.observations.fmh != null ? payload.observations.fmh.filter(f => !isEmpty(f)).length : 0;
+    const hpoStartIndex = 5 + fmhLength;
+    console.log(hpoStartIndex);
+    if (responses.length > hpoStartIndex) {
+      for (let i = 0; i < payload.observations.hpos.length; i += 1) {
+        result.hpos.push(processBundleResponse(responses[hpoStartIndex + i]));
+      }
+    }
+    console.log(result);
 
     result.investigations = [
       ...responses.filter(isInvestigation).map(processBundleResponse),
