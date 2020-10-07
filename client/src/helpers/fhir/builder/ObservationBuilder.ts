@@ -24,7 +24,7 @@ interface AgeAtOnset extends Extension {
 }
 
 type SupportedExtensions = HpoCategoryExtension | AgeAtOnset;
-type SupportedCodes = 'CGH' | 'INDIC';
+type SupportedCodes = 'CGH' | 'INDIC' | 'HPO';
 
 export class ObservationBuilder {
     private resourceType: ResourceType = "Observation";
@@ -50,6 +50,7 @@ export class ObservationBuilder {
     private note: Note[] = [];
     private extension: SupportedExtensions[] = [];
     private code: CodeableConcept;
+    private valueCodeableConcept?: CodeableConcept = undefined;
 
     public constructor(code: SupportedCodes) {
         switch (code) {
@@ -74,6 +75,18 @@ export class ObservationBuilder {
                         },
                     ],
                 }
+
+                break;
+            case "HPO":
+                this.code = {
+                    coding: [
+                        {
+                            system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
+                            code: 'PHENO',
+                            display: 'phenotype',
+                        },
+                    ],
+                }
                 break;
         }
     }
@@ -88,7 +101,8 @@ export class ObservationBuilder {
             subject: this.subject,
             interpretation: this.interpretation,
             note: this.note,
-            extension: this.extension
+            extension: this.extension,
+            valueCodeableConcept: this.valueCodeableConcept,
         };
     }
 
@@ -137,5 +151,9 @@ export class ObservationBuilder {
     public withExtension(value: SupportedExtensions) {
         this.extension.push(value);
         return this;
+    }
+
+    public withValue(value: CodeableConcept){
+        this.valueCodeableConcept = value;
     }
 }

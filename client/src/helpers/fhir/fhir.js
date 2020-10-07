@@ -376,11 +376,28 @@ export const createPatientSubmissionBundle = ({
       });
     }
 
+    if (observations.hpos != null) {
+      observations.hpos.forEach((hpo) => {
+        const entry = createEntry({ ...hpo, subject: patientReference });
+        bundle.entry.push(entry);
+        clinicalImpressionResource.investigation[0].item.push(getReference(entry));
+      });
+    }
+
     // reference from ServiceRequest to ClinicalImpression resource
     serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
   }
 
   deleted.fmh.forEach((deletedResource) => {
+    bundle.entry.push({
+      request: {
+        method: 'DELETE',
+        url: `${deletedResource.resourceType}/${deletedResource.id}`,
+      },
+    });
+  });
+
+  deleted.hpos.forEach((deletedResource) => {
     bundle.entry.push({
       request: {
         method: 'DELETE',
@@ -591,14 +608,17 @@ export const hpoOnsetValues = [
     groupLabel: 'Pediatric onset',
     options: [
       {
+        code: 'HP:0003621',
         value: 'Juvenile onset',
         display: 'Juvenile',
       },
       {
+        code: 'HP:0011463',
         value: 'Childhood onset',
         display: 'Childhood',
       },
       {
+        code: 'HP:0003593',
         value: 'Infantile onset',
         display: 'Infantile',
       },
@@ -608,14 +628,17 @@ export const hpoOnsetValues = [
     groupLabel: 'Adult onset',
     options: [
       {
+        code: 'HP:0011462',
         value: 'YoungAdult onset',
         display: 'Young adult',
       },
       {
+        code: 'HP:0003596',
         value: 'MiddleAge onset',
         display: 'Middle age',
       },
       {
+        code: 'HP:0003584',
         value: 'Late onset',
         display: 'Late',
       },
@@ -625,10 +648,12 @@ export const hpoOnsetValues = [
     groupLabel: 'Antenatal onset',
     options: [
       {
+        code: 'HP:0011460',
         value: 'Embryonal onset',
         display: 'Embryonal',
       },
       {
+        code: 'HP:0011461',
         value: 'Fetal onset',
         display: 'Fetal',
       },
@@ -638,6 +663,7 @@ export const hpoOnsetValues = [
     groupLabel: 'Neonatal onset',
     options: [
       {
+        code: 'HP:0003623',
         value: 'Neonatal onset',
         display: 'Neonatal',
       },
@@ -647,6 +673,7 @@ export const hpoOnsetValues = [
     groupLabel: 'Congenital onset',
     options: [
       {
+        code: 'HP:0003577',
         value: 'Congenital onset',
         display: 'Congenital',
       },
@@ -657,17 +684,17 @@ export const hpoOnsetValues = [
 export const hpoInterpretationValues = () => [
   {
     iconClass: 'observedIcon',
-    value: 'O',
+    value: 'POS',
     display: 'Observé',
   },
   {
     iconClass: 'notObservedIcon',
-    value: 'NO',
+    value: 'NEG',
     display: 'Non-observé',
   },
   {
     iconClass: 'unknownIcon',
-    value: 'I',
+    value: 'IND',
     display: 'Inconnu',
   },
 ];

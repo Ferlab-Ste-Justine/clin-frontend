@@ -343,7 +343,7 @@ class PatientSubmissionScreen extends React.Component {
       investigation[0].item = [
         this.createCGHResourceList(),
         ...this.createFamilyRelationshipResourceList(),
-        ...this.createHPOResourceList(),
+        // ...this.createHPOResourceList(),
         this.createIndicationResourceList(),
       ];
     }
@@ -619,6 +619,7 @@ class PatientSubmissionScreen extends React.Component {
     return currentPageIndex === this.nbPages() - 1;
   }
 
+  // TODO: Update check
   isClinicalInformationComplete() {
     const { clinicalImpression } = this.props;
     const resources = clinicalImpression.investigation[0].item;
