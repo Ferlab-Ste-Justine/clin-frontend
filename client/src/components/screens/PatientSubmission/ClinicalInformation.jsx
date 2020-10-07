@@ -182,14 +182,11 @@ class ClinicalInformation extends React.Component {
     const { Option, OptGroup } = Select;
 
     const defaultValue = () => {
-      console.log(hpoResource);
       if (hpoResource.note.length > 0) {
         return hpoResource.note[0].text;
       }
       return '';
     };
-    const { lastUpdated } = this.props;
-    console.log(JSON.stringify(hpoResource));
     return (
       <div key={hpoResource.valueCodeableConcept.coding[0].code} className="phenotypeBlock">
         <div className="phenotypeFirstLine">
@@ -456,7 +453,6 @@ class ClinicalInformation extends React.Component {
   }
 
   handleHpoOptionSelected(value) {
-    console.log('H');
     const { hpoOptions } = this.state;
     const option = hpoOptions.find(h => h.name === value);
 

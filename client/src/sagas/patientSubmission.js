@@ -64,7 +64,6 @@ function* savePatientSubmission(action) {
     }
 
 
-    console.log(responses);
     result.fmh = [];
     result.hpos = [];
     if (payload.observations.fmh != null && responses.length > 5) {
@@ -75,13 +74,11 @@ function* savePatientSubmission(action) {
 
     const fmhLength = payload.observations.fmh != null ? payload.observations.fmh.filter(f => !isEmpty(f)).length : 0;
     const hpoStartIndex = 5 + fmhLength;
-    console.log(hpoStartIndex);
     if (responses.length > hpoStartIndex) {
       for (let i = 0; i < payload.observations.hpos.length; i += 1) {
         result.hpos.push(processBundleResponse(responses[hpoStartIndex + i]));
       }
     }
-    console.log(result);
 
     result.investigations = [
       ...responses.filter(isInvestigation).map(processBundleResponse),
