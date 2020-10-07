@@ -17,7 +17,9 @@ import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
-import { assignServiceRequestPractitioner, savePatientSubmission, savePatientLocal } from '../../../actions/patientSubmission';
+import {
+  assignServiceRequestPractitioner, savePatientSubmission, savePatientLocal, saveObservations,
+} from '../../../actions/patientSubmission';
 import ClinicalInformation from './ClinicalInformation';
 import Api from '../../../helpers/api';
 
@@ -247,7 +249,7 @@ const Approval = ({
             <AutoComplete
               classeName="searchInput"
               placeholder="Recherche par nom ou licence…"
-              value={assignedPractitionerLabel}
+              // value={assignedPractitionerLabel}
               dataSource={practitionerOptionsLabels}
               onSelect={practitionerOptionSelected}
               onChange={practitionerSearchTermChanged}
@@ -312,7 +314,7 @@ class PatientSubmissionScreen extends React.Component {
       }
     };
     if (currentPageIndex === 0) {
-      const value = FhirDataManager.initializePatient({
+      const value = FhirDataManager.createPatient({
         ...values,
         id: patient.id,
         bloodRelationship: values.consanguinity,
@@ -330,6 +332,17 @@ class PatientSubmissionScreen extends React.Component {
   getHPOData() {
     console.log(this);
     return [];
+  }
+
+  getPractitioner() {
+    const { currentPageIndex } = this.state;
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+    if (currentPageIndex === 2) {
+      return values.practitioner.id;
+    }
+
+    return null;
   }
 
   getClinicalImpressionData() {
@@ -393,15 +406,11 @@ class PatientSubmissionScreen extends React.Component {
           }
           return false;
         };
-
         if (values.cghInterpretationValue
           && values.analyse
-          && checkIfEmptyValue(values.familyRelationshipNotes)
-          && checkIfEmptyValue(values.familyRelationshipCodes)
           && checkCghInterpretationValue()
-          && checkIfEmptyValue(values.hpoCodes)
-          && checkIfEmptyValue(values.hpoOnset)
-          && values.indication) {
+          && values.indication
+        ) {
           return false;
         }
         return true;
@@ -554,7 +563,7 @@ class PatientSubmissionScreen extends React.Component {
       }
 
       const {
-        actions, serviceRequest, clinicalImpression, observations, deleted,
+        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId,
       } = this.props;
 
       const patientData = this.getPatientData();
@@ -572,20 +581,34 @@ class PatientSubmissionScreen extends React.Component {
       if (hasObservations(clinicalImpression)) {
         submission.clinicalImpression = clinicalImpressionData;
       }
+      const { currentPageIndex } = this.state;
 
+      if (currentPageIndex === 1) {
+        submission.observations = {
+          ...observations,
+          cgh: {
+            ...observations.cgh,
+            ...this.createCGHResourceList(),
+          },
+          indic: {
+            ...observations.indic,
+            ...this.createIndicationResourceList(),
+          },
+        };
+        actions.saveObservations(submission.observations);
+      } else {
+        submission.observations = {
+          ...observations,
+          cgh: {
+            ...observations.cgh,
+          },
+          indic: {
+            ...observations.indic,
+          },
+        };
+      }
 
-      submission.observations = {
-        ...observations,
-        cgh: {
-          ...observations.cgh,
-          ...this.createCGHResourceList(),
-        },
-        indic: {
-          ...observations.indic,
-          ...this.createIndicationResourceList(),
-        },
-      };
-
+      submission.practitionerId = practitionerId;
       submission.deleted = deleted;
       actions.savePatientSubmission(submission);
     });
@@ -597,9 +620,26 @@ class PatientSubmissionScreen extends React.Component {
 
   next() {
     const { currentPageIndex } = this.state;
-    const { actions } = this.props;
+    const { actions, observations } = this.props;
     const pageIndex = currentPageIndex + 1;
-    actions.savePatientLocal(this.getPatientData());
+    if (currentPageIndex === 0) {
+      actions.savePatientLocal(this.getPatientData());
+    } else if (currentPageIndex === 1) {
+      actions.saveObservations(
+        {
+          ...observations,
+          cgh: {
+            ...observations.cgh,
+            ...this.createCGHResourceList(),
+          },
+          indic: {
+            ...observations.indic,
+            ...this.createIndicationResourceList(),
+          },
+        },
+      );
+    }
+
     this.setState({ currentPageIndex: pageIndex });
   }
 
@@ -621,23 +661,6 @@ class PatientSubmissionScreen extends React.Component {
 
   // TODO: Update check
   isClinicalInformationComplete() {
-    const { clinicalImpression } = this.props;
-    const resources = clinicalImpression.investigation[0].item;
-    if (!resources.find(isCGH)) {
-      return false;
-    }
-    if (!resources.find(isHPO)) {
-      return false;
-    }
-    if (!resources.find(isHPO)) {
-      return false;
-    }
-    if (!resources.find(isIndication)) {
-      return false;
-    }
-    if (!resources.find(isFamilyHistoryResource)) {
-      return false;
-    }
     return true;
   }
 
@@ -654,27 +677,34 @@ class PatientSubmissionScreen extends React.Component {
 
   handlePractitionerSearchTermChanged(term) {
     const normalizedTerm = term.toLowerCase().trim();
-    const params = { given: normalizedTerm, family: normalizedTerm, license: normalizedTerm };
-    Api.searchPractitioners(params).then((response) => {
-      if (response.payload) {
-        const { data } = response.payload;
 
-        // TODO this function is mocking a result.
-        // Please replace when data becomes accessible in FHIR
-        // eslint-disable-next-line no-unused-vars
-        const extractPractionerOptions = d => [
-          {
-            family: 'Francis', given: 'Renaud', license: '00000', id: '1393',
-          },
-        ];
+    if (normalizedTerm.length > 0 && normalizedTerm.length < 10) {
+      const params = { term: normalizedTerm };
+      Api.searchPractitioners(params).then((response) => {
+        if (response.payload) {
+          const { data } = response.payload;
 
-        const options = extractPractionerOptions(data);
+          const result = [];
+          if (data.entry != null) {
+            data.entry.forEach((entry) => {
+              const { resource } = entry;
+              if (resource != null && resource.name != null && resource.name.length > 0) {
+                result.push({
+                  id: resource.id,
+                  family: resource.name[0].family,
+                  given: resource.name[0].given[0],
+                  license: resource.identifier[0].value,
+                });
+              }
+            });
+          }
 
-        this.setState({
-          practitionerOptions: options,
-        });
-      }
-    });
+          this.setState({
+            practitionerOptions: result,
+          });
+        }
+      });
+    }
   }
 
   render() {
@@ -707,7 +737,7 @@ class PatientSubmissionScreen extends React.Component {
         ),
         name: 'ClinicalInformation',
         values: {},
-        isComplete: this.isClinicalInformationComplete(),
+        isComplete: () => true,
       },
       {
         title: intl.get('screen.clinicalSubmission.approval'),
@@ -803,6 +833,7 @@ const mapDispatchToProps = dispatch => ({
     savePatientSubmission,
     savePatientLocal,
     assignServiceRequestPractitioner,
+    saveObservations,
   }, dispatch),
 });
 
@@ -814,6 +845,7 @@ const mapStateToProps = state => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
   observations: state.patientSubmission.observations,
   deleted: state.patientSubmission.deleted,
+  practitionerId: state.patientSubmission.practitionerId,
   search: state.search,
 });
 

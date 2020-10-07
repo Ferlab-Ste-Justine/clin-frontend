@@ -157,8 +157,9 @@ const searchHpoChildren = async (hpoCode) => {
     .catch(errorCallback);
 };
 
-const searchPractitioners = async ({ given, family }) => {
-  const url = `${window.CLIN.fhirBaseUrl}/Practitioner?family=${family}&given=${given}&_pretty=true`;
+const searchPractitioners = async ({ term }) => {
+  const filter = `name sw "${term}" or identifier sw "${term}"`;
+  const url = `${window.CLIN.fhirBaseUrl}/Practitioner?_filter=${filter}&_pretty=true&_count=5`;
   return Http.secureClinAxios.get(url)
     .then(successCallback)
     .catch(errorCallback);
