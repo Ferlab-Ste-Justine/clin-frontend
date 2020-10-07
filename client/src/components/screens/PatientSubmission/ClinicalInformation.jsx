@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import {
   Card, Form, Input, Button, Radio, Tree, Select, AutoComplete,
 } from 'antd';
+import uuidv1 from 'uuid/v1';
 import IconKit from 'react-icons-kit';
 import {
   ic_add, ic_remove, ic_help, ic_person, ic_visibility, ic_visibility_off,
@@ -14,18 +15,17 @@ import {
 import {
   map,
   isEmpty,
+  debounce,
 } from 'lodash';
 import {
   CGH_CODES,
   CGH_VALUES,
   isCGH,
-  isHPO,
   isIndication,
   cghNote,
   getCGHInterpretationCode,
   getIndicationNote,
   getIndicationId,
-  createHPOResource,
   getFamilyRelationshipCode,
   getFamilyRelationshipNote,
   hpoOnsetValues,
@@ -35,7 +35,9 @@ import {
   getHPOOnsetCode,
   getHPOInterpretationCode,
   hpoInterpretationValues,
-  getFamilyRelationshipValues, getFamilyRelationshipDisplayForCode,
+  getFamilyRelationshipValues,
+  getFamilyRelationshipDisplayForCode,
+  hpoInterpretationDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 
 import {
@@ -44,15 +46,19 @@ import {
   setFamilyRelationshipResourceDeletionFlag,
   addFamilyHistoryResource,
   addEmptyFamilyHistory,
+  updateHpoNote,
+  updateHpoObservation,
+  updateHpoAgeOnSet,
 } from '../../../actions/patientSubmission';
 
 import Api from '../../../helpers/api';
 import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
+import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 
 const interpretationIcon = {
-  O: ic_visibility,
-  NO: ic_visibility_off,
-  I: ic_help,
+  POS: ic_visibility,
+  NEG: ic_visibility_off,
+  IND: ic_help,
 };
 
 const HpoHiddenFields = ({
@@ -92,76 +98,6 @@ const HpoHiddenFields = ({
 );
 
 
-const phenotype = ({
-  hpoResource,
-  form,
-  hpoIndex,
-  deleteHpo,
-}) => {
-  const { getFieldDecorator } = form;
-  const { Option, OptGroup } = Select;
-
-  return hpoResource.toDelete ? (<HpoHiddenFields hpoResource={hpoResource} hpoIndex={hpoIndex} getFieldDecorator={getFieldDecorator} />) : (
-    <div className="phenotypeBlock">
-      <div className="phenotypeFirstLine">
-        <div className="leftBlock">
-          <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
-          <Button type="link" className="bordelessButton deleteButton" onClick={() => deleteHpo(getHPOCode(hpoResource))}>Supprimer</Button>
-        </div>
-        <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} getFieldDecorator={getFieldDecorator} />
-        <div className="rightBlock">
-          <Form.Item>
-            {getFieldDecorator(`hpoInterpretation[${hpoIndex}]`, {
-              rules: [],
-              initialValue: getHPOInterpretationCode(hpoResource),
-            })(
-              <Select className="select selectObserved" placeholder="Interpretation" size="small" dropdownClassName="selectDropdown">
-                {hpoInterpretationValues().map((interpretation, index) => (
-                  <Select.Option
-                    key={`hpoInterpretation_${index}`}
-                  >
-                    <IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />
-                    {interpretation.display}
-                  </Select.Option>
-                ))}
-              </Select>,
-            )}
-          </Form.Item>
-          <Form.Item>
-            {getFieldDecorator(`hpoOnset[${hpoIndex}]`, {
-              rules: [],
-              initialValue: getHPOOnsetCode(hpoResource),
-            })(
-              <Select className="select selectAge" size="small" placeholder="Âge d’apparition" dropdownClassName="selectDropdown">
-                {
-                hpoOnsetValues.map((group, gIndex) => (
-                  <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
-                    {group.options.map((o, oIndex) => (
-                      <Option value={o.value} key={`onsetOption_${oIndex}`}>{o.display}</Option>
-                    ))}
-                  </OptGroup>
-                ))
-              }
-              </Select>,
-            )}
-          </Form.Item>
-        </div>
-      </div>
-      <div className="phenotypeSecondLine">
-        {/*  TODO initalValue */}
-        <Form.Item>
-          {getFieldDecorator(`hpoNote[${hpoIndex}]`, {
-            rules: [],
-          })(
-            <Input placeholder="Ajouter une note…" size="small" className="input hpoNote" />,
-          )}
-
-        </Form.Item>
-      </div>
-    </div>
-  );
-};
-
 const INITIAL_TREE_ROOTS = [
   { key: 'HP:0001197', title: 'Anomalie du développement prénatal ou de la naissance', is_leaf: false },
   { key: 'HP:0001507', title: 'Anomalie de la croissance', is_Leaf: false },
@@ -198,7 +134,11 @@ class ClinicalInformation extends React.Component {
     this.hpoSelected = this.hpoSelected.bind(this);
     this.isAddDisabled = this.isAddDisabled.bind(this);
     this.fmhSelected = this.fmhSelected.bind(this);
+    this.handleHpoNoteChanged = this.handleHpoNoteChanged.bind(this);
+    this.handleObservationChanged = this.handleObservationChanged.bind(this);
+    this.handleHpoAgeChanged = this.handleHpoAgeChanged.bind(this);
   }
+
 
   onLoadHpoChildren(treeNode) {
     return new Promise((resolve) => {
@@ -230,6 +170,134 @@ class ClinicalInformation extends React.Component {
         }
       });
     });
+  }
+
+  phenotype({
+    hpoResource,
+    form,
+    hpoIndex,
+    deleteHpo,
+  }) {
+    const { getFieldDecorator } = form;
+    const { Option, OptGroup } = Select;
+
+    const defaultValue = () => {
+      console.log(hpoResource);
+      if (hpoResource.note.length > 0) {
+        return hpoResource.note[0].text;
+      }
+      return '';
+    };
+    const { lastUpdated } = this.props;
+    console.log(JSON.stringify(hpoResource));
+    return (
+      <div key={hpoResource.valueCodeableConcept.coding[0].code} className="phenotypeBlock">
+        <div className="phenotypeFirstLine">
+          <div className="leftBlock">
+            <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
+            <Button type="link" className="bordelessButton deleteButton" onClick={() => deleteHpo(getHPOCode(hpoResource))}>Supprimer</Button>
+          </div>
+          <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} getFieldDecorator={getFieldDecorator} />
+          <div className="rightBlock">
+            <Form.Item>
+              {getFieldDecorator(`hpoInterpretation[${hpoIndex}]`, {
+                rules: [],
+                initialValue: getHPOInterpretationCode(hpoResource),
+              })(
+                <Select
+                  className="select selectObserved"
+                  placeholder="Interpretation"
+                  size="small"
+                  dropdownClassName="selectDropdown"
+                  onChange={event => this.handleObservationChanged(event, hpoIndex)}
+                >
+                  {hpoInterpretationValues().map((interpretation, index) => (
+                    <Select.Option
+                      key={`hpoInterpretation_${index}`}
+                      value={interpretation.value}
+                    >
+                      <IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />
+                      {interpretation.display}
+                    </Select.Option>
+                  ))}
+                </Select>,
+              )}
+            </Form.Item>
+            <Form.Item>
+              {getFieldDecorator(`hpoOnset[${hpoIndex}]`, {
+                rules: [],
+                initialValue: getHPOOnsetCode(hpoResource),
+              })(
+                <Select
+                  className="select selectAge"
+                  size="small"
+                  placeholder="Âge d’apparition"
+                  dropdownClassName="selectDropdown"
+                  onChange={event => this.handleHpoAgeChanged(event, hpoIndex)}
+                >
+                  {
+                        hpoOnsetValues.map((group, gIndex) => (
+                          <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
+                            {group.options.map((o, oIndex) => (
+                              <Option value={o.code} key={`onsetOption_${oIndex}`}>{o.display}</Option>
+                            ))}
+                          </OptGroup>
+                        ))
+                      }
+                </Select>,
+              )}
+            </Form.Item>
+          </div>
+        </div>
+        <div className="phenotypeSecondLine" key={`input-${hpoIndex}`}>
+          <Form.Item>
+            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" onChange={event => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />
+          </Form.Item>
+        </div>
+      </div>
+    );
+  }
+
+  handleHpoNoteChanged(note, index) {
+    // console.log(arguments);
+    const { actions } = this.props;
+    // const debouncedUpdateHpoNote = debounce(actions.updateHpoNote, 500);
+    actions.updateHpoNote(note, index);
+  }
+
+  handleObservationChanged(observationCode, index) {
+    // console.log(arguments);
+    const { actions } = this.props;
+
+
+    actions.updateHpoObservation(
+      {
+        interpretation: {
+          code: observationCode,
+          display: hpoInterpretationValues().find(interpretation => interpretation.value === observationCode).display,
+        },
+      }, index,
+    );
+  }
+
+  handleHpoAgeChanged(code, index) {
+    // console.log(arguments);
+    const { actions } = this.props;
+    let value = null;
+    const keys = Object.keys(hpoOnsetValues);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of keys) {
+      const group = hpoOnsetValues[key];
+      value = group.options.find(onSet => onSet.code === code);
+      if (value != null) {
+        break;
+      }
+    }
+
+    if (value == null) {
+      throw new Error(`OnSet code [${code}] not found in [hpoOnsetValues]`);
+    }
+    actions.updateHpoAgeOnSet(value, index);
   }
 
   isAddDisabled() {
@@ -338,36 +406,57 @@ class ClinicalInformation extends React.Component {
 
   hpoSelected({ code, display }) {
     const { actions } = this.props;
-    const hpoResource = createHPOResource({
-      hpoCode: {
-        code,
-        display,
-      },
+
+    const builder = new ObservationBuilder('HPO');
+    builder.withValue({
+      coding: [{
+        code, display,
+      }],
     });
 
-    actions.addHpoResource(hpoResource);
+    actions.addHpoResource(builder.build());
   }
 
   handleHpoNodesChecked(_, info) {
-    const { actions, clinicalImpression } = this.props;
+    const { actions, observations } = this.props;
 
     const checkedNodes = info.checkedNodes.map(n => ({ code: n.key, display: n.props.title }));
-    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO);
+    const hpoResources = observations.hpos;// clinicalImpression.investigation[0].item.filter(isHPO);
 
-    // If in resources: make sure it is not marked as toDelete
-    const nodesPresent = checkedNodes
-      .filter(n => !!hpoResources.find(r => n.code === getHPOCode(r)));
-    nodesPresent.forEach((n) => {
-      actions.setHpoResourceDeletionFlag({ code: n.code, toDelete: false });
+    console.log(checkedNodes);
+    const toDelete = [];
+    const toAdd = [];
+    hpoResources.forEach((resource) => {
+      if (checkedNodes.find(r => r.code === resource.valueCodeableConcept.coding[0].code) == null) {
+        toDelete.push(resource);
+      }
+    });
+    checkedNodes.forEach((resource) => {
+      if (hpoResources.find(r => resource.code === r.valueCodeableConcept.coding[0].code) == null) {
+        toAdd.push(resource);
+      }
     });
 
-    // If not in resources: add it
-    const nodesToAdd = checkedNodes
-      .filter(n => !hpoResources.find(r => n.code === getHPOCode(r)));
-    nodesToAdd.forEach(this.hpoSelected);
+    toDelete.map(r => ({ code: r.valueCodeableConcept.coding[0].code })).forEach(actions.setHpoResourceDeletionFlag);
+    toAdd.forEach(this.hpoSelected);
+    // If in resources: make sure it is not marked as toDelete
+    // console.log(arguments);
+    // console.log(toDelete);
+    // const nodesPresent = checkedNodes
+    //   .filter(n => hpoResources.find(r => n.code === getHPOCode(r)));
+    // console.log(nodesPresent);
+    // nodesPresent.forEach((n) => {
+    //   actions.setHpoResourceDeletionFlag({ code: n.code, toDelete: false });
+    // });
+    //
+    // // If not in resources: add it
+    // const nodesToAdd = checkedNodes
+    //   .filter(n => !hpoResources.find(r => n.code === getHPOCode(r)));
+    // nodesToAdd.forEach(this.hpoSelected);
   }
 
   handleHpoOptionSelected(value) {
+    console.log('H');
     const { hpoOptions } = this.state;
     const option = hpoOptions.find(h => h.name === value);
 
@@ -471,7 +560,7 @@ class ClinicalInformation extends React.Component {
       indicationNoteValue = getIndicationNote(indicationResource);
     }
 
-    const hpoResources = clinicalImpression.investigation[0].item.filter(isHPO) || [];
+    const hpoResources = observations.hpos; // clinicalImpression.investigation[0].item.filter(isHPO) || [];
     const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
 
     return (
@@ -573,7 +662,7 @@ class ClinicalInformation extends React.Component {
               {
                 hpoResources.length === 0
                   ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
-                  : hpoResources.map((hpoResource, hpoIndex) => phenotype({
+                  : hpoResources.map((hpoResource, hpoIndex) => this.phenotype({
                     hpoResource,
                     form,
                     hpoIndex,
@@ -613,12 +702,16 @@ const mapDispatchToProps = dispatch => ({
     setFamilyRelationshipResourceDeletionFlag,
     addFamilyHistoryResource,
     addEmptyFamilyHistory,
+    updateHpoNote,
+    updateHpoObservation,
+    updateHpoAgeOnSet,
   }, dispatch),
 });
 
 const mapStateToProps = state => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
   observations: state.patientSubmission.observations,
+  lastUpdated: state.patientSubmission.lastUpdated,
 });
 
 export default connect(
