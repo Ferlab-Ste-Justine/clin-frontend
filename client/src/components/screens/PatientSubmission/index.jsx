@@ -209,7 +209,6 @@ const Approval = ({
   practitionerOptionsLabels,
   practitionerOptionSelected,
   practitionerSearchTermChanged,
-  assignedPractitionerLabel,
   getFieldDecorator,
 }) => (
   <div>
@@ -384,15 +383,15 @@ class PatientSubmissionScreen extends React.Component {
         }
         return true;
       case 1: {
-        const checkIfEmptyValue = (array) => {
-          if (array) {
-            if (array.findIndex(element => !element) !== -1) {
-              return false;
-            }
-            return true;
-          }
-          return false;
-        };
+        // const checkIfEmptyValue = (array) => {
+        //   if (array) {
+        //     if (array.findIndex(element => !element) !== -1) {
+        //       return false;
+        //     }
+        //     return true;
+        //   }
+        //   return false;
+        // };
 
         const checkCghInterpretationValue = () => {
           if (values.cghInterpretationValue) {
@@ -661,6 +660,23 @@ class PatientSubmissionScreen extends React.Component {
 
   // TODO: Update check
   isClinicalInformationComplete() {
+    const { clinicalImpression } = this.props;
+    const resources = clinicalImpression.investigation[0].item;
+    if (!resources.find(isCGH)) {
+      return false;
+    }
+    if (!resources.find(isHPO)) {
+      return false;
+    }
+    if (!resources.find(isHPO)) {
+      return false;
+    }
+    if (!resources.find(isIndication)) {
+      return false;
+    }
+    if (!resources.find(isFamilyHistoryResource)) {
+      return false;
+    }
     return true;
   }
 
