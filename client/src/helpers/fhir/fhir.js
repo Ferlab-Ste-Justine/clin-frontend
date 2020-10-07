@@ -397,6 +397,15 @@ export const createPatientSubmissionBundle = ({
     });
   });
 
+  deleted.hpos.forEach((deletedResource) => {
+    bundle.entry.push({
+      request: {
+        method: 'DELETE',
+        url: `${deletedResource.resourceType}/${deletedResource.id}`,
+      },
+    });
+  });
+
   return bundle;
 };
 
