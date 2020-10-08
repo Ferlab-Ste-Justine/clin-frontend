@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
 import { isEmpty } from 'lodash';
+import { message } from 'antd';
+import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
 
 // @TODO change item values
@@ -85,6 +87,11 @@ const patientSubmissionReducer = (
       draft.observations.fmh.push({});
       draft.deleted.fmh = [];
       draft.deleted.hpos = [];
+
+      message.success(intl.get('screen.clinicalSubmission.notification.save.success'));
+      break;
+    case actions.PATIENT_SUBMISSION_SAVE_FAILED:
+      message.error(intl.get('screen.clinicalSubmission.notification.save.error'));
       break;
     case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
       draft.practitionerId = action.payload.id;
