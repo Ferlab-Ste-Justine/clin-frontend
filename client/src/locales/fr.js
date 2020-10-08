@@ -459,6 +459,8 @@ const fr = {
   'screen.clinicalSubmission.previousButtonTitle': 'Précédent',
   'screen.clinicalSubmission.saveButtonTitle': 'Sauvegarder',
   'screen.clinicalSubmission.cancelButtonTitle': 'Annuler',
+  'screen.clinicalSubmission.notification.save.success': 'Formulaire sauvegardé avec succès',
+  'screen.clinicalSubmission.notification.save.error': 'Une erreur s\'est produite lors de la sauvegarde.',
   'form.patientSubmission.form.genderMale': 'Male',
   'form.patientSubmission.form.genderFemale': 'Female',
   'form.patientSubmission.form.genderOther': 'Other',

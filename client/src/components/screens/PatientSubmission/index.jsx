@@ -9,7 +9,7 @@ import { bindActionCreators } from 'redux';
 import {
   AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps,
 } from 'antd';
-import { find, has } from 'lodash';
+import { find, has, debounce } from 'lodash';
 
 import IconKit from 'react-icons-kit';
 import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';
@@ -248,7 +248,6 @@ const Approval = ({
             <AutoComplete
               classeName="searchInput"
               placeholder="Recherche par nom ou licence…"
-              // value={assignedPractitionerLabel}
               dataSource={practitionerOptionsLabels}
               onSelect={practitionerOptionSelected}
               onChange={practitionerSearchTermChanged}
@@ -279,6 +278,7 @@ class PatientSubmissionScreen extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.isClinicalInformationComplete = this.isClinicalInformationComplete.bind(this);
     this.handlePractitionerSearchTermChanged = this.handlePractitionerSearchTermChanged.bind(this);
+    this.searchPractitioner = debounce(this.searchPractitioner.bind(this), 300);
     this.handlePractitionerOptionSelected = this.handlePractitionerOptionSelected.bind(this);
     this.canGoNextPage = this.canGoNextPage.bind(this);
   }
@@ -691,6 +691,10 @@ class PatientSubmissionScreen extends React.Component {
     }
   }
 
+  searchPractitioner(term) {
+    this.handlePractitionerSearchTermChanged(term);
+  }
+
   handlePractitionerSearchTermChanged(term) {
     const normalizedTerm = term.toLowerCase().trim();
 
@@ -763,7 +767,7 @@ class PatientSubmissionScreen extends React.Component {
             getFieldDecorator={getFieldDecorator}
             practitionerOptionsLabels={practitionerOptionsLabels}
             practitionerOptionSelected={this.handlePractitionerOptionSelected}
-            practitionerSearchTermChanged={this.handlePractitionerSearchTermChanged}
+            practitionerSearchTermChanged={this.searchPractitioner}
             assignedPractitionerLabel={assignedPractitionerLabel}
           />
         ),
