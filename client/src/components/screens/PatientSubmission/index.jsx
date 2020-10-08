@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import moment from 'moment';
 import {
   AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps,
 } from 'antd';
@@ -32,10 +33,6 @@ import {
   getFamilyRelationshipDisplayForCode,
   getHPOOnsetDisplayFromCode,
   hpoInterpretationDisplayForCode,
-  isCGH,
-  isFamilyHistoryResource,
-  isHPO,
-  isIndication,
 } from '../../../helpers/fhir/fhir';
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
@@ -70,7 +67,8 @@ const getValueCoding = (patient, extensionName) => {
   return undefined;
 };
 
-const hasObservations = clinicalImpression => clinicalImpression.investigation[0].item.length > 0;
+const hasObservations = observations => observations.cgh != null || observations.indic != null
+    || observations.fmh.length > 0 || observations.hpos.length > 0;
 
 const getGenderValues = () => ({
   male: {
@@ -91,6 +89,20 @@ const getGenderValues = () => ({
   },
 });
 
+const defaultOrganizationValue = (patient) => {
+  if (has(patient, 'managingOrganization.reference') && patient.managingOrganization.reference.length > 0) {
+    return patient.managingOrganization.reference.split('/')[1];
+  }
+  return 'CHUSJ';
+};
+
+const defaultBirthDate = (patient) => {
+  if (has(patient, 'birthDate') && patient.birthDate.length > 0) {
+    return moment(patient.birthDate, 'YYYY-MM-DD');
+  }
+  return null;
+};
+
 const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
   const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
@@ -100,7 +112,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Nom">
         {getFieldDecorator('family', {
           rules: [{ required: true, message: 'Please enter the family name!' }],
-          initialValue: has(patient, 'name.family') ? patient.name.family : '',
+          initialValue: has(patient, 'name[0].family') ? patient.name[0].family : '',
         })(
           <Input placeholder="Nom de famille" className="input large" />,
         )}
@@ -108,7 +120,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Prénom">
         {getFieldDecorator('given', {
           rules: [{ required: true, message: 'Please enter the given name!' }],
-          initialValue: has(patient, 'name.given') ? patient.name.given : '',
+          initialValue: has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : '',
         })(
           <Input placeholder="Prénom" className="input large" />,
         )}
@@ -132,7 +144,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Date de naissance">
         {getFieldDecorator('birthDate', {
           rules: [{ required: true, message: 'Please enter the birthdate!' }],
-          initialValue: has(patient, 'birthDate') ? patient.birthDate : '',
+          initialValue: defaultBirthDate(patient),
         })(
           <DatePicker className="small" />,
         )}
@@ -160,7 +172,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       <Form.Item label="Hôpital">
         {getFieldDecorator('organization', {
           rules: [{ required: true, message: 'Please select the hospital!' }],
-          initialValue: has(patient, 'managingOrganization') ? patient.managingOrganization : 'CHUSJ',
+          initialValue: defaultOrganizationValue(patient),
         })(
           <Select className="small" dropdownClassName="selectDropdown">
             <Select.Option value="CHUSJ">CHUSJ</Select.Option>
@@ -194,7 +206,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           initialValue: consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding,
         })(
           <Radio.Group buttonStyle="solid">
-            <Radio.Button value="Ye"><span className="radioText">Oui</span></Radio.Button>
+            <Radio.Button value="Yes"><span className="radioText">Oui</span></Radio.Button>
             <Radio.Button value="No"><span className="radioText">Non</span></Radio.Button>
             <Radio.Button value="Unknown"><span className="radioText">Inconnu</span></Radio.Button>
           </Radio.Group>,
@@ -281,6 +293,7 @@ class PatientSubmissionScreen extends React.Component {
     this.searchPractitioner = debounce(this.searchPractitioner.bind(this), 300);
     this.handlePractitionerOptionSelected = this.handlePractitionerOptionSelected.bind(this);
     this.canGoNextPage = this.canGoNextPage.bind(this);
+    this.updateFormValues = this.updateFormValues.bind(this);
   }
 
   getPatientData() {
@@ -567,8 +580,6 @@ class PatientSubmissionScreen extends React.Component {
 
       const patientData = this.getPatientData();
 
-      const clinicalImpressionData = this.getClinicalImpressionData();
-
       const submission = {
         patient: patientData,
         serviceRequest,
@@ -577,8 +588,8 @@ class PatientSubmissionScreen extends React.Component {
       submission.serviceRequest = submission.serviceRequest || {};
       submission.serviceRequest.code = this.getServiceRequestCode();
 
-      if (hasObservations(clinicalImpression)) {
-        submission.clinicalImpression = clinicalImpressionData;
+      if (hasObservations(observations)) {
+        submission.clinicalImpression = clinicalImpression;
       }
       const { currentPageIndex } = this.state;
 
@@ -617,6 +628,11 @@ class PatientSubmissionScreen extends React.Component {
     return this.pages.length;
   }
 
+  updateFormValues() {
+    const { form } = this.props;
+    debounce(() => { form.setFieldsValue({}); }, 500)();
+  }
+
   next() {
     const { currentPageIndex } = this.state;
     const { actions, observations } = this.props;
@@ -640,12 +656,15 @@ class PatientSubmissionScreen extends React.Component {
     }
 
     this.setState({ currentPageIndex: pageIndex });
+    this.updateFormValues();
   }
 
   previous() {
     const { currentPageIndex } = this.state;
     const pageIndex = currentPageIndex - 1;
     this.setState({ currentPageIndex: pageIndex });
+
+    this.updateFormValues();
   }
 
   isFirstPage() {
@@ -660,21 +679,15 @@ class PatientSubmissionScreen extends React.Component {
 
   // TODO: Update check
   isClinicalInformationComplete() {
-    const { clinicalImpression } = this.props;
-    const resources = clinicalImpression.investigation[0].item;
-    if (!resources.find(isCGH)) {
+    const { observations } = this.props;
+    if (observations.cgh == null) {
       return false;
     }
-    if (!resources.find(isHPO)) {
+    if (observations.hpos.length === 0) {
       return false;
     }
-    if (!resources.find(isHPO)) {
-      return false;
-    }
-    if (!resources.find(isIndication)) {
-      return false;
-    }
-    if (!resources.find(isFamilyHistoryResource)) {
+
+    if (observations.indic == null) {
       return false;
     }
     return true;
@@ -778,7 +791,6 @@ class PatientSubmissionScreen extends React.Component {
 
     const currentPage = this.pages[currentPageIndex];
     const pageContent = currentPage.content;
-    const validation = this.canGoNextPage(currentPageIndex);
     return (
       <Content type="auto">
         <Header />
@@ -798,7 +810,7 @@ class PatientSubmissionScreen extends React.Component {
                   <Button
                     htmlType="submit"
                     type="primary"
-                    disabled={validation}
+                    disabled={this.canGoNextPage(currentPageIndex)}
                   >
                     Soumettre
                   </Button>
@@ -806,20 +818,20 @@ class PatientSubmissionScreen extends React.Component {
               }
               {
                 currentPageIndex !== this.pages.length - 1 && (
-                  <Button type="primary" onClick={() => this.next()} disabled={validation}>
+                  <Button type="primary" onClick={() => this.next()} disabled={this.canGoNextPage(currentPageIndex)}>
                     {intl.get('screen.clinicalSubmission.nextButtonTitle')}
                   </Button>
                 )
               }
 
               {
-                                currentPageIndex !== 0 && (
-                                <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                                  <IconKit size={20} icon={ic_keyboard_arrow_left} />
-                                  {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-                                </Button>
-                                )
-                            }
+                  currentPageIndex !== 0 && (
+                  <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                    <IconKit size={20} icon={ic_keyboard_arrow_left} />
+                    {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+                  </Button>
+                  )
+              }
 
               <Button
                 htmlType="submit"
