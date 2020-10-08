@@ -14,12 +14,11 @@ import {
 import {
   map,
   isEmpty,
+  has,
 } from 'lodash';
 import {
   CGH_CODES,
   CGH_VALUES,
-  isCGH,
-  isIndication,
   cghNote,
   getCGHInterpretationCode,
   getIndicationNote,
@@ -411,7 +410,7 @@ class ClinicalInformation extends React.Component {
     const { actions, observations } = this.props;
 
     const checkedNodes = info.checkedNodes.map(n => ({ code: n.key, display: n.props.title }));
-    const hpoResources = observations.hpos;// clinicalImpression.investigation[0].item.filter(isHPO);
+    const hpoResources = observations.hpos;
 
     const toDelete = [];
     const toAdd = [];
@@ -460,7 +459,7 @@ class ClinicalInformation extends React.Component {
     const { hpoOptions, treeData } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
-    const { form, clinicalImpression, observations } = this.props;
+    const { form, serviceRequest, observations } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
 
     const { TextArea } = Input;
@@ -518,23 +517,20 @@ class ClinicalInformation extends React.Component {
 
     let cghInterpretationValue;
     let cghNoteValue;
-    let cghResource = {};
     let cghId = null;
-    if (clinicalImpression) {
-      cghResource = clinicalImpression.investigation[0].item.find(isCGH) || {};
-      cghId = cghResource.id;
-      cghInterpretationValue = getCGHInterpretationCode(cghResource);
-      cghNoteValue = cghNote(cghResource);
+    if (observations.cgh != null) {
+      cghId = observations.cgh.id;
+      cghInterpretationValue = getCGHInterpretationCode(observations.cgh);
+      cghNoteValue = cghNote(observations.cgh);
     }
 
     let indicationNoteValue;
     let indicationResource;
-    if (clinicalImpression) {
-      indicationResource = clinicalImpression.investigation[0].item.find(isIndication) || {};
-      indicationNoteValue = getIndicationNote(indicationResource);
+    if (observations.indic != null) {
+      indicationNoteValue = getIndicationNote(observations.indic);
     }
 
-    const hpoResources = observations.hpos; // clinicalImpression.investigation[0].item.filter(isHPO) || [];
+    const hpoResources = observations.hpos;
     const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
 
     return (
@@ -551,6 +547,7 @@ class ClinicalInformation extends React.Component {
           <Form.Item label="Type d’analyse">
             {getFieldDecorator('analyse', {
               rules: [],
+              initialValue: has(serviceRequest, 'code') ? serviceRequest.code : null,
             })(
               <Radio.Group buttonStyle="solid">
                 <Radio.Button value="WXS"><span className="radioText">Exome</span></Radio.Button>
@@ -685,7 +682,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
   observations: state.patientSubmission.observations,
-  lastUpdated: state.patientSubmission.lastUpdated,
+  serviceRequest: state.patientSubmission.serviceRequest,
 });
 
 export default connect(
