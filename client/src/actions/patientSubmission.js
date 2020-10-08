@@ -12,6 +12,11 @@ export const savePatientLocal = patient => ({
   payload: patient,
 });
 
+export const saveObservations = observations => ({
+  type: actions.PATIENT_SUBMISSION_OBSERVATIONS_SAVE_REQUESTED,
+  payload: observations,
+});
+
 export const addHpoResource = resource => ({
   type: actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE,
   payload: resource,

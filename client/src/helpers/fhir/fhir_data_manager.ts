@@ -34,7 +34,7 @@ const formatDate = (date: Date): string => {
 
 export class FhirDataManager {
 
-    public static initializePatient(options: InitializePatientOptions): Patient {
+    public static createPatient(options: InitializePatientOptions): Patient {
         const formattedBirthDate = formatDate(options.birthDate);
 
         const patient: Patient = {
@@ -55,11 +55,7 @@ export class FhirDataManager {
                 }
             ],
             gender: options.gender,
-            generalPractitioner: [
-                {
-                    reference: `Practitioner/${options.practitionerId}`
-                }
-            ],
+            generalPractitioner: [],
             identifier: [
                 {
                     type: {
@@ -124,6 +120,14 @@ export class FhirDataManager {
 
     }
 
+    private static getPractitionerReference(id: string){
+        if(id == null){
+            return null;
+        }
+        return {
+            reference: `Practitioner/${id}`,
+        }
+    }
 
     public static createServiceRequest(requesterId: string, subjectId: string, status: string, coding: ServiceRequestCoding): ServiceRequest {
         const serviceRequest: ServiceRequest = {
@@ -151,9 +155,6 @@ export class FhirDataManager {
             priority: 'routine',
             subject: {
                 reference: subjectId.startsWith('urn:') ? subjectId : `Patient/${subjectId}`,
-            },
-            requester: {
-                reference: `Practitioner/${requesterId}`,
             },
             authoredOn: formatDate(new Date())
         };
@@ -199,11 +200,15 @@ export class FhirDataManager {
             }
         }
 
+        if(requesterId != null){
+            serviceRequest.requester = this.getPractitionerReference(requesterId);
+        }
+
         return serviceRequest;
     }
 
     public static createClinicalImpression(assessorId: string, subjectId: string, age: number = 1): ClinicalImpression {
-        return {
+        const clinicalImpression: ClinicalImpression = {
             resourceType: "ClinicalImpression",
             meta: {
                 profile: [
@@ -223,8 +228,8 @@ export class FhirDataManager {
                 },
             ],
             status: 'in-progress',
+            assessor: this.getPractitionerReference(assessorId),
             date: formatDate(new Date()),
-            assessor: {reference: `Practitioner/${assessorId}`},
             subject: {
                 reference: subjectId.startsWith('urn:') ? subjectId : `Patient/${subjectId}`
             },
@@ -237,5 +242,6 @@ export class FhirDataManager {
                 },
             ],
         };
+        return clinicalImpression;
     }
 }
