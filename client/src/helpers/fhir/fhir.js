@@ -44,7 +44,7 @@ export const cghInterpretation = (cgh) => {
 
 export const getCGHInterpretationCode = (cghResource) => {
   try {
-    return cghResource.interpretation[0].coding[0].value;
+    return cghResource.interpretation[0].coding[0].code;
   } catch (e) {
     return null;
   }
