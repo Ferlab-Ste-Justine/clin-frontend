@@ -20,32 +20,14 @@ export const initialPatientSubmissionState = {
     birthDate: '',
   },
   practitionerId: null,
-  clinicalImpression: {
-    investigation: [
-      {
-        item: [
-          {
-            resourceType: 'FamilyMemberHistory',
-            relationship: {
-              coding: [
-                {
-                  code: '',
-                  display: '',
-                }],
-            },
-            note: [
-              {}],
-          }],
-      },
-    ],
-  },
+  serviceRequest: {},
+  clinicalImpression: {},
   observations: {
     cgh: null,
     indic: null,
     fmh: [{}],
     hpos: [],
   },
-  lastUpdated: 0,
   deleted: {
     fmh: [],
     hpos: [],
@@ -124,7 +106,6 @@ const patientSubmissionReducer = (
       draft.observations.hpos = draft.observations.hpos.filter(hpo => hpo.valueCodeableConcept.coding[0].code !== action.payload.code);
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_HPO_NOTE:
-      draft.lastUpdated = action.payload.index;
       draft.observations.hpos[action.payload.index].note = [{
         text: action.payload.note,
       }];
@@ -151,16 +132,6 @@ const patientSubmissionReducer = (
       break;
     case actions.PATIENT_SUBMISSION_ADD_FAMILY_RELATIONSHIP_RESOURCE:
       draft.observations.fmh = action.payload;
-
-      draft.clinicalImpression = {
-        ...draft.clinicalImpression,
-        investigation:
-          [
-            {
-              item: [...draft.clinicalImpression.investigation[0].item, action.payload],
-            },
-          ],
-      };
       break;
     case actions.PATIENT_SUBMISSION_ADD_EMPTY_FAMILY_RELATIONSHIP:
       draft.observations.fmh.push({});
@@ -169,6 +140,14 @@ const patientSubmissionReducer = (
       action.payload.deleted.forEach((deleted) => {
         draft.deleted.fmh.push(deleted);
       });
+      break;
+    case actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED:
+      draft.patient = initialPatientSubmissionState.patient;
+      draft.practitionerId = initialPatientSubmissionState.practitionerId;
+      draft.clinicalImpression = initialPatientSubmissionState.clinicalImpression;
+      draft.serviceRequest = initialPatientSubmissionState.serviceRequest;
+      draft.observations = initialPatientSubmissionState.observations;
+      draft.deleted = initialPatientSubmissionState.deleted;
       break;
     default:
       break;

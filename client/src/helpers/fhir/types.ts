@@ -81,6 +81,7 @@ export interface Interpretation {
 }
 
 export interface Patient {
+    id?: string;
     resourceType: ResourceType;
     meta: Meta;
     extension: Extension[];

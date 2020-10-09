@@ -51,7 +51,7 @@ export class FhirDataManager {
                 },
                 {
                     url: "http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband",
-                    valueBoolean: false
+                    valueBoolean: true
                 }
             ],
             gender: options.gender,
@@ -105,19 +105,22 @@ export class FhirDataManager {
             });
         }
         if (options.bloodRelationship != null && options.bloodRelationship.length > 0) {
+            const code =  options.bloodRelationship.charAt(0);
             patient.extension.push({
                 url: "http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship",
                 valueCoding: {
                     system: "http://fhir.cqgc.ferlab.bio/CodeSystem/blood-relationship",
-                    code: options.bloodRelationship ? options.bloodRelationship.charAt(0) : '',
-                    display: options.bloodRelationship === "Y" ? "Yes" : "No"
+                    code: code,
+                    display: code === "Y" ? "Yes" : code === 'N' ? "No" : "Unknown",
                 },
             });
         }
 
+        if(options.id != null){
+            patient.id = options.id;
+        }
 
         return patient;
-
     }
 
     private static getPractitionerReference(id: string){
