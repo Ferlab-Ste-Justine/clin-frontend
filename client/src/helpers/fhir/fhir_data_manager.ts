@@ -46,10 +46,6 @@ export class FhirDataManager {
             birthDate: formattedBirthDate,
             extension: [
                 {
-                    url: "http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id",
-                    valueReference: {reference: `Group/F00`}
-                },
-                {
                     url: "http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband",
                     valueBoolean: true
                 }

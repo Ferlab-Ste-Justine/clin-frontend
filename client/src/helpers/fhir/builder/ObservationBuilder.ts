@@ -24,7 +24,7 @@ interface AgeAtOnset extends Extension {
 }
 
 type SupportedExtensions = HpoCategoryExtension | AgeAtOnset;
-type SupportedCodes = 'CGH' | 'INDIC' | 'HPO';
+type SupportedCodes = 'CGH' | 'INDIC' | 'HPO' | 'INVES';
 
 export class ObservationBuilder {
     private resourceType: ResourceType = "Observation";
@@ -87,6 +87,19 @@ export class ObservationBuilder {
                         },
                     ],
                 }
+                break;
+            case "INVES":
+                this.code = {
+                    coding: [
+                        {
+                            system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
+                            code: 'INVES',
+                            display: 'investigations',
+                        },
+                    ],
+                }
+                break;
+            default:
                 break;
         }
     }
