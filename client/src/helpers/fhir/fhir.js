@@ -3,6 +3,7 @@ import intl from 'react-intl-universal';
 
 import { has, isEmpty } from 'lodash';
 import { FhirDataManager } from './fhir_data_manager.ts';
+import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
@@ -50,9 +51,9 @@ export const getCGHInterpretationCode = (cghResource) => {
   }
 };
 
-export const cghNote = (cgh) => {
-  if (cgh.note && cgh.note.length) {
-    return cgh.note[0].text;
+export const resourceNote = (resource) => {
+  if (resource.note && resource.note.length) {
+    return resource.note[0].text;
   }
 
   return null;
@@ -323,6 +324,23 @@ export const createPatientSubmissionBundle = ({
   const bundle = createBundle();
   bundle.entry.push(patientEntry);
 
+  if (patient.id == null) {
+    const familyGroupBuilder = new FamilyGroupBuilder();
+    familyGroupBuilder.withActual(true).withType('person').withMember(
+      patientReference,
+    );
+    const familyGroup = familyGroupBuilder.build();
+    const entry = createEntry(familyGroup);
+    const familyGroupReference = getReference(entry);
+    patient.extension.push(
+      {
+        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
+        valueReference: { ...familyGroupReference },
+      },
+    );
+    bundle.entry.push(entry);
+  }
+
   const serviceRequestResource = FhirDataManager.createServiceRequest(
     practitionerId, // TODO: Change to real id once it's supported.
     patientEntry.fullUrl,
@@ -363,7 +381,12 @@ export const createPatientSubmissionBundle = ({
       clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
     }
 
-    // TODO: HPO
+    if (observations.summary != null && !isEmpty(observations.summary)) {
+      observations.summary.subject = patientReference;
+      const summaryEntry = createEntry(observations.summary);
+      bundle.entry.push(summaryEntry);
+      clinicalImpressionResource.investigation[0].item.push(getReference(summaryEntry));
+    }
 
     // Indication
     if (observations.indic != null && !isEmpty(observations.indic)) {
