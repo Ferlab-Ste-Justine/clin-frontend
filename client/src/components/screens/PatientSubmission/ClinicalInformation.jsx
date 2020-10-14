@@ -19,7 +19,7 @@ import {
 import {
   CGH_CODES,
   CGH_VALUES,
-  cghNote,
+  resourceNote,
   getCGHInterpretationCode,
   getIndicationNote,
   getIndicationId,
@@ -516,12 +516,16 @@ class ClinicalInformation extends React.Component {
     )));
 
     let cghInterpretationValue;
-    let cghNoteValue;
+    let summaryNoteValue;
     let cghId = null;
     if (observations.cgh != null) {
       cghId = observations.cgh.id;
       cghInterpretationValue = getCGHInterpretationCode(observations.cgh);
-      cghNoteValue = cghNote(observations.cgh);
+    }
+
+
+    if (observations.summary != null) {
+      summaryNoteValue = resourceNote(observations.summary);
     }
 
     let indicationNoteValue;
@@ -585,9 +589,9 @@ class ClinicalInformation extends React.Component {
           }
 
           <Form.Item label="Résumé">
-            {getFieldDecorator('cghNote', {
+            {getFieldDecorator('summaryNote', {
               rules: [],
-              initialValue: cghNoteValue,
+              initialValue: summaryNoteValue,
             })(
               <TextArea className="input note" rows={4} />,
             )}

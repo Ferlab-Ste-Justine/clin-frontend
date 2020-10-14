@@ -294,6 +294,7 @@ class PatientSubmissionScreen extends React.Component {
     this.handlePractitionerOptionSelected = this.handlePractitionerOptionSelected.bind(this);
     this.canGoNextPage = this.canGoNextPage.bind(this);
     this.updateFormValues = this.updateFormValues.bind(this);
+    this.createSummary = this.createSummary.bind(this);
   }
 
   getPatientData() {
@@ -565,6 +566,15 @@ class PatientSubmissionScreen extends React.Component {
     return builder.build();
   }
 
+  createSummary() {
+    const { form } = this.props;
+    const values = form.getFieldsValue();
+    const builder = new ObservationBuilder('INVES');
+
+    builder.withNote(values.summaryNote || '');
+    return builder.build();
+  }
+
 
   handleSubmit(e) {
     const { form } = this.props;
@@ -603,6 +613,10 @@ class PatientSubmissionScreen extends React.Component {
           indic: {
             ...observations.indic,
             ...this.createIndicationResourceList(),
+          },
+          summary: {
+            ...observations.summary,
+            ...this.createSummary(),
           },
         };
         actions.saveObservations(submission.observations);
