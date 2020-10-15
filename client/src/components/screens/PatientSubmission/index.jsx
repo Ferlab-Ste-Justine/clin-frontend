@@ -109,9 +109,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
   const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
   const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
-  function disabledDate(current) {
-    return current && current > moment().startOf('day');
-  }
+  const disabledDate = current => current && current > moment().startOf('day');
   return (
     <Card title="Patient" bordered={false} className="staticCard patientContent">
       <Form.Item label="Nom">
