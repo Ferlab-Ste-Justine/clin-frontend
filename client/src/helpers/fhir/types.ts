@@ -1,11 +1,12 @@
-export type ResourceType = "Practitioner" | 
-                            "Patient" | 
-                            "Observation" | 
-                            "ClinicalImpression" | 
-                            "FamilyMemberHistory" | 
-                            "ServiceRequest" | 
-                            "Organization" | 
-                            "PractitionerRole";
+export type ResourceType = "Practitioner" |
+    "Patient" |
+    "Observation" |
+    "ClinicalImpression" |
+    "FamilyMemberHistory" |
+    "ServiceRequest" |
+    "Organization" |
+    "PractitionerRole" |
+    "Group";
 
 export interface Meta {
     profile: string[];
@@ -139,4 +140,19 @@ export interface Observation {
     note: Note[];
     extension: Extension[];
     valueCodeableConcept?: CodeableConcept;
+}
+
+export type FamilyGroupType = "person" | "animal" | "practitioner" | "device" | "medication" | "substance";
+
+export interface BackboneElement {
+    entity: Reference;
+}
+
+export interface FamilyGroup {
+    resourceType: ResourceType;
+    id?: string;
+    meta: Meta;
+    type: FamilyGroupType;
+    actual: boolean;
+    member: BackboneElement[];
 }

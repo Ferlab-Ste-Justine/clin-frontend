@@ -58,22 +58,23 @@ function* savePatientSubmission(action) {
     result.patient = processBundleResponse(responses.find(isPatient));
     result.serviceRequest = processBundleResponse(responses.find(isServiceRequest));
     result.clinicalImpression = processBundleResponse(responses.find(isClinicalImpression));
-    if (responses.length > 4) {
+    if (responses.length > 5) {
       result.cgh = processBundleResponse(responses[3]);
-      result.indic = processBundleResponse(responses[4]);
+      result.summary = processBundleResponse(responses[4]);
+      result.indic = processBundleResponse(responses[5]);
     }
 
 
     result.fmh = [];
     result.hpos = [];
-    if (payload.observations.fmh != null && responses.length > 5) {
+    if (payload.observations.fmh != null && responses.length > 6) {
       for (let i = 0; i < payload.observations.fmh.length; i += 1) {
-        result.fmh.push(processBundleResponse(responses[5 + i]));
+        result.fmh.push(processBundleResponse(responses[6 + i]));
       }
     }
 
     const fmhLength = payload.observations.fmh != null ? payload.observations.fmh.filter(f => !isEmpty(f)).length : 0;
-    const hpoStartIndex = 5 + fmhLength;
+    const hpoStartIndex = 6 + fmhLength;
     if (responses.length > hpoStartIndex) {
       for (let i = 0; i < payload.observations.hpos.length; i += 1) {
         result.hpos.push(processBundleResponse(responses[hpoStartIndex + i]));

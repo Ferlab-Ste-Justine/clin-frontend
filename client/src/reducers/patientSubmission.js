@@ -19,12 +19,14 @@ export const initialPatientSubmissionState = {
     gender: '',
     birthDate: '',
   },
+  familyGroup: null,
   practitionerId: null,
   serviceRequest: {},
   clinicalImpression: {},
   observations: {
     cgh: null,
     indic: null,
+    summary: null,
     fmh: [{}],
     hpos: [],
   },
@@ -52,6 +54,9 @@ const patientSubmissionReducer = (
         ...draft.observations,
         cgh: {
           ...draft.observations.cgh, ...action.payload.result.cgh,
+        },
+        summary: {
+          ...draft.observations.summary, ...action.payload.result.summary,
         },
         indic: {
           ...draft.observations.indic, ...action.payload.result.indic,
