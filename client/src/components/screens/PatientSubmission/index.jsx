@@ -10,7 +10,9 @@ import moment from 'moment';
 import {
   AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps,
 } from 'antd';
-import { find, has, debounce } from 'lodash';
+import {
+  find, has, debounce, mapValues,
+} from 'lodash';
 
 import IconKit from 'react-icons-kit';
 import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';
@@ -107,11 +109,27 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   const genderValues = getGenderValues();
   const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
   const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
+  function disabledDate(current) {
+    return current && current > moment().startOf('day');
+  }
   return (
     <Card title="Patient" bordered={false} className="staticCard patientContent">
       <Form.Item label="Nom">
         {getFieldDecorator('family', {
-          rules: [{ required: true, message: 'Please enter the family name!' }],
+          rules: [{
+            required: true,
+            message: 'Please enter the family name!',
+          },
+          {
+            pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
+            message: 'Pas de caractère spécial',
+          },
+          {
+            whitespace: true,
+            pattern: RegExp(/(.*[a-z]){2}/i),
+            message: 'Doit contenir au moins 2 caractères',
+          },
+          ],
           initialValue: has(patient, 'name[0].family') ? patient.name[0].family : '',
         })(
           <Input placeholder="Nom de famille" className="input large" />,
@@ -119,7 +137,20 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="Prénom">
         {getFieldDecorator('given', {
-          rules: [{ required: true, message: 'Please enter the given name!' }],
+          rules: [{
+            required: true,
+            message: 'Please enter the given name!',
+          },
+          {
+            pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
+            message: 'Pas de caractère spécial',
+          },
+          {
+            whitespace: true,
+            pattern: RegExp(/(.*[a-z]){2}/i),
+            message: 'Doit contenir au moins 2 caractères',
+          },
+          ],
           initialValue: has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : '',
         })(
           <Input placeholder="Prénom" className="input large" />,
@@ -146,14 +177,14 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           rules: [{ required: true, message: 'Please enter the birthdate!' }],
           initialValue: defaultBirthDate(patient),
         })(
-          <DatePicker className="small" />,
+          <DatePicker className="small" disabledDate={disabledDate} />,
         )}
       </Form.Item>
       <Form.Item label="RAMQ">
         {getFieldDecorator('ramq', {
           rules: [{
-            pattern: RegExp(/^[A-Z]{4}\d{8,9}$/),
-            message: 'Doit comporter quatre lettres majuscules suivies de 8 ou 9 chiffres',
+            pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
+            message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
           }],
           initialValue: ramqValue(patient),
         })(
@@ -163,7 +194,16 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
       </Form.Item>
       <Form.Item label="MRN">
         {getFieldDecorator('mrn', {
-          rules: [{ required: true, message: 'Please enter the MRN number!' }],
+          rules: [
+            { required: true, message: 'Please enter the MRN number!' },
+            {
+              pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
+              message: 'Pas de caractère spécial',
+            },
+            {
+              whitespace: true,
+              message: 'Ne peux pas être vide',
+            }],
           initialValue: mrnValue(patient),
         })(
           <Input placeholder="12345678" className="input small" />,
@@ -300,7 +340,7 @@ class PatientSubmissionScreen extends React.Component {
   getPatientData() {
     const { currentPageIndex } = this.state;
     const { patient, form } = this.props;
-    const values = form.getFieldsValue();
+    let values = form.getFieldsValue();
 
     const getEthnicityDisplay = (ethnicity) => {
       switch (ethnicity) {
@@ -326,6 +366,15 @@ class PatientSubmissionScreen extends React.Component {
           return '';
       }
     };
+    values.ramq = values.ramq.toUpperCase();
+
+    values = mapValues(values, (o) => {
+      if (typeof o === 'string') {
+        return o.trim();
+      }
+      return o;
+    });
+
     if (currentPageIndex === 0) {
       const value = FhirDataManager.createPatient({
         ...values,
