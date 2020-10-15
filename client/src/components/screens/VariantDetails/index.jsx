@@ -51,11 +51,6 @@ const header = title => (
   <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>
 );
 
-const pickTranscript = (c) => {
-  const pick = c.transcripts.find(t => t.pick);
-  return pick;
-};
-
 const Link = ({ url, text }) => (
   <Button
     key={uuidv1()}
@@ -98,15 +93,15 @@ const getImpactTag = (impact) => {
 };
 
 const impactSummary = (c) => {
-  if (pickTranscript(c)) {
+  if (c.pick === true) {
     const impactScore = c.impact ? (getImpactTag(c.impact)) : null;
     return (
       <Fragment key={shortid.generate()}>
         <div>
           <Row className="impactRow">
             <Link
-              url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedSymbol}`}
-              text={c.geneAffectedSymbol}
+              url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.symbol}`}
+              text={c.symbol}
               className="link"
             />
             {impactScore}
@@ -122,25 +117,25 @@ const impact = (c) => {
   const vep = c.impact ? (<li><span className="consequenceTerm">VEP: </span>{getImpactTag(c.impact)} {c.impact}</li>) : null;
   let items = [vep];
   if (c.predictions) {
-    const sift = c.predictions.SIFT
-      ? (<li><span className="consequenceTerm">SIFT: </span>{c.predictions.SIFT} - {c.predictions.SIFT_score}</li>) : null;
-    const polyphen2 = c.predictions.Polyphen2_HVAR_score
+    const sift = c.predictions.sift_pred
+      ? (<li><span className="consequenceTerm">SIFT: </span>{c.predictions.sift_pred} - {c.predictions.sift_converted_rank_score}</li>) : null;
+    const polyphen2 = c.predictions.polyphen2_hvar_pred
       ? (
         <li>
           <span className="consequenceTerm">Polyphen2: </span>
-          {c.predictions.Polyphen2_HVAR_score} - {c.predictions.Polyphen2_HVAR_pred}
+          {c.predictions.polyphen2_hvar_pred} - {c.predictions.polyphen2_hvar_score}
         </li>
       ) : null;
-    const lrt = c.predictions.LRT_Pred
-      ? (<li><span className="consequenceTerm">LRT: </span>{c.predictions.LRT_Pred} - {c.predictions.LRT_score}</li>) : null;
-    const fathmm = c.predictions.FATHMM
-      ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.FATHMM} - {c.predictions.FATHMM_score}</li>) : null;
-    const cadd = c.predictions.CADD_score
-      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.CADD_score}</li>) : null;
-    const dann = c.predictions && c.predictions.DANN_score
-      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.DANN_score}</li>) : null;
-    const revel = c.predictions && c.predictions.REVEL_score
-      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.REVEL_score}</li>) : null;
+    const lrt = c.predictions.lrt_pred
+      ? (<li><span className="consequenceTerm">LRT: </span>{c.predictions.lrt_pred} - {c.predictions.lrt_converted_rankscore}</li>) : null;
+    const fathmm = c.predictions.fathmm_pred
+      ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.fathmm_pred} - {c.predictions.fathmm_converted_rank_score}</li>) : null;
+    const cadd = c.predictions.cadd_score
+      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.cadd_score}</li>) : null;
+    const dann = c.predictions && c.predictions.dann_score
+      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.dann_score}</li>) : null;
+    const revel = c.predictions && c.predictions.revel_rankscore
+      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.revel_rankscore}</li>) : null;
     items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
   }
   return (
@@ -171,20 +166,20 @@ class VariantDetailsScreen extends React.Component {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
         renderer: c => (
-          <Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.geneAffectedId}`} text={c.geneAffectedSymbol} /> || ''
+          <Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.ensembl_gene_id}`} text={c.symbol} /> || ''
         ),
       },
       {
         key: 'aaChange',
         label: 'screen.variantDetails.summaryTab.consequencesTable.AAColumn',
-        renderer: c => c.aaChange || '',
+        renderer: c => c.aa_change || '',
       },
       {
         key: 'consequence',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn',
         renderer: (c) => {
-          const valueArray = c.consequence[0].split('_');
+          const valueArray = c.consequence.split('_');
           const arrayFilter = valueArray.filter(item => item !== 'variant');
           const finalString = arrayFilter.join(' ');
           return <span className="capitalize">{finalString}</span>;
@@ -194,7 +189,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'cdnaChange',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.CDNAChangeColumn',
-        renderer: c => c.cdnaChange || '',
+        renderer: c => c.coding_dna_change || '',
       },
       {
         key: 'strand',
@@ -212,7 +207,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'PhyloP17Way',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.ConservationColumn',
-        renderer: (c) => { try { return c.conservationsScores.PhyloP17Way; } catch (e) { return ''; } },
+        renderer: (c) => { try { return c.conservations.phylo_p17way_primate_rankscore; } catch (e) { return ''; } },
       },
       {
         key: 'transcripts',
@@ -221,20 +216,13 @@ class VariantDetailsScreen extends React.Component {
         renderer: (data) => {
           try {
             const baseUrl = 'https://useast.ensembl.org/Homo_sapiens/Transcript/Summary?db=core';
-            const lis = data.transcripts.map(t => (
-              <li>
-                <Link url={`${baseUrl}&t=${t.featureId}`} text={t.featureId} />
-                {
-                  t.canonical ? (
-                    <svg className="canonicalIcon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#1D8BC6" />
-                      <path d="M12.1872 10.3583C12.1087 11.1889 11.8021 11.8378 11.2674 12.3048C10.7326 12.7683 10.0214 13 9.13369 13C8.51337 13 7.96613 12.8538 7.49198 12.5615C7.02139 12.2656 6.65775 11.8467 6.40107 11.3048C6.14439 10.7629 6.0107 10.1337 6 9.41711V8.68984C6 7.95544 6.13012 7.30838 6.39037 6.74866C6.65062 6.18895 7.02317 5.75758 7.50802 5.45455C7.99643 5.15152 8.55971 5 9.19786 5C10.057 5 10.7487 5.23351 11.2727 5.70053C11.7968 6.16756 12.1016 6.82709 12.1872 7.67914H10.8396C10.7754 7.11943 10.6114 6.71658 10.3476 6.47059C10.0873 6.22103 9.7041 6.09626 9.19786 6.09626C8.60963 6.09626 8.15686 6.31194 7.83957 6.74332C7.52585 7.17112 7.36542 7.80036 7.35829 8.63102V9.32086C7.35829 10.1622 7.50802 10.8039 7.80749 11.246C8.11052 11.6881 8.55258 11.9091 9.13369 11.9091C9.66488 11.9091 10.0642 11.7897 10.3316 11.5508C10.5989 11.3119 10.7683 10.9144 10.8396 10.3583H12.1872Z" fill="#EAF3FA" />
-                    </svg>
-                  ) : ''
-                }
-              </li>
-            ));
-            return <ul>{lis}</ul>;
+            const canonical = data.canonical ? (
+              <svg className="canonicalIcon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#1D8BC6" />
+                <path d="M12.1872 10.3583C12.1087 11.1889 11.8021 11.8378 11.2674 12.3048C10.7326 12.7683 10.0214 13 9.13369 13C8.51337 13 7.96613 12.8538 7.49198 12.5615C7.02139 12.2656 6.65775 11.8467 6.40107 11.3048C6.14439 10.7629 6.0107 10.1337 6 9.41711V8.68984C6 7.95544 6.13012 7.30838 6.39037 6.74866C6.65062 6.18895 7.02317 5.75758 7.50802 5.45455C7.99643 5.15152 8.55971 5 9.19786 5C10.057 5 10.7487 5.23351 11.2727 5.70053C11.7968 6.16756 12.1016 6.82709 12.1872 7.67914H10.8396C10.7754 7.11943 10.6114 6.71658 10.3476 6.47059C10.0873 6.22103 9.7041 6.09626 9.19786 6.09626C8.60963 6.09626 8.15686 6.31194 7.83957 6.74332C7.52585 7.17112 7.36542 7.80036 7.35829 8.63102V9.32086C7.35829 10.1622 7.50802 10.8039 7.80749 11.246C8.11052 11.6881 8.55258 11.9091 9.13369 11.9091C9.66488 11.9091 10.0642 11.7897 10.3316 11.5508C10.5989 11.3119 10.7683 10.9144 10.8396 10.3583H12.1872Z" fill="#EAF3FA" />
+              </svg>
+            ) : '';
+            return <span><Link url={`${baseUrl}&t=${data.ensembl_feature_id}`} text={data.ensembl_feature_id} />{canonical}</span>;
           } catch (e) {
             return '';
           }
@@ -266,36 +254,36 @@ class VariantDetailsScreen extends React.Component {
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
-        key: 'AC',
+        key: 'ac',
         label: 'screen.variantDetails.frequenciesTab.nbAllelesAlt',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
-          renderer: (data) => { try { return data.AC; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.ac; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
-        key: 'AN',
+        key: 'an',
         label: 'screen.variantDetails.frequenciesTab.nbAllelesAltRef',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
-          renderer: (data) => { try { return data.AN; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.an; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
-        key: 'HC',
+        key: 'hc',
         label: 'screen.variantDetails.frequenciesTab.nbHomozygotes',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
-          renderer: (data) => { try { return data.HC; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.hc; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
-        key: 'AF',
+        key: 'af',
         label: 'screen.variantDetails.frequenciesTab.frequencies',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
           renderer: (data) => {
             try {
-              const af = data.AF.toExponential(5);
+              const af = data.af.toExponential(5);
               return af;
             } catch (e) { return ''; }
           },
@@ -320,18 +308,18 @@ class VariantDetailsScreen extends React.Component {
         columnWidth: COLUMN_WIDTH.WIDE,
       },
       {
-        key: 'AC',
+        key: 'ac',
         label: 'screen.variantDetails.frequenciesTab.nbAllelesAlt',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          renderer: (data) => { try { return data.AC; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.ac; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
       {
-        key: 'AF',
+        key: 'af',
         label: 'screen.variantDetails.frequenciesTab.frequencies',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          renderer: (data) => { try { return data.AF; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.af; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -359,7 +347,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'geneLocus',
         label: 'screen.variantDetails.clinicalAssociationsTab.geneLocus',
         renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => { try { return data.geneSymbol; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.symbol; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -397,10 +385,10 @@ class VariantDetailsScreen extends React.Component {
 
     this.state.associationColumnPreset = [
       {
-        key: 'geneSymbol',
+        key: 'symbol',
         label: 'screen.variantDetails.clinicalAssociationsTab.gene',
         renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => { try { return data.geneSymbol; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.symbol; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -438,10 +426,10 @@ class VariantDetailsScreen extends React.Component {
 
     this.state.HPOColumnPreset = [
       {
-        key: 'geneSymbol',
+        key: 'symbol',
         label: 'screen.variantDetails.clinicalAssociationsTab.gene',
         renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => { try { return data.geneSymbol; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.symbol; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -453,62 +441,47 @@ class VariantDetailsScreen extends React.Component {
         key: 'donors',
         label: 'screen.variantDetails.clinicalAssociationsTab.donors',
       },
-      // {
-      //   key: 'donors',
-      //   label: 'screen.variantDetails.clinicalAssociationsTab.donors',
-      //   renderer: createCellRenderer('custom', this.getGenes, {
-      //     renderer: (data) => { try { return data.donors; } catch (e) { return ''; } },
-      //   }),
-      // },
     ];
 
     this.state.donorsColumnPreset = [
       {
-        key: 'patientId',
+        key: 'patient_id',
         label: 'screen.variantDetails.patientsTab.donor',
         renderer: createCellRenderer('button', this.getDonors, {
-          key: 'patientId',
+          key: 'patient_id',
           handler: this.handleGoToPatientScreen,
         }),
         columnWidth: COLUMN_WIDTH.NORMAL,
       },
       {
-        key: 'organizationId',
+        key: 'organization_id',
         label: 'screen.variantDetails.patientsTab.LDM',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.organizationId; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.organization_id; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.NORMAL,
       },
       {
-        key: 'studyId',
+        key: 'study_id',
         label: 'screen.variantDetails.patientsTab.studyId',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.studyId; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.study_id; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.NARROW,
       },
       {
-        key: 'relation',
-        label: 'screen.variantDetails.patientsTab.relation',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.relation; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.SMALL,
-      },
-      {
-        key: 'familyId',
+        key: 'family_id',
         label: 'screen.variantDetails.patientsTab.familyId',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.familyId; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.family_id; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.NORMAL,
       },
       {
-        key: 'sequencingStrategy',
+        key: 'sequencing_strategy',
         label: 'screen.variantDetails.patientsTab.type',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.sequencingStrategy; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.sequencing_strategy; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.NARROW,
       },
@@ -521,52 +494,28 @@ class VariantDetailsScreen extends React.Component {
         columnWidth: COLUMN_WIDTH.SMALL,
       },
       {
-        key: 'transmission',
-        label: 'screen.variantDetails.patientsTab.transmission',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.transmission; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
-      },
-      {
-        key: 'genotypeFamily',
-        label: 'screen.variantDetails.patientsTab.genotypeFamily',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.genotypeFamily; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
-      },
-      {
-        key: 'adAlt',
+        key: 'ad_alt',
         label: 'screen.variantDetails.patientsTab.adAlt',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.adAlt; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.ad_alt; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.TINY,
       },
       {
-        key: 'adTotal',
+        key: 'ad_total',
         label: 'screen.variantDetails.patientsTab.adTotal',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.adTotal; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.ad_total; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.NARROW,
       },
       {
-        key: 'adFreq',
+        key: 'ad_ratio',
         label: 'screen.variantDetails.patientsTab.adFreq',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.adFreq; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.ad_ratio; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
-      },
-      {
-        key: 'exomiserScore',
-        label: 'screen.variantDetails.patientsTab.exomiserScore',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.exomiserScore; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
         key: 'gq',
@@ -585,10 +534,10 @@ class VariantDetailsScreen extends React.Component {
         columnWidth: COLUMN_WIDTH.TINY,
       },
       {
-        key: 'lastUpdate',
+        key: 'last_update',
         label: 'screen.variantDetails.patientsTab.lastUpdate',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.lastUpdate; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.last_update; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
@@ -646,15 +595,15 @@ class VariantDetailsScreen extends React.Component {
         frequencies,
       } = data;
 
-      const internalCohortsKeys = Object.keys(frequencies).filter(k => k === 'interne' || k.indexOf('LDx') !== -1);
+      const internalCohortsKeys = Object.keys(frequencies).filter(k => k === 'internal' || k.indexOf('LDx') !== -1);
       const totalKey = 'Total';
       let totalValue = null;
       const rows = [];
       internalCohortsKeys.forEach((key) => {
         const frequency = frequencies[key];
-        const isInterne = key === 'interne';
+        const isInterne = key === 'internal';
         frequency.key = isInterne ? totalKey : key;
-        frequency.AF = Number.parseFloat(frequency.AF).toExponential(5);
+        frequency.af = Number.parseFloat(frequency.af).toExponential(5);
         if (isInterne) {
           totalValue = frequency;
         } else {
@@ -681,16 +630,16 @@ class VariantDetailsScreen extends React.Component {
         frequencies,
         chrom,
         start,
-        altAllele,
-        refAllele,
+        alternate,
+        reference,
       } = data;
 
-      const url = `https://gnomad.broadinstitute.org/variant/${chrom}-${start}-${refAllele}-${altAllele}?dataset=gnomad_r3`;
-      const externalCohortsKeys = Object.keys(frequencies).filter(k => k !== 'interne' && k.indexOf('LDx') === -1);
+      const url = `https://gnomad.broadinstitute.org/variant/${chrom}-${start}-${reference}-${alternate}?dataset=gnomad_r3`;
+      const externalCohortsKeys = Object.keys(frequencies).filter(k => k !== 'internal' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
         const frequency = frequencies[key];
         frequency.key = key;
-        frequency.AF = Number.parseFloat(frequency.AF).toExponential(5);
+        frequency.af = Number.parseFloat(frequency.af).toExponential(5);
         frequency.info = (
           <Link
             url={url}
@@ -726,17 +675,17 @@ class VariantDetailsScreen extends React.Component {
   getAssociationData() {
     const orphanetLink = (on) => {
       const {
-        dataId, panel,
+        disorder_id, panel,
       } = on;
 
-      const re = RegExp(/([Orph:])\d+(\.\d*)?/, 'i');
-      const orphaId = panel ? re.exec(panel)[0] : '';
+      // const re = RegExp(/([Orph:])\d+(\.\d*)?/, 'i');
+      // const orphaId = panel ? re.exec(panel)[0] : '';
 
       return (
         <span className="orphanetLink">
           <Link
             key={shortid.generate()}
-            url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${dataId}&Disease_Disease_Search_diseaseGroup=ORPHA-${orphaId}`}
+            url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${disorder_id}`}
             text={panel}
           />
         </span>
@@ -748,10 +697,9 @@ class VariantDetailsScreen extends React.Component {
       .filter(gene => gene.radboudumc != null || gene.orphanet != null)
       .map((g) => {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-        const radboudumcLine = g.radboudumc ? g.radboudumc.join(', ') : '--';
         const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
-        const orphphanetLine = test || '--';
-        return { geneSymbol: g.geneSymbol, orphanet: (<span className="orphanetValue">{orphphanetLine}</span>), radboudumc: radboudumcLine };
+        const orphanetLine = test || '--';
+        return { symbol: g.symbol, orphanet: (<span className="orphanetValue">{orphanetLine}</span>) };
       });
   }
 
@@ -760,13 +708,13 @@ class VariantDetailsScreen extends React.Component {
     return this.getGenes().map((g) => {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
       const geneLine = (
-        <span>{g.geneSymbol} {g.geneMim
+        <span>{g.symbol} {g.omim_gene_id
           ? (
             <Fragment key={shortid.generate()}>
             (MIM:
               <Link
-                url={`https://omim.org/entry/${g.geneMim[0]}`}
-                text={g.geneMim[0]}
+                url={`https://omim.org/entry/${g.omim_gene_id}`}
+                text={g.omim_gene_id}
               />
             )
             </Fragment>
@@ -778,10 +726,10 @@ class VariantDetailsScreen extends React.Component {
       if (g.omim && g.omim.length > 0) {
         phenotype = g.omim.map(o => (
           <li key={shortid.generate()}>
-            {o.phenotype} (MIN:
+            {o.name} (MIM:
             <Link
-              url={`https://omim.org/entry/${o.phenotypeMim}`}
-              text={o.phenotypeMim}
+              url={`https://omim.org/entry/${o.omim_id}`}
+              text={o.omim_id}
             />)
           </li>
         ));
@@ -809,10 +757,9 @@ class VariantDetailsScreen extends React.Component {
     if (genes.filter(g => !!g.hpo).length > 0) {
       return genes.map((g, index) => {
         const lis = g.hpo ? g.hpo.map((h) => {
-          const re = RegExp(/([HP:])\d+(\.\d*)?/, 'i');
-          const hpoId = re.exec(h)[0];
-          const url = `https://hpo.jax.org/app/browse/term/HP:${hpoId}`;
-          return (<a href={url}>{h}</a>);
+          console.log('hpo', h);
+          const url = `https://hpo.jax.org/app/browse/term/${h.hpo_term_id}`;
+          return (<a href={url}>{h.hpo_term_label}</a>);
         }) : '--';
         const value = (
           <span className="hpoRow">
@@ -826,7 +773,7 @@ class VariantDetailsScreen extends React.Component {
             }
           </span>
         );
-        return { geneSymbol: g.geneSymbol, trait: value, donors: '' };
+        return { symbol: g.symbol, trait: value, donors: '' };
       });
     }
 
@@ -849,7 +796,7 @@ class VariantDetailsScreen extends React.Component {
 
   goToPatientTab() {
     const { actions, variantDetails } = this.props;
-    actions.navigateToVariantDetailsScreen(variantDetails.variantID, 'patients');
+    actions.navigateToVariantDetailsScreen(variantDetails.id, 'patients');
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -883,20 +830,23 @@ class VariantDetailsScreen extends React.Component {
     if (!data) return null;
 
     const {
-      dnaChange,
+      dna_change,
       genes,
-      type,
-      assemblyVersion,
-      refAllele,
-      altAllele,
+      variant_class,
+      assembly_version,
+      reference,
+      alternate,
       clinvar,
-      lastAnnotationUpdate,
-      bdExt,
+      last_annotation_update,
+      ext_db,
       frequencies,
       consequences,
+      dbsnp,
+      pubmed,
+      omim,
     } = data;
 
-    const clinvar_clinsig = clinvar ? clinvar.clinvar_clinsig : '';
+    const clin_sig = clinvar ? clinvar.clin_sig : '';
 
     const {
       consequencesColumnPreset,
@@ -909,25 +859,25 @@ class VariantDetailsScreen extends React.Component {
     } = this.state;
     const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
 
-    const omimLinks = omims => omims.map(omim => (
+    const omimLinks = omims => omims.map(o => (
       <div className="variantPageContentRow">
         <Link
           className="link"
-          url={`https://omim.org/entry/${omim}`}
-          text={omim}
+          url={`https://omim.org/entry/${o}`}
+          text={o}
         />
         {/* Ignore the comma if it's the last entry */}
-        {omims.length > 1 && omim !== omims[omims.length - 1] ? (<div>,&nbsp;</div>) : (<></>)}
+        {o.length > 1 && o !== omims[omims.length - 1] ? (<div>,&nbsp;</div>) : (<></>)}
       </div>
     ));
 
     let mutationIdTitle = '';
-    if (data.mutationId.length > 31) {
-      const mutationIdTitleStart = data.mutationId.substring(0, 15);
-      const mutationIdTitleEnd = data.mutationId.substring(data.mutationId.length - 15);
+    if (data.hgvsg.length > 31) {
+      const mutationIdTitleStart = data.hgvsg.substring(0, 15);
+      const mutationIdTitleEnd = data.hgvsg.substring(data.hgvsg.length - 15);
       mutationIdTitle = `${mutationIdTitleStart} ... ${mutationIdTitleEnd}`;
     } else {
-      mutationIdTitle = data.mutationId;
+      mutationIdTitle = data.hgvsg;
     }
     return (
       <Content>
@@ -982,25 +932,25 @@ class VariantDetailsScreen extends React.Component {
                     <DataList
                       title={intl.get(SUMMARY_TAB)}
                       dataSource={[
-                        { label: 'Variant', value: dnaChange },
+                        { label: 'Variant', value: dna_change },
                         {
                           label: 'Cytobande',
                           value: genes && genes[0] ? genes[0].location : '',
                         },
-                        { label: 'Type', value: type },
-                        { label: 'Génome Réf.', value: assemblyVersion },
-                        { label: 'Allele Réf.', value: refAllele },
-                        { label: 'Allele Atl', value: altAllele },
+                        { label: 'Type', value: variant_class },
+                        { label: 'Génome Réf.', value: assembly_version },
+                        { label: 'Allele Réf.', value: reference },
+                        { label: 'Allele Atl', value: alternate },
                         {
                           label: 'Gène(s)',
                           value: (
                             <ul>
                               {genes.map(g => (
-                                <li key={g.geneSymbol}>
+                                <li key={g.symbol}>
                                   {
                                     <Link
-                                      url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensemblId}`}
-                                      text={g.geneSymbol}
+                                      url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensembl_gene_id}`}
+                                      text={g.symbol}
                                     />
                                 }
                                 </li>
@@ -1011,11 +961,11 @@ class VariantDetailsScreen extends React.Component {
                         { label: 'Impact VEP', value: <ul>{impactsSummary}</ul> },
                         {
                           label: 'Signification clinique (Clinvar)',
-                          value: clinvar_clinsig ? clinvar_clinsig.join(', ') : '--',
+                          value: clin_sig ? clin_sig.join(', ') : '--',
                         },
                         {
                           label: 'Date des annotations',
-                          value: lastAnnotationUpdate,
+                          value: last_annotation_update,
                         },
                       ]}
                     />
@@ -1025,13 +975,13 @@ class VariantDetailsScreen extends React.Component {
                     <DataList
                       title="Références externes"
 
-                      dataSource={bdExt ? [
+                      dataSource={ext_db ? [
                         {
                           label: 'Clin Var',
-                          value: bdExt && bdExt.clinvar ? (
+                          value: ext_db && ext_db.is_clinvar ? (
                             <Link
-                              url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.clinvar}`}
-                              text={`${bdExt.clinvar}`}
+                              url={`https://www.ncbi.nlm.nih.gov/snp/${clinvar.clinvar_id}`}
+                              text={`${clinvar.clinvar_id}`}
                             />
                           ) : (
                             '--'
@@ -1040,9 +990,9 @@ class VariantDetailsScreen extends React.Component {
                         {
                           label: 'OMIM',
                           value:
-                          bdExt && bdExt.omim ? (
+                          ext_db && ext_db.is_omim ? (
                             <div className="variantPageContentRow">
-                              {omimLinks(bdExt.omim)}
+                              {omimLinks(omim)}
                             </div>
                           ) : (
                             '--'
@@ -1051,10 +1001,10 @@ class VariantDetailsScreen extends React.Component {
                         {
                           label: 'dbSNP',
                           value:
-                          bdExt && bdExt.dbSNP ? (
+                          ext_db && ext_db.is_dbsnp ? (
                             <Link
-                              url={`https://www.ncbi.nlm.nih.gov/snp/${bdExt.dbSNP}`}
-                              text={bdExt.dbSNP}
+                              url={`https://www.ncbi.nlm.nih.gov/snp/${dbsnp}`}
+                              text={dbsnp}
                             />
                           ) : (
                             '--'
@@ -1063,25 +1013,25 @@ class VariantDetailsScreen extends React.Component {
                         {
                           label: 'Pubmed',
                           value:
-                          bdExt && bdExt.pubmed
+                          ext_db && ext_db.is_pubmed
                             ? (
                               <>
                                 {
-                                bdExt.pubmed.length === 1
-                                  ? (
-                                    <Link
-                                      className="link"
-                                      url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${bdExt.pubmed[0]}`}
-                                      text={`${bdExt.pubmed.length} publication`}
-                                    />
-                                  )
-                                  : (
-                                    <Link
-                                      className="link"
-                                      url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${bdExt.pubmed.join('+')}`}
-                                      text={`${bdExt.pubmed.length} publications`}
-                                    />
-                                  )
+                                  pubmed.length === 1
+                                    ? (
+                                      <Link
+                                        className="link"
+                                        url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed[0]}`}
+                                        text={`${pubmed.length} publication`}
+                                      />
+                                    )
+                                    : (
+                                      <Link
+                                        className="link"
+                                        url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed.join('+')}`}
+                                        text={`${pubmed.length} publications`}
+                                      />
+                                    )
                               }
                               </>
                             )
@@ -1098,25 +1048,13 @@ class VariantDetailsScreen extends React.Component {
                           label: 'Nb de patients (i)',
                           value: (
                             <span>
-                              <Button className="patientLink" type="link" onClick={this.goToPatientTab}>{frequencies.interne.PN}</Button>
-                            /{frequencies.interne.AN / 2}
+                              <Button className="patientLink" type="link" onClick={this.goToPatientTab}>{frequencies.internal.ac}</Button>
+                            /{frequencies.internal.an}
                             </span>),
                         },
                         {
-                          label: "Nb d'alleles ALT",
-                          value: `${frequencies.interne.AC}`,
-                        },
-                        {
-                          label: "Nb total d'alleles",
-                          value: `${frequencies.interne.AN}`,
-                        },
-                        {
-                          label: "Nb d'homozygotes",
-                          value: `${frequencies.interne.HC}`,
-                        },
-                        {
                           label: 'Fréquences',
-                          value: `${Number.parseFloat(frequencies.interne.AF).toExponential(5)}`,
+                          value: `${Number.parseFloat(frequencies.internal.af).toExponential(5)}`,
                         },
                       ]}
                     />
@@ -1217,13 +1155,7 @@ class VariantDetailsScreen extends React.Component {
                             label: intl.get(
                               'screen.variantDetails.clinicalAssociationsTab.signification',
                             ),
-                            value: clinvar.clinvar_clinsig ? clinvar.clinvar_clinsig.join(', ') : null,
-                          },
-                          {
-                            label: intl.get(
-                              'screen.variantDetails.clinicalAssociationsTab.sign',
-                            ),
-                            value: clinvar.clinvar_trait.join(', '),
+                            value: clinvar.clin_sig ? clinvar.clin_sig.join(', ') : null,
                           },
                         ]
                         : []

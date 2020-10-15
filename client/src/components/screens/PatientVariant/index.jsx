@@ -8,14 +8,19 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Tabs, Button, Tag, Row, Col, Dropdown, Menu, Badge, notification, Checkbox,
+  Badge, Button, Card, Checkbox, Col, Dropdown, Menu, notification, Row, Tabs, Tag,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
-  ic_assignment_ind, ic_location_city, ic_folder_shared, ic_assignment_turned_in, ic_launch, ic_arrow_drop_down,
+  ic_arrow_drop_down,
+  ic_assignment_ind,
+  ic_assignment_turned_in,
+  ic_folder_shared,
+  ic_launch,
+  ic_location_city,
 } from 'react-icons-kit/md';
 import {
-  sortBy, findIndex, filter, cloneDeep, get, curryRight, isNil, isArray, has, curry,
+  cloneDeep, curry, curryRight, filter, findIndex, get, has, isNil, sortBy,
 } from 'lodash';
 
 import Header from '../../Header';
@@ -32,14 +37,26 @@ import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import {
-  fetchSchema, selectQuery, replaceQuery, replaceQueries, removeQuery, duplicateQuery, sortStatement,
-  searchVariants, commitHistory,
-  getStatements, createDraftStatement, updateStatement, deleteStatement, undo, selectStatement, duplicateStatement,
-  createStatement, countVariants,
+  commitHistory,
+  countVariants,
+  createDraftStatement,
+  createStatement,
+  deleteStatement,
+  duplicateQuery,
+  duplicateStatement,
+  fetchSchema,
+  getStatements,
+  removeQuery,
+  replaceQueries,
+  replaceQuery,
+  searchVariants,
+  selectQuery,
+  selectStatement,
+  sortStatement,
+  undo,
+  updateStatement,
 } from '../../../actions/variant';
-import {
-  updateUserProfile,
-} from '../../../actions/user';
+import { updateUserProfile } from '../../../actions/user';
 import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
 
 import './style.scss';
@@ -230,6 +247,11 @@ const showNotification = (message, description) => {
   });
 };
 
+const formatConsequences = consequences => consequences.map((consequence) => {
+  consequence.consequence = consequence.consequence.split('_').filter(item => item !== 'variant').join(' ');
+  return consequence;
+});
+
 class PatientVariantScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -285,9 +307,9 @@ class PatientVariantScreen extends React.Component {
                 return (
                   <Checkbox
                     className="checkbox"
-                    id={data.mutationId}
+                    id={data.id}
                     onChange={this.handleSelectVariant}
-                    checked={!!selectedVariants[data.mutationId]}
+                    checked={!!selectedVariants[data.id]}
                   />
                 );
               } catch (e) {
@@ -295,32 +317,36 @@ class PatientVariantScreen extends React.Component {
               }
             },
           }),
-          excelRenderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
+          excelRenderer: (data) => { try { return data.hgvsg; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.TINY,
         },
         {
-          key: 'mutationId',
+          key: 'id',
           label: 'screen.variantsearch.table.variant',
-          renderer: createCellRenderer('tooltipButton', this.getData, {
-            key: 'mutationId',
-            handler: this.handleNavigationToVariantDetailsScreen,
-            renderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
+          renderer: createCellRenderer('custom', this.getData, {
+            renderer: (data) => {
+              try {
+                return (
+                  <Button data-id={data.id} onClick={this.handleNavigationToVariantDetailsScreen} className="button">{data.hgvsg}</Button>
+                );
+              } catch (e) { return ''; }
+            },
           }),
-          excelRenderer: (data) => { try { return data.mutationId; } catch (e) { return ''; } },
+          excelRenderer: (data) => { try { return data.hgvsg; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.MUTATION_ID,
         },
         {
           key: 'type',
           label: 'screen.variantsearch.table.variantType',
           renderer: createCellRenderer('capitalText', this.getData, {
-            key: 'type',
+            key: 'variant_class',
             renderer: (data) => {
               try {
-                return data.type;
+                return data.variant_class;
               } catch (e) { return ''; }
             },
           }),
-          excelRenderer: (data) => { try { return data.type; } catch (e) { return ''; } },
+          excelRenderer: (data) => { try { return data.variant_class; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.TYPE,
         },
         {
@@ -331,18 +357,18 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <a
-                    href={`https://www.ncbi.nlm.nih.gov/snp/${data.bdExt.dbSNP}`}
+                    href={`https://www.ncbi.nlm.nih.gov/snp/${data.dbsnp}`}
                     rel="noopener noreferrer"
                     target="_blank"
                     className="link, dbsnp"
                   >
-                    {data.bdExt.dbSNP}
+                    {data.dbsnp}
                   </a>
                 );
               } catch (e) { return ''; }
             },
           }),
-          excelRenderer: (data) => { try { return data.bdExt.dbSNP; } catch (e) { return ''; } },
+          excelRenderer: (data) => { try { return data.dbsnp; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.DBSNP,
         },
         {
@@ -351,32 +377,26 @@ class PatientVariantScreen extends React.Component {
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
-                data.consequences.map((consequence) => {
-                  const valueArray = consequence.consequence[0].split('_');
-                  const arrayFilter = valueArray.filter(item => item !== 'variant');
-                  const finalString = arrayFilter.join(' ');
-                  consequence.consequence[0] = finalString;
-                  return consequence.consequence[0];
-                });
+                const consequences = formatConsequences(data.consequences);
                 return (
                   <div>
                     {
-                    data.consequences.map(consequence => (
+                    consequences.map(consequence => (
                       consequence.pick === true ? (
                         <Row className="consequences" key={shortid.generate()}>
                           <Col>{this.getImpactTag(consequence.impact)}</Col>
-                          <Col className="consequence">{consequence.consequence[0]}</Col>
+                          <Col className="consequence">{consequence.consequence}</Col>
                           <Col>
                             <a
-                              href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.geneAffectedSymbol}`}
+                              href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.symbol}`}
                               rel="noopener noreferrer"
                               target="_blank"
                               className="link"
                             >
-                              {consequence.geneAffectedSymbol ? consequence.geneAffectedSymbol : ''}
+                              {consequence.symbol ? consequence.symbol : ''}
                             </a>
                           </Col>
-                          <Col>{consequence.aaChange ? consequence.aaChange : ''}</Col>
+                          <Col>{consequence.aa_change ? consequence.aa_change : ''}</Col>
                         </Row>
                       ) : null
                     ))
@@ -388,44 +408,13 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => {
             try {
-              data.consequences.map((consequence) => {
-                const valueArray = consequence.consequence[0].split('_');
-                const arrayFilter = valueArray.filter(item => item !== 'variant');
-                const finalString = arrayFilter.join(' ');
-                consequence.consequence[0] = finalString;
-                return consequence.consequence[0];
-              });
-              return data.consequences.map(consequence => (consequence.pick === true
-                ? `${consequence.consequence[0]} ${consequence.geneAffectedSymbol ? consequence.geneAffectedSymbol : ''} ${consequence.aaChange ? consequence.aaChange : ''}`
+              const consequences = formatConsequences(data.consequences);
+              return consequences.map(consequence => (consequence.pick === true
+                ? `${consequence.consequence[0]} ${consequence.symbol ? consequence.symbol : ''} ${consequence.aa_change ? consequence.aa_change : ''}`
                 : ''));
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.CONSEQUENCES,
-        },
-        {
-          key: 'exomiser',
-          label: 'screen.variantsearch.table.exomiser',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => {
-              try {
-                const { variant } = this.props;
-                const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
-                return (
-                  <div className="exomiser">
-                    <Row>{data.donors[donorIndex].exomiserScore}</Row>
-                  </div>
-                );
-              } catch (e) { return ''; }
-            },
-          }),
-          excelRenderer: (data) => {
-            try {
-              const { variant } = this.props;
-              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
-              return `${data.donors[donorIndex].exomiserScore}\n`;
-            } catch (e) { return ''; }
-          },
-          columnWidth: COLUMN_WIDTHS.EXOMISER,
         },
         {
           key: 'clinvar',
@@ -435,7 +424,7 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <div className="clinvar">
-                    <Row>{data.clinvar.clinvar_clinsig.join(', ')}</Row>
+                    <Row>{data.clinvar.clin_sig.join(', ')}</Row>
                     <Row>
                       <a
                         href={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${data.clinvar.clinvar_id}/`}
@@ -453,7 +442,7 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => {
             try {
-              return `${data.clinvar.clinvar_clinsig}\n${data.clinvar.clinvar_id}`;
+              return `${data.clinvar.clin_sig}\n${data.clinvar.clinvar_id}`;
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.CLINVAR,
@@ -467,7 +456,7 @@ class PatientVariantScreen extends React.Component {
                 return (
                   data.consequences.map(consequence => (
                     consequence.pick === true ? (
-                      <Row key={shortid.generate()}>{consequence.predictions.CADD_score}</Row>
+                      <Row key={shortid.generate()}>{consequence.predictions.cadd_score}</Row>
                     ) : null
 
                   ))
@@ -479,7 +468,7 @@ class PatientVariantScreen extends React.Component {
             try {
               return data.consequences.map(consequence => (
                 consequence.pick === true
-                  ? `${consequence.predictions.CADD_score}`
+                  ? `${consequence.predictions.cadd_score}`
                   : ''
               )).join('\n');
             } catch (e) { return ''; }
@@ -493,10 +482,9 @@ class PatientVariantScreen extends React.Component {
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
-                const frequenciesAN = data.frequencies.interne.AN / 2;
                 return (
                   <>
-                    <Row><Button className="frequenciesLink" data-id={data.mutationId} onClick={this.goToVariantPatientTab}>{data.frequencies.interne.PN}</Button><span> / </span>{frequenciesAN}</Row>
+                    <Row><Button className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{data.frequencies.internal.ac}</Button><span> / </span>{data.frequencies.internal.an}</Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -504,8 +492,7 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => {
             try {
-              const frequenciesAN = data.frequencies.interne.AN / 2;
-              return `${data.frequencies.interne.PN} / ${frequenciesAN}`;
+              return `${data.frequencies.internal.ac} / ${data.frequencies.internal.an}`;
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.FREQUENCIES,
@@ -520,12 +507,12 @@ class PatientVariantScreen extends React.Component {
                   <>
                     <Row>
                       <a
-                        href={`https://gnomad.broadinstitute.org/variant/${data.chrom}-${data.start}-${data.refAllele}-${data.altAllele}`}
+                        href={`https://gnomad.broadinstitute.org/variant/${data.chromosome}-${data.start}-${data.reference}-${data.alternate}`}
                         rel="noopener noreferrer"
                         target="_blank"
                         className="link"
                       >
-                        {data.frequencies.gnomAD_exomes.AF.toExponential()}
+                        {data.frequencies.gnomad_genomes_3_0.af.toExponential()}
                       </a>
                     </Row>
                   </>
@@ -535,7 +522,7 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => {
             try {
-              return `${data.frequencies.gnomAD_exomes.AF.toExponential()}`;
+              return `${data.frequencies.gnomad_genomes_3_0.af.toExponential()}`;
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.GNOMAD,
@@ -546,7 +533,7 @@ class PatientVariantScreen extends React.Component {
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               const { variant } = this.props;
-              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+              const donorIndex = findIndex(data.donors, { patient_id: variant.activePatient });
               try {
                 return (
                   <>
@@ -558,39 +545,12 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => {
             const { variant } = this.props;
-            const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+            const donorIndex = findIndex(data.donors, { patient_id: variant.activePatient });
             try {
               return `${data.donors[donorIndex].zygosity}`;
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.ZYGOSITY,
-        },
-        {
-          key: 'transmission',
-          label: 'screen.variantsearch.table.transmission',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
-          renderer: createCellRenderer('custom', this.getData, {
-            renderer: (data) => {
-              const { variant } = this.props;
-              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
-              try {
-                return (
-                  <div>
-                    <Row>{data.donors[donorIndex].transmission.join(', ')}</Row>
-                    <Row>{data.donors[donorIndex].genotypeFamily}</Row>
-                  </div>
-                );
-              } catch (e) { return ''; }
-            },
-          }),
-          excelRenderer: (data) => {
-            const { variant } = this.props;
-            const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
-            try {
-              return `${data.donors[donorIndex].transmission.join(', ')} \n ${data.donors[donorIndex].genotypeFamily}`;
-            } catch (e) { return ''; }
-          },
-          columnWidth: COLUMN_WIDTHS.DEFAULT,
         },
         {
           key: 'seq',
@@ -600,10 +560,10 @@ class PatientVariantScreen extends React.Component {
             renderer: (data) => {
               try {
                 const { variant } = this.props;
-                const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
+                const donorIndex = findIndex(data.donors, { patient_id: variant.activePatient });
                 return (
                   <>
-                    <Row>{data.donors[donorIndex].adAlt}<span> / </span>{data.donors[donorIndex].adTotal}</Row>
+                    <Row>{data.donors[donorIndex].ad_alt}<span> / </span>{data.donors[donorIndex].ad_total}</Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -612,8 +572,8 @@ class PatientVariantScreen extends React.Component {
           excelRenderer: (data) => {
             try {
               const { variant } = this.props;
-              const donorIndex = findIndex(data.donors, { patientId: variant.activePatient });
-              return `${data.donors[donorIndex].adAlt}/${data.donors[donorIndex].adTotal}`;
+              const donorIndex = findIndex(data.donors, { patient_id: variant.activePatient });
+              return `${data.donors[donorIndex].ad_alt}/${data.donors[donorIndex].ad_total}`;
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.SEQ,
@@ -624,27 +584,27 @@ class PatientVariantScreen extends React.Component {
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
-                if (data.bdExt.pubmed.length === 1) {
+                if (data.pubmed.length === 1) {
                   return (
                     <a
-                      href={`https://www.ncbi.nlm.nih.gov/pubmed?term=${data.bdExt.pubmed[0]}`}
+                      href={`https://www.ncbi.nlm.nih.gov/pubmed?term=${data.pubmed[0]}`}
                       rel="noopener noreferrer"
                       target="_blank"
                       className="link"
                     >
-                      {`${data.bdExt.pubmed.length} publication`}
+                      {`${data.pubmed.length} publication`}
                     </a>
                   );
                 }
 
                 return (
                   <a
-                    href={`https://www.ncbi.nlm.nih.gov/pubmed?term=${data.bdExt.pubmed.join('+')}`}
+                    href={`https://www.ncbi.nlm.nih.gov/pubmed?term=${data.pubmed.join('+')}`}
                     rel="noopener noreferrer"
                     target="_blank"
                     className="link"
                   >
-                    {`${data.bdExt.pubmed.length} publications`}
+                    {`${data.pubmed.length} publications`}
                   </a>
                 );
               } catch (e) { return ''; }
@@ -652,7 +612,7 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => {
             try {
-              return data.bdExt.pubmed.join(', ');
+              return data.pubmed.join(', ');
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.DEFAULT,
@@ -761,11 +721,7 @@ class PatientVariantScreen extends React.Component {
     } = variant;
 
     const mutationId = e.target.getAttribute('data-id');
-    const mutation = results[activeQuery].find(r => r.mutationId === mutationId);
-
-    if (mutation) {
-      actions.navigateToVariantDetailsScreen(mutation.id, 'patients');
-    }
+    actions.navigateToVariantDetailsScreen(mutationId, 'patients');
   }
 
   handlePageChange(page) {
@@ -957,11 +913,7 @@ class PatientVariantScreen extends React.Component {
     } = variant;
 
     const mutationId = e.target.getAttribute('data-id');
-    const mutation = results[activeQuery].find(r => r.mutationId === mutationId);
-
-    if (mutation) {
-      actions.navigateToVariantDetailsScreen(mutation.id);
-    }
+    actions.navigateToVariantDetailsScreen(mutationId);
   }
 
   handleSelectVariant(event) {

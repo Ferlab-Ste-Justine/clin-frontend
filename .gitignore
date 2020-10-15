@@ -9,6 +9,7 @@
 # .env
 /.env
 /.idea
+.idea
 /pnpm-debug.log
 
 # .DS_Store
