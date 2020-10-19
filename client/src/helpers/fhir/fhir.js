@@ -616,11 +616,29 @@ export const getHPOInterpretationDisplay = (resource) => {
   }
 };
 
+export const hpoInterpretationValues = () => [
+  {
+    iconClass: 'observedIcon',
+    value: 'POS',
+    display: 'Observé',
+  },
+  {
+    iconClass: 'notObservedIcon',
+    value: 'NEG',
+    display: 'Non-observé',
+  },
+  {
+    iconClass: 'unknownIcon',
+    value: 'IND',
+    display: 'Inconnu',
+  },
+];
+
 export const getHPOInterpretationCode = (resource) => {
   try {
     return resource.interpretation[0].coding[0].code;
   } catch (e) {
-    return '';
+    return hpoInterpretationValues()[0].value;
   }
 };
 
@@ -710,23 +728,6 @@ export const hpoOnsetValues = [
   },
 ];
 
-export const hpoInterpretationValues = () => [
-  {
-    iconClass: 'observedIcon',
-    value: 'POS',
-    display: 'Observé',
-  },
-  {
-    iconClass: 'notObservedIcon',
-    value: 'NEG',
-    display: 'Non-observé',
-  },
-  {
-    iconClass: 'unknownIcon',
-    value: 'IND',
-    display: 'Inconnu',
-  },
-];
 
 export const hpoInterpretationDisplayForCode = (code) => {
   try {
