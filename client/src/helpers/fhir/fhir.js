@@ -586,7 +586,7 @@ export const getResourceId = (resource) => {
 
 export const getHPOOnsetCode = (resource) => {
   try {
-    return resource.extension[0].valueCoding.value;
+    return resource.extension[0].valueCoding.code;
   } catch (e) {
     return undefined;
   }

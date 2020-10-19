@@ -364,16 +364,16 @@ class PatientSubmissionScreen extends React.Component {
           return '';
       }
     };
-    values.ramq = values.ramq.toUpperCase();
-
-    values = mapValues(values, (o) => {
-      if (typeof o === 'string') {
-        return o.trim();
-      }
-      return o;
-    });
 
     if (currentPageIndex === 0) {
+      values.ramq = values.ramq.toUpperCase();
+
+      values = mapValues(values, (o) => {
+        if (typeof o === 'string') {
+          return o.trim();
+        }
+        return o;
+      });
       const value = FhirDataManager.createPatient({
         ...values,
         id: patient.id,

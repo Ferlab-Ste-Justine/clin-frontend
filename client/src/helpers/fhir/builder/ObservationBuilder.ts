@@ -155,9 +155,11 @@ export class ObservationBuilder {
     }
 
     public withNote(value: string) {
-        this.note.push({
-            text: value
-        });
+        if(value.length > 0){
+            this.note.push({
+                text: value
+            });   
+        }
         return this;
     }
 

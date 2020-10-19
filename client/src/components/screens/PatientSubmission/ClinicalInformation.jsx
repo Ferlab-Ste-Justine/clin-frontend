@@ -192,53 +192,45 @@ class ClinicalInformation extends React.Component {
           </div>
           <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} getFieldDecorator={getFieldDecorator} />
           <div className="rightBlock">
-            <Form.Item>
-              {getFieldDecorator(`hpoInterpretation[${hpoIndex}]`, {
-                rules: [],
-                initialValue: getHPOInterpretationCode(hpoResource),
-              })(
-                <Select
-                  className="select selectObserved"
-                  placeholder="Interpretation"
-                  size="small"
-                  dropdownClassName="selectDropdown"
-                  onChange={event => this.handleObservationChanged(event, hpoIndex)}
-                >
-                  {hpoInterpretationValues().map((interpretation, index) => (
-                    <Select.Option
-                      key={`hpoInterpretation_${index}`}
-                      value={interpretation.value}
-                    >
-                      <IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />
-                      {interpretation.display}
-                    </Select.Option>
-                  ))}
-                </Select>,
-              )}
+            <Form.Item key={`interpretation-${hpoIndex}`}>
+              <Select
+                className="select selectObserved"
+                placeholder="Interpretation"
+                size="small"
+                dropdownClassName="selectDropdown"
+                defaultValue={getHPOInterpretationCode(hpoResource)}
+                onChange={event => this.handleObservationChanged(event, hpoIndex)}
+              >
+                {hpoInterpretationValues().map((interpretation, index) => (
+                  <Select.Option
+                    key={`hpoInterpretation_${index}`}
+                    value={interpretation.value}
+                  >
+                    <IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />
+                    {interpretation.display}
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
-            <Form.Item>
-              {getFieldDecorator(`hpoOnset[${hpoIndex}]`, {
-                rules: [],
-                initialValue: getHPOOnsetCode(hpoResource),
-              })(
-                <Select
-                  className="select selectAge"
-                  size="small"
-                  placeholder="Âge d’apparition"
-                  dropdownClassName="selectDropdown"
-                  onChange={event => this.handleHpoAgeChanged(event, hpoIndex)}
-                >
-                  {
-                        hpoOnsetValues.map((group, gIndex) => (
-                          <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
-                            {group.options.map((o, oIndex) => (
-                              <Option value={o.code} key={`onsetOption_${oIndex}`}>{o.display}</Option>
-                            ))}
-                          </OptGroup>
-                        ))
-                      }
-                </Select>,
-              )}
+            <Form.Item key={`onset-${hpoIndex}`}>
+              <Select
+                className="select selectAge"
+                size="small"
+                placeholder="Âge d’apparition"
+                dropdownClassName="selectDropdown"
+                defaultValue={getHPOOnsetCode(hpoResource)}
+                onChange={event => this.handleHpoAgeChanged(event, hpoIndex)}
+              >
+                {
+                    hpoOnsetValues.map((group, gIndex) => (
+                      <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
+                        {group.options.map((o, oIndex) => (
+                          <Option value={o.code} key={`onsetOption_${oIndex}`}>{o.display}</Option>
+                        ))}
+                      </OptGroup>
+                    ))
+                  }
+              </Select>
             </Form.Item>
           </div>
         </div>
