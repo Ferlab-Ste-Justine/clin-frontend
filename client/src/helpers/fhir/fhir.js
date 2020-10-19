@@ -85,7 +85,7 @@ export const CGH_VALUES = () => (
   [
     { value: CGH_CODES.A, display: 'Anormal' },
     { value: CGH_CODES.N, display: 'Normal' },
-    { value: CGH_CODES.IND, display: 'Indeterminate' },
+    { value: CGH_CODES.IND, display: 'Indéterminé' },
   ]
 );
 
