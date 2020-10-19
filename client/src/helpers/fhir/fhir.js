@@ -638,7 +638,7 @@ export const getHPOInterpretationCode = (resource) => {
   try {
     return resource.interpretation[0].coding[0].code;
   } catch (e) {
-    return hpoInterpretationValues()[0].value;
+    return undefined;
   }
 };
 
