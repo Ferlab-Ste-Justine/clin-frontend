@@ -681,10 +681,6 @@ class ClinicalInformation extends React.Component {
             {getFieldDecorator('indication', {
               rules: [
                 {
-                  required: true,
-                  message: 'Please enter indication',
-                },
-                {
                   whitespace: true,
                   message: 'Ne peux pas contenir que des espaces',
                 },

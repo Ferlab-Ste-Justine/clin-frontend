@@ -475,17 +475,22 @@ class PatientSubmissionScreen extends React.Component {
         };
 
         const checkHpo = () => {
-          if (values.hpoInterpretation && observations.hpos.length === values.hpoInterpretation.length) {
-            if ((checkIfEmptyValue(values.hpoInterpretation) && !checkIfEmptyValue(values.hpoOnset))
-              || (!checkIfEmptyValue(values.hpoInterpretation) && checkIfEmptyValue(values.hpoOnset))) {
+          if (observations.hpos.length > 0) {
+            const checkValue = [];
+            observations.hpos.forEach((element) => {
+              if (element.interpretation.length === 0 || element.extension.length === 0) {
+                checkValue.push(false);
+              }
+            });
+            if (checkValue.includes(false)) {
               return false;
             }
             return true;
           }
           return false;
         };
-        if (values.cghInterpretationValue
-          && values.analyse
+
+        if (values.analyse
           && checkHpo()
           && checkCghInterpretationValue()
           && checkFamilyHistory()
