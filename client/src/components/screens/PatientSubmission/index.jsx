@@ -441,12 +441,7 @@ class PatientSubmissionScreen extends React.Component {
         }
         return true;
       case 1: {
-        const checkIfEmptyValue = (array) => {
-          if (array) {
-            return array != null && array.findIndex(element => !element) === -1;
-          }
-          return false;
-        };
+        const checkIfEmptyValue = array => array != null && array.findIndex(element => !element) === -1;
         const checkCghInterpretationValue = () => {
           if (values.cghInterpretationValue) {
             if (values.cghInterpretationValue !== 'A') {
