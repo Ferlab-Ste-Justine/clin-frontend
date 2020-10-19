@@ -382,7 +382,7 @@ export const createPatientSubmissionBundle = ({
     }
 
     // Summary
-    if (observations.summary != null && !isEmpty(observations.summary) && observations.summary.note.length > 0) {
+    if (observations.summary != null && !isEmpty(observations.summary) && has(observations, 'summary.note') && observations.summary.note.length > 0) {
       observations.summary.subject = patientReference;
       const summaryEntry = createEntry(observations.summary);
       bundle.entry.push(summaryEntry);

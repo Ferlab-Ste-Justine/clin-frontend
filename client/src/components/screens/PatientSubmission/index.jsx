@@ -322,6 +322,7 @@ class PatientSubmissionScreen extends React.Component {
       practitionerOptions: [],
     };
 
+    this.submit = this.submit.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.isClinicalInformationComplete = this.isClinicalInformationComplete.bind(this);
     this.handlePractitionerSearchTermChanged = this.handlePractitionerSearchTermChanged.bind(this);
@@ -603,6 +604,11 @@ class PatientSubmissionScreen extends React.Component {
     return builder.build();
   }
 
+  submit(e) {
+    const { actions } = this.props;
+    this.handleSubmit(e);
+    actions.navigateToPatientSearchScreen();
+  }
 
   handleSubmit(e) {
     const { form } = this.props;
@@ -853,6 +859,7 @@ class PatientSubmissionScreen extends React.Component {
                     htmlType="submit"
                     type="primary"
                     disabled={this.canGoNextPage(currentPageIndex)}
+                    onClick={this.submit}
                   >
                     Soumettre
                   </Button>
