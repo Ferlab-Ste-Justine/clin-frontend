@@ -66,19 +66,6 @@ export class FhirDataManager {
                     },
                     value: options.mrn,
                 },
-                {
-                    type: {
-                        coding: [
-                            {
-                                system: "http://terminology.hl7.org/CodeSystem/v2-0203",
-                                code: "JHN",
-                                display: "Jurisdictional health number (Canada)"
-                            }
-                        ],
-                        text: "Numéro du dossier médical",
-                    },
-                    value: options.ramq,
-                },
             ],
             managingOrganization: {
                 reference: `Organization/${options.organization}`,
@@ -110,6 +97,24 @@ export class FhirDataManager {
                     display: code === "Y" ? "Yes" : code === 'N' ? "No" : "Unknown",
                 },
             });
+        }
+
+        if(options.ramq != null && options.ramq.length > 0) {
+            patient.identifier.push(
+                {
+                    type: {
+                        coding: [
+                            {
+                                system: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                                code: "JHN",
+                                display: "Jurisdictional health number (Canada)"
+                            }
+                        ],
+                        text: "Numéro du dossier médical",
+                    },
+                    value: options.ramq,
+                }
+            );
         }
 
         if(options.id != null){
