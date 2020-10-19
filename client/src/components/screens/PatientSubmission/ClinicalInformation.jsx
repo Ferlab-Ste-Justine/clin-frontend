@@ -236,7 +236,18 @@ class ClinicalInformation extends React.Component {
         </div>
         <div className="phenotypeSecondLine" key={`input-${hpoIndex}`}>
           <Form.Item>
-            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" onChange={event => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />
+            {getFieldDecorator(`hpoNotes[${hpoIndex}]`, {
+              initialValue: defaultValue(),
+              validateTrigger: ['onChange', 'onBlur'],
+              rules: [{
+                whitespace: true,
+                message: 'Ne peux pas contenir que des espaces',
+              },
+              ],
+            })(
+              <Input placeholder="Ajouter une note…" size="small" onChange={event => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />,
+            )}
+
           </Form.Item>
         </div>
       </div>
@@ -245,6 +256,7 @@ class ClinicalInformation extends React.Component {
 
   handleHpoNoteChanged(note, index) {
     const { actions } = this.props;
+    note = note.trim();
     actions.updateHpoNote(note, index);
   }
 
@@ -301,10 +313,11 @@ class ClinicalInformation extends React.Component {
     const values = form.getFieldsValue();
     const {
       familyRelationshipCodes,
-      familyRelationshipNotes,
     } = values;
 
+    let { familyRelationshipNotes } = values;
 
+    familyRelationshipNotes = familyRelationshipNotes.map(n => n.trim());
     const fmh = [];
     const { observations } = this.props;
     familyRelationshipCodes.forEach((c, i) => {
@@ -478,7 +491,11 @@ class ClinicalInformation extends React.Component {
           {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
             validateTrigger: ['onChange', 'onBlur'],
             initialValue: getFamilyRelationshipNote(resource),
-            rules: [],
+            rules: [{
+              whitespace: true,
+              message: 'Ne peux pas contenir que des espaces',
+            },
+            ],
           })(
             <Input placeholder="Ajouter une note…" className="input noteInput note" />,
           )}
@@ -572,7 +589,15 @@ class ClinicalInformation extends React.Component {
             && (
             <Form.Item label="Précision">
               {getFieldDecorator('cghPrecision', {
-                rules: [],
+                rules: [{
+                  required: true,
+                  message: 'Please enter cgh precision',
+                },
+                {
+                  whitespace: true,
+                  message: 'Ne peux pas contenir que des espaces',
+                },
+                ],
               })(
                 <Input placeholder="Veuillez préciser…" className="input note" />,
               )}
@@ -582,7 +607,11 @@ class ClinicalInformation extends React.Component {
 
           <Form.Item label="Résumé">
             {getFieldDecorator('summaryNote', {
-              rules: [],
+              rules: [{
+                whitespace: true,
+                message: 'Ne peux pas contenir que des espaces',
+              },
+              ],
               initialValue: summaryNoteValue,
             })(
               <TextArea className="input note" rows={4} />,
@@ -650,7 +679,16 @@ class ClinicalInformation extends React.Component {
 
           <Form.Item label="Hypothèse(s) de diagnostic">
             {getFieldDecorator('indication', {
-              rules: [],
+              rules: [
+                {
+                  required: true,
+                  message: 'Please enter indication',
+                },
+                {
+                  whitespace: true,
+                  message: 'Ne peux pas contenir que des espaces',
+                },
+              ],
               initialValue: indicationNoteValue,
             })(
               <TextArea className="input note" rows={4} />,
