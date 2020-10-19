@@ -78,7 +78,7 @@ export const getIndicationId = (indication) => {
 // TODO: translate/intl
 export const CGH_CODES = {
   A: 'A',
-  N: 'NEG',
+  N: 'N',
   IND: 'IND',
 };
 export const CGH_VALUES = () => (
@@ -381,7 +381,8 @@ export const createPatientSubmissionBundle = ({
       clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
     }
 
-    if (observations.summary != null && !isEmpty(observations.summary)) {
+    // Summary
+    if (observations.summary != null && !isEmpty(observations.summary) && observations.summary.note.length > 0) {
       observations.summary.subject = patientReference;
       const summaryEntry = createEntry(observations.summary);
       bundle.entry.push(summaryEntry);
