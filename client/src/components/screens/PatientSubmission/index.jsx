@@ -30,11 +30,8 @@ import './style.scss';
 
 import {
   cghDisplay,
-  createHPOResource,
   createPractitionerResource,
   getFamilyRelationshipDisplayForCode,
-  getHPOOnsetDisplayFromCode,
-  hpoInterpretationDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
@@ -200,7 +197,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
             },
             {
               whitespace: true,
-              message: 'Ne peux pas être vide',
+              message: 'Ne peut pas être vide',
             }],
           initialValue: mrnValue(patient),
         })(
@@ -446,10 +443,7 @@ class PatientSubmissionScreen extends React.Component {
       case 1: {
         const checkIfEmptyValue = (array) => {
           if (array) {
-            if (array.findIndex(element => !element) !== -1) {
-              return false;
-            }
-            return true;
+            return array != null && array.findIndex(element => !element) === -1;
           }
           return false;
         };
@@ -546,43 +540,6 @@ class PatientSubmissionScreen extends React.Component {
       }
       return null;
     }).filter(r => r != null);
-  }
-
-  createHPOResourceList() {
-    const { form } = this.props;
-    const values = form.getFieldsValue();
-
-    if (values.hpoCodes === undefined) {
-      return [];
-    }
-
-    const {
-      hpoIds,
-      hpoCodes,
-      hpoDisplays,
-      hpoOnsets,
-      hpoNotes,
-      hposToDelete,
-      hpoInterpretationCodes,
-    } = values;
-
-    const hpoResources = hpoCodes.map((code, index) => createHPOResource({
-      id: hpoIds[index],
-      hpoCode: { code, display: hpoDisplays[index] },
-      onset: { code: hpoOnsets[index], display: getHPOOnsetDisplayFromCode(hpoOnsets[index]) },
-      category: {
-        code: '',
-        display: '',
-      },
-      interpretation: {
-        code: hpoInterpretationCodes[index],
-        display: hpoInterpretationDisplayForCode(hpoInterpretationCodes[index]),
-      },
-      note: hpoNotes[index],
-      toDelete: hposToDelete[index],
-    }));
-
-    return hpoResources;
   }
 
   createCGHResourceList() {

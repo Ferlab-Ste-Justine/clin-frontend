@@ -236,18 +236,7 @@ class ClinicalInformation extends React.Component {
         </div>
         <div className="phenotypeSecondLine" key={`input-${hpoIndex}`}>
           <Form.Item>
-            {getFieldDecorator(`hpoNotes[${hpoIndex}]`, {
-              initialValue: defaultValue(),
-              validateTrigger: ['onChange', 'onBlur'],
-              rules: [{
-                whitespace: true,
-                message: 'Ne peux pas contenir que des espaces',
-              },
-              ],
-            })(
-              <Input placeholder="Ajouter une note…" size="small" onChange={event => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />,
-            )}
-
+            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" onChange={event => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />,
           </Form.Item>
         </div>
       </div>
@@ -256,7 +245,6 @@ class ClinicalInformation extends React.Component {
 
   handleHpoNoteChanged(note, index) {
     const { actions } = this.props;
-    note = note.trim();
     actions.updateHpoNote(note, index);
   }
 
@@ -493,7 +481,7 @@ class ClinicalInformation extends React.Component {
             initialValue: getFamilyRelationshipNote(resource),
             rules: [{
               whitespace: true,
-              message: 'Ne peux pas contenir que des espaces',
+              message: 'Ne peut pas contenir que des espaces',
             },
             ],
           })(
@@ -595,7 +583,7 @@ class ClinicalInformation extends React.Component {
                 },
                 {
                   whitespace: true,
-                  message: 'Ne peux pas contenir que des espaces',
+                  message: 'Ne peut pas contenir que des espaces',
                 },
                 ],
               })(
@@ -609,7 +597,7 @@ class ClinicalInformation extends React.Component {
             {getFieldDecorator('summaryNote', {
               rules: [{
                 whitespace: true,
-                message: 'Ne peux pas contenir que des espaces',
+                message: 'Ne peut pas contenir que des espaces',
               },
               ],
               initialValue: summaryNoteValue,
@@ -682,7 +670,7 @@ class ClinicalInformation extends React.Component {
               rules: [
                 {
                   whitespace: true,
-                  message: 'Ne peux pas contenir que des espaces',
+                  message: 'Ne peut pas contenir que des espaces',
                 },
               ],
               initialValue: indicationNoteValue,
