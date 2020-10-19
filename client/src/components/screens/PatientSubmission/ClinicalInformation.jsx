@@ -236,7 +236,7 @@ class ClinicalInformation extends React.Component {
         </div>
         <div className="phenotypeSecondLine" key={`input-${hpoIndex}`}>
           <Form.Item>
-            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" onChange={event => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />,
+            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" onChange={event => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />
           </Form.Item>
         </div>
       </div>
