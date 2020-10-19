@@ -224,7 +224,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           rules: [{ required: false }],
           initialValue: ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding,
         })(
-          <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
+          <Select className="large" placeholder={intl.get('form.patientSubmission.form.ethnicity.select')} dropdownClassName="selectDropdown">
             <Select.Option value="CA-FR">Canadien-Français</Select.Option>
             <Select.Option value="EU">Caucasienne Européenne</Select.Option>
             <Select.Option value="AFR">Africain ou caribéen</Select.Option>
@@ -274,7 +274,7 @@ const Approval = ({
                 <Checkbox className="checkbox" value="c1"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.patient')}</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c2"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.father')}2</span></Checkbox>
+                <Checkbox className="checkbox" value="c2"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.father')}</span></Checkbox>
               </Row>
               <Row>
                 <Checkbox className="checkbox" value="c3"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.mother')}</span></Checkbox>
