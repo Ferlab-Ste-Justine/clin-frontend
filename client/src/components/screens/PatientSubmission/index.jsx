@@ -112,11 +112,11 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   const disabledDate = current => current && current > moment().startOf('day');
   return (
     <Card title="Patient" bordered={false} className="staticCard patientContent">
-      <Form.Item label={intl.get('form.patientSubmission.form.lastName')}>
+      <Form.Item label="Nom">
         {getFieldDecorator('family', {
           rules: [{
             required: true,
-            message: 'Veuillez entrer un nom de famille!',
+            message: 'Please enter the family name!',
           },
           {
             pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
@@ -130,14 +130,14 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           ],
           initialValue: has(patient, 'name[0].family') ? patient.name[0].family : '',
         })(
-          <Input placeholder={intl.get('form.patientSubmission.form.lastName')} className="input large" />,
+          <Input placeholder="Nom de famille" className="input large" />,
         )}
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.given')}>
+      <Form.Item label="Prénom">
         {getFieldDecorator('given', {
           rules: [{
             required: true,
-            message: 'Veuillez entrer un prénom',
+            message: 'Please enter the given name!',
           },
           {
             pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
@@ -151,12 +151,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           ],
           initialValue: has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : '',
         })(
-          <Input placeholder={intl.get('form.patientSubmission.form.given')} className="input large" />,
+          <Input placeholder="Prénom" className="input large" />,
         )}
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.gender')}>
+      <Form.Item label="Sexe">
         {getFieldDecorator('gender', {
-          rules: [{ required: true, message: 'Veuillez indiquer le sexe' }],
+          rules: [{ required: true, message: 'Please select the gender!' }],
           initialValue: has(patient, 'gender') ? patient.gender : '',
         })(
           <Radio.Group buttonStyle="solid">
@@ -170,15 +170,15 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           </Radio.Group>,
         )}
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.birthDate.label')}>
+      <Form.Item label="Date de naissance">
         {getFieldDecorator('birthDate', {
-          rules: [{ required: true, message: 'Veuillez indiquer la date de naissance' }],
+          rules: [{ required: true, message: 'Please enter the birthdate!' }],
           initialValue: defaultBirthDate(patient),
         })(
-          <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />,
+          <DatePicker className="small" disabledDate={disabledDate} />,
         )}
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.ramq')}>
+      <Form.Item label="RAMQ">
         {getFieldDecorator('ramq', {
           rules: [{
             pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
@@ -190,10 +190,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         )}
         <span className="optional">Facultatif</span>
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.mrn')}>
+      <Form.Item label="MRN">
         {getFieldDecorator('mrn', {
           rules: [
-            { required: true, message: 'Veuillez entrer le numéro de dossier médical' },
+            { required: true, message: 'Please enter the MRN number!' },
             {
               pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
               message: 'Pas de caractère spécial',
@@ -207,7 +207,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           <Input placeholder="12345678" className="input small" />,
         )}
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.hospital')}>
+      <Form.Item label="Hôpital">
         {getFieldDecorator('organization', {
           rules: [{ required: true, message: 'Please select the hospital!' }],
           initialValue: defaultOrganizationValue(patient),
@@ -219,12 +219,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           </Select>,
         )}
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.ethnicity')}>
+      <Form.Item label="Ethnicité">
         {getFieldDecorator('ethnicity', {
           rules: [{ required: false }],
           initialValue: ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding,
         })(
-          <Select className="large" placeholder={intl.get('form.patientSubmission.form.ethnicity.select')} dropdownClassName="selectDropdown">
+          <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
             <Select.Option value="CA-FR">Canadien-Français</Select.Option>
             <Select.Option value="EU">Caucasienne Européenne</Select.Option>
             <Select.Option value="AFR">Africain ou caribéen</Select.Option>
@@ -238,15 +238,15 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         )}
         <span className="optional">Facultatif</span>
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.consanguinity')}>
+      <Form.Item label="Consanguinité">
         {getFieldDecorator('consanguinity', {
           rules: [{ required: false }],
           initialValue: consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding,
         })(
           <Radio.Group buttonStyle="solid">
-            <Radio.Button value="Yes"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.yes')}</span></Radio.Button>
-            <Radio.Button value="No"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.no')}</span></Radio.Button>
-            <Radio.Button value="Unknown"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.unknown')}</span></Radio.Button>
+            <Radio.Button value="Yes"><span className="radioText">Oui</span></Radio.Button>
+            <Radio.Button value="No"><span className="radioText">Non</span></Radio.Button>
+            <Radio.Button value="Unknown"><span className="radioText">Inconnu</span></Radio.Button>
           </Radio.Group>,
         )}
         <span className="optional">Facultatif</span>
@@ -267,20 +267,20 @@ const Approval = ({
         {/* TODO initialValue */}
         <Form.Item label="Clauses signées" className="labelTop">
           {getFieldDecorator('consent', {
-            rules: [{ required: true, message: 'Veuillez sélectionner au moins un consentement' }],
+            rules: [{ required: true }],
           })(
             <Checkbox.Group className="checkboxGroup">
               <Row>
-                <Checkbox className="checkbox" value="c1"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.patient')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c1"><span className="checkboxText">Clause 1</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c2"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.father')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c2"><span className="checkboxText">Clause 2</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c3"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.mother')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c3"><span className="checkboxText">Clause 3</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c4"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.research')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c4"><span className="checkboxText">Clause 4</span></Checkbox>
               </Row>
             </Checkbox.Group>,
           )}
@@ -293,7 +293,7 @@ const Approval = ({
         {/* TODO initialValue */}
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
           {getFieldDecorator('practitioner', {
-            rules: [{ required: true, message: 'Veuillez spécifier le nom du médecin responsable' }],
+            rules: [{ required: true }],
           })(
             <AutoComplete
               classeName="searchInput"
@@ -435,7 +435,7 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   canGoNextPage(currentPage) {
-    const { form } = this.props;
+    const { form, observations } = this.props;
     const values = form.getFieldsValue();
     switch (currentPage) {
       case 0:
@@ -444,16 +444,15 @@ class PatientSubmissionScreen extends React.Component {
         }
         return true;
       case 1: {
-        // const checkIfEmptyValue = (array) => {
-        //   if (array) {
-        //     if (array.findIndex(element => !element) !== -1) {
-        //       return false;
-        //     }
-        //     return true;
-        //   }
-        //   return false;
-        // };
-
+        const checkIfEmptyValue = (array) => {
+          if (array) {
+            if (array.findIndex(element => !element) !== -1) {
+              return false;
+            }
+            return true;
+          }
+          return false;
+        };
         const checkCghInterpretationValue = () => {
           if (values.cghInterpretationValue) {
             if (values.cghInterpretationValue !== 'A') {
@@ -466,9 +465,30 @@ class PatientSubmissionScreen extends React.Component {
           }
           return false;
         };
+
+        const checkFamilyHistory = () => {
+          if ((checkIfEmptyValue(values.familyRelationshipNotes) && !checkIfEmptyValue(values.familyRelationshipCodes))
+          || (!checkIfEmptyValue(values.familyRelationshipNotes) && checkIfEmptyValue(values.familyRelationshipCodes))) {
+            return false;
+          }
+          return true;
+        };
+
+        const checkHpo = () => {
+          if (values.hpoInterpretation && observations.hpos.length === values.hpoInterpretation.length) {
+            if ((checkIfEmptyValue(values.hpoInterpretation) && !checkIfEmptyValue(values.hpoOnset))
+              || (!checkIfEmptyValue(values.hpoInterpretation) && checkIfEmptyValue(values.hpoOnset))) {
+              return false;
+            }
+            return true;
+          }
+          return false;
+        };
         if (values.cghInterpretationValue
           && values.analyse
+          && checkHpo()
           && checkCghInterpretationValue()
+          && checkFamilyHistory()
           && values.indication
         ) {
           return false;
@@ -563,16 +583,18 @@ class PatientSubmissionScreen extends React.Component {
   createCGHResourceList() {
     const { form } = this.props;
     const values = form.getFieldsValue();
-
     if (values.cghInterpretationValue === undefined) {
       return undefined;
     }
 
     const {
       cghInterpretationValue,
-      cghNote,
+      summaryNote,
+      cghPrecision,
     } = values;
 
+    values.summaryNote = summaryNote ? summaryNote.trim() : summaryNote;
+    values.cghPrecision = cghPrecision ? cghPrecision.trim() : cghPrecision;
     const builder = new ObservationBuilder('CGH')
       .withStatus('final');
 
@@ -586,8 +608,8 @@ class PatientSubmissionScreen extends React.Component {
       });
     }
 
-    if (cghNote != null && cghNote.length > 0) {
-      builder.withNote(cghNote);
+    if (summaryNote != null && summaryNote.length > 0) {
+      builder.withNote(summaryNote);
     }
 
     return builder.build();
@@ -601,9 +623,11 @@ class PatientSubmissionScreen extends React.Component {
       return [];
     }
 
-    const {
+    let {
       indication,
     } = values;
+
+    indication = indication ? indication.trim() : indication;
 
     const builder = new ObservationBuilder('INDIC');
     if (indication != null) {
