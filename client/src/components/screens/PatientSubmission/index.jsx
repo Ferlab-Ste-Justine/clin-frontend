@@ -112,11 +112,11 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   const disabledDate = current => current && current > moment().startOf('day');
   return (
     <Card title="Patient" bordered={false} className="staticCard patientContent">
-      <Form.Item label="Nom">
+      <Form.Item label={intl.get('form.patientSubmission.form.lastName')}>
         {getFieldDecorator('family', {
           rules: [{
             required: true,
-            message: 'Please enter the family name!',
+            message: 'Veuillez entrer un nom de famille!',
           },
           {
             pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
@@ -130,14 +130,14 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           ],
           initialValue: has(patient, 'name[0].family') ? patient.name[0].family : '',
         })(
-          <Input placeholder="Nom de famille" className="input large" />,
+          <Input placeholder={intl.get('form.patientSubmission.form.lastName')} className="input large" />,
         )}
       </Form.Item>
-      <Form.Item label="Prénom">
+      <Form.Item label={intl.get('form.patientSubmission.form.given')}>
         {getFieldDecorator('given', {
           rules: [{
             required: true,
-            message: 'Please enter the given name!',
+            message: 'Veuillez entrer un prénom',
           },
           {
             pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
@@ -151,12 +151,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           ],
           initialValue: has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : '',
         })(
-          <Input placeholder="Prénom" className="input large" />,
+          <Input placeholder={intl.get('form.patientSubmission.form.given')} className="input large" />,
         )}
       </Form.Item>
-      <Form.Item label="Sexe">
+      <Form.Item label={intl.get('form.patientSubmission.form.gender')}>
         {getFieldDecorator('gender', {
-          rules: [{ required: true, message: 'Please select the gender!' }],
+          rules: [{ required: true, message: 'Veuillez indiquer le sexe' }],
           initialValue: has(patient, 'gender') ? patient.gender : '',
         })(
           <Radio.Group buttonStyle="solid">
@@ -170,15 +170,15 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           </Radio.Group>,
         )}
       </Form.Item>
-      <Form.Item label="Date de naissance">
+      <Form.Item label={intl.get('form.patientSubmission.form.birthDate.label')}>
         {getFieldDecorator('birthDate', {
-          rules: [{ required: true, message: 'Please enter the birthdate!' }],
+          rules: [{ required: true, message: 'Veuillez indiquer la date de naissance' }],
           initialValue: defaultBirthDate(patient),
         })(
-          <DatePicker className="small" disabledDate={disabledDate} />,
+          <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />,
         )}
       </Form.Item>
-      <Form.Item label="RAMQ">
+      <Form.Item label={intl.get('form.patientSubmission.form.ramq')}>
         {getFieldDecorator('ramq', {
           rules: [{
             pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
@@ -190,10 +190,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         )}
         <span className="optional">Facultatif</span>
       </Form.Item>
-      <Form.Item label="MRN">
+      <Form.Item label={intl.get('form.patientSubmission.form.mrn')}>
         {getFieldDecorator('mrn', {
           rules: [
-            { required: true, message: 'Please enter the MRN number!' },
+            { required: true, message: 'Veuillez entrer le numéro de dossier médical' },
             {
               pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
               message: 'Pas de caractère spécial',
@@ -207,7 +207,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           <Input placeholder="12345678" className="input small" />,
         )}
       </Form.Item>
-      <Form.Item label="Hôpital">
+      <Form.Item label={intl.get('form.patientSubmission.form.hospital')}>
         {getFieldDecorator('organization', {
           rules: [{ required: true, message: 'Please select the hospital!' }],
           initialValue: defaultOrganizationValue(patient),
@@ -219,12 +219,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           </Select>,
         )}
       </Form.Item>
-      <Form.Item label="Ethnicité">
+      <Form.Item label={intl.get('form.patientSubmission.form.ethnicity')}>
         {getFieldDecorator('ethnicity', {
           rules: [{ required: false }],
           initialValue: ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding,
         })(
-          <Select className="large" placeholder="Selectionner" dropdownClassName="selectDropdown">
+          <Select className="large" placeholder={intl.get('form.patientSubmission.form.ethnicity.select')} dropdownClassName="selectDropdown">
             <Select.Option value="CA-FR">Canadien-Français</Select.Option>
             <Select.Option value="EU">Caucasienne Européenne</Select.Option>
             <Select.Option value="AFR">Africain ou caribéen</Select.Option>
@@ -238,15 +238,15 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         )}
         <span className="optional">Facultatif</span>
       </Form.Item>
-      <Form.Item label="Consanguinité">
+      <Form.Item label={intl.get('form.patientSubmission.form.consanguinity')}>
         {getFieldDecorator('consanguinity', {
           rules: [{ required: false }],
           initialValue: consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding,
         })(
           <Radio.Group buttonStyle="solid">
-            <Radio.Button value="Yes"><span className="radioText">Oui</span></Radio.Button>
-            <Radio.Button value="No"><span className="radioText">Non</span></Radio.Button>
-            <Radio.Button value="Unknown"><span className="radioText">Inconnu</span></Radio.Button>
+            <Radio.Button value="Yes"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.yes')}</span></Radio.Button>
+            <Radio.Button value="No"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.no')}</span></Radio.Button>
+            <Radio.Button value="Unknown"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.unknown')}</span></Radio.Button>
           </Radio.Group>,
         )}
         <span className="optional">Facultatif</span>
@@ -267,20 +267,20 @@ const Approval = ({
         {/* TODO initialValue */}
         <Form.Item label="Clauses signées" className="labelTop">
           {getFieldDecorator('consent', {
-            rules: [{ required: true }],
+            rules: [{ required: true, message: 'Veuillez sélectionner au moins un consentement' }],
           })(
             <Checkbox.Group className="checkboxGroup">
               <Row>
-                <Checkbox className="checkbox" value="c1"><span className="checkboxText">Clause 1</span></Checkbox>
+                <Checkbox className="checkbox" value="c1"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.patient')}</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c2"><span className="checkboxText">Clause 2</span></Checkbox>
+                <Checkbox className="checkbox" value="c2"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.father')}</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c3"><span className="checkboxText">Clause 3</span></Checkbox>
+                <Checkbox className="checkbox" value="c3"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.mother')}</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c4"><span className="checkboxText">Clause 4</span></Checkbox>
+                <Checkbox className="checkbox" value="c4"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.research')}</span></Checkbox>
               </Row>
             </Checkbox.Group>,
           )}
@@ -293,7 +293,7 @@ const Approval = ({
         {/* TODO initialValue */}
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
           {getFieldDecorator('practitioner', {
-            rules: [{ required: true }],
+            rules: [{ required: true, message: 'Veuillez spécifier le nom du médecin responsable' }],
           })(
             <AutoComplete
               classeName="searchInput"
