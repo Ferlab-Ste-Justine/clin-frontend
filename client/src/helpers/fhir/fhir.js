@@ -407,6 +407,9 @@ export const createPatientSubmissionBundle = ({
 
     if (observations.hpos != null) {
       observations.hpos.forEach((hpo) => {
+        if (hpo.note.length !== 0) {
+          hpo.note[0].text.trim();
+        }
         const entry = createEntry({ ...hpo, subject: patientReference });
         bundle.entry.push(entry);
         clinicalImpressionResource.investigation[0].item.push(getReference(entry));
