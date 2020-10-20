@@ -289,7 +289,6 @@ const Approval = ({
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
         {/* TODO initialValue */}
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
-
           <AutoComplete
             optionLabelProp="text"
             classeName="searchInput"
@@ -413,7 +412,6 @@ class PatientSubmissionScreen extends React.Component {
       investigation[0].item = [
         this.createCGHResourceList(),
         ...this.createFamilyRelationshipResourceList(),
-        // ...this.createHPOResourceList(),
         this.createIndicationResourceList(),
       ];
     }
@@ -799,9 +797,14 @@ class PatientSubmissionScreen extends React.Component {
       : '';
 
     const practitionerOptionsLabels = practitionerOptions.map(practitioner => (
-
-      <AutoComplete.Option key={practitioner.license} text={`${practitioner.family} ${practitioner.given} – ${practitioner.license}`}>
-        <div className="page3__autocomplete"><span className="page3__autocomplete__family-name">{practitioner.family.toUpperCase()}</span> {practitioner.given} – {practitioner.license}</div>
+      <AutoComplete.Option
+        key={practitioner.license}
+        text={`${practitioner.family} ${practitioner.given} – ${practitioner.license}`}
+      >
+        <div className="page3__autocomplete">
+          <span className="page3__autocomplete__family-name">{practitioner.family.toUpperCase()}</span>
+          {practitioner.given} – {practitioner.license}
+        </div>
       </AutoComplete.Option>
     ));
 
