@@ -253,7 +253,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
 };
 
 const Approval = ({
-  practitionerOptionsLabels,
+  dataSource,
   practitionerOptionSelected,
   practitionerSearchTermChanged,
   getFieldDecorator,
@@ -289,17 +289,16 @@ const Approval = ({
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
         {/* TODO initialValue */}
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
-          {getFieldDecorator('practitioner', {
-            rules: [{ required: true, message: 'Veuillez spécifier le nom du médecin responsable' }],
-          })(
-            <AutoComplete
-              classeName="searchInput"
-              placeholder="Recherche par nom ou licence…"
-              dataSource={practitionerOptionsLabels}
-              onSelect={practitionerOptionSelected}
-              onChange={practitionerSearchTermChanged}
-            />,
-          )}
+
+          <AutoComplete
+            optionLabelProp="text"
+            classeName="searchInput"
+            placeholder="Recherche par nom ou licence…"
+            dataSource={dataSource}
+            onSelect={practitionerOptionSelected}
+            onChange={practitionerSearchTermChanged}
+          />,
+          {/* )} */}
 
         </Form.Item>
       </Form>
@@ -741,12 +740,12 @@ class PatientSubmissionScreen extends React.Component {
     return true;
   }
 
-  handlePractitionerOptionSelected(value) {
+  handlePractitionerOptionSelected(license) {
     const { actions } = this.props;
     const { practitionerOptions } = this.state;
-    const option = practitionerOptions.find(o => stringifyPractionerOption(o) === value);
+    const option = practitionerOptions.find(o => o.license === license);
 
-    if (option) {
+    if (option != null) {
       const resource = createPractitionerResource(option);
       actions.assignServiceRequestPractitioner(resource);
     }
@@ -799,7 +798,12 @@ class PatientSubmissionScreen extends React.Component {
       ? stringifyPractionerOption(practitionerOptionFromResource(assignedPractitioner))
       : '';
 
-    const practitionerOptionsLabels = practitionerOptions.map(stringifyPractionerOption);
+    const practitionerOptionsLabels = practitionerOptions.map(practitioner => (
+
+      <AutoComplete.Option key={practitioner.license} text={`${practitioner.family} ${practitioner.given} – ${practitioner.license}`}>
+        <div className="page3__autocomplete"><span className="page3__autocomplete__family-name">{practitioner.family.toUpperCase()}</span> {practitioner.given} – {practitioner.license}</div>
+      </AutoComplete.Option>
+    ));
 
     this.pages = [
       {
@@ -826,7 +830,7 @@ class PatientSubmissionScreen extends React.Component {
           <Approval
             parentForm={this}
             getFieldDecorator={getFieldDecorator}
-            practitionerOptionsLabels={practitionerOptionsLabels}
+            dataSource={practitionerOptionsLabels}
             practitionerOptionSelected={this.handlePractitionerOptionSelected}
             practitionerSearchTermChanged={this.searchPractitioner}
             assignedPractitionerLabel={assignedPractitionerLabel}
