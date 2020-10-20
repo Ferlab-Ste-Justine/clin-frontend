@@ -224,6 +224,18 @@
             grid-template-rows: 1fr;
             gap: 0px 24px;
             grid-template-areas: ". .";
+
+            .cardSeparator:first-child{
+                padding: 16px;
+                overflow: scroll;
+                max-height: 600px;
+            }
+
+            .message{
+                display: flex;
+                align-items: center;
+                text-align: center;
+              }
     }
     .phenotypeBlock:not(:first-child){
         padding-top: 24px;
