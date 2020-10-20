@@ -642,8 +642,7 @@ class ClinicalInformation extends React.Component {
                 {this.renderTreeNodes(treeData)}
               </Tree>
             </div>
-            <div className="cardSeparator">
-              {
+            <div className={hpoResources.length === 0 ? 'cardSeparator message' : 'cardSeparator'}>              {
                 hpoResources.length === 0
                   ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
                   : hpoResources.map((hpoResource, hpoIndex) => this.phenotype({
