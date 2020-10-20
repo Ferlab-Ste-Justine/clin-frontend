@@ -384,3 +384,27 @@
 
 
 }
+
+.page3{
+    &__autocomplete{
+        //styleName: Regular / 14px | 22px;
+        font-family: Roboto;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px;
+        letter-spacing: 0.25px;
+        text-align: left;
+        color: $textLightBlack;
+
+        &__family-name{
+            font-family: Roboto;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 22px;
+            letter-spacing: 0.25px;
+            text-align: left;
+        }
+    }
+}
