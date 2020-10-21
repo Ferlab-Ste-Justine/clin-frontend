@@ -126,12 +126,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           },
           {
             pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
-            message: 'Pas de caractère spécial',
+            message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
           },
           {
             whitespace: true,
             pattern: RegExp(/(.*[a-z]){2}/i),
-            message: 'Doit contenir au moins 2 caractères',
+            message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
           },
           ],
           initialValue: has(patient, 'name[0].family') ? patient.name[0].family : '',
@@ -147,12 +147,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           },
           {
             pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
-            message: 'Pas de caractère spécial',
+            message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
           },
           {
             whitespace: true,
             pattern: RegExp(/(.*[a-z]){2}/i),
-            message: 'Doit contenir au moins 2 caractères',
+            message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
           },
           ],
           initialValue: has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : '',
@@ -202,12 +202,14 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
             { required: true, message: 'Veuillez entrer le numéro de dossier médical' },
             {
               pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
-              message: 'Pas de caractère spécial',
+              message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
             },
             {
               whitespace: true,
-              message: 'Ne peut pas être vide',
-            }],
+              pattern: RegExp(/(.*[a-z0-9]){2}/i),
+              message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
+            },
+          ],
           initialValue: mrnValue(patient),
         })(
           <Input placeholder="12345678" className="input small" />,
@@ -449,9 +451,14 @@ class PatientSubmissionScreen extends React.Component {
   canGoNextPage(currentPage) {
     const { form, observations } = this.props;
     const values = form.getFieldsValue();
+    let hasError = null;
     switch (currentPage) {
       case 0:
         if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
+          hasError = find(form.getFieldsError(), o => o !== undefined);
+          if (hasError) {
+            return true;
+          }
           return false;
         }
         return true;
