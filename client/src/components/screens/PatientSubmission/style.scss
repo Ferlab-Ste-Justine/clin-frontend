@@ -144,6 +144,12 @@
             align-items: baseline;
         }
 
+        .ant-form-explain{
+            .errorMessage:not(:first-child){
+                display: none;
+            }
+        }
+
         .ant-form-item-control{
             line-height: 0; 
         }
