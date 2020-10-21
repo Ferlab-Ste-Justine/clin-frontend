@@ -306,6 +306,7 @@ const Approval = ({
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
           {getFieldDecorator('practInput', {
             initialValue: initialPractitionerValue,
+            rules: [{ required: true, message: 'Veuillez spécifier le nom du médecin responsable' }],
           })(
             <AutoComplete
               optionLabelProp="text"
