@@ -24,6 +24,30 @@ export const saveServiceRequest = code => ({
   },
 });
 
+export const saveLocalCgh = (interpretation, precision) => ({
+  type: actions.PATIENT_SUBMISSION_LOCAL_CGH_SAVE_REQUESTED,
+  payload: {
+    interpretation,
+    precision,
+  },
+});
+
+export const saveLocalSummary = summary => ({
+  type: actions.PATIENT_SUBMISSION_LOCAL_SUMMARY_SAVE_REQUESTED,
+  payload: {
+    summary,
+  },
+});
+
+
+export const saveLocalIndic = indic => ({
+  type: actions.PATIENT_SUBMISSION_LOCAL_INDIC_SAVE_REQUESTED,
+  payload: {
+    indic,
+  },
+});
+
+
 export const addHpoResource = resource => ({
   type: actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE,
   payload: resource,

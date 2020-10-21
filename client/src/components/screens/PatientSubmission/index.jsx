@@ -26,6 +26,9 @@ import {
   savePatientLocal,
   saveObservations,
   saveServiceRequest,
+  saveLocalCgh,
+  saveLocalSummary,
+  saveLocalIndic,
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './ClinicalInformation';
 import Api from '../../../helpers/api';
@@ -333,6 +336,7 @@ class PatientSubmissionScreen extends React.Component {
     this.canGoNextPage = this.canGoNextPage.bind(this);
     this.updateFormValues = this.updateFormValues.bind(this);
     this.createSummary = this.createSummary.bind(this);
+    this.saveSecondPageLocalStore = this.saveSecondPageLocalStore.bind(this);
   }
 
   getPatientData() {
@@ -655,6 +659,7 @@ class PatientSubmissionScreen extends React.Component {
           },
         };
         actions.saveObservations(submission.observations);
+        this.saveSecondPageLocalStore();
       } else {
         submission.observations = {
           ...observations,
@@ -682,6 +687,17 @@ class PatientSubmissionScreen extends React.Component {
     debounce(() => { form.setFieldsValue({}); }, 500)();
   }
 
+
+  saveSecondPageLocalStore() {
+    const { actions, form } = this.props;
+    const values = form.getFieldsValue();
+
+    actions.saveServiceRequest(values.analyse);
+    actions.saveLocalCgh(values.cghInterpretationValue, values.cghPrecision);
+    actions.saveLocalSummary(values.summaryNote);
+    actions.saveLocalIndic(values.indication);
+  }
+
   next() {
     const { currentPageIndex } = this.state;
     const { actions, observations } = this.props;
@@ -703,14 +719,13 @@ class PatientSubmissionScreen extends React.Component {
         },
       );
 
-      const { form } = this.props;
-      const values = form.getFieldsValue();
-      actions.saveServiceRequest(values.analyse);
+      this.saveSecondPageLocalStore();
     }
 
     this.setState({ currentPageIndex: pageIndex });
     this.updateFormValues();
   }
+
 
   previous() {
     const { currentPageIndex } = this.state;
@@ -718,9 +733,7 @@ class PatientSubmissionScreen extends React.Component {
     this.setState({ currentPageIndex: pageIndex });
 
     if (currentPageIndex === 1) {
-      const { actions, form } = this.props;
-      const values = form.getFieldsValue();
-      actions.saveServiceRequest(values.analyse);
+      this.saveSecondPageLocalStore();
     }
 
     this.updateFormValues();
@@ -936,6 +949,9 @@ const mapDispatchToProps = dispatch => ({
     assignServiceRequestPractitioner,
     saveObservations,
     saveServiceRequest,
+    saveLocalCgh,
+    saveLocalSummary,
+    saveLocalIndic,
   }, dispatch),
 });
 

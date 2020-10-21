@@ -21,8 +21,6 @@ import {
   CGH_VALUES,
   resourceNote,
   getCGHInterpretationCode,
-  getIndicationNote,
-  getIndicationId,
   getFamilyRelationshipCode,
   getFamilyRelationshipNote,
   hpoOnsetValues,
@@ -515,12 +513,11 @@ class ClinicalInformation extends React.Component {
       </div>
     )));
 
-    let cghInterpretationValue;
+    const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
     let summaryNoteValue;
     let cghId = null;
     if (observations.cgh != null) {
       cghId = observations.cgh.id;
-      cghInterpretationValue = getCGHInterpretationCode(observations.cgh);
     }
 
 
@@ -528,11 +525,7 @@ class ClinicalInformation extends React.Component {
       summaryNoteValue = resourceNote(observations.summary);
     }
 
-    let indicationNoteValue;
-    let indicationResource;
-    if (observations.indic != null) {
-      indicationNoteValue = getIndicationNote(observations.indic);
-    }
+    const indicationNoteValue = has(localStore, 'indic.note') ? localStore.indic.note : null;
 
     const hpoResources = observations.hpos;
     const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
@@ -589,6 +582,7 @@ class ClinicalInformation extends React.Component {
                   message: 'Ne peut pas contenir que des espaces',
                 },
                 ],
+                initialValue: has(localStore, 'cgh.precision') ? localStore.cgh.precision : null,
               })(
                 <Input placeholder="Veuillez préciser…" className="input note" />,
               )}
@@ -660,12 +654,6 @@ class ClinicalInformation extends React.Component {
 
         </Card>
         <Card title="Indications" bordered={false} className="staticCard patientContent">
-          {getFieldDecorator('indicationId', {
-            rules: [],
-            initialValue: getIndicationId(indicationResource) || '',
-          })(
-            <Input size="small" type="hidden" />,
-          )}
 
           <Form.Item label="Hypothèse(s) de diagnostic">
             {getFieldDecorator('indication', {
