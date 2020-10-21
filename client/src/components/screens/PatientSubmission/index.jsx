@@ -799,7 +799,7 @@ class PatientSubmissionScreen extends React.Component {
     const practitionerOptionsLabels = practitionerOptions.map(practitioner => (
       <AutoComplete.Option
         key={practitioner.license}
-        text={`${practitioner.family} ${practitioner.given} – ${practitioner.license}`}
+        text={`${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`}
       >
         <div className="page3__autocomplete">
           <span className="page3__autocomplete__family-name">{practitioner.family.toUpperCase()}</span> {practitioner.given} – {practitioner.license}
