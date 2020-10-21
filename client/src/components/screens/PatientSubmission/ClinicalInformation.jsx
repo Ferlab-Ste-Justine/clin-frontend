@@ -579,7 +579,7 @@ class ClinicalInformation extends React.Component {
               {getFieldDecorator('cghPrecision', {
                 rules: [{
                   required: true,
-                  message: 'Please enter cgh precision',
+                  message: 'Veuillez indiquer le résultat du CGH',
                 },
                 {
                   whitespace: true,

@@ -113,7 +113,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         {getFieldDecorator('family', {
           rules: [{
             required: true,
-            message: 'Veuillez entrer un nom de famille!',
+            message: 'Veuillez entrer un nom de famille',
           },
           {
             pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
