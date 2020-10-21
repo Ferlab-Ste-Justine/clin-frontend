@@ -303,6 +303,9 @@
     }
 
     .searchInput340{
+        input{
+            color: $textLightBlack;   
+        }
         .ant-form-item-control-wrapper{
             width: 340px;
         }
