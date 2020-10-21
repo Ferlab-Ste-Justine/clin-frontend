@@ -17,6 +17,13 @@ export const saveObservations = observations => ({
   payload: observations,
 });
 
+export const saveServiceRequest = code => ({
+  type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_SAVE_REQUESTED,
+  payload: {
+    code,
+  },
+});
+
 export const addHpoResource = resource => ({
   type: actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE,
   payload: resource,

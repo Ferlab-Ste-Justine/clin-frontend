@@ -30,6 +30,9 @@ export const initialPatientSubmissionState = {
     fmh: [{}],
     hpos: [],
   },
+  local: {
+    serviceRequest: {},
+  },
   deleted: {
     fmh: [],
     hpos: [],
@@ -97,6 +100,11 @@ const patientSubmissionReducer = (
       if (action.payload != null) {
         draft.observations.cgh = action.payload.cgh;
         draft.observations.indic = action.payload.indic;
+      }
+      break;
+    case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_SAVE_REQUESTED:
+      if (action.payload != null) {
+        draft.local.serviceRequest.code = action.payload.code;
       }
       break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:

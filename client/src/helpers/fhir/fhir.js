@@ -342,7 +342,7 @@ export const createPatientSubmissionBundle = ({
   }
 
   const serviceRequestResource = FhirDataManager.createServiceRequest(
-    practitionerId, // TODO: Change to real id once it's supported.
+    practitionerId,
     patientEntry.fullUrl,
     'draft',
     serviceRequest.code,

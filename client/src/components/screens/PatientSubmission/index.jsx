@@ -21,7 +21,11 @@ import Content from '../../Content';
 import Footer from '../../Footer';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
 import {
-  assignServiceRequestPractitioner, savePatientSubmission, savePatientLocal, saveObservations,
+  assignServiceRequestPractitioner,
+  savePatientSubmission,
+  savePatientLocal,
+  saveObservations,
+  saveServiceRequest,
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './ClinicalInformation';
 import Api from '../../../helpers/api';
@@ -698,6 +702,10 @@ class PatientSubmissionScreen extends React.Component {
           },
         },
       );
+
+      const { form } = this.props;
+      const values = form.getFieldsValue();
+      actions.saveServiceRequest(values.analyse);
     }
 
     this.setState({ currentPageIndex: pageIndex });
@@ -708,6 +716,12 @@ class PatientSubmissionScreen extends React.Component {
     const { currentPageIndex } = this.state;
     const pageIndex = currentPageIndex - 1;
     this.setState({ currentPageIndex: pageIndex });
+
+    if (currentPageIndex === 1) {
+      const { actions, form } = this.props;
+      const values = form.getFieldsValue();
+      actions.saveServiceRequest(values.analyse);
+    }
 
     this.updateFormValues();
   }
@@ -921,6 +935,7 @@ const mapDispatchToProps = dispatch => ({
     savePatientLocal,
     assignServiceRequestPractitioner,
     saveObservations,
+    saveServiceRequest,
   }, dispatch),
 });
 

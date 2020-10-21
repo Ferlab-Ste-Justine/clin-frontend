@@ -452,10 +452,13 @@ class ClinicalInformation extends React.Component {
     const { hpoOptions, treeData } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
-    const { form, serviceRequest, observations } = this.props;
+    const {
+      form, observations, localStore,
+    } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
 
     const { TextArea } = Input;
+
 
     const relationshipPossibleValues = getFamilyRelationshipValues();
     const familyHistoryResources = observations.fmh;
@@ -548,7 +551,7 @@ class ClinicalInformation extends React.Component {
           <Form.Item label="Type d’analyse">
             {getFieldDecorator('analyse', {
               rules: [],
-              initialValue: has(serviceRequest, 'code') ? serviceRequest.code : null,
+              initialValue: has(localStore.serviceRequest, 'code') ? localStore.serviceRequest.code : null,
             })(
               <Radio.Group buttonStyle="solid">
                 <Radio.Button value="WXS"><span className="radioText">Exome</span></Radio.Button>
@@ -700,6 +703,7 @@ const mapStateToProps = state => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
   observations: state.patientSubmission.observations,
   serviceRequest: state.patientSubmission.serviceRequest,
+  localStore: state.patientSubmission.local,
 });
 
 export default connect(
