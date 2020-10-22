@@ -836,7 +836,6 @@ class PatientSubmissionScreen extends React.Component {
 
     const { consents } = localStore;
     const initialPractitionerValue = localStore.practitioner;
-    console.log(initialPractitionerValue);
 
     const practitionerOptionsLabels = practitionerOptions.map(practitioner => (
       <AutoComplete.Option
