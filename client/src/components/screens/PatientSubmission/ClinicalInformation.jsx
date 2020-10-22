@@ -4,13 +4,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Form, Input, Button, Radio, Tree, Select, AutoComplete,
+  Card, Form, Input, Button, Radio, Tree, Select, AutoComplete, Popconfirm,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_add, ic_remove, ic_help, ic_person, ic_visibility, ic_visibility_off,
 } from 'react-icons-kit/md';
 
+import intl from 'react-intl-universal';
 import {
   map,
   isEmpty,
@@ -187,7 +188,15 @@ class ClinicalInformation extends React.Component {
         <div className="phenotypeFirstLine">
           <div className="leftBlock">
             <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
-            <Button type="link" className="bordelessButton deleteButton" onClick={() => deleteHpo(getHPOCode(hpoResource))}>Supprimer</Button>
+            <Popconfirm
+              placement="top"
+              title={intl.get('form.patientSubmission.form.hpo.confirm.text')}
+              onConfirm={() => deleteHpo(getHPOCode(hpoResource))}
+              okText={intl.get('form.patientSubmission.form.hpo.confirm.yes')}
+              cancelText={intl.get('form.patientSubmission.form.hpo.confirm.no')}
+            >
+              <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
+            </Popconfirm>
           </div>
           <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} getFieldDecorator={getFieldDecorator} />
           <div className="rightBlock">
