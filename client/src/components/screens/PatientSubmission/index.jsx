@@ -727,8 +727,6 @@ class PatientSubmissionScreen extends React.Component {
         };
       }
 
-      console.log(submission.observations);
-
       submission.practitionerId = practitionerId;
       submission.deleted = deleted;
       submission.groupId = groupId;
