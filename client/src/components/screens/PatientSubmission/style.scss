@@ -144,9 +144,17 @@
             align-items: baseline;
         }
 
+        .ant-form-explain{
+            .errorMessage:not(:first-child){
+                display: none;
+            }
+        }
+
         .ant-form-item-control{
             line-height: 0; 
         }
+
+
     }
     .labelTop{
         .ant-form-item-label{
@@ -182,40 +190,49 @@
     }
     .familyLines{
         margin-bottom: 16px;
+
     }
     .familyLine{
-        display: flex;
-        align-items: center;
         margin-bottom: 16px;
-        .ant-form-item{
-            margin: 0;
-        }
-
-        .noteInput{
-            margin-right: 8px;
-        }
-
-        .selectRelation{
-            width: 260px;
-            margin-right: 8px;
-        }
-        .delButton{
-            width: 24px;
-            height: 24px;
-            padding: 0;
-            border: 1px solid #1D8BC6;
-            &:disabled{
-                border: 1px solid #D2DBE4;
+        .familyTop{
+            display: flex;
+            align-items: center;
+            
+            .ant-form-item{
+                margin: 0;
+            }
+    
+            .noteInput{
+                margin-right: 8px;
+            }
+    
+            .selectRelation{
+                width: 260px;
+                margin-right: 8px;
+            }
+            .delButton{
+                width: 24px;
+                height: 24px;
+                padding: 0;
+                border: 1px solid #1D8BC6;
+                &:disabled{
+                    border: 1px solid #D2DBE4;
+                    i{
+                        color: #ABB3BC;
+                    }
+                }
+    
                 i{
-                    color: #ABB3BC;
+                    color: #1D8BC6;;
                 }
             }
-
-            i{
-                color: #1D8BC6;;
-            }
         }
+        .familyBottom{
+            margin-top: 4px;
+        }
+
     }
+    
 
     .separator{
        

@@ -4,7 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Form, Input, Button, Radio, Tree, Select, AutoComplete, Popconfirm,
+  Card, Form, Input, Button, Radio, Tree, Select, AutoComplete, Typography, Popconfirm,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -471,61 +471,73 @@ class ClinicalInformation extends React.Component {
     const { getFieldDecorator, getFieldValue } = form;
 
     const { TextArea } = Input;
+    const { Text } = Typography;
 
 
     const relationshipPossibleValues = getFamilyRelationshipValues();
     const familyHistoryResources = observations.fmh;
     const familyItems = familyHistoryResources.map((resource, index) => ((
       <div className="familyLine">
-        {getFieldDecorator(`familyRelationshipIds[${index}]`, {
-          rules: [],
-          initialValue: getResourceId(resource) || '',
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
-          rules: [],
-          initialValue: resource.toDelete,
-        })(
-          <Input size="small" type="hidden" />,
-        )}
-
-        <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
-          {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            initialValue: getFamilyRelationshipNote(resource),
-            rules: [{
-              whitespace: true,
-              message: 'Ne peut pas contenir que des espaces',
-            },
-            ],
-          })(
-            <Input onChange={event => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
-          )}
-        </Form.Item>
-        <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
-          {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            initialValue: getFamilyRelationshipCode(resource),
+        <div className="familyTop">
+          {getFieldDecorator(`familyRelationshipIds[${index}]`, {
             rules: [],
+            initialValue: getResourceId(resource) || '',
           })(
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown" onChange={(event) => { this.fmhSelected(event, index); }}>
-              {Object.values(relationshipPossibleValues).map(rv => (
-                <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
-              ))}
-            </Select>,
+            <Input size="small" type="hidden" />,
           )}
-        </Form.Item>
-        <Button
-          className="delButton"
-          disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
-          shape="round"
-          onClick={() => this.deleteFamilyHistory({ code: getFieldValue(`familyRelationshipCodes[${index}]`) })}
-        >
-          <IconKit size={20} icon={ic_remove} />
-        </Button>
+
+          {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
+            rules: [],
+            initialValue: resource.toDelete,
+          })(
+            <Input size="small" type="hidden" />,
+          )}
+
+          <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
+            {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
+              validateTrigger: ['onChange', 'onBlur'],
+              initialValue: getFamilyRelationshipNote(resource),
+              rules: [{
+                whitespace: true,
+                message: 'Ne peut pas contenir que des espaces',
+              },
+              ],
+            })(
+              <Input onChange={event => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
+            )}
+          </Form.Item>
+          <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
+            {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
+              validateTrigger: ['onChange', 'onBlur'],
+              initialValue: getFamilyRelationshipCode(resource),
+              rules: [],
+            })(
+              <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown" onChange={(event) => { this.fmhSelected(event, index); }}>
+                {Object.values(relationshipPossibleValues).map(rv => (
+                  <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
+                ))}
+              </Select>,
+            )}
+          </Form.Item>
+          <Button
+            className="delButton"
+            disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
+            shape="round"
+            onClick={() => this.deleteFamilyHistory({ code: getFieldValue(`familyRelationshipCodes[${index}]`) })}
+          >
+            <IconKit size={20} icon={ic_remove} />
+          </Button>
+          <div className="break" />
+
+        </div>
+        {
+            (!form.getFieldValue(`familyRelationshipNotes[${index}]`) && form.getFieldValue(`familyRelationshipCodes[${index}]`))
+            || (form.getFieldValue(`familyRelationshipNotes[${index}]`) && !form.getFieldValue(`familyRelationshipCodes[${index}]`))
+              ? <div className="familyBottom"> <Text className="customErrorMessage" type="danger">Les 2 champs doivent être rentrés</Text></div>
+              : null
+          }
       </div>
+
     )));
 
     const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
@@ -673,6 +685,10 @@ class ClinicalInformation extends React.Component {
           <Form.Item label="Hypothèse(s) de diagnostic">
             {getFieldDecorator('indication', {
               rules: [
+                {
+                  required: true,
+                  message: 'Vous devez entrer une hypothèse de diagnostique',
+                },
                 {
                   whitespace: true,
                   message: 'Ne peut pas contenir que des espaces',
