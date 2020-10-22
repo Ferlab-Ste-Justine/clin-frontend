@@ -90,6 +90,14 @@ export const addFamilyHistoryResource = resource => ({
   payload: resource,
 });
 
+export const updateFMHNote = (note, index) => ({
+  type: actions.PATIENT_SUBMISSION_UPDATE_FMH_NOTE,
+  payload: {
+    note,
+    index,
+  },
+});
+
 
 export const addEmptyFamilyHistory = () => ({
   type: actions.PATIENT_SUBMISSION_ADD_EMPTY_FAMILY_RELATIONSHIP,

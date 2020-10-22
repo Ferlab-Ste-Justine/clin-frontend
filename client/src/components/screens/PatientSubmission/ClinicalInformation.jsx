@@ -20,7 +20,6 @@ import {
   CGH_CODES,
   CGH_VALUES,
   resourceNote,
-  getCGHInterpretationCode,
   getFamilyRelationshipCode,
   getFamilyRelationshipNote,
   hpoOnsetValues,
@@ -43,6 +42,7 @@ import {
   updateHpoNote,
   updateHpoObservation,
   updateHpoAgeOnSet,
+  updateFMHNote,
 } from '../../../actions/patientSubmission';
 
 import Api from '../../../helpers/api';
@@ -127,6 +127,7 @@ class ClinicalInformation extends React.Component {
     this.handleHpoNodesChecked = this.handleHpoNodesChecked.bind(this);
     this.hpoSelected = this.hpoSelected.bind(this);
     this.isAddDisabled = this.isAddDisabled.bind(this);
+    this.fmhNoteUpdate = this.fmhNoteUpdate.bind(this);
     this.fmhSelected = this.fmhSelected.bind(this);
     this.handleHpoNoteChanged = this.handleHpoNoteChanged.bind(this);
     this.handleObservationChanged = this.handleObservationChanged.bind(this);
@@ -294,6 +295,11 @@ class ClinicalInformation extends React.Component {
     actions.addEmptyFamilyHistory();
   }
 
+  fmhNoteUpdate(note, index) {
+    const { actions } = this.props;
+    actions.updateFMHNote(note, index);
+  }
+
   fmhSelected(fhmCode, index) {
     const { form } = this.props;
     const values = form.getFieldsValue();
@@ -310,8 +316,8 @@ class ClinicalInformation extends React.Component {
       const code = i === index ? fhmCode : c;
       if (code != null && code.length > 0) {
         const builder = new FamilyMemberHistoryBuilder(code, getFamilyRelationshipDisplayForCode(code));
-        if (familyRelationshipNotes[index] != null) {
-          builder.withNote(familyRelationshipNotes[index]);
+        if (familyRelationshipNotes[i] != null) {
+          builder.withNote(familyRelationshipNotes[i]);
         }
         const familyHistory = builder.build();
 
@@ -486,7 +492,7 @@ class ClinicalInformation extends React.Component {
             },
             ],
           })(
-            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input onChange={event => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
           )}
         </Form.Item>
         <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
@@ -684,6 +690,7 @@ const mapDispatchToProps = dispatch => ({
     updateHpoNote,
     updateHpoObservation,
     updateHpoAgeOnSet,
+    updateFMHNote,
   }, dispatch),
 });
 

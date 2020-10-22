@@ -162,6 +162,18 @@ const patientSubmissionReducer = (
     case actions.PATIENT_SUBMISSION_ADD_EMPTY_FAMILY_RELATIONSHIP:
       draft.observations.fmh.push({});
       break;
+    case actions.PATIENT_SUBMISSION_UPDATE_FMH_NOTE:
+      if (draft.observations.fmh[action.payload.index] != null
+        && !isEmpty(draft.observations.fmh[action.payload.index])) {
+        if (draft.observations.fmh[action.payload.index].note.length > 0) {
+          draft.observations.fmh[action.payload.index].note[0].text = action.payload.note;
+        } else {
+          draft.observations.fmh[action.payload.index].note = [{
+            text: action.payload.note,
+          }];
+        }
+      }
+      break;
     case actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION:
       action.payload.deleted.forEach((deleted) => {
         draft.deleted.fmh.push(deleted);
