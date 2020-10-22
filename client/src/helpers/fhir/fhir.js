@@ -308,6 +308,7 @@ export const createPatientSubmissionBundle = ({
   observations,
   deleted,
   practitionerId,
+  groupId,
 }) => {
   const patientResource = patient;
   if (practitionerId != null) {
@@ -323,25 +324,6 @@ export const createPatientSubmissionBundle = ({
 
   const bundle = createBundle();
   bundle.entry.push(patientEntry);
-
-  if (patient.id == null) {
-    const familyGroupBuilder = new FamilyGroupBuilder();
-    familyGroupBuilder.withActual(true).withType('person').withMember(
-      patientReference,
-    );
-    const familyGroup = familyGroupBuilder.build();
-    const entry = createEntry(familyGroup);
-    const familyGroupReference = getReference(entry);
-    const familyIdUrl = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
-    patient.extension = patient.extension.filter(extension => extension.url !== familyIdUrl);
-    patient.extension.push(
-      {
-        url: familyIdUrl,
-        valueReference: { ...familyGroupReference },
-      },
-    );
-    bundle.entry.push(entry);
-  }
 
   const serviceRequestResource = FhirDataManager.createServiceRequest(
     practitionerId,
@@ -420,6 +402,34 @@ export const createPatientSubmissionBundle = ({
 
     // reference from ServiceRequest to ClinicalImpression resource
     serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
+  }
+
+  const familyIdUrl = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
+  if (patient.id == null || groupId == null) {
+    const familyGroupBuilder = new FamilyGroupBuilder();
+    familyGroupBuilder.withActual(true).withType('person').withMember(
+      patientReference,
+    );
+    const familyGroup = familyGroupBuilder.build();
+    const entry = createEntry(familyGroup);
+    const familyGroupReference = getReference(entry);
+    patient.extension = patient.extension.filter(extension => extension.url !== familyIdUrl);
+    patient.extension.push(
+      {
+        url: familyIdUrl,
+        valueReference: { ...familyGroupReference },
+      },
+    );
+    bundle.entry.push(entry);
+  }
+  if (groupId != null) {
+    patient.extension = patient.extension.filter(extension => extension.url !== familyIdUrl);
+    patient.extension.push(
+      {
+        url: familyIdUrl,
+        valueReference: { reference: `Group/${groupId}` },
+      },
+    );
   }
 
   deleted.fmh.forEach((deletedResource) => {
