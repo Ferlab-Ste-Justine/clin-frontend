@@ -678,6 +678,10 @@ class PatientSubmissionScreen extends React.Component {
           indic: {
             ...observations.indic,
           },
+          summary: {
+            ...observations.summary,
+            ...this.createSummary(),
+          },
         };
       }
 
