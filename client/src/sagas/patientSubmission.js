@@ -81,6 +81,11 @@ function* savePatientSubmission(action) {
       }
     }
 
+    const groupIdIndex = (responses.length > 5) ? hpoStartIndex + payload.observations.hpos.length : 3;
+    if (responses[groupIdIndex] != null && !isDelete(responses[groupIdIndex])) {
+      result.groupId = processBundleResponse(responses[groupIdIndex]);
+    }
+
     result.investigations = [
       ...responses.filter(isInvestigation).map(processBundleResponse),
     ];

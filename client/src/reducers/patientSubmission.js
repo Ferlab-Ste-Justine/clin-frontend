@@ -23,6 +23,7 @@ export const initialPatientSubmissionState = {
   practitionerId: null,
   serviceRequest: {},
   clinicalImpression: {},
+  groupId: null,
   observations: {
     cgh: null,
     indic: null,
@@ -55,6 +56,9 @@ const patientSubmissionReducer = (
   switch (action.type) {
     case actions.PATIENT_SUBMISSION_SAVE_SUCCEEDED:
       draft.patient = { ...action.payload.patient, ...action.payload.result.patient };
+      if (action.payload.result.groupId != null) {
+        draft.groupId = action.payload.result.groupId.id;
+      }
       draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest, ...action.payload.result.serviceRequest };
       draft.clinicalImpression = { ...draft.clinicalImpression, ...action.payload.clinicalImpression, ...action.payload.result.clinicalImpression };
 
