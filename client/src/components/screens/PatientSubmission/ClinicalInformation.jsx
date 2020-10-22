@@ -483,7 +483,7 @@ class ClinicalInformation extends React.Component {
             rules: [],
             initialValue: getResourceId(resource) || '',
           })(
-            <Input onChange={event => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input size="small" type="hidden" />,
           )}
 
           {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
@@ -503,7 +503,7 @@ class ClinicalInformation extends React.Component {
               },
               ],
             })(
-              <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+              <Input onChange={event => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
             )}
           </Form.Item>
           <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
