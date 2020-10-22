@@ -29,6 +29,8 @@ import {
   saveLocalCgh,
   saveLocalSummary,
   saveLocalIndic,
+  updateConsentments,
+  saveLocalPractitioner,
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './ClinicalInformation';
 import Api from '../../../helpers/api';
@@ -264,6 +266,9 @@ const Approval = ({
   practitionerOptionSelected,
   practitionerSearchTermChanged,
   getFieldDecorator,
+  initialConsentsValue,
+  initialPractitionerValue,
+  updateConsentmentsCallback,
 }) => (
   <div>
     <Card title="Consentements" bordered={false} className="staticCard patientContent">
@@ -272,8 +277,9 @@ const Approval = ({
         <Form.Item label="Clauses signées" className="labelTop">
           {getFieldDecorator('consent', {
             rules: [{ required: true, message: 'Veuillez sélectionner au moins un consentement' }],
+            initialValue: initialConsentsValue,
           })(
-            <Checkbox.Group className="checkboxGroup">
+            <Checkbox.Group className="checkboxGroup" onChange={updateConsentmentsCallback}>
               <Row>
                 <Checkbox className="checkbox" value="c1"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.patient')}</span></Checkbox>
               </Row>
@@ -296,15 +302,18 @@ const Approval = ({
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
         {/* TODO initialValue */}
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
-          <AutoComplete
-            optionLabelProp="text"
-            classeName="searchInput"
-            placeholder="Recherche par nom ou licence…"
-            dataSource={dataSource}
-            onSelect={practitionerOptionSelected}
-            onChange={practitionerSearchTermChanged}
-          />
-          {/* )} */}
+          {getFieldDecorator('practInput', {
+            initialValue: initialPractitionerValue,
+          })(
+            <AutoComplete
+              optionLabelProp="text"
+              classeName="searchInput"
+              placeholder="Recherche par nom ou licence…"
+              dataSource={dataSource}
+              onSelect={practitionerOptionSelected}
+              onChange={practitionerSearchTermChanged}
+            />,
+          )}
 
         </Form.Item>
       </Form>
@@ -768,10 +777,12 @@ class PatientSubmissionScreen extends React.Component {
   handlePractitionerOptionSelected(license) {
     const { actions } = this.props;
     const { practitionerOptions } = this.state;
-    const option = practitionerOptions.find(o => o.license === license);
+    const practitioner = practitionerOptions.find(o => o.license === license);
 
-    if (option != null) {
-      const resource = createPractitionerResource(option);
+    if (practitioner != null) {
+      const practitionerText = `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`;
+      actions.saveLocalPractitioner(practitionerText);
+      const resource = createPractitionerResource(practitioner);
       actions.assignServiceRequestPractitioner(resource);
     }
   }
@@ -813,7 +824,7 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   render() {
-    const { form, actions } = this.props;
+    const { form, actions, localStore } = this.props;
     const { getFieldDecorator } = form;
     const { patient, clinicalImpression, serviceRequest } = this.props;
     const { practitionerOptions, currentPageIndex } = this.state;
@@ -822,6 +833,10 @@ class PatientSubmissionScreen extends React.Component {
     const assignedPractitionerLabel = assignedPractitioner && has(assignedPractitioner, 'resourceType')
       ? stringifyPractionerOption(practitionerOptionFromResource(assignedPractitioner))
       : '';
+
+    const { consents } = localStore;
+    const initialPractitionerValue = localStore.practitioner;
+    console.log(initialPractitionerValue);
 
     const practitionerOptionsLabels = practitionerOptions.map(practitioner => (
       <AutoComplete.Option
@@ -863,6 +878,9 @@ class PatientSubmissionScreen extends React.Component {
             practitionerOptionSelected={this.handlePractitionerOptionSelected}
             practitionerSearchTermChanged={this.searchPractitioner}
             assignedPractitionerLabel={assignedPractitionerLabel}
+            initialConsentsValue={consents}
+            initialPractitionerValue={initialPractitionerValue}
+            updateConsentmentsCallback={actions.updateConsentments}
           />
         ),
         name: 'Approval',
@@ -952,6 +970,8 @@ const mapDispatchToProps = dispatch => ({
     saveLocalCgh,
     saveLocalSummary,
     saveLocalIndic,
+    updateConsentments,
+    saveLocalPractitioner,
   }, dispatch),
 });
 
@@ -965,6 +985,7 @@ const mapStateToProps = state => ({
   deleted: state.patientSubmission.deleted,
   practitionerId: state.patientSubmission.practitionerId,
   search: state.search,
+  localStore: state.patientSubmission.local,
 });
 
 const WrappedPatientSubmissionForm = Form.create({ name: 'patient_submission' })(PatientSubmissionScreen);
