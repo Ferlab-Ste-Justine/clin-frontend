@@ -139,7 +139,7 @@ const fr = {
   'screen.patient.tab.patient': 'Informations du patient',
   'screen.patient.tab.clinical': 'Informations cliniques',
   'screen.patientsearch.title': 'Liste des patients',
-  'screen.patientsearch.button.new': 'Nouveau Patient',
+  'screen.patientsearch.button.new': 'Prescription',
   'screen.patientsearch.placeholder': 'MRN, ID Patient, RAMQ, Nom, Prénom, ID Famille, ID Specimen et Étude',
   'screen.patientsearch.table.patientId': 'Identifiant',
   'screen.patientsearch.table.mrn': 'MRN',
