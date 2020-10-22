@@ -447,7 +447,7 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   canGoNextPage(currentPage) {
-    const { form, observations } = this.props;
+    const { form, observations, practitionerId } = this.props;
     const values = form.getFieldsValue();
     switch (currentPage) {
       case 0:
@@ -505,7 +505,7 @@ class PatientSubmissionScreen extends React.Component {
         return true;
       }
       case 2:
-        if (values.consent && values.practitioner) {
+        if (values.consent != null && values.consent.length > 0 && practitionerId != null) {
           return false;
         }
         return true;
@@ -633,7 +633,7 @@ class PatientSubmissionScreen extends React.Component {
       }
 
       const {
-        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId,
+        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId,
       } = this.props;
 
       const patientData = this.getPatientData();
@@ -651,7 +651,20 @@ class PatientSubmissionScreen extends React.Component {
       }
       const { currentPageIndex } = this.state;
 
-      if (currentPageIndex === 1) {
+      if (currentPageIndex === 0) {
+        submission.observations = {
+          ...observations,
+          cgh: {
+            ...observations.cgh,
+          },
+          indic: {
+            ...observations.indic,
+          },
+          summary: {
+            ...observations.summary,
+          },
+        };
+      } else if (currentPageIndex === 1) {
         submission.observations = {
           ...observations,
           cgh: {
@@ -685,8 +698,11 @@ class PatientSubmissionScreen extends React.Component {
         };
       }
 
+      console.log(submission.observations);
+
       submission.practitionerId = practitionerId;
       submission.deleted = deleted;
+      submission.groupId = groupId;
       actions.savePatientSubmission(submission);
     });
   }
@@ -983,6 +999,7 @@ const mapStateToProps = state => ({
   router: state.router,
   serviceRequest: state.patientSubmission.serviceRequest,
   patient: state.patientSubmission.patient,
+  groupId: state.patientSubmission.groupId,
   clinicalImpression: state.patientSubmission.clinicalImpression,
   observations: state.patientSubmission.observations,
   deleted: state.patientSubmission.deleted,
