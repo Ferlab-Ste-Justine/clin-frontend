@@ -306,7 +306,16 @@ const Approval = ({
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
           {getFieldDecorator('practInput', {
             initialValue: initialPractitionerValue,
-            rules: [{ required: true, message: 'Veuillez spécifier le nom du médecin responsable' }],
+            rules: [
+              {
+                required: true,
+                message: 'Veuillez spécifier le nom du médecin responsable',
+              },
+              {
+                whitespace: true,
+                message: 'Ne peut pas contenir que des espaces',
+              },
+            ],
           })(
             <AutoComplete
               optionLabelProp="text"
@@ -502,17 +511,29 @@ class PatientSubmissionScreen extends React.Component {
           return false;
         };
 
+        hasError = find(form.getFieldsError(), (o) => {
+          if (Array.isArray(o)) {
+            return !o.includes(undefined);
+          }
+          return o !== undefined;
+        });
+
         if (values.analyse
           && checkHpo()
           && checkCghInterpretationValue()
           && checkFamilyHistory()
           && values.indication
+          && !hasError
         ) {
           return false;
         }
         return true;
       }
       case 2:
+        hasError = find(form.getFieldsError(), o => o !== undefined);
+        if (hasError) {
+          return true;
+        }
         if (values.consent && values.practitioner) {
           return false;
         }
