@@ -47,6 +47,19 @@ export const saveLocalIndic = indic => ({
   },
 });
 
+export const updateConsentments = consents => ({
+  type: actions.PATIENT_SUBMISSION_LOCAL_CONSENTS_SAVE,
+  payload: {
+    consents,
+  },
+});
+
+export const saveLocalPractitioner = practitioner => ({
+  type: actions.PATIENT_SUBMISSION_LOCAL_PRACTITIONER,
+  payload: {
+    practitioner,
+  },
+});
 
 export const addHpoResource = resource => ({
   type: actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE,

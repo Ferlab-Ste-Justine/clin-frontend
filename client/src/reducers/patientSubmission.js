@@ -35,6 +35,8 @@ export const initialPatientSubmissionState = {
     cgh: {},
     summary: {},
     indic: {},
+    consents: [],
+    practitioner: '',
   },
   deleted: {
     fmh: [],
@@ -119,6 +121,12 @@ const patientSubmissionReducer = (
       break;
     case actions.PATIENT_SUBMISSION_LOCAL_INDIC_SAVE_REQUESTED:
       draft.local.indic.note = action.payload.indic;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_CONSENTS_SAVE:
+      draft.local.consents = action.payload.consents;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_PRACTITIONER:
+      draft.local.practitioner = action.payload.practitioner;
       break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
       draft.observations.hpos.push(action.payload);
