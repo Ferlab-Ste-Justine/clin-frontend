@@ -30,6 +30,14 @@ export const initialPatientSubmissionState = {
     fmh: [{}],
     hpos: [],
   },
+  local: {
+    serviceRequest: {},
+    cgh: {},
+    summary: {},
+    indic: {},
+    consents: [],
+    practitioner: '',
+  },
   deleted: {
     fmh: [],
     hpos: [],
@@ -99,6 +107,27 @@ const patientSubmissionReducer = (
         draft.observations.indic = action.payload.indic;
       }
       break;
+    case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_SAVE_REQUESTED:
+      if (action.payload != null) {
+        draft.local.serviceRequest.code = action.payload.code;
+      }
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_CGH_SAVE_REQUESTED:
+      draft.local.cgh.interpretation = action.payload.interpretation;
+      draft.local.cgh.precision = action.payload.precision;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_SUMMARY_SAVE_REQUESTED:
+      draft.local.summary.note = action.payload.note;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_INDIC_SAVE_REQUESTED:
+      draft.local.indic.note = action.payload.indic;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_CONSENTS_SAVE:
+      draft.local.consents = action.payload.consents;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_PRACTITIONER:
+      draft.local.practitioner = action.payload.practitioner;
+      break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
       draft.observations.hpos.push(action.payload);
       break;
@@ -140,6 +169,18 @@ const patientSubmissionReducer = (
       break;
     case actions.PATIENT_SUBMISSION_ADD_EMPTY_FAMILY_RELATIONSHIP:
       draft.observations.fmh.push({});
+      break;
+    case actions.PATIENT_SUBMISSION_UPDATE_FMH_NOTE:
+      if (draft.observations.fmh[action.payload.index] != null
+        && !isEmpty(draft.observations.fmh[action.payload.index])) {
+        if (draft.observations.fmh[action.payload.index].note.length > 0) {
+          draft.observations.fmh[action.payload.index].note[0].text = action.payload.note;
+        } else {
+          draft.observations.fmh[action.payload.index].note = [{
+            text: action.payload.note,
+          }];
+        }
+      }
       break;
     case actions.PATIENT_SUBMISSION_MARK_FAMILY_RELATIONSHIP_FOR_DELETION:
       action.payload.deleted.forEach((deleted) => {

@@ -332,9 +332,11 @@ export const createPatientSubmissionBundle = ({
     const familyGroup = familyGroupBuilder.build();
     const entry = createEntry(familyGroup);
     const familyGroupReference = getReference(entry);
+    const familyIdUrl = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
+    patient.extension = patient.extension.filter(extension => extension.url !== familyIdUrl);
     patient.extension.push(
       {
-        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
+        url: familyIdUrl,
         valueReference: { ...familyGroupReference },
       },
     );
@@ -342,7 +344,7 @@ export const createPatientSubmissionBundle = ({
   }
 
   const serviceRequestResource = FhirDataManager.createServiceRequest(
-    practitionerId, // TODO: Change to real id once it's supported.
+    practitionerId,
     patientEntry.fullUrl,
     'draft',
     serviceRequest.code,
@@ -382,7 +384,7 @@ export const createPatientSubmissionBundle = ({
     }
 
     // Summary
-    if (observations.summary != null && !isEmpty(observations.summary) && has(observations, 'summary.note') && observations.summary.note.length > 0) {
+    if (observations.summary != null && !isEmpty(observations.summary)) {
       observations.summary.subject = patientReference;
       const summaryEntry = createEntry(observations.summary);
       bundle.entry.push(summaryEntry);
@@ -399,8 +401,7 @@ export const createPatientSubmissionBundle = ({
 
     if (observations.fmh != null) {
       observations.fmh.filter(fmh => !isEmpty(fmh)).forEach((fmh) => {
-        fmh.patient = patientReference;
-        const entry = createEntry(fmh);
+        const entry = createEntry({ ...fmh, patient: patientReference });
         bundle.entry.push(entry);
         clinicalImpressionResource.investigation[0].item.push(getReference(entry));
       });

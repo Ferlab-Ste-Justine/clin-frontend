@@ -20,9 +20,6 @@ import {
   CGH_CODES,
   CGH_VALUES,
   resourceNote,
-  getCGHInterpretationCode,
-  getIndicationNote,
-  getIndicationId,
   getFamilyRelationshipCode,
   getFamilyRelationshipNote,
   hpoOnsetValues,
@@ -45,6 +42,7 @@ import {
   updateHpoNote,
   updateHpoObservation,
   updateHpoAgeOnSet,
+  updateFMHNote,
 } from '../../../actions/patientSubmission';
 
 import Api from '../../../helpers/api';
@@ -129,6 +127,7 @@ class ClinicalInformation extends React.Component {
     this.handleHpoNodesChecked = this.handleHpoNodesChecked.bind(this);
     this.hpoSelected = this.hpoSelected.bind(this);
     this.isAddDisabled = this.isAddDisabled.bind(this);
+    this.fmhNoteUpdate = this.fmhNoteUpdate.bind(this);
     this.fmhSelected = this.fmhSelected.bind(this);
     this.handleHpoNoteChanged = this.handleHpoNoteChanged.bind(this);
     this.handleObservationChanged = this.handleObservationChanged.bind(this);
@@ -296,6 +295,11 @@ class ClinicalInformation extends React.Component {
     actions.addEmptyFamilyHistory();
   }
 
+  fmhNoteUpdate(note, index) {
+    const { actions } = this.props;
+    actions.updateFMHNote(note, index);
+  }
+
   fmhSelected(fhmCode, index) {
     const { form } = this.props;
     const values = form.getFieldsValue();
@@ -312,8 +316,8 @@ class ClinicalInformation extends React.Component {
       const code = i === index ? fhmCode : c;
       if (code != null && code.length > 0) {
         const builder = new FamilyMemberHistoryBuilder(code, getFamilyRelationshipDisplayForCode(code));
-        if (familyRelationshipNotes[index] != null) {
-          builder.withNote(familyRelationshipNotes[index]);
+        if (familyRelationshipNotes[i] != null) {
+          builder.withNote(familyRelationshipNotes[i]);
         }
         const familyHistory = builder.build();
 
@@ -452,10 +456,13 @@ class ClinicalInformation extends React.Component {
     const { hpoOptions, treeData } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
-    const { form, serviceRequest, observations } = this.props;
+    const {
+      form, observations, localStore,
+    } = this.props;
     const { getFieldDecorator, getFieldValue } = form;
 
     const { TextArea } = Input;
+
 
     const relationshipPossibleValues = getFamilyRelationshipValues();
     const familyHistoryResources = observations.fmh;
@@ -485,7 +492,7 @@ class ClinicalInformation extends React.Component {
             },
             ],
           })(
-            <Input placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input onChange={event => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
           )}
         </Form.Item>
         <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
@@ -512,12 +519,11 @@ class ClinicalInformation extends React.Component {
       </div>
     )));
 
-    let cghInterpretationValue;
+    const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
     let summaryNoteValue;
     let cghId = null;
     if (observations.cgh != null) {
       cghId = observations.cgh.id;
-      cghInterpretationValue = getCGHInterpretationCode(observations.cgh);
     }
 
 
@@ -525,11 +531,7 @@ class ClinicalInformation extends React.Component {
       summaryNoteValue = resourceNote(observations.summary);
     }
 
-    let indicationNoteValue;
-    let indicationResource;
-    if (observations.indic != null) {
-      indicationNoteValue = getIndicationNote(observations.indic);
-    }
+    const indicationNoteValue = has(localStore, 'indic.note') ? localStore.indic.note : null;
 
     const hpoResources = observations.hpos;
     const hpoCodes = hpoResources.filter(r => !r.toDelete).map(getHPOCode);
@@ -548,7 +550,7 @@ class ClinicalInformation extends React.Component {
           <Form.Item label="Type d’analyse">
             {getFieldDecorator('analyse', {
               rules: [],
-              initialValue: has(serviceRequest, 'code') ? serviceRequest.code : null,
+              initialValue: has(localStore.serviceRequest, 'code') ? localStore.serviceRequest.code : null,
             })(
               <Radio.Group buttonStyle="solid">
                 <Radio.Button value="WXS"><span className="radioText">Exome</span></Radio.Button>
@@ -586,6 +588,7 @@ class ClinicalInformation extends React.Component {
                   message: 'Ne peut pas contenir que des espaces',
                 },
                 ],
+                initialValue: has(localStore, 'cgh.precision') ? localStore.cgh.precision : null,
               })(
                 <Input placeholder="Veuillez préciser…" className="input note" />,
               )}
@@ -657,12 +660,6 @@ class ClinicalInformation extends React.Component {
 
         </Card>
         <Card title="Indications" bordered={false} className="staticCard patientContent">
-          {getFieldDecorator('indicationId', {
-            rules: [],
-            initialValue: getIndicationId(indicationResource) || '',
-          })(
-            <Input size="small" type="hidden" />,
-          )}
 
           <Form.Item label="Hypothèse(s) de diagnostic">
             {getFieldDecorator('indication', {
@@ -693,6 +690,7 @@ const mapDispatchToProps = dispatch => ({
     updateHpoNote,
     updateHpoObservation,
     updateHpoAgeOnSet,
+    updateFMHNote,
   }, dispatch),
 });
 
@@ -700,6 +698,7 @@ const mapStateToProps = state => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
   observations: state.patientSubmission.observations,
   serviceRequest: state.patientSubmission.serviceRequest,
+  localStore: state.patientSubmission.local,
 });
 
 export default connect(
