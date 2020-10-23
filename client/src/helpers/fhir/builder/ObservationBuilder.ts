@@ -8,7 +8,7 @@ import {
     Note,
     Observation,
     Reference,
-    ResourceType
+    ResourceType,
 } from "../types";
 
 type Status = "registered" | "preliminary" | "final" | "amended";
@@ -24,27 +24,17 @@ interface AgeAtOnset extends Extension {
 }
 
 type SupportedExtensions = HpoCategoryExtension | AgeAtOnset;
-type SupportedCodes = 'CGH' | 'INDIC' | 'HPO' | 'INVES';
+type SupportedCodes = "CGH" | "INDIC" | "HPO" | "INVES";
 
 export class ObservationBuilder {
     private resourceType: ResourceType = "Observation";
     private meta: Meta = {
         profile: [
-            "http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation"
-        ]
+            "http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-observation",
+        ],
     };
     private status: Status = "registered";
-    private category: CodeableConcept[] = [
-        {
-            coding: [
-                {
-                    system: "http://terminology.hl7.org/CodeSystem/observation-category",
-                    code: "laboratory",
-                    display: "Laboratory"
-                }
-            ]
-        }
-    ];
+    private category: CodeableConcept[];
     private subject: Reference = null;
     private interpretation: Interpretation[] = [];
     private note: Note[] = [];
@@ -59,22 +49,22 @@ export class ObservationBuilder {
                     coding: [
                         {
                             system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
-                            code: 'CGH',
-                            display: 'cgh',
+                            code: "CGH",
+                            display: "cgh",
                         },
                     ],
-                }
+                };
                 break;
             case "INDIC":
                 this.code = {
                     coding: [
                         {
                             system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
-                            code: 'INDIC',
-                            display: 'indications',
+                            code: "INDIC",
+                            display: "indications",
                         },
                     ],
-                }
+                };
 
                 break;
             case "HPO":
@@ -82,24 +72,57 @@ export class ObservationBuilder {
                     coding: [
                         {
                             system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
-                            code: 'PHENO',
-                            display: 'phenotype',
+                            code: "PHENO",
+                            display: "phenotype",
                         },
                     ],
-                }
+                };
                 break;
             case "INVES":
                 this.code = {
                     coding: [
                         {
                             system: "http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code",
-                            code: 'INVES',
-                            display: 'investigations',
+                            code: "INVES",
+                            display: "investigations",
                         },
                     ],
-                }
+                };
                 break;
             default:
+                break;
+        }
+
+        switch (code) {
+            case "CGH":
+            case "INDIC":
+            case "HPO":
+                this.category = [
+                    {
+                        coding: [
+                            {
+                                system:
+                                    "http://terminology.hl7.org/CodeSystem/observation-category",
+                                code: "laboratory",
+                                display: "Laboratory",
+                            },
+                        ],
+                    },
+                ];
+                break;
+            case "INVES":
+                this.category = [
+                    {
+                        coding: [
+                            {
+                                system:
+                                    "http://terminology.hl7.org/CodeSystem/observation-category",
+                                code: "exam",
+                                display: "Exam",
+                            },
+                        ],
+                    },
+                ];
                 break;
         }
     }
@@ -155,10 +178,10 @@ export class ObservationBuilder {
     }
 
     public withNote(value: string) {
-        if(value.length > 0){
+        if (value.length > 0) {
             this.note.push({
-                text: value
-            });   
+                text: value,
+            });
         }
         return this;
     }
@@ -168,7 +191,7 @@ export class ObservationBuilder {
         return this;
     }
 
-    public withValue(value: CodeableConcept){
+    public withValue(value: CodeableConcept) {
         this.valueCodeableConcept = value;
     }
 }
