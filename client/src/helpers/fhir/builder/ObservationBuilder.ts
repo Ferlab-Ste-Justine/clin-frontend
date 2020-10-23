@@ -177,8 +177,8 @@ export class ObservationBuilder {
         return this;
     }
 
-    public withNote(value: string) {
-        if (value.length > 0) {
+    public withNote(value?: string) {
+        if (value != null && value.length > 0) {
             this.note.push({
                 text: value,
             });
