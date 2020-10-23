@@ -20,7 +20,6 @@ import {
 import {
   CGH_CODES,
   CGH_VALUES,
-  resourceNote,
   getFamilyRelationshipCode,
   getFamilyRelationshipNote,
   hpoOnsetValues,
@@ -541,16 +540,13 @@ class ClinicalInformation extends React.Component {
     )));
 
     const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
-    let summaryNoteValue;
     let cghId = null;
     if (observations.cgh != null) {
       cghId = observations.cgh.id;
     }
 
 
-    if (observations.summary != null) {
-      summaryNoteValue = resourceNote(observations.summary);
-    }
+    const summaryNoteValue = localStore.summary.note;
 
     const indicationNoteValue = has(localStore, 'indic.note') ? localStore.indic.note : null;
 

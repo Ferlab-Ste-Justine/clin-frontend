@@ -590,11 +590,9 @@ class PatientSubmissionScreen extends React.Component {
 
     const {
       cghInterpretationValue,
-      summaryNote,
       cghPrecision,
     } = values;
 
-    values.summaryNote = summaryNote ? summaryNote.trim() : summaryNote;
     values.cghPrecision = cghPrecision ? cghPrecision.trim() : cghPrecision;
     const builder = new ObservationBuilder('CGH')
       .withStatus('final');
@@ -609,8 +607,8 @@ class PatientSubmissionScreen extends React.Component {
       });
     }
 
-    if (summaryNote != null && summaryNote.length > 0) {
-      builder.withNote(summaryNote);
+    if (cghPrecision != null && cghPrecision.length > 0) {
+      builder.withNote(cghPrecision);
     }
 
     return builder.build();
@@ -639,11 +637,15 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   createSummary() {
-    const { form } = this.props;
+    const { form, localStore } = this.props;
     const values = form.getFieldsValue();
     const builder = new ObservationBuilder('INVES');
 
-    builder.withNote(values.summaryNote || '');
+    if (values.summaryNote == null && localStore.summary.note != null) {
+      builder.withNote(localStore.summary.note);
+    } else {
+      builder.withNote(values.summaryNote);
+    }
     return builder.build();
   }
 

@@ -121,7 +121,7 @@ const patientSubmissionReducer = (
       draft.local.cgh.precision = action.payload.precision;
       break;
     case actions.PATIENT_SUBMISSION_LOCAL_SUMMARY_SAVE_REQUESTED:
-      draft.local.summary.note = action.payload.note;
+      draft.local.summary.note = action.payload.summary;
       break;
     case actions.PATIENT_SUBMISSION_LOCAL_INDIC_SAVE_REQUESTED:
       draft.local.indic.note = action.payload.indic;
