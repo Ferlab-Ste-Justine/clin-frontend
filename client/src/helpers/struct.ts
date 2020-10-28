@@ -43,29 +43,26 @@ export const normalizePatientDetails = (data) => {
   return struct;
 };
 
-export const normalizePatientFamily = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.family);
-  const mother = find(fhirPatient.link, { relationship: "MTH" });
-  const father = find(fhirPatient.link, { relationship: "FTH" });
+export const normalizePatientFamily = (data) => {
+  const patient = extractResource<Patient>(data, "Patient");
+  const fmhs = extractResources<FamilyMemberHistory>(data, "FamilyMemberHistory");
+  const struct: any = {};
+  // const mother = find(fhirPatient.link, { relationship: "MTH" });
+  // const father = find(fhirPatient.link, { relationship: "FTH" });
 
-  struct.id = fhirPatient.familyId;
-  struct.composition = fhirPatient.familyComposition;
-  struct.members.proband = fhirPatient.id;
-  struct.members.mother = mother ? mother.id : "";
-  struct.members.father = father ? father.id : "";
+  struct.id = patient.id;
+  struct.proband = patient.id;
+  struct.composition = "trio"; // Not suported for now
+  struct.members = {};
+  fmhs.forEach((fmh) => {
+    struct.members[fmh.relationship.coding[0].display];
+  });
 
   return struct;
 };
 
 export const normalizePatientStudy = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.study);
-
-  if (fhirPatient.studies && fhirPatient.studies[0]) {
-    struct.id = fhirPatient.studies[0].id;
-    struct.name = fhirPatient.studies[0].title;
-  }
-
-  return struct;
+  return {};
 };
 
 export const normalizePatientPractitioner = (fhirPatient) => {
