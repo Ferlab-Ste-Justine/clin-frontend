@@ -65,25 +65,21 @@ export const normalizePatientStudy = (fhirPatient) => {
   return {};
 };
 
-export const normalizePatientPractitioner = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.practitioner);
+export const normalizePatientPractitioner = (data) => {
+  const struct: any = Object.assign({}, initialPatientState.practitioner);
+  const practitioner = extractResource<Practitioner>(data, "Practitioner");
 
-  if (fhirPatient.practitioners && fhirPatient.practitioners[0]) {
-    struct.id = fhirPatient.practitioners[0].id;
-    struct.rid = fhirPatient.practitioners[0].role_id;
-    struct.mln = fhirPatient.practitioners[0].identifier.MD;
-    const nameParts = [fhirPatient.practitioners[0].name[0].given[0], fhirPatient.practitioners[0].name[0].family];
-    if (fhirPatient.practitioners[0].name[0].prefix) {
-      nameParts.unshift(fhirPatient.practitioners[0].name[0].prefix[0]);
-    }
-    if (fhirPatient.practitioners[0].name[0].suffix) {
-      nameParts.push(fhirPatient.practitioners[0].name[0].suffix[0]);
-    }
-    struct.name = nameParts.join(" ");
+  if (practitioner != null) {
+    struct.id = practitioner.id;
+    struct.rid = "ROLE ID";
+    struct.mln = practitioner.identifier[0].value;
+    struct.name = has(practitioner, "name[0].prefix[0]") ? `${practitioner.name[0].prefix[0]} ` : "";
+    struct.name += has(practitioner, "name[0].given[0]") ? `${practitioner.name[0].given[0]} ` : "";
+    struct.name += has(practitioner, "name[0].family") ? practitioner.name[0].family : "";
   }
-
   return struct;
 };
+
 export const normalizePatientOrganization = (fhirPatient) => {
   const struct: any = Object.assign({}, initialPatientState.organization);
 
