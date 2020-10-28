@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 import { has } from "lodash";
 import { initialPatientState } from "../reducers/patient";
-import { FamilyMemberHistory, Patient, ResourceType, Practitioner } from "./fhir/types";
+import { FamilyMemberHistory, Patient, ResourceType, Practitioner, Organization } from "./fhir/types";
 
 // THIS REDUCER NEEDS TO BE REMOVED WHEN THE NEW PATIENT PAGE IS IMPLEMENTED.
 // INSTEAD, HANDLE ALL YOUR DATA IN THE REDUCER patient.ts.
@@ -80,12 +80,13 @@ export const normalizePatientPractitioner = (data) => {
   return struct;
 };
 
-export const normalizePatientOrganization = (fhirPatient) => {
+export const normalizePatientOrganization = (data) => {
+  const organization = extractResource<Organization>(data, "Organization");
   const struct: any = Object.assign({}, initialPatientState.organization);
 
-  if (fhirPatient.organization) {
-    struct.id = fhirPatient.organization.id;
-    struct.name = fhirPatient.organization.name;
+  if (organization != null) {
+    struct.id = organization.id;
+    struct.name = organization.name || organization.id;
   }
 
   return struct;

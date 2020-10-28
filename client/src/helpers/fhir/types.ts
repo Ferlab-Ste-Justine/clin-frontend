@@ -165,3 +165,12 @@ export interface Practitioner {
   identifier: Identifier[];
   name: Name[];
 }
+
+export interface Organization {
+  resourceType: ResourceType;
+  id: string;
+  meta: Meta;
+  name: string;
+  alias: string[];
+  type: CodeableConcept[];
+}
