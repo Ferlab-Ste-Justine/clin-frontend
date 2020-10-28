@@ -1,7 +1,14 @@
 /* eslint-disable import/no-cycle */
-import { has } from "lodash";
+import { assign, has } from "lodash";
 import { initialPatientState } from "../reducers/patient";
-import { FamilyMemberHistory, Patient, ResourceType, Practitioner, Organization } from "./fhir/types";
+import {
+  FamilyMemberHistory,
+  Patient,
+  ResourceType,
+  Practitioner,
+  Organization,
+  ClinicalImpression,
+} from "./fhir/types";
 
 // THIS REDUCER NEEDS TO BE REMOVED WHEN THE NEW PATIENT PAGE IS IMPLEMENTED.
 // INSTEAD, HANDLE ALL YOUR DATA IN THE REDUCER patient.ts.
@@ -47,8 +54,6 @@ export const normalizePatientFamily = (data) => {
   const patient = extractResource<Patient>(data, "Patient");
   const fmhs = extractResources<FamilyMemberHistory>(data, "FamilyMemberHistory");
   const struct: any = {};
-  // const mother = find(fhirPatient.link, { relationship: "MTH" });
-  // const father = find(fhirPatient.link, { relationship: "FTH" });
 
   struct.id = patient.id;
   struct.proband = patient.id;
@@ -92,27 +97,38 @@ export const normalizePatientOrganization = (data) => {
   return struct;
 };
 
-export const normalizePatientConsultations = (fhirPatient) =>
-  fhirPatient.clinicalImpressions
-    ? fhirPatient.clinicalImpressions.reduce((result, current) => {
-        const nameParts = [current.assessor_name[0].given[0], current.assessor_name[0].family];
-        if (current.assessor_name[0].prefix) {
-          nameParts.unshift(current.assessor_name[0].prefix[0]);
-        }
-        if (current.assessor_name[0].suffix) {
-          nameParts.push(current.assessor_name[0].suffix[0]);
-        }
-        result.push({
-          id: current.id,
-          age: current.runtimePatientAge,
-          date: current.ci_consultation_date ? current.ci_consultation_date.dateTime : "",
-          assessor: nameParts.join(" "),
-          organization: current.assessor_org_name || "",
-        });
+export const normalizePatientConsultations = (data) => {
+  const organization = extractResource<Organization>(data, "Organization");
+  const clinicalImpressions = extractResources<ClinicalImpression>(data, "ClinicalImpression");
 
-        return result;
-      }, [])
-    : [];
+  return clinicalImpressions.map((clinicalImpression) => {
+    if (clinicalImpression.assessor != null) {
+      const practitioners = extractResources<Practitioner>(data, "Practitioner");
+      const assessor = practitioners.find(
+        (practitioner) => practitioner.id === clinicalImpression.assessor.reference.split("/")[1]
+      );
+
+      let name = undefined;
+      if (assessor != null) {
+        const nameParts = [assessor.name[0].given[0], assessor.name[0].family];
+        if (assessor.name[0].prefix) {
+          nameParts.unshift(assessor.name[0].prefix[0]);
+        }
+        if (assessor.name[0].suffix) {
+          nameParts.push(assessor.name[0].suffix[0]);
+        }
+        name = nameParts.join(" ");
+      }
+    }
+    return {
+      id: clinicalImpression.id,
+      assessor: name,
+      age: 0,
+      date: clinicalImpression.date,
+      organization: organization.name || organization.id,
+    };
+  });
+};
 
 export const normalizePatientRequests = (fhirPatient) =>
   fhirPatient.serviceRequests

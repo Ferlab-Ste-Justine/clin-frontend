@@ -97,6 +97,7 @@ export interface Patient {
 }
 
 export interface ClinicalImpression {
+  id?: string;
   resourceType: ResourceType;
   meta: Meta;
   extension: Extension[];
