@@ -6,14 +6,13 @@ import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 
 function* fetch(action) {
-  let patientResponse = null;
   try {
-    patientResponse = yield Api.getPatientById(action.payload.uid);
-    if (patientResponse.error) {
-      throw new ApiError(patientResponse.error);
+    const response = yield Api.getPatientDataById(action.payload.uid);
+    if (response.error) {
+      throw new ApiError(response.error);
     }
 
-    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: patientResponse.payload.data });
+    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: response.payload.data });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
   }

@@ -8,6 +8,10 @@ const getPatientById = uid => Http.secureClinAxios.get(`${window.CLIN.patientSer
   .then(successCallback)
   .catch(errorCallback);
 
+const getPatientDataById = async id => Http.secureClinAxios.get(`${window.CLIN.fhirBaseUrl}/Bundle?patient=${id}`)
+  .then(successCallback)
+  .catch(errorCallback);
+
 const getPatientsByAutoComplete = (type, query, page, size) => Http.secureClinAxios.get(
   `${window.CLIN.patientServiceApiUrl}/autocomplete`, {
     params: {
@@ -187,4 +191,5 @@ export default {
   convertToExcelData,
   getGeneAutocomplete,
   savePatientSubmission,
+  getPatientDataById,
 };
