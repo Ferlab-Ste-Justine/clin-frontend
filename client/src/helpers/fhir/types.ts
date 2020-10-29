@@ -11,6 +11,7 @@ export type ResourceType =
 
 export interface Meta {
   profile: string[];
+  lastUpdated?: string;
 }
 
 export interface Coding {
@@ -133,6 +134,7 @@ export interface ServiceRequest {
 }
 
 export interface Observation {
+  id?: string;
   resourceType: ResourceType;
   meta: Meta;
   status: string;

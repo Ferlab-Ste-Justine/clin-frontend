@@ -9,6 +9,7 @@ import {
   Organization,
   ClinicalImpression,
   ServiceRequest,
+  Observation,
 } from "./fhir/types";
 
 // THIS REDUCER NEEDS TO BE REMOVED WHEN THE NEW PATIENT PAGE IS IMPLEMENTED.
@@ -19,7 +20,9 @@ const extractResource = <T>(data: any, resourceType: ResourceType) => {
 };
 
 const extractResources = <T>(data: any, resourceType: ResourceType) => {
-  return data.entry.filter((entry) => entry.resource.resourceType === resourceType).resource as T[];
+  return data.entry
+    .filter((entry) => entry.resource.resourceType === resourceType)
+    .map((entry) => entry.resource as T) as T[];
 };
 
 export const normalizePatientDetails = (data) => {
@@ -36,6 +39,7 @@ export const normalizePatientDetails = (data) => {
 
   // const struct = Object.assign({}, initialPatientState.);
   const struct: any = {};
+  console.log(patient);
 
   struct.id = patient.id;
   struct.firstName = patient.name ? patient.name[0].given[0] : "";
@@ -158,17 +162,7 @@ export const normalizePatientRequests = (data) => {
   });
 };
 
-export const normalizePatientSamples = (fhirPatient) =>
-  fhirPatient.specimens.reduce((result, current) => {
-    result.push({
-      type: "DNA",
-      id: current.id,
-      barcode: current.container ? current.container[0] : "",
-      request: current.request ? current.request[0] : "",
-    });
-
-    return result;
-  }, []);
+export const normalizePatientSamples = (data) => [];
 
 const emptyImpressions = {
   observations: [],
@@ -176,62 +170,71 @@ const emptyImpressions = {
   ontology: [],
   history: [],
 };
-export const normalizePatientImpressions = (fhirPatient) =>
-  fhirPatient.clinicalImpressions
-    ? fhirPatient.clinicalImpressions.reduce((result, current) => {
-        if (current.familyMemberHistory) {
-          current.familyMemberHistory.forEach((history) => {
-            result.history.push({
-              date: history.date || "",
-              note: history.note[0] ? history.note[0].text : "",
-            });
+export const normalizePatientImpressions = (data) => {
+  const familyMemberHistories = extractResources<FamilyMemberHistory>(data, "FamilyMemberHistory");
+  const observations = extractResources<Observation>(data, "Observation");
+  const organization = extractResource<Organization>(data, "Organization");
+
+  const result: any = {
+    history: [],
+    observations: [],
+    ontology: [],
+    indications: [],
+  };
+
+  familyMemberHistories.forEach((familyMemberHistory) => {
+    result.history.push({
+      data: "",
+      note: has(familyMemberHistory, "note[0].text") ? familyMemberHistory.note[0].text : "",
+    });
+  });
+
+  observations.forEach((observation) => {
+    if (has(observation, "code.coding[0].code")) {
+      const code = observation.code.coding[0].code;
+      switch (code) {
+        case "CGH":
+          result.observations.push({
+            consultation_id: observation.id,
+            consultation_date: observation.meta.lastUpdated,
+            apparition_date: "",
+            note: has(observation, "note[0].text") ? observation.note[0].text : "",
+            status: observation.status,
+            performer: "",
+            organization: organization.name || organization.id,
           });
-        }
-        if (current.observations) {
-          current.observations.forEach((observation) => {
-            if (observation.code && observation.code.text) {
-              const code = observation.code.text.toLowerCase();
-              const nameParts = [observation.performer_name[0].given[0], observation.performer_name[0].family];
-              if (observation.performer_name[0].prefix) {
-                nameParts.unshift(observation.performer_name[0].prefix[0]);
-              }
-              if (observation.performer_name[0].suffix) {
-                nameParts.push(observation.performer_name[0].suffix[0]);
-              }
-              if (code.indexOf("medical") !== -1) {
-                result.observations.push({
-                  consultation_id: current.id,
-                  consultation_date: current.ci_consultation_date ? current.ci_consultation_date.dateTime : "",
-                  apparition_date: observation.effective ? observation.effective.dateTime : "",
-                  note: observation.note[0] ? observation.note[0].text : "",
-                  status: observation.status || "",
-                  performer: nameParts.join(" "),
-                  organization: observation.performer_org_name || "",
-                });
-              } else if (code.indexOf("indication") !== -1) {
-                result.indications.push({
-                  consultation_id: current.id,
-                  consultation_date: current.ci_consultation_date ? current.ci_consultation_date.dateTime : "",
-                  apparition_date: observation.effective ? observation.effective.dateTime : "",
-                  note: observation.note[0] ? observation.note[0].text : "",
-                  status: observation.status || "",
-                  performer: nameParts.join(" "),
-                  organization: observation.performer_org_name || "",
-                });
-              } else if (code.indexOf("phenotype") !== -1 && observation.phenotype) {
-                result.ontology.push({
-                  consultation_id: current.id,
-                  consultation_date: current.ci_consultation_date ? current.ci_consultation_date.dateTime : "",
-                  apparition_date: observation.effective ? observation.effective.dateTime : "",
-                  ontology: "HPO",
-                  observed: observation.observed || "",
-                  code: observation.phenotype[0] ? observation.phenotype[0].code : "",
-                  term: observation.phenotype[0] ? observation.phenotype[0].display : "",
-                });
-              }
-            }
+          break;
+        case "INDIC":
+        case "INVES":
+          result.indications.push({
+            consultation_id: observation.id,
+            consultation_date: observation.meta.lastUpdated,
+            apparition_date: "",
+            note: has(observation, "note[0].text") ? observation.note[0].text : "",
+            status: observation.status,
+            performer: "",
+            organization: organization.name || organization.id,
           });
-        }
-        return result;
-      }, JSON.parse(JSON.stringify(emptyImpressions)))
-    : emptyImpressions;
+          break;
+        case "PHENO":
+          result.ontology.push({
+            consultation_id: observation.id,
+            consultation_date: observation.meta.lastUpdated,
+            apparition_date: "",
+            ontology: "HPO",
+            observed: has(observation, "interpretation[0].coding[0].code")
+              ? observation.interpretation[0].coding[0].code
+              : "",
+            code: has(observation, "valueCodeableConcept.coding[0].code")
+              ? observation.valueCodeableConcept.coding[0].code
+              : "",
+            term: has(observation, "valueCodeableConcept.coding[0].display")
+              ? observation.valueCodeableConcept.coding[0].display
+              : "",
+          });
+          break;
+      }
+    }
+  });
+  return result;
+};
