@@ -118,6 +118,7 @@ export interface FamilyMemberHistory {
 }
 
 export interface ServiceRequest {
+  id?: string;
   resourceType: ResourceType;
   meta: Meta;
   extension: Extension[];

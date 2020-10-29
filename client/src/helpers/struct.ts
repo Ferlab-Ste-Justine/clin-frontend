@@ -8,6 +8,7 @@ import {
   Practitioner,
   Organization,
   ClinicalImpression,
+  ServiceRequest,
 } from "./fhir/types";
 
 // THIS REDUCER NEEDS TO BE REMOVED WHEN THE NEW PATIENT PAGE IS IMPLEMENTED.
@@ -97,32 +98,32 @@ export const normalizePatientOrganization = (data) => {
   return struct;
 };
 
+const formatName = (subject) => {
+  const nameParts = [subject.name[0].given[0], subject.name[0].family];
+  if (subject.name[0].prefix) {
+    nameParts.unshift(subject.name[0].prefix[0]);
+  }
+  if (subject.name[0].suffix) {
+    nameParts.push(subject.name[0].suffix[0]);
+  }
+  return nameParts.join(" ");
+};
+
 export const normalizePatientConsultations = (data) => {
   const organization = extractResource<Organization>(data, "Organization");
   const clinicalImpressions = extractResources<ClinicalImpression>(data, "ClinicalImpression");
 
   return clinicalImpressions.map((clinicalImpression) => {
+    let assessor = null;
     if (clinicalImpression.assessor != null) {
       const practitioners = extractResources<Practitioner>(data, "Practitioner");
-      const assessor = practitioners.find(
+      assessor = practitioners.find(
         (practitioner) => practitioner.id === clinicalImpression.assessor.reference.split("/")[1]
       );
-
-      let name = undefined;
-      if (assessor != null) {
-        const nameParts = [assessor.name[0].given[0], assessor.name[0].family];
-        if (assessor.name[0].prefix) {
-          nameParts.unshift(assessor.name[0].prefix[0]);
-        }
-        if (assessor.name[0].suffix) {
-          nameParts.push(assessor.name[0].suffix[0]);
-        }
-        name = nameParts.join(" ");
-      }
     }
     return {
       id: clinicalImpression.id,
-      assessor: name,
+      assessor: assessor != null ? formatName(assessor) : "",
       age: 0,
       date: clinicalImpression.date,
       organization: organization.name || organization.id,
@@ -130,31 +131,32 @@ export const normalizePatientConsultations = (data) => {
   });
 };
 
-export const normalizePatientRequests = (fhirPatient) =>
-  fhirPatient.serviceRequests
-    ? fhirPatient.serviceRequests.reduce((result, current) => {
-        const nameParts = [current.requester_name[0].given[0], current.requester_name[0].family];
-        if (current.requester_name[0].prefix) {
-          nameParts.unshift(current.requester_name[0].prefix[0]);
-        }
-        if (current.requester_name[0].suffix) {
-          nameParts.push(current.requester_name[0].suffix[0]);
-        }
-        result.push({
-          id: current.id,
-          date: current.authoredOn,
-          type: current.code ? current.code.text : "",
-          status: current.status,
-          intent: current.intent ? current.intent : "",
-          specimen: current.specimen ? current.specimen[0].id : "",
-          requester: nameParts.join(" "),
-          organization: current.requester_org_name || "",
-          consulation: current.ci_ref || "",
-        });
+export const normalizePatientRequests = (data) => {
+  const organization = extractResource<Organization>(data, "Organization");
+  const serviceRequests = extractResources<ServiceRequest>(data, "ServiceRequest");
 
-        return result;
-      }, [])
-    : [];
+  serviceRequests.map((serviceRequest) => {
+    const practitioners = extractResources<Practitioner>(data, "Practitioner");
+    let requester = null;
+    if (serviceRequest.requester != null) {
+      requester = practitioners.find(
+        (practitioner) => practitioner.id === serviceRequest.requester.reference.split("/")[1]
+      );
+    }
+
+    return {
+      id: serviceRequest.id,
+      date: serviceRequest.authoredOn,
+      type: has(serviceRequest, "code.coding[0].code") ? serviceRequest.code.coding[0].code : "",
+      status: serviceRequest.status,
+      intent: serviceRequest.intent,
+      specimen: "",
+      requester: requester != null ? formatName(requester) : "",
+      organization: organization.name || organization.id,
+      consultation: serviceRequest.extension[0].valueReference.reference,
+    };
+  });
+};
 
 export const normalizePatientSamples = (fhirPatient) =>
   fhirPatient.specimens.reduce((result, current) => {
