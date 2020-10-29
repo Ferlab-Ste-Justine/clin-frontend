@@ -400,8 +400,10 @@ export const createPatientSubmissionBundle = ({
       });
     }
 
-    // reference from ServiceRequest to ClinicalImpression resource
-    serviceRequestResource.extension.valueReference = getReference(clinicalImpressionEntry);
+    serviceRequestResource.extension[0] = {
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression',
+      valueReference: getReference(clinicalImpressionEntry),
+    };
   }
 
   const familyIdUrl = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
