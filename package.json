@@ -1,6 +1,6 @@
 {
   "name": "clin-frontend",
-  "version": "3.0.53",
+  "version": "3.0.52",
   "versionName": "Alpha Strain",
   "dependencies": {
     "@babel/core": "7.2.2",
@@ -105,6 +105,9 @@
     "webpack-dev-server": "3.1.14",
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "3.6.3"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.162"
   },
   "scripts": {
     "start": "node ./client/scripts/start.js",
