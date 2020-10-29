@@ -455,7 +455,7 @@ class PatientSubmissionScreen extends React.Component {
     if (values.analyse != null) {
       return values.analyse;
     }
-    
+
     const { localStore } = this.props;
     return localStore.serviceRequest.code;
   }
