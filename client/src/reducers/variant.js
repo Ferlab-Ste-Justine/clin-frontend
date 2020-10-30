@@ -8,7 +8,7 @@ import intl from 'react-intl-universal';
 import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
-import { normalizePatientDetails } from '../helpers/struct';
+import { normalizePatientDetails } from '../helpers/struct.ts';
 import { INSTRUCTION_TYPE_SUBQUERY } from '../components/Query/Subquery';
 import { sanitizeInstructions } from '../components/Query/helpers/query';
 
@@ -75,7 +75,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_FETCH_SUCCEEDED:
-      const details = normalizePatientDetails(action.payload.data); // eslint-disable-line no-case-declarations
+      const details = normalizePatientDetails(action.payload); // eslint-disable-line no-case-declarations
       draft.activePatient = details.id;
       draft.originalQueries = [{
         key: uuidv1(),

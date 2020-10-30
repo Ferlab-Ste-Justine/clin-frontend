@@ -15,6 +15,21 @@ import {
 // THIS REDUCER NEEDS TO BE REMOVED WHEN THE NEW PATIENT PAGE IS IMPLEMENTED.
 // INSTEAD, HANDLE ALL YOUR DATA IN THE REDUCER patient.ts.
 
+type BundleType = "Patient" | "ServiceRequest" | "ClinicalImpression";
+
+const extractBundle = (data: any, type: BundleType) => {
+  switch (type) {
+    case "Patient":
+      return data.entry[0].resource;
+    case "ServiceRequest":
+      return data.entry[1].resource;
+    case "ClinicalImpression":
+      return data.entry[2].resource;
+    default:
+      throw new Error(`Invalid bundle type ${type}`);
+  }
+};
+
 const extractResource = <T>(data: any, resourceType: ResourceType) => {
   return data.entry.find((entry) => entry.resource.resourceType === resourceType).resource as T;
 };
@@ -26,7 +41,8 @@ const extractResources = <T>(data: any, resourceType: ResourceType) => {
 };
 
 export const normalizePatientDetails = (data) => {
-  const patient = extractResource<Patient>(data, "Patient");
+  const patientBundle = extractBundle(data, "Patient");
+  const patient = extractResource<Patient>(patientBundle, "Patient");
   const ethnicity = patient.extension.find(
     (extension) => extension.url === "http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity"
   );
@@ -56,8 +72,10 @@ export const normalizePatientDetails = (data) => {
 };
 
 export const normalizePatientFamily = (data) => {
-  const patient = extractResource<Patient>(data, "Patient");
-  const fmhs = extractResources<FamilyMemberHistory>(data, "FamilyMemberHistory");
+  const patientBundle = extractBundle(data, "Patient");
+  const ciBundle = extractBundle(data, "ClinicalImpression");
+  const patient = extractResource<Patient>(patientBundle, "Patient");
+  const fmhs = extractResources<FamilyMemberHistory>(ciBundle, "FamilyMemberHistory");
   const struct: any = {};
 
   struct.id = patient.id;
@@ -76,8 +94,10 @@ export const normalizePatientStudy = (fhirPatient) => {
 };
 
 export const normalizePatientPractitioner = (data) => {
+  const patientBundle = extractBundle(data, "Patient");
+
   const struct: any = Object.assign({}, initialPatientState.practitioner);
-  const practitioner = extractResource<Practitioner>(data, "Practitioner");
+  const practitioner = extractResource<Practitioner>(patientBundle, "Practitioner");
 
   if (practitioner != null) {
     struct.id = practitioner.id;
@@ -91,7 +111,8 @@ export const normalizePatientPractitioner = (data) => {
 };
 
 export const normalizePatientOrganization = (data) => {
-  const organization = extractResource<Organization>(data, "Organization");
+  const patientBundle = extractBundle(data, "Patient");
+  const organization = extractResource<Organization>(patientBundle, "Organization");
   const struct: any = Object.assign({}, initialPatientState.organization);
 
   if (organization != null) {
@@ -114,17 +135,15 @@ const formatName = (subject) => {
 };
 
 export const normalizePatientConsultations = (data) => {
-  const organization = extractResource<Organization>(data, "Organization");
-  const clinicalImpressions = extractResources<ClinicalImpression>(data, "ClinicalImpression");
+  const patientBundle = extractBundle(data, "Patient");
+  const ciBundle = extractBundle(data, "ClinicalImpression");
+
+  const organization = extractResource<Organization>(patientBundle, "Organization");
+  const clinicalImpressions = extractResources<ClinicalImpression>(ciBundle, "ClinicalImpression");
 
   return clinicalImpressions.map((clinicalImpression) => {
-    let assessor = null;
-    if (clinicalImpression.assessor != null) {
-      const practitioners = extractResources<Practitioner>(data, "Practitioner");
-      assessor = practitioners.find(
-        (practitioner) => practitioner.id === clinicalImpression.assessor.reference.split("/")[1]
-      );
-    }
+    const assessor = extractResource<Practitioner>(ciBundle, "Practitioner");
+
     return {
       id: clinicalImpression.id,
       assessor: assessor != null ? formatName(assessor) : "",
@@ -136,17 +155,14 @@ export const normalizePatientConsultations = (data) => {
 };
 
 export const normalizePatientRequests = (data) => {
-  const organization = extractResource<Organization>(data, "Organization");
-  const serviceRequests = extractResources<ServiceRequest>(data, "ServiceRequest");
+  const patientBundle = extractBundle(data, "Patient");
+  const serviceRequestBundle = extractBundle(data, "ServiceRequest");
+
+  const organization = extractResource<Organization>(patientBundle, "Organization");
+  const serviceRequests = extractResources<ServiceRequest>(serviceRequestBundle, "ServiceRequest");
 
   serviceRequests.map((serviceRequest) => {
-    const practitioners = extractResources<Practitioner>(data, "Practitioner");
-    let requester = null;
-    if (serviceRequest.requester != null) {
-      requester = practitioners.find(
-        (practitioner) => practitioner.id === serviceRequest.requester.reference.split("/")[1]
-      );
-    }
+    const requester = extractResource<Practitioner>(serviceRequestBundle, "Practitioner");
 
     return {
       id: serviceRequest.id,
@@ -171,9 +187,12 @@ const emptyImpressions = {
   history: [],
 };
 export const normalizePatientImpressions = (data) => {
-  const familyMemberHistories = extractResources<FamilyMemberHistory>(data, "FamilyMemberHistory");
-  const observations = extractResources<Observation>(data, "Observation");
-  const organization = extractResource<Organization>(data, "Organization");
+  const patientBundle = extractBundle(data, "Patient");
+  const ciBundle = extractBundle(data, "ClinicalImpression");
+
+  const familyMemberHistories = extractResources<FamilyMemberHistory>(ciBundle, "FamilyMemberHistory");
+  const observations = extractResources<Observation>(ciBundle, "Observation");
+  const organization = extractResource<Organization>(patientBundle, "Organization");
 
   const result: any = {
     history: [],
