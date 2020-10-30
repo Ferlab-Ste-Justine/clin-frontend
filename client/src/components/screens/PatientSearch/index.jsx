@@ -67,6 +67,19 @@ class PatientSearchScreen extends React.Component {
     ];
     this.columnPreset = [
       {
+        key: 'status',
+        label: 'screen.patientsearch.table.status',
+        renderer: createCellRenderer('dot', this.getData, {
+          key: 'status',
+          renderer: (value) => {
+            if (value === 'completed') {
+              return '#52c41a';
+            } return '#ffa812';
+          },
+        }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
         key: 'patientId',
         label: 'screen.patientsearch.table.patientId',
         renderer: createCellRenderer('button', this.getData, {
@@ -94,21 +107,15 @@ class PatientSearchScreen extends React.Component {
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
+        key: 'gender',
+        label: 'screen.patientsearch.table.gender',
+        renderer: createCellRenderer('text', this.getData, { key: 'gender' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
         key: 'dob',
         label: 'screen.patientsearch.table.dob',
         renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
-      },
-      {
-        key: 'familyComposition',
-        label: 'screen.patientsearch.table.familyComposition',
-        renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
-      },
-      {
-        key: 'position',
-        label: 'screen.patientsearch.table.position',
-        renderer: createCellRenderer('text', this.getData, { key: 'proband' }),
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
@@ -124,16 +131,9 @@ class PatientSearchScreen extends React.Component {
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
-        key: 'status',
-        label: 'screen.patientsearch.table.status',
-        renderer: createCellRenderer('dot', this.getData, {
-          key: 'status',
-          renderer: (value) => {
-            if (value === 'completed') {
-              return '#52c41a';
-            } return '#ffa812';
-          },
-        }),
+        key: 'test',
+        label: 'screen.patientsearch.table.test',
+        renderer: createCellRenderer('text', this.getData, { key: 'test' }),
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
     ];
@@ -156,12 +156,14 @@ class PatientSearchScreen extends React.Component {
           organization: result.organization.name,
           firstName: result.details.firstName,
           lastName: result.details.lastName,
+          gender: result.details.gender,
           birthDate: result.details.birthDate,
           familyId: result.family.id,
           familyComposition: result.family.composition || '',
           proband: result.details.proband,
           practitioner: result.practitioner.name,
           request: (lastRequest ? lastRequest.id : ''),
+          test: lastRequest.type,
         };
       });
 
