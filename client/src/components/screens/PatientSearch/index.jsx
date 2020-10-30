@@ -67,6 +67,19 @@ class PatientSearchScreen extends React.Component {
     ];
     this.columnPreset = [
       {
+        key: 'status',
+        label: 'screen.patientsearch.table.status',
+        renderer: createCellRenderer('dot', this.getData, {
+          key: 'status',
+          renderer: (value) => {
+            if (value === 'completed') {
+              return '#52c41a';
+            } return '#ffa812';
+          },
+        }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
         key: 'patientId',
         label: 'screen.patientsearch.table.patientId',
         renderer: createCellRenderer('button', this.getData, {
@@ -94,46 +107,81 @@ class PatientSearchScreen extends React.Component {
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
+        key: 'gender',
+        label: 'screen.patientsearch.table.gender',
+        renderer: createCellRenderer('text', this.getData, { key: 'gender' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
         key: 'dob',
         label: 'screen.patientsearch.table.dob',
         renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
-      },
-      {
-        key: 'familyComposition',
-        label: 'screen.patientsearch.table.familyComposition',
-        renderer: createCellRenderer('text', this.getData, { key: 'familyComposition' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
-      },
-      {
-        key: 'position',
-        label: 'screen.patientsearch.table.position',
-        renderer: createCellRenderer('text', this.getData, { key: 'proband' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
+        columnWidth: COLUMN_WIDTHS.DEFAULT + 10,
       },
       {
         key: 'practitioner',
         label: 'screen.patientsearch.table.practitioner',
         renderer: createCellRenderer('text', this.getData, { key: 'practitioner' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT + 30,
+      },
+      {
+        key: 'test',
+        label: 'screen.patientsearch.table.test',
+        renderer: createCellRenderer('text', this.getData, { key: 'test' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'prescription',
+        label: 'screen.patientsearch.table.prescription',
+        renderer: createCellRenderer('text', this.getData, { key: 'prescription' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'mrn',
+        label: 'screen.patientsearch.table.mrn',
+        renderer: createCellRenderer('text', this.getData, { key: 'mrn' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'ramq',
+        label: 'screen.patientsearch.table.ramq',
+        renderer: createCellRenderer('text', this.getData, { key: 'ramq' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'position',
+        label: 'screen.patientsearch.table.position',
+        renderer: createCellRenderer('text', this.getData, { key: 'position' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'familyId',
+        label: 'screen.patientsearch.table.familyId',
+        renderer: createCellRenderer('text', this.getData, { key: 'familyId' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'familyType',
+        label: 'screen.patientsearch.table.familyType',
+        renderer: createCellRenderer('text', this.getData, { key: 'familyType' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'ethnicity',
+        label: 'screen.patientsearch.table.ethnicity',
+        renderer: createCellRenderer('text', this.getData, { key: 'ethnicity' }),
+        columnWidth: COLUMN_WIDTHS.DEFAULT,
+      },
+      {
+        key: 'bloodRelationship',
+        label: 'screen.patientsearch.table.bloodRelationship',
+        renderer: createCellRenderer('text', this.getData, { key: 'bloodRelationship' }),
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'request',
         label: 'screen.patientsearch.table.request',
         renderer: createCellRenderer('text', this.getData, { key: 'request' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
-      },
-      {
-        key: 'status',
-        label: 'screen.patientsearch.table.status',
-        renderer: createCellRenderer('dot', this.getData, {
-          key: 'status',
-          renderer: (value) => {
-            if (value === 'completed') {
-              return '#52c41a';
-            } return '#ffa812';
-          },
-        }),
         columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
     ];
@@ -153,15 +201,23 @@ class PatientSearchScreen extends React.Component {
           status: (lastRequest ? lastRequest.status : ''),
           id: result.details.id,
           mrn: result.details.mrn,
+          ramq: result.details.ramq,
           organization: result.organization.name,
           firstName: result.details.firstName,
           lastName: result.details.lastName,
+          gender: result.details.gender,
           birthDate: result.details.birthDate,
           familyId: result.family.id,
           familyComposition: result.family.composition || '',
+          familyType: result.family.composition || '',
+          ethnicity: result.details.ethnicity,
+          bloodRelationship: result.details.bloodRelationship ? intl.get('screen.patientsearch.yes') : intl.get('screen.patientsearch.no'),
           proband: result.details.proband,
+          position: result.details.proband ? 'Proband' : 'Pas proband',
           practitioner: result.practitioner.name,
           request: (lastRequest ? lastRequest.id : ''),
+          test: lastRequest.type,
+          prescription: lastRequest.date.substring(0, 10),
         };
       });
 
@@ -358,6 +414,19 @@ class PatientSearchScreen extends React.Component {
       ),
     }));
 
+    const defaultVisibleColumns = [
+      'screen.patientsearch.table.status',
+      'screen.patientsearch.table.patientId',
+      'screen.patientsearch.table.organization',
+      'screen.patientsearch.table.lastName',
+      'screen.patientsearch.table.firstName',
+      'screen.patientsearch.table.gender',
+      'screen.patientsearch.table.dob',
+      'screen.patientsearch.table.practitioner',
+      'screen.patientsearch.table.test',
+      'screen.patientsearch.table.prescription',
+    ];
+
     return (
       <Content>
         <Header />
@@ -466,6 +535,7 @@ class PatientSearchScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
+                  defaultVisibleColumns={defaultVisibleColumns}
                   schema={this.columnPreset}
                   columnWidth={this.columnPreset.map(c => c.columnWidth)}
                   pageChangeCallback={this.handlePageChange}
