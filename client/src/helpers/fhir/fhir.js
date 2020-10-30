@@ -297,6 +297,34 @@ export const createPractitionerResource = ({
   }
 );
 
+export const createGetPatientDataBundle = id => (
+  {
+    resourceType: 'Bundle',
+    id: 'bundle-request-patient-data',
+    type: 'batch',
+    entry: [
+      {
+        request: {
+          method: 'GET',
+          url: `Patient?_id=${id}&_include=Patient:general-practitioner&_include=Patient:organization`,
+        },
+      },
+      {
+        request: {
+          method: 'GET',
+          url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester`,
+        },
+      },
+      {
+        request: {
+          method: 'GET',
+          url: `/ClinicalImpression?patient=${id}&_include=ClinicalImpression:assessor&_include=ClinicalImpression:investigation`,
+        },
+      },
+    ],
+  }
+);
+
 // TODO: Observations, Family relationships and Practitioner have been converted to resources already in the PatientSubmission form.
 // patient, serviceRequest and clinicalImpression are not converted to FHIR resources yet at this point.
 // They're converted in this method for now but this should be done in the patientSubmission form so that this method only has to create

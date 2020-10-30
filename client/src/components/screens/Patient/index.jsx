@@ -364,15 +364,15 @@ class PatientScreen extends React.Component {
                           value: patient.details.id,
                         },
                         { label: ramq, value: 'ROYL 12345 455' },
-                        { label: mrn, value: '4352661' },
+                        { label: mrn, value: patient.details.mrn },
                         { label: organization, value: 'CHU Sainte-Justine' },
-                        { label: dateOfBirth, value: ' 2018-12-04' },
-                        { label: genderTitle, value: 'Féminin' },
-                        { label: ethnicity, value: 'Canadien Francais' },
-                        { label: consanguinity, value: 'non' },
+                        { label: dateOfBirth, value: patient.details.birthDate },
+                        { label: genderTitle, value: patient.details.gender },
+                        { label: ethnicity, value: patient.details.ethnicity },
+                        { label: consanguinity, value: patient.details.bloodRelationship },
                         { label: family, value: '[FA452622]' },
                         { label: familyType, value: familyTypeTag },
-                        { label: proband, value: 'Proband' },
+                        { label: proband, value: patient.details.proband ? 'Proband' : ' - ' },
                       ]}
                       locale={{
                         emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
@@ -498,7 +498,6 @@ const mapStateToProps = state => ({
   app: state.app,
   router: state.router,
   patient: state.patient,
-  search: state.search,
 });
 
 export default connect(

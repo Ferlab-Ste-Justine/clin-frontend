@@ -2,6 +2,9 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
+// THIS REDUCER NEEDS TO BE REMOVED WHEN THE NEW PATIENT PAGE IS IMPLEMENTED.
+// INSTEAD, USE THE NEW @link reducers/patient.ts.
+
 import * as actions from '../actions/type';
 import {
   normalizePatientConsultations,
@@ -10,7 +13,7 @@ import {
   normalizePatientOrganization,
   normalizePatientPractitioner, normalizePatientRequests, normalizePatientSamples,
   normalizePatientStudy,
-} from '../helpers/struct';
+} from '../helpers/struct.ts';
 
 
 export const initialPatientState = {
@@ -69,15 +72,15 @@ const patientReducer = (state = Object.assign({}, initialPatientState), action) 
       break;
 
     case actions.PATIENT_FETCH_SUCCEEDED:
-      draft.details = normalizePatientDetails(action.payload.data);
-      draft.family = normalizePatientFamily(action.payload.data);
-      draft.organization = normalizePatientOrganization(action.payload.data);
-      draft.practitioner = normalizePatientPractitioner(action.payload.data);
-      draft.study = normalizePatientStudy(action.payload.data);
-      draft.consultations = normalizePatientConsultations(action.payload.data);
-      draft.requests = normalizePatientRequests(action.payload.data);
-      draft.samples = normalizePatientSamples(action.payload.data);
-      const impressions = normalizePatientImpressions(action.payload.data); // eslint-disable-line no-case-declarations
+      draft.details = normalizePatientDetails(action.payload);
+      draft.family = normalizePatientFamily(action.payload);
+      draft.organization = normalizePatientOrganization(action.payload);
+      draft.practitioner = normalizePatientPractitioner(action.payload);
+      draft.study = normalizePatientStudy(action.payload);
+      draft.consultations = normalizePatientConsultations(action.payload);
+      draft.requests = normalizePatientRequests(action.payload);
+      draft.samples = normalizePatientSamples(action.payload);
+      const impressions = normalizePatientImpressions(action.payload); // eslint-disable-line no-case-declarations
       draft.observations = impressions.observations;
       draft.ontology = impressions.ontology;
       draft.indications = impressions.indications;
