@@ -8,7 +8,32 @@ const getPatientById = uid => Http.secureClinAxios.get(`${window.CLIN.patientSer
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientDataById = async id => Http.secureClinAxios.get(`${window.CLIN.fhirBaseUrl}/Bundle?patient=${id}`)
+const getPatientDataById = async id => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+  {
+    resourceType: 'Bundle',
+    id: 'bundle-request-patient-data',
+    type: 'batch',
+    entry: [
+      {
+        request: {
+          method: 'GET',
+          url: `Patient?_id=${id}&_include=Patient:general-practitioner&_include=Patient:organization`,
+        },
+      },
+      {
+        request: {
+          method: 'GET',
+          url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester`,
+        },
+      },
+      {
+        request: {
+          method: 'GET',
+          url: `/ClinicalImpression?patient=${id}&_include=ClinicalImpression:assessor&_include=ClinicalImpression:investigation`,
+        },
+      },
+    ],
+  })
   .then(successCallback)
   .catch(errorCallback);
 
