@@ -414,6 +414,19 @@ class PatientSearchScreen extends React.Component {
       ),
     }));
 
+    const defaultVisibleColumns = [
+      'screen.patientsearch.table.status',
+      'screen.patientsearch.table.patientId',
+      'screen.patientsearch.table.organization',
+      'screen.patientsearch.table.lastName',
+      'screen.patientsearch.table.firstName',
+      'screen.patientsearch.table.gender',
+      'screen.patientsearch.table.dob',
+      'screen.patientsearch.table.practitioner',
+      'screen.patientsearch.table.test',
+      'screen.patientsearch.table.prescription',
+    ];
+
     return (
       <Content>
         <Header />
@@ -522,18 +535,7 @@ class PatientSearchScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
-                  defaultVisibleColumns={[
-                    'screen.patientsearch.table.status',
-                    'screen.patientsearch.table.patientId',
-                    'screen.patientsearch.table.organization',
-                    'screen.patientsearch.table.lastName',
-                    'screen.patientsearch.table.firstName',
-                    'screen.patientsearch.table.gender',
-                    'screen.patientsearch.table.dob',
-                    'screen.patientsearch.table.practitioner',
-                    'screen.patientsearch.table.test',
-                    'screen.patientsearch.table.prescription',
-                  ]}
+                  defaultVisibleColumns={defaultVisibleColumns}
                   schema={this.columnPreset}
                   columnWidth={this.columnPreset.map(c => c.columnWidth)}
                   pageChangeCallback={this.handlePageChange}
