@@ -1,5 +1,5 @@
 import Http from './http-client';
-import { createPatientSubmissionBundle } from './fhir/fhir';
+import { createPatientSubmissionBundle, createGetPatientDataBundle } from './fhir/fhir';
 
 const successCallback = payload => ({ payload });
 const errorCallback = error => ({ error });
@@ -8,32 +8,8 @@ const getPatientById = uid => Http.secureClinAxios.get(`${window.CLIN.patientSer
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientDataById = async id => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
-  {
-    resourceType: 'Bundle',
-    id: 'bundle-request-patient-data',
-    type: 'batch',
-    entry: [
-      {
-        request: {
-          method: 'GET',
-          url: `Patient?_id=${id}&_include=Patient:general-practitioner&_include=Patient:organization`,
-        },
-      },
-      {
-        request: {
-          method: 'GET',
-          url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester`,
-        },
-      },
-      {
-        request: {
-          method: 'GET',
-          url: `/ClinicalImpression?patient=${id}&_include=ClinicalImpression:assessor&_include=ClinicalImpression:investigation`,
-        },
-      },
-    ],
-  })
+const getPatientDataById = id => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+  createGetPatientDataBundle(id))
   .then(successCallback)
   .catch(errorCallback);
 
