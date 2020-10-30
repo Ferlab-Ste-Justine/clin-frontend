@@ -107,7 +107,7 @@ class InteractiveTable extends React.Component {
 
       this.setState({
         visibleColumns,
-        matchingColumns: cloneDeep(visibleColumns),
+        matchingColumns: cloneDeep(orderedColumns.map(column => column.label)),
         searchValue: '',
       });
     }
