@@ -146,6 +146,9 @@ class InteractiveTable extends React.Component {
   }
 
   handleColumnsSelected(selection) {
+    const { columnsUpdated } = this.props;
+    columnsUpdated(selection);
+
     if (this.isSelectable()) {
       const { visibleColumns, matchingColumns, orderedColumns } = this.state;
       const uncheckedColumns = matchingColumns.filter(name => !selection.includes(name));
@@ -394,6 +397,7 @@ InteractiveTable.propTypes = {
   pageChangeCallback: PropTypes.func,
   pageSizeChangeCallback: PropTypes.func,
   getData: PropTypes.func,
+  columnsUpdated: PropTypes.func,
   rowHeights: PropTypes.array,
 };
 
@@ -413,6 +417,7 @@ InteractiveTable.defaultProps = {
   pageChangeCallback: () => {},
   pageSizeChangeCallback: () => {},
   getData: () => {},
+  columnsUpdated: () => {},
   rowHeights: null,
 };
 
