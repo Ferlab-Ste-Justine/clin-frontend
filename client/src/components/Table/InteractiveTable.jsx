@@ -130,7 +130,6 @@ class InteractiveTable extends React.Component {
     if (this.isSelectable()) {
       const { defaultVisibleColumns } = this.props;
       const orderedColumns = this.getOrderedColumns();
-      console.log(orderedColumns);
       const visibleColumns = defaultVisibleColumns.length > 0 ? defaultVisibleColumns : orderedColumns.map(column => column.label);
 
       this.setState({
