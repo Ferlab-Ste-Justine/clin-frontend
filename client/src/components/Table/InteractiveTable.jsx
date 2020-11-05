@@ -47,13 +47,34 @@ class InteractiveTable extends React.Component {
     this.isExportable = this.isExportable.bind(this);
     this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
     this.handleCreateReport = this.handleCreateReport.bind(this);
+    this.getOrderedColumns = this.getOrderedColumns.bind(this);
 
     // @NOTE Initialize Component State
-    this.state.orderedColumns = cloneDeep(props.schema);
+
+    if (props.defaultColumnsOrder != null) {
+      this.state.orderedColumns = cloneDeep(props.defaultColumnsOrder);
+    } else {
+      this.state.orderedColumns = cloneDeep(props.schema);
+    }
   }
 
   componentDidMount() {
     this.handleResetColumnSelector();
+  }
+
+  getOrderedColumns() {
+    const { orderedColumns } = this.state;
+    const { schema } = this.props;
+    const output = cloneDeep(orderedColumns);
+    schema.forEach((column) => {
+      const ordered = orderedColumns.find(o => o.label === column.label);
+      if (ordered == null) {
+        output.push(cloneDeep(column));
+      } else {
+        ordered.renderer = column.renderer;
+      }
+    });
+    return output;
   }
 
   isSelectable() {
@@ -102,12 +123,12 @@ class InteractiveTable extends React.Component {
   handleResetColumnSelector() {
     if (this.isSelectable()) {
       const { defaultVisibleColumns } = this.props;
-      const { orderedColumns } = this.state;
+      const orderedColumns = this.getOrderedColumns();
       const visibleColumns = defaultVisibleColumns.length > 0 ? defaultVisibleColumns : orderedColumns.map(column => column.label);
 
       this.setState({
         visibleColumns,
-        matchingColumns: cloneDeep(orderedColumns.map(column => column.label)),
+        matchingColumns: orderedColumns.map(column => column.label),
         searchValue: '',
       });
     }
@@ -128,10 +149,14 @@ class InteractiveTable extends React.Component {
   }
 
   handleColumnsReordered(reorderedColumns) {
+    const { columnsOrderUpdated } = this.props;
+    columnsOrderUpdated(reorderedColumns);
+
     if (this.isReorderable()) {
       this.setState({
         orderedColumns: reorderedColumns,
       });
+      this.handleResetColumnSelector();
     }
   }
 
@@ -398,10 +423,13 @@ InteractiveTable.propTypes = {
   pageSizeChangeCallback: PropTypes.func,
   getData: PropTypes.func,
   columnsUpdated: PropTypes.func,
+  columnsOrderUpdated: PropTypes.func,
   rowHeights: PropTypes.array,
+  defaultColumnsOrder: PropTypes.array,
 };
 
 InteractiveTable.defaultProps = {
+  defaultColumnsOrder: null,
   defaultVisibleColumns: [],
   isLoading: false,
   isReorderable: true,
@@ -418,6 +446,7 @@ InteractiveTable.defaultProps = {
   pageSizeChangeCallback: () => {},
   getData: () => {},
   columnsUpdated: () => {},
+  columnsOrderUpdated: () => {},
   rowHeights: null,
 };
 

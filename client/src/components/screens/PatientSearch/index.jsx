@@ -26,7 +26,7 @@ import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
-import { updateUserColumns } from '../../../actions/user';
+import { updateUserColumns, updateUserColumnsOrder } from '../../../actions/user';
 import { appShape } from '../../../reducers/app';
 
 const COLUMN_WIDTHS = {
@@ -58,6 +58,7 @@ class PatientSearchScreen extends React.Component {
     this.handleCategoriesOpenChange = this.handleCategoriesOpenChange.bind(this);
     this.handleGotoSubmissionPage = this.handleGotoSubmissionPage.bind(this);
     this.handleColumnsUpdated = this.handleColumnsUpdated.bind(this);
+    this.handleColumnsOrderUpdated = this.handleColumnsOrderUpdated.bind(this);
 
     // @NOTE Initialize Component State
     this.state.facet = [
@@ -305,6 +306,13 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
+  handleColumnsOrderUpdated(columns) {
+    if (columns != null) {
+      const { actions } = this.props;
+      actions.updateUserColumnsOrder(columns);
+    }
+  }
+
   handlePageSizeChange(size) {
     const { actions, search } = this.props;
     const { page } = this.state;
@@ -387,7 +395,9 @@ class PatientSearchScreen extends React.Component {
   }
 
   render() {
-    const { app, search, defaultColumns } = this.props;
+    const {
+      app, search, defaultColumns, defaultColumnsOrder,
+    } = this.props;
     const { patient } = search;
     const { total } = patient;
     const { showSubloadingAnimation } = app;
@@ -533,6 +543,7 @@ class PatientSearchScreen extends React.Component {
                   page={page}
                   total={total}
                   defaultVisibleColumns={defaultColumns}
+                  defaultColumnsOrder={defaultColumnsOrder}
                   schema={this.columnPreset}
                   columnWidth={this.columnPreset.map(c => c.columnWidth)}
                   pageChangeCallback={this.handlePageChange}
@@ -542,6 +553,7 @@ class PatientSearchScreen extends React.Component {
                   isLoading={showSubloadingAnimation}
                   rowHeights={rowHeights}
                   columnsUpdated={this.handleColumnsUpdated}
+                  columnsOrderUpdated={this.handleColumnsOrderUpdated}
                 />
                 )}
               </Card>
@@ -558,7 +570,8 @@ PatientSearchScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
-  defaultColumns: PropTypes.array.isRequired,
+  defaultColumns: PropTypes.array,
+  defaultColumnsOrder: PropTypes.array,
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -569,6 +582,7 @@ const mapDispatchToProps = dispatch => ({
     searchPatientsByQuery,
     autoCompletePatientsSelected,
     updateUserColumns,
+    updateUserColumnsOrder,
   }, dispatch),
 });
 
@@ -576,7 +590,14 @@ const mapStateToProps = state => ({
   app: state.app,
   search: state.search,
   defaultColumns: state.user.columns,
+  defaultColumnsOrder: state.user.columnsOrder,
 });
+
+
+PatientSearchScreen.defaultProps = {
+  defaultColumns: null,
+  defaultColumnsOrder: null,
+};
 
 export default connect(
   mapStateToProps,
