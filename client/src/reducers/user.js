@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
 import * as actions from '../actions/type';
+import { LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultColumns } from '../helpers/search_table_helper';
 
 
 export const initialUserState = {
@@ -14,6 +15,7 @@ export const initialUserState = {
     patientTableConfig: {},
     variantTableConfig: {},
   },
+  columns: null,
 };
 
 export const userShape = {
@@ -26,6 +28,21 @@ export const userShape = {
     patientTableConfig: PropTypes.shape({}),
     variantTableConfig: PropTypes.shape({}),
   }),
+  columns: PropTypes.array,
+};
+
+const retrieveColumns = () => {
+  const columnsItem = window.localStorage.getItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY);
+  if (columnsItem != null) {
+    const columns = columnsItem.split(',');
+    // Correct the item's content if invalid
+    if (columns.length > 0 && columns.filter(str => !str.startsWith('screen.patientsearch.table.')).length > 0) {
+      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultColumns.join(','));
+      return defaultColumns;
+    }
+    return columns;
+  }
+  return defaultColumns;
 };
 
 const userReducer = (state = Object.assign({}, initialUserState), action) => produce(state, (draft) => {
@@ -35,6 +52,9 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
       draft.username = null;
       break;
 
+    case actions.USER_PROFILE_REQUESTED:
+      draft.columns = retrieveColumns();
+      break;
     case actions.USER_IDENTITY_SUCCEEDED:
       draft.username = action.payload.username;
       draft.firstName = action.payload.firstName;
@@ -54,6 +74,10 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
       draft.profile.variantTableConfig = JSON.parse(action.payload.data.variantTableConfig);
       break;
 
+    case actions.USER_PROFILE_UPDATE_COLUMNS:
+      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, action.payload.columns.join(','));
+      draft.columns = action.payload.columns;
+      break;
     default:
       break;
   }
