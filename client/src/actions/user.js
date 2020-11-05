@@ -24,3 +24,10 @@ export const updateUserColumns = columns => ({
     columns,
   },
 });
+
+export const updateUserColumnsOrder = columnsOrder => ({
+  type: actions.USER_PROFILE_UPDATE_COLUMNS_ORDER,
+  payload: {
+    columnsOrder,
+  },
+});

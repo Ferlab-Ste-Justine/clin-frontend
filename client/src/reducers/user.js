@@ -2,7 +2,12 @@ import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
 import * as actions from '../actions/type';
-import { LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultColumns } from '../helpers/search_table_helper';
+import {
+  LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY,
+  LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY,
+  defaultColumns,
+  defaultColumnsOrder,
+} from '../helpers/search_table_helper';
 
 
 export const initialUserState = {
@@ -16,6 +21,7 @@ export const initialUserState = {
     variantTableConfig: {},
   },
   columns: null,
+  columnsOrder: null,
 };
 
 export const userShape = {
@@ -45,6 +51,15 @@ const retrieveColumns = () => {
   return defaultColumns;
 };
 
+const retrieveColumnsOrder = () => {
+  const columnsOrder = window.localStorage.getItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY);
+  try {
+    return JSON.parse(columnsOrder);
+  } catch (e) {
+    return defaultColumnsOrder;
+  }
+};
+
 const userReducer = (state = Object.assign({}, initialUserState), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
@@ -54,6 +69,7 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
 
     case actions.USER_PROFILE_REQUESTED:
       draft.columns = retrieveColumns();
+      draft.columnsOrder = retrieveColumnsOrder();
       break;
     case actions.USER_IDENTITY_SUCCEEDED:
       draft.username = action.payload.username;
@@ -77,6 +93,11 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
     case actions.USER_PROFILE_UPDATE_COLUMNS:
       window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, action.payload.columns.join(','));
       draft.columns = action.payload.columns;
+      break;
+
+    case actions.USER_PROFILE_UPDATE_COLUMNS_ORDER:
+      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY, JSON.stringify(action.payload.columnsOrder));
+      draft.columnsOrder = action.payload.columnsOrder;
       break;
     default:
       break;
