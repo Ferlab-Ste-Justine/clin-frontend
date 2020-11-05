@@ -17,3 +17,10 @@ export const updateUserProfile = (id, defaultStatement, patientTableConfig, vari
     variantTableConfig,
   },
 });
+
+export const updateUserColumns = columns => ({
+  type: actions.USER_PROFILE_UPDATE_COLUMNS,
+  payload: {
+    columns,
+  },
+});
