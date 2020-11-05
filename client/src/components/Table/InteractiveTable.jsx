@@ -48,6 +48,7 @@ class InteractiveTable extends React.Component {
     this.handleColumnsVisible = this.handleColumnsVisible.bind(this);
     this.handleCreateReport = this.handleCreateReport.bind(this);
     this.getOrderedColumns = this.getOrderedColumns.bind(this);
+    this.handleResetClick = this.handleResetClick.bind(this);
 
     // @NOTE Initialize Component State
 
@@ -65,13 +66,18 @@ class InteractiveTable extends React.Component {
   getOrderedColumns() {
     const { orderedColumns } = this.state;
     const { schema } = this.props;
-    const output = cloneDeep(orderedColumns);
+    const output = [];
+
+    orderedColumns.forEach((ordered) => {
+      const column = schema.find(c => c.label === ordered.label);
+      if (column != null) {
+        output.push(column);
+      }
+    });
     schema.forEach((column) => {
       const ordered = orderedColumns.find(o => o.label === column.label);
       if (ordered == null) {
-        output.push(cloneDeep(column));
-      } else {
-        ordered.renderer = column.renderer;
+        output.push(column);
       }
     });
     return output;
@@ -124,19 +130,30 @@ class InteractiveTable extends React.Component {
     if (this.isSelectable()) {
       const { defaultVisibleColumns } = this.props;
       const orderedColumns = this.getOrderedColumns();
+      console.log(orderedColumns);
       const visibleColumns = defaultVisibleColumns.length > 0 ? defaultVisibleColumns : orderedColumns.map(column => column.label);
 
       this.setState({
         visibleColumns,
         matchingColumns: orderedColumns.map(column => column.label),
         searchValue: '',
+        orderedColumns,
       });
+    }
+  }
+
+  handleResetClick() {
+    const { columnsReset } = this.props;
+    if (columnsReset != null) {
+      columnsReset();
+    } else {
+      this.handleResetColumnSelector();
     }
   }
 
   handleSearchColumnByQuery(e) {
     if (this.isSelectable()) {
-      const { orderedColumns } = this.state;
+      const orderedColumns = this.getOrderedColumns();
       const query = e.target.value.toLowerCase();
       const columnMatches = orderedColumns.filter(column => intl.get(column.label).toLowerCase()
         .startsWith(query));
@@ -152,9 +169,20 @@ class InteractiveTable extends React.Component {
     const { columnsOrderUpdated } = this.props;
     columnsOrderUpdated(reorderedColumns);
 
+    const { schema } = this.props;
+    const orderedColumns = cloneDeep(reorderedColumns);
+    schema.forEach((column) => {
+      let ordered = orderedColumns.find(o => o.label === column.label);
+      if (ordered == null) {
+        ordered = cloneDeep(column);
+        orderedColumns.push(ordered);
+      }
+      ordered.renderer = column.renderer;
+    });
+
     if (this.isReorderable()) {
       this.setState({
-        orderedColumns: reorderedColumns,
+        orderedColumns,
       });
       this.handleResetColumnSelector();
     }
@@ -175,7 +203,8 @@ class InteractiveTable extends React.Component {
     columnsUpdated(selection);
 
     if (this.isSelectable()) {
-      const { visibleColumns, matchingColumns, orderedColumns } = this.state;
+      const { visibleColumns, matchingColumns } = this.state;
+      const orderedColumns = this.getOrderedColumns();
       const uncheckedColumns = matchingColumns.filter(name => !selection.includes(name));
       const toRemove = filter(visibleColumns, column => uncheckedColumns.includes(column));
       pullAll(visibleColumns, toRemove);
@@ -300,7 +329,7 @@ class InteractiveTable extends React.Component {
       >
         { !isEqual(orderedColumns.map(column => column.label), visibleColumns) && (
           <Row>
-            <a onClick={this.handleResetColumnSelector}> { /* eslint-disable-line */ }
+            <a onClick={this.handleResetClick}> { /* eslint-disable-line */ }
               {intl.get('components.table.action.reset')} <IconKit size={16} icon={ic_replay} /> { /* eslint-disable-line */ }
             </a>
           </Row>
@@ -424,6 +453,7 @@ InteractiveTable.propTypes = {
   getData: PropTypes.func,
   columnsUpdated: PropTypes.func,
   columnsOrderUpdated: PropTypes.func,
+  columnsReset: PropTypes.func,
   rowHeights: PropTypes.array,
   defaultColumnsOrder: PropTypes.array,
 };
@@ -446,7 +476,8 @@ InteractiveTable.defaultProps = {
   pageSizeChangeCallback: () => {},
   getData: () => {},
   columnsUpdated: () => {},
-  columnsOrderUpdated: () => {},
+  columnsOrderUpdated: null,
+  columnsReset: () => {},
   rowHeights: null,
 };
 

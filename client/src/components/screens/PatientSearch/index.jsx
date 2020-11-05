@@ -26,7 +26,7 @@ import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
-import { updateUserColumns, updateUserColumnsOrder } from '../../../actions/user';
+import { updateUserColumns, updateUserColumnsOrder, updateUserColumnsReset } from '../../../actions/user';
 import { appShape } from '../../../reducers/app';
 
 const COLUMN_WIDTHS = {
@@ -59,6 +59,7 @@ class PatientSearchScreen extends React.Component {
     this.handleGotoSubmissionPage = this.handleGotoSubmissionPage.bind(this);
     this.handleColumnsUpdated = this.handleColumnsUpdated.bind(this);
     this.handleColumnsOrderUpdated = this.handleColumnsOrderUpdated.bind(this);
+    this.handleColumnsReset = this.handleColumnsReset.bind(this);
 
     // @NOTE Initialize Component State
     this.state.facet = [
@@ -313,6 +314,12 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
+  handleColumnsReset() {
+    const { actions } = this.props;
+    actions.updateUserColumnsReset();
+    window.location.reload();
+  }
+
   handlePageSizeChange(size) {
     const { actions, search } = this.props;
     const { page } = this.state;
@@ -554,6 +561,7 @@ class PatientSearchScreen extends React.Component {
                   rowHeights={rowHeights}
                   columnsUpdated={this.handleColumnsUpdated}
                   columnsOrderUpdated={this.handleColumnsOrderUpdated}
+                  columnsReset={this.handleColumnsReset}
                 />
                 )}
               </Card>
@@ -583,6 +591,7 @@ const mapDispatchToProps = dispatch => ({
     autoCompletePatientsSelected,
     updateUserColumns,
     updateUserColumnsOrder,
+    updateUserColumnsReset,
   }, dispatch),
 });
 

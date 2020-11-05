@@ -31,3 +31,7 @@ export const updateUserColumnsOrder = columnsOrder => ({
     columnsOrder,
   },
 });
+
+export const updateUserColumnsReset = () => ({
+  type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET,
+});

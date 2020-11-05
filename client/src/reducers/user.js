@@ -99,6 +99,13 @@ const userReducer = (state = Object.assign({}, initialUserState), action) => pro
       window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY, JSON.stringify(action.payload.columnsOrder));
       draft.columnsOrder = action.payload.columnsOrder;
       break;
+
+    case actions.USER_PROFILE_UPDATE_COLUMNS_RESET:
+      window.localStorage.removeItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY);
+      window.localStorage.removeItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY);
+      draft.columns = retrieveColumns();
+      draft.columnsOrder = retrieveColumnsOrder();
+      break;
     default:
       break;
   }
