@@ -17,3 +17,21 @@ export const updateUserProfile = (id, defaultStatement, patientTableConfig, vari
     variantTableConfig,
   },
 });
+
+export const updateUserColumns = columns => ({
+  type: actions.USER_PROFILE_UPDATE_COLUMNS,
+  payload: {
+    columns,
+  },
+});
+
+export const updateUserColumnsOrder = columnsOrder => ({
+  type: actions.USER_PROFILE_UPDATE_COLUMNS_ORDER,
+  payload: {
+    columnsOrder,
+  },
+});
+
+export const updateUserColumnsReset = () => ({
+  type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET,
+});
