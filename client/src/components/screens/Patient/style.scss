@@ -48,6 +48,9 @@
             flex-direction: column;
             .title{
                 color: $gray-7;
+                font-size: 12px;
+                line-height: 20px;
+                font-weight: 500;
             }
 
             .view{
