@@ -8,6 +8,7 @@
 }
 
 .generalInfo{
+    margin-bottom: 24px;
     .nameBlock{
         width: 240px;
         text-align: center;
@@ -79,6 +80,42 @@
 
     }
 }
+
+.prescription{
+    margin-bottom: 24px;
+    table{
+        border-bottom: 1px solid $gray-4 !important;
+    }
+}
+
+.practitionerInfo{
+    width: 350px;
+    .ant-popover-inner-content{
+        padding: 0;
+    }
+    .ant-card-head{
+        padding: 8px 16px;
+        height: auto;
+        min-height: auto;
+        .ant-card-head-title{
+            font-size: 14px;
+            padding: 0;
+        }
+    }
+    .ant-card-body{
+        padding: 12px 16px;
+        p{
+            margin: 0;
+        }
+        .popOverName{
+            font-weight: 500;
+        }
+    }
+
+
+}
+
+
 .ant-tabs-nav-scroll{
 background-color: #fff;
 }
