@@ -136,7 +136,7 @@ const fr = {
   'screen.patient.header.familyHistory': 'Histoire familiale',
   'screen.patient.header.generalInformation': 'Informations générales',
   'screen.patient.header.familyMembers': 'Membres de la famille',
-  'screen.patient.tab.patient': 'Informations du patient',
+  'screen.patient.tab.patient': 'Patient',
   'screen.patient.tab.clinical': 'Informations cliniques',
   'screen.patientsearch.yes': 'Oui',
   'screen.patientsearch.no': 'Non',

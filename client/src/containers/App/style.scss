@@ -693,3 +693,13 @@ div.ant-card {
 .ant-collapse-content-box{
   padding: 24px !important;
 }
+//Tag
+[class="ant-tag"] {
+  border: 1px solid $gray-4;
+  padding:0 8px ;
+}
+
+//ICON
+.customIcon{
+  display: flex;
+}

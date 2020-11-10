@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Empty, Tag, Badge, Card, List, Collapse, Popover, Icon,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Collapse, Popover, Icon, Divider,
 } from 'antd';
 import {
   find,
@@ -16,9 +16,8 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_info, ic_visibility, ic_visibility_off, ic_help,
+  ic_person, ic_assignment, ic_info, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar,
 } from 'react-icons-kit/md';
-import { mars } from 'react-icons-kit/fa/mars';
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
@@ -271,11 +270,9 @@ class PatientScreen extends React.Component {
     const mrn = intl.get('screen.patient.details.mrn');
     const ramq = intl.get('screen.patient.details.ramq');
     const dateOfBirth = intl.get('screen.patient.details.dob');
-    const organization = intl.get('screen.patient.details.organization');
     const genderTitle = intl.get('screen.patient.details.gender');
     const ethnicity = intl.get('screen.patient.details.ethnicity');
     const consanguinity = intl.get('screen.patient.details.consanguinity');
-    const proband = intl.get('screen.patient.details.proband');
     /*     const mother = intl.get('screen.patient.details.mother');
     const father = intl.get('screen.patient.details.father');
     const additionalInformation = intl.get('screen.patient.header.additionalInformation'); */
@@ -285,36 +282,24 @@ class PatientScreen extends React.Component {
     const familyType = intl.get('screen.patient.details.familyType');
 
     const { Panel } = Collapse;
+    const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
-    const name = `${patient.details.lastName}, ${patient.details.firstName} `;
-
-
-    const getFamilyTypeIcon = () => {
-      if (patient.family.composition === 'trio') {
-        return (
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11 6C12.6569 6 14 4.65685 14 3C14 1.34315 12.6569 0 11 0C9.34315 0 8 1.34315 8 3C8 4.65685 9.34315 6 11 6Z" fill="#13C2C2" />
-            <path d="M3 6C4.65685 6 6 4.65685 6 3C6 1.34315 4.65685 0 3 0C1.34315 0 0 1.34315 0 3C0 4.65685 1.34315 6 3 6Z" fill="#13C2C2" />
-            <path d="M7 14C8.65685 14 10 12.6569 10 11C10 9.34315 8.65685 8 7 8C5.34315 8 4 9.34315 4 11C4 12.6569 5.34315 14 7 14Z" fill="#13C2C2" />
-          </svg>
-        );
-      }
-      if (patient.family.composition === 'duo') {
-        return (
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7 6C8.65685 6 10 4.65685 10 3C10 1.34315 8.65685 0 7 0C5.34315 0 4 1.34315 4 3C4 4.65685 5.34315 6 7 6Z" fill="#13C2C2" />
-            <path d="M7 14C8.65685 14 10 12.6569 10 11C10 9.34315 8.65685 8 7 8C5.34315 8 4 9.34315 4 11C4 12.6569 5.34315 14 7 14Z" fill="#13C2C2" />
-          </svg>
-        );
-      }
-
-      return (
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7 10C8.65685 10 10 8.65685 10 7C10 5.34315 8.65685 4 7 4C5.34315 4 4 5.34315 4 7C4 8.65685 5.34315 10 7 10Z" fill="#13C2C2" />
+    // ICON GENDER
+    const maleIcon = (
+      <i className="customIcon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.75 6.75C7.7175 6.75 8.625 7.0575 9.3525 7.5825L13.185 3.75H9.75V2.25H15.75V8.25H14.25V4.8075L10.4175 8.625C10.9425 9.375 11.25 10.275 11.25 11.25C11.25 13.7353 9.23528 15.75 6.75 15.75C4.26472 15.75 2.25 13.7353 2.25 11.25C2.25 8.76472 4.26472 6.75 6.75 6.75ZM6.75 8.25C5.09315 8.25 3.75 9.59315 3.75 11.25C3.75 12.9069 5.09315 14.25 6.75 14.25C8.40685 14.25 9.75 12.9069 9.75 11.25C9.75 9.59315 8.40685 8.25 6.75 8.25Z" fill="#A7B4C3" />
         </svg>
-      );
-    };
-    const familyTypeTag = <Tag className="familyTypeTag">{getFamilyTypeIcon()}{patient.family.composition}</Tag>;
+      </i>
+    );
+    // eslint-disable-next-line no-unused-vars
+    const femaleIcon = (
+      <i className="customIcon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 2.25C11.4853 2.25 13.5 4.26472 13.5 6.75C13.5 8.9775 11.88 10.83 9.75 11.19V12.75H11.25V14.25H9.75V15.75H8.25V14.25H6.75V12.75H8.25V11.19C6.12 10.83 4.5 8.9775 4.5 6.75C4.5 4.26472 6.51472 2.25 9 2.25ZM9 3.75C7.34315 3.75 6 5.09315 6 6.75C6 8.40685 7.34315 9.75 9 9.75C10.6569 9.75 12 8.40685 12 6.75C12 5.09315 10.6569 3.75 9 3.75Z" fill="#A7B4C3" />
+        </svg>
+      </i>
+    );
 
     return (
       <Content type="auto">
@@ -323,15 +308,25 @@ class PatientScreen extends React.Component {
           <div className="patientPage">
             <div className="page_headerStaticNoMargin">
               <div className="headerStaticContent">
-                <Row type="flex" justify="space-between" align="middle">
+                <Row type="flex" align="middle" className="patientHeader">
                   <Col>
                     <Typography.Title level={3} className="patientName">
-                      {`${patient.details.lastName}, ${patient.details.firstName}`}
+                      ROY Léon
                     </Typography.Title>
-                    <span className="patientInfo">{patient.details.birthDate} <IconKit size={16} icon={mars} /></span>
-                    <Tag className="patientType" color="red">{patient.details.proband}</Tag>
-
                   </Col>
+                  <Col>
+                    {maleIcon}
+                  </Col>
+                  <Col>
+                    <Tag>
+                      2012-10-18
+                    </Tag>
+                  </Col>
+                  <Col>
+                    <Tag color="red">Proband</Tag>
+                  </Col>
+
+
                   <Col>
                     <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientVariantScreen}>
                       <Button type="primary">
@@ -356,40 +351,63 @@ class PatientScreen extends React.Component {
               )}
               >
                 <div className="page-static-content">
-                  <Card title="Informations générales" className="staticCard halfPageCard" bordered={false}>
-                    <List
-                      dataSource={[
-                        {
-                          label: name,
-                          value: patient.details.id,
-                        },
-                        { label: ramq, value: 'ROYL 12345 455' },
-                        { label: mrn, value: patient.details.mrn },
-                        { label: organization, value: 'CHU Sainte-Justine' },
-                        { label: dateOfBirth, value: patient.details.birthDate },
-                        { label: genderTitle, value: patient.details.gender },
-                        { label: ethnicity, value: patient.details.ethnicity },
-                        { label: consanguinity, value: patient.details.bloodRelationship },
-                        { label: family, value: '[FA452622]' },
-                        { label: familyType, value: familyTypeTag },
-                        { label: proband, value: patient.details.proband ? 'Proband' : ' - ' },
-                      ]}
-                      locale={{
-                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
-                      }}
-                      renderItem={item => (
-                        <List.Item className="listRow">
-                          <Row type="flex" justify="space-between" style={{ width: '100%' }}>
-                            <Col className="rowTitle">
-                              <Typography.Text>{item.label}</Typography.Text>
-                            </Col>
-                            <Col className="rowValue">
-                              <Typography.Text>{item.value}</Typography.Text>
-                            </Col>
+                  <Card bordered={false} className="generalInfo">
+                    <Row type="flex">
+                      <Col>
+                        <Card className="nameBlock">
+                          <Row align="middle" justify="center">
+                            <IconKit size={56} icon={ic_perm_contact_calendar} />
+                            <Col><Typography.Title level={3} className="patientName">Roy</Typography.Title></Col>
+                            <Col><Typography.Title level={4} className="patientName">Leon</Typography.Title></Col>
+                            <Col><Tag color="red">Proband</Tag></Col>
                           </Row>
-                        </List.Item>
-                      )}
-                    />
+                        </Card>
+                      </Col>
+                      <Col className="content">
+                        <Row type="flex">
+                          <Col className="grid">
+                            <div className="row">
+                              <span className="title">{ramq}</span>
+                              <span className="info">ROYL 12345 455</span>
+                            </div>
+                            <div className="row">
+                              <span className="title">{genderTitle}</span>
+                              <span className="info">Masculin</span>
+                            </div>
+                            <div className="row">
+                              <span className="title">{mrn}</span>
+                              <span className="info mrn">123456 | CHUM</span>
+                              {/*                               <span className="info mrn">156987 | CHUSJ</span>
+                              <span className="info mrn">789654 | HGM</span>
+                              <span className="view">Voir moins</span> */}
+                            </div>
+                            <div className="row">
+                              <span className="title">{dateOfBirth}</span>
+                              <span className="info">2012-10-18</span>
+                            </div>
+                          </Col>
+                          <Divider type="vertical" />
+                          <Col className="grid">
+                            <div className="row">
+                              <span className="title">{ethnicity}</span>
+                              <span className="info">Canadien Français</span>
+                            </div>
+                            <div className="row">
+                              <span className="title">{family}</span>
+                              <span className="info"><Button type="link">FA45622</Button></span>
+                            </div>
+                            <div className="row">
+                              <span className="title">{consanguinity}</span>
+                              <span className="info">Non</span>
+                            </div>
+                            <div className="row">
+                              <span className="title">{familyType}</span>
+                              <span className="info">{familyTypeTag}</span>
+                            </div>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
                   </Card>
                   <Row>
                     <Card title="Requête" className="staticCard" bordered={false}>
