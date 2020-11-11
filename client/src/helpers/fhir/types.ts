@@ -130,6 +130,7 @@ export interface ServiceRequest {
   priority: string;
   code?: CodeableConcept;
   requester?: Reference;
+  performer?: Reference[];
   subject: Reference;
 }
 
@@ -177,4 +178,15 @@ export interface Organization {
   name: string;
   alias: string[];
   type: CodeableConcept[];
+}
+
+export interface PractitionerRole {
+  resourceType: ResourceType;
+  id: string;
+  meta: Meta;
+  active: boolean;
+  practitioner: Reference;
+  organization: Reference;
+  telecom: Telecom[];
+  code: CodeableConcept[];
 }
