@@ -39,8 +39,6 @@ export class DataExtractor {
     if (this.data.practitionersData.entry == null) {
       return null;
     }
-    console.log(id);
-    console.log(this.data.practitionersData);
     for (let i = 0; i < this.data.practitionersData.entry.length; i++) {
       if (this.data.practitionersData.entry[i].resource.entry == null) {
         continue;
@@ -48,7 +46,6 @@ export class DataExtractor {
 
       if (has(this.data.practitionersData.entry[i], "resource.entry[0]")) {
         const resource = this.data.practitionersData.entry[i].resource.entry[0].resource;
-        console.log(resource);
         if (resource.practitioner.reference.indexOf(id) !== -1) {
           return {
             role: resource,

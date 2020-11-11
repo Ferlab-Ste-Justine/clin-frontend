@@ -75,7 +75,7 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
       break;
 
     case actions.PATIENT_FETCH_SUCCEEDED:
-      const details = normalizePatientDetails(action.payload); // eslint-disable-line no-case-declarations
+      const details = normalizePatientDetails(action.payload.patientData); // eslint-disable-line no-case-declarations
       draft.activePatient = details.id;
       draft.originalQueries = [{
         key: uuidv1(),

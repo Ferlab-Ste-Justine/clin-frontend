@@ -42,7 +42,7 @@ function* navigateToPatientScreen(action) {
 
     // @NOTE Only fetch patient if it is not the currently active one
     const { details } = yield select(state => state.patient);
-    if (uid !== details.id) {
+    if (details == null || uid !== details.id) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
         payload: { uid },
