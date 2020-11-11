@@ -11,6 +11,7 @@ import {
 } from 'antd';
 import {
   find,
+  get,
 } from 'lodash';
 
 
@@ -21,7 +22,6 @@ import {
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
-import { patientShape } from '../../../reducers/patient';
 import { appShape } from '../../../reducers/app';
 import {
   navigateToPatientScreen, navigateToPatientVariantScreen,
@@ -117,16 +117,16 @@ class PatientScreen extends React.Component {
   }
 
   getRequest() {
-    // eslint-disable-next-line no-unused-vars
-    const { patient } = this.props;
-    const requests = [{
-      status: 'Incomplète',
-      date: '2020-06-05',
-      requester: 'Fadi HAMDAN PhD',
-      practitioner: 'MICHAUD Jacques ',
+    const { prescriptions } = this.props;
+
+    const requests = prescriptions.map(prescription => ({
+      status: prescription.status,
+      date: prescription.date,
+      requester: get(prescription, 'requester.name', 'N/A'),
+      practitioner: get(prescription, 'performer.name', 'N/A'),
       organization: 'LDx CHU Ste-Justine',
-      test: 'WXS',
-    }];
+      test: prescription.test,
+    }));
     if (requests) {
       return requests.map((r) => {
         const getStatusColor = (status) => {
@@ -325,7 +325,7 @@ class PatientScreen extends React.Component {
 
   handleTabNavigation(tab) {
     const { actions, patient } = this.props;
-    actions.navigateToPatientScreen(patient.details.id, tab);
+    actions.navigateToPatientScreen(patient.id, tab);
   }
 
   render() {
@@ -375,193 +375,196 @@ class PatientScreen extends React.Component {
       <Content type="auto">
         <Header />
         <Spin spinning={showSubloadingAnimation}>
-          <div className="patientPage">
-            <div className="page_headerStaticNoMargin">
-              <div className="headerStaticContent">
-                <Row type="flex" align="middle" className="patientHeader">
-                  <Col>
-                    <Typography.Title level={3} className="patientName">
-                      ROY Léon
-                    </Typography.Title>
-                  </Col>
-                  <Col>
-                    {maleIcon}
-                  </Col>
-                  <Col>
-                    <Tag>
-                      2012-10-18
-                    </Tag>
-                  </Col>
-                  <Col>
-                    <Tag color="red">Proband</Tag>
-                  </Col>
+          {patient != null
+           && (
+           <div className="patientPage">
+             <div className="page_headerStaticNoMargin">
+               <div className="headerStaticContent">
+                 <Row type="flex" align="middle" className="patientHeader">
+                   <Col>
+                     <Typography.Title level={3} className="patientName">
+                       {patient.lastName} {patient.firstName}
+                     </Typography.Title>
+                   </Col>
+                   <Col>
+                     {maleIcon}
+                   </Col>
+                   <Col>
+                     <Tag>
+                     2012-10-18
+                     </Tag>
+                   </Col>
+                   <Col>
+                     <Tag color="red">{patient.proband}</Tag>
+                   </Col>
 
 
-                  <Col>
-                    <a href="#" data-patient-id={patient.details.id} onClick={this.handleNavigationToPatientVariantScreen}>
-                      <Button type="primary">
-                  Variant Interpreter
-                      </Button>
-                    </a>
-                  </Col>
-                </Row>
+                   <Col>
+                     <a href="#" data-patient-id={patient.id} onClick={this.handleNavigationToPatientVariantScreen}>
+                       <Button type="primary">
+                 Variant Interpreter
+                       </Button>
+                     </a>
+                   </Col>
+                 </Row>
 
 
-              </div>
-            </div>
-            <Tabs key={patient.details.id} onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
-              <Tabs.TabPane
-                key="personal"
-                style={{ height: '100%' }}
-                tab={(
-                  <span className="tabName">
-                    <IconKit size={18} icon={ic_person} />
-                    {patientTab}
-                  </span>
-              )}
-              >
-                <div className="page-static-content">
-                  <Card bordered={false} className="generalInfo">
-                    <Row type="flex">
-                      <Col>
-                        <Card className="nameBlock">
-                          <Row align="middle" justify="center">
-                            <IconKit size={56} icon={ic_perm_contact_calendar} />
-                            <Col><Typography.Title level={3} className="patientName">Roy</Typography.Title></Col>
-                            <Col><Typography.Title level={4} className="patientName">Leon</Typography.Title></Col>
-                            <Col><Tag color="red">Proband</Tag></Col>
-                          </Row>
-                        </Card>
-                      </Col>
-                      <Col className="content">
-                        <Row type="flex">
-                          <Col className="grid">
-                            <div className="row">
-                              <span className="title">{ramq}</span>
-                              <span className="info">ROYL 12345 455</span>
-                            </div>
-                            <div className="row">
-                              <span className="title">{genderTitle}</span>
-                              <span className="info">Masculin</span>
-                            </div>
-                            <div className="row">
-                              <span className="title">{mrn}</span>
-                              <span className="info mrn">123456 | CHUM</span>
-                              {/*                               <span className="info mrn">156987 | CHUSJ</span>
-                              <span className="info mrn">789654 | HGM</span>
-                              <span className="view">Voir moins</span> */}
-                            </div>
-                            <div className="row">
-                              <span className="title">{dateOfBirth}</span>
-                              <span className="info">2012-10-18</span>
-                            </div>
-                          </Col>
-                          <Divider type="vertical" />
-                          <Col className="grid">
-                            <div className="row">
-                              <span className="title">{ethnicity}</span>
-                              <span className="info">Canadien Français</span>
-                            </div>
-                            <div className="row">
-                              <span className="title">{family}</span>
-                              <span className="info"><Button type="link">FA45622</Button></span>
-                            </div>
-                            <div className="row">
-                              <span className="title">{consanguinity}</span>
-                              <span className="info">Non</span>
-                            </div>
-                            <div className="row">
-                              <span className="title">{familyType}</span>
-                              <span className="info">{familyTypeTag}</span>
-                            </div>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                  </Card>
-                  <Row>
-                    <Card bordered={false} className="prescription">
-                      <Card title="Prescriptions" bordered={false}>
-                        <Table
-                          pagination={false}
-                          columns={requestColumnPreset.map(
-                            columnPresetToColumn,
-                          )}
-                          dataSource={this.getRequest()}
-                          size="small"
-                        />
-                      </Card>
+               </div>
+             </div>
+             <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
+               <Tabs.TabPane
+                 key="personal"
+                 style={{ height: '100%' }}
+                 tab={(
+                   <span className="tabName">
+                     <IconKit size={18} icon={ic_person} />
+                     {patientTab}
+                   </span>
+             )}
+               >
+                 <div className="page-static-content">
+                   <Card bordered={false} className="generalInfo">
+                     <Row type="flex">
+                       <Col>
+                         <Card className="nameBlock">
+                           <Row align="middle" justify="center">
+                             <IconKit size={56} icon={ic_perm_contact_calendar} />
+                             <Col><Typography.Title level={3} className="patientName">{patient.lastName}</Typography.Title></Col>
+                             <Col><Typography.Title level={4} className="patientName">{patient.firstName}</Typography.Title></Col>
+                             <Col><Tag color="red">{patient.proband}</Tag></Col>
+                           </Row>
+                         </Card>
+                       </Col>
+                       <Col className="content">
+                         <Row type="flex">
+                           <Col className="grid">
+                             <div className="row">
+                               <span className="title">{ramq}</span>
+                               <span className="info">{patient.ramq}</span>
+                             </div>
+                             <div className="row">
+                               <span className="title">{genderTitle}</span>
+                               <span className="info">{patient.gender}</span>
+                             </div>
+                             <div className="row">
+                               <span className="title">{mrn}</span>
+                               <span className="info mrn">{patient.mrn} | {patient.organization}</span>
+                               {/*                               <span className="info mrn">156987 | CHUSJ</span>
+                             <span className="info mrn">789654 | HGM</span>
+                             <span className="view">Voir moins</span> */}
+                             </div>
+                             <div className="row">
+                               <span className="title">{dateOfBirth}</span>
+                               <span className="info">{patient.birthDate}</span>
+                             </div>
+                           </Col>
+                           <Divider type="vertical" />
+                           <Col className="grid">
+                             <div className="row">
+                               <span className="title">{ethnicity}</span>
+                               <span className="info">{patient.ethnicity}</span>
+                             </div>
+                             <div className="row">
+                               <span className="title">{family}</span>
+                               <span className="info"><Button type="link">{patient.familyId}</Button></span>
+                             </div>
+                             <div className="row">
+                               <span className="title">{consanguinity}</span>
+                               <span className="info">{patient.bloodRelationship}</span>
+                             </div>
+                             <div className="row">
+                               <span className="title">{familyType}</span>
+                               <span className="info">{familyTypeTag}</span>
+                             </div>
+                           </Col>
+                         </Row>
+                       </Col>
+                     </Row>
+                   </Card>
+                   <Row>
+                     <Card bordered={false} className="prescription">
+                       <Card title="Prescriptions" bordered={false}>
+                         <Table
+                           pagination={false}
+                           columns={requestColumnPreset.map(
+                             columnPresetToColumn,
+                           )}
+                           dataSource={this.getRequest()}
+                           size="small"
+                         />
+                       </Card>
 
-                    </Card>
-                  </Row>
-                </div>
-              </Tabs.TabPane>
+                     </Card>
+                   </Row>
+                 </div>
+               </Tabs.TabPane>
 
-              <Tabs.TabPane
-                key="clinical"
-                tab={(
-                  <span className="tabName">
-                    <IconKit size={18} icon={ic_assignment} />
-                    {clinicalTab}
-                  </span>
-              )}
-                style={{ height: '100%' }}
-              >
-                <div className="page-static-content">
-                  <Card bordered={false} className="staticCard">
-                    <Collapse bordered={false} defaultActiveKey={['1']} expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}>
-                      <Panel header="Consultation 2020-06-05" key="1">
-                        <Card className="generalInfo" bordered={false} staticCard>
-                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                            <Col className="title">Medicin Référant</Col>
-                            <Col className="value">Dre Julie DOUCET</Col>
-                          </Row>
-                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                            <Col className="title">Age du patient</Col>
-                            <Col className="value">3 ans</Col>
-                          </Row>
-                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                            <Col className="title">CGH</Col>
-                            <Col className="value neg">Négatif</Col>
-                          </Row>
-                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                            <Col className="title">Résume de l'investigation</Col>
-                            <Col className="value">Echographie anormale a 3 mois teste neurologique realise le 2019-03-06</Col>
-                          </Row>
-                          <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                            <Col className="title">Hypothèse de diagnostique</Col>
-                            <Col className="value">Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</Col>
-                          </Row>
-                        </Card>
-                        <Card title="Histoire familiale" bordered={false} className="staticCard">
-                          <Table
-                            pagination={false}
-                            columns={familyHistoryColumnPreset.map(
-                              columnPresetToColumn,
-                            )}
-                            dataSource={this.getFamilyHistory()}
-                            size="small"
-                          />
-                        </Card>
+               <Tabs.TabPane
+                 key="clinical"
+                 tab={(
+                   <span className="tabName">
+                     <IconKit size={18} icon={ic_assignment} />
+                     {clinicalTab}
+                   </span>
+             )}
+                 style={{ height: '100%' }}
+               >
+                 <div className="page-static-content">
+                   <Card bordered={false} className="staticCard">
+                     <Collapse bordered={false} defaultActiveKey={['1']} expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}>
+                       <Panel header="Consultation 2020-06-05" key="1">
+                         <Card className="generalInfo" bordered={false} staticCard>
+                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                             <Col className="title">Medicin Référant</Col>
+                             <Col className="value">Dre Julie DOUCET</Col>
+                           </Row>
+                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                             <Col className="title">Age du patient</Col>
+                             <Col className="value">3 ans</Col>
+                           </Row>
+                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                             <Col className="title">CGH</Col>
+                             <Col className="value neg">Négatif</Col>
+                           </Row>
+                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                             <Col className="title">Résume de l'investigation</Col>
+                             <Col className="value">Echographie anormale a 3 mois teste neurologique realise le 2019-03-06</Col>
+                           </Row>
+                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
+                             <Col className="title">Hypothèse de diagnostique</Col>
+                             <Col className="value">Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</Col>
+                           </Row>
+                         </Card>
+                         <Card title="Histoire familiale" bordered={false} className="staticCard">
+                           <Table
+                             pagination={false}
+                             columns={familyHistoryColumnPreset.map(
+                               columnPresetToColumn,
+                             )}
+                             dataSource={this.getFamilyHistory()}
+                             size="small"
+                           />
+                         </Card>
 
-                        <Card title="Signes cliniques" bordered={false} className="staticCard">
-                          <Table
-                            pagination={false}
-                            columns={clinicalColumnPreset.map(
-                              columnPresetToColumn,
-                            )}
-                            dataSource={this.getClinical()}
-                            size="small"
-                          />
-                        </Card>
-                      </Panel>
-                    </Collapse>
-                  </Card>
+                         <Card title="Signes cliniques" bordered={false} className="staticCard">
+                           <Table
+                             pagination={false}
+                             columns={clinicalColumnPreset.map(
+                               columnPresetToColumn,
+                             )}
+                             dataSource={this.getClinical()}
+                             size="small"
+                           />
+                         </Card>
+                       </Panel>
+                     </Collapse>
+                   </Card>
 
-                </div>
-              </Tabs.TabPane>
-            </Tabs>
-          </div>
+                 </div>
+               </Tabs.TabPane>
+             </Tabs>
+           </div>
+           )}
           <Footer />
         </Spin>
 
@@ -573,7 +576,8 @@ class PatientScreen extends React.Component {
 PatientScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
   router: PropTypes.shape({}).isRequired,
-  patient: PropTypes.shape(patientShape).isRequired,
+  patient: PropTypes.shape({}).isRequired,
+  prescriptions: PropTypes.array.isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
 
@@ -588,7 +592,8 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   app: state.app,
   router: state.router,
-  patient: state.patient,
+  patient: state.patient.patient.parsed,
+  prescriptions: state.patient.prescriptions.map(prescription => prescription.parsed),
 });
 
 export default connect(

@@ -33,7 +33,6 @@ import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocomple
 import exportToExcel from '../../../helpers/excel/export';
 
 import { appShape } from '../../../reducers/app';
-import { patientShape } from '../../../reducers/patient';
 import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import {
@@ -1325,7 +1324,7 @@ class PatientVariantScreen extends React.Component {
 PatientVariantScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
   user: PropTypes.shape(userShape).isRequired,
-  patient: PropTypes.shape(patientShape).isRequired,
+  patient: PropTypes.shape({}).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
