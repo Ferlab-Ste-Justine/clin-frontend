@@ -199,8 +199,9 @@ export class FhirDataManager {
       }
     }
 
+    serviceRequest.requester = this.getPractitionerReference("PR00106");
     if (requesterId != null) {
-      serviceRequest.requester = this.getPractitionerReference(requesterId);
+      serviceRequest.performer = [this.getPractitionerReference(requesterId)];
     }
 
     return serviceRequest;
