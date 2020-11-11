@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Collapse, Popover, Icon, Divider,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Collapse, Popover, Icon, Divider, Menu, Dropdown,
 } from 'antd';
 import {
   find,
@@ -16,7 +16,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_info, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar,
+  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -32,7 +32,7 @@ import '../../../style/themes/antd-clin-theme.css';
 import './style.scss';
 
 const columnPresetToColumn = c => ({
-  key: c.key, title: intl.get(c.label), dataIndex: c.key,
+  key: c.key, title: c.label, dataIndex: c.key,
 });
 
 class PatientScreen extends React.Component {
@@ -54,27 +54,30 @@ class PatientScreen extends React.Component {
     this.state.requestColumnPreset = [
       {
         key: 'date',
-        label: 'screen.patient.details.date',
-      },
-      {
-        key: 'practitioner',
-        label: 'screen.patient.details.referringPractitioner',
-      },
-      {
-        key: 'organization',
-        label: 'screen.patient.details.organization',
+        label: 'Soumis le',
       },
       {
         key: 'requester',
-        label: 'screen.patient.details.createdBy',
+        label: 'Soumis par',
+      },
+      {
+        key: 'practitioner',
+        label: 'Médecin résponsable',
+      },
+      {
+        key: 'organization',
+        label: 'Hôpital',
       },
       {
         key: 'test',
-        label: 'screen.patient.details.test',
+        label: 'Test',
       },
       {
         key: 'status',
-        label: 'screen.patient.details.status',
+        label: 'Statut',
+      },
+      {
+        key: 'action',
       },
     ];
 
@@ -114,27 +117,94 @@ class PatientScreen extends React.Component {
   }
 
   getRequest() {
+    // eslint-disable-next-line no-unused-vars
     const { patient } = this.props;
-    const { requests } = patient;
+    const requests = [{
+      status: 'Incomplète',
+      date: '2020-06-05',
+      requester: 'Fadi HAMDAN PhD',
+      practitioner: 'MICHAUD Jacques ',
+      organization: 'LDx CHU Ste-Justine',
+      test: 'WXS',
+    }];
     if (requests) {
       return requests.map((r) => {
-        const status = <span><Badge className="impact" color={r.status === 'active' ? '#FA8C16' : '#52c41a'} />{r.status}</span>;
-        const practitionerPopOverText = (
-          <div>
-            <p>Dre Julie Doucet</p>
-            <p>MLN: 4425615</p>
-            <p>Hopital: CHU Sainte Justine</p>
-            <p>Tel. (514) 456-367 poste: 3542</p>
-            <p>Courriel: julie.doucet@chu-ste-justine.qc.ca</p>
-          </div>
+        const getStatusColor = (status) => {
+          switch (status) {
+            case 'draft':
+              // Gray-5
+              return '#D2DBE4';
+            case 'on-hold':
+              return '#FA8C16';
+            case 'active':
+              // blue-6
+              return '#2AABE8';
+            case 'revoked':
+              return '#F5222D';
+            case 'completed':
+              return '#52C41A';
+            default:
+              return '#EB2F96';
+          }
+        };
+        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{r.status}</span>;
+
+        const practitionerPopOverText = info => (
+          <Card title="Médecin résponsable" bordered={false}>
+            <p><span className="popOverName">{info}</span>  |  4425615</p>
+            <p>CHU Sainte Justine</p>
+            <p>(514) 456-367 poste: 3542</p>
+            <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
+          </Card>
+        );
+        const requesterPopOverText = info => (
+          <Card title="Médecin prescripteur" bordered={false}>
+            <p><span className="popOverName">{info}</span>  |  4425615</p>
+            <p>CHU Sainte Justine</p>
+            <p>(514) 456-367 poste: 3542</p>
+            <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
+          </Card>
         );
         const practitioner = (
-          <Popover placement="topRight" content={practitionerPopOverText} trigger="hover">
-            <span className="logoText">{r.requester} <Button type="link"><IconKit size={20} icon={ic_info} /></Button></span>
-          </Popover>
+          <span className="logoText">
+            {r.practitioner}
+            <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(r.practitioner)} trigger="hover">
+              <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+            </Popover>
+          </span>
+        );
+        const requester = (
+          <span className="logoText">
+            {r.requester}
+            <Popover overlayClassName="practitionerInfo" placement="topRight" content={requesterPopOverText(r.requester)} trigger="hover">
+              <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+            </Popover>
+          </span>
+        );
+
+        const menu = (
+          <Menu>
+            <Menu.Item key="0">
+                Changer le statut
+            </Menu.Item>
+            <Menu.Item key="1" disabled>
+                Voir détail
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="3" disabled>
+              Supprimer
+            </Menu.Item>
+          </Menu>
+        );
+        const action = (
+          <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
+            <Button type="link" onClick={e => e.preventDefault()}>
+              Action <IconKit size={12} icon={ic_keyboard_arrow_down} />
+            </Button>
+          </Dropdown>
         );
         return {
-          date: r.date, practitioner, organization: r.organization, requester: practitioner, test: r.type, status,
+          date: r.date, requester, organization: r.organization, practitioner, test: r.test, status, action,
         };
       });
     }
@@ -410,15 +480,18 @@ class PatientScreen extends React.Component {
                     </Row>
                   </Card>
                   <Row>
-                    <Card title="Requête" className="staticCard" bordered={false}>
-                      <Table
-                        pagination={false}
-                        columns={requestColumnPreset.map(
-                          columnPresetToColumn,
-                        )}
-                        dataSource={this.getRequest()}
-                        size="small"
-                      />
+                    <Card bordered={false} className="prescription">
+                      <Card title="Prescriptions" bordered={false}>
+                        <Table
+                          pagination={false}
+                          columns={requestColumnPreset.map(
+                            columnPresetToColumn,
+                          )}
+                          dataSource={this.getRequest()}
+                          size="small"
+                        />
+                      </Card>
+
                     </Card>
                   </Row>
                 </div>
