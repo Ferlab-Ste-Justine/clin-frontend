@@ -7,12 +7,19 @@ import Api, { ApiError } from '../helpers/api';
 
 function* fetch(action) {
   try {
-    const response = yield Api.getPatientDataById(action.payload.uid);
-    if (response.error) {
-      throw new ApiError(response.error);
+    const patientDataResponse = yield Api.getPatientDataById(action.payload.uid);
+    if (patientDataResponse.error) {
+      throw new ApiError(patientDataResponse.error);
     }
+    const practitionersDatePresponse = yield Api.getPractitionersData(patientDataResponse.payload.data);
 
-    yield put({ type: actions.PATIENT_FETCH_SUCCEEDED, payload: response.payload.data });
+    yield put({
+      type: actions.PATIENT_FETCH_SUCCEEDED,
+      payload: {
+        patientData: patientDataResponse.payload.data,
+        practitionersData: practitionersDatePresponse.payload.data,
+      },
+    });
   } catch (e) {
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
   }
