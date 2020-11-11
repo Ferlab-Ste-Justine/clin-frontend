@@ -1,5 +1,5 @@
 import Http from './http-client';
-import { createPatientSubmissionBundle, createGetPatientDataBundle } from './fhir/fhir';
+import { createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle } from './fhir/fhir';
 
 const successCallback = payload => ({ payload });
 const errorCallback = error => ({ error });
@@ -10,6 +10,11 @@ const getPatientById = uid => Http.secureClinAxios.get(`${window.CLIN.patientSer
 
 const getPatientDataById = id => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
   createGetPatientDataBundle(id))
+  .then(successCallback)
+  .catch(errorCallback);
+
+const getPractitionersData = data => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+  createGetPractitionersDataBundle(data))
   .then(successCallback)
   .catch(errorCallback);
 
@@ -193,4 +198,5 @@ export default {
   getGeneAutocomplete,
   savePatientSubmission,
   getPatientDataById,
+  getPractitionersData,
 };

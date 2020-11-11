@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
 
-import { has, isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import { FhirDataManager } from './fhir_data_manager.ts';
 import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
 
@@ -312,6 +312,12 @@ export const createGetPatientDataBundle = id => (
       {
         request: {
           method: 'GET',
+          url: `Group?member=${id}`,
+        },
+      },
+      {
+        request: {
+          method: 'GET',
           url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester`,
         },
       },
@@ -324,6 +330,35 @@ export const createGetPatientDataBundle = id => (
     ],
   }
 );
+
+export const createGetPractitionersDataBundle = (data) => {
+  const ids = [];
+  data.entry.forEach((bundle) => {
+    bundle.resource.entry.forEach((entry) => {
+      if (get(entry, 'resource.resourceType', '') === 'Practitioner' && ids.find(id => id === entry.resource.id) == null) {
+        ids.push(entry.resource.id);
+      }
+    });
+  });
+  const output = {
+    resourceType: 'Bundle',
+    id: 'bundle-request-practitioner-data',
+    type: 'batch',
+    entry: [],
+  };
+
+  ids.forEach((id) => {
+    output.entry.push(
+      {
+        request: {
+          method: 'GET',
+          url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
+        },
+      },
+    );
+  });
+  return output;
+};
 
 // TODO: Observations, Family relationships and Practitioner have been converted to resources already in the PatientSubmission form.
 // patient, serviceRequest and clinicalImpression are not converted to FHIR resources yet at this point.
@@ -362,14 +397,6 @@ export const createPatientSubmissionBundle = ({
 
   serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
   serviceRequestResource.subject = patientReference;
-
-  // We don't need to send a resource of type Practitioner
-  // We only need tocreate the reference
-  if (serviceRequest && has(serviceRequest, 'requester.resourceType')) {
-    const practitionerEntry = createEntry(serviceRequest.requester);
-    const practitionerReference = getReference(practitionerEntry);
-    serviceRequestResource.requester = practitionerReference;
-  }
 
   const serviceRequestEntry = createEntry(serviceRequestResource);
   bundle.entry.push(serviceRequestEntry);
