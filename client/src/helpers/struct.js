@@ -1,6 +1,39 @@
 /* eslint-disable import/no-cycle */
 import { find } from 'lodash';
-import { initialPatientState } from '../reducers/patient';
+
+
+const initialPatientState = {
+  details: {
+    id: null,
+    birthDate: '',
+    gender: null,
+    mrn: null,
+    ramq: null,
+    ethnicity: null,
+    proband: null,
+    firstName: '',
+    lastName: '',
+  },
+  family: {
+    id: null,
+    composition: null,
+    members: {
+      proband: null,
+      mother: null,
+      father: null,
+    },
+  },
+  practitioner: {},
+  organization: {},
+  study: {},
+  familyHistory: [],
+  consultations: [],
+  requests: [],
+  samples: [],
+  observations: [],
+  ontology: [],
+  indications: [],
+};
 
 
 export const normalizePatientDetails = (fhirPatient) => {

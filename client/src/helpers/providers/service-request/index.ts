@@ -24,12 +24,8 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       const firstName = get(practitioners, ["0", "name", "0", "given", "0"], "");
       const suffix = get(practitioners, ["0", "name", "0", "suffix", "0"], "");
 
-      console.log(practitioners);
-      console.log(get(practitioners, ["0", "id"]));
-
       const practMetadata = dataExtractor.getPractitionerMetaData(get(practitioners, ["0", "id"]));
 
-      console.log(practMetadata);
       performer = {
         name: `${prefix} ${firstName} ${lastName} ${suffix}`,
         email:

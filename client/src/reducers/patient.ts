@@ -10,7 +10,7 @@ import { ServiceRequestProvider } from "../helpers/providers/service-request/ind
 import { ParsedPatientData, Prescription } from "../helpers/providers/types";
 
 type State = {
-  patient?: Record<Patient, ParsedPatientData>;
+  patient: Record<Patient, ParsedPatientData>;
   prescriptions: Record<ServiceRequest, Prescription>[];
 };
 
@@ -19,14 +19,13 @@ type Action = {
   payload: any;
 };
 
-const reducer = (state: State = { prescriptions: [] }, action: Action) =>
+const reducer = (state: State = { patient: { parsed: { id: "" } }, prescriptions: [] }, action: Action) =>
   produce<State>(state, (draft) => {
     switch (action.type) {
-      case "PATIENT_FETCH_SUCCEEDED": {
+      case actions.PATIENT_FETCH_SUCCEEDED: {
         const providerChain = new ProviderChain(action.payload);
         providerChain.add(new PatientProvider("patient")).add(new ServiceRequestProvider("prescriptions"));
         const result = providerChain.execute();
-        console.log(result);
         draft.patient = result.patient.records[0];
         draft.prescriptions = [];
         result.prescriptions.records.forEach((prescription) => draft.prescriptions.push(prescription));

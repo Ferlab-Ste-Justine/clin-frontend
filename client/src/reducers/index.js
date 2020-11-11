@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
 
 import appReducer from './app';
-import patientReducer from './patient';
+import patientReducer from './patient.ts';
 import searchReducer from './search';
 import userReducer from './user';
 import variantReducer from './variant';
