@@ -1,8 +1,7 @@
 import { get, has } from "lodash";
 import { Practitioner, ServiceRequest } from "../../fhir/types";
 import { PractitionerData, Prescription } from "../types";
-//@ts-ignore
-import { DataExtractor } from "../extractor.ts";
+import { DataExtractor } from "../extractor";
 //@ts-ignore
 import { Provider, Record } from "../providers.ts";
 
@@ -35,7 +34,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
         hospital: "ORGANIZATION",
         phone:
           practMetadata != null && practMetadata.role != null
-            ? `${dataExtractor.extractPhone(practMetadata.role.telecom)} - ${dataExtractor.extractExtension(
+            ? `${dataExtractor.extractPhone(practMetadata.role.telecom)} - ${dataExtractor.extractPhoneExtension(
                 practMetadata.role.telecom
               )}`
             : "No phone.",
