@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Collapse, Popover, Icon, Divider, Menu, Dropdown,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown,
 } from 'antd';
 import {
   find,
@@ -32,7 +32,7 @@ import '../../../style/themes/antd-clin-theme.css';
 import './style.scss';
 
 const columnPresetToColumn = c => ({
-  key: c.key, title: c.label, dataIndex: c.key,
+  key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
 class PatientScreen extends React.Component {
@@ -54,30 +54,31 @@ class PatientScreen extends React.Component {
     this.state.requestColumnPreset = [
       {
         key: 'date',
-        label: 'Soumis le',
+        label: 'screen.patient.details.submissionDate',
       },
       {
         key: 'requester',
-        label: 'Soumis par',
+        label: 'screen.patient.details.submittedBy',
       },
       {
         key: 'practitioner',
-        label: 'Médecin résponsable',
+        label: 'screen.patient.details.practitioner',
       },
       {
         key: 'organization',
-        label: 'Hôpital',
+        label: 'screen.patient.details.organization',
       },
       {
         key: 'test',
-        label: 'Test',
+        label: 'screen.patient.details.test',
       },
       {
         key: 'status',
-        label: 'Statut',
+        label: 'screen.patient.details.status',
       },
       {
         key: 'action',
+        label: ' ',
       },
     ];
 
@@ -212,11 +213,18 @@ class PatientScreen extends React.Component {
   }
 
   getFamilyHistory() {
+    // eslint-disable-next-line no-unused-vars
     const { patient } = this.props;
-    const { familyHistory } = patient;
+    // const { familyHistory } = patient;
+    const familyHistory = [
+      {
+        note: 'Retard de développement',
+        link: 'Cousin paternel',
+      },
+    ];
     if (familyHistory) {
       return familyHistory.map(f => ({
-        link: f.note, notes: f.date,
+        link: f.link, notes: f.note,
       }));
     }
     return [];
@@ -351,7 +359,6 @@ class PatientScreen extends React.Component {
     const clinicalTab = intl.get('screen.patient.tab.clinical');
     const familyType = intl.get('screen.patient.details.familyType');
 
-    const { Panel } = Collapse;
     const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
     // ICON GENDER
@@ -369,6 +376,15 @@ class PatientScreen extends React.Component {
           <path d="M9 2.25C11.4853 2.25 13.5 4.26472 13.5 6.75C13.5 8.9775 11.88 10.83 9.75 11.19V12.75H11.25V14.25H9.75V15.75H8.25V14.25H6.75V12.75H8.25V11.19C6.12 10.83 4.5 8.9775 4.5 6.75C4.5 4.26472 6.51472 2.25 9 2.25ZM9 3.75C7.34315 3.75 6 5.09315 6 6.75C6 8.40685 7.34315 9.75 9 9.75C10.6569 9.75 12 8.40685 12 6.75C12 5.09315 10.6569 3.75 9 3.75Z" fill="#A7B4C3" />
         </svg>
       </i>
+    );
+
+    const practitionerPopOverText = info => (
+      <Card title="Médecin résponsable" bordered={false}>
+        <p><span className="popOverName">{info}</span>  |  4425615</p>
+        <p>CHU Sainte Justine</p>
+        <p>(514) 456-367 poste: 3542</p>
+        <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
+      </Card>
     );
 
     return (
