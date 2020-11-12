@@ -96,22 +96,23 @@ export class DataExtractor {
     const id = reference.split("/")[1];
     const practitioners = this.extractResources<Practitioner>(bundle, "Practitioner");
     const practitioner = practitioners.find((pract) => pract.id === id);
-
     if (practitioner == null) {
       return null;
     }
-    const practMetadata = this.getPractitionerMetaData(id);
 
+    const practMetadata = this.getPractitionerMetaData(id);
     if (practMetadata == null) {
       return null;
     }
 
     const prefix = get(practitioner, ["name", "0", "prefix", "0"], "Dr.");
-    const lastName = get(practitioner, ["name", "0", "given"], "");
+    const lastName = get(practitioner, ["name", "0", "family"], "");
     const firstName = get(practitioner, ["name", "0", "given", "0"], "");
     const suffix = get(practitioner, ["name", "0", "suffix", "0"], "");
 
     return {
+      organization: get(practMetadata.organization, "name", "N/A"),
+      mrn: get(practitioner, "identifier[0].value", "N/A"),
       name: `${prefix} ${firstName} ${lastName} ${suffix}`,
       email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : "No email.",
       hospital: "ORGANIZATION",

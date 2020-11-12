@@ -17,6 +17,8 @@ export type ParsedPatientData = {
 
 export type PractitionerData = {
   name: string;
+  mrn: string;
+  organization: string;
   hospital: string;
   phone: string;
   email: string;

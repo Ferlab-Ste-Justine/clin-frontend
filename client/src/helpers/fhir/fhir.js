@@ -318,7 +318,7 @@ export const createGetPatientDataBundle = id => (
       {
         request: {
           method: 'GET',
-          url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester`,
+          url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester&_include=ServiceRequest:performer`,
         },
       },
       {
