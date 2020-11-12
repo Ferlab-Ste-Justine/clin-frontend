@@ -1,5 +1,6 @@
 import { get, has } from "lodash";
-import { Organization, PractitionerRole, ResourceType, Telecom } from "../fhir/types";
+import { Organization, Practitioner, PractitionerRole, ResourceType, Telecom } from "../fhir/types";
+import { PractitionerData } from "./types";
 
 type BundleType = "Patient" | "ServiceRequest" | "ClinicalImpression" | "FamilyGroup";
 
@@ -81,8 +82,46 @@ export class DataExtractor {
     return get(phone, "value", "N/A");
   }
 
-  public extractExtension(telecom: Telecom[]): string {
+  public extractPhoneExtension(telecom: Telecom[]): string {
     const ext = telecom.find((tel) => tel.system === "phone" && tel.rank === 0);
     return get(ext, "value", "N/A");
+  }
+
+  public getPractitionerDataByReference(resource: any, attributeName: string, bundle: any): PractitionerData | null {
+    const reference = get(resource, `${attributeName}.reference`, null);
+    if (reference == null) {
+      return null;
+    }
+
+    const id = reference.split("/")[1];
+    const practitioners = this.extractResources<Practitioner>(bundle, "Practitioner");
+    const practitioner = practitioners.find((pract) => pract.id === id);
+    if (practitioner == null) {
+      return null;
+    }
+
+    const practMetadata = this.getPractitionerMetaData(id);
+    if (practMetadata == null) {
+      return null;
+    }
+
+    const prefix = get(practitioner, ["name", "0", "prefix", "0"], "Dr.");
+    const lastName = get(practitioner, ["name", "0", "family"], "");
+    const firstName = get(practitioner, ["name", "0", "given", "0"], "");
+    const suffix = get(practitioner, ["name", "0", "suffix", "0"], "");
+
+    return {
+      organization: get(practMetadata.organization, "name", "N/A"),
+      mrn: get(practitioner, "identifier[0].value", "N/A"),
+      name: `${prefix} ${firstName} ${lastName} ${suffix}`,
+      email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : "No email.",
+      hospital: "ORGANIZATION",
+      phone:
+        practMetadata.role != null
+          ? `${this.extractPhone(practMetadata.role.telecom)} - ${this.extractPhoneExtension(
+              practMetadata.role.telecom
+            )}`
+          : "No phone.",
+    };
   }
 }

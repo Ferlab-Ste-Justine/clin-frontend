@@ -210,14 +210,13 @@ class PatientScreen extends React.Component {
 
   getFamilyHistory() {
     // eslint-disable-next-line no-unused-vars
-    const { patient } = this.props;
+    const { fmhs } = this.props;
     // const { familyHistory } = patient;
-    const familyHistory = [
+    const familyHistory = fmhs.map(fmh => (
       {
-        note: 'Retard de développement',
-        link: 'Cousin paternel',
-      },
-    ];
+        note: fmh.note,
+        link: fmh.link,
+      }));
     if (familyHistory) {
       return familyHistory.map(f => ({
         link: f.link, notes: f.note,
@@ -244,15 +243,14 @@ class PatientScreen extends React.Component {
 
   getClinical() {
     // eslint-disable-next-line no-unused-vars
-    const { patient } = this.props;
-    const ontology = [
+    const { hpos } = this.props;
+    const ontology = hpos.map(hpo => (
       {
-        observed: 'POS',
-        term: 'Anomalie du développement prénatal ou de naissance',
-        apparition: 'Apparition pédiatrique',
-        notes: 'Donec id elit non mi porta gravida at eget metus.',
-      },
-    ];
+        observed: hpo.observations,
+        term: hpo.term,
+        apparition: hpo.ageAtOnset,
+        notes: hpo.note,
+      }));
     if (ontology) {
       return ontology.map((o) => {
         const getObservedIcon = (status) => {
@@ -340,7 +338,7 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      app, router, patient,
+      app, router, patient, consultation,
     } = this.props;
     const {
       requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset,
@@ -382,10 +380,10 @@ class PatientScreen extends React.Component {
 
     const practitionerPopOverText = info => (
       <Card title="Médecin résponsable" bordered={false}>
-        <p><span className="popOverName">{info}</span>  |  4425615</p>
-        <p>CHU Sainte Justine</p>
-        <p>(514) 456-367 poste: 3542</p>
-        <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
+        <p><span className="popOverName">{info.name}</span>  | {info.mrn}</p>
+        <p>{info.organization}</p>
+        <p>{info.phone}</p>
+        <p><a href={`mailto:${info.email}`}>{info.email}</a></p>
       </Card>
     );
 
@@ -393,7 +391,7 @@ class PatientScreen extends React.Component {
       <Content type="auto">
         <Header />
         <Spin spinning={showSubloadingAnimation}>
-          {patient != null
+          {patient != null && patient.id != null && patient.id.length > 0
            && (
            <div className="patientPage">
              <div className="page_headerStaticNoMargin">
@@ -532,14 +530,14 @@ class PatientScreen extends React.Component {
                      <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
                        <Row type="flex">
                          <Col className="title">MRN</Col>
-                         <Col className="value">123123  |  CHU Sainte-Justine</Col>
+                         <Col className="value">{patient.mrn}  |  {patient.organization}</Col>
                        </Row>
                        <Row type="flex">
                          <Col className="title">Médecin résponsable</Col>
                          <Col className="value">
                            <span className="logoText">
-                            MICHAUD Jacques
-                             <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText('MICHAUD Jacques')} trigger="hover">
+                             {consultation[0].practitioner.name}
+                             <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
                                <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
                              </Popover>
                            </span>
@@ -552,15 +550,15 @@ class PatientScreen extends React.Component {
                        <Row type="flex">
                          <Col className="title">CGH</Col>
                          {/* TODO put value in className */}
-                         <Col className="value normal">Négatif</Col>
+                         <Col className="value normal">{consultation[0].cgh}</Col>
                        </Row>
                        <Row type="flex">
                          <Col className="title">Résume de l'investigation</Col>
-                         <Col className="value">Echographie anormale a 3 mois teste neurologique realise le 2019-03-06</Col>
+                         <Col className="value">{consultation[0].summary}</Col>
                        </Row>
                        <Row type="flex">
                          <Col className="title">Hypothèse de diagnostique</Col>
-                         <Col className="value">Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</Col>
+                         <Col className="value">{consultation[0].hypothesis}</Col>
                        </Row>
                      </Card>
                      <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
@@ -604,8 +602,12 @@ PatientScreen.propTypes = {
   router: PropTypes.shape({}).isRequired,
   patient: PropTypes.shape({}).isRequired,
   prescriptions: PropTypes.array.isRequired,
+  consultation: PropTypes.array.isRequired,
+  fmhs: PropTypes.array.isRequired,
+  hpos: PropTypes.array.isRequired,
   actions: PropTypes.shape({}).isRequired,
 };
+
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators({
@@ -620,7 +622,11 @@ const mapStateToProps = state => ({
   router: state.router,
   patient: state.patient.patient.parsed,
   prescriptions: state.patient.prescriptions.map(prescription => prescription.parsed),
+  consultation: state.patient.consultation.map(cons => cons.parsed),
+  fmhs: state.patient.fmhs.map(fmh => fmh.parsed),
+  hpos: state.patient.hpos.map(hpo => hpo.parsed),
 });
+
 
 export default connect(
   mapStateToProps,
