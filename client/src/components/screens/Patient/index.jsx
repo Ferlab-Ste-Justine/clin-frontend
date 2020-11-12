@@ -526,54 +526,62 @@ class PatientScreen extends React.Component {
                  style={{ height: '100%' }}
                >
                  <div className="page-static-content">
-                   <Card bordered={false} className="staticCard">
-                     <Collapse bordered={false} defaultActiveKey={['1']} expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}>
-                       <Panel header="Consultation 2020-06-05" key="1">
-                         <Card className="generalInfo" bordered={false} staticCard>
-                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                             <Col className="title">Medicin Référant</Col>
-                             <Col className="value">Dre Julie DOUCET</Col>
-                           </Row>
-                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                             <Col className="title">Age du patient</Col>
-                             <Col className="value">3 ans</Col>
-                           </Row>
-                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                             <Col className="title">CGH</Col>
-                             <Col className="value neg">Négatif</Col>
-                           </Row>
-                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                             <Col className="title">Résume de l'investigation</Col>
-                             <Col className="value">Echographie anormale a 3 mois teste neurologique realise le 2019-03-06</Col>
-                           </Row>
-                           <Row type="flex" justify="space-between" gutter={[12, 24]}>
-                             <Col className="title">Hypothèse de diagnostique</Col>
-                             <Col className="value">Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</Col>
-                           </Row>
-                         </Card>
-                         <Card title="Histoire familiale" bordered={false} className="staticCard">
-                           <Table
-                             pagination={false}
-                             columns={familyHistoryColumnPreset.map(
-                               columnPresetToColumn,
-                             )}
-                             dataSource={this.getFamilyHistory()}
-                             size="small"
-                           />
-                         </Card>
+                   <Card bordered={false} className="staticCard clinical">
+                     <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
+                       <Row type="flex">
+                         <Col className="title">MRN</Col>
+                         <Col className="value">123123  |  CHU Sainte-Justine</Col>
+                       </Row>
+                       <Row type="flex">
+                         <Col className="title">Médecin résponsable</Col>
+                         <Col className="value">
+                           <span className="logoText">
+                            MICHAUD Jacques
+                             <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText('MICHAUD Jacques')} trigger="hover">
+                               <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+                             </Popover>
+                           </span>
+                         </Col>
+                       </Row>
+                       <Row type="flex">
+                         <Col className="title">Age du patient</Col>
+                         <Col className="value">3 ans</Col>
+                       </Row>
+                       <Row type="flex">
+                         <Col className="title">CGH</Col>
+                         {/* TODO put value in className */}
+                         <Col className="value abnormal">Négatif</Col>
+                       </Row>
+                       <Row type="flex">
+                         <Col className="title">Résume de l'investigation</Col>
+                         <Col className="value">Echographie anormale a 3 mois teste neurologique realise le 2019-03-06</Col>
+                       </Row>
+                       <Row type="flex">
+                         <Col className="title">Hypothèse de diagnostique</Col>
+                         <Col className="value">Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Nullam id dolor id nibh ultricies vehicula ut id elit. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Donec sed odio dui. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</Col>
+                       </Row>
+                     </Card>
+                     <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
+                       <Table
+                         pagination={false}
+                         columns={familyHistoryColumnPreset.map(
+                           columnPresetToColumn,
+                         )}
+                         dataSource={this.getFamilyHistory()}
+                         size="small"
+                       />
+                     </Card>
+                     <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
+                       <Table
+                         pagination={false}
+                         columns={clinicalColumnPreset.map(
+                           columnPresetToColumn,
+                         )}
+                         dataSource={this.getClinical()}
+                         size="small"
+                       />
+                     </Card>
 
-                         <Card title="Signes cliniques" bordered={false} className="staticCard">
-                           <Table
-                             pagination={false}
-                             columns={clinicalColumnPreset.map(
-                               columnPresetToColumn,
-                             )}
-                             dataSource={this.getClinical()}
-                             size="small"
-                           />
-                         </Card>
-                       </Panel>
-                     </Collapse>
                    </Card>
 
                  </div>
