@@ -388,7 +388,6 @@ class PatientScreen extends React.Component {
         <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
       </Card>
     );
-    console.log('patient', patient);
 
     return (
       <Content type="auto">
