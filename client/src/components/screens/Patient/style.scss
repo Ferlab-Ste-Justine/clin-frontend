@@ -162,18 +162,35 @@
         color: $red-6;
     }
 
-
-    .familyHistory{
-        table{
-            border-bottom: 1px solid $gray-4 !important;
-        }
-        .ant-table-body{
-            margin: 0 !important;
-        }
+    .ant-table-body{
+        margin: 0 !important;
+    }
+    table{
+        border-bottom: 1px solid $gray-4 !important;
         th{
             color: $gray-8;
+        }
+    }
+
+    .familyHistory{
+        th{
             &:first-child{
                 width: 200px !important;
+            }
+        }
+    }
+
+    .clinicalSign{
+        th{
+            &:first-child{
+                width: 70px !important;
+                text-align: center;
+            }
+        }
+
+        td{
+            &:first-child{
+                text-align: center;
             }
         }
     }

@@ -99,10 +99,6 @@ class PatientScreen extends React.Component {
         label: 'screen.patient.details.observed',
       },
       {
-        key: 'category',
-        label: 'screen.patient.details.category',
-      },
-      {
         key: 'term',
         label: 'screen.patient.details.term',
       },
@@ -247,9 +243,16 @@ class PatientScreen extends React.Component {
   }
 
   getClinical() {
+    // eslint-disable-next-line no-unused-vars
     const { patient } = this.props;
-    const { ontology } = patient;
-
+    const ontology = [
+      {
+        observed: 'POS',
+        term: 'Anomalie du développement prénatal ou de naissance',
+        apparition: 'Apparition pédiatrique',
+        notes: 'Donec id elit non mi porta gravida at eget metus.',
+      },
+    ];
     if (ontology) {
       return ontology.map((o) => {
         const getObservedIcon = (status) => {
@@ -263,10 +266,9 @@ class PatientScreen extends React.Component {
           return (<IconKit className="unknownIcon icon" size={16} icon={ic_help} />);
         };
         const observed = getObservedIcon(o.observed);
-        const note = o.note ? o.note : '--';
-        const dateA = o.apparition_date.split('T');
+        const note = o.notes ? o.notes : '--';
         return {
-          observed, category: o.term, term: o.term, apparition: dateA[0], notes: note,
+          observed, term: o.term, apparition: o.apparition, notes: note,
         };
       });
     }
@@ -386,6 +388,7 @@ class PatientScreen extends React.Component {
         <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
       </Card>
     );
+    console.log('patient', patient);
 
     return (
       <Content type="auto">
@@ -550,7 +553,7 @@ class PatientScreen extends React.Component {
                        <Row type="flex">
                          <Col className="title">CGH</Col>
                          {/* TODO put value in className */}
-                         <Col className="value abnormal">Négatif</Col>
+                         <Col className="value normal">Négatif</Col>
                        </Row>
                        <Row type="flex">
                          <Col className="title">Résume de l'investigation</Col>
