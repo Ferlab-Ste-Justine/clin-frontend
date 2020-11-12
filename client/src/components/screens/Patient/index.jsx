@@ -22,6 +22,7 @@ import {
 import Header from '../../Header';
 import Content from '../../Content';
 import Footer from '../../Footer';
+import PatientVariantScreen from '../PatientVariant';
 import { appShape } from '../../../reducers/app';
 import {
   navigateToPatientScreen, navigateToPatientVariantScreen,
@@ -585,6 +586,17 @@ class PatientScreen extends React.Component {
                    </Card>
 
                  </div>
+               </Tabs.TabPane>
+               <Tabs.TabPane
+                 key="variant"
+                 tab={(
+                   <span className="tabName">
+                     <IconKit size={18} icon={ic_assignment} />
+                     Variant
+                   </span>
+                 )}
+               >
+                 <PatientVariantScreen />
                </Tabs.TabPane>
              </Tabs>
            </div>
