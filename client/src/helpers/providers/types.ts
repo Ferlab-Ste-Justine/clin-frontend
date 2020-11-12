@@ -30,4 +30,23 @@ export type Prescription = {
   status: string;
 };
 
+export type ClinicalObservation = {
+  observed: "NEG" | "POS" | "IND";
+  term: string;
+  ageAtOnset: string;
+  note: string;
+};
+
+export type FamilyObservation = {
+  link: string;
+  note: string;
+};
+
+export type ConsultationSummary = {
+  practitioner: PractitionerData;
+  cgh: string;
+  summary: string;
+  hypothesis: string;
+};
+
 export type PositionType = "proband" | "parent";
