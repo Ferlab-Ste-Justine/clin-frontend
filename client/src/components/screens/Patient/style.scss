@@ -86,6 +86,20 @@
     table{
         border-bottom: 1px solid $gray-4 !important;
     }
+    //logo
+    .logoText{
+        display: flex;
+        align-items: center;
+        width: fit-content;
+        i{
+            height: 16px;
+            margin-top: 2px;
+            svg{
+                vertical-align: top !important;
+            }
+        }
+    
+  }
 }
 
 .practitionerInfo{
@@ -115,18 +129,59 @@
 
 }
 
+.clinical{
+    .ant-row-flex{
+        flex-wrap: nowrap;
+        &:not(:last-of-type){
+            margin-bottom: 12px;
+        }
+        
+    }
+    .title{
+        color: $gray-7;
+        min-width: 200px;
+        margin-right: 16px;
+    }
+    .value{
+        button{
+            height: 22px;
+            i{
+                height: 16px;
+                
+                svg{
+                    vertical-align: sub !important;
+                }
+            }
+        }
+
+    }
+    .normal{
+        color: $green-7;
+    }
+    .abnormal{
+        color: $red-6;
+    }
+
+
+    .familyHistory{
+        table{
+            border-bottom: 1px solid $gray-4 !important;
+        }
+        .ant-table-body{
+            margin: 0 !important;
+        }
+        th{
+            color: $gray-8;
+            &:first-child{
+                width: 200px !important;
+            }
+        }
+    }
+}
+
 
 .ant-tabs-nav-scroll{
 background-color: #fff;
-}
-
-.tierPageCard{
-max-width: 480px;
-}
-
-   .datalistHeader{
-    margin-bottom: 0;
-    line-height: 28px;
 }
 
 .observedIcon{
