@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import * as actions from '../actions/type';
 import {
-  normalizePatientDetails, normalizePatientFamily,
-  normalizePatientOrganization,
-  normalizePatientPractitioner, normalizePatientRequests,
-  normalizePatientStudy,
+  normalizePatientDetails,
 } from '../helpers/struct';
 
 
@@ -55,17 +52,7 @@ const searchReducer = (state = Object.assign({}, initialSearchState), action) =>
 
     case actions.PATIENT_SEARCH_SUCCEEDED:
       draft.patient.total = action.payload.data.data.total;
-      draft.patient.results = action.payload.data.data.hits.map((hit) => {
-        const patient = {
-          details: normalizePatientDetails(hit._source),
-          family: normalizePatientFamily(hit._source),
-          practitioner: normalizePatientPractitioner(hit._source),
-          organization: normalizePatientOrganization(hit._source),
-          study: normalizePatientStudy(hit._source),
-          requests: normalizePatientRequests(hit._source),
-        };
-        return patient;
-      });
+      draft.patient.results = action.payload.data.data.hits.map(hit => hit._source);
       break;
 
     case actions.PATIENT_SEARCH_REQUESTED:

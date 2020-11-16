@@ -162,13 +162,13 @@ function* selectStatement(action) {
 }
 
 function* refreshCount() {
-  const { details } = yield select(state => state.patient);
+  const { patient } = yield select(state => state.patient);
   const { draftQueries } = yield select(state => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_COUNT_REQUESTED,
     payload: {
-      patient: details.id,
+      patient: patient.parsed.id,
       statement: draftQueries,
       queries: draftQueries.map(query => query.key),
     },
@@ -176,13 +176,13 @@ function* refreshCount() {
 }
 
 function* refreshResults() {
-  const { details } = yield select(state => state.patient);
+  const { patient } = yield select(state => state.patient);
   const { draftQueries, activeQuery } = yield select(state => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_SEARCH_REQUESTED,
     payload: {
-      patient: details.id,
+      patient: patient.parsed.id,
       statement: draftQueries,
       query: activeQuery,
     },
@@ -190,13 +190,13 @@ function* refreshResults() {
 }
 
 function* refreshFacets() {
-  const { details } = yield select(state => state.patient);
+  const { patient } = yield select(state => state.patient);
   const { draftQueries, activeQuery } = yield select(state => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_FACET_REQUESTED,
     payload: {
-      patient: details.id,
+      patient: patient.parsed.id,
       statement: draftQueries,
       query: activeQuery,
     },
