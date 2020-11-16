@@ -334,11 +334,13 @@ export const createGetPatientDataBundle = id => (
 export const createGetPractitionersDataBundle = (data) => {
   const ids = [];
   data.entry.forEach((bundle) => {
-    bundle.resource.entry.forEach((entry) => {
-      if (get(entry, 'resource.resourceType', '') === 'Practitioner' && ids.find(id => id === entry.resource.id) == null) {
-        ids.push(entry.resource.id);
-      }
-    });
+    if (bundle.resource.entry != null) {
+      bundle.resource.entry.forEach((entry) => {
+        if (get(entry, 'resource.resourceType', '') === 'Practitioner' && ids.find(id => id === entry.resource.id) == null) {
+          ids.push(entry.resource.id);
+        }
+      });
+    }
   });
   const output = {
     resourceType: 'Bundle',

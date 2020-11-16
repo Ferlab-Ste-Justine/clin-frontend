@@ -729,7 +729,7 @@ class PatientVariantScreen extends React.Component {
       draftQueries, activeQuery,
     } = variant;
     const { size } = this.state;
-    const { id } = patient.details;
+    const { id } = patient;
 
     this.setState({
       page,

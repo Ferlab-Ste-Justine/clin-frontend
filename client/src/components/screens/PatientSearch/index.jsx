@@ -200,29 +200,36 @@ class PatientSearchScreen extends React.Component {
 
     if (searchType !== 'autocomplete') {
       const data = nextProps.search[searchType].results.map((result) => {
-        const lastRequest = result.requests[result.requests.length - 1];
-        return {
-          status: (lastRequest ? lastRequest.status : ''),
-          id: result.details.id,
-          mrn: result.details.mrn,
-          ramq: result.details.ramq,
+        const value = {
+          status: result.status,
+          id: result.id,
+          mrn: result.mrn,
+          ramq: result.ramq,
           organization: result.organization.name,
-          firstName: result.details.firstName,
-          lastName: result.details.lastName,
-          gender: result.details.gender,
-          birthDate: result.details.birthDate,
-          familyId: result.family.id,
-          familyComposition: result.family.composition || '',
-          familyType: result.family.composition || '',
-          ethnicity: result.details.ethnicity,
-          bloodRelationship: result.details.bloodRelationship ? intl.get('screen.patientsearch.yes') : intl.get('screen.patientsearch.no'),
-          proband: result.details.proband,
-          position: result.details.proband ? 'Proband' : 'Pas proband',
-          practitioner: result.practitioner.name,
-          request: (lastRequest ? lastRequest.id : ''),
-          test: lastRequest.type,
-          prescription: lastRequest.date.substring(0, 10),
+          firstName: result.firstName,
+          lastName: result.lastName,
+          gender: result.gender,
+          birthDate: result.birthDate,
+          familyId: result.familyId,
+          familyComposition: '',
+          familyType: result.familyType,
+          ethnicity: result.ethnicity,
+          bloodRelationship: result.bloodRelationship,
+          proband: result.proband,
+          position: result.position,
+          practitioner: `${result.practitioner.lastName} ${result.practitioner.firstName}`,
+          request: result.request,
+          test: result.test,
+          prescription: result.prescription,
         };
+
+        Object.keys(value).forEach((key) => {
+          if (value[key] == null || value[key].length === 0) {
+            value[key] = 'N/A';
+          }
+        });
+
+        return value;
       });
 
       return {
