@@ -1495,7 +1495,7 @@ html {
   font-feature-settings: 'tnum';
 }
 .ant-select-auto-complete.ant-select .ant-select-selection {
-  border: 0;
+  border-color: transparent;
   box-shadow: none;
 }
 .ant-select-auto-complete.ant-select .ant-select-selection__rendered {
