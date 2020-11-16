@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input,
 } from 'antd';
 import {
   find,
@@ -40,6 +40,7 @@ class PatientScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      modalVisibility: false,
     };
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.getRequest = this.getRequest.bind(this);
@@ -51,6 +52,8 @@ class PatientScreen extends React.Component {
     this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
     this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
+    this.showModal = this.showModal.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
 
     this.state.requestColumnPreset = [
       {
@@ -183,7 +186,10 @@ class PatientScreen extends React.Component {
         const menu = (
           <Menu>
             <Menu.Item key="0">
+              <Button type="link" className="dropDownButton" onClick={this.showModal}>
                 Changer le statut
+              </Button>
+
             </Menu.Item>
             <Menu.Item key="1" disabled>
                 Voir détail
@@ -337,15 +343,28 @@ class PatientScreen extends React.Component {
     actions.navigateToPatientScreen(patient.id, tab);
   }
 
+  showModal() {
+    this.setState({
+      modalVisibility: true,
+    });
+  }
+
+  handleCancel() {
+    this.setState({
+      modalVisibility: false,
+    });
+  }
+
   render() {
     const {
       app, router, patient, consultation,
     } = this.props;
     const {
-      requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset,
+      requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset, modalVisibility,
     } = this.state;
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
+    const { TextArea } = Input;
     const mrn = intl.get('screen.patient.details.mrn');
     const ramq = intl.get('screen.patient.details.ramq');
     const dateOfBirth = intl.get('screen.patient.details.dob');
@@ -510,6 +529,46 @@ class PatientScreen extends React.Component {
                            size="small"
                          />
                        </Card>
+                       <Modal
+                         title="Changer le status de la prescription"
+                         className="statusModal"
+                         visible={modalVisibility}
+                         onOk={this.handleOk}
+                         onCancel={this.handleCancel}
+                         footer={[
+                           <Button size="small" key="back" onClick={this.handleCancel} className="cancel">
+                            Annuler
+                           </Button>,
+                           <Button size="small" key="submit" type="primary" onClick={this.handleOk} disabled>
+                            Changer le statut
+                           </Button>,
+                         ]}
+                       >
+                         <Radio.Group onChange={this.onChange} className="modalRadio">
+                           <Radio value={1} className="submitted">
+                              Soumise
+                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                           </Radio>
+                           <Radio value={2} className="approuved">
+                              Approuvée
+                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                           </Radio>
+                           <Radio value={3} className="incomplete">
+                              Incomplète
+                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                             <TextArea rows={1} />
+                           </Radio>
+                           <Radio value={4} className="refused">
+                              Refusée
+                             <span className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+                             <TextArea rows={1} />
+                           </Radio>
+                           <Radio value={5} className="completed">
+                              Complèter
+                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                           </Radio>
+                         </Radio.Group>
+                       </Modal>
 
                      </Card>
                    </Row>

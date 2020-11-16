@@ -98,8 +98,62 @@
                 vertical-align: top !important;
             }
         }
-    
-  }
+    }
+}
+
+.dropDownButton{
+    color: $gray-8;
+}
+
+.statusModal{
+    .modalRadio{
+        display: flex;
+        flex-direction: column;
+
+        .ant-radio-wrapper{
+            line-height: 0;
+            margin-bottom: 12px;
+            margin-right: 0;
+            .description{
+                color: $gray-8;
+                display: block;
+                margin-left: 24px;
+                white-space:normal;
+                font-size: 12px;
+                line-height: 20px;
+            }
+            textarea{
+                margin-top: 12px;
+                margin-left: 24px;
+                width: calc(100% - 24px);
+            }
+        }
+
+        .submitted{
+            color:$orange-7;
+        }
+        .approuved{
+            color: $blue-7;
+        }
+        .incomplete{
+            color:$magenta-6;
+        }
+        .refused{
+            color: $red-6;
+        }
+        .completed{
+            color: $green-7;
+        }
+    }
+    .ant-modal-footer{
+        button{
+            border-color: $gray-5; 
+        }
+        .cancel{
+            color: $gray-8;
+            border-color: $gray-5;
+        }
+    }
 }
 
 .practitionerInfo{
