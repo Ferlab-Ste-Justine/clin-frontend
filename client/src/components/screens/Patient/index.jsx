@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio,
 } from 'antd';
 import {
   find,
@@ -40,6 +40,7 @@ class PatientScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      modalVisibility: false,
     };
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.getRequest = this.getRequest.bind(this);
@@ -51,6 +52,8 @@ class PatientScreen extends React.Component {
     this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
     this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
+    this.showModal = this.showModal.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
 
     this.state.requestColumnPreset = [
       {
@@ -183,7 +186,10 @@ class PatientScreen extends React.Component {
         const menu = (
           <Menu>
             <Menu.Item key="0">
+              <Button type="link" className="dropDownButton" onClick={this.showModal}>
                 Changer le statut
+              </Button>
+
             </Menu.Item>
             <Menu.Item key="1" disabled>
                 Voir détail
@@ -337,12 +343,24 @@ class PatientScreen extends React.Component {
     actions.navigateToPatientScreen(patient.id, tab);
   }
 
+  showModal() {
+    this.setState({
+      modalVisibility: true,
+    });
+  }
+
+  handleCancel() {
+    this.setState({
+      modalVisibility: false,
+    });
+  }
+
   render() {
     const {
       app, router, patient, consultation,
     } = this.props;
     const {
-      requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset,
+      requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset, modalVisibility,
     } = this.state;
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
@@ -510,6 +528,38 @@ class PatientScreen extends React.Component {
                            size="small"
                          />
                        </Card>
+                       <Modal
+                         title="Changer le status de la prescription"
+                         visible={modalVisibility}
+                         onOk={this.handleOk}
+                         onCancel={this.handleCancel}
+                         footer={[
+                           <Button size="small" key="back" onClick={this.handleCancel}>
+                            Annuler
+                           </Button>,
+                           <Button size="small" key="submit" type="primary" onClick={this.handleOk}>
+                            Changer le statut
+                           </Button>,
+                         ]}
+                       >
+                         <Radio.Group onChange={this.onChange}>
+                           <Radio value={1}>
+                              Soumise
+                           </Radio>
+                           <Radio value={2}>
+                              Approuvée
+                           </Radio>
+                           <Radio value={3}>
+                              Incomplète
+                           </Radio>
+                           <Radio value={4}>
+                              Refusée
+                           </Radio>
+                           <Radio value={5}>
+                              Complèter
+                           </Radio>
+                         </Radio.Group>
+                       </Modal>
 
                      </Card>
                    </Row>
