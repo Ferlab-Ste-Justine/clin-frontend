@@ -1704,7 +1704,7 @@ html {
   line-height: 20px;
   white-space: nowrap;
   text-align: center;
-  background: #eb2f96;
+  background: #EB2F96;
   border-radius: 10px;
   box-shadow: 0 0 0 1px #fff;
 }
@@ -1718,7 +1718,7 @@ html {
 .ant-badge-dot {
   width: 8px;
   height: 8px;
-  background: #eb2f96;
+  background: #EB2F96;
   border-radius: 100%;
   box-shadow: 0 0 0 1px #fff;
 }
@@ -1776,7 +1776,7 @@ html {
   background: #eb2f96;
 }
 .ant-badge-status-magenta {
-  background: #eb2f96;
+  background: #EB2F96;
 }
 .ant-badge-status-red {
   background: #F5222D;
@@ -4368,7 +4368,7 @@ a.ant-btn-sm {
   font-size: 12px;
 }
 .ant-cascader-menu-item .ant-cascader-menu-item-keyword {
-  color: #eb2f96;
+  color: #EB2F96;
 }
 @keyframes antCheckboxEffect {
   0% {
@@ -7552,7 +7552,7 @@ li.ant-calendar-time-picker-select-option-disabled:hover {
 .ant-form-item-required::before {
   display: inline-block;
   margin-right: 4px;
-  color: #eb2f96;
+  color: #EB2F96;
   font-size: 14px;
   font-family: SimSun, sans-serif;
   line-height: 1;
@@ -18949,14 +18949,14 @@ tr.ant-table-expanded-row td > .ant-table-wrapper {
   border-color: #eb2f96;
 }
 .ant-tag-magenta {
-  color: #eb2f96;
+  color: #EB2F96;
   background: #fff0f6;
   border-color: #ffadd2;
 }
 .ant-tag-magenta-inverse {
   color: #fff;
-  background: #eb2f96;
-  border-color: #eb2f96;
+  background: #EB2F96;
+  border-color: #EB2F96;
 }
 .ant-tag-red {
   color: #F5222D;
@@ -20202,7 +20202,7 @@ span.ant-transfer-list-search-action {
   border-bottom-color: #1D8BC6;
 }
 .ant-tree li.filter-node > span {
-  color: #eb2f96 !important;
+  color: #EB2F96 !important;
   font-weight: 500 !important;
 }
 .ant-tree li.ant-tree-treenode-loading span.ant-tree-switcher.ant-tree-switcher_open .ant-tree-switcher-loading-icon,
