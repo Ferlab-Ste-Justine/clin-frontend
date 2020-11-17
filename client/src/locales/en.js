@@ -164,6 +164,8 @@ const en = {
   'screen.patientsearch.table.bloodRelationship': 'Blood Relationship',
   'screen.patientsearch.download': 'Download Page to TSV',
   'screen.patientsearch.pagination': '%d-%d of %d results',
+  'screen.patientsearch.male': 'Male',
+  'screen.patientsearch.female': 'Female',
   'screen.patientvariant.parentalOrigin.variantConverage': 'Variant converage',
   'screen.patientvariant.parentalOrigin.sequenceReads': 'sequence reads',
   'screen.patientvariant.clinVarVariationId': 'ClinVar variation ID',

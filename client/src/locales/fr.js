@@ -164,6 +164,8 @@ const fr = {
   'screen.patientsearch.table.bloodRelationship': 'Consanguinité',
   'screen.patientsearch.download': 'Téléchargez la page en TSV',
   'screen.patientsearch.pagination': '%d-%d sur %d résulats',
+  'screen.patientsearch.male': 'Homme',
+  'screen.patientsearch.female': 'Femme',
   'screen.patientvariant.parentalOrigin.variantConverage': 'couverture de la variation',
   'screen.patientvariant.parentalOrigin.sequenceReads': 'lectures de séquences',
   'screen.patientvariant.clinVarVariationId': 'ID de variation ClinVar',
