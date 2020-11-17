@@ -44,7 +44,6 @@ function* navigateToPatientScreen(action) {
 
     // @NOTE Only fetch patient if it is not the currently active one
     const { patient } = yield select(state => state.patient);
-
     if (get(patient, 'parsed.id', '') !== uid) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
@@ -69,7 +68,7 @@ function* navigateToPatientVariantScreen(action) {
 
     // @NOTE Only fetch patient if it is not the currently active one
     const { patient } = yield select(state => state.patient);
-    if (uid !== patient.parsed.id) {
+    if (get(patient, 'parsed.id', '') !== uid) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
         payload: { uid },
