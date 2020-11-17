@@ -191,12 +191,12 @@
         }
         
     }
-    .clinical__title{
+    &__title{
         color: $gray-7;
         min-width: 200px;
         margin-right: 16px;
     }
-    .clinical__value{
+    &__value{
         button{
             height: 22px;
             i{
@@ -207,14 +207,16 @@
                 }
             }
         }
+        &--abnormal{
+            color: $red-6;
+        }
+        &--normal{
+            color: $green-7;
+        }
 
     }
-    .clinical__value--abnormal{
-        color: $red-6;
-    }
-    .clinical__value--normal{
-        color: $green-7;
-    }
+
+
 
     .ant-table-body{
         margin: 0 !important;
