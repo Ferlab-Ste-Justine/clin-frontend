@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import moment from 'moment';
 import {
-  AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps,
+  AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps, Typography,
 } from 'antd';
 import {
   find, has, debounce, mapValues,
@@ -117,7 +117,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
   const disabledDate = current => current && current > moment().startOf('day');
   return (
-    <Card title="Patient" bordered={false} className="staticCard patientContent">
+    <Card title="Patient" bordered={false} className="patientContent">
       <Form.Item label={intl.get('form.patientSubmission.form.lastName')}>
         {getFieldDecorator('family', {
           rules: [{
@@ -273,7 +273,7 @@ const Approval = ({
   updateConsentmentsCallback,
 }) => (
   <div>
-    <Card title="Consentements" bordered={false} className="staticCard patientContent">
+    <Card title="Consentements" bordered={false} className="patientContent">
       <Form>
         {/* TODO initialValue */}
         <Form.Item label="Clauses signées" className="labelTop">
@@ -299,7 +299,7 @@ const Approval = ({
         </Form.Item>
       </Form>
     </Card>
-    <Card title="Approbation" bordered={false} className="staticCard patientContent">
+    <Card title="Approbation" bordered={false} className="patientContent">
       <Form>
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
         {/* TODO initialValue */}
@@ -937,18 +937,22 @@ class PatientSubmissionScreen extends React.Component {
         values: {},
       },
     ];
-
+    const { Title } = Typography;
     const currentPage = this.pages[currentPageIndex];
     const pageContent = currentPage.content;
     return (
       <Content type="auto">
         <Header />
         <div className="page_headerStaticMargin">
-          <Steps current={currentPageIndex} className="headerStaticContent step">
-            {this.pages.map(item => <Step key={item.title} title={item.title} />)}
-          </Steps>
+          <Title className="headerStaticContent" level={3}>Demande de séquençage génomique</Title>
         </div>
         <div className="page-static-content">
+          <Card bordered={false} className="step">
+            <Steps current={currentPageIndex}>
+              {this.pages.map(item => <Step key={item.title} title={item.title} />)}
+            </Steps>
+          </Card>
+
           <Form
             onSubmit={this.handleSubmit}
           >

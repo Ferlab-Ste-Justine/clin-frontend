@@ -285,7 +285,7 @@ div.ant-card {
   margin-bottom: 24px;
   .headerStaticContent{
     width: $maxWidth;
-    margin: 0 auto;
+    margin: 0 24px;
   }
 }
 
@@ -295,7 +295,7 @@ div.ant-card {
   font-size: 14px;
   .headerStaticContent{
     width: $maxWidth;
-    margin: 0 auto;
+    margin: 0 24px;
   }
 }
 
@@ -321,7 +321,7 @@ div.ant-card {
     background-color: #ffffff;
     .ant-tabs-nav-scroll{
       max-width: $maxWidth;
-      margin:0 auto;
+      margin:0 24px;
       .ant-tabs-tab{
         padding: 12px 0;
         .tabName{
