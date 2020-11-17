@@ -69,6 +69,19 @@ function* countVariantsForPatient(action) {
   }
 }
 
+function* selectDefaultStatement() {
+  const { profile } = yield select(state => state.user);
+
+  if (profile.defaultStatement != null) {
+    yield put({
+      type: actionTypes.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED,
+      payload: {
+        id: profile.defaultStatement,
+      },
+    });
+  }
+}
+
 function* getStatements() {
   try {
     const statementResponse = yield Api.getStatements();
@@ -239,6 +252,10 @@ function* watchGetStatements() {
   yield takeLatest(actionTypes.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED, getStatements);
 }
 
+function* watchGetStatementsSuceeded() {
+  yield takeLatest(actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, selectDefaultStatement);
+}
+
 function* watchUpdateStatement() {
   yield takeLatest(actionTypes.PATIENT_VARIANT_UPDATE_STATEMENT_REQUESTED, updateStatement);
 }
@@ -312,6 +329,7 @@ export default function* watchedVariantSagas() {
     watchVariantSearch(),
     watchFacetSearch(),
     watchSelectStatement(),
+    watchGetStatementsSuceeded(),
     watchCreateStatement(),
     watchUpdateStatement(),
     watchDeleteStatement(),
