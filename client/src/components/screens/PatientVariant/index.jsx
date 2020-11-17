@@ -632,12 +632,6 @@ class PatientVariantScreen extends React.Component {
 
   componentDidMount() {
     this.handleGetStatements();
-
-    const { actions, user } = this.props;
-
-    if (user.profile.defaultStatement != null) {
-      actions.selectStatement(user.profile.defaultStatement);
-    }
   }
 
 

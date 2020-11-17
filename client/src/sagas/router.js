@@ -3,6 +3,8 @@ import {
   all, select, put, takeLatest, delay, takeEvery,
 } from 'redux-saga/effects';
 
+import { get } from 'lodash';
+
 import * as actions from '../actions/type';
 import {
   isPatientSearchRoute,
@@ -41,8 +43,8 @@ function* navigateToPatientScreen(action) {
     if (tab) { url += `/#${tab}`; }
 
     // @NOTE Only fetch patient if it is not the currently active one
-    const { details } = yield select(state => state.patient);
-    if (details == null || uid !== details.id) {
+    const { patient } = yield select(state => state.patient);
+    if (get(patient, 'parsed.id', '') !== uid) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
         payload: { uid },
@@ -65,8 +67,8 @@ function* navigateToPatientVariantScreen(action) {
     if (tab) { url += `/#${tab}`; }
 
     // @NOTE Only fetch patient if it is not the currently active one
-    const { details } = yield select(state => state.patient);
-    if (uid !== details.id) {
+    const { patient } = yield select(state => state.patient);
+    if (get(patient, 'parsed.id', '') !== uid) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
         payload: { uid },
