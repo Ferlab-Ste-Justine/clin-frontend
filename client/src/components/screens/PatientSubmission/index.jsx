@@ -167,12 +167,12 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
         })(
           <Radio.Group buttonStyle="solid">
             {
-                            Object.values(genderValues).map(gv => (
-                              <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
-                                <span className="radioText">{gv.label}</span>
-                              </Radio.Button>
-                            ))
-                        }
+              Object.values(genderValues).map(gv => (
+                <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
+                  <span className="radioText">{gv.label}</span>
+                </Radio.Button>
+              ))
+            }
           </Radio.Group>,
         )}
       </Form.Item>
@@ -979,12 +979,12 @@ class PatientSubmissionScreen extends React.Component {
               }
 
               {
-                  currentPageIndex !== 0 && (
+                currentPageIndex !== 0 && (
                   <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
                     <IconKit size={20} icon={ic_keyboard_arrow_left} />
                     {intl.get('screen.clinicalSubmission.previousButtonTitle')}
                   </Button>
-                  )
+                )
               }
 
               <Button

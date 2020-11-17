@@ -1,6 +1,9 @@
 {
   "extends": "airbnb",
   "rules": {
+    "indent": ["error", 2, {
+      "SwitchCase": 1
+    }],
     "max-len": [1, 124, 4],
     "camelcase": "off",
     "react/jsx-one-expression-per-line": "off",

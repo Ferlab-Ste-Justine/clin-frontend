@@ -93,13 +93,13 @@ const Header = ({
           )}
           <Col>
             {app.locale.lang !== null && (
-            <Dropdown overlay={languageMenu(actions)} trigger={['click']}>
-              { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a className="ant-dropdown-link">
-                <IconKit size={16} icon={ic_translate} />
-                {langText}
-              </a>
-            </Dropdown>
+              <Dropdown overlay={languageMenu(actions)} trigger={['click']}>
+                { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a className="ant-dropdown-link">
+                  <IconKit size={16} icon={ic_translate} />
+                  {langText}
+                </a>
+              </Dropdown>
             )}
           </Col>
         </div>

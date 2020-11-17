@@ -380,25 +380,25 @@ class PatientVariantScreen extends React.Component {
                 return (
                   <div>
                     {
-                    consequences.map(consequence => (
-                      consequence.pick === true ? (
-                        <Row className="consequences" key={shortid.generate()}>
-                          <Col>{this.getImpactTag(consequence.impact)}</Col>
-                          <Col className="consequence">{consequence.consequence}</Col>
-                          <Col>
-                            <a
-                              href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.symbol}`}
-                              rel="noopener noreferrer"
-                              target="_blank"
-                              className="link"
-                            >
-                              {consequence.symbol ? consequence.symbol : ''}
-                            </a>
-                          </Col>
-                          <Col>{consequence.aa_change ? consequence.aa_change : ''}</Col>
-                        </Row>
-                      ) : null
-                    ))
+                      consequences.map(consequence => (
+                        consequence.pick === true ? (
+                          <Row className="consequences" key={shortid.generate()}>
+                            <Col>{this.getImpactTag(consequence.impact)}</Col>
+                            <Col className="consequence">{consequence.consequence}</Col>
+                            <Col>
+                              <a
+                                href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.symbol}`}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                                className="link"
+                              >
+                                {consequence.symbol ? consequence.symbol : ''}
+                              </a>
+                            </Col>
+                            <Col>{consequence.aa_change ? consequence.aa_change : ''}</Col>
+                          </Row>
+                        ) : null
+                      ))
                     }
                   </div>
                 );

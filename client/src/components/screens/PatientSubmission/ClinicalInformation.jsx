@@ -229,14 +229,14 @@ class ClinicalInformation extends React.Component {
                 onChange={event => this.handleHpoAgeChanged(event, hpoIndex)}
               >
                 {
-                    hpoOnsetValues.map((group, gIndex) => (
-                      <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
-                        {group.options.map((o, oIndex) => (
-                          <Option value={o.code} key={`onsetOption_${oIndex}`}>{o.display}</Option>
-                        ))}
-                      </OptGroup>
-                    ))
-                  }
+                  hpoOnsetValues.map((group, gIndex) => (
+                    <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
+                      {group.options.map((o, oIndex) => (
+                        <Option value={o.code} key={`onsetOption_${oIndex}`}>{o.display}</Option>
+                      ))}
+                    </OptGroup>
+                  ))
+                }
               </Select>
             </Form.Item>
           </div>
@@ -530,11 +530,11 @@ class ClinicalInformation extends React.Component {
 
         </div>
         {
-            (!form.getFieldValue(`familyRelationshipNotes[${index}]`) && form.getFieldValue(`familyRelationshipCodes[${index}]`))
+          (!form.getFieldValue(`familyRelationshipNotes[${index}]`) && form.getFieldValue(`familyRelationshipCodes[${index}]`))
             || (form.getFieldValue(`familyRelationshipNotes[${index}]`) && !form.getFieldValue(`familyRelationshipCodes[${index}]`))
-              ? <div className="familyBottom"> <Text className="customErrorMessage" type="danger">Les 2 champs doivent être rentrés</Text></div>
-              : null
-          }
+            ? <div className="familyBottom"> <Text className="customErrorMessage" type="danger">Les 2 champs doivent être rentrés</Text></div>
+            : null
+        }
       </div>
 
     )));
@@ -594,22 +594,22 @@ class ClinicalInformation extends React.Component {
             /* TODO initalValue */
             (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
             && (
-            <Form.Item label="Précision">
-              {getFieldDecorator('cghPrecision', {
-                rules: [{
-                  required: true,
-                  message: 'Veuillez indiquer le résultat du CGH',
-                },
-                {
-                  whitespace: true,
-                  message: 'Ne peut pas contenir que des espaces',
-                },
-                ],
-                initialValue: has(localStore, 'cgh.precision') ? localStore.cgh.precision : null,
-              })(
-                <Input placeholder="Veuillez préciser…" className="input note" />,
-              )}
-            </Form.Item>
+              <Form.Item label="Précision">
+                {getFieldDecorator('cghPrecision', {
+                  rules: [{
+                    required: true,
+                    message: 'Veuillez indiquer le résultat du CGH',
+                  },
+                  {
+                    whitespace: true,
+                    message: 'Ne peut pas contenir que des espaces',
+                  },
+                  ],
+                  initialValue: has(localStore, 'cgh.precision') ? localStore.cgh.precision : null,
+                })(
+                  <Input placeholder="Veuillez préciser…" className="input note" />,
+                )}
+              </Form.Item>
             )
           }
 
@@ -663,15 +663,15 @@ class ClinicalInformation extends React.Component {
               </Tree>
             </div>
             <div className={hpoResources.length === 0 ? 'cardSeparator message' : 'cardSeparator'}>              {
-                hpoResources.length === 0
-                  ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
-                  : hpoResources.map((hpoResource, hpoIndex) => this.phenotype({
-                    hpoResource,
-                    form,
-                    hpoIndex,
-                    deleteHpo: this.handleHpoDeleted,
-                  }))
-              }
+              hpoResources.length === 0
+                ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
+                : hpoResources.map((hpoResource, hpoIndex) => this.phenotype({
+                  hpoResource,
+                  form,
+                  hpoIndex,
+                  deleteHpo: this.handleHpoDeleted,
+                }))
+            }
             </div>
           </div>
 

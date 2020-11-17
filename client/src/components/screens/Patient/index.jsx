@@ -423,243 +423,243 @@ class PatientScreen extends React.Component {
         <Spin spinning={showSubloadingAnimation}>
           {patient != null && patient.id != null && patient.id.length > 0
            && (
-           <div className="patientPage">
-             <div className="page_headerStaticNoMargin">
-               <div className="headerStaticContent">
-                 <Row type="flex" align="middle" className="patientHeader">
-                   <Col>
-                     <Typography.Title level={3} className="patientName">
-                       {patient.lastName} {patient.firstName}
-                     </Typography.Title>
-                   </Col>
-                   <Col>
-                     {maleIcon}
-                   </Col>
-                   <Col>
-                     <Tag>
+             <div className="patientPage">
+               <div className="page_headerStaticNoMargin">
+                 <div className="headerStaticContent">
+                   <Row type="flex" align="middle" className="patientHeader">
+                     <Col>
+                       <Typography.Title level={3} className="patientName">
+                         {patient.lastName} {patient.firstName}
+                       </Typography.Title>
+                     </Col>
+                     <Col>
+                       {maleIcon}
+                     </Col>
+                     <Col>
+                       <Tag>
                      2012-10-18
-                     </Tag>
-                   </Col>
-                   <Col>
-                     <Tag color="red">{patient.proband}</Tag>
-                   </Col>
-                 </Row>
+                       </Tag>
+                     </Col>
+                     <Col>
+                       <Tag color="red">{patient.proband}</Tag>
+                     </Col>
+                   </Row>
 
 
+                 </div>
                </div>
-             </div>
-             <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
-               <Tabs.TabPane
-                 key="personal"
-                 style={{ height: '100%' }}
-                 tab={(
-                   <span className="tabName">
-                     <IconKit size={18} icon={ic_person} />
-                     {patientTab}
-                   </span>
-             )}
-               >
-                 <div className="page-static-content">
-                   <Card bordered={false} className="generalInfo">
-                     <Row type="flex">
-                       <Col>
-                         <Card className="nameBlock">
-                           <Row align="middle" justify="center">
-                             <IconKit size={56} icon={ic_perm_contact_calendar} />
-                             <Col><Typography.Title level={3} className="patientName">{patient.lastName}</Typography.Title></Col>
-                             <Col><Typography.Title level={4} className="patientName">{patient.firstName}</Typography.Title></Col>
-                             <Col><Tag color="red">{patient.proband}</Tag></Col>
-                           </Row>
-                         </Card>
-                       </Col>
-                       <Col className="content">
-                         <Row type="flex">
-                           <Col className="grid">
-                             <div className="row">
-                               <span className="title">{ramq}</span>
-                               <span className="info">{patient.ramq}</span>
-                             </div>
-                             <div className="row">
-                               <span className="title">{genderTitle}</span>
-                               <span className="info">{intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`)}</span>
-                             </div>
-                             <div className="row">
-                               <span className="title">{mrn}</span>
-                               <span className="info mrn">{patient.mrn} | {patient.organization}</span>
-                               {/*                               <span className="info mrn">156987 | CHUSJ</span>
+               <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
+                 <Tabs.TabPane
+                   key="personal"
+                   style={{ height: '100%' }}
+                   tab={(
+                     <span className="tabName">
+                       <IconKit size={18} icon={ic_person} />
+                       {patientTab}
+                     </span>
+                   )}
+                 >
+                   <div className="page-static-content">
+                     <Card bordered={false} className="generalInfo">
+                       <Row type="flex">
+                         <Col>
+                           <Card className="nameBlock">
+                             <Row align="middle" justify="center">
+                               <IconKit size={56} icon={ic_perm_contact_calendar} />
+                               <Col><Typography.Title level={3} className="patientName">{patient.lastName}</Typography.Title></Col>
+                               <Col><Typography.Title level={4} className="patientName">{patient.firstName}</Typography.Title></Col>
+                               <Col><Tag color="red">{patient.proband}</Tag></Col>
+                             </Row>
+                           </Card>
+                         </Col>
+                         <Col className="content">
+                           <Row type="flex">
+                             <Col className="grid">
+                               <div className="row">
+                                 <span className="title">{ramq}</span>
+                                 <span className="info">{patient.ramq}</span>
+                               </div>
+                               <div className="row">
+                                 <span className="title">{genderTitle}</span>
+                                 <span className="info">{intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`)}</span>
+                               </div>
+                               <div className="row">
+                                 <span className="title">{mrn}</span>
+                                 <span className="info mrn">{patient.mrn} | {patient.organization}</span>
+                                 {/*                               <span className="info mrn">156987 | CHUSJ</span>
                              <span className="info mrn">789654 | HGM</span>
                              <span className="view">Voir moins</span> */}
-                             </div>
-                             <div className="row">
-                               <span className="title">{dateOfBirth}</span>
-                               <span className="info">{patient.birthDate}</span>
-                             </div>
-                           </Col>
-                           <Divider type="vertical" />
-                           <Col className="grid">
-                             <div className="row">
-                               <span className="title">{ethnicity}</span>
-                               <span className="info">{patient.ethnicity}</span>
-                             </div>
-                             <div className="row">
-                               <span className="title">{family}</span>
-                               <span className="info"><Button type="link">{patient.familyId}</Button></span>
-                             </div>
-                             <div className="row">
-                               <span className="title">{consanguinity}</span>
-                               <span className="info">{patient.bloodRelationship}</span>
-                             </div>
-                             <div className="row">
-                               <span className="title">{familyType}</span>
-                               <span className="info">{familyTypeTag}</span>
-                             </div>
+                               </div>
+                               <div className="row">
+                                 <span className="title">{dateOfBirth}</span>
+                                 <span className="info">{patient.birthDate}</span>
+                               </div>
+                             </Col>
+                             <Divider type="vertical" />
+                             <Col className="grid">
+                               <div className="row">
+                                 <span className="title">{ethnicity}</span>
+                                 <span className="info">{patient.ethnicity}</span>
+                               </div>
+                               <div className="row">
+                                 <span className="title">{family}</span>
+                                 <span className="info"><Button type="link">{patient.familyId}</Button></span>
+                               </div>
+                               <div className="row">
+                                 <span className="title">{consanguinity}</span>
+                                 <span className="info">{patient.bloodRelationship}</span>
+                               </div>
+                               <div className="row">
+                                 <span className="title">{familyType}</span>
+                                 <span className="info">{familyTypeTag}</span>
+                               </div>
+                             </Col>
+                           </Row>
+                         </Col>
+                       </Row>
+                     </Card>
+                     <Row>
+                       <Card bordered={false} className="prescription">
+                         <Card title="Prescriptions" bordered={false}>
+                           <Table
+                             pagination={false}
+                             columns={requestColumnPreset.map(
+                               columnPresetToColumn,
+                             )}
+                             dataSource={this.getRequest()}
+                             size="small"
+                           />
+                         </Card>
+                         <Modal
+                           title="Changer le status de la prescription"
+                           className="statusModal"
+                           visible={modalVisibility}
+                           onOk={this.handleOk}
+                           onCancel={this.handleCancel}
+                           footer={[
+                             <Button size="small" key="back" onClick={this.handleCancel} className="cancel">
+                            Annuler
+                             </Button>,
+                             <Button size="small" key="submit" type="primary" onClick={this.handleOk} disabled>
+                            Changer le statut
+                             </Button>,
+                           ]}
+                         >
+                           <Radio.Group onChange={this.onChange} className="modalRadio">
+                             <Radio value={1} className="submitted">
+                              Soumise
+                               <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                             </Radio>
+                             <Radio value={2} className="approuved">
+                              Approuvée
+                               <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                             </Radio>
+                             <Radio value={3} className="incomplete">
+                              Incomplète
+                               <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                               <TextArea rows={1} />
+                             </Radio>
+                             <Radio value={4} className="refused">
+                              Refusée
+                               <span className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+                               <TextArea rows={1} />
+                             </Radio>
+                             <Radio value={5} className="completed">
+                              Compléter
+                               <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
+                             </Radio>
+                           </Radio.Group>
+                         </Modal>
+
+                       </Card>
+                     </Row>
+                   </div>
+                 </Tabs.TabPane>
+
+                 <Tabs.TabPane
+                   key="clinical"
+                   tab={(
+                     <span className="tabName">
+                       <IconKit size={18} icon={ic_assignment} />
+                       {clinicalTab}
+                     </span>
+                   )}
+                   style={{ height: '100%' }}
+                 >
+                   <div className="page-static-content">
+                     <Card bordered={false} className="staticCard clinical">
+                       <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
+                         <Row type="flex">
+                           <Col className="clinical__title">MRN</Col>
+                           <Col className="clinical__value">{patient.mrn}  |  {patient.organization}</Col>
+                         </Row>
+                         <Row type="flex">
+                           <Col className="clinical__title">Médecin résponsable</Col>
+                           <Col className="clinical__value">
+                             <span className="logoText">
+                               {consultation[0].practitioner.name}
+                               <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
+                                 <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+                               </Popover>
+                             </span>
                            </Col>
                          </Row>
-                       </Col>
-                     </Row>
-                   </Card>
-                   <Row>
-                     <Card bordered={false} className="prescription">
-                       <Card title="Prescriptions" bordered={false}>
+                         <Row type="flex">
+                           <Col className="clinical__title">Age du patient</Col>
+                           <Col className="clinical__value">3 ans</Col>
+                         </Row>
+                         <Row type="flex">
+                           <Col className="clinical__title">CGH</Col>
+                           {/* TODO put value in className */}
+                           <Col className="clinical__value">{getCGHText(consultation[0].cgh)}</Col>
+                         </Row>
+                         <Row type="flex">
+                           <Col className="clinical__title">Résume de l'investigation</Col>
+                           <Col className="clinical__value">{consultation[0].summary}</Col>
+                         </Row>
+                         <Row type="flex">
+                           <Col className="clinical__title">Hypothèse de diagnostique</Col>
+                           <Col className="clinical__value">{consultation[0].hypothesis}</Col>
+                         </Row>
+                       </Card>
+                       <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
                          <Table
                            pagination={false}
-                           columns={requestColumnPreset.map(
+                           columns={familyHistoryColumnPreset.map(
                              columnPresetToColumn,
                            )}
-                           dataSource={this.getRequest()}
+                           dataSource={this.getFamilyHistory()}
                            size="small"
                          />
                        </Card>
-                       <Modal
-                         title="Changer le status de la prescription"
-                         className="statusModal"
-                         visible={modalVisibility}
-                         onOk={this.handleOk}
-                         onCancel={this.handleCancel}
-                         footer={[
-                           <Button size="small" key="back" onClick={this.handleCancel} className="cancel">
-                            Annuler
-                           </Button>,
-                           <Button size="small" key="submit" type="primary" onClick={this.handleOk} disabled>
-                            Changer le statut
-                           </Button>,
-                         ]}
-                       >
-                         <Radio.Group onChange={this.onChange} className="modalRadio">
-                           <Radio value={1} className="submitted">
-                              Soumise
-                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                           </Radio>
-                           <Radio value={2} className="approuved">
-                              Approuvée
-                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                           </Radio>
-                           <Radio value={3} className="incomplete">
-                              Incomplète
-                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                             <TextArea rows={1} />
-                           </Radio>
-                           <Radio value={4} className="refused">
-                              Refusée
-                             <span className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-                             <TextArea rows={1} />
-                           </Radio>
-                           <Radio value={5} className="completed">
-                              Compléter
-                             <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                           </Radio>
-                         </Radio.Group>
-                       </Modal>
+                       <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
+                         <Table
+                           pagination={false}
+                           columns={clinicalColumnPreset.map(
+                             columnPresetToColumn,
+                           )}
+                           dataSource={this.getClinical()}
+                           size="small"
+                         />
+                       </Card>
 
                      </Card>
-                   </Row>
-                 </div>
-               </Tabs.TabPane>
 
-               <Tabs.TabPane
-                 key="clinical"
-                 tab={(
-                   <span className="tabName">
-                     <IconKit size={18} icon={ic_assignment} />
-                     {clinicalTab}
-                   </span>
-             )}
-                 style={{ height: '100%' }}
-               >
-                 <div className="page-static-content">
-                   <Card bordered={false} className="staticCard clinical">
-                     <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
-                       <Row type="flex">
-                         <Col className="clinical__title">MRN</Col>
-                         <Col className="clinical__value">{patient.mrn}  |  {patient.organization}</Col>
-                       </Row>
-                       <Row type="flex">
-                         <Col className="clinical__title">Médecin résponsable</Col>
-                         <Col className="clinical__value">
-                           <span className="logoText">
-                             {consultation[0].practitioner.name}
-                             <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
-                               <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
-                             </Popover>
-                           </span>
-                         </Col>
-                       </Row>
-                       <Row type="flex">
-                         <Col className="clinical__title">Age du patient</Col>
-                         <Col className="clinical__value">3 ans</Col>
-                       </Row>
-                       <Row type="flex">
-                         <Col className="clinical__title">CGH</Col>
-                         {/* TODO put value in className */}
-                         <Col className="clinical__value">{getCGHText(consultation[0].cgh)}</Col>
-                       </Row>
-                       <Row type="flex">
-                         <Col className="clinical__title">Résume de l'investigation</Col>
-                         <Col className="clinical__value">{consultation[0].summary}</Col>
-                       </Row>
-                       <Row type="flex">
-                         <Col className="clinical__title">Hypothèse de diagnostique</Col>
-                         <Col className="clinical__value">{consultation[0].hypothesis}</Col>
-                       </Row>
-                     </Card>
-                     <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
-                       <Table
-                         pagination={false}
-                         columns={familyHistoryColumnPreset.map(
-                           columnPresetToColumn,
-                         )}
-                         dataSource={this.getFamilyHistory()}
-                         size="small"
-                       />
-                     </Card>
-                     <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
-                       <Table
-                         pagination={false}
-                         columns={clinicalColumnPreset.map(
-                           columnPresetToColumn,
-                         )}
-                         dataSource={this.getClinical()}
-                         size="small"
-                       />
-                     </Card>
-
-                   </Card>
-
-                 </div>
-               </Tabs.TabPane>
-               <Tabs.TabPane
-                 key="variant"
-                 tab={(
-                   <span className="tabName">
-                     <IconKit size={18} icon={ic_widgets} />
+                   </div>
+                 </Tabs.TabPane>
+                 <Tabs.TabPane
+                   key="variant"
+                   tab={(
+                     <span className="tabName">
+                       <IconKit size={18} icon={ic_widgets} />
                      Variant
-                   </span>
-                 )}
-               >
-                 <PatientVariantScreen />
-               </Tabs.TabPane>
-             </Tabs>
-           </div>
+                     </span>
+                   )}
+                 >
+                   <PatientVariantScreen />
+                 </Tabs.TabPane>
+               </Tabs>
+             </div>
            )}
           <Footer />
         </Spin>

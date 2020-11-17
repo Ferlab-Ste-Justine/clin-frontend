@@ -678,29 +678,29 @@ class VariantNavigation extends React.Component {
                   </div>
                 )}
                 {activeFilterId === null && category.label === 'category_genomic' && (
-                <div className="variantsHeader">
-                  <Typography.Text>
+                  <div className="variantsHeader">
+                    <Typography.Text>
                     Identifiant de gêne
-                    <Tooltip overlayClassName="tooltip" placement="right" title="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.">
-                      <Button>
-                        <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
-                      </Button>
-                    </Tooltip>
-                  </Typography.Text>
-                  <AutoComplete
-                    key="geneAutocompleter"
-                    allowClear
-                    size="large"
-                    onSearch={this.handleGeneSearch}
-                    className="geneAutocomplete"
-                    onChange={this.handleGeneAutoCompleteChange}
-                    value={searchGeneValue}
-                    open
-                  >
-                    <Input placeholder="Recherche de filtres" />
-                  </AutoComplete>
+                      <Tooltip overlayClassName="tooltip" placement="right" title="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.">
+                        <Button>
+                          <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
+                        </Button>
+                      </Tooltip>
+                    </Typography.Text>
+                    <AutoComplete
+                      key="geneAutocompleter"
+                      allowClear
+                      size="large"
+                      onSearch={this.handleGeneSearch}
+                      className="geneAutocomplete"
+                      onChange={this.handleGeneAutoCompleteChange}
+                      value={searchGeneValue}
+                      open
+                    >
+                      <Input placeholder="Recherche de filtres" />
+                    </AutoComplete>
 
-                </div>
+                  </div>
                 )}
                 { (!geneSearch || category.label !== 'category_genomic') && activeFilterId === null && !searchSelection.category && category.filters.map(f => (f.search && f.label !== 'filter_gene_symbol') && (
                   <Menu.SubMenu
@@ -714,7 +714,7 @@ class VariantNavigation extends React.Component {
                           </div>
                         )
 
-                      }
+                    }
 
                     onTitleClick={this.handleFilterSelection}
                     className="filterChoise"
@@ -725,15 +725,15 @@ class VariantNavigation extends React.Component {
                     className="geneMenuList"
                   >
                     {
-                    geneItem.map(item => (
-                      <Menu.Item key={item.geneSymbol} onClick={this.handleGeneSelection}>
-                        <div className="geneValues">
-                          <div className="geneSymbol">{this.getHighlightSearchGene(item.geneSymbol)}</div>
-                          <div className="alias">{this.getHighlightSearchGene(item.alias)}</div>
-                        </div>
+                      geneItem.map(item => (
+                        <Menu.Item key={item.geneSymbol} onClick={this.handleGeneSelection}>
+                          <div className="geneValues">
+                            <div className="geneSymbol">{this.getHighlightSearchGene(item.geneSymbol)}</div>
+                            <div className="alias">{this.getHighlightSearchGene(item.alias)}</div>
+                          </div>
 
-                      </Menu.Item>
-                    ))
+                        </Menu.Item>
+                      ))
                     }
                   </Menu>
                 )}

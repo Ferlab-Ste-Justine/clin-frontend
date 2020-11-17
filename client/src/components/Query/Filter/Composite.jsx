@@ -173,17 +173,17 @@ class CompositeFilter extends React.Component {
       contents: (
         <>
           {facets && (
-          <NumericalComparisonWidget
-            min={this.getMin()}
-            max={this.getMax()}
-            tick={VALUE_TICK}
-            decimals={VALUE_DECIMALS}
-            draft={cloneDeep(draft)}
-            cachedValues={this.cachedValues}
-            savedData={data}
-            updateDraft={this.updateScoreRange}
-            disabled={!numericalComparisonActive}
-          />
+            <NumericalComparisonWidget
+              min={this.getMin()}
+              max={this.getMax()}
+              tick={VALUE_TICK}
+              decimals={VALUE_DECIMALS}
+              draft={cloneDeep(draft)}
+              cachedValues={this.cachedValues}
+              savedData={data}
+              updateDraft={this.updateScoreRange}
+              disabled={!numericalComparisonActive}
+            />
           )}
 
           <Row>
