@@ -5,9 +5,21 @@
 }
 
 .step{
+    margin-bottom: 8px;
+    .ant-card-body{
+        display: flex;
+        justify-content: center;
+    }
+
+    .ant-steps{
+        width: auto;
+    }
     .ant-steps-item{
         flex: none;
         padding-right: 180px !important;
+        &:last-of-type{
+            padding-right: 0 !important;
+        }
     }
     .ant-steps-item-container{
         display: flex;
@@ -83,6 +95,7 @@
 }
 
 .patientContent{
+    margin-bottom: 8px !important;
     .ant-card-head{
         background: #FFFFFF;
         padding: 12px 16px;

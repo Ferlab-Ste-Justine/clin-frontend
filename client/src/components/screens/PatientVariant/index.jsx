@@ -1048,7 +1048,7 @@ class PatientVariantScreen extends React.Component {
 
     return (
       <Content>
-        <Card className="entity">
+        <Card className="entity" bordered={false}>
           <VariantNavigation
             key="variant-navigation"
             className="variant-navigation"
@@ -1061,7 +1061,7 @@ class PatientVariantScreen extends React.Component {
             searchData={searchData}
             autocomplete={autocomplete}
           />
-          <Card className={`Content ${style.variantContent}`}>
+          <Card bordered={false} className={`Content ${style.variantContent}`}>
             <Statement
               key="variant-statement"
               activeQuery={activeQuery}
@@ -1103,7 +1103,7 @@ class PatientVariantScreen extends React.Component {
               externalData={patient}
             />
           </Card>
-          <Card className={`Content ${style.variantTable}`}>
+          <Card bordered={false} className={`Content ${style.variantTable}`}>
             <Tabs
               key="variant-interpreter-tabs"
               activeKey={currentTab}

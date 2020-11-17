@@ -464,7 +464,7 @@ const en = {
   'screen.variantdetails.tab.patients': 'Patients',
   'screen.clinicalSubmission.patientInformation': 'Patient information',
   'screen.clinicalSubmission.clinicalInformation': 'Clinical information',
-  'screen.clinicalSubmission.approval': 'Approval',
+  'screen.clinicalSubmission.approval': 'Submission',
   'screen.clinicalSubmission.nextButtonTitle': 'Next',
   'screen.clinicalSubmission.previousButtonTitle': 'Previous',
   'screen.clinicalSubmission.saveButtonTitle': 'Save',

@@ -433,15 +433,6 @@ class PatientScreen extends React.Component {
                    <Col>
                      <Tag color="red">{patient.proband}</Tag>
                    </Col>
-
-
-                   <Col>
-                     <a href="#" data-patient-id={patient.id} onClick={this.handleNavigationToPatientVariantScreen}>
-                       <Button type="primary">
-                 Variant Interpreter
-                       </Button>
-                     </a>
-                   </Col>
                  </Row>
 
 
