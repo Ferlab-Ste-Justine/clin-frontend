@@ -378,7 +378,6 @@ class PatientScreen extends React.Component {
     const patientTab = intl.get('screen.patient.tab.patient');
     const clinicalTab = intl.get('screen.patient.tab.clinical');
     const familyType = intl.get('screen.patient.details.familyType');
-    console.log('consultation', consultation);
     const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
     // ICON GENDER
@@ -409,11 +408,12 @@ class PatientScreen extends React.Component {
 
     const getCGHText = (code) => {
       switch (code) {
-        case 'N':
-          return 'Négatif';
-
+        case 'A':
+          return (<span className="clinical__value--abnormal">Anormal</span>);
+        case 'IND':
+          return (<span className="clinical__value--indeterminate">Indéterminée</span>);
         default:
-          return 'Anormal';
+          return (<span className="clinical__value--normal">Négatif</span>);
       }
     };
 
@@ -590,12 +590,12 @@ class PatientScreen extends React.Component {
                    <Card bordered={false} className="staticCard clinical">
                      <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
                        <Row type="flex">
-                         <Col className="title">MRN</Col>
-                         <Col className="value">{patient.mrn}  |  {patient.organization}</Col>
+                         <Col className="clinical__title">MRN</Col>
+                         <Col className="clinical__value">{patient.mrn}  |  {patient.organization}</Col>
                        </Row>
                        <Row type="flex">
-                         <Col className="title">Médecin résponsable</Col>
-                         <Col className="value">
+                         <Col className="clinical__title">Médecin résponsable</Col>
+                         <Col className="clinical__value">
                            <span className="logoText">
                              {consultation[0].practitioner.name}
                              <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
@@ -605,21 +605,21 @@ class PatientScreen extends React.Component {
                          </Col>
                        </Row>
                        <Row type="flex">
-                         <Col className="title">Age du patient</Col>
-                         <Col className="value">3 ans</Col>
+                         <Col className="clinical__title">Age du patient</Col>
+                         <Col className="clinical__value">3 ans</Col>
                        </Row>
                        <Row type="flex">
-                         <Col className="title">CGH</Col>
+                         <Col className="clinical__title">CGH</Col>
                          {/* TODO put value in className */}
-                         <Col className="value normal">{getCGHText(consultation[0].cgh)}</Col>
+                         <Col className="clinical__value">{getCGHText(consultation[0].cgh)}</Col>
                        </Row>
                        <Row type="flex">
-                         <Col className="title">Résume de l'investigation</Col>
-                         <Col className="value">{consultation[0].summary}</Col>
+                         <Col className="clinical__title">Résume de l'investigation</Col>
+                         <Col className="clinical__value">{consultation[0].summary}</Col>
                        </Row>
                        <Row type="flex">
-                         <Col className="title">Hypothèse de diagnostique</Col>
-                         <Col className="value">{consultation[0].hypothesis}</Col>
+                         <Col className="clinical__title">Hypothèse de diagnostique</Col>
+                         <Col className="clinical__value">{consultation[0].hypothesis}</Col>
                        </Row>
                      </Card>
                      <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
