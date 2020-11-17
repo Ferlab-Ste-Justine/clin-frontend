@@ -378,7 +378,7 @@ class PatientScreen extends React.Component {
     const patientTab = intl.get('screen.patient.tab.patient');
     const clinicalTab = intl.get('screen.patient.tab.clinical');
     const familyType = intl.get('screen.patient.details.familyType');
-
+    console.log('consultation', consultation);
     const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
     // ICON GENDER
@@ -406,6 +406,16 @@ class PatientScreen extends React.Component {
         <p><a href={`mailto:${info.email}`}>{info.email}</a></p>
       </Card>
     );
+
+    const getCGHText = (code) => {
+      switch (code) {
+        case 'N':
+          return 'Négatif';
+
+        default:
+          return 'Anormal';
+      }
+    };
 
     return (
       <Content type="auto">
@@ -601,7 +611,7 @@ class PatientScreen extends React.Component {
                        <Row type="flex">
                          <Col className="title">CGH</Col>
                          {/* TODO put value in className */}
-                         <Col className="value normal">{consultation[0].cgh}</Col>
+                         <Col className="value normal">{getCGHText(consultation[0].cgh)}</Col>
                        </Row>
                        <Row type="flex">
                          <Col className="title">Résume de l'investigation</Col>
