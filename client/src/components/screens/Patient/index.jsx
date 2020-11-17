@@ -564,7 +564,7 @@ class PatientScreen extends React.Component {
                              <TextArea rows={1} />
                            </Radio>
                            <Radio value={5} className="completed">
-                              Complèter
+                              Compléter
                              <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
                            </Radio>
                          </Radio.Group>
