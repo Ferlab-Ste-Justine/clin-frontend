@@ -411,7 +411,7 @@ class PatientScreen extends React.Component {
         case 'A':
           return (<span className="clinical__value--abnormal">Anormal</span>);
         case 'IND':
-          return (<span className="clinical__value--indeterminate">Indéterminée</span>);
+          return (<span className="clinical__value--indeterminate">Sans objet</span>);
         default:
           return (<span className="clinical__value--normal">Négatif</span>);
       }
