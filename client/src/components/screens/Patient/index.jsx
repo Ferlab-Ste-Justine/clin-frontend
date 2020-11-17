@@ -17,7 +17,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline,
+  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline, ic_widgets,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -148,7 +148,7 @@ class PatientScreen extends React.Component {
               return '#EB2F96';
           }
         };
-        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{r.status}</span>;
+        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{intl.get(`screen.patient.details.status.${r.status}`)}</span>;
 
         const practitionerPopOverText = info => (
           <Card title="Médecin résponsable" bordered={false}>
@@ -253,7 +253,7 @@ class PatientScreen extends React.Component {
     const { hpos } = this.props;
     const ontology = hpos.map(hpo => (
       {
-        observed: hpo.observations,
+        observed: hpo.observed,
         term: hpo.term,
         apparition: hpo.ageAtOnset,
         notes: hpo.note,
@@ -481,7 +481,7 @@ class PatientScreen extends React.Component {
                              </div>
                              <div className="row">
                                <span className="title">{genderTitle}</span>
-                               <span className="info">{patient.gender}</span>
+                               <span className="info">{intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`)}</span>
                              </div>
                              <div className="row">
                                <span className="title">{mrn}</span>
@@ -651,7 +651,7 @@ class PatientScreen extends React.Component {
                  key="variant"
                  tab={(
                    <span className="tabName">
-                     <IconKit size={18} icon={ic_assignment} />
+                     <IconKit size={18} icon={ic_widgets} />
                      Variant
                    </span>
                  )}

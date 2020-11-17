@@ -23,7 +23,6 @@ export class ClinicalImpressionProvider extends Provider<ClinicalImpression, Con
       "ClinicalImpression"
     );
     const observations = dataExtractor.extractResources<Observation>(clinicalImpressionBundle, "Observation");
-    console.log(observations);
     const cgh = observations.find((observation) => get(observation, "code.coding[0].code", "") === CGH_CODE);
     const inves = observations.find((observation) => get(observation, "code.coding[0].code", "") === CGH_INVES);
     const indic = observations.find((observation) => get(observation, "code.coding[0].code", "") === CGH_INDIC);
@@ -44,6 +43,8 @@ export class ClinicalImpressionProvider extends Provider<ClinicalImpression, Con
               hospital: "N/A",
               name: "N/A",
               phone: "N/A",
+              mrn: "N/A",
+              organization: "N/A"
             },
       summary: get(inves, "note[0].text", "N/A"),
     };

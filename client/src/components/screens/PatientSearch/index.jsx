@@ -208,7 +208,7 @@ class PatientSearchScreen extends React.Component {
           organization: result.organization.name,
           firstName: result.firstName,
           lastName: result.lastName,
-          gender: result.gender,
+          gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
           birthDate: result.birthDate,
           familyId: result.familyId,
           familyComposition: '',
