@@ -323,7 +323,7 @@ class InteractiveTable extends React.Component {
             onChange={this.handleSearchColumnByQuery}
             value={searchValue}
           />
-          )}
+        )}
         bordered={false}
       >
         { !isEqual(orderedColumns.map(column => column.label), visibleColumns) && (
@@ -385,11 +385,11 @@ class InteractiveTable extends React.Component {
 
               {
                 canCreateReport && (
-                <Col>
-                  <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
-                    <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.createReport')}
-                  </Button>
-                </Col>
+                  <Col>
+                    <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
+                      <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.createReport')}
+                    </Button>
+                  </Col>
                 )
               }
             </Row>

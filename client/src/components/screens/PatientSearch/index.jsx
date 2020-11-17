@@ -464,7 +464,7 @@ class PatientSearchScreen extends React.Component {
                   Filtrer
                 </div>
                 { isFacetOpen && (
-                <IconKit className="btnClose" size={16} icon={ic_close} />
+                  <IconKit className="btnClose" size={16} icon={ic_close} />
                 )}
               </Button>
             </Col>
@@ -494,82 +494,82 @@ class PatientSearchScreen extends React.Component {
           </Row>
           <Row type="flex" justify="space-between">
             { isFacetOpen && (
-            <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
-              <Menu
-                onClick={this.handleClick}
-                mode="inline"
-                className="menuCaterogy"
-                onOpenChange={this.handleCategoriesOpenChange}
-              >{
-                facet.map(type => (
-                  <SubMenu
-                    className="category"
-                    key={type}
-                    title={(
-                      <span className="subMenuTitle">
-                        <IconKit size={24} icon={this.isCategorieFacetOpen(type) ? ic_keyboard_arrow_down : ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
-                        <div className="titleName">
-                          <span className="value">{intl.get(`screen.patientsearch.table.${type}`)}</span>
-                          {
-                            this.isCategorieFacetOpen(type) ? (
-                              <Button className="iconSearch" onClick={this.handleInputView}>
-                                <IconKit size={24} icon={ic_search} />
-                              </Button>
-                            ) : null
-                          }
+              <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
+                <Menu
+                  onClick={this.handleClick}
+                  mode="inline"
+                  className="menuCaterogy"
+                  onOpenChange={this.handleCategoriesOpenChange}
+                >{
+                    facet.map(type => (
+                      <SubMenu
+                        className="category"
+                        key={type}
+                        title={(
+                          <span className="subMenuTitle">
+                            <IconKit size={24} icon={this.isCategorieFacetOpen(type) ? ic_keyboard_arrow_down : ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
+                            <div className="titleName">
+                              <span className="value">{intl.get(`screen.patientsearch.table.${type}`)}</span>
+                              {
+                                this.isCategorieFacetOpen(type) ? (
+                                  <Button className="iconSearch" onClick={this.handleInputView}>
+                                    <IconKit size={24} icon={ic_search} />
+                                  </Button>
+                                ) : null
+                              }
 
-                        </div>
-                      </span>
-                    )}
-                  >
-                    <Card bordered={false}>
-                      <Row className="selectionToolBar">
-                        <Button onClick={this.handleSelectAll}>{selectAll}</Button>
-                        <Divider type="vertical" />
-                        <Button onClick={this.handleSelectNone}>{selectNone}</Button>
-                      </Row>
-                      <Row>
-                        <Col span={24}>
-                          <Checkbox.Group className="checkboxGroup" onChange={this.handleSelectionChange}>
-                            { this.getValue(type).map(option => (
-                              <Row>
-                                <Col>
-                                  <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{ option }</span></Checkbox>
-                                </Col>
-                              </Row>
-                            )) }
-                          </Checkbox.Group>
-                        </Col>
-                      </Row>
-                    </Card>
-                  </SubMenu>
-                ))
-              }
-              </Menu>
-            </Col>
+                            </div>
+                          </span>
+                        )}
+                      >
+                        <Card bordered={false}>
+                          <Row className="selectionToolBar">
+                            <Button onClick={this.handleSelectAll}>{selectAll}</Button>
+                            <Divider type="vertical" />
+                            <Button onClick={this.handleSelectNone}>{selectNone}</Button>
+                          </Row>
+                          <Row>
+                            <Col span={24}>
+                              <Checkbox.Group className="checkboxGroup" onChange={this.handleSelectionChange}>
+                                { this.getValue(type).map(option => (
+                                  <Row>
+                                    <Col>
+                                      <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{ option }</span></Checkbox>
+                                    </Col>
+                                  </Row>
+                                )) }
+                              </Checkbox.Group>
+                            </Col>
+                          </Row>
+                        </Card>
+                      </SubMenu>
+                    ))
+                  }
+                </Menu>
+              </Col>
             )}
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
               <Card bordered={false} className="tablePatient">
                 {defaultColumns != null && (
-                <InteractiveTable
-                  key="patient-interactive-table"
-                  size={size}
-                  page={page}
-                  total={total}
-                  defaultVisibleColumns={defaultColumns}
-                  defaultColumnsOrder={defaultColumnsOrder}
-                  schema={this.columnPreset}
-                  columnWidth={this.columnPreset.map(c => c.columnWidth)}
-                  pageChangeCallback={this.handlePageChange}
-                  pageSizeChangeCallback={this.handlePageSizeChange}
-                  exportCallback={this.exportToTsv}
-                  numFrozenColumns={1}
-                  isLoading={showSubloadingAnimation}
-                  rowHeights={rowHeights}
-                  columnsUpdated={this.handleColumnsUpdated}
-                  columnsOrderUpdated={this.handleColumnsOrderUpdated}
-                  columnsReset={this.handleColumnsReset}
-                />
+                  <InteractiveTable
+                    key="patient-interactive-table"
+                    size={size}
+                    page={page}
+                    total={total}
+                    defaultVisibleColumns={defaultColumns}
+                    defaultColumnsOrder={defaultColumnsOrder}
+                    schema={this.columnPreset}
+                    columnWidth={this.columnPreset.map(c => c.columnWidth)}
+                    pageChangeCallback={this.handlePageChange}
+                    pageSizeChangeCallback={this.handlePageSizeChange}
+                    exportCallback={this.exportToTsv}
+                    numFrozenColumns={1}
+                    isLoading={showSubloadingAnimation}
+                    rowHeights={rowHeights}
+                    columnsUpdated={this.handleColumnsUpdated}
+                    columnsOrderUpdated={this.handleColumnsOrderUpdated}
+                    columnsReset={this.handleColumnsReset}
+                  />
                 )}
               </Card>
             </Col>

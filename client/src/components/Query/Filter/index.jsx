@@ -392,7 +392,7 @@ class Filter extends React.Component {
             />
             <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
           </>
-          )}
+        )}
         onClick={this.handleApply}
         overlay={applyMenu(cfg)
         }
@@ -436,9 +436,9 @@ class Filter extends React.Component {
                 </Button>
               </Tooltip>
               {(searchable) && (
-              <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
-                <IconKit size={24} icon={ic_search} />
-              </Button>
+                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                  <IconKit size={24} icon={ic_search} />
+                </Button>
               )}
               {(resettable && canApply) && (
                 <Button className={styleFilter.iconSearch} onClick={onReset}>

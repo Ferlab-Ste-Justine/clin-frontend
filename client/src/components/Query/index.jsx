@@ -335,24 +335,24 @@ class Query extends React.Component {
           </Tooltip>
           <div className={styleQuery.actions}>
             {copyable && !isEmpty && (
-            <Tooltip title={duplicateText}>
-              <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }} />
-            </Tooltip>
+              <Tooltip title={duplicateText}>
+                <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }} />
+              </Tooltip>
             )}
             {removable && (
-            <Tooltip title={deleteText} onVisibleChange={this.toggleToolTip} visible={toolTipOpen}>
-              <Popconfirm
-                title={intl.get('screen.patientvariant.query.menu.delete.body')}
-                onConfirm={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }}
-                okText={intl.get('screen.patientvariant.query.menu.delete.button.ok')}
-                cancelText={intl.get('screen.patientvariant.query.menu.delete.button.cancel')}
-                icon={null}
-                overlayClassName={styleQuery.popconfirm}
-                onVisibleChange={this.togglePopConfirm}
-              >
-                <IconKit icon={ic_delete} size={16} className={styleQuery.icon} />
-              </Popconfirm>
-            </Tooltip>
+              <Tooltip title={deleteText} onVisibleChange={this.toggleToolTip} visible={toolTipOpen}>
+                <Popconfirm
+                  title={intl.get('screen.patientvariant.query.menu.delete.body')}
+                  onConfirm={() => { this.handleMenuSelection({ key: QUERY_ACTION_DELETE }); }}
+                  okText={intl.get('screen.patientvariant.query.menu.delete.button.ok')}
+                  cancelText={intl.get('screen.patientvariant.query.menu.delete.button.cancel')}
+                  icon={null}
+                  overlayClassName={styleQuery.popconfirm}
+                  onVisibleChange={this.togglePopConfirm}
+                >
+                  <IconKit icon={ic_delete} size={16} className={styleQuery.icon} />
+                </Popconfirm>
+              </Tooltip>
             )}
           </div>
           <div className={styleQuery.count}>

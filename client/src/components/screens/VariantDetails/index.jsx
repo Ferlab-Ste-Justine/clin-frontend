@@ -924,7 +924,7 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_assessment} />
                   {intl.get(SUMMARY_TAB)}
                 </span>
-)}
+              )}
             >
               <div className="page-static-content">
                 <Row type="flex" gutter={24} className="resumeDataList">
@@ -952,7 +952,7 @@ class VariantDetailsScreen extends React.Component {
                                       url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensembl_gene_id}`}
                                       text={g.symbol}
                                     />
-                                }
+                                  }
                                 </li>
                               ))}
                             </ul>
@@ -1032,7 +1032,7 @@ class VariantDetailsScreen extends React.Component {
                                         text={`${pubmed.length} publications`}
                                       />
                                     )
-                              }
+                                }
                               </>
                             )
                             : '--',
@@ -1088,7 +1088,7 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_show_chart} />
                   {intl.get(FREQUENCIES_TAB)}
                 </span>
-                  )}
+              )}
             >
               <div className="page-static-content">
                 <Row type="flex" className="frequenciesTab" gutter={24}>
@@ -1135,7 +1135,7 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_local_library} />
                   {intl.get(CLINICAL_ASSOCIATIONS_TAB)}
                 </span>
-)}
+              )}
             >
               <div className="page-static-content">
                 <Row type="flex" className="clinVarTable">
@@ -1149,17 +1149,17 @@ class VariantDetailsScreen extends React.Component {
                         />
                       ) : null}
                       dataSource={
-                      clinvar
-                        ? [
-                          {
-                            label: intl.get(
-                              'screen.variantDetails.clinicalAssociationsTab.signification',
-                            ),
-                            value: clinvar.clin_sig ? clinvar.clin_sig.join(', ') : null,
-                          },
-                        ]
-                        : []
-                    }
+                        clinvar
+                          ? [
+                            {
+                              label: intl.get(
+                                'screen.variantDetails.clinicalAssociationsTab.signification',
+                              ),
+                              value: clinvar.clin_sig ? clinvar.clin_sig.join(', ') : null,
+                            },
+                          ]
+                          : []
+                      }
                     />
                   </Col>
                 </Row>
@@ -1221,7 +1221,7 @@ class VariantDetailsScreen extends React.Component {
                   <IconKit size={18} icon={ic_people} />
                   {intl.get(PATIENTS_TAB)}
                 </span>
-)}
+              )}
             >
               <div className="page-static-content">
                 <Row type="flex" gutter={32}>
