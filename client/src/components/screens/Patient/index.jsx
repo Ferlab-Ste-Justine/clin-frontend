@@ -148,7 +148,7 @@ class PatientScreen extends React.Component {
               return '#EB2F96';
           }
         };
-        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{r.status}</span>;
+        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{intl.get(`screen.patient.details.status.${r.status}`)}</span>;
 
         const practitionerPopOverText = info => (
           <Card title="Médecin résponsable" bordered={false}>
@@ -481,7 +481,7 @@ class PatientScreen extends React.Component {
                              </div>
                              <div className="row">
                                <span className="title">{genderTitle}</span>
-                               <span className="info">{patient.gender}</span>
+                               <span className="info">{intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`)}</span>
                              </div>
                              <div className="row">
                                <span className="title">{mrn}</span>
