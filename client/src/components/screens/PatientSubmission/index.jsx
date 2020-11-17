@@ -16,9 +16,6 @@ import {
 
 import IconKit from 'react-icons-kit';
 import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';
-import Header from '../../Header';
-import Content from '../../Content';
-import Footer from '../../Footer';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
 import {
   assignServiceRequestPractitioner,
@@ -45,6 +42,7 @@ import {
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
+import Layout from '../../Layout';
 
 const { Step } = Steps;
 
@@ -76,7 +74,7 @@ const getValueCoding = (patient, extensionName) => {
 };
 
 const hasObservations = observations => observations.cgh != null || observations.indic != null
-    || observations.fmh.length > 0 || observations.hpos.length > 0;
+  || observations.fmh.length > 0 || observations.hpos.length > 0;
 
 const getGenderValues = () => ({
   male: {
@@ -491,7 +489,7 @@ class PatientSubmissionScreen extends React.Component {
 
         const checkFamilyHistory = () => {
           if ((checkIfEmptyValue(values.familyRelationshipNotes) && !checkIfEmptyValue(values.familyRelationshipCodes))
-          || (!checkIfEmptyValue(values.familyRelationshipNotes) && checkIfEmptyValue(values.familyRelationshipCodes))) {
+            || (!checkIfEmptyValue(values.familyRelationshipNotes) && checkIfEmptyValue(values.familyRelationshipCodes))) {
             return false;
           }
           return true;
@@ -941,69 +939,69 @@ class PatientSubmissionScreen extends React.Component {
     const currentPage = this.pages[currentPageIndex];
     const pageContent = currentPage.content;
     return (
-      <Content type="auto">
-        <Header />
-        <div className="page_headerStaticMargin">
-          <Title className="headerStaticContent" level={3}>Demande de séquençage génomique</Title>
-        </div>
-        <div className="page-static-content">
-          <Card bordered={false} className="step">
-            <Steps current={currentPageIndex}>
-              {this.pages.map(item => <Step key={item.title} title={item.title} />)}
-            </Steps>
-          </Card>
+      <Layout>
+        <>
+          <div className="page_headerStaticMargin">
+            <Title className="headerStaticContent" level={3}>Demande de séquençage génomique</Title>
+          </div>
+          <div className="page-static-content">
+            <Card bordered={false} className="step">
+              <Steps current={currentPageIndex}>
+                {this.pages.map(item => <Step key={item.title} title={item.title} />)}
+              </Steps>
+            </Card>
 
-          <Form
-            onSubmit={this.handleSubmit}
-          >
-            {pageContent}
-            <div className="submission-form-actions">
-              {
-                currentPageIndex === this.pages.length - 1 && (
-                  <Button
-                    htmlType="submit"
-                    type="primary"
-                    disabled={this.canGoNextPage(currentPageIndex)}
-                    onClick={this.submit}
-                  >
-                    Soumettre
-                  </Button>
-                )
-              }
-              {
-                currentPageIndex !== this.pages.length - 1 && (
-                  <Button type="primary" onClick={() => this.next()} disabled={this.canGoNextPage(currentPageIndex)}>
-                    {intl.get('screen.clinicalSubmission.nextButtonTitle')}
-                  </Button>
-                )
-              }
+            <Form
+              onSubmit={this.handleSubmit}
+            >
+              {pageContent}
+              <div className="submission-form-actions">
+                {
+                  currentPageIndex === this.pages.length - 1 && (
+                    <Button
+                      htmlType="submit"
+                      type="primary"
+                      disabled={this.canGoNextPage(currentPageIndex)}
+                      onClick={this.submit}
+                    >
+                      Soumettre
+                    </Button>
+                  )
+                }
+                {
+                  currentPageIndex !== this.pages.length - 1 && (
+                    <Button type="primary" onClick={() => this.next()} disabled={this.canGoNextPage(currentPageIndex)}>
+                      {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+                    </Button>
+                  )
+                }
 
-              {
-                currentPageIndex !== 0 && (
-                  <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                    <IconKit size={20} icon={ic_keyboard_arrow_left} />
-                    {intl.get('screen.clinicalSubmission.previousButtonTitle')}
-                  </Button>
-                )
-              }
+                {
+                  currentPageIndex !== 0 && (
+                    <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
+                      <IconKit size={20} icon={ic_keyboard_arrow_left} />
+                      {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+                    </Button>
+                  )
+                }
 
-              <Button
-                htmlType="submit"
-              >
-                <IconKit size={20} icon={ic_save} />
-                {intl.get('screen.clinicalSubmission.saveButtonTitle')}
-              </Button>
-              <Button
-                onClick={actions.navigateToPatientSearchScreen}
-                className="cancelButton"
-              >
-                {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
-              </Button>
-            </div>
-          </Form>
-        </div>
-        <Footer />
-      </Content>
+                <Button
+                  htmlType="submit"
+                >
+                  <IconKit size={20} icon={ic_save} />
+                  {intl.get('screen.clinicalSubmission.saveButtonTitle')}
+                </Button>
+                <Button
+                  onClick={actions.navigateToPatientSearchScreen}
+                  className="cancelButton"
+                >
+                  {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
+                </Button>
+              </div>
+            </Form>
+          </div>
+        </>
+      </Layout>
     );
   }
 }

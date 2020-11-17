@@ -14,10 +14,6 @@ import IconKit from 'react-icons-kit';
 import {
   ic_assessment, ic_show_chart, ic_local_library, ic_people,
 } from 'react-icons-kit/md';
-
-import Header from '../../Header';
-import Content from '../../Content';
-import Footer from '../../Footer';
 import DataList from '../../DataList';
 import DataTable, { createCellRenderer } from '../../Table/index';
 
@@ -25,6 +21,7 @@ import './style.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
 import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
+import Layout from '../../Layout';
 
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
@@ -696,7 +693,7 @@ class VariantDetailsScreen extends React.Component {
     return this.getGenes()
       .filter(gene => gene.radboudumc != null || gene.orphanet != null)
       .map((g) => {
-      // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
+        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
         const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
         const orphanetLine = test || '--';
         return { symbol: g.symbol, orphanet: (<span className="orphanetValue">{orphanetLine}</span>) };
@@ -880,8 +877,7 @@ class VariantDetailsScreen extends React.Component {
       mutationIdTitle = data.hgvsg;
     }
     return (
-      <Content>
-        <Header />
+      <Layout>
         <div className="variantPageContent">
           <div className="page_headerStaticNoMargin">
             <div className="headerStaticContent">
@@ -1255,8 +1251,7 @@ class VariantDetailsScreen extends React.Component {
             </Tabs.TabPane>
           </Tabs>
         </div>
-        <Footer />
-      </Content>
+      </Layout>
     );
   }
 }

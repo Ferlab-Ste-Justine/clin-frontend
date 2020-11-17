@@ -5,12 +5,8 @@ import IconKit from 'react-icons-kit';
 import {
   ic_lock,
 } from 'react-icons-kit/md';
-
-import Header from '../../Header';
-import Content from '../../Content';
-import Footer from '../../Footer';
-
 import './style.scss';
+import Layout from '../../Layout';
 
 const goBack = () => {
   // @NOTE Path is: denied resource -> access-denied; we must go back before the denied resource location
@@ -18,8 +14,7 @@ const goBack = () => {
 };
 
 const AccessDeniedScreen = () => (
-  <Content type="auto">
-    <Header />
+  <Layout>
     <Card className="accessDeniedBackground">
       <Card bordered={false} className="accessDeniedContent">
         <Row>
@@ -32,13 +27,11 @@ const AccessDeniedScreen = () => (
           <Typography.Text className="text">{intl.get('screen.accessdenied.description')}</Typography.Text>
         </Row>
         <Row>
-          {window.history.length > 2 ? <button type="button" className="buttonBack" onClick={goBack}>{intl.get('screen.accessdenied.button')}</button> : null }
+          {window.history.length > 2 ? <button type="button" className="buttonBack" onClick={goBack}>{intl.get('screen.accessdenied.button')}</button> : null}
         </Row>
       </Card>
-
     </Card>
-    <Footer />
-  </Content>
+  </Layout>
 );
 
 export default AccessDeniedScreen;

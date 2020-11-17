@@ -18,9 +18,6 @@ import {
 import './style.scss';
 import style from '../../../containers/App/style.module.scss';
 
-import Header from '../../Header';
-import Content from '../../Content';
-import Footer from '../../Footer';
 import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
@@ -28,6 +25,7 @@ import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../ac
 import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
 import { updateUserColumns, updateUserColumnsOrder, updateUserColumnsReset } from '../../../actions/user';
 import { appShape } from '../../../reducers/app';
+import Layout from '../../Layout';
 
 const COLUMN_WIDTHS = {
   DEFAULT: 150,
@@ -461,12 +459,11 @@ class PatientSearchScreen extends React.Component {
     }));
 
     return (
-      <Content>
-        <Header />
+      <Layout>
         <Card className="patientSearch">
           <Row>
             <Col span={24}>
-              <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
+              <Title level={3}>{intl.get('screen.patientsearch.title')}</Title>
             </Col>
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
@@ -476,7 +473,7 @@ class PatientSearchScreen extends React.Component {
                   <IconKit className="btnIcon" size={16} icon={ic_tune} />
                   Filtrer
                 </div>
-                { isFacetOpen && (
+                {isFacetOpen && (
                   <IconKit className="btnClose" size={16} icon={ic_close} />
                 )}
               </Button>
@@ -501,12 +498,12 @@ class PatientSearchScreen extends React.Component {
             <Col>
               <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
                 <IconKit size={16} icon={ic_add} />
-                { intl.get('screen.patientsearch.button.new') }
+                {intl.get('screen.patientsearch.button.new')}
               </Button>
             </Col>
           </Row>
           <Row type="flex" justify="space-between">
-            { isFacetOpen && (
+            {isFacetOpen && (
               <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
                 <Menu
                   onClick={this.handleClick}
@@ -544,13 +541,13 @@ class PatientSearchScreen extends React.Component {
                           <Row>
                             <Col span={24}>
                               <Checkbox.Group className="checkboxGroup" onChange={this.handleSelectionChange}>
-                                { this.getValue(type).map(option => (
+                                {this.getValue(type).map(option => (
                                   <Row>
                                     <Col>
-                                      <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{ option }</span></Checkbox>
+                                      <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{option}</span></Checkbox>
                                     </Col>
                                   </Row>
-                                )) }
+                                ))}
                               </Checkbox.Group>
                             </Col>
                           </Row>
@@ -588,8 +585,7 @@ class PatientSearchScreen extends React.Component {
             </Col>
           </Row>
         </Card>
-        <Footer />
-      </Content>
+      </Layout>
     );
   }
 }
