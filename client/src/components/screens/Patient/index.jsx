@@ -253,7 +253,7 @@ class PatientScreen extends React.Component {
     const { hpos } = this.props;
     const ontology = hpos.map(hpo => (
       {
-        observed: hpo.observations,
+        observed: hpo.observed,
         term: hpo.term,
         apparition: hpo.ageAtOnset,
         notes: hpo.note,
