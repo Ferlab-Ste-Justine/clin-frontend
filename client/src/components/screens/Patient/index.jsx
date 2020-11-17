@@ -17,7 +17,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline,
+  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline, ic_widgets,
 } from 'react-icons-kit/md';
 import Header from '../../Header';
 import Content from '../../Content';
@@ -651,7 +651,7 @@ class PatientScreen extends React.Component {
                  key="variant"
                  tab={(
                    <span className="tabName">
-                     <IconKit size={18} icon={ic_assignment} />
+                     <IconKit size={18} icon={ic_widgets} />
                      Variant
                    </span>
                  )}
