@@ -696,3 +696,8 @@ div.ant-card {
 .customIcon{
   display: flex;
 }
+
+//AUTOCOMPLETE
+.ant-select-selection:hover{
+    border:0px solid transparent !important;
+}

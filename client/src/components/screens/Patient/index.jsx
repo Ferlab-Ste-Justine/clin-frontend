@@ -397,9 +397,6 @@ class PatientScreen extends React.Component {
           return (<span className="clinical__value--normal">Négatif</span>);
       }
     };
-
-    console.log('prescription', prescriptions);
-
     return (
       <Layout>
         <Spin spinning={showSubloadingAnimation}>
