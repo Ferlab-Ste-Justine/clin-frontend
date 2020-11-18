@@ -10,7 +10,7 @@ import {
   Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input,
 } from 'antd';
 import {
-  get, find,
+  find,
 } from 'lodash';
 
 
@@ -119,8 +119,8 @@ class PatientScreen extends React.Component {
     const requests = prescriptions.map(prescription => ({
       status: prescription.status,
       date: prescription.date,
-      requester: get(prescription, 'requester.name', 'N/A'),
-      practitioner: get(prescription, 'performer.name', 'N/A'),
+      requester: prescription.requester,
+      practitioner: prescription.performer,
       organization: 'LDx CHU Ste-Justine',
       test: prescription.test,
     }));
@@ -148,23 +148,23 @@ class PatientScreen extends React.Component {
 
         const practitionerPopOverText = info => (
           <Card title="Médecin résponsable" bordered={false}>
-            <p><span className="popOverName">{ info }</span>  |  4425615</p>
-            <p>CHU Sainte Justine</p>
-            <p>(514) 456-367 poste: 3542</p>
-            <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
+            <p><span className="popOverName">{ info.name }</span>  |  4425615</p>
+            <p>{ info.organization }</p>
+            <p>{ info.phone } poste: { info.phoneExtension }</p>
+            <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
           </Card>
         );
         const requesterPopOverText = info => (
           <Card title="Médecin prescripteur" bordered={false}>
-            <p><span className="popOverName">{ info }</span>  |  4425615</p>
-            <p>CHU Sainte Justine</p>
-            <p>(514) 456-367 poste: 3542</p>
-            <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
+            <p><span className="popOverName">{ info.name }</span>  |  4425615</p>
+            <p>{ info.organization }</p>
+            <p>{ info.phone } poste: { info.phoneExtension }</p>
+            <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
           </Card>
         );
         const practitioner = (
           <span className="logoText">
-            { r.practitioner }
+            { r.practitioner.name }
             <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(r.practitioner)} trigger="hover">
               <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
             </Popover>
@@ -172,7 +172,7 @@ class PatientScreen extends React.Component {
         );
         const requester = (
           <span className="logoText">
-            { r.requester }
+            { r.requester.name }
             <Popover overlayClassName="practitionerInfo" placement="topRight" content={requesterPopOverText(r.requester)} trigger="hover">
               <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
             </Popover>
@@ -379,7 +379,7 @@ class PatientScreen extends React.Component {
       <Card title="Médecin résponsable" bordered={false}>
         <p><span className="popOverName">{ info.name }</span>  | { info.mrn }</p>
         <p>{ info.organization }</p>
-        <p>{ info.phone }</p>
+        <p>{ info.phone } poste: { info.phoneExtension }</p>
         <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
       </Card>
     );

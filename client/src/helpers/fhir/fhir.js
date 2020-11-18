@@ -374,6 +374,7 @@ export const createPatientSubmissionBundle = ({
   deleted,
   practitionerId,
   groupId,
+  status,
 }) => {
   const patientResource = patient;
   if (practitionerId != null) {
@@ -393,7 +394,7 @@ export const createPatientSubmissionBundle = ({
   const serviceRequestResource = FhirDataManager.createServiceRequest(
     practitionerId,
     patientEntry.fullUrl,
-    'draft',
+    status || 'draft',
     serviceRequest.code,
   );
 

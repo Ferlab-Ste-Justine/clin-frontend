@@ -714,6 +714,7 @@ class PatientSubmissionScreen extends React.Component {
         actions.saveObservations(submission.observations);
         this.saveSecondPageLocalStore();
       } else {
+        submission.status = 'on-hold';
         submission.observations = {
           ...observations,
           cgh: {
