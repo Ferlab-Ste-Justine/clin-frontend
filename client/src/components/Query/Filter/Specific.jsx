@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Row, Col, Checkbox, Tag, Tooltip, Divider, Button, Badge,
@@ -26,9 +25,11 @@ const SELECTOR_INTERSECTION = 'intersection';
 const SELECTOR_DIFFERENCE = 'difference';
 const SELECTOR_DEFAULT = SELECTOR_NONE;
 const SELECTORS = [SELECTOR_ALL, SELECTOR_NONE, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
+const HPO_POSITIVE_CODE = 'POS';
+const HPO_NEGATIVE_CODE = 'NEG';
 
 const isObservedPos = (ontology) => {
-  if (ontology.observed === 'POS') {
+  if (ontology.parsed.observed === HPO_POSITIVE_CODE) {
     return true;
   }
 
@@ -36,14 +37,15 @@ const isObservedPos = (ontology) => {
 };
 
 const isObservedNeg = (ontology) => {
-  if (ontology.observed === 'NEG' || ontology.observed === '') {
+  if (ontology.parsed.observed === HPO_NEGATIVE_CODE) {
     return true;
   }
   return false;
 };
 
 const optionObservedPos = externalDataSet => (option) => {
-  const observedPos = externalDataSet.ontology.filter(isObservedPos);
+  const observedPos = externalDataSet.hpos.filter(isObservedPos);
+  console.log(observedPos.length);
   const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
   const code = option.value.match(hpoRegexp).toString();
   const obsPos = find(observedPos, { code });
@@ -51,7 +53,7 @@ const optionObservedPos = externalDataSet => (option) => {
 };
 
 const optionObservedNeg = externalDataSet => (option) => {
-  const observedNeg = externalDataSet.ontology.filter(isObservedNeg);
+  const observedNeg = externalDataSet.hpos.filter(isObservedNeg);
   const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
   const code = option.value.match(hpoRegexp).toString();
   const obsNeg = find(observedNeg, { code });
@@ -194,7 +196,7 @@ class SpecificFilter extends Filter {
           selectedValues = dataSet;
           break;
         case SELECTOR_INTERSECTION:
-          selectorDataSet = externalDataSet.ontology.filter(isObservedPos)
+          selectorDataSet = externalDataSet.hpos.filter(isObservedPos)
             .map(ontology => ontology.code);
           selectedValues = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
@@ -202,7 +204,7 @@ class SpecificFilter extends Filter {
           });
           break;
         case SELECTOR_DIFFERENCE:
-          selectorDataSet = externalDataSet.ontology.filter(isObservedNeg)
+          selectorDataSet = externalDataSet.hpos.filter(isObservedNeg)
             .map(ontology => ontology.code);
           selectedValues = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
@@ -282,8 +284,8 @@ class SpecificFilter extends Filter {
 
     const options = loadedOptionsClone.map((option) => {
       const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
-      const observedPos = externalDataSet.ontology.filter(ontology => ontology.observed === 'POS');
-      const observedNeg = externalDataSet.ontology.filter(ontology => ontology.observed === 'NEG' || ontology.observed === '');
+      const observedPos = externalDataSet.hpos.filter(ontology => ontology.parsed.observed === HPO_POSITIVE_CODE);
+      const observedNeg = externalDataSet.hpos.filter(ontology => ontology.parsed.observed === HPO_NEGATIVE_CODE);
       const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
       const code = option.value.match(hpoRegexp).toString();
       const isObservePos = find(observedPos, { code });
