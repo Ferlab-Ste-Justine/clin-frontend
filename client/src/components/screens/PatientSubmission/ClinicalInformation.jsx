@@ -61,33 +61,33 @@ const HpoHiddenFields = ({
   getFieldDecorator,
 }) => (
   <div>
-    {getFieldDecorator(`hpoIds[${hpoIndex}]`, {
+    { getFieldDecorator(`hpoIds[${hpoIndex}]`, {
       rules: [],
       initialValue: getResourceId(hpoResource) || '',
     })(
       <Input size="small" type="hidden" />,
-    )}
+    ) }
 
-    {getFieldDecorator(`hposToDelete[${hpoIndex}]`, {
+    { getFieldDecorator(`hposToDelete[${hpoIndex}]`, {
       rules: [],
       initialValue: hpoResource.toDelete,
     })(
       <Input size="small" type="hidden" />,
-    )}
+    ) }
 
-    {getFieldDecorator(`hpoCodes[${hpoIndex}]`, {
+    { getFieldDecorator(`hpoCodes[${hpoIndex}]`, {
       rules: [],
       initialValue: getHPOCode(hpoResource) || '',
     })(
       <Input size="small" type="hidden" />,
-    )}
+    ) }
 
-    {getFieldDecorator(`hpoDisplays[${hpoIndex}]`, {
+    { getFieldDecorator(`hpoDisplays[${hpoIndex}]`, {
       rules: [],
       initialValue: getHPODisplay(hpoResource) || '',
     })(
       <Input size="small" type="hidden" />,
-    )}
+    ) }
   </div>
 );
 
@@ -186,7 +186,7 @@ class ClinicalInformation extends React.Component {
       <div key={hpoResource.valueCodeableConcept.coding[0].code} className="phenotypeBlock">
         <div className="phenotypeFirstLine">
           <div className="leftBlock">
-            <span className="hpoTitle">{getHPODisplay(hpoResource)}</span>
+            <span className="hpoTitle">{ getHPODisplay(hpoResource) }</span>
             <Popconfirm
               placement="top"
               title={intl.get('form.patientSubmission.form.hpo.confirm.text')}
@@ -208,15 +208,15 @@ class ClinicalInformation extends React.Component {
                 defaultValue={getHPOInterpretationCode(hpoResource)}
                 onChange={event => this.handleObservationChanged(event, hpoIndex)}
               >
-                {hpoInterpretationValues().map((interpretation, index) => (
+                { hpoInterpretationValues().map((interpretation, index) => (
                   <Select.Option
                     key={`hpoInterpretation_${index}`}
                     value={interpretation.value}
                   >
                     <IconKit className={`${interpretation.iconClass} icon`} size={14} icon={interpretationIcon[interpretation.value]} />
-                    {interpretation.display}
+                    { interpretation.display }
                   </Select.Option>
-                ))}
+                )) }
               </Select>
             </Form.Item>
             <Form.Item key={`onset-${hpoIndex}`}>
@@ -231,9 +231,9 @@ class ClinicalInformation extends React.Component {
                 {
                   hpoOnsetValues.map((group, gIndex) => (
                     <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
-                      {group.options.map((o, oIndex) => (
-                        <Option value={o.code} key={`onsetOption_${oIndex}`}>{o.display}</Option>
-                      ))}
+                      { group.options.map((o, oIndex) => (
+                        <Option value={o.code} key={`onsetOption_${oIndex}`}>{ o.display }</Option>
+                      )) }
                     </OptGroup>
                   ))
                 }
@@ -452,7 +452,7 @@ class ClinicalInformation extends React.Component {
       if (item.children) {
         return (
           <TreeNode title={item.title} key={item.key} dataRef={item}>
-            {this.renderTreeNodes(item.children)}
+            { this.renderTreeNodes(item.children) }
           </TreeNode>
         );
       }
@@ -478,22 +478,22 @@ class ClinicalInformation extends React.Component {
     const familyItems = familyHistoryResources.map((resource, index) => ((
       <div className="familyLine">
         <div className="familyTop">
-          {getFieldDecorator(`familyRelationshipIds[${index}]`, {
+          { getFieldDecorator(`familyRelationshipIds[${index}]`, {
             rules: [],
             initialValue: getResourceId(resource) || '',
           })(
             <Input size="small" type="hidden" />,
-          )}
+          ) }
 
-          {getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
+          { getFieldDecorator(`familyRelationshipsToDelete[${index}]`, {
             rules: [],
             initialValue: resource.toDelete,
           })(
             <Input size="small" type="hidden" />,
-          )}
+          ) }
 
           <Form.Item required={false} key={`familyHistoryNote_${getFamilyRelationshipCode(resource)}`}>
-            {getFieldDecorator(`familyRelationshipNotes[${index}]`, {
+            { getFieldDecorator(`familyRelationshipNotes[${index}]`, {
               validateTrigger: ['onChange', 'onBlur'],
               initialValue: getFamilyRelationshipNote(resource),
               rules: [{
@@ -503,20 +503,20 @@ class ClinicalInformation extends React.Component {
               ],
             })(
               <Input onChange={event => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
-            )}
+            ) }
           </Form.Item>
           <Form.Item required={false} key={`familyRelation_${getFamilyRelationshipCode(resource)}`}>
-            {getFieldDecorator(`familyRelationshipCodes[${index}]`, {
+            { getFieldDecorator(`familyRelationshipCodes[${index}]`, {
               validateTrigger: ['onChange', 'onBlur'],
               initialValue: getFamilyRelationshipCode(resource),
               rules: [],
             })(
               <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown" onChange={(event) => { this.fmhSelected(event, index); }}>
-                {Object.values(relationshipPossibleValues).map(rv => (
-                  <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{rv.label}</Select.Option>
-                ))}
+                { Object.values(relationshipPossibleValues).map(rv => (
+                  <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{ rv.label }</Select.Option>
+                )) }
               </Select>,
-            )}
+            ) }
           </Form.Item>
           <Button
             className="delButton"
@@ -556,16 +556,16 @@ class ClinicalInformation extends React.Component {
     return (
       <div>
         <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
-          {getFieldDecorator('cghId', {
+          { getFieldDecorator('cghId', {
             rules: [],
             initialValue: cghId,
           })(
             <Input size="small" type="hidden" />,
-          )}
+          ) }
 
-          {/* TODO initialValue */}
+          { /* TODO initialValue */ }
           <Form.Item label="Type d’analyse">
-            {getFieldDecorator('analyse', {
+            { getFieldDecorator('analyse', {
               rules: [],
               initialValue: has(localStore.serviceRequest, 'code') ? localStore.serviceRequest.code : null,
             })(
@@ -574,28 +574,28 @@ class ClinicalInformation extends React.Component {
                 <Radio.Button value="WGS"><span className="radioText">Génome</span></Radio.Button>
                 <Radio.Button value="GP"><span className="radioText">Séquençage ciblé</span></Radio.Button>
               </Radio.Group>,
-            )}
+            ) }
           </Form.Item>
         </Card>
         <Card title="Résumé de l’investigation" bordered={false} className="staticCard patientContent">
           <Form.Item label="CGH">
-            {getFieldDecorator('cghInterpretationValue', {
+            { getFieldDecorator('cghInterpretationValue', {
               rules: [],
               initialValue: cghInterpretationValue,
             })(
               <Radio.Group buttonStyle="solid">
-                {CGH_VALUES().map((v, index) => (
-                  <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{v.display}</span></Radio.Button>
-                ))}
+                { CGH_VALUES().map((v, index) => (
+                  <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{ v.display }</span></Radio.Button>
+                )) }
               </Radio.Group>,
-            )}
+            ) }
           </Form.Item>
           {
             /* TODO initalValue */
             (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
             && (
               <Form.Item label="Précision">
-                {getFieldDecorator('cghPrecision', {
+                { getFieldDecorator('cghPrecision', {
                   rules: [{
                     required: true,
                     message: 'Veuillez indiquer le résultat du CGH',
@@ -608,13 +608,13 @@ class ClinicalInformation extends React.Component {
                   initialValue: has(localStore, 'cgh.precision') ? localStore.cgh.precision : null,
                 })(
                   <Input placeholder="Veuillez préciser…" className="input note" />,
-                )}
+                ) }
               </Form.Item>
             )
           }
 
           <Form.Item label="Résumé">
-            {getFieldDecorator('summaryNote', {
+            { getFieldDecorator('summaryNote', {
               rules: [{
                 whitespace: true,
                 message: 'Ne peut pas contenir que des espaces',
@@ -623,16 +623,16 @@ class ClinicalInformation extends React.Component {
               initialValue: summaryNoteValue,
             })(
               <TextArea className="input note" rows={4} />,
-            )}
+            ) }
             <span className="optional">Facultatif</span>
           </Form.Item>
         </Card>
         <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
           <div className="familyLines">
-            {familyItems}
+            { familyItems }
           </div>
           <Form.Item>
-            {/* <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}> */}
+            { /* <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}> */ }
             <Button className="addFamilyButton" disabled={this.isAddDisabled()} onClick={this.addFamilyHistory}>
               <IconKit size={14} icon={ic_add} />
                 Ajouter
@@ -659,7 +659,7 @@ class ClinicalInformation extends React.Component {
                 checkedKeys={hpoCodes}
                 onCheck={this.handleHpoNodesChecked}
               >
-                {this.renderTreeNodes(treeData)}
+                { this.renderTreeNodes(treeData) }
               </Tree>
             </div>
             <div className={hpoResources.length === 0 ? 'cardSeparator message' : 'cardSeparator'}>              {
@@ -679,7 +679,7 @@ class ClinicalInformation extends React.Component {
         <Card title="Indications" bordered={false} className="staticCard patientContent">
 
           <Form.Item label="Hypothèse(s) de diagnostic">
-            {getFieldDecorator('indication', {
+            { getFieldDecorator('indication', {
               rules: [
                 {
                   required: true,
@@ -693,7 +693,7 @@ class ClinicalInformation extends React.Component {
               initialValue: indicationNoteValue,
             })(
               <TextArea className="input note" rows={4} />,
-            )}
+            ) }
           </Form.Item>
         </Card>
       </div>

@@ -20,10 +20,10 @@ const DataList = (props) => {
           <List.Item className="listRow">
             <Row type="flex" justify="space-between" align="middle" style={{ width: '100%' }}>
               <Col className="rowTitle">
-                <Typography.Text>{item.label}</Typography.Text>
+                <Typography.Text>{ item.label }</Typography.Text>
               </Col>
               <Col className="rowValue">
-                <Typography.Text>{item.value}</Typography.Text>
+                <Typography.Text>{ item.value }</Typography.Text>
               </Col>
             </Row>
           </List.Item>

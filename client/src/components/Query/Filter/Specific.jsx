@@ -293,13 +293,13 @@ class SpecificFilter extends Filter {
           <span className={styleFilter.checkboxValue}>
             <div className={styleFilter.valueInfo}>
               <Tooltip title={option.value}>
-                {value}
+                { value }
               </Tooltip>
-              {(isObservePos || isObserveNeg) && (
+              { (isObservePos || isObserveNeg) && (
                 <Badge color={isObservePos ? '#52c41a' : '#f5646c'} className={styleFilter.tag} />
-              )}
+              ) }
             </div>
-            <Tag className={styleFilter.valueCount}>{intl.get('components.query.count', { count: option.count })}</Tag>
+            <Tag className={styleFilter.valueCount}>{ intl.get('components.query.count', { count: option.count }) }</Tag>
           </span>
         ),
         value: option.value,
@@ -397,7 +397,7 @@ SpecificFilter.defaultProps = {
     <Row className={styleFilter.selectionToolBar}>
       { values.map(value => (
         <>
-          <Button onClick={() => onChangeCallback(value.value)} className={value.value}>{value.label}</Button>
+          <Button onClick={() => onChangeCallback(value.value)} className={value.value}>{ value.label }</Button>
           <Divider className="divider" type="vertical" />
         </>
       )) }

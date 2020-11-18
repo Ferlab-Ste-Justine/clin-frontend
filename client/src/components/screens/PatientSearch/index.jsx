@@ -441,14 +441,14 @@ class PatientSearchScreen extends React.Component {
       value: result.id,
       text: (
         <>
-          <Typography.Text strong>{result.firstName} {result.lastName}</Typography.Text>
+          <Typography.Text strong>{ result.firstName } { result.lastName }</Typography.Text>
           <br />
           <Typography.Text
             disabled
             style={{
               fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block',
             }}
-          >{result.ramq}
+          >{ result.ramq }
           </Typography.Text>
           <hr style={{
             borderTop: 'none', borderBottom: '1px solid #CCCCCC', marginBottom: -5, marginTop: 3,
@@ -463,7 +463,7 @@ class PatientSearchScreen extends React.Component {
         <Card className="patientSearch">
           <Row>
             <Col span={24}>
-              <Title level={3}>{intl.get('screen.patientsearch.title')}</Title>
+              <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
             </Col>
           </Row>
           <Row type="flex" justify="space-between" className="searchNav">
@@ -473,9 +473,9 @@ class PatientSearchScreen extends React.Component {
                   <IconKit className="btnIcon" size={16} icon={ic_tune} />
                   Filtrer
                 </div>
-                {isFacetOpen && (
+                { isFacetOpen && (
                   <IconKit className="btnClose" size={16} icon={ic_close} />
-                )}
+                ) }
               </Button>
             </Col>
             <Col className="autoSearch">
@@ -498,12 +498,12 @@ class PatientSearchScreen extends React.Component {
             <Col>
               <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
                 <IconKit size={16} icon={ic_add} />
-                {intl.get('screen.patientsearch.button.new')}
+                { intl.get('screen.patientsearch.button.new') }
               </Button>
             </Col>
           </Row>
           <Row type="flex" justify="space-between">
-            {isFacetOpen && (
+            { isFacetOpen && (
               <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
                 <Menu
                   onClick={this.handleClick}
@@ -519,7 +519,7 @@ class PatientSearchScreen extends React.Component {
                           <span className="subMenuTitle">
                             <IconKit size={24} icon={this.isCategorieFacetOpen(type) ? ic_keyboard_arrow_down : ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
                             <div className="titleName">
-                              <span className="value">{intl.get(`screen.patientsearch.table.${type}`)}</span>
+                              <span className="value">{ intl.get(`screen.patientsearch.table.${type}`) }</span>
                               {
                                 this.isCategorieFacetOpen(type) ? (
                                   <Button className="iconSearch" onClick={this.handleInputView}>
@@ -534,20 +534,20 @@ class PatientSearchScreen extends React.Component {
                       >
                         <Card bordered={false}>
                           <Row className="selectionToolBar">
-                            <Button onClick={this.handleSelectAll}>{selectAll}</Button>
+                            <Button onClick={this.handleSelectAll}>{ selectAll }</Button>
                             <Divider type="vertical" />
-                            <Button onClick={this.handleSelectNone}>{selectNone}</Button>
+                            <Button onClick={this.handleSelectNone}>{ selectNone }</Button>
                           </Row>
                           <Row>
                             <Col span={24}>
                               <Checkbox.Group className="checkboxGroup" onChange={this.handleSelectionChange}>
-                                {this.getValue(type).map(option => (
+                                { this.getValue(type).map(option => (
                                   <Row>
                                     <Col>
-                                      <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{option}</span></Checkbox>
+                                      <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{ option }</span></Checkbox>
                                     </Col>
                                   </Row>
-                                ))}
+                                )) }
                               </Checkbox.Group>
                             </Col>
                           </Row>
@@ -557,10 +557,10 @@ class PatientSearchScreen extends React.Component {
                   }
                 </Menu>
               </Col>
-            )}
+            ) }
             <Col className={isFacetOpen ? 'table table-facet' : 'table'}>
               <Card bordered={false} className="tablePatient">
-                {defaultColumns != null && (
+                { defaultColumns != null && (
                   <InteractiveTable
                     key="patient-interactive-table"
                     size={size}
@@ -580,7 +580,7 @@ class PatientSearchScreen extends React.Component {
                     columnsOrderUpdated={this.handleColumnsOrderUpdated}
                     columnsReset={this.handleColumnsReset}
                   />
-                )}
+                ) }
               </Card>
             </Col>
           </Row>

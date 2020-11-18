@@ -5,6 +5,12 @@
       "SwitchCase": 1
     }],
     "object-curly-spacing": ["error", "always"],
+    "react/jsx-curly-spacing": ["error", {
+      "when": "never",
+      "children": {
+        "when": "always"
+      }
+    }],
     "max-len": [1, 124, 4],
     "camelcase": "off",
     "react/jsx-one-expression-per-line": "off",

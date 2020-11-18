@@ -21,13 +21,13 @@ const AccessDeniedScreen = () => (
           <IconKit className="iconLock" size={72} icon={ic_lock} />
         </Row>
         <Row>
-          <Typography.Title className="title" level={4}> {intl.get('screen.accessdenied.title')}</Typography.Title>
+          <Typography.Title className="title" level={4}> { intl.get('screen.accessdenied.title') }</Typography.Title>
         </Row>
         <Row>
-          <Typography.Text className="text">{intl.get('screen.accessdenied.description')}</Typography.Text>
+          <Typography.Text className="text">{ intl.get('screen.accessdenied.description') }</Typography.Text>
         </Row>
         <Row>
-          {window.history.length > 2 ? <button type="button" className="buttonBack" onClick={goBack}>{intl.get('screen.accessdenied.button')}</button> : null}
+          { window.history.length > 2 ? <button type="button" className="buttonBack" onClick={goBack}>{ intl.get('screen.accessdenied.button') }</button> : null }
         </Row>
       </Card>
     </Card>

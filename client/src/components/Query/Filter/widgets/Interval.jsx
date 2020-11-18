@@ -12,14 +12,14 @@ const Interval = ({ terms }) => {
   if (termList.length === 2) {
     return (
       <div className={style.termList}>
-        {`[${termList[0].value}, ${termList[1].value}]`}
+        { `[${termList[0].value}, ${termList[1].value}]` }
       </div>
     );
   }
 
   return (
     <div className={style.termList}>
-      {`${termList[0].value}`}
+      { `${termList[0].value}` }
     </div>
   );
 };

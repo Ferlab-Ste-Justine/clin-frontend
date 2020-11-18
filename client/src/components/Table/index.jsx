@@ -27,21 +27,21 @@ export const createCellRenderer = (type, getData, options = {}) => {
       case 'text':
         valueRenderer = value => (
           <Fragment>
-            <Typography.Text {...options.style} type={options.type} ellipsis>{value}</Typography.Text>
+            <Typography.Text {...options.style} type={options.type} ellipsis>{ value }</Typography.Text>
           </Fragment>
         );
         break;
       case 'paragraph':
         valueRenderer = value => (
           <Fragment>
-            <Typography.Paragraph ellipsis>{value}</Typography.Paragraph>
+            <Typography.Paragraph ellipsis>{ value }</Typography.Paragraph>
           </Fragment>
         );
         break;
       case 'capitalText':
         valueRenderer = value => (
           <Fragment>
-            <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{value}</Typography.Text>
+            <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{ value }</Typography.Text>
           </Fragment>
         );
         break;
@@ -52,7 +52,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
             href={(options.renderer ? options.renderer(value) : '#')}
             className="link"
           >
-            {value}
+            { value }
           </a>
         );
         break;
@@ -64,7 +64,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
               href={(options.renderer ? options.renderer(value) : '#')}
               className="wrapTextLink"
             >
-              {value}
+              { value }
             </a>
           </div>
         );
@@ -81,7 +81,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
               data-id={value}
               className="button"
             >
-              {options.label || value}
+              { options.label || value }
             </Button>
           </Fragment>
         );
@@ -98,7 +98,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
               data-id={value}
               className="button"
             >
-              {options.label || value}
+              { options.label || value }
             </Button>
           </Tooltip>
         );
@@ -123,7 +123,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         const value = dataSet[row] ? dataSet[row][options.key] ? dataSet[row][options.key] : cloneDeep(dataSet[row]) : ''; // eslint-disable-line
         return (
           <Cell className="cellValue">
-            {valueRenderer(value)}
+            { valueRenderer(value) }
           </Cell>
         );
       } catch (e) {
@@ -233,7 +233,7 @@ class DataTable extends React.Component {
       rowHeights = [...rowHeights, ...bufferArray];
     }
     const renderColumnHeader = (name, index) => (
-      <div className="tooltipHeader">{intl.get(columns[index].label)} <IconKit size={16} icon={ic_info_outline} /></div>
+      <div className="tooltipHeader">{ intl.get(columns[index].label) } <IconKit size={16} icon={ic_info_outline} /></div>
     );
 
     const getColumnTitle = (label) => {

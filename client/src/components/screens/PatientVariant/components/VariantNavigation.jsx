@@ -55,7 +55,7 @@ const getCategoryIcon = (label) => {
       );
     case 'category_genomic':
       return (
-        <svg className="svgIcon">{iconGenomicPath}</svg>
+        <svg className="svgIcon">{ iconGenomicPath }</svg>
       );
     case 'category_impacts':
       return (
@@ -131,7 +131,7 @@ class VariantNavigation extends React.Component {
 
     return highlightPart.map((stringPart, index) => (
       <React.Fragment>
-        { index === 0 ? null : <span className="highlight">{highlightValue[index - 1]}</span>}{stringPart}
+        { index === 0 ? null : <span className="highlight">{ highlightValue[index - 1] }</span> }{ stringPart }
       </React.Fragment>
     ));
   }
@@ -156,7 +156,7 @@ class VariantNavigation extends React.Component {
 
     return highlightPart.map((stringPart, index) => (
       <React.Fragment>
-        { index === 0 ? null : <span className="highlight">{highlightValue[index - 1]}</span>}{stringPart}
+        { index === 0 ? null : <span className="highlight">{ highlightValue[index - 1] }</span> }{ stringPart }
       </React.Fragment>
     ));
   }
@@ -567,20 +567,20 @@ class VariantNavigation extends React.Component {
     const autocompletes = searchValue !== '' ? searchResults.filter(group => group.label !== '').map((group) => {
       autocompletesCount += group.matches.length;
       return (
-        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong className="label">{group.label}</Typography.Text>)}>
-          {group.matches.map(match => (
+        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong className="label">{ group.label }</Typography.Text>)}>
+          { group.matches.map(match => (
             <AutoComplete.Option key={match.id} value={JSON.stringify(match)} className="value">
               <Col>
                 <Typography.Text style={{ maxWidth: 280 }} ellipsis>
                   <IconKit size={16} icon={ic_done} className="iconCheck" />
-                  {this.getHighlightSearch(match.value)}
+                  { this.getHighlightSearch(match.value) }
                 </Typography.Text>
               </Col>
               <Col justify="end" align="end" className="valueCount">
-                {match.count && (<Tag color="#f0f2f5">{intl.get('components.query.count', { count: match.count })}</Tag>)}
+                { match.count && (<Tag color="#f0f2f5">{ intl.get('components.query.count', { count: match.count }) }</Tag>) }
               </Col>
             </AutoComplete.Option>
-          ))}
+          )) }
         </AutoComplete.OptGroup>
       );
     }) : [];
@@ -588,7 +588,7 @@ class VariantNavigation extends React.Component {
       autocompletes.unshift((
         <AutoComplete.Option key="count" disabled>
           <Typography.Text className="totalCount">
-            {autocompletesCount}{' '}result(s)
+            { autocompletesCount }{ ' ' }result(s)
           </Typography.Text>
         </AutoComplete.Option>
       ));
@@ -602,7 +602,7 @@ class VariantNavigation extends React.Component {
             className="menu"
             openKeys={activeMenu}
           >
-            {children}
+            { children }
           </Menu>
         );
       }
@@ -614,7 +614,7 @@ class VariantNavigation extends React.Component {
           selectedKeys={[searchSelection.filter]}
           className="menu"
         >
-          {children}
+          { children }
         </Menu>
       );
     };
@@ -637,7 +637,7 @@ class VariantNavigation extends React.Component {
         >
           <Input prefix={<IconKit size={24} icon={ic_search} />} placeholder="Recherche de filtres" />
         </AutoComplete>
-        {generateMenuComponent(searchSelection, schema.categories ? schema.categories.map((category) => {
+        { generateMenuComponent(searchSelection, schema.categories ? schema.categories.map((category) => {
           if (category.filters && category.filters.length > 0) {
             const { id } = category;
             const label = intl.get(`screen.patientvariant.${category.label}`);
@@ -651,15 +651,15 @@ class VariantNavigation extends React.Component {
                 title={(
                   <span className="subMenuTitle">
                     <div>
-                      {getCategoryIcon(category.label)}
-                      <span className="value">{label}</span>
+                      { getCategoryIcon(category.label) }
+                      <span className="value">{ label }</span>
                     </div>
                     <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
                   </span>
                 )}
                 popupClassName={activeMenu.includes(id) ? 'submenuOpen menuDropdown' : 'menuDropdown'}
               >
-                {activeFilterId === null && category.label === 'category_variant' && (
+                { activeFilterId === null && category.label === 'category_variant' && (
                   <div className="variantsHeader">
                     <Typography.Text>
                     Identifiant
@@ -676,8 +676,8 @@ class VariantNavigation extends React.Component {
                     </Button>
 
                   </div>
-                )}
-                {activeFilterId === null && category.label === 'category_genomic' && (
+                ) }
+                { activeFilterId === null && category.label === 'category_genomic' && (
                   <div className="variantsHeader">
                     <Typography.Text>
                     Identifiant de gêne
@@ -701,7 +701,7 @@ class VariantNavigation extends React.Component {
                     </AutoComplete>
 
                   </div>
-                )}
+                ) }
                 { (!geneSearch || category.label !== 'category_genomic') && activeFilterId === null && !searchSelection.category && category.filters.map(f => (f.search && f.label !== 'filter_gene_symbol') && (
                   <Menu.SubMenu
                     key={f.id}
@@ -709,7 +709,7 @@ class VariantNavigation extends React.Component {
                       f.label === 'filter_gene_symbol' ? null
                         : (
                           <div className={category.label === 'category_variant' ? 'subMenuVariant' : 'subMenuTitle'}>
-                            {intl.get(`screen.patientvariant.${f.label}`)}
+                            { intl.get(`screen.patientvariant.${f.label}`) }
                             <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrow" />
                           </div>
                         )
@@ -719,7 +719,7 @@ class VariantNavigation extends React.Component {
                     onTitleClick={this.handleFilterSelection}
                     className="filterChoise"
                   />
-                ))}
+                )) }
                 { geneSearch && variant.geneResult.hits && category.label === 'category_genomic' && (
                   <Menu
                     className="geneMenuList"
@@ -728,21 +728,21 @@ class VariantNavigation extends React.Component {
                       geneItem.map(item => (
                         <Menu.Item key={item.geneSymbol} onClick={this.handleGeneSelection}>
                           <div className="geneValues">
-                            <div className="geneSymbol">{this.getHighlightSearchGene(item.geneSymbol)}</div>
-                            <div className="alias">{this.getHighlightSearchGene(item.alias)}</div>
+                            <div className="geneSymbol">{ this.getHighlightSearchGene(item.geneSymbol) }</div>
+                            <div className="alias">{ this.getHighlightSearchGene(item.alias) }</div>
                           </div>
 
                         </Menu.Item>
                       ))
                     }
                   </Menu>
-                )}
+                ) }
                 { filter }
               </Menu.SubMenu>
             );
           }
           return null;
-        }) : null)}
+        }) : null) }
       </div>
     );
   }

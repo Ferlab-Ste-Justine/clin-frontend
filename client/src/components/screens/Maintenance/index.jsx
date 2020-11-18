@@ -14,7 +14,7 @@ const MaintenanceScreen = error => (
       <Navigation />
       <Card>
         <h1>Under Maintenance</h1>
-        <div style={{ display: 'none' }}>{error}</div>
+        <div style={{ display: 'none' }}>{ error }</div>
       </Card>
     </>
   </Layout>
