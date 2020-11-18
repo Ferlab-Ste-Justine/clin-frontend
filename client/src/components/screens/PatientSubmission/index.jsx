@@ -117,7 +117,7 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
   return (
     <Card title="Patient" bordered={false} className="patientContent">
       <Form.Item label={intl.get('form.patientSubmission.form.lastName')}>
-        {getFieldDecorator('family', {
+        { getFieldDecorator('family', {
           rules: [{
             required: true,
             message: 'Veuillez entrer un nom de famille',
@@ -135,10 +135,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           initialValue: has(patient, 'name[0].family') ? patient.name[0].family : '',
         })(
           <Input placeholder={intl.get('form.patientSubmission.form.lastName')} className="input large" />,
-        )}
+        ) }
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.given')}>
-        {getFieldDecorator('given', {
+        { getFieldDecorator('given', {
           rules: [{
             required: true,
             message: 'Veuillez entrer un prénom',
@@ -156,10 +156,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           initialValue: has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : '',
         })(
           <Input placeholder={intl.get('form.patientSubmission.form.given')} className="input large" />,
-        )}
+        ) }
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.gender')}>
-        {getFieldDecorator('gender', {
+        { getFieldDecorator('gender', {
           rules: [{ required: true, message: 'Veuillez indiquer le sexe' }],
           initialValue: has(patient, 'gender') ? patient.gender : '',
         })(
@@ -167,23 +167,23 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
             {
               Object.values(genderValues).map(gv => (
                 <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
-                  <span className="radioText">{gv.label}</span>
+                  <span className="radioText">{ gv.label }</span>
                 </Radio.Button>
               ))
             }
           </Radio.Group>,
-        )}
+        ) }
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.birthDate.label')}>
-        {getFieldDecorator('birthDate', {
+        { getFieldDecorator('birthDate', {
           rules: [{ required: true, message: 'Veuillez indiquer la date de naissance' }],
           initialValue: defaultBirthDate(patient),
         })(
           <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />,
-        )}
+        ) }
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.ramq')}>
-        {getFieldDecorator('ramq', {
+        { getFieldDecorator('ramq', {
           rules: [{
             pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
             message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
@@ -191,11 +191,11 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           initialValue: ramqValue(patient),
         })(
           <Input placeholder="ABCD 0000 0000" className="input large" />,
-        )}
+        ) }
         <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.mrn')}>
-        {getFieldDecorator('mrn', {
+        { getFieldDecorator('mrn', {
           rules: [
             { required: true, message: 'Veuillez entrer le numéro de dossier médical' },
             {
@@ -211,10 +211,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
           initialValue: mrnValue(patient),
         })(
           <Input placeholder="12345678" className="input small" />,
-        )}
+        ) }
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.hospital')}>
-        {getFieldDecorator('organization', {
+        { getFieldDecorator('organization', {
           rules: [{ required: true, message: 'Please select the hospital!' }],
           initialValue: defaultOrganizationValue(patient),
         })(
@@ -223,10 +223,10 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
             <Select.Option value="CHUM">CHUM</Select.Option>
             <Select.Option value="CUSM">CUSM</Select.Option>
           </Select>,
-        )}
+        ) }
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.ethnicity')}>
-        {getFieldDecorator('ethnicity', {
+        { getFieldDecorator('ethnicity', {
           rules: [{ required: false }],
           initialValue: ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding,
         })(
@@ -241,20 +241,20 @@ const PatientInformation = ({ getFieldDecorator, patient }) => {
             <Select.Option value="MIX">Origine mixte</Select.Option>
             <Select.Option value="OTH">Autre</Select.Option>
           </Select>,
-        )}
+        ) }
         <span className="optional">Facultatif</span>
       </Form.Item>
       <Form.Item label={intl.get('form.patientSubmission.form.consanguinity')}>
-        {getFieldDecorator('consanguinity', {
+        { getFieldDecorator('consanguinity', {
           rules: [{ required: false }],
           initialValue: consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding,
         })(
           <Radio.Group buttonStyle="solid">
-            <Radio.Button value="Yes"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.yes')}</span></Radio.Button>
-            <Radio.Button value="No"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.no')}</span></Radio.Button>
-            <Radio.Button value="Unknown"><span className="radioText">{intl.get('form.patientSubmission.form.consanguinity.unknown')}</span></Radio.Button>
+            <Radio.Button value="Yes"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span></Radio.Button>
+            <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
+            <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
           </Radio.Group>,
-        )}
+        ) }
         <span className="optional">Facultatif</span>
       </Form.Item>
     </Card>
@@ -273,36 +273,36 @@ const Approval = ({
   <div>
     <Card title="Consentements" bordered={false} className="patientContent">
       <Form>
-        {/* TODO initialValue */}
+        { /* TODO initialValue */ }
         <Form.Item label="Clauses signées" className="labelTop">
-          {getFieldDecorator('consent', {
+          { getFieldDecorator('consent', {
             rules: [{ required: true, message: 'Veuillez sélectionner au moins un consentement' }],
             initialValue: initialConsentsValue,
           })(
             <Checkbox.Group className="checkboxGroup" onChange={updateConsentmentsCallback}>
               <Row>
-                <Checkbox className="checkbox" value="c1"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.patient')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c1"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.patient') }</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c2"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.father')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c2"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.father') }</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c3"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.mother')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c3"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.mother') }</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c4"><span className="checkboxText">{intl.get('form.patientSubmission.form.consent.research')}</span></Checkbox>
+                <Checkbox className="checkbox" value="c4"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.research') }</span></Checkbox>
               </Row>
             </Checkbox.Group>,
-          )}
+          ) }
         </Form.Item>
       </Form>
     </Card>
     <Card title="Approbation" bordered={false} className="patientContent">
       <Form>
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
-        {/* TODO initialValue */}
+        { /* TODO initialValue */ }
         <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
-          {getFieldDecorator('practInput', {
+          { getFieldDecorator('practInput', {
             initialValue: initialPractitionerValue,
             rules: [
               {
@@ -323,7 +323,7 @@ const Approval = ({
               onSelect={practitionerOptionSelected}
               onChange={practitionerSearchTermChanged}
             />,
-          )}
+          ) }
 
         </Form.Item>
       </Form>
@@ -892,7 +892,7 @@ class PatientSubmissionScreen extends React.Component {
         text={`${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`}
       >
         <div className="page3__autocomplete">
-          <span className="page3__autocomplete__family-name">{practitioner.family.toUpperCase()}</span> {practitioner.given} – {practitioner.license}
+          <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given } – { practitioner.license }
         </div>
       </AutoComplete.Option>
     ));
@@ -947,14 +947,14 @@ class PatientSubmissionScreen extends React.Component {
           <div className="page-static-content">
             <Card bordered={false} className="step">
               <Steps current={currentPageIndex}>
-                {this.pages.map(item => <Step key={item.title} title={item.title} />)}
+                { this.pages.map(item => <Step key={item.title} title={item.title} />) }
               </Steps>
             </Card>
 
             <Form
               onSubmit={this.handleSubmit}
             >
-              {pageContent}
+              { pageContent }
               <div className="submission-form-actions">
                 {
                   currentPageIndex === this.pages.length - 1 && (
@@ -971,7 +971,7 @@ class PatientSubmissionScreen extends React.Component {
                 {
                   currentPageIndex !== this.pages.length - 1 && (
                     <Button type="primary" onClick={() => this.next()} disabled={this.canGoNextPage(currentPageIndex)}>
-                      {intl.get('screen.clinicalSubmission.nextButtonTitle')}
+                      { intl.get('screen.clinicalSubmission.nextButtonTitle') }
                     </Button>
                   )
                 }
@@ -980,7 +980,7 @@ class PatientSubmissionScreen extends React.Component {
                   currentPageIndex !== 0 && (
                     <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
                       <IconKit size={20} icon={ic_keyboard_arrow_left} />
-                      {intl.get('screen.clinicalSubmission.previousButtonTitle')}
+                      { intl.get('screen.clinicalSubmission.previousButtonTitle') }
                     </Button>
                   )
                 }
@@ -989,13 +989,13 @@ class PatientSubmissionScreen extends React.Component {
                   htmlType="submit"
                 >
                   <IconKit size={20} icon={ic_save} />
-                  {intl.get('screen.clinicalSubmission.saveButtonTitle')}
+                  { intl.get('screen.clinicalSubmission.saveButtonTitle') }
                 </Button>
                 <Button
                   onClick={actions.navigateToPatientSearchScreen}
                   className="cancelButton"
                 >
-                  {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
+                  { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
                 </Button>
               </div>
             </Form>

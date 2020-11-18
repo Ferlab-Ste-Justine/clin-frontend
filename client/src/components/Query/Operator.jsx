@@ -74,7 +74,7 @@ export const getSvgPathFromOperatorType = (type) => {
 
 export const OperatorIconComponent = operator => props => (
   <svg width="10em" height="10em" viewBox="0 0 24 24" {...props}>
-    {getSvgPathFromOperatorType(operator)}
+    { getSvgPathFromOperatorType(operator) }
   </svg>
 );
 
@@ -152,11 +152,11 @@ class Operator extends React.Component {
     return (
       <Menu onClick={this.handleApply} className={style.operatorMenu}>
         <Menu.Item key={OPERATOR_TYPE_AND}>
-          <svg className={style.icon}>{svgPathAnd}</svg>
+          <svg className={style.icon}>{ svgPathAnd }</svg>
           { intl.get('components.query.instruction.operator.and') }
         </Menu.Item>
         <Menu.Item key={OPERATOR_TYPE_OR}>
-          <svg className={style.icon}>{svgPathOr}</svg>
+          <svg className={style.icon}>{ svgPathOr }</svg>
           { intl.get('components.query.instruction.operator.or') }
         </Menu.Item>
       </Menu>

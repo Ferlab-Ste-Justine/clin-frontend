@@ -729,9 +729,9 @@ export const hpoOnsetValues = [
     groupLabel: 'Pediatric onset',
     options: [
       {
-        code: 'HP:0003621',
-        value: 'Juvenile onset',
-        display: 'Juvenile',
+        code: 'HP:0003593',
+        value: 'Infantile onset',
+        display: 'Infantile',
       },
       {
         code: 'HP:0011463',
@@ -739,9 +739,9 @@ export const hpoOnsetValues = [
         display: 'Childhood',
       },
       {
-        code: 'HP:0003593',
-        value: 'Infantile onset',
-        display: 'Infantile',
+        code: 'HP:0003621',
+        value: 'Juvenile onset',
+        display: 'Juvenile',
       },
     ],
   },

@@ -45,7 +45,7 @@ const columnPresetToColumn = c => ({
 });
 
 const header = title => (
-  <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{title}</Typography.Title>
+  <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{ title }</Typography.Title>
 );
 
 const Link = ({ url, text }) => (
@@ -57,7 +57,7 @@ const Link = ({ url, text }) => (
     target="_blank"
     className="link"
   >
-    {text}
+    { text }
   </Button>
 );
 
@@ -101,8 +101,8 @@ const impactSummary = (c) => {
               text={c.symbol}
               className="link"
             />
-            {impactScore}
-            {c.impact}
+            { impactScore }
+            { c.impact }
           </Row>
         </div>
       </Fragment>
@@ -111,34 +111,34 @@ const impactSummary = (c) => {
   return null;
 };
 const impact = (c) => {
-  const vep = c.impact ? (<li><span className="consequenceTerm">VEP: </span>{getImpactTag(c.impact)} {c.impact}</li>) : null;
+  const vep = c.impact ? (<li><span className="consequenceTerm">VEP: </span>{ getImpactTag(c.impact) } { c.impact }</li>) : null;
   let items = [vep];
   if (c.predictions) {
     const sift = c.predictions.sift_pred
-      ? (<li><span className="consequenceTerm">SIFT: </span>{c.predictions.sift_pred} - {c.predictions.sift_converted_rank_score}</li>) : null;
+      ? (<li><span className="consequenceTerm">SIFT: </span>{ c.predictions.sift_pred } - { c.predictions.sift_converted_rank_score }</li>) : null;
     const polyphen2 = c.predictions.polyphen2_hvar_pred
       ? (
         <li>
           <span className="consequenceTerm">Polyphen2: </span>
-          {c.predictions.polyphen2_hvar_pred} - {c.predictions.polyphen2_hvar_score}
+          { c.predictions.polyphen2_hvar_pred } - { c.predictions.polyphen2_hvar_score }
         </li>
       ) : null;
     const lrt = c.predictions.lrt_pred
-      ? (<li><span className="consequenceTerm">LRT: </span>{c.predictions.lrt_pred} - {c.predictions.lrt_converted_rankscore}</li>) : null;
+      ? (<li><span className="consequenceTerm">LRT: </span>{ c.predictions.lrt_pred } - { c.predictions.lrt_converted_rankscore }</li>) : null;
     const fathmm = c.predictions.fathmm_pred
-      ? (<li><span className="consequenceTerm">FATHMM: </span>{c.predictions.fathmm_pred} - {c.predictions.fathmm_converted_rank_score}</li>) : null;
+      ? (<li><span className="consequenceTerm">FATHMM: </span>{ c.predictions.fathmm_pred } - { c.predictions.fathmm_converted_rank_score }</li>) : null;
     const cadd = c.predictions.cadd_score
-      ? (<li><span className="consequenceTerm">CADD score: </span>{c.predictions.cadd_score}</li>) : null;
+      ? (<li><span className="consequenceTerm">CADD score: </span>{ c.predictions.cadd_score }</li>) : null;
     const dann = c.predictions && c.predictions.dann_score
-      ? (<li><span className="consequenceTerm">DANN score: </span>{c.predictions.dann_score}</li>) : null;
+      ? (<li><span className="consequenceTerm">DANN score: </span>{ c.predictions.dann_score }</li>) : null;
     const revel = c.predictions && c.predictions.revel_rankscore
-      ? (<li><span className="consequenceTerm">REVEL score: </span>{c.predictions.revel_rankscore}</li>) : null;
+      ? (<li><span className="consequenceTerm">REVEL score: </span>{ c.predictions.revel_rankscore }</li>) : null;
     items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
   }
   return (
     <>
       <ul>
-        {items}
+        { items }
       </ul>
     </>
   );
@@ -179,7 +179,7 @@ class VariantDetailsScreen extends React.Component {
           const valueArray = c.consequence.split('_');
           const arrayFilter = valueArray.filter(item => item !== 'variant');
           const finalString = arrayFilter.join(' ');
-          return <span className="capitalize">{finalString}</span>;
+          return <span className="capitalize">{ finalString }</span>;
         },
       },
       {
@@ -219,7 +219,7 @@ class VariantDetailsScreen extends React.Component {
                 <path d="M12.1872 10.3583C12.1087 11.1889 11.8021 11.8378 11.2674 12.3048C10.7326 12.7683 10.0214 13 9.13369 13C8.51337 13 7.96613 12.8538 7.49198 12.5615C7.02139 12.2656 6.65775 11.8467 6.40107 11.3048C6.14439 10.7629 6.0107 10.1337 6 9.41711V8.68984C6 7.95544 6.13012 7.30838 6.39037 6.74866C6.65062 6.18895 7.02317 5.75758 7.50802 5.45455C7.99643 5.15152 8.55971 5 9.19786 5C10.057 5 10.7487 5.23351 11.2727 5.70053C11.7968 6.16756 12.1016 6.82709 12.1872 7.67914H10.8396C10.7754 7.11943 10.6114 6.71658 10.3476 6.47059C10.0873 6.22103 9.7041 6.09626 9.19786 6.09626C8.60963 6.09626 8.15686 6.31194 7.83957 6.74332C7.52585 7.17112 7.36542 7.80036 7.35829 8.63102V9.32086C7.35829 10.1622 7.50802 10.8039 7.80749 11.246C8.11052 11.6881 8.55258 11.9091 9.13369 11.9091C9.66488 11.9091 10.0642 11.7897 10.3316 11.5508C10.5989 11.3119 10.7683 10.9144 10.8396 10.3583H12.1872Z" fill="#EAF3FA" />
               </svg>
             ) : '';
-            return <span><Link url={`${baseUrl}&t=${data.ensembl_feature_id}`} text={data.ensembl_feature_id} />{canonical}</span>;
+            return <span><Link url={`${baseUrl}&t=${data.ensembl_feature_id}`} text={data.ensembl_feature_id} />{ canonical }</span>;
           } catch (e) {
             return '';
           }
@@ -354,8 +354,8 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{o}</li>));
-              return (<ul>{lis}</ul>);
+              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{ o }</li>));
+              return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
             }
@@ -369,8 +369,8 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{r}</li>));
-              return (<ul>{lis}</ul>);
+              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{ r }</li>));
+              return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
             }
@@ -395,8 +395,8 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{o}</li>));
-              return (<ul>{lis}</ul>);
+              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{ o }</li>));
+              return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
             }
@@ -410,8 +410,8 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{r}</li>));
-              return (<ul>{lis}</ul>);
+              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{ r }</li>));
+              return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
             }
@@ -696,7 +696,7 @@ class VariantDetailsScreen extends React.Component {
         // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
         const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
         const orphanetLine = test || '--';
-        return { symbol: g.symbol, orphanet: (<span className="orphanetValue">{orphanetLine}</span>) };
+        return { symbol: g.symbol, orphanet: (<span className="orphanetValue">{ orphanetLine }</span>) };
       });
   }
 
@@ -705,7 +705,7 @@ class VariantDetailsScreen extends React.Component {
     return this.getGenes().map((g) => {
       // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
       const geneLine = (
-        <span>{g.symbol} {g.omim_gene_id
+        <span>{ g.symbol } { g.omim_gene_id
           ? (
             <Fragment key={shortid.generate()}>
             (MIM:
@@ -715,7 +715,7 @@ class VariantDetailsScreen extends React.Component {
               />
             )
             </Fragment>
-          ) : ''}
+          ) : '' }
         </span>
       );
       let phenotype = '--';
@@ -723,7 +723,7 @@ class VariantDetailsScreen extends React.Component {
       if (g.omim && g.omim.length > 0) {
         phenotype = g.omim.map(o => (
           <li key={shortid.generate()}>
-            {o.name} (MIM:
+            { o.name } (MIM:
             <Link
               url={`https://omim.org/entry/${o.omim_id}`}
               text={o.omim_id}
@@ -735,14 +735,14 @@ class VariantDetailsScreen extends React.Component {
           if (o.inheritance) {
             return (
               <li>
-                {o.inheritance.join(',')}
+                { o.inheritance.join(',') }
               </li>
             );
           }
           return '--';
         });
       }
-      return { geneLocus: (<span className="orphanetValue">{geneLine}</span>), phenotype: (<ul className="omimValue">{phenotype}</ul>), transmission: <ul className="omimValue">{transmission}</ul> };
+      return { geneLocus: (<span className="orphanetValue">{ geneLine }</span>), phenotype: (<ul className="omimValue">{ phenotype }</ul>), transmission: <ul className="omimValue">{ transmission }</ul> };
     });
   }
 
@@ -756,11 +756,11 @@ class VariantDetailsScreen extends React.Component {
         const lis = g.hpo ? g.hpo.map((h) => {
           console.log('hpo', h);
           const url = `https://hpo.jax.org/app/browse/term/${h.hpo_term_id}`;
-          return (<a href={url}>{h.hpo_term_label}</a>);
+          return (<a href={url}>{ h.hpo_term_label }</a>);
         }) : '--';
         const value = (
           <span className="hpoRow">
-            <span className="hpoValue">{lis}</span>
+            <span className="hpoValue">{ lis }</span>
             {
               lis !== '--' ? (
                 <span className="iconPlus">
@@ -854,7 +854,7 @@ class VariantDetailsScreen extends React.Component {
       HPOColumnPreset,
       donorsColumnPreset,
     } = this.state;
-    const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{i}</li>));
+    const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{ i }</li>));
 
     const omimLinks = omims => omims.map(o => (
       <div className="variantPageContentRow">
@@ -863,8 +863,8 @@ class VariantDetailsScreen extends React.Component {
           url={`https://omim.org/entry/${o}`}
           text={o}
         />
-        {/* Ignore the comma if it's the last entry */}
-        {o.length > 1 && o !== omims[omims.length - 1] ? (<div>,&nbsp;</div>) : (<></>)}
+        { /* Ignore the comma if it's the last entry */ }
+        { o.length > 1 && o !== omims[omims.length - 1] ? (<div>,&nbsp;</div>) : (<></>) }
       </div>
     ));
 
@@ -900,7 +900,7 @@ class VariantDetailsScreen extends React.Component {
               <Tooltip title={data.mutationId} overlayClassName="tooltip">
                 <span>
                   <Typography.Text className="mutationID">
-                    {mutationIdTitle}
+                    { mutationIdTitle }
                   </Typography.Text>
                 </span>
               </Tooltip>
@@ -918,7 +918,7 @@ class VariantDetailsScreen extends React.Component {
               tab={(
                 <span className="tabName">
                   <IconKit size={18} icon={ic_assessment} />
-                  {intl.get(SUMMARY_TAB)}
+                  { intl.get(SUMMARY_TAB) }
                 </span>
               )}
             >
@@ -941,7 +941,7 @@ class VariantDetailsScreen extends React.Component {
                           label: 'Gène(s)',
                           value: (
                             <ul>
-                              {genes.map(g => (
+                              { genes.map(g => (
                                 <li key={g.symbol}>
                                   {
                                     <Link
@@ -950,11 +950,11 @@ class VariantDetailsScreen extends React.Component {
                                     />
                                   }
                                 </li>
-                              ))}
+                              )) }
                             </ul>
                           ),
                         },
-                        { label: 'Impact VEP', value: <ul>{impactsSummary}</ul> },
+                        { label: 'Impact VEP', value: <ul>{ impactsSummary }</ul> },
                         {
                           label: 'Signification clinique (Clinvar)',
                           value: clin_sig ? clin_sig.join(', ') : '--',
@@ -988,7 +988,7 @@ class VariantDetailsScreen extends React.Component {
                           value:
                           ext_db && ext_db.is_omim ? (
                             <div className="variantPageContentRow">
-                              {omimLinks(omim)}
+                              { omimLinks(omim) }
                             </div>
                           ) : (
                             '--'
@@ -1044,8 +1044,8 @@ class VariantDetailsScreen extends React.Component {
                           label: 'Nb de patients (i)',
                           value: (
                             <span>
-                              <Button className="patientLink" type="link" onClick={this.goToPatientTab}>{frequencies.internal.ac}</Button>
-                            /{frequencies.internal.an}
+                              <Button className="patientLink" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.ac }</Button>
+                            /{ frequencies.internal.an }
                             </span>),
                         },
                         {
@@ -1082,7 +1082,7 @@ class VariantDetailsScreen extends React.Component {
               tab={(
                 <span className="tabName">
                   <IconKit size={18} icon={ic_show_chart} />
-                  {intl.get(FREQUENCIES_TAB)}
+                  { intl.get(FREQUENCIES_TAB) }
                 </span>
               )}
             >
@@ -1129,7 +1129,7 @@ class VariantDetailsScreen extends React.Component {
               tab={(
                 <span className="tabName">
                   <IconKit size={18} icon={ic_local_library} />
-                  {intl.get(CLINICAL_ASSOCIATIONS_TAB)}
+                  { intl.get(CLINICAL_ASSOCIATIONS_TAB) }
                 </span>
               )}
             >
@@ -1176,7 +1176,7 @@ class VariantDetailsScreen extends React.Component {
                 </Row>
 
                 <Row>
-                  <Col>{header('OMIM')}</Col>
+                  <Col>{ header('OMIM') }</Col>
                 </Row>
                 <Row type="flex" className="omimTable">
                   <Card title="OMIM" className="staticCard" bordered={false}>
@@ -1215,7 +1215,7 @@ class VariantDetailsScreen extends React.Component {
               tab={(
                 <span className="tabName">
                   <IconKit size={18} icon={ic_people} />
-                  {intl.get(PATIENTS_TAB)}
+                  { intl.get(PATIENTS_TAB) }
                 </span>
               )}
             >
@@ -1225,9 +1225,9 @@ class VariantDetailsScreen extends React.Component {
                     <Row>
                       <Col>
                         <div>
-                          {`${
+                          { `${
                             this.getDonors().length
-                          } patient(s) sont porteur(s) de ce variant`}
+                          } patient(s) sont porteur(s) de ce variant` }
                         </div>
                       </Col>
                     </Row>

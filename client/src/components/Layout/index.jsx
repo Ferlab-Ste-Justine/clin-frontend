@@ -11,7 +11,7 @@ const Layout = ({ children }) => (
     <Header />
     <AntLayout.Content>
       <Content>
-        {children}
+        { children }
       </Content>
     </AntLayout.Content>
     <Footer />

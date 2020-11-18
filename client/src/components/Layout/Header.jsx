@@ -21,7 +21,7 @@ const userMenu = actions => (
     <Menu.Item key="logout" onClick={actions.logoutUser}>
       <span>
         <Icon type="logout" />
-        {` ${intl.get('header.navigation.user.logout')}`}
+        { ` ${intl.get('header.navigation.user.logout')}` }
       </span>
     </Menu.Item>
   </Menu>
@@ -35,7 +35,7 @@ const languageMenu = actions => (
       }}
     >
       <span>
-        {intl.get('lang.fr.long')}
+        { intl.get('lang.fr.long') }
       </span>
     </Menu.Item>
 
@@ -46,7 +46,7 @@ const languageMenu = actions => (
       }}
     >
       <span>
-        {intl.get('lang.en.long')}
+        { intl.get('lang.en.long') }
       </span>
     </Menu.Item>
   </Menu>
@@ -66,15 +66,15 @@ const Header = ({
           <img className="logo" alt={title} src="/assets/logos/cqgc-white.svg" />
         </Col>
         <div className="secondaryNav">
-          {user.username !== null && (
+          { user.username !== null && (
           <>
             <div className="navigation">
               <Row type="flex" justify="space-between" align="middle">
                 <Col className="patientList">
-                  { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
                   <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link">
                     <IconKit size={16} icon={ic_supervisor_account} />
-                    {intl.get('header.navigation.patient')}
+                    { intl.get('header.navigation.patient') }
                   </a>
                 </Col>
                 <Divider type="vertical" />
@@ -82,25 +82,25 @@ const Header = ({
             </div>
             <Col className="userName">
               <Dropdown overlay={userMenu(actions)} trigger={['click']}>
-                { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
                 <a className="ant-dropdown-link">
                   <IconKit size={16} icon={ic_account_circle} />
-                  {` ${user.firstName} `}
+                  { ` ${user.firstName} ` }
                 </a>
               </Dropdown>
             </Col>
           </>
-          )}
+          ) }
           <Col>
-            {app.locale.lang !== null && (
+            { app.locale.lang !== null && (
               <Dropdown overlay={languageMenu(actions)} trigger={['click']}>
-                { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
                 <a className="ant-dropdown-link">
                   <IconKit size={16} icon={ic_translate} />
-                  {langText}
+                  { langText }
                 </a>
               </Dropdown>
-            )}
+            ) }
           </Col>
         </div>
 

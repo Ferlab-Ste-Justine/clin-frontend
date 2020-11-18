@@ -334,12 +334,12 @@ class Query extends React.Component {
             </div>
           </Tooltip>
           <div className={styleQuery.actions}>
-            {copyable && !isEmpty && (
+            { copyable && !isEmpty && (
               <Tooltip title={duplicateText}>
                 <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }} />
               </Tooltip>
-            )}
-            {removable && (
+            ) }
+            { removable && (
               <Tooltip title={deleteText} onVisibleChange={this.toggleToolTip} visible={toolTipOpen}>
                 <Popconfirm
                   title={intl.get('screen.patientvariant.query.menu.delete.body')}
@@ -353,16 +353,16 @@ class Query extends React.Component {
                   <IconKit icon={ic_delete} size={16} className={styleQuery.icon} />
                 </Popconfirm>
               </Tooltip>
-            )}
+            ) }
           </div>
           <div className={styleQuery.count}>
-            { results && (<span>{intl.get('components.query.count', { count: results })}</span>) }
+            { results && (<span>{ intl.get('components.query.count', { count: results }) }</span>) }
           </div>
         </div>
-        {isEmpty
+        { isEmpty
           ? (
             <div className={styleQuery.emptyQuery}>
-              {intl.get('components.query.empty')}
+              { intl.get('components.query.empty') }
             </div>
           )
           : (
@@ -526,7 +526,7 @@ class Query extends React.Component {
                   default:
                     return null;
                 }
-              })}
+              }) }
             </div>
           )
         }

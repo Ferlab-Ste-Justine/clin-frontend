@@ -6,7 +6,7 @@ const Content = (props) => {
   return (
     <Row id="content">
       <Col span={24}>
-        {children}
+        { children }
       </Col>
     </Row>
   );

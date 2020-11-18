@@ -157,9 +157,9 @@ class CompositeFilter extends React.Component {
         label: (
           <span className={styleFilter.checkboxValue}>
             <Tooltip title={option.value}>
-              {valueText}
+              { valueText }
             </Tooltip>
-            <Tag className={selectionActive ? `${styleFilter.valueCount}` : `${styleFilter.valueCount} ${styleFilter.valueCountDisabled}`}>{option.count}</Tag>
+            <Tag className={selectionActive ? `${styleFilter.valueCount}` : `${styleFilter.valueCount} ${styleFilter.valueCountDisabled}`}>{ option.count }</Tag>
           </span>
         ),
         value: option.value,
@@ -172,7 +172,7 @@ class CompositeFilter extends React.Component {
       getInstruction: this.getEditorInstruction,
       contents: (
         <>
-          {facets && (
+          { facets && (
             <NumericalComparisonWidget
               min={this.getMin()}
               max={this.getMax()}
@@ -184,7 +184,7 @@ class CompositeFilter extends React.Component {
               updateDraft={this.updateScoreRange}
               disabled={!numericalComparisonActive}
             />
-          )}
+          ) }
 
           <Row>
             <Col span={24}>
@@ -267,12 +267,12 @@ class CompositeFilter extends React.Component {
 
     const contents = values.map((target, index) => (
       <div key={target}>
-        {index !== 0 ? IconForOperator(OPERATOR_TYPE_UNION) : null}{target.value}
+        { index !== 0 ? IconForOperator(OPERATOR_TYPE_UNION) : null }{ target.value }
       </div>
     ));
     return (
       <div className={style.termList}>
-        {contents}
+        { contents }
       </div>
     );
   }

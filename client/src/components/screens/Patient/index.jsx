@@ -146,11 +146,11 @@ class PatientScreen extends React.Component {
               return '#EB2F96';
           }
         };
-        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{intl.get(`screen.patient.details.status.${r.status}`)}</span>;
+        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{ intl.get(`screen.patient.details.status.${r.status}`) }</span>;
 
         const practitionerPopOverText = info => (
           <Card title="Médecin résponsable" bordered={false}>
-            <p><span className="popOverName">{info}</span>  |  4425615</p>
+            <p><span className="popOverName">{ info }</span>  |  4425615</p>
             <p>CHU Sainte Justine</p>
             <p>(514) 456-367 poste: 3542</p>
             <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
@@ -158,7 +158,7 @@ class PatientScreen extends React.Component {
         );
         const requesterPopOverText = info => (
           <Card title="Médecin prescripteur" bordered={false}>
-            <p><span className="popOverName">{info}</span>  |  4425615</p>
+            <p><span className="popOverName">{ info }</span>  |  4425615</p>
             <p>CHU Sainte Justine</p>
             <p>(514) 456-367 poste: 3542</p>
             <p><a href="mailto:webmaster@example.com">julie.doucet@chu-ste-justine.qc.ca</a></p>
@@ -166,7 +166,7 @@ class PatientScreen extends React.Component {
         );
         const practitioner = (
           <span className="logoText">
-            {r.practitioner}
+            { r.practitioner }
             <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(r.practitioner)} trigger="hover">
               <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
             </Popover>
@@ -174,7 +174,7 @@ class PatientScreen extends React.Component {
         );
         const requester = (
           <span className="logoText">
-            {r.requester}
+            { r.requester }
             <Popover overlayClassName="practitionerInfo" placement="topRight" content={requesterPopOverText(r.requester)} trigger="hover">
               <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
             </Popover>
@@ -397,10 +397,10 @@ class PatientScreen extends React.Component {
 
     const practitionerPopOverText = info => (
       <Card title="Médecin résponsable" bordered={false}>
-        <p><span className="popOverName">{info.name}</span>  | {info.mrn}</p>
-        <p>{info.organization}</p>
-        <p>{info.phone}</p>
-        <p><a href={`mailto:${info.email}`}>{info.email}</a></p>
+        <p><span className="popOverName">{ info.name }</span>  | { info.mrn }</p>
+        <p>{ info.organization }</p>
+        <p>{ info.phone }</p>
+        <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
       </Card>
     );
 
@@ -418,7 +418,7 @@ class PatientScreen extends React.Component {
     return (
       <Layout>
         <Spin spinning={showSubloadingAnimation}>
-          {patient != null && patient.id != null && patient.id.length > 0
+          { patient != null && patient.id != null && patient.id.length > 0
             && (
               <div className="patientPage">
                 <div className="page_headerStaticNoMargin">
@@ -426,11 +426,11 @@ class PatientScreen extends React.Component {
                     <Row type="flex" align="middle" className="patientHeader">
                       <Col>
                         <Typography.Title level={3} className="patientName">
-                          {patient.lastName} {patient.firstName}
+                          { patient.lastName } { patient.firstName }
                         </Typography.Title>
                       </Col>
                       <Col>
-                        {maleIcon}
+                        { maleIcon }
                       </Col>
                       <Col>
                         <Tag>
@@ -438,7 +438,7 @@ class PatientScreen extends React.Component {
                         </Tag>
                       </Col>
                       <Col>
-                        <Tag color="red">{patient.proband}</Tag>
+                        <Tag color="red">{ patient.proband }</Tag>
                       </Col>
                     </Row>
 
@@ -452,7 +452,7 @@ class PatientScreen extends React.Component {
                     tab={(
                       <span className="tabName">
                         <IconKit size={18} icon={ic_person} />
-                        {patientTab}
+                        { patientTab }
                       </span>
                     )}
                   >
@@ -463,9 +463,9 @@ class PatientScreen extends React.Component {
                             <Card className="nameBlock">
                               <Row align="middle" justify="center">
                                 <IconKit size={56} icon={ic_perm_contact_calendar} />
-                                <Col><Typography.Title level={3} className="patientName">{patient.lastName}</Typography.Title></Col>
-                                <Col><Typography.Title level={4} className="patientName">{patient.firstName}</Typography.Title></Col>
-                                <Col><Tag color="red">{patient.proband}</Tag></Col>
+                                <Col><Typography.Title level={3} className="patientName">{ patient.lastName }</Typography.Title></Col>
+                                <Col><Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title></Col>
+                                <Col><Tag color="red">{ patient.proband }</Tag></Col>
                               </Row>
                             </Card>
                           </Col>
@@ -473,42 +473,42 @@ class PatientScreen extends React.Component {
                             <Row type="flex">
                               <Col className="grid">
                                 <div className="row">
-                                  <span className="title">{ramq}</span>
-                                  <span className="info">{patient.ramq}</span>
+                                  <span className="title">{ ramq }</span>
+                                  <span className="info">{ patient.ramq }</span>
                                 </div>
                                 <div className="row">
-                                  <span className="title">{genderTitle}</span>
-                                  <span className="info">{intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`)}</span>
+                                  <span className="title">{ genderTitle }</span>
+                                  <span className="info">{ intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`) }</span>
                                 </div>
                                 <div className="row">
-                                  <span className="title">{mrn}</span>
-                                  <span className="info mrn">{patient.mrn} | {patient.organization}</span>
-                                  {/*                               <span className="info mrn">156987 | CHUSJ</span>
+                                  <span className="title">{ mrn }</span>
+                                  <span className="info mrn">{ patient.mrn } | { patient.organization }</span>
+                                  { /*                               <span className="info mrn">156987 | CHUSJ</span>
                              <span className="info mrn">789654 | HGM</span>
-                             <span className="view">Voir moins</span> */}
+                             <span className="view">Voir moins</span> */ }
                                 </div>
                                 <div className="row">
-                                  <span className="title">{dateOfBirth}</span>
-                                  <span className="info">{patient.birthDate}</span>
+                                  <span className="title">{ dateOfBirth }</span>
+                                  <span className="info">{ patient.birthDate }</span>
                                 </div>
                               </Col>
                               <Divider type="vertical" />
                               <Col className="grid">
                                 <div className="row">
-                                  <span className="title">{ethnicity}</span>
-                                  <span className="info">{patient.ethnicity}</span>
+                                  <span className="title">{ ethnicity }</span>
+                                  <span className="info">{ patient.ethnicity }</span>
                                 </div>
                                 <div className="row">
-                                  <span className="title">{family}</span>
-                                  <span className="info"><Button type="link">{patient.familyId}</Button></span>
+                                  <span className="title">{ family }</span>
+                                  <span className="info"><Button type="link">{ patient.familyId }</Button></span>
                                 </div>
                                 <div className="row">
-                                  <span className="title">{consanguinity}</span>
-                                  <span className="info">{patient.bloodRelationship}</span>
+                                  <span className="title">{ consanguinity }</span>
+                                  <span className="info">{ patient.bloodRelationship }</span>
                                 </div>
                                 <div className="row">
-                                  <span className="title">{familyType}</span>
-                                  <span className="info">{familyTypeTag}</span>
+                                  <span className="title">{ familyType }</span>
+                                  <span className="info">{ familyTypeTag }</span>
                                 </div>
                               </Col>
                             </Row>
@@ -578,7 +578,7 @@ class PatientScreen extends React.Component {
                     tab={(
                       <span className="tabName">
                         <IconKit size={18} icon={ic_assignment} />
-                        {clinicalTab}
+                        { clinicalTab }
                       </span>
                     )}
                     style={{ height: '100%' }}
@@ -588,13 +588,13 @@ class PatientScreen extends React.Component {
                         <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
                           <Row type="flex">
                             <Col className="clinical__title">MRN</Col>
-                            <Col className="clinical__value">{patient.mrn}  |  {patient.organization}</Col>
+                            <Col className="clinical__value">{ patient.mrn }  |  { patient.organization }</Col>
                           </Row>
                           <Row type="flex">
                             <Col className="clinical__title">Médecin résponsable</Col>
                             <Col className="clinical__value">
                               <span className="logoText">
-                                {consultation[0].practitioner.name}
+                                { consultation[0].practitioner.name }
                                 <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
                                   <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
                                 </Popover>
@@ -607,16 +607,16 @@ class PatientScreen extends React.Component {
                           </Row>
                           <Row type="flex">
                             <Col className="clinical__title">CGH</Col>
-                            {/* TODO put value in className */}
-                            <Col className="clinical__value">{getCGHText(consultation[0].cgh)}</Col>
+                            { /* TODO put value in className */ }
+                            <Col className="clinical__value">{ getCGHText(consultation[0].cgh) }</Col>
                           </Row>
                           <Row type="flex">
                             <Col className="clinical__title">Résume de l'investigation</Col>
-                            <Col className="clinical__value">{consultation[0].summary}</Col>
+                            <Col className="clinical__value">{ consultation[0].summary }</Col>
                           </Row>
                           <Row type="flex">
                             <Col className="clinical__title">Hypothèse de diagnostique</Col>
-                            <Col className="clinical__value">{consultation[0].hypothesis}</Col>
+                            <Col className="clinical__value">{ consultation[0].hypothesis }</Col>
                           </Row>
                         </Card>
                         <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
@@ -657,7 +657,7 @@ class PatientScreen extends React.Component {
                   </Tabs.TabPane>
                 </Tabs>
               </div>
-            )}
+            ) }
         </Spin>
       </Layout>
     );

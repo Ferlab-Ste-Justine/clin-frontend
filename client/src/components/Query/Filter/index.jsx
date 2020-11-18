@@ -311,11 +311,11 @@ class Filter extends React.Component {
     const actionTargets = editorLabels.targets;
     return (
       <div className={style.termList}>
-        {actionTargets.map((target, index) => (
+        { actionTargets.map((target, index) => (
           <Fragment key={shortid.generate()}>
-            {index !== 0 ? PillInnerIconForOperand(operand)() : null}{target}
+            { index !== 0 ? PillInnerIconForOperand(operand)() : null }{ target }
           </Fragment>
-        ))}
+        )) }
       </div>
     );
   }
@@ -368,12 +368,12 @@ class Filter extends React.Component {
 
     const applyMenu = cfg => (!cfg ? null : (
       <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
-        {cfg.operands.map(configOperand => (
+        { cfg.operands.map(configOperand => (
           <Menu.Item key={shortid.generate()}>
             <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
-            {intl.get(`screen.patientvariant.filter.operand.${configOperand}`)}
+            { intl.get(`screen.patientvariant.filter.operand.${configOperand}`) }
           </Menu.Item>
-        ))}
+        )) }
       </Menu>
     ));
 
@@ -398,7 +398,7 @@ class Filter extends React.Component {
         }
         placement="bottomLeft"
       >
-        {intl.get('components.query.filter.button.apply')}
+        { intl.get('components.query.filter.button.apply') }
       </Dropdown.Button>
     ) : (
       <Button
@@ -407,7 +407,7 @@ class Filter extends React.Component {
         className={`composite-filter-apply-button ${styleFilter.applyButton}`}
         disabled={haveChange || !canApply}
       >
-        {intl.get('components.query.filter.button.apply') }
+        { intl.get('components.query.filter.button.apply') }
       </Button>
     ));
     const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
@@ -428,25 +428,25 @@ class Filter extends React.Component {
           <div className={styleFilter.fieldHeader}>
             <Row type="flex" justify="start" align="middle">
               <Typography.Title className={styleFilter.labelTitle}>
-                {filterLabel}
+                { filterLabel }
               </Typography.Title>
               <Tooltip overlayClassName={styleFilter.tooltip} placement="right" title={filterDescription}>
                 <Button>
                   <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
                 </Button>
               </Tooltip>
-              {(searchable) && (
+              { (searchable) && (
                 <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
                   <IconKit size={24} icon={ic_search} />
                 </Button>
-              )}
-              {(resettable && canApply) && (
+              ) }
+              { (resettable && canApply) && (
                 <Button className={styleFilter.iconSearch} onClick={onReset}>
                   <IconKit size={24} icon={ic_replay} />
                 </Button>
-              )}
+              ) }
             </Row>
-            {(searchable) && (
+            { (searchable) && (
             <>
               <Row className={visibleInput ? null : `${styleFilter.searchInputClose}`}>
                 <Input
@@ -458,7 +458,7 @@ class Filter extends React.Component {
                 />
               </Row>
             </>
-            )}
+            ) }
           </div>
 
           { editor.contents }
@@ -466,10 +466,10 @@ class Filter extends React.Component {
             allOptions.length >= size
               ? (
                 <Row className={styleFilter.paginationInfo} type="flex" align="middle" justify="space-between">
-                  <Col className={styleFilter.valueCount}>{allOptions.length} {valueText}</Col>
+                  <Col className={styleFilter.valueCount}>{ allOptions.length } { valueText }</Col>
                 </Row>
               ) : null
-          )}
+          ) }
           <Row type="flex" justify="end" className={styleFilter.actionToolBar}>
             <Col>
               <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
@@ -516,7 +516,7 @@ class Filter extends React.Component {
             color={autoSelect ? '#b5e6f7' : '#d1deea'}
             className={`${style.insideTag} ${style.operator}`}
           >
-            {this.pillOuterOperatorIcon()}
+            { this.pillOuterOperatorIcon() }
           </div>
           { this.isEditable() && (
             <Dropdown
@@ -531,15 +531,15 @@ class Filter extends React.Component {
                 color="#FFFFFF"
                 className={`${style.insideTag}`}
               >
-                {this.isNumericalComparisonFilter() || this.isCompositeFilter()
+                { this.isNumericalComparisonFilter() || this.isCompositeFilter()
                   ? getPillContent()
                   : (
                     <div className={style.termList}>
-                      {actionTargets.map((target, index) => (
+                      { actionTargets.map((target, index) => (
                         <Fragment key={shortid.generate()}>
-                          {index !== 0 ? PillInnerIconForOperand(savedOperand)() : null}{target}
+                          { index !== 0 ? PillInnerIconForOperand(savedOperand)() : null }{ target }
                         </Fragment>
-                      ))}
+                      )) }
                     </div>
                   )
                 }
@@ -547,9 +547,9 @@ class Filter extends React.Component {
               </Tag>
             </Dropdown>
           ) }
-          {autoSelect
+          { autoSelect
             ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
-            : null}
+            : null }
         </Tag>
       </span>
     );

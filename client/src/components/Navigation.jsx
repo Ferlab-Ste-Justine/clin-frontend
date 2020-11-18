@@ -40,7 +40,7 @@ const Navigation = ({
   <nav id="navigation">
     <Row type="flex">
       <Col span={24} align="start">
-        { user.username !== null && navigationMenu(router, actions)}
+        { user.username !== null && navigationMenu(router, actions) }
       </Col>
     </Row>
   </nav>

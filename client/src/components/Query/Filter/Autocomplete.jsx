@@ -97,7 +97,7 @@ class AutocompleteFilter extends React.Component {
         label: (
           <span className={styleFilter.checkboxValue}>
             <Tooltip title={option}>
-              {value}
+              { value }
             </Tooltip>
           </span>
         ),

@@ -105,7 +105,7 @@ class Subquery extends React.Component {
           >
             { queryTitle }
           </Tag>
-          {autoSelect
+          { autoSelect
             ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
             : null
           }

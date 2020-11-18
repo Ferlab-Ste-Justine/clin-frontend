@@ -356,7 +356,7 @@ class InteractiveTable extends React.Component {
                 <Col>
                   <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                     <IconKit size={16} icon={ic_swap_horiz} />
-                    {intl.get('components.table.action.organize')}
+                    { intl.get('components.table.action.organize') }
                   </Button>
                 </Col>
               ) }
@@ -370,7 +370,7 @@ class InteractiveTable extends React.Component {
                   >
                     <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                       <IconKit size={16} icon={ic_view_column} />
-                      {intl.get('components.table.action.display')}
+                      { intl.get('components.table.action.display') }
                     </Button>
                   </Popover>
                 </Col>
@@ -378,7 +378,7 @@ class InteractiveTable extends React.Component {
               { isExportable && (
                 <Col>
                   <Button onClick={this.handleExport} className={`${style.btn} ${style.btnSec}`}>
-                    <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.export')}
+                    <IconKit size={16} icon={ic_cloud_download} /> { intl.get('components.table.action.export') }
                   </Button>
                 </Col>
               ) }
@@ -387,7 +387,7 @@ class InteractiveTable extends React.Component {
                 canCreateReport && (
                   <Col>
                     <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
-                      <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.createReport')}
+                      <IconKit size={16} icon={ic_cloud_download} /> { intl.get('components.table.action.createReport') }
                     </Button>
                   </Col>
                 )

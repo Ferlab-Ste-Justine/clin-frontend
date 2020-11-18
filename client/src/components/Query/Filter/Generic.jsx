@@ -98,9 +98,9 @@ class GenericFilter extends React.Component {
         label: (
           <span className={styleFilter.checkboxValue}>
             <Tooltip title={option.value}>
-              {value}
+              { value }
             </Tooltip>
-            <Tag className={styleFilter.valueCount}>{intl.get('components.query.count', { count: option.count })}</Tag>
+            <Tag className={styleFilter.valueCount}>{ intl.get('components.query.count', { count: option.count }) }</Tag>
           </span>
         ),
         value: option.value,
@@ -114,9 +114,9 @@ class GenericFilter extends React.Component {
       contents: (
         <>
           <Row className={styleFilter.selectionToolBar}>
-            <Button onClick={this.handleSelectAll}>{selectAll}</Button>
+            <Button onClick={this.handleSelectAll}>{ selectAll }</Button>
             <Divider type="vertical" />
-            <Button onClick={this.handleSelectNone}>{selectNone}</Button>
+            <Button onClick={this.handleSelectNone}>{ selectNone }</Button>
           </Row>
           <Row>
             <Col span={24}>

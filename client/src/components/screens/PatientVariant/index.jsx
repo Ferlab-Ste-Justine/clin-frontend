@@ -314,7 +314,7 @@ class PatientVariantScreen extends React.Component {
             renderer: (data) => {
               try {
                 return (
-                  <Button data-id={data.id} onClick={this.handleNavigationToVariantDetailsScreen} className="button">{data.hgvsg}</Button>
+                  <Button data-id={data.id} onClick={this.handleNavigationToVariantDetailsScreen} className="button">{ data.hgvsg }</Button>
                 );
               } catch (e) { return ''; }
             },
@@ -349,7 +349,7 @@ class PatientVariantScreen extends React.Component {
                     target="_blank"
                     className="link, dbsnp"
                   >
-                    {data.dbsnp}
+                    { data.dbsnp }
                   </a>
                 );
               } catch (e) { return ''; }
@@ -371,8 +371,8 @@ class PatientVariantScreen extends React.Component {
                       consequences.map(consequence => (
                         consequence.pick === true ? (
                           <Row className="consequences" key={shortid.generate()}>
-                            <Col>{this.getImpactTag(consequence.impact)}</Col>
-                            <Col className="consequence">{consequence.consequence}</Col>
+                            <Col>{ this.getImpactTag(consequence.impact) }</Col>
+                            <Col className="consequence">{ consequence.consequence }</Col>
                             <Col>
                               <a
                                 href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.symbol}`}
@@ -380,10 +380,10 @@ class PatientVariantScreen extends React.Component {
                                 target="_blank"
                                 className="link"
                               >
-                                {consequence.symbol ? consequence.symbol : ''}
+                                { consequence.symbol ? consequence.symbol : '' }
                               </a>
                             </Col>
-                            <Col>{consequence.aa_change ? consequence.aa_change : ''}</Col>
+                            <Col>{ consequence.aa_change ? consequence.aa_change : '' }</Col>
                           </Row>
                         ) : null
                       ))
@@ -411,7 +411,7 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <div className="clinvar">
-                    <Row>{data.clinvar.clin_sig.join(', ')}</Row>
+                    <Row>{ data.clinvar.clin_sig.join(', ') }</Row>
                     <Row>
                       <a
                         href={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${data.clinvar.clinvar_id}/`}
@@ -419,7 +419,7 @@ class PatientVariantScreen extends React.Component {
                         target="_blank"
                         className="link"
                       >
-                        {data.clinvar.clinvar_id}
+                        { data.clinvar.clinvar_id }
                       </a>
                     </Row>
                   </div>
@@ -443,7 +443,7 @@ class PatientVariantScreen extends React.Component {
                 return (
                   data.consequences.map(consequence => (
                     consequence.pick === true ? (
-                      <Row key={shortid.generate()}>{consequence.predictions.cadd_score}</Row>
+                      <Row key={shortid.generate()}>{ consequence.predictions.cadd_score }</Row>
                     ) : null
 
                   ))
@@ -471,7 +471,7 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <>
-                    <Row><Button className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{data.frequencies.internal.ac}</Button><span> / </span>{data.frequencies.internal.an}</Row>
+                    <Row><Button className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{ data.frequencies.internal.ac }</Button><span> / </span>{ data.frequencies.internal.an }</Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -499,7 +499,7 @@ class PatientVariantScreen extends React.Component {
                         target="_blank"
                         className="link"
                       >
-                        {data.frequencies.gnomad_genomes_3_0.af.toExponential()}
+                        { data.frequencies.gnomad_genomes_3_0.af.toExponential() }
                       </a>
                     </Row>
                   </>
@@ -524,7 +524,7 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <>
-                    <Row>{data.donors[donorIndex].zygosity}</Row>
+                    <Row>{ data.donors[donorIndex].zygosity }</Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -550,7 +550,7 @@ class PatientVariantScreen extends React.Component {
                 const donorIndex = findIndex(data.donors, { patient_id: variant.activePatient });
                 return (
                   <>
-                    <Row>{data.donors[donorIndex].ad_alt}<span> / </span>{data.donors[donorIndex].ad_total}</Row>
+                    <Row>{ data.donors[donorIndex].ad_alt }<span> / </span>{ data.donors[donorIndex].ad_total }</Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -579,7 +579,7 @@ class PatientVariantScreen extends React.Component {
                       target="_blank"
                       className="link"
                     >
-                      {`${data.pubmed.length} publication`}
+                      { `${data.pubmed.length} publication` }
                     </a>
                   );
                 }
@@ -591,7 +591,7 @@ class PatientVariantScreen extends React.Component {
                     target="_blank"
                     className="link"
                   >
-                    {`${data.pubmed.length} publications`}
+                    { `${data.pubmed.length} publications` }
                   </a>
                 );
               } catch (e) { return ''; }
@@ -1088,7 +1088,7 @@ class PatientVariantScreen extends React.Component {
             onChange={this.handleTabChange}
           >
             <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
-              {currentTab === VARIANT_TAB && (
+              { currentTab === VARIANT_TAB && (
                 <InteractiveTable
                   key="variant-interactive-table"
                   isLoading={showSubloadingAnimation}
@@ -1106,10 +1106,10 @@ class PatientVariantScreen extends React.Component {
                   numFrozenColumns={1}
                   getData={this.getData}
                 />
-              )}
+              ) }
             </Tabs.TabPane>
             <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
-              {currentTab === GENE_TAB && (
+              { currentTab === GENE_TAB && (
                 <InteractiveTable
                   key="gene-interactive-table"
                   isLoading={showSubloadingAnimation}
@@ -1121,7 +1121,7 @@ class PatientVariantScreen extends React.Component {
                   pageSizeChangeCallback={this.handlePageSizeChange}
                   isExportable={false}
                 />
-              )}
+              ) }
             </Tabs.TabPane>
           </Tabs>
         </Card>
