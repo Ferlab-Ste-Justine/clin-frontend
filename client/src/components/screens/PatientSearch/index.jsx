@@ -76,9 +76,22 @@ class PatientSearchScreen extends React.Component {
         renderer: createCellRenderer('dot', this.getData, {
           key: 'status',
           renderer: (value) => {
-            if (value === 'completed') {
-              return '#52c41a';
-            } return '#ffa812';
+            switch (value) {
+              case intl.get('screen.patientsearch.status.draft'):
+              // Gray-5
+                return '#D2DBE4';
+              case intl.get('screen.patientsearch.status.on-hold'):
+                return '#FA8C16';
+              case intl.get('screen.patientsearch.status.active'):
+              // blue-6
+                return '#2AABE8';
+              case intl.get('screen.patientsearch.status.revoked'):
+                return '#F5222D';
+              case intl.get('screen.patientsearch.status.completed'):
+                return '#52C41A';
+              default:
+                return '#EB2F96';
+            }
           },
         }),
         columnWidth: COLUMN_WIDTHS.DEFAULT,
@@ -201,7 +214,7 @@ class PatientSearchScreen extends React.Component {
     if (searchType !== 'autocomplete') {
       const data = nextProps.search[searchType].results.map((result) => {
         const value = {
-          status: result.status,
+          status: intl.get(`screen.patientsearch.status.${result.status}`),
           id: result.id,
           mrn: result.mrn,
           ramq: result.ramq,
