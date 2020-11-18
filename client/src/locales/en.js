@@ -549,6 +549,9 @@ const en = {
   'components.table.action.createReport': 'Create Report',
   'components.table.action.columns': 'Columns',
   'components.table.action.organize': 'Organize',
+  'components.confirmationModal.title': 'Quit without saving your changes?',
+  'components.confirmationModal.okText': 'Quit',
+  'components.confirmationModal.cancelText': 'Cancel',
 };
 
 export default en;

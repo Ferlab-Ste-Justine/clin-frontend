@@ -549,6 +549,9 @@ const fr = {
   'components.table.action.createReport': 'Créer Rapport',
   'components.table.action.columns': 'Columns',
   'components.table.action.organize': 'Organizer',
+  'components.confirmationModal.title': 'Quitter sans sauvegarder les modifications?',
+  'components.confirmationModal.okText': 'Quitter',
+  'components.confirmationModal.cancelText': 'Annuler',
 };
 
 export default fr;

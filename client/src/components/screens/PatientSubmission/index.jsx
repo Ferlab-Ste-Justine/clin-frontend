@@ -43,6 +43,7 @@ import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
 import Layout from '../../Layout';
+import ConfirmationModal from '../../ConfirmationModal';
 
 const { Step } = Steps;
 
@@ -993,7 +994,7 @@ class PatientSubmissionScreen extends React.Component {
                   { intl.get('screen.clinicalSubmission.saveButtonTitle') }
                 </Button>
                 <Button
-                  onClick={actions.navigateToPatientSearchScreen}
+                  onClick={() => ConfirmationModal({ onOk: () => { actions.navigateToPatientSearchScreen(); } })}
                   className="cancelButton"
                 >
                   { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
