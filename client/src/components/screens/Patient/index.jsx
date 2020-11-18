@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input, Icon,
 } from 'antd';
 import {
   find,
@@ -16,7 +16,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline, ic_widgets, ic_info, ic_arrow_forward,
+  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_info_outline, ic_widgets, ic_info, ic_arrow_forward,
 } from 'react-icons-kit/md';
 import PatientVariantScreen from '../PatientVariant';
 import { appShape } from '../../../reducers/app';
@@ -199,7 +199,7 @@ class PatientScreen extends React.Component {
         const action = (
           <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
             <Button type="link" onClick={e => e.preventDefault()}>
-              Action <IconKit size={12} icon={ic_keyboard_arrow_down} />
+              Action <Icon className="dropdown-icon" type="down" />
             </Button>
           </Dropdown>
         );

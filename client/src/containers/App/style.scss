@@ -666,6 +666,13 @@ div.ant-card {
   border: none;
 }
 
+table{
+  border-bottom: 1px solid $gray-4 !important;
+  th{
+      color: $gray-8 !important;
+  }
+}
+
 //Badge
 .ant-badge-status-dot{
   vertical-align: baseline;
