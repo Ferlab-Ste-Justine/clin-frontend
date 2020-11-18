@@ -9,11 +9,11 @@ import {
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import { ic_translate, ic_account_circle, ic_supervisor_account } from 'react-icons-kit/md';
-import { logoutUser } from '../actions/user';
-import { changeLanguage } from '../actions/app';
-import { navigateToPatientSearchScreen } from '../actions/router';
-import { appShape } from '../reducers/app';
-import { userShape } from '../reducers/user';
+import { logoutUser } from '../../actions/user';
+import { changeLanguage } from '../../actions/app';
+import { navigateToPatientSearchScreen } from '../../actions/router';
+import { appShape } from '../../reducers/app';
+import { userShape } from '../../reducers/user';
 
 
 const userMenu = actions => (
@@ -67,29 +67,29 @@ const Header = ({
         </Col>
         <div className="secondaryNav">
           {user.username !== null && (
-            <>
-              <div className="navigation">
-                <Row type="flex" justify="space-between" align="middle">
-                  <Col className="patientList">
-                    { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                    <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link">
-                      <IconKit size={16} icon={ic_supervisor_account} />
-                      { intl.get('header.navigation.patient') }
-                    </a>
-                  </Col>
-                  <Divider type="vertical" />
-                </Row>
-              </div>
-              <Col className="userName">
-                <Dropdown overlay={userMenu(actions)} trigger={['click']}>
+          <>
+            <div className="navigation">
+              <Row type="flex" justify="space-between" align="middle">
+                <Col className="patientList">
                   { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a className="ant-dropdown-link">
-                    <IconKit size={16} icon={ic_account_circle} />
-                    {` ${user.firstName} `}
+                  <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link">
+                    <IconKit size={16} icon={ic_supervisor_account} />
+                    {intl.get('header.navigation.patient')}
                   </a>
-                </Dropdown>
-              </Col>
-            </>
+                </Col>
+                <Divider type="vertical" />
+              </Row>
+            </div>
+            <Col className="userName">
+              <Dropdown overlay={userMenu(actions)} trigger={['click']}>
+                { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a className="ant-dropdown-link">
+                  <IconKit size={16} icon={ic_account_circle} />
+                  {` ${user.firstName} `}
+                </a>
+              </Dropdown>
+            </Col>
+          </>
           )}
           <Col>
             {app.locale.lang !== null && (

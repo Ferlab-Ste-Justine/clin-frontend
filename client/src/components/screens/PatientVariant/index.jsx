@@ -8,24 +8,12 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Badge, Button, Card, Checkbox, Col, Dropdown, Menu, notification, Row, Tabs, Tag,
+  Badge, Button, Card, Checkbox, Col, notification, Row, Tabs,
 } from 'antd';
-import IconKit from 'react-icons-kit';
 import {
-  ic_arrow_drop_down,
-  ic_assignment_ind,
-  ic_assignment_turned_in,
-  ic_folder_shared,
-  ic_launch,
-  ic_location_city,
-} from 'react-icons-kit/md';
-import {
-  cloneDeep, curry, curryRight, filter, findIndex, get, has, isNil, sortBy,
+  cloneDeep, curry, curryRight, filter, findIndex, get, has, isNil,
 } from 'lodash';
 
-import Header from '../../Header';
-import Content from '../../Content';
-import Footer from '../../Footer';
 import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import VariantNavigation from './components/VariantNavigation';
@@ -242,7 +230,7 @@ const showNotification = (message, description) => {
   notification.open({
     message,
     description,
-    onClick: () => {},
+    onClick: () => { },
   });
 };
 
@@ -675,7 +663,6 @@ class PatientVariantScreen extends React.Component {
         if (nbValue <= 1 && (value.clinvar || (value.donors[donorIndex] ? value.donors[donorIndex].transmission : null))) {
           rowHeights[index] = 2 * singleRowHeight + 20;
         }
-        const { mutationId } = value;
         if (rowHeights[index] < singleRowHeight + 20) {
           rowHeights[index] = singleRowHeight + 20;
         }
@@ -708,10 +695,6 @@ class PatientVariantScreen extends React.Component {
       actions,
     } = this.props;
 
-    const {
-      activeQuery,
-      results,
-    } = variant;
 
     const mutationId = e.target.getAttribute('data-id');
     actions.navigateToVariantDetailsScreen(mutationId, 'patients');
@@ -900,10 +883,6 @@ class PatientVariantScreen extends React.Component {
       actions,
     } = this.props;
 
-    const {
-      activeQuery,
-      results,
-    } = variant;
 
     const mutationId = e.target.getAttribute('data-id');
     actions.navigateToVariantDetailsScreen(mutationId);
@@ -1047,109 +1026,106 @@ class PatientVariantScreen extends React.Component {
     const reportAvailable = this.isReportAvailable();
 
     return (
-      <Content>
-        <Card className="entity" bordered={false}>
-          <VariantNavigation
-            key="variant-navigation"
-            className="variant-navigation"
-            schema={schema}
-            patient={patient}
-            queries={draftQueries}
+      <Card className="entity" bordered={false}>
+        <VariantNavigation
+          key="variant-navigation"
+          className="variant-navigation"
+          schema={schema}
+          patient={patient}
+          queries={draftQueries}
+          activeQuery={activeQuery}
+          data={facets[activeQuery] || {}}
+          onEditCallback={this.handleQueryChange}
+          searchData={searchData}
+          autocomplete={autocomplete}
+        />
+        <Card bordered={false} className={`Content ${style.variantContent}`}>
+          <Statement
+            key="variant-statement"
             activeQuery={activeQuery}
-            data={facets[activeQuery] || {}}
+            activeStatementId={activeStatementId}
+            activeStatementTotals={activeStatementTotals}
+            defaultStatementId={defaultStatementId}
+            statements={statements}
+            data={draftQueries}
+            draftHistory={draftHistory}
+            original={originalQueries}
+            facets={facets}
+            target={patient}
+            categories={schema.categories}
+            options={{
+              copyable: true,
+              duplicatable: true,
+              editable: true,
+              removable: true,
+              reorderable: true,
+              selectable: true,
+              undoable: true,
+            }}
+            onSelectCallback={this.handleQuerySelection}
+            onSortCallback={this.handleStatementSort}
             onEditCallback={this.handleQueryChange}
+            onBatchEditCallback={this.handleQueriesChange}
+            onRemoveCallback={this.handleQueriesRemoval}
+            onDuplicateCallback={this.handleQueryDuplication}
+            onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
+            onGetStatementsCallback={this.handleGetStatements}
+            onCreateDraftStatementCallback={this.handleCreateDraftStatement}
+            onUpdateStatementCallback={this.handleUpdateStatement}
+            onDeleteStatementCallback={this.handleDeleteStatement}
+            onSelectStatementCallback={this.handleSelectStatement}
+            onDuplicateStatementCallback={this.handleDuplicateStatement}
+            onSetDefaultStatementCallback={this.handleSetDefaultStatement}
+            newCombinedQueryCallback={this.handleQuerySelection}
             searchData={searchData}
-            autocomplete={autocomplete}
+            externalData={patient}
           />
-          <Card bordered={false} className={`Content ${style.variantContent}`}>
-            <Statement
-              key="variant-statement"
-              activeQuery={activeQuery}
-              activeStatementId={activeStatementId}
-              activeStatementTotals={activeStatementTotals}
-              defaultStatementId={defaultStatementId}
-              statements={statements}
-              data={draftQueries}
-              draftHistory={draftHistory}
-              original={originalQueries}
-              facets={facets}
-              target={patient}
-              categories={schema.categories}
-              options={{
-                copyable: true,
-                duplicatable: true,
-                editable: true,
-                removable: true,
-                reorderable: true,
-                selectable: true,
-                undoable: true,
-              }}
-              onSelectCallback={this.handleQuerySelection}
-              onSortCallback={this.handleStatementSort}
-              onEditCallback={this.handleQueryChange}
-              onBatchEditCallback={this.handleQueriesChange}
-              onRemoveCallback={this.handleQueriesRemoval}
-              onDuplicateCallback={this.handleQueryDuplication}
-              onDraftHistoryUndoCallback={this.handleDraftHistoryUndo}
-              onGetStatementsCallback={this.handleGetStatements}
-              onCreateDraftStatementCallback={this.handleCreateDraftStatement}
-              onUpdateStatementCallback={this.handleUpdateStatement}
-              onDeleteStatementCallback={this.handleDeleteStatement}
-              onSelectStatementCallback={this.handleSelectStatement}
-              onDuplicateStatementCallback={this.handleDuplicateStatement}
-              onSetDefaultStatementCallback={this.handleSetDefaultStatement}
-              newCombinedQueryCallback={this.handleQuerySelection}
-              searchData={searchData}
-              externalData={patient}
-            />
-          </Card>
-          <Card bordered={false} className={`Content ${style.variantTable}`}>
-            <Tabs
-              key="variant-interpreter-tabs"
-              activeKey={currentTab}
-              onChange={this.handleTabChange}
-            >
-              <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
-                {currentTab === VARIANT_TAB && (
-                  <InteractiveTable
-                    key="variant-interactive-table"
-                    isLoading={showSubloadingAnimation}
-                    size={size}
-                    page={page}
-                    total={total}
-                    schema={columnPreset[VARIANT_TAB]}
-                    pageChangeCallback={this.handlePageChange}
-                    pageSizeChangeCallback={this.handlePageSizeChange}
-                    createReportCallback={this.handleCreateReport}
-                    isExportable={false}
-                    canCreateReport
-                    isReportAvailable={reportAvailable}
-                    rowHeights={rowHeights}
-                    numFrozenColumns={1}
-                    getData={this.getData}
-                  />
-                )}
-              </Tabs.TabPane>
-              <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
-                {currentTab === GENE_TAB && (
-                  <InteractiveTable
-                    key="gene-interactive-table"
-                    isLoading={showSubloadingAnimation}
-                    size={size}
-                    page={page}
-                    total={total}
-                    schema={columnPreset[GENE_TAB]}
-                    pageChangeCallback={this.handlePageChange}
-                    pageSizeChangeCallback={this.handlePageSizeChange}
-                    isExportable={false}
-                  />
-                )}
-              </Tabs.TabPane>
-            </Tabs>
-          </Card>
         </Card>
-        <Footer />
-      </Content>
+        <Card bordered={false} className={`Content ${style.variantTable}`}>
+          <Tabs
+            key="variant-interpreter-tabs"
+            activeKey={currentTab}
+            onChange={this.handleTabChange}
+          >
+            <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
+              {currentTab === VARIANT_TAB && (
+                <InteractiveTable
+                  key="variant-interactive-table"
+                  isLoading={showSubloadingAnimation}
+                  size={size}
+                  page={page}
+                  total={total}
+                  schema={columnPreset[VARIANT_TAB]}
+                  pageChangeCallback={this.handlePageChange}
+                  pageSizeChangeCallback={this.handlePageSizeChange}
+                  createReportCallback={this.handleCreateReport}
+                  isExportable={false}
+                  canCreateReport
+                  isReportAvailable={reportAvailable}
+                  rowHeights={rowHeights}
+                  numFrozenColumns={1}
+                  getData={this.getData}
+                />
+              )}
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Genes" key={GENE_TAB} disabled>
+              {currentTab === GENE_TAB && (
+                <InteractiveTable
+                  key="gene-interactive-table"
+                  isLoading={showSubloadingAnimation}
+                  size={size}
+                  page={page}
+                  total={total}
+                  schema={columnPreset[GENE_TAB]}
+                  pageChangeCallback={this.handlePageChange}
+                  pageSizeChangeCallback={this.handlePageSizeChange}
+                  isExportable={false}
+                />
+              )}
+            </Tabs.TabPane>
+          </Tabs>
+        </Card>
+      </Card>
     );
   }
 }
