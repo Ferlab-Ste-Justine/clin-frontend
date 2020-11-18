@@ -122,7 +122,7 @@ export class DataExtractor {
     return {
       organization: get(practMetadata.organization, "resource.name", "N/A"),
       mrn: get(practitioner, "identifier[0].value", "N/A"),
-      name: `${prefix} ${firstName} ${lastName} ${suffix !== "null" ? suffix : ""}`,
+      name: `${prefix} ${firstName} ${lastName.toUpperCase()} ${suffix !== "null" ? suffix : ""}`,
       email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : "No email.",
       phone: practMetadata.role != null
           ? `${this.extractPhone(practMetadata.role.telecom)}`
