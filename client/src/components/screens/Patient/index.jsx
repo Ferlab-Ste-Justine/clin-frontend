@@ -212,9 +212,7 @@ class PatientScreen extends React.Component {
   }
 
   getFamilyHistory() {
-    // eslint-disable-next-line no-unused-vars
     const { fmhs } = this.props;
-    // const { familyHistory } = patient;
     const familyHistory = fmhs.map(fmh => (
       {
         note: fmh.note,
@@ -229,7 +227,6 @@ class PatientScreen extends React.Component {
   }
 
   getClinical() {
-    // eslint-disable-next-line no-unused-vars
     const { hpos } = this.props;
     const ontology = hpos.map(hpo => (
       {
@@ -408,7 +405,7 @@ class PatientScreen extends React.Component {
                     <Row type="flex" align="middle" className="patientHeader">
                       <Col>
                         <Typography.Title level={3} className="patientName">
-                          { patient.lastName } { patient.firstName }
+                          { patient.lastName.toUpperCase() } { patient.firstName }
                         </Typography.Title>
                       </Col>
                       <Col>
@@ -465,9 +462,6 @@ class PatientScreen extends React.Component {
                                 <div className="row">
                                   <span className="title">{ mrn }</span>
                                   <span className="info mrn">{ patient.mrn } | { patient.organization }</span>
-                                  { /*                               <span className="info mrn">156987 | CHUSJ</span>
-                             <span className="info mrn">789654 | HGM</span>
-                             <span className="view">Voir moins</span> */ }
                                 </div>
                                 <div className="row">
                                   <span className="title">{ dateOfBirth }</span>
