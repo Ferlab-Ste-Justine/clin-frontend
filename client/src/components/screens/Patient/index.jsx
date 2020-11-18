@@ -165,17 +165,23 @@ class PatientScreen extends React.Component {
         const practitioner = (
           <span className="logoText">
             { r.practitioner.name }
-            <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(r.practitioner)} trigger="hover">
-              <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
-            </Popover>
+            { r.practitioner.name !== 'N/A' ? (
+              <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(r.practitioner)} trigger="hover">
+                <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+              </Popover>
+            ) : null }
+
           </span>
         );
         const requester = (
           <span className="logoText">
             { r.requester.name }
-            <Popover overlayClassName="practitionerInfo" placement="topRight" content={requesterPopOverText(r.requester)} trigger="hover">
-              <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
-            </Popover>
+            { r.requester.name !== 'N/A' ? (
+              <Popover overlayClassName="practitionerInfo" placement="topRight" content={requesterPopOverText(r.requester)} trigger="hover">
+                <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+              </Popover>
+            ) : null }
+
           </span>
         );
 
@@ -583,9 +589,12 @@ class PatientScreen extends React.Component {
                                   <Col className="clinical__value">
                                     <span className="logoText">
                                       { consultation[0].practitioner.name }
-                                      <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
-                                        <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
-                                      </Popover>
+                                      { consultation[0].practitioner.name !== 'N/A' ? (
+                                        <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
+                                          <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+                                        </Popover>
+                                      ) : null }
+
                                     </span>
                                   </Col>
                                 </Row>
