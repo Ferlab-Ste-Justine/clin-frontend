@@ -1495,7 +1495,7 @@ html {
   font-feature-settings: 'tnum';
 }
 .ant-select-auto-complete.ant-select .ant-select-selection {
-  border-color: transparent;
+  border: 0;
   box-shadow: none;
 }
 .ant-select-auto-complete.ant-select .ant-select-selection__rendered {
@@ -20831,7 +20831,7 @@ h2.ant-typography,
   margin-bottom: 0;
   color: #125A90;
   font-weight: 500;
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1.35;
 }
 h3.ant-typography,
@@ -21545,21 +21545,21 @@ div.ant-typography-edit-content {
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: local('Roboto Light'), local('Roboto-Light'), url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmSU5fBBc9.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmSU5fBBc9.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: local('Roboto'), local('Roboto-Regular'), url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxP.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: local('Roboto Medium'), local('Roboto-Medium'), url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc9.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc9.ttf) format('truetype');
 }
 .ant-btn-link {
   color: #1D8BC6;
