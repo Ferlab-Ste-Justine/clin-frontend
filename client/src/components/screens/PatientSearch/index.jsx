@@ -87,6 +87,9 @@ class PatientSearchScreen extends React.Component {
                 return '#F5222D';
               case intl.get('screen.patientsearch.status.completed'):
                 return '#52C41A';
+              // empty rows
+              case '':
+                return 'transparent';
               default:
                 return '#EB2F96';
             }

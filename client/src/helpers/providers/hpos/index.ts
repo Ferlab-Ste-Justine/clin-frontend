@@ -26,7 +26,7 @@ export class HPOProvider extends Provider<Observation, ClinicalObservation> {
 
       const observation: ClinicalObservation = {
         observed: get(hpo, "interpretation[0].coding[0].code", "IND"),
-        term: get(hpo, "valueCodeableConcept.coding[0].code", "N/A"),
+        term: get(hpo, "valueCodeableConcept.coding[0].display", "N/A"),
         ageAtOnset: get(ageAtOnset, "valueCoding.display", "N/A"),
         note: get(hpo, "note[0].text", ""),
       };
