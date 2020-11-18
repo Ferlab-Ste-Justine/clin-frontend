@@ -10,14 +10,13 @@ import {
   Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input,
 } from 'antd';
 import {
-  find,
-  get,
+  get, find,
 } from 'lodash';
 
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline, ic_widgets,
+  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_keyboard_arrow_down, ic_info_outline, ic_widgets, ic_info, ic_arrow_forward,
 } from 'react-icons-kit/md';
 import PatientVariantScreen from '../PatientVariant';
 import { appShape } from '../../../reducers/app';
@@ -42,7 +41,6 @@ class PatientScreen extends React.Component {
     };
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.getRequest = this.getRequest.bind(this);
-    this.getExtendedlRequest = this.getExtendedlRequest.bind(this);
     this.getClinical = this.getClinical.bind(this);
     this.getIndication = this.getIndication.bind(this);
     this.getObservations = this.getObservations.bind(this);
@@ -230,22 +228,6 @@ class PatientScreen extends React.Component {
     return [];
   }
 
-  getExtendedlRequest() {
-    const { patient } = this.props;
-    const { requests, samples } = patient;
-
-    if (requests) {
-      return requests.map((r) => {
-        const sample = find(samples, { request: r.id });
-        return {
-          specimen: r.specimen, externalId: sample ? sample.barcode : '--', type: sample.type, specimenIdExt: '', sourceTissue: '', tissueType: '',
-        };
-      });
-    }
-
-    return [];
-  }
-
   getClinical() {
     // eslint-disable-next-line no-unused-vars
     const { hpos } = this.props;
@@ -355,7 +337,7 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      app, router, patient, consultation,
+      app, router, patient, consultation, prescriptions,
     } = this.props;
     const {
       requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset, modalVisibility,
@@ -363,6 +345,7 @@ class PatientScreen extends React.Component {
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
     const { TextArea } = Input;
+    const { Title } = Typography;
     const mrn = intl.get('screen.patient.details.mrn');
     const ramq = intl.get('screen.patient.details.ramq');
     const dateOfBirth = intl.get('screen.patient.details.dob');
@@ -414,6 +397,8 @@ class PatientScreen extends React.Component {
           return (<span className="clinical__value--normal">Négatif</span>);
       }
     };
+
+    console.log('prescription', prescriptions);
 
     return (
       <Layout>
@@ -584,63 +569,77 @@ class PatientScreen extends React.Component {
                     style={{ height: '100%' }}
                   >
                     <div className="page-static-content">
-                      <Card bordered={false} className="staticCard clinical">
-                        <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
-                          <Row type="flex">
-                            <Col className="clinical__title">MRN</Col>
-                            <Col className="clinical__value">{ patient.mrn }  |  { patient.organization }</Col>
-                          </Row>
-                          <Row type="flex">
-                            <Col className="clinical__title">Médecin résponsable</Col>
-                            <Col className="clinical__value">
-                              <span className="logoText">
-                                { consultation[0].practitioner.name }
-                                <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
-                                  <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
-                                </Popover>
-                              </span>
-                            </Col>
-                          </Row>
-                          <Row type="flex">
-                            <Col className="clinical__title">Age du patient</Col>
-                            <Col className="clinical__value">3 ans</Col>
-                          </Row>
-                          <Row type="flex">
-                            <Col className="clinical__title">CGH</Col>
-                            { /* TODO put value in className */ }
-                            <Col className="clinical__value">{ getCGHText(consultation[0].cgh) }</Col>
-                          </Row>
-                          <Row type="flex">
-                            <Col className="clinical__title">Résume de l'investigation</Col>
-                            <Col className="clinical__value">{ consultation[0].summary }</Col>
-                          </Row>
-                          <Row type="flex">
-                            <Col className="clinical__title">Hypothèse de diagnostique</Col>
-                            <Col className="clinical__value">{ consultation[0].hypothesis }</Col>
-                          </Row>
-                        </Card>
-                        <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
-                          <Table
-                            pagination={false}
-                            columns={familyHistoryColumnPreset.map(
-                              columnPresetToColumn,
-                            )}
-                            dataSource={this.getFamilyHistory()}
-                            size="small"
-                          />
-                        </Card>
-                        <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
-                          <Table
-                            pagination={false}
-                            columns={clinicalColumnPreset.map(
-                              columnPresetToColumn,
-                            )}
-                            dataSource={this.getClinical()}
-                            size="small"
-                          />
-                        </Card>
+                      {
+                        find(prescriptions, { status: 'draft' })
+                          ? (
+                            <Card bordered={false} className="staticCard noInfo">
+                              <Row type="flex" align="middle" className="noInfo__contents">
+                                <Col className="noInfo__contents__icon"><IconKit size={72} icon={ic_info} /></Col>
+                                <Col className="noInfo__contents__title"><Title level={2}>Aucune information clinique disponible</Title></Col>
+                                <Col className="noInfo__contents__text"><p>Maecenas sed diam eget risus varius blandit sit amet non magna. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p></Col>
+                                <Col className="noInfo__contents__button"><Button type="primary">Compléter la formulaire<IconKit size={20} icon={ic_arrow_forward} /></Button></Col>
+                              </Row>
+                            </Card>
+                          ) : (
+                            <Card bordered={false} className="staticCard clinical">
+                              <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
+                                <Row type="flex">
+                                  <Col className="clinical__title">MRN</Col>
+                                  <Col className="clinical__value">{ patient.mrn }  |  { patient.organization }</Col>
+                                </Row>
+                                <Row type="flex">
+                                  <Col className="clinical__title">Médecin résponsable</Col>
+                                  <Col className="clinical__value">
+                                    <span className="logoText">
+                                      { consultation[0].practitioner.name }
+                                      <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
+                                        <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+                                      </Popover>
+                                    </span>
+                                  </Col>
+                                </Row>
+                                <Row type="flex">
+                                  <Col className="clinical__title">Age du patient</Col>
+                                  <Col className="clinical__value">3 ans</Col>
+                                </Row>
+                                <Row type="flex">
+                                  <Col className="clinical__title">CGH</Col>
+                                  <Col className="clinical__value">{ getCGHText(consultation[0].cgh) }</Col>
+                                </Row>
+                                <Row type="flex">
+                                  <Col className="clinical__title">Résume de l'investigation</Col>
+                                  <Col className="clinical__value">{ consultation[0].summary }</Col>
+                                </Row>
+                                <Row type="flex">
+                                  <Col className="clinical__title">Hypothèse de diagnostique</Col>
+                                  <Col className="clinical__value">{ consultation[0].hypothesis }</Col>
+                                </Row>
+                              </Card>
+                              <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
+                                <Table
+                                  pagination={false}
+                                  columns={familyHistoryColumnPreset.map(
+                                    columnPresetToColumn,
+                                  )}
+                                  dataSource={this.getFamilyHistory()}
+                                  size="small"
+                                />
+                              </Card>
+                              <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
+                                <Table
+                                  pagination={false}
+                                  columns={clinicalColumnPreset.map(
+                                    columnPresetToColumn,
+                                  )}
+                                  dataSource={this.getClinical()}
+                                  size="small"
+                                />
+                              </Card>
 
-                      </Card>
+                            </Card>
+                          )
+                      }
+
 
                     </div>
                   </Tabs.TabPane>
