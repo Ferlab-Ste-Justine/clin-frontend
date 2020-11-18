@@ -18,6 +18,15 @@ type Data = {
   practitionersData: PractitionersData;
 };
 
+const PRACTITIONER_NOT_FOUND: PractitionerData = {
+  email: "N/A",
+  name: "N/A",
+  phone: "N/A",
+  mrn: "N/A",
+  organization: "N/A",
+  phoneExtension: "N/A",
+}
+
 export class DataExtractor {
   constructor(private readonly data: Data) {}
 
@@ -50,7 +59,7 @@ export class DataExtractor {
         if (resource.practitioner.reference.indexOf(id) !== -1) {
           return {
             role: resource,
-            organization: get(this.data.practitionersData.entry[i], "[resource, entry, 1]", null),
+            organization: get(this.data.practitionersData.entry[i], "resource.entry[1]", null),
           };
         }
       }
@@ -90,19 +99,19 @@ export class DataExtractor {
   public getPractitionerDataByReference(resource: any, attributeName: string, bundle: any): PractitionerData | null {
     const reference = get(resource, `${attributeName}.reference`, null);
     if (reference == null) {
-      return null;
+      return PRACTITIONER_NOT_FOUND;
     }
 
     const id = reference.split("/")[1];
     const practitioners = this.extractResources<Practitioner>(bundle, "Practitioner");
     const practitioner = practitioners.find((pract) => pract.id === id);
     if (practitioner == null) {
-      return null;
+      return PRACTITIONER_NOT_FOUND;
     }
 
     const practMetadata = this.getPractitionerMetaData(id);
     if (practMetadata == null) {
-      return null;
+      return PRACTITIONER_NOT_FOUND;
     }
 
     const prefix = get(practitioner, ["name", "0", "prefix", "0"], "Dr.");
@@ -111,17 +120,14 @@ export class DataExtractor {
     const suffix = get(practitioner, ["name", "0", "suffix", "0"], "");
 
     return {
-      organization: get(practMetadata.organization, "name", "N/A"),
+      organization: get(practMetadata.organization, "resource.name", "N/A"),
       mrn: get(practitioner, "identifier[0].value", "N/A"),
-      name: `${prefix} ${firstName} ${lastName} ${suffix}`,
+      name: `${prefix} ${firstName} ${lastName} ${suffix !== "null" ? suffix : ""}`,
       email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : "No email.",
-      hospital: "ORGANIZATION",
-      phone:
-        practMetadata.role != null
-          ? `${this.extractPhone(practMetadata.role.telecom)} - ${this.extractPhoneExtension(
-              practMetadata.role.telecom
-            )}`
-          : "No phone.",
+      phone: practMetadata.role != null
+          ? `${this.extractPhone(practMetadata.role.telecom)}`
+          : "N/A",
+          phoneExtension:  this.extractPhoneExtension(practMetadata.role.telecom)
     };
   }
 }

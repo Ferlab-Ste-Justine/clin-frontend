@@ -19,8 +19,8 @@ export type PractitionerData = {
   name: string;
   mrn: string;
   organization: string;
-  hospital: string;
   phone: string;
+  phoneExtension: string;
   email: string;
 };
 

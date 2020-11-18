@@ -35,17 +35,7 @@ export class ClinicalImpressionProvider extends Provider<ClinicalImpression, Con
     const consultationSummary: ConsultationSummary = {
       cgh: get(cgh, "interpretation[0].coding[0].code", "IND"),
       hypothesis: get(indic, "note[0].text", "N/A"),
-      practitioner:
-        assessor != null
-          ? assessor
-          : {
-              email: "N/A",
-              hospital: "N/A",
-              name: "N/A",
-              phone: "N/A",
-              mrn: "N/A",
-              organization: "N/A"
-            },
+      practitioner: assessor,
       summary: get(inves, "note[0].text", "N/A"),
     };
 
