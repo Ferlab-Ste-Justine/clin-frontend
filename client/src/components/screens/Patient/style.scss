@@ -9,6 +9,9 @@
 
 .generalInfo{
     margin-bottom: 24px;
+    .ant-card-body{
+        padding: 16px 32px;
+    }
     .nameBlock{
         width: 240px;
         text-align: center;
@@ -81,11 +84,9 @@
     }
 }
 
+
 .prescription{
     margin-bottom: 24px;
-    table{
-        border-bottom: 1px solid $gray-4 !important;
-    }
     //logo
     .logoText{
         display: flex;
@@ -99,10 +100,15 @@
             }
         }
     }
+
+    .dropdown-icon{
+        margin-left: 4px !important;
+    }
 }
 
 .dropDownButton{
     color: $gray-8;
+    
 }
 
 .statusModal{
@@ -244,12 +250,6 @@
 
     .ant-table-body{
         margin: 0 !important;
-    }
-    table{
-        border-bottom: 1px solid $gray-4 !important;
-        th{
-            color: $gray-8;
-        }
     }
 
     .familyHistory{
