@@ -196,10 +196,6 @@ class PatientScreen extends React.Component {
             <Menu.Item key="1" disabled>
               Voir détail
             </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item key="3" disabled>
-              Supprimer
-            </Menu.Item>
           </Menu>
         );
         const action = (
