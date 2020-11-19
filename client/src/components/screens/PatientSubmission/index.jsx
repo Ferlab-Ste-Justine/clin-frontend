@@ -944,7 +944,7 @@ class PatientSubmissionScreen extends React.Component {
       <Layout>
         <>
           <div className="page_headerStaticMargin">
-            <Title className="headerStaticContent" level={3}>Demande de séquençage génomique</Title>
+            <Title className="headerStaticContent" level={3}>Nouveau patient et prescription de test génomique</Title>
           </div>
           <div className="page-static-content">
             <Card bordered={false} className="step">
