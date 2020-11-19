@@ -202,7 +202,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item key={`interpretation-${hpoIndex}`}>
               <Select
                 className="select selectObserved"
-                placeholder="Interpretation"
+                placeholder={intl.get('form.patientSubmission.form.hpo.interpretation')}
                 size="small"
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOInterpretationCode(hpoResource)}
@@ -223,7 +223,7 @@ class ClinicalInformation extends React.Component {
               <Select
                 className="select selectAge"
                 size="small"
-                placeholder="Âge d’apparition"
+                placeholder={intl.get('form.patientSubmission.form.hpo.ageAtOnset')}
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOOnsetCode(hpoResource)}
                 onChange={event => this.handleHpoAgeChanged(event, hpoIndex)}

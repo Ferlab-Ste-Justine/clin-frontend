@@ -525,6 +525,8 @@ const en = {
   'form.patientSubmission.form.niece': 'Niece',
   'form.patientSubmission.form.maternalMember': 'Maternal Member',
   'form.patientSubmission.form.paternalMember': 'Maternal Member',
+  'form.patientSubmission.form.hpo.interpretation': 'Interpretation',
+  'form.patientSubmission.form.hpo.ageAtOnset': 'Age at onset',
   'form.patientSubmission.form.hpo.confirm.text': 'Are you sure you want to delete this phenotype?',
   'form.patientSubmission.form.hpo.confirm.yes': 'Yes',
   'form.patientSubmission.form.hpo.confirm.no': 'No',
