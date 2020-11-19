@@ -146,14 +146,6 @@ class PatientScreen extends React.Component {
         };
         const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{ intl.get(`screen.patient.details.status.${r.status}`) }</span>;
 
-        const practitionerPopOverText = info => (
-          <Card title="Médecin résponsable" bordered={false}>
-            <p><span className="popOverName">{ info.name }</span>  |  4425615</p>
-            <p>{ info.organization }</p>
-            <p>{ info.phone } poste: { info.phoneExtension }</p>
-            <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
-          </Card>
-        );
         const requesterPopOverText = info => (
           <Card title="Médecin prescripteur" bordered={false}>
             <p><span className="popOverName">{ info.name }</span>  |  4425615</p>
@@ -161,17 +153,6 @@ class PatientScreen extends React.Component {
             <p>{ info.phone } poste: { info.phoneExtension }</p>
             <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
           </Card>
-        );
-        const practitioner = (
-          <span className="logoText">
-            { r.practitioner.name }
-            { r.practitioner.name !== 'N/A' ? (
-              <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(r.practitioner)} trigger="hover">
-                <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
-              </Popover>
-            ) : null }
-
-          </span>
         );
         const requester = (
           <span className="logoText">
@@ -206,7 +187,7 @@ class PatientScreen extends React.Component {
           </Dropdown>
         );
         return {
-          date: r.date, requester, organization: r.organization, practitioner, test: r.test, status, action,
+          date: r.date, requester, organization: r.organization, practitioner: requester, test: r.test, status, action,
         };
       });
     }
