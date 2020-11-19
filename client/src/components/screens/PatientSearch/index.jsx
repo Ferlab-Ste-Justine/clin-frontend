@@ -214,12 +214,19 @@ class PatientSearchScreen extends React.Component {
 
     if (searchType !== 'autocomplete') {
       const data = nextProps.search[searchType].results.map((result) => {
+        const organizationValue = () => {
+          if (result.organization.name === '') {
+            const organizationId = result.organization.id.split('/');
+            return organizationId[organizationId.length - 1];
+          }
+          return result.organization.name;
+        };
         const value = {
           status: intl.get(`screen.patientsearch.status.${result.status}`),
           id: result.id,
           mrn: result.mrn,
           ramq: result.ramq,
-          organization: result.organization.name,
+          organization: organizationValue(),
           firstName: result.firstName,
           lastName: result.lastName,
           gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
