@@ -2,9 +2,6 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import * as actions from '../actions/type';
-import {
-  normalizePatientDetails,
-} from '../helpers/struct';
 
 
 export const initialSearchState = {
@@ -88,7 +85,7 @@ const searchReducer = (state = Object.assign({}, initialSearchState), action) =>
 
     case actions.PATIENT_AUTOCOMPLETE_SUCCEEDED:
       draft.autocomplete.total = action.payload.data.data.total;
-      draft.autocomplete.results = action.payload.data.data.hits.map(hit => normalizePatientDetails(hit._source));
+      draft.autocomplete.results = action.payload.data.data.hits.map(hit => hit._source);
       break;
 
     default:
