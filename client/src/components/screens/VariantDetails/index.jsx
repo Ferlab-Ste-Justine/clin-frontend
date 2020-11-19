@@ -625,13 +625,13 @@ class VariantDetailsScreen extends React.Component {
     if (data) {
       const {
         frequencies,
-        chrom,
+        chromosome,
         start,
         alternate,
         reference,
       } = data;
 
-      const url = `https://gnomad.broadinstitute.org/variant/${chrom}-${start}-${reference}-${alternate}?dataset=gnomad_r3`;
+      const url = `https://gnomad.broadinstitute.org/variant/${chromosome}-${start}-${reference}-${alternate}?dataset=gnomad_r3`;
       const externalCohortsKeys = Object.keys(frequencies).filter(k => k !== 'internal' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
         const frequency = frequencies[key];
