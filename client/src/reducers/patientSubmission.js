@@ -198,6 +198,7 @@ const patientSubmissionReducer = (
       draft.serviceRequest = initialPatientSubmissionState.serviceRequest;
       draft.observations = initialPatientSubmissionState.observations;
       draft.deleted = initialPatientSubmissionState.deleted;
+      draft.local = initialPatientSubmissionState.local;
       break;
     default:
       break;
