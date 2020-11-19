@@ -101,8 +101,7 @@ const nucleotidicVariation = (variant, gene) => {
 
   lines.push(...geneLine);
 
-  const transcriptsRefSeqIds = c => c.transcripts.filter(isCanonical).map(t => getValue(t, 'refSeqId')).filter(valuePresent);
-  const refTranscripts = variant.consequences.filter(valuePresent).map(transcriptsRefSeqIds).filter(valuePresent);
+  const refTranscripts = variant.consequences.filter(isCanonical).map(t => getValue(t, 'ensembl_feature_id')).filter(valuePresent);
   lines.push(...insertCR(refTranscripts));
 
   // For some reason, point form doesn't work in filter for the _ghas function ...
@@ -685,7 +684,7 @@ class PatientVariantScreen extends React.Component {
   }
 
   getVariantData(mutationId) {
-    const variants = this.getData().filter(v => v.mutationId === mutationId);
+    const variants = this.getData().filter(v => v.id === mutationId);
     return variants.length ? variants[0] : null;
   }
 
