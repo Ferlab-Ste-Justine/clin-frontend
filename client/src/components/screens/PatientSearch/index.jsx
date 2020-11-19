@@ -216,8 +216,7 @@ class PatientSearchScreen extends React.Component {
       const data = nextProps.search[searchType].results.map((result) => {
         const organizationValue = () => {
           if (result.organization.name === '') {
-            const organizationId = result.organization.id.split('/');
-            return organizationId[organizationId.length - 1];
+            return result.organization.id.split('/')[1];
           }
           return result.organization.name;
         };
