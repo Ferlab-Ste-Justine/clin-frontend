@@ -553,7 +553,7 @@ class PatientScreen extends React.Component {
                                 <Col className="noInfo__contents__icon"><IconKit size={72} icon={ic_info} /></Col>
                                 <Col className="noInfo__contents__title"><Title level={2}>Aucune information clinique disponible</Title></Col>
                                 <Col className="noInfo__contents__text"><p>Maecenas sed diam eget risus varius blandit sit amet non magna. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p></Col>
-                                <Col className="noInfo__contents__button"><Button type="primary">Compléter la formulaire<IconKit size={20} icon={ic_arrow_forward} /></Button></Col>
+                                <Col className="noInfo__contents__button"><Button type="primary">Compléter le formulaire<IconKit size={20} icon={ic_arrow_forward} /></Button></Col>
                               </Row>
                             </Card>
                           ) : (
