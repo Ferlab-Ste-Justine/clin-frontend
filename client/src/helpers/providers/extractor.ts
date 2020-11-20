@@ -18,13 +18,15 @@ type Data = {
   practitionersData: PractitionersData;
 };
 
+const NOT_AVAILABLE = "N/A";
+
 const PRACTITIONER_NOT_FOUND: PractitionerData = {
-  email: "N/A",
-  name: "N/A",
-  phone: "N/A",
-  mrn: "N/A",
-  organization: "N/A",
-  phoneExtension: "N/A",
+  email: NOT_AVAILABLE,
+  name: NOT_AVAILABLE,
+  phone: NOT_AVAILABLE,
+  mrn: NOT_AVAILABLE,
+  organization: NOT_AVAILABLE,
+  phoneExtension: NOT_AVAILABLE,
 }
 
 export class DataExtractor {
@@ -83,20 +85,20 @@ export class DataExtractor {
 
   public extractEmail(telecom: Telecom[]): string {
     const email = telecom.find((tel) => tel.system === "email");
-    return get(email, "value", "N/A");
+    return get(email, "value", NOT_AVAILABLE);
   }
 
   public extractPhone(telecom: Telecom[]): string {
     const phone = telecom.find((tel) => tel.system === "phone" && tel.rank === 1);
-    return get(phone, "value", "N/A");
+    return get(phone, "value", NOT_AVAILABLE);
   }
 
   public extractPhoneExtension(telecom: Telecom[]): string {
     const ext = telecom.find((tel) => tel.system === "phone" && tel.rank === 0);
-    return get(ext, "value", "N/A");
+    return get(ext, "value", NOT_AVAILABLE);
   }
 
-  public getPractitionerDataByReference(resource: any, attributeName: string, bundle: any): PractitionerData | null {
+  public getPractitionerDataByReference(resource: any, attributeName: string, bundle: any): PractitionerData {
     const reference = get(resource, `${attributeName}.reference`, null);
     if (reference == null) {
       return PRACTITIONER_NOT_FOUND;
@@ -120,13 +122,13 @@ export class DataExtractor {
     const suffix = get(practitioner, ["name", "0", "suffix", "0"], "");
 
     return {
-      organization: get(practMetadata.organization, "resource.name", "N/A"),
-      mrn: get(practitioner, "identifier[0].value", "N/A"),
+      organization: get(practMetadata.organization, "resource.name", NOT_AVAILABLE),
+      mrn: get(practitioner, "identifier[0].value", NOT_AVAILABLE),
       name: `${prefix} ${firstName} ${lastName.toUpperCase()} ${suffix !== "null" ? suffix : ""}`,
       email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : "No email.",
       phone: practMetadata.role != null
           ? `${this.extractPhone(practMetadata.role.telecom)}`
-          : "N/A",
+          : NOT_AVAILABLE,
           phoneExtension:  this.extractPhoneExtension(practMetadata.role.telecom)
     };
   }
