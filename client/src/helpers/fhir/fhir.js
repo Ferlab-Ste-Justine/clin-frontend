@@ -449,7 +449,7 @@ export const createPatientSubmissionBundle = ({
 
     if (observations.hpos != null) {
       observations.hpos.forEach((hpo) => {
-        if (hpo.note.length !== 0) {
+        if (hpo.note != null && hpo.note.length !== 0) {
           hpo.note[0].text.trim();
         }
         const entry = createEntry({ ...hpo, subject: patientReference });
