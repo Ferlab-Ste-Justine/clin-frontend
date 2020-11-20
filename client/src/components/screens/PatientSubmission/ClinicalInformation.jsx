@@ -177,7 +177,7 @@ class ClinicalInformation extends React.Component {
     const { Option, OptGroup } = Select;
 
     const defaultValue = () => {
-      if (hpoResource.note.length > 0) {
+      if (hpoResource.note != null && hpoResource.note.length > 0) {
         return hpoResource.note[0].text;
       }
       return '';
@@ -291,9 +291,12 @@ class ClinicalInformation extends React.Component {
   isAddDisabled() {
     const { form } = this.props;
     const values = form.getFieldsValue();
-    const {
+    let {
       familyRelationshipCodes,
     } = values;
+    if (familyRelationshipCodes == null) {
+      familyRelationshipCodes = [];
+    }
     const index = familyRelationshipCodes.length - 1;
     return familyRelationshipCodes[index] == null || familyRelationshipCodes[index].length === 0;
   }
@@ -474,7 +477,7 @@ class ClinicalInformation extends React.Component {
 
 
     const relationshipPossibleValues = getFamilyRelationshipValues();
-    const familyHistoryResources = observations.fmh;
+    const familyHistoryResources = observations.fmh || [];
     const familyItems = familyHistoryResources.map((resource, index) => ((
       <div className="familyLine">
         <div className="familyTop">
