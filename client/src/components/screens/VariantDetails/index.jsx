@@ -229,24 +229,10 @@ class VariantDetailsScreen extends React.Component {
 
     this.state.internalCohortsFrequenciesColumnPreset = [
       {
-        key: 'key',
-        label: 'screen.variantDetails.frequenciesTab.LDMColumn',
-        renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
-          renderer: (data) => {
-            try {
-              return data.key;
-            } catch (e) {
-              return '';
-            }
-          },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
-      },
-      {
-        key: 'PN',
+        key: 'pn',
         label: 'screen.variantDetails.frequenciesTab.nbPatientsColumn',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
-          renderer: (data) => { try { return data.PN; } catch (e) { return ''; } },
+          renderer: (data) => { try { return data.pn; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
@@ -1089,7 +1075,7 @@ class VariantDetailsScreen extends React.Component {
               <div className="page-static-content">
                 <Row type="flex" className="frequenciesTab" gutter={24}>
                   <Col span={12}>
-                    <Card title="Cohortes internes" className="staticCard" bordered={false}>
+                    <Card title="RDMQ" className="staticCard" bordered={false}>
                       <Table
                         rowKey={() => shortid.generate()}
                         pagination={false}
