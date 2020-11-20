@@ -450,19 +450,14 @@ class PatientSearchScreen extends React.Component {
       value: result.id,
       text: (
         <>
-          <Typography.Text strong>{ result.firstName } { result.lastName }</Typography.Text>
-          <br />
-          <Typography.Text
-            disabled
-            style={{
-              fontSize: 10, color: '#ABB3BC', marginTop: -5, display: 'block',
-            }}
-          >{ result.ramq }
-          </Typography.Text>
-          <hr style={{
-            borderTop: 'none', borderBottom: '1px solid #CCCCCC', marginBottom: -5, marginTop: 3,
-          }}
-          />
+          <Row className="autocomplete-row">
+            <Col>
+              <Typography.Text className="autocomplete-row__name">{ result.firstName.toUpperCase() } { result.lastName }</Typography.Text>
+            </Col>
+            <Col>
+              <Typography.Text className="autocomplete-row__mrn">MRN: { result.mrn }</Typography.Text>
+            </Col>
+          </Row>
         </>
       ),
     }));

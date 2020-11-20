@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 @import '../../../containers/App/variables.scss';
 @import './variables.scss';
+@import '../../../style/themes/colors.scss';
+
 
 div.bp3-table-container {
   height: auto;
@@ -285,6 +287,18 @@ div.ant-tag {
 
     .table-facet{
         width:calc(100% - 280px - 24px)
+    }
+}
+
+.autocomplete-row{
+    border-bottom: 1px solid $gray-5;
+    margin-bottom: -5px;
+
+    &__name{
+        font-weight: 500;
+    }
+    &__mrn{
+        font-size: 12px;
     }
 }
 
