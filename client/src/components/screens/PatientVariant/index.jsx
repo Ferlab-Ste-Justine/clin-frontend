@@ -82,7 +82,7 @@ const _has = curryRight(has);
  * @param {*} gene
  */
 const nucleotidicVariation = (variant, gene) => {
-  const lines = [variant.mutationId, '\n'];
+  const lines = [variant.hgvsg, '\n'];
 
   const bdExts = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp : [];
   lines.push(...insertCR(bdExts));
@@ -130,7 +130,7 @@ const parentalOriginLines = (variant, _gene) => {
 
   const coverage = donor => [
     intl.get('screen.patientvariant.parentalOrigin.variantConverage'),
-    `${getValue(donor, 'adAlt')}/${getValue(donor, 'adTotal')} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
+    `${getValue(donor, 'ad_alt')}/${getValue(donor, 'ad_total')} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
   ];
 
   const origin = (d) => {
@@ -153,16 +153,16 @@ const parentalOriginLines = (variant, _gene) => {
  * @param {*} gene
  */
 const allelicFrequency = (variant, _gene) => {
-  if (has(variant, 'frequencies.ExAc')) {
-    return getValue(variant.frequencies.ExAc, 'AF');
+  if (has(variant, 'frequencies.exac')) {
+    return getValue(variant.frequencies.exac, 'af');
   }
 
-  if (has(variant, 'frequencies.gnomAD_exomes')) {
-    return getValue(variant.frequencies.gnomAD_exomes, 'AF');
+  if (has(variant, 'frequencies.gnomad_genomes_3_0')) {
+    return getValue(variant.frequencies.gnomad_genomes_3_0, 'af');
   }
 
-  if (has(variant, 'variant.frequencies.gnomAD_genomes')) {
-    return getValue(variant.frequencies.gnomAD_genomes, 'AF');
+  if (has(variant, 'variant.frequencies.gnomad_genomes_2_1_1')) {
+    return getValue(variant.frequencies.gnomad_genomes_2_1_1, 'af');
   }
 
   return 0;
@@ -175,7 +175,7 @@ const allelicFrequency = (variant, _gene) => {
  */
 const inSilicoPredictions = (variant, _gene) => {
   const preds = variant.consequences
-    .map(c => (c.predictions ? c.predictions.SIFT : null))
+    .map(c => (c.predictions ? c.predictions.sift_converted_rank_score : null))
     .filter(valuePresent)
     .join(', ');
 
