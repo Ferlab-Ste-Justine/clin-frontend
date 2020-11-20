@@ -207,10 +207,9 @@ const patientSubmissionReducer = (
       const serviceRequest = action.payload.patient.prescriptions[0].original;
       const clinicalImpression = action.payload.patient.consultation[0].original;
 
-      const { cgh } = action.payload.patient.consultation[0].parsed;
-      const { summary } = action.payload.patient.consultation[0].parsed;
-      const { hypothesis } = action.payload.patient.consultation[0].parsed;
-      const { practitioner } = action.payload.patient.consultation[0].parsed;
+      const {
+        cgh, summary, hypothesis, practitioner,
+      } = action.payload.patient.consultation[0].parsed;
       const hpos = action.payload.patient.hpos.map(hpo => hpo.original);
       const fmhs = action.payload.patient.fmhs.map(fmh => fmh.original);
       const { observationIds } = action.payload.patient;
