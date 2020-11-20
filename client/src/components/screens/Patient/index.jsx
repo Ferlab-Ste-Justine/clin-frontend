@@ -23,6 +23,7 @@ import { appShape } from '../../../reducers/app';
 import {
   navigateToPatientScreen, navigateToPatientVariantScreen,
   navigateToPatientSearchScreen,
+  navigatoToSubmissionWithPatient,
 } from '../../../actions/router';
 
 import '../../../style/themes/antd-clin-theme.css';
@@ -50,6 +51,7 @@ class PatientScreen extends React.Component {
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
     this.showModal = this.showModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.navigatoToSubmissionWithPatient = this.navigatoToSubmissionWithPatient.bind(this);
 
     this.state.requestColumnPreset = [
       {
@@ -112,6 +114,7 @@ class PatientScreen extends React.Component {
       },
     ];
   }
+
 
   getRequest() {
     const { prescriptions } = this.props;
@@ -281,6 +284,11 @@ class PatientScreen extends React.Component {
       });
     }
     return [];
+  }
+
+  navigatoToSubmissionWithPatient() {
+    const { actions } = this.props;
+    actions.navigatoToSubmissionWithPatient();
   }
 
   handleNavigationToPatientScreen(e) {
@@ -553,7 +561,7 @@ class PatientScreen extends React.Component {
                                 <Col className="noInfo__contents__icon"><IconKit size={72} icon={ic_info} /></Col>
                                 <Col className="noInfo__contents__title"><Title level={2}>Aucune information clinique disponible</Title></Col>
                                 <Col className="noInfo__contents__text"><p>Maecenas sed diam eget risus varius blandit sit amet non magna. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p></Col>
-                                <Col className="noInfo__contents__button"><Button type="primary">Compléter le formulaire<IconKit size={20} icon={ic_arrow_forward} /></Button></Col>
+                                <Col className="noInfo__contents__button"><Button type="primary" onClick={this.navigatoToSubmissionWithPatient}>Compléter le formulaire<IconKit size={20} icon={ic_arrow_forward} /></Button></Col>
                               </Row>
                             </Card>
                           ) : (
@@ -659,6 +667,7 @@ const mapDispatchToProps = dispatch => ({
     navigateToPatientScreen,
     navigateToPatientVariantScreen,
     navigateToPatientSearchScreen,
+    navigatoToSubmissionWithPatient,
   }, dispatch),
 });
 

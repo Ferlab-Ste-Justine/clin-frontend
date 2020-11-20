@@ -2,10 +2,12 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
-import { isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 import { message } from 'antd';
 import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
+
+const getExtension = (resource, url) => get(resource, 'extension', []).find(ext => ext.url === url);
 
 // @TODO change item values
 export const initialPatientSubmissionState = {
@@ -200,6 +202,40 @@ const patientSubmissionReducer = (
       draft.deleted = initialPatientSubmissionState.deleted;
       draft.local = initialPatientSubmissionState.local;
       break;
+    case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
+      const patient = action.payload.patient.patient.original;
+      const serviceRequest = action.payload.patient.prescriptions[0].original;
+      const clinicalImpression = action.payload.patient.consultation[0].original;
+
+      const {
+        cgh, summary, hypothesis, practitioner,
+      } = action.payload.patient.consultation[0].parsed;
+      const hpos = action.payload.patient.hpos.map(hpo => hpo.original);
+      const fmhs = action.payload.patient.fmhs.map(fmh => fmh.original);
+      const { observationIds } = action.payload.patient;
+
+      const groupId = getExtension(patient, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id');
+
+      draft.local = initialPatientSubmissionState.local;
+      draft.patient = action.payload.patient.patient.original;
+      draft.groupId = groupId;
+      draft.serviceRequest = { ...draft.serviceRequest, id: serviceRequest.id };
+      draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
+
+      draft.observations.hpos = (hpos.length === 0) ? [] : hpos;
+      draft.observations.fmh = (fmhs.length === 0) ? [] : fmhs;
+      draft.observations.cgh = { id: observationIds.cgh };
+      draft.observations.indic = { id: observationIds.indic };
+      draft.observations.summary = { id: observationIds.inves };
+
+      draft.local.serviceRequest.code = get(serviceRequest, 'code.coding[0].code', null);
+      draft.local.cgh.interpretation = cgh;
+      draft.local.summary.note = summary !== 'N/A' ? summary : '';
+      draft.local.indic.note = hypothesis !== 'N/A' ? hypothesis : '';
+      draft.local.consents = ['c1', 'c2'];
+      draft.local.practitioner = practitioner.name !== 'N/A' ? practitioner.name.trim() : null;
+      break;
+    }
     default:
       break;
   }

@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import { get } from 'lodash';
 import * as actions from "../actions/type";
 import { ClinicalImpression, FamilyMemberHistory, Observation, Patient, ServiceRequest } from "../helpers/fhir/types";
 //@ts-ignore
@@ -21,12 +22,28 @@ import {
   Prescription,
 } from "../helpers/providers/types";
 
+type ObservationCode = "CGH" | "INDIC" | "INVES";
+
+const getObservationId = (code: ObservationCode, resource: any) : string | undefined => {
+  const clinicalImpressin = resource.entry[3];
+  const cgh = clinicalImpressin.resource.entry.find(entry => get(entry, 'resource.code.coding[0].code', '') === code);
+  
+  return get(cgh, 'resource.id', undefined);
+}
+
+type ObservationIds = {
+  cgh?: string;
+  indic?: string;
+  inves?: string;
+}
+
 type State = {
   patient: Record<Patient, ParsedPatientData>;
   prescriptions: Record<ServiceRequest, Prescription>[];
   consultation: Record<ClinicalImpression, ConsultationSummary>[];
   hpos: Record<Observation, ClinicalObservation>[];
   fmhs: Record<FamilyMemberHistory, FamilyObservation>[];
+  observationIds: ObservationIds; 
 };
 
 type Action = {
@@ -35,12 +52,17 @@ type Action = {
 };
 
 const reducer = (
-  state: State = { patient: { parsed: { id: "" } }, prescriptions: [], consultation: [], hpos: [], fmhs: [] },
+  state: State = { patient: { parsed: { id: "" } }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observationIds: {}},
   action: Action
 ) =>
   produce<State>(state, (draft) => {
     switch (action.type) {
       case actions.PATIENT_FETCH_SUCCEEDED: {
+        draft.observationIds  = {
+          cgh: getObservationId('CGH', action.payload.patientData),
+          indic: getObservationId('INDIC', action.payload.patientData),
+          inves: getObservationId('INVES', action.payload.patientData)
+        }; 
         const providerChain = new ProviderChain(action.payload);
         providerChain
           .add(new PatientProvider("patient"))

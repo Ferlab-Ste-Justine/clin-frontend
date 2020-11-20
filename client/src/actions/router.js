@@ -46,3 +46,7 @@ export const navigateToAccessDeniedScreen = () => ({
 export const navigateToSubmissionScreen = () => ({
   type: actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED,
 });
+
+export const navigatoToSubmissionWithPatient = () => ({
+  type: actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_REQUESTED,
+});

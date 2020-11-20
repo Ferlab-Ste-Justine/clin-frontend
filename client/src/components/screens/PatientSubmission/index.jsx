@@ -359,6 +359,10 @@ class PatientSubmissionScreen extends React.Component {
     this.saveSecondPageLocalStore = this.saveSecondPageLocalStore.bind(this);
   }
 
+  componentDidMount() {
+    this.updateFormValues();
+  }
+
   getPatientData() {
     const { currentPageIndex } = this.state;
     const { patient, form } = this.props;
