@@ -94,6 +94,18 @@ function* navigateToSubmissionScreen() {
   }
 }
 
+function* navigateToSubmissionScreenWithPatient() {
+  try {
+    const patient = yield select(state => state.patient);
+    yield put(push(yield put(push('/submission'))));
+    window.scrollTo(0, 0);
+    yield put({ type: actions.PATIENT_SUBMISSION_UPDATE_DATA, payload: { patient } });
+    yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
+  }
+}
+
 function* navigateToPatientSearchScreen() {
   try {
     yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
@@ -181,6 +193,10 @@ function* watchNavigateToSubmissionScreen() {
   yield takeLatest(actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED, navigateToSubmissionScreen);
 }
 
+function* watchNavigateToPatientScreenWithPatient() {
+  yield takeLatest(actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_REQUESTED, navigateToSubmissionScreenWithPatient);
+}
+
 
 function* watchNavigationToAccessDeniedScreen() {
   yield takeLatest(actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED, navigateToAccessDeniedScreen);
@@ -195,5 +211,6 @@ export default function* watchedRouterSagas() {
     watchNavigationToAccessDeniedScreen(),
     watchManualUserNavigation(),
     watchNavigateToSubmissionScreen(),
+    watchNavigateToPatientScreenWithPatient(),
   ]);
 }
