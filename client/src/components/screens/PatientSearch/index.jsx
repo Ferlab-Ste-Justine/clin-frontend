@@ -237,7 +237,7 @@ class PatientSearchScreen extends React.Component {
           bloodRelationship: result.bloodRelationship,
           proband: result.proband,
           position: result.position,
-          practitioner: `${result.practitioner.lastName} ${result.practitioner.firstName}`,
+          practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName} ${result.practitioner.firstName}` : 'Vincent Ferretti',
           request: result.request,
           test: result.test,
           prescription: result.prescription,
