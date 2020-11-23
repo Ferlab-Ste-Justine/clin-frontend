@@ -282,16 +282,16 @@ const Approval = ({
           })(
             <Checkbox.Group className="checkboxGroup" onChange={updateConsentmentsCallback}>
               <Row>
-                <Checkbox className="checkbox" value="c1"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.patient') }</span></Checkbox>
+                <Checkbox className="checkbox" value="consent-1"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.patient') }</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c2"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.father') }</span></Checkbox>
+                <Checkbox className="checkbox" value="consent-2"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.father') }</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c3"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.mother') }</span></Checkbox>
+                <Checkbox className="checkbox" value="consent-3"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.mother') }</span></Checkbox>
               </Row>
               <Row>
-                <Checkbox className="checkbox" value="c4"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.research') }</span></Checkbox>
+                <Checkbox className="checkbox" value="consent-4"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.research') }</span></Checkbox>
               </Row>
             </Checkbox.Group>,
           ) }
@@ -656,11 +656,11 @@ class PatientSubmissionScreen extends React.Component {
 
   submit(e) {
     const { actions } = this.props;
-    this.handleSubmit(e);
+    this.handleSubmit(e, true);
     actions.navigateToPatientSearchScreen();
   }
 
-  handleSubmit(e) {
+  handleSubmit(e, submit = false) {
     const { form } = this.props;
     e.preventDefault();
     form.validateFields((err) => {
@@ -719,7 +719,9 @@ class PatientSubmissionScreen extends React.Component {
         actions.saveObservations(submission.observations);
         this.saveSecondPageLocalStore();
       } else {
-        submission.status = 'on-hold';
+        if (submit) {
+          submission.status = 'on-hold';
+        }
         submission.observations = {
           ...observations,
           cgh: {
@@ -784,6 +786,13 @@ class PatientSubmissionScreen extends React.Component {
       );
 
       this.saveSecondPageLocalStore();
+
+      const { localStore } = this.props;
+      const { practitioner } = localStore;
+
+      this.handlePractitionerSearchTermChanged(practitioner, () => {
+        this.handlePractitionerOptionSelected(practitioner);
+      });
     }
 
     this.setState({ currentPageIndex: pageIndex });
@@ -846,7 +855,7 @@ class PatientSubmissionScreen extends React.Component {
     this.handlePractitionerSearchTermChanged(term);
   }
 
-  handlePractitionerSearchTermChanged(term) {
+  handlePractitionerSearchTermChanged(term, callback = null) {
     const normalizedTerm = term.toLowerCase().trim();
 
     if (normalizedTerm.length > 0 && normalizedTerm.length < 10) {
@@ -873,6 +882,10 @@ class PatientSubmissionScreen extends React.Component {
           this.setState({
             practitionerOptions: result,
           });
+
+          if (callback != null) {
+            callback();
+          }
         }
       });
     }
