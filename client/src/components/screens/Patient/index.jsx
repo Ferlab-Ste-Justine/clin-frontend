@@ -1,5 +1,4 @@
 /* eslint-disable react/no-unescaped-entities */
-/* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -43,9 +42,6 @@ class PatientScreen extends React.Component {
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.getRequest = this.getRequest.bind(this);
     this.getClinical = this.getClinical.bind(this);
-    this.getIndication = this.getIndication.bind(this);
-    this.getObservations = this.getObservations.bind(this);
-    this.getHistorical = this.getHistorical.bind(this);
     this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
     this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
@@ -244,48 +240,6 @@ class PatientScreen extends React.Component {
     return [];
   }
 
-  getIndication() {
-    const { patient } = this.props;
-    const { indications } = patient;
-    if (indications) {
-      return indications.map((i) => {
-        const date = i.consultation_date.split('T');
-        return {
-          notes: i.note, consultation: date[0],
-        };
-      });
-    }
-    return [];
-  }
-
-  getObservations() {
-    const { patient } = this.props;
-    const { observations } = patient;
-    if (observations) {
-      return observations.map((o) => {
-        const date = o.consultation_date.split('T');
-        return {
-          notes: o.note, consultation: date[0],
-        };
-      });
-    }
-    return [];
-  }
-
-  getHistorical() {
-    const { patient } = this.props;
-    const { familyHistory } = patient;
-    if (familyHistory) {
-      return familyHistory.map((f) => {
-        const date = f.date.split('T')[0];
-        return {
-          notes: f.note, date,
-        };
-      });
-    }
-    return [];
-  }
-
   navigatoToSubmissionWithPatient() {
     const { actions } = this.props;
     actions.navigatoToSubmissionWithPatient();
@@ -340,9 +294,6 @@ class PatientScreen extends React.Component {
     const genderTitle = intl.get('screen.patient.details.gender');
     const ethnicity = intl.get('screen.patient.details.ethnicity');
     const consanguinity = intl.get('screen.patient.details.consanguinity');
-    /*     const mother = intl.get('screen.patient.details.mother');
-    const father = intl.get('screen.patient.details.father');
-    const additionalInformation = intl.get('screen.patient.header.additionalInformation'); */
     const family = intl.get('screen.patient.header.family');
     const patientTab = intl.get('screen.patient.tab.patient');
     const clinicalTab = intl.get('screen.patient.tab.clinical');
