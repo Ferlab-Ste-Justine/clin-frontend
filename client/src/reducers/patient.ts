@@ -24,17 +24,17 @@ import {
 
 type ObservationCode = "CGH" | "INDIC" | "INVES";
 
-const getObservationId = (code: ObservationCode, resource: any) : string | undefined => {
+const getObservation = (code: ObservationCode, resource: any) : Observation | undefined => {
   const clinicalImpressin = resource.entry[3];
-  const cgh = clinicalImpressin.resource.entry.find(entry => get(entry, 'resource.code.coding[0].code', '') === code);
+  const observation = clinicalImpressin.resource.entry.find(entry => get(entry, 'resource.code.coding[0].code', '') === code);
   
-  return get(cgh, 'resource.id', undefined);
+  return get(observation, 'resource', undefined);
 }
 
-type ObservationIds = {
-  cgh?: string;
-  indic?: string;
-  inves?: string;
+type Observations = {
+  cgh?: Observation;
+  indic?: Observation;
+  inves?: Observation;
 }
 
 type State = {
@@ -43,7 +43,7 @@ type State = {
   consultation: Record<ClinicalImpression, ConsultationSummary>[];
   hpos: Record<Observation, ClinicalObservation>[];
   fmhs: Record<FamilyMemberHistory, FamilyObservation>[];
-  observationIds: ObservationIds; 
+  observations: Observations; 
 };
 
 type Action = {
@@ -51,17 +51,18 @@ type Action = {
   payload: any;
 };
 
-const reducer = (
-  state: State = { patient: { parsed: { id: "" } }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observationIds: {}},
-  action: Action
-) =>
+const initialState = {
+  patient: { parsed: { id: '' } }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observations: {},
+};
+
+const reducer = (state: State = initialState, action: Action) =>
   produce<State>(state, (draft) => {
     switch (action.type) {
       case actions.PATIENT_FETCH_SUCCEEDED: {
-        draft.observationIds  = {
-          cgh: getObservationId('CGH', action.payload.patientData),
-          indic: getObservationId('INDIC', action.payload.patientData),
-          inves: getObservationId('INVES', action.payload.patientData)
+        draft.observations  = {
+          cgh: getObservation('CGH', action.payload.patientData),
+          indic: getObservation('INDIC', action.payload.patientData),
+          inves: getObservation('INVES', action.payload.patientData)
         }; 
         const providerChain = new ProviderChain(action.payload);
         providerChain
@@ -76,7 +77,18 @@ const reducer = (
         draft.consultation = result.consultation.records;
         draft.hpos = result.hpos.records;
         draft.fmhs = result.fmhs.records;
+        break;
       }
+      case actions.CLEAR_PATIENT_DATA_REQUESTED:
+        draft.consultation = initialState.consultation;
+        draft.fmhs = initialState.fmhs;
+        draft.hpos = initialState.hpos;
+        draft.observations = initialState.observations;
+        draft.patient = initialState.patient;
+        draft.prescriptions = initialState.prescriptions;
+        break;
+      default: 
+      break;
     }
   });
 

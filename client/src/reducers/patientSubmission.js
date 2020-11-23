@@ -2,7 +2,9 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
-import { isEmpty, get } from 'lodash';
+import {
+  isEmpty, get, range,
+} from 'lodash';
 import { message } from 'antd';
 import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
@@ -51,6 +53,7 @@ export const patientSubmissionShape = {
   data: PropTypes.shape({}),
 };
 
+const NOT_AVAILABLE = 'N/A';
 const patientSubmissionReducer = (
   state = Object.assign({}, initialPatientSubmissionState),
   action,
@@ -200,7 +203,14 @@ const patientSubmissionReducer = (
       draft.serviceRequest = initialPatientSubmissionState.serviceRequest;
       draft.observations = initialPatientSubmissionState.observations;
       draft.deleted = initialPatientSubmissionState.deleted;
-      draft.local = initialPatientSubmissionState.local;
+      draft.local = {
+        serviceRequest: {},
+        cgh: {},
+        summary: {},
+        indic: {},
+        consents: [],
+        practitioner: '',
+      };
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
       const patient = action.payload.patient.patient.original;
@@ -208,11 +218,16 @@ const patientSubmissionReducer = (
       const clinicalImpression = action.payload.patient.consultation[0].original;
 
       const {
-        cgh, summary, hypothesis, practitioner,
+        cgh, summary, hypothesis,
       } = action.payload.patient.consultation[0].parsed;
+
+      const { performer } = action.payload.patient.prescriptions[0].parsed;
+
+      const { generalPractitioner } = patient;
+
       const hpos = action.payload.patient.hpos.map(hpo => hpo.original);
       const fmhs = action.payload.patient.fmhs.map(fmh => fmh.original);
-      const { observationIds } = action.payload.patient;
+      const { observations } = action.payload.patient;
 
       const groupId = getExtension(patient, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id');
 
@@ -222,18 +237,23 @@ const patientSubmissionReducer = (
       draft.serviceRequest = { ...draft.serviceRequest, id: serviceRequest.id };
       draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
-      draft.observations.hpos = (hpos.length === 0) ? [] : hpos;
-      draft.observations.fmh = (fmhs.length === 0) ? [] : fmhs;
-      draft.observations.cgh = { id: observationIds.cgh };
-      draft.observations.indic = { id: observationIds.indic };
-      draft.observations.summary = { id: observationIds.inves };
+      draft.observations.hpos = hpos;
+      draft.observations.fmh = fmhs;
+      draft.observations.cgh = { ...observations.cgh };
+      draft.observations.indic = { ...observations.indic };
+      draft.observations.summary = { ...observations.inves };
 
       draft.local.serviceRequest.code = get(serviceRequest, 'code.coding[0].code', null);
       draft.local.cgh.interpretation = cgh;
-      draft.local.summary.note = summary !== 'N/A' ? summary : '';
-      draft.local.indic.note = hypothesis !== 'N/A' ? hypothesis : '';
-      draft.local.consents = ['c1', 'c2'];
-      draft.local.practitioner = practitioner.name !== 'N/A' ? practitioner.name.trim() : null;
+      draft.local.summary.note = summary !== NOT_AVAILABLE ? summary : '';
+      draft.local.indic.note = hypothesis !== NOT_AVAILABLE ? hypothesis : '';
+      draft.local.consents = range(1, 5).map(value => `consent-${value}`);
+
+      if (get(generalPractitioner, 'length', 0) > 0) {
+        draft.local.practitioner = performer.mrn;
+      }
+
+      draft.observations.fmh.push({});
       break;
     }
     default:

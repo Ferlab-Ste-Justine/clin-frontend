@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { produce } from 'immer';
 import * as actions from '../actions/type';
 
-
 export const initialSearchState = {
   lastSearchType: null,
   autocomplete: {

@@ -108,6 +108,7 @@ function* navigateToSubmissionScreenWithPatient() {
 
 function* navigateToPatientSearchScreen() {
   try {
+    yield put({ type: actions.CLEAR_PATIENT_DATA_REQUESTED });
     yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
     yield put(push(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`));
     window.scrollTo(0, 0);
@@ -196,7 +197,6 @@ function* watchNavigateToSubmissionScreen() {
 function* watchNavigateToPatientScreenWithPatient() {
   yield takeLatest(actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_REQUESTED, navigateToSubmissionScreenWithPatient);
 }
-
 
 function* watchNavigationToAccessDeniedScreen() {
   yield takeLatest(actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED, navigateToAccessDeniedScreen);
