@@ -416,17 +416,27 @@ class ClinicalInformation extends React.Component {
 
   handleHpoNodesChecked(_, info) {
     const { actions, observations } = this.props;
+    const { treeData } = this.state;
 
     const checkedNodes = info.checkedNodes.map(n => ({ code: n.key, display: n.props.title }));
     const hpoResources = observations.hpos;
 
     const toDelete = [];
     const toAdd = [];
+
     hpoResources.forEach((resource) => {
-      if (checkedNodes.find(r => r.code === resource.valueCodeableConcept.coding[0].code) == null) {
-        toDelete.push(resource);
+      if (resource.valueCodeableConcept.coding.length > 0) {
+        const { code } = resource.valueCodeableConcept.coding[0];
+        const isUnchecked = checkedNodes.find(r => r.code === code) === undefined;
+        // Resources selected by the autocomplete aren't in the treeData
+        const isHidden = treeData.find(td => td.key === code) === undefined;
+
+        if (isUnchecked && !isHidden) {
+          toDelete.push(resource);
+        }
       }
     });
+
     checkedNodes.forEach((resource) => {
       if (hpoResources.find(r => resource.code === r.valueCodeableConcept.coding[0].code) == null) {
         toAdd.push(resource);
@@ -441,7 +451,7 @@ class ClinicalInformation extends React.Component {
     const { hpoOptions } = this.state;
     const option = hpoOptions.find(h => h.name === value);
 
-    this.hpoSelected({ code: option.key, display: option.name });
+    this.hpoSelected({ code: option.id, display: option.name });
   }
 
   handleHpoDeleted(hpoId) {
