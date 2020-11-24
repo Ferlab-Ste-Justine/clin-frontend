@@ -190,8 +190,13 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
         };
       });
 
-      // @CASE: No default statement or default statement not part of retrieved statements
-      if (!state.defaultStatement || !draft.statements[state.defaultStatement]) {
+      // eslint-disable-next-line no-case-declarations
+      const doesDefaultStatementExist = state.defaultStatement && draft.statements[state.defaultStatement];
+      // eslint-disable-next-line no-case-declarations
+      const wasAStatementSelected = state.activeStatementId
+        && state.activeStatementId !== DRAFT_STATEMENT_UID && draft.statements[state.activeStatementId];
+
+      if (!doesDefaultStatementExist && !wasAStatementSelected) {
         // @NOTE Don't override draft if one exists
         if (!draft.statements[DRAFT_STATEMENT_UID]) {
           draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
