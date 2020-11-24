@@ -335,7 +335,7 @@ class SpecificFilter extends Filter {
                 value={draft.values}
               >
                 <div
-                  style={{ overflow: 'auto', height: 250 }}
+                  className="scrollFilter"
                   ref={(ref) => { this.scrollParentRef = ref; }}
                 >
                   <InfiniteScroll

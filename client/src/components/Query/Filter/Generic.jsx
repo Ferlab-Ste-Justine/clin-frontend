@@ -1,5 +1,6 @@
 import React from 'react';
 import shortid from 'shortid';
+import InfiniteScroll from 'react-infinite-scroller';
 import {
   Row, Col, Checkbox, Tag, Tooltip, Button, Divider,
 } from 'antd';
@@ -45,6 +46,7 @@ class GenericFilter extends React.Component {
       size: null,
       page: null,
       allOptions: null,
+      loadedOptions: [],
     };
     this.getEditor = this.getEditor.bind(this);
     this.getEditorLabels = this.getEditorLabels.bind(this);
@@ -56,6 +58,7 @@ class GenericFilter extends React.Component {
     this.handleSelectNone = this.handleSelectNone.bind(this);
     this.handleSelectAll = this.handleSelectAll.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
+    this.loadMoreFacets = this.loadMoreFacets.bind(this);
 
     // @NOTE Initialize Component State
     const { data, dataSet } = props;
@@ -82,17 +85,14 @@ class GenericFilter extends React.Component {
 
   getEditor() {
     const {
-      selection, size, page, allOptions,
+      selection, allOptions, loadedOptions,
     } = this.state;
     const selectAll = intl.get('screen.patientvariant.filter.selection.all');
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
-
-    const minValue = size * (page - 1);
-    const maxValue = size * page;
-
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
-    const options = allOptions.slice(minValue, maxValue).map((option) => {
+    const loadedOptionsClone = loadedOptions.length ? [...loadedOptions] : allOptions.slice(0, Math.min(10, allOptions.length));
+    const options = loadedOptionsClone.map((option) => {
       const value = option.value.length < 30 ? option.value : `${option.value.substring(0, 25)} ...`;
       return {
         label: (
@@ -121,13 +121,26 @@ class GenericFilter extends React.Component {
           <Row>
             <Col span={24}>
               <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
-                { options.map(option => (
-                  <Row key={shortid.generate()}>
-                    <Col>
-                      <Checkbox key={`${option.value}`} className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
-                    </Col>
-                  </Row>
-                )) }
+                <div className="scrollFilter" ref={(ref) => { this.scrollParentRef = ref; }}>
+                  <InfiniteScroll
+                    pageStart={0}
+                    loadMore={this.loadMoreFacets}
+                    hasMore={allOptions.length > loadedOptions.length}
+                    loader={<div className="loader" key={0}>Loading ...</div>}
+                    useWindow={false}
+                    getScrollParent={() => this.scrollParentRef}
+                  >
+                    { options.map(option => (
+                      <Row key={shortid.generate()}>
+                        <Col>
+                          <Checkbox key={`${option.value}`} className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                        </Col>
+                      </Row>
+                    )) }
+                  </InfiniteScroll>
+
+                </div>
+
               </Checkbox.Group>
             </Col>
           </Row>
@@ -200,12 +213,9 @@ class GenericFilter extends React.Component {
 
   handleSelectionChange(values) {
     const {
-      selection, allOptions, page, size, draft,
+      selection, allOptions, draft,
     } = this.state;
-
-    const minValue = size * (page - 1);
-    const maxValue = size * page;
-    const options = allOptions.slice(minValue, maxValue);
+    const options = allOptions;
 
     options.forEach((x) => {
       if (selection.includes(x.value)) {
@@ -231,6 +241,19 @@ class GenericFilter extends React.Component {
       draft.operand = operand;
       this.setState({ draft });
     }
+  }
+
+  loadMoreFacets(page) {
+    const {
+      allOptions,
+      loadedOptions,
+    } = this.state;
+    const newlyLoadedOptions = allOptions.slice(
+      loadedOptions.length,
+      Math.min(allOptions.length, loadedOptions.length + page * 10),
+    );
+
+    this.setState({ loadedOptions: [...loadedOptions, ...newlyLoadedOptions] });
   }
 
   render() {
