@@ -351,38 +351,18 @@ const practitionerOptionFromResource = (resource) => ({
   license: resource.identifier[0].value,
 });
 
-class PatientSubmissionScreen extends React.Component {
-  form = React.createRef();
+export function PatientSubmissionScreen(props) {
+  const [form] = Form.useForm();
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentPageIndex: 0,
-      practitionerOptions: [],
-    };
+  const [state, setState] = React.useState({
+    currentPageIndex: 0,
+    practitionerOptions: [],
+  });
 
-    this.submit = this.submit.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.isClinicalInformationComplete = this.isClinicalInformationComplete.bind(this);
-    this.handlePractitionerSearchTermChanged = this.handlePractitionerSearchTermChanged.bind(this);
-    this.searchPractitioner = debounce(this.searchPractitioner.bind(this), 300);
-    this.handlePractitionerOptionSelected = this.handlePractitionerOptionSelected.bind(this);
-    this.canGoNextPage = this.canGoNextPage.bind(this);
-    this.updateFormValues = this.updateFormValues.bind(this);
-    this.createSummary = this.createSummary.bind(this);
-    this.saveSecondPageLocalStore = this.saveSecondPageLocalStore.bind(this);
-
-    this.form.current.setFieldsValue({});
-  }
-
-  componentDidMount() {
-    this.updateFormValues();
-  }
-
-  getPatientData() {
-    const { currentPageIndex } = this.state;
-    const { patient, form } = this.props;
-    let values = this.form.current.getFieldsValue();
+  const getPatientData = () => {
+    const { currentPageIndex } = state;
+    const { patient } = props;
+    let values = form.getFieldsValue();
 
     const getEthnicityDisplay = (ethnicity) => {
       switch (ethnicity) {
@@ -432,62 +412,27 @@ class PatientSubmissionScreen extends React.Component {
     }
 
     return { ...patient };
-  }
+  };
 
-  getHPOData() {
-    console.log(this);
-    return [];
-  }
-
-  getPractitioner() {
-    const { currentPageIndex } = this.state;
-    const { form } = this.props;
-    const values = this.form.current.getFieldsValue();
-    if (currentPageIndex === 2) {
-      return values.practitioner.id;
-    }
-
-    return null;
-  }
-
-  getClinicalImpressionData() {
-    const { currentPageIndex } = this.state;
-    const { clinicalImpression } = this.props;
-
-    const clinicalImpressionData = { ...clinicalImpression };
-
-    if (currentPageIndex === 1) {
-      const { investigation } = clinicalImpression;
-      investigation[0].item = [
-        this.createCGHResourceList(),
-        ...this.createFamilyRelationshipResourceList(),
-        this.createIndicationResourceList(),
-      ];
-    }
-
-    return clinicalImpressionData;
-  }
-
-  getServiceRequestCode() {
-    const { form } = this.props;
-    const values = this.form.current.getFieldsValue();
+  const getServiceRequestCode = () => {
+    const values = form.getFieldsValue();
 
     if (values.analyse != null) {
       return values.analyse;
     }
 
-    const { localStore } = this.props;
+    const { localStore } = props;
     return localStore.serviceRequest.code;
-  }
+  };
 
-  canGoNextPage(currentPage) {
-    const { observations, practitionerId } = this.props;
-    const values = this.form.current.getFieldsValue();
+  const canGoNextPage = (currentPage) => {
+    const { observations, practitionerId } = props;
+    const values = form.getFieldsValue();
     let hasError = null;
     switch (currentPage) {
       case 0:
         if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
-          hasError = find(this.form.current.getFieldsError(), (o) => o !== undefined);
+          hasError = find(form.getFieldsError(), (o) => o !== undefined);
           if (hasError) {
             return true;
           }
@@ -533,7 +478,7 @@ class PatientSubmissionScreen extends React.Component {
           return false;
         };
 
-        hasError = find(this.form.current.getFieldsError(), (o) => {
+        hasError = find(form.getFieldsError(), (o) => {
           if (Array.isArray(o)) {
             return !o.includes(undefined);
           }
@@ -552,7 +497,7 @@ class PatientSubmissionScreen extends React.Component {
         return true;
       }
       case 2:
-        hasError = find(this.form.current.getFieldsError(), (o) => o !== undefined);
+        hasError = find(form.getFieldsError(), (o) => o !== undefined);
         if (hasError) {
           return true;
         }
@@ -563,11 +508,11 @@ class PatientSubmissionScreen extends React.Component {
       default:
         return false;
     }
-  }
+  };
 
-  createFamilyRelationshipResourceList() {
-    const { form } = this.props;
-    const values = this.form.current.getFieldsValue();
+  // eslint-disable-next-line no-unused-vars
+  const createFamilyRelationshipResourceList = () => {
+    const values = form.getFieldsValue();
 
     if (values.familyRelationshipCodes === undefined) {
       return [];
@@ -601,11 +546,10 @@ class PatientSubmissionScreen extends React.Component {
       }
       return null;
     }).filter((r) => r != null);
-  }
+  };
 
-  createCGHResourceList() {
-    const { form } = this.props;
-    const values = this.form.current.getFieldsValue();
+  const createCGHResourceList = () => {
+    const values = form.getFieldsValue();
     if (values.cghInterpretationValue === undefined) {
       return undefined;
     }
@@ -633,11 +577,10 @@ class PatientSubmissionScreen extends React.Component {
     }
 
     return builder.build();
-  }
+  };
 
-  createIndicationResourceList() {
-    const { form } = this.props;
-    const values = this.form.current.getFieldsValue();
+  const createIndicationResourceList = () => {
+    const values = form.getFieldsValue();
 
     if (values.indication === undefined) {
       return [];
@@ -655,11 +598,12 @@ class PatientSubmissionScreen extends React.Component {
     }
 
     return builder.build();
-  }
+  };
 
-  createSummary() {
-    const { form, localStore } = this.props;
-    const values = this.form.current.getFieldsValue();
+  const { localStore } = props;
+
+  const createSummary = () => {
+    const values = form.getFieldsValue();
     const builder = new ObservationBuilder('INVES');
 
     if (values.summaryNote == null && localStore.summary.note != null) {
@@ -668,21 +612,24 @@ class PatientSubmissionScreen extends React.Component {
       builder.withNote(values.summaryNote);
     }
     return builder.build();
-  }
+  };
 
-  submit(e) {
-    const { actions } = this.props;
-    this.handleSubmit(e, true);
-    actions.navigateToPatientSearchScreen();
-  }
+  const saveSecondPageLocalStore = () => {
+    const { actions } = props;
+    const values = form.getFieldsValue();
 
-  handleSubmit(e, submit = false) {
-    this.form.current.validateFields().then(() => {
+    actions.saveServiceRequest(values.analyse);
+    actions.saveLocalCgh(values.cghInterpretationValue, values.cghPrecision);
+    actions.saveLocalSummary(values.summaryNote);
+    actions.saveLocalIndic(values.indication);
+  };
+  const handleSubmit = (e, submitted = false) => {
+    form.validateFields().then(() => {
       const {
         actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId,
-      } = this.props;
+      } = props;
 
-      const patientData = this.getPatientData();
+      const patientData = getPatientData();
 
       const submission = {
         patient: patientData,
@@ -690,12 +637,12 @@ class PatientSubmissionScreen extends React.Component {
       };
 
       submission.serviceRequest = { ...submission.serviceRequest };
-      submission.serviceRequest.code = this.getServiceRequestCode();
+      submission.serviceRequest.code = getServiceRequestCode();
 
       if (hasObservations(observations)) {
         submission.clinicalImpression = clinicalImpression;
       }
-      const { currentPageIndex } = this.state;
+      const { currentPageIndex } = state;
 
       if (currentPageIndex === 0) {
         submission.observations = {
@@ -715,21 +662,21 @@ class PatientSubmissionScreen extends React.Component {
           ...observations,
           cgh: {
             ...observations.cgh,
-            ...this.createCGHResourceList(),
+            ...createCGHResourceList(),
           },
           indic: {
             ...observations.indic,
-            ...this.createIndicationResourceList(),
+            ...createIndicationResourceList(),
           },
           summary: {
             ...observations.summary,
-            ...this.createSummary(),
+            ...createSummary(),
           },
         };
         actions.saveObservations(submission.observations);
-        this.saveSecondPageLocalStore();
+        saveSecondPageLocalStore();
       } else {
-        if (submit) {
+        if (submitted) {
           submission.status = 'on-hold';
         }
         submission.observations = {
@@ -742,7 +689,7 @@ class PatientSubmissionScreen extends React.Component {
           },
           summary: {
             ...observations.summary,
-            ...this.createSummary(),
+            ...createSummary(),
           },
         };
       }
@@ -752,86 +699,36 @@ class PatientSubmissionScreen extends React.Component {
       submission.groupId = groupId;
       actions.savePatientSubmission(submission);
     });
-  }
+  };
+  const submit = (e) => {
+    const { actions } = props;
+    handleSubmit(e, true);
+    actions.navigateToPatientSearchScreen();
+  };
 
-  nbPages() {
-    return this.pages.length;
-  }
+  const nbPages = () => pages.length;
 
-  updateFormValues() {
-    debounce(() => { this.form.current.setFieldsValue({}); }, 500)();
-  }
+  const updateFormValues = () => {
+    debounce(() => { form.setFieldsValue({}); }, 500)();
+  };
 
-  saveSecondPageLocalStore() {
-    const { actions } = this.props;
-    const values = this.form.current.getFieldsValue();
+  updateFormValues();
 
-    actions.saveServiceRequest(values.analyse);
-    actions.saveLocalCgh(values.cghInterpretationValue, values.cghPrecision);
-    actions.saveLocalSummary(values.summaryNote);
-    actions.saveLocalIndic(values.indication);
-  }
-
-  next() {
-    const { currentPageIndex } = this.state;
-    const { actions, observations } = this.props;
-    const pageIndex = currentPageIndex + 1;
-    if (currentPageIndex === 0) {
-      actions.savePatientLocal(this.getPatientData());
-    } else if (currentPageIndex === 1) {
-      actions.saveObservations(
-        {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-            ...this.createCGHResourceList(),
-          },
-          indic: {
-            ...observations.indic,
-            ...this.createIndicationResourceList(),
-          },
-        },
-      );
-
-      this.saveSecondPageLocalStore();
-
-      const { localStore } = this.props;
-      const { practitioner } = localStore;
-
-      this.handlePractitionerSearchTermChanged(practitioner, () => {
-        this.handlePractitionerOptionSelected(practitioner);
-      });
-    }
-
-    this.setState({ currentPageIndex: pageIndex });
-    this.updateFormValues();
-  }
-
-  previous() {
-    const { currentPageIndex } = this.state;
-    const pageIndex = currentPageIndex - 1;
-    this.setState({ currentPageIndex: pageIndex });
-
-    if (currentPageIndex === 1) {
-      this.saveSecondPageLocalStore();
-    }
-
-    this.updateFormValues();
-  }
-
-  isFirstPage() {
-    const { currentPageIndex } = this.state;
+  const isFirstPage = () => {
+    const { currentPageIndex } = state;
     return currentPageIndex === 0;
-  }
+  };
 
-  isLastPage() {
-    const { currentPageIndex } = this.state;
-    return currentPageIndex === this.nbPages() - 1;
-  }
+  // eslint-disable-next-line no-unused-vars
+  const isLastPage = () => {
+    const { currentPageIndex } = state;
+    return currentPageIndex === nbPages() - 1;
+  };
 
   // TODO: Update check
-  isClinicalInformationComplete() {
-    const { observations } = this.props;
+  // eslint-disable-next-line no-unused-vars
+  const isClinicalInformationComplete = () => {
+    const { observations } = props;
     if (observations.cgh == null) {
       return false;
     }
@@ -843,11 +740,11 @@ class PatientSubmissionScreen extends React.Component {
       return false;
     }
     return true;
-  }
+  };
 
-  handlePractitionerOptionSelected(license) {
-    const { actions } = this.props;
-    const { practitionerOptions } = this.state;
+  const handlePractitionerOptionSelected = (license) => {
+    const { actions } = props;
+    const { practitionerOptions } = state;
     const practitioner = practitionerOptions.find((o) => o.license === license);
 
     if (practitioner != null) {
@@ -856,13 +753,9 @@ class PatientSubmissionScreen extends React.Component {
       const resource = createPractitionerResource(practitioner);
       actions.assignServiceRequestPractitioner(resource);
     }
-  }
+  };
 
-  searchPractitioner(term) {
-    this.handlePractitionerSearchTermChanged(term);
-  }
-
-  handlePractitionerSearchTermChanged(term, callback = null) {
+  const handlePractitionerSearchTermChanged = (term, callback = null) => {
     const normalizedTerm = term.toLowerCase().trim();
 
     if (normalizedTerm.length > 0 && normalizedTerm.length < 10) {
@@ -886,7 +779,7 @@ class PatientSubmissionScreen extends React.Component {
             });
           }
 
-          this.setState({
+          setState({
             practitionerOptions: result,
           });
 
@@ -896,143 +789,191 @@ class PatientSubmissionScreen extends React.Component {
         }
       });
     }
-  }
+  };
 
-  render() {
-    const { form, actions, localStore } = this.props;
-    const { patient, clinicalImpression, serviceRequest } = this.props;
-    const { practitionerOptions, currentPageIndex } = this.state;
+  const searchPractitioner = (term) => {
+    handlePractitionerSearchTermChanged(term);
+  };
 
-    const assignedPractitioner = serviceRequest ? serviceRequest.requester : null;
-    const assignedPractitionerLabel = assignedPractitioner && has(assignedPractitioner, 'resourceType')
-      ? stringifyPractionerOption(practitionerOptionFromResource(assignedPractitioner))
-      : '';
+  const next = () => {
+    const { currentPageIndex } = state;
+    const { actions, observations } = props;
+    const pageIndex = currentPageIndex + 1;
+    if (currentPageIndex === 0) {
+      actions.savePatientLocal(getPatientData());
+    } else if (currentPageIndex === 1) {
+      actions.saveObservations(
+        {
+          ...observations,
+          cgh: {
+            ...observations.cgh,
+            ...createCGHResourceList(),
+          },
+          indic: {
+            ...observations.indic,
+            ...createIndicationResourceList(),
+          },
+        },
+      );
 
-    const { consents } = localStore;
-    const initialPractitionerValue = localStore.practitioner;
+      saveSecondPageLocalStore();
 
-    const practitionerOptionsLabels = practitionerOptions.map((practitioner) => (
-      <AutoComplete.Option
-        key={practitioner.license}
-        text={`${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`}
-      >
-        <div className="page3__autocomplete">
-          <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given } – { practitioner.license }
+      const { practitioner } = localStore;
+
+      handlePractitionerSearchTermChanged(practitioner, () => {
+        handlePractitionerOptionSelected(practitioner);
+      });
+    }
+
+    setState({ currentPageIndex: pageIndex });
+    updateFormValues();
+  };
+
+  const previous = () => {
+    const { currentPageIndex } = state;
+    const pageIndex = currentPageIndex - 1;
+    setState({ currentPageIndex: pageIndex });
+
+    if (currentPageIndex === 1) {
+      saveSecondPageLocalStore();
+    }
+
+    updateFormValues();
+  };
+
+  const { actions } = props;
+  const { patient, clinicalImpression, serviceRequest } = props;
+  const { practitionerOptions, currentPageIndex } = state;
+
+  const assignedPractitioner = serviceRequest ? serviceRequest.requester : null;
+  const assignedPractitionerLabel = assignedPractitioner && has(assignedPractitioner, 'resourceType')
+    ? stringifyPractionerOption(practitionerOptionFromResource(assignedPractitioner))
+    : '';
+
+  const { consents } = localStore;
+  const initialPractitionerValue = localStore.practitioner;
+
+  const practitionerOptionsLabels = practitionerOptions.map((practitioner) => (
+    <AutoComplete.Option
+      key={practitioner.license}
+      text={`${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`}
+    >
+      <div className="page3__autocomplete">
+        <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given } – { practitioner.license }
+      </div>
+    </AutoComplete.Option>
+  ));
+
+  const pages = [
+    {
+      title: intl.get('screen.clinicalSubmission.patientInformation'),
+      content: (
+        <PatientInformation parentForm={this} patient={patient} />
+      ),
+      name: 'PatientInformation',
+      values: {},
+      isComplete: () => true,
+    },
+    {
+      title: intl.get('screen.clinicalSubmission.clinicalInformation'),
+      content: (
+        <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} />
+      ),
+      name: 'ClinicalInformation',
+      values: {},
+      isComplete: () => true,
+    },
+    {
+      title: intl.get('screen.clinicalSubmission.approval'),
+      content: (
+        <Approval
+          parentForm={this}
+          dataSource={practitionerOptionsLabels}
+          practitionerOptionSelected={handlePractitionerOptionSelected}
+          practitionerSearchTermChanged={searchPractitioner}
+          assignedPractitionerLabel={assignedPractitionerLabel}
+          initialConsentsValue={consents}
+          initialPractitionerValue={initialPractitionerValue}
+          updateConsentmentsCallback={actions.updateConsentments}
+        />
+      ),
+      name: 'Approval',
+      values: {},
+    },
+  ];
+  const { Title } = Typography;
+  const currentPage = pages[currentPageIndex];
+  const pageContent = currentPage.content;
+  return (
+    <Layout>
+      <>
+        <div className="page_headerStaticMargin">
+          <Title className="headerStaticContent" level={3}>Nouveau patient et prescription de test génomique</Title>
         </div>
-      </AutoComplete.Option>
-    ));
+        <div className="page-static-content">
+          <Card bordered={false} className="step">
+            <Steps current={currentPageIndex}>
+              { pages.map((item) => <Step key={item.title} title={item.title} />) }
+            </Steps>
+          </Card>
 
-    this.pages = [
-      {
-        title: intl.get('screen.clinicalSubmission.patientInformation'),
-        content: (
-          <PatientInformation parentForm={this} patient={patient} />
-        ),
-        name: 'PatientInformation',
-        values: {},
-        isComplete: () => true,
-      },
-      {
-        title: intl.get('screen.clinicalSubmission.clinicalInformation'),
-        content: (
-          <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} />
-        ),
-        name: 'ClinicalInformation',
-        values: {},
-        isComplete: () => true,
-      },
-      {
-        title: intl.get('screen.clinicalSubmission.approval'),
-        content: (
-          <Approval
-            parentForm={this}
-            dataSource={practitionerOptionsLabels}
-            practitionerOptionSelected={this.handlePractitionerOptionSelected}
-            practitionerSearchTermChanged={this.searchPractitioner}
-            assignedPractitionerLabel={assignedPractitionerLabel}
-            initialConsentsValue={consents}
-            initialPractitionerValue={initialPractitionerValue}
-            updateConsentmentsCallback={actions.updateConsentments}
-          />
-        ),
-        name: 'Approval',
-        values: {},
-      },
-    ];
-    const { Title } = Typography;
-    const currentPage = this.pages[currentPageIndex];
-    const pageContent = currentPage.content;
-    return (
-      <Layout>
-        <>
-          <div className="page_headerStaticMargin">
-            <Title className="headerStaticContent" level={3}>Nouveau patient et prescription de test génomique</Title>
-          </div>
-          <div className="page-static-content">
-            <Card bordered={false} className="step">
-              <Steps current={currentPageIndex}>
-                { this.pages.map((item) => <Step key={item.title} title={item.title} />) }
-              </Steps>
-            </Card>
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+          >
+            { pageContent }
+            <div className="submission-form-actions">
+              {
+                currentPageIndex === pages.length - 1 && (
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    disabled={() => debounce(() => canGoNextPage(currentPageIndex), 1500)}
+                    onClick={submit}
+                  >
+                    Soumettre
+                  </Button>
+                )
+              }
+              {
+                currentPageIndex !== pages.length - 1 && (
+                  <Button
+                    type="primary"
+                    onClick={() => next()}
+                    disabled={canGoNextPage(currentPageIndex)}
+                  >
+                    { intl.get('screen.clinicalSubmission.nextButtonTitle') }
+                  </Button>
+                )
+              }
 
-            <Form
-              ref={this.form}
-              onFinish={this.handleSubmit}
-            >
-              { pageContent }
-              <div className="submission-form-actions">
-                {
-                  currentPageIndex === this.pages.length - 1 && (
-                    <Button
-                      htmlType="submit"
-                      type="primary"
-                      disabled={() => debounce(() => this.canGoNextPage(currentPageIndex), 1500)}
-                      onClick={this.submit}
-                    >
-                      Soumettre
-                    </Button>
-                  )
-                }
-                {
-                  currentPageIndex !== this.pages.length - 1 && (
-                    <Button
-                      type="primary"
-                      onClick={() => this.next()}
-                      disabled={this.canGoNextPage(currentPageIndex)}
-                    >
-                      { intl.get('screen.clinicalSubmission.nextButtonTitle') }
-                    </Button>
-                  )
-                }
+              {
+                currentPageIndex !== 0 && (
+                  <Button onClick={() => previous()} disabled={isFirstPage()}>
+                    <IconKit size={20} icon={ic_keyboard_arrow_left} />
+                    { intl.get('screen.clinicalSubmission.previousButtonTitle') }
+                  </Button>
+                )
+              }
 
-                {
-                  currentPageIndex !== 0 && (
-                    <Button onClick={() => this.previous()} disabled={this.isFirstPage()}>
-                      <IconKit size={20} icon={ic_keyboard_arrow_left} />
-                      { intl.get('screen.clinicalSubmission.previousButtonTitle') }
-                    </Button>
-                  )
-                }
-
-                <Button
-                  htmlType="submit"
-                >
-                  <IconKit size={20} icon={ic_save} />
-                  { intl.get('screen.clinicalSubmission.saveButtonTitle') }
-                </Button>
-                <Button
-                  onClick={() => ConfirmationModal({ onOk: () => { actions.navigateToPatientSearchScreen(); } })}
-                  className="cancelButton"
-                >
-                  { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
-                </Button>
-              </div>
-            </Form>
-          </div>
-        </>
-      </Layout>
-    );
-  }
+              <Button
+                htmlType="submit"
+              >
+                <IconKit size={20} icon={ic_save} />
+                { intl.get('screen.clinicalSubmission.saveButtonTitle') }
+              </Button>
+              <Button
+                onClick={() => ConfirmationModal({ onOk: () => { actions.navigateToPatientSearchScreen(); } })}
+                className="cancelButton"
+              >
+                { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
+              </Button>
+            </div>
+          </Form>
+        </div>
+      </>
+    </Layout>
+  );
 }
 
 PatientSubmissionScreen.propTypes = {
