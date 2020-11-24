@@ -110,153 +110,162 @@ const defaultBirthDate = (patient) => {
   return null;
 };
 
-const PatientInformation = ({ getFieldDecorator, patient }) => {
+const PatientInformation = ({ patient }) => {
   const genderValues = getGenderValues();
   const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
   const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
   const disabledDate = (current) => current && current > moment().startOf('day');
   return (
     <Card title="Patient" bordered={false} className="patientContent">
-      <Form.Item label={intl.get('form.patientSubmission.form.lastName')}>
-        { getFieldDecorator('family', {
-          rules: [{
-            required: true,
-            message: 'Veuillez entrer un nom de famille',
-          },
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.lastName')}
+        name="family"
+        initialValue={has(patient, 'name[0].family') ? patient.name[0].family : ''}
+        rules={[{
+          required: true,
+          message: 'Veuillez entrer un nom de famille',
+        },
+        {
+          pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
+          message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
+        },
+        {
+          whitespace: true,
+          pattern: RegExp(/(.*[a-z]){2}/i),
+          message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
+        },
+        ]}
+      >
+        <Input placeholder={intl.get('form.patientSubmission.form.lastName')} className="input large" />
+      </Form.Item>
+
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.given')}
+        name="given"
+        initialValue={has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}
+        rules={[{
+          required: true,
+          message: 'Veuillez entrer un prénom',
+        },
+        {
+          pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
+          message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
+        },
+        {
+          whitespace: true,
+          pattern: RegExp(/(.*[a-z]){2}/i),
+          message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
+        },
+        ]}
+      >
+        <Input placeholder={intl.get('form.patientSubmission.form.given')} className="input large" />
+      </Form.Item>
+
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.gender')}
+        name="gender"
+        initialValue={has(patient, 'gender') ? patient.gender : ''}
+        rules={[{
+          required: true,
+          message: 'Veuillez indiquer le sexe',
+        }]}
+        valuePropName="gender"
+      >
+        <Radio.Group buttonStyle="solid">
+          {
+            Object.values(genderValues).map((gv) => (
+              <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
+                <span className="radioText">{ gv.label }</span>
+              </Radio.Button>
+            ))
+          }
+        </Radio.Group>
+      </Form.Item>
+
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.birthDate.label')}
+        name="birthDate"
+        initialValue={defaultBirthDate(patient)}
+        rules={[{ required: true, message: 'Veuillez indiquer la date de naissance' }]}
+      >
+        <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />
+      </Form.Item>
+
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.ramq')}
+        name="ramq"
+        initialValue={ramqValue(patient)}
+        rules={[{
+          pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
+          message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
+        }]}
+      >
+        <Input placeholder="ABCD 0000 0000" className="input large" />
+      </Form.Item>
+
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.mrn')}
+        name="mrn"
+        initialValue={mrnValue(patient)}
+        rules={[
+          { required: true, message: 'Veuillez entrer le numéro de dossier médical' },
           {
             pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
             message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
           },
           {
             whitespace: true,
-            pattern: RegExp(/(.*[a-z]){2}/i),
+            pattern: RegExp(/(.*[a-z0-9]){2}/i),
             message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
           },
-          ],
-          initialValue: has(patient, 'name[0].family') ? patient.name[0].family : '',
-        })(
-          <Input placeholder={intl.get('form.patientSubmission.form.lastName')} className="input large" />,
-        ) }
+        ]}
+      >
+        <Input placeholder="12345678" className="input small" />
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.given')}>
-        { getFieldDecorator('given', {
-          rules: [{
-            required: true,
-            message: 'Veuillez entrer un prénom',
-          },
-          {
-            pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
-            message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
-          },
-          {
-            whitespace: true,
-            pattern: RegExp(/(.*[a-z]){2}/i),
-            message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
-          },
-          ],
-          initialValue: has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : '',
-        })(
-          <Input placeholder={intl.get('form.patientSubmission.form.given')} className="input large" />,
-        ) }
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.hospital')}
+        name="organization"
+        initialValue={defaultOrganizationValue(patient)}
+        rules={[{ required: true, message: 'Please select the hospital!' }]}
+      >
+        <Select className="small" dropdownClassName="selectDropdown">
+          <Select.Option value="CHUSJ">CHUSJ</Select.Option>
+          <Select.Option value="CHUM">CHUM</Select.Option>
+          <Select.Option value="CUSM">CUSM</Select.Option>
+        </Select>
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.gender')}>
-        { getFieldDecorator('gender', {
-          rules: [{ required: true, message: 'Veuillez indiquer le sexe' }],
-          initialValue: has(patient, 'gender') ? patient.gender : '',
-        })(
-          <Radio.Group buttonStyle="solid">
-            {
-              Object.values(genderValues).map((gv) => (
-                <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
-                  <span className="radioText">{ gv.label }</span>
-                </Radio.Button>
-              ))
-            }
-          </Radio.Group>,
-        ) }
-      </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.birthDate.label')}>
-        { getFieldDecorator('birthDate', {
-          rules: [{ required: true, message: 'Veuillez indiquer la date de naissance' }],
-          initialValue: defaultBirthDate(patient),
-        })(
-          <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />,
-        ) }
-      </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.ramq')}>
-        { getFieldDecorator('ramq', {
-          rules: [{
-            pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
-            message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
-          }],
-          initialValue: ramqValue(patient),
-        })(
-          <Input placeholder="ABCD 0000 0000" className="input large" />,
-        ) }
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.ethnicity')}
+        name="ethnicity"
+        initialValue={ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding}
+        rules={[{ required: false }]}
+      >
+
+        <Select className="large" placeholder={intl.get('form.patientSubmission.form.ethnicity.select')} dropdownClassName="selectDropdown">
+          <Select.Option value="CA-FR">Canadien-Français</Select.Option>
+          <Select.Option value="EU">Caucasienne Européenne</Select.Option>
+          <Select.Option value="AFR">Africain ou caribéen</Select.Option>
+          <Select.Option value="LAT- AM">Hispanique</Select.Option>
+          <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
+          <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
+          <Select.Option value="ABOR">Aboriginal</Select.Option>
+          <Select.Option value="MIX">Origine mixte</Select.Option>
+          <Select.Option value="OTH">Autre</Select.Option>
+        </Select>
         <span className="optional">Facultatif</span>
       </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.mrn')}>
-        { getFieldDecorator('mrn', {
-          rules: [
-            { required: true, message: 'Veuillez entrer le numéro de dossier médical' },
-            {
-              pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
-              message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
-            },
-            {
-              whitespace: true,
-              pattern: RegExp(/(.*[a-z0-9]){2}/i),
-              message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
-            },
-          ],
-          initialValue: mrnValue(patient),
-        })(
-          <Input placeholder="12345678" className="input small" />,
-        ) }
-      </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.hospital')}>
-        { getFieldDecorator('organization', {
-          rules: [{ required: true, message: 'Please select the hospital!' }],
-          initialValue: defaultOrganizationValue(patient),
-        })(
-          <Select className="small" dropdownClassName="selectDropdown">
-            <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-            <Select.Option value="CHUM">CHUM</Select.Option>
-            <Select.Option value="CUSM">CUSM</Select.Option>
-          </Select>,
-        ) }
-      </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.ethnicity')}>
-        { getFieldDecorator('ethnicity', {
-          rules: [{ required: false }],
-          initialValue: ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding,
-        })(
-          <Select className="large" placeholder={intl.get('form.patientSubmission.form.ethnicity.select')} dropdownClassName="selectDropdown">
-            <Select.Option value="CA-FR">Canadien-Français</Select.Option>
-            <Select.Option value="EU">Caucasienne Européenne</Select.Option>
-            <Select.Option value="AFR">Africain ou caribéen</Select.Option>
-            <Select.Option value="LAT- AM">Hispanique</Select.Option>
-            <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
-            <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
-            <Select.Option value="ABOR">Aboriginal</Select.Option>
-            <Select.Option value="MIX">Origine mixte</Select.Option>
-            <Select.Option value="OTH">Autre</Select.Option>
-          </Select>,
-        ) }
-        <span className="optional">Facultatif</span>
-      </Form.Item>
-      <Form.Item label={intl.get('form.patientSubmission.form.consanguinity')}>
-        { getFieldDecorator('consanguinity', {
-          rules: [{ required: false }],
-          initialValue: consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding,
-        })(
-          <Radio.Group buttonStyle="solid">
-            <Radio.Button value="Yes"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span></Radio.Button>
-            <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
-            <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
-          </Radio.Group>,
-        ) }
-        <span className="optional">Facultatif</span>
+
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.consanguinity')}
+        name="consanguinity"
+        initialValue={consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding}
+        rules={[{ required: false }]}
+      >
+        <Radio.Group buttonStyle="solid">
+          <Radio.Button value="Yes"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span></Radio.Button>
+          <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
+          <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
+        </Radio.Group>,
       </Form.Item>
     </Card>
   );
@@ -266,7 +275,6 @@ const Approval = ({
   dataSource,
   practitionerOptionSelected,
   practitionerSearchTermChanged,
-  getFieldDecorator,
   initialConsentsValue,
   initialPractitionerValue,
   updateConsentmentsCallback,
@@ -275,26 +283,28 @@ const Approval = ({
     <Card title="Consentements" bordered={false} className="patientContent">
       <Form>
         { /* TODO initialValue */ }
-        <Form.Item label="Clauses signées" className="labelTop">
-          { getFieldDecorator('consent', {
-            rules: [{ required: true, message: 'Veuillez sélectionner au moins un consentement' }],
-            initialValue: initialConsentsValue,
-          })(
-            <Checkbox.Group className="checkboxGroup" onChange={updateConsentmentsCallback}>
-              <Row>
-                <Checkbox className="checkbox" value="consent-1"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.patient') }</span></Checkbox>
-              </Row>
-              <Row>
-                <Checkbox className="checkbox" value="consent-2"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.father') }</span></Checkbox>
-              </Row>
-              <Row>
-                <Checkbox className="checkbox" value="consent-3"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.mother') }</span></Checkbox>
-              </Row>
-              <Row>
-                <Checkbox className="checkbox" value="consent-4"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.research') }</span></Checkbox>
-              </Row>
-            </Checkbox.Group>,
-          ) }
+
+        <Form.Item
+          label="Clauses signées"
+          className="labelTop"
+          name="consent"
+          initialValue={initialConsentsValue}
+          rules={[{ required: true, message: 'Veuillez sélectionner au moins un consentement' }]}
+        >
+          <Checkbox.Group className="checkboxGroup" onChange={updateConsentmentsCallback}>
+            <Row>
+              <Checkbox className="checkbox" value="consent-1"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.patient') }</span></Checkbox>
+            </Row>
+            <Row>
+              <Checkbox className="checkbox" value="consent-2"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.father') }</span></Checkbox>
+            </Row>
+            <Row>
+              <Checkbox className="checkbox" value="consent-3"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.mother') }</span></Checkbox>
+            </Row>
+            <Row>
+              <Checkbox className="checkbox" value="consent-4"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.research') }</span></Checkbox>
+            </Row>
+          </Checkbox.Group>
         </Form.Item>
       </Form>
     </Card>
@@ -302,30 +312,32 @@ const Approval = ({
       <Form>
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
         { /* TODO initialValue */ }
-        <Form.Item className="searchInput searchInput340" label="Médecin résponsable">
-          { getFieldDecorator('practInput', {
-            initialValue: initialPractitionerValue,
-            rules: [
-              {
-                required: true,
-                message: 'Veuillez spécifier le nom du médecin responsable',
-              },
-              {
-                whitespace: true,
-                message: 'Ne peut pas contenir que des espaces',
-              },
-            ],
-          })(
-            <AutoComplete
-              optionLabelProp="text"
-              classeName="searchInput"
-              placeholder="Recherche par nom ou licence…"
-              dataSource={dataSource}
-              onSelect={practitionerOptionSelected}
-              onChange={practitionerSearchTermChanged}
-            />,
-          ) }
 
+        <Form.Item
+          label="Médecin résponsable"
+          className="searchInput searchInput340"
+          name="practInput"
+          initialValue={initialPractitionerValue}
+          rules={[
+            {
+              required: true,
+              message: 'Veuillez spécifier le nom du médecin responsable',
+            },
+            {
+              whitespace: true,
+              message: 'Ne peut pas contenir que des espaces',
+            },
+          ]}
+        >
+
+          <AutoComplete
+            optionLabelProp="text"
+            classeName="searchInput"
+            placeholder="Recherche par nom ou licence…"
+            dataSource={dataSource}
+            onSelect={practitionerOptionSelected}
+            onChange={practitionerSearchTermChanged}
+          />
         </Form.Item>
       </Form>
     </Card>
@@ -340,6 +352,8 @@ const practitionerOptionFromResource = (resource) => ({
 });
 
 class PatientSubmissionScreen extends React.Component {
+  form = React.createRef();
+
   constructor(props) {
     super(props);
     this.state = {
@@ -357,6 +371,8 @@ class PatientSubmissionScreen extends React.Component {
     this.updateFormValues = this.updateFormValues.bind(this);
     this.createSummary = this.createSummary.bind(this);
     this.saveSecondPageLocalStore = this.saveSecondPageLocalStore.bind(this);
+
+    this.form.current.setFieldsValue({});
   }
 
   componentDidMount() {
@@ -366,7 +382,7 @@ class PatientSubmissionScreen extends React.Component {
   getPatientData() {
     const { currentPageIndex } = this.state;
     const { patient, form } = this.props;
-    let values = form.getFieldsValue();
+    let values = this.form.current.getFieldsValue();
 
     const getEthnicityDisplay = (ethnicity) => {
       switch (ethnicity) {
@@ -404,6 +420,7 @@ class PatientSubmissionScreen extends React.Component {
       });
       const value = FhirDataManager.createPatient({
         ...values,
+        gender: values.gender.target.value,
         id: patient.id,
         bloodRelationship: values.consanguinity,
         ethnicityCode: values.ethnicity ? values.ethnicity : '',
@@ -425,7 +442,7 @@ class PatientSubmissionScreen extends React.Component {
   getPractitioner() {
     const { currentPageIndex } = this.state;
     const { form } = this.props;
-    const values = form.getFieldsValue();
+    const values = this.form.current.getFieldsValue();
     if (currentPageIndex === 2) {
       return values.practitioner.id;
     }
@@ -453,7 +470,7 @@ class PatientSubmissionScreen extends React.Component {
 
   getServiceRequestCode() {
     const { form } = this.props;
-    const values = form.getFieldsValue();
+    const values = this.form.current.getFieldsValue();
 
     if (values.analyse != null) {
       return values.analyse;
@@ -464,13 +481,13 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   canGoNextPage(currentPage) {
-    const { form, observations, practitionerId } = this.props;
-    const values = form.getFieldsValue();
+    const { observations, practitionerId } = this.props;
+    const values = this.form.current.getFieldsValue();
     let hasError = null;
     switch (currentPage) {
       case 0:
         if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
-          hasError = find(form.getFieldsError(), (o) => o !== undefined);
+          hasError = find(this.form.current.getFieldsError(), (o) => o !== undefined);
           if (hasError) {
             return true;
           }
@@ -494,7 +511,7 @@ class PatientSubmissionScreen extends React.Component {
 
         const checkFamilyHistory = () => {
           if ((checkIfEmptyValue(values.familyRelationshipNotes) && !checkIfEmptyValue(values.familyRelationshipCodes))
-            || (!checkIfEmptyValue(values.familyRelationshipNotes) && checkIfEmptyValue(values.familyRelationshipCodes))) {
+              || (!checkIfEmptyValue(values.familyRelationshipNotes) && checkIfEmptyValue(values.familyRelationshipCodes))) {
             return false;
           }
           return true;
@@ -516,7 +533,7 @@ class PatientSubmissionScreen extends React.Component {
           return false;
         };
 
-        hasError = find(form.getFieldsError(), (o) => {
+        hasError = find(this.form.current.getFieldsError(), (o) => {
           if (Array.isArray(o)) {
             return !o.includes(undefined);
           }
@@ -524,18 +541,18 @@ class PatientSubmissionScreen extends React.Component {
         });
 
         if (values.analyse
-          && checkHpo()
-          && checkCghInterpretationValue()
-          && checkFamilyHistory()
-          && values.indication
-          && !hasError
+            && checkHpo()
+            && checkCghInterpretationValue()
+            && checkFamilyHistory()
+            && values.indication
+            && !hasError
         ) {
           return false;
         }
         return true;
       }
       case 2:
-        hasError = find(form.getFieldsError(), (o) => o !== undefined);
+        hasError = find(this.form.current.getFieldsError(), (o) => o !== undefined);
         if (hasError) {
           return true;
         }
@@ -550,7 +567,7 @@ class PatientSubmissionScreen extends React.Component {
 
   createFamilyRelationshipResourceList() {
     const { form } = this.props;
-    const values = form.getFieldsValue();
+    const values = this.form.current.getFieldsValue();
 
     if (values.familyRelationshipCodes === undefined) {
       return [];
@@ -588,7 +605,7 @@ class PatientSubmissionScreen extends React.Component {
 
   createCGHResourceList() {
     const { form } = this.props;
-    const values = form.getFieldsValue();
+    const values = this.form.current.getFieldsValue();
     if (values.cghInterpretationValue === undefined) {
       return undefined;
     }
@@ -620,7 +637,7 @@ class PatientSubmissionScreen extends React.Component {
 
   createIndicationResourceList() {
     const { form } = this.props;
-    const values = form.getFieldsValue();
+    const values = this.form.current.getFieldsValue();
 
     if (values.indication === undefined) {
       return [];
@@ -642,7 +659,7 @@ class PatientSubmissionScreen extends React.Component {
 
   createSummary() {
     const { form, localStore } = this.props;
-    const values = form.getFieldsValue();
+    const values = this.form.current.getFieldsValue();
     const builder = new ObservationBuilder('INVES');
 
     if (values.summaryNote == null && localStore.summary.note != null) {
@@ -660,13 +677,7 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   handleSubmit(e, submit = false) {
-    const { form } = this.props;
-    e.preventDefault();
-    form.validateFields((err) => {
-      if (err) {
-        return;
-      }
-
+    this.form.current.validateFields().then(() => {
       const {
         actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId,
       } = this.props;
@@ -678,7 +689,7 @@ class PatientSubmissionScreen extends React.Component {
         serviceRequest,
       };
 
-      submission.serviceRequest = submission.serviceRequest || {};
+      submission.serviceRequest = { ...submission.serviceRequest };
       submission.serviceRequest.code = this.getServiceRequestCode();
 
       if (hasObservations(observations)) {
@@ -748,13 +759,12 @@ class PatientSubmissionScreen extends React.Component {
   }
 
   updateFormValues() {
-    const { form } = this.props;
-    debounce(() => { form.setFieldsValue({}); }, 500)();
+    debounce(() => { this.form.current.setFieldsValue({}); }, 500)();
   }
 
   saveSecondPageLocalStore() {
-    const { actions, form } = this.props;
-    const values = form.getFieldsValue();
+    const { actions } = this.props;
+    const values = this.form.current.getFieldsValue();
 
     actions.saveServiceRequest(values.analyse);
     actions.saveLocalCgh(values.cghInterpretationValue, values.cghPrecision);
@@ -890,7 +900,6 @@ class PatientSubmissionScreen extends React.Component {
 
   render() {
     const { form, actions, localStore } = this.props;
-    const { getFieldDecorator } = form;
     const { patient, clinicalImpression, serviceRequest } = this.props;
     const { practitionerOptions, currentPageIndex } = this.state;
 
@@ -917,7 +926,7 @@ class PatientSubmissionScreen extends React.Component {
       {
         title: intl.get('screen.clinicalSubmission.patientInformation'),
         content: (
-          <PatientInformation parentForm={this} getFieldDecorator={getFieldDecorator} patient={patient} />
+          <PatientInformation parentForm={this} patient={patient} />
         ),
         name: 'PatientInformation',
         values: {},
@@ -937,7 +946,6 @@ class PatientSubmissionScreen extends React.Component {
         content: (
           <Approval
             parentForm={this}
-            getFieldDecorator={getFieldDecorator}
             dataSource={practitionerOptionsLabels}
             practitionerOptionSelected={this.handlePractitionerOptionSelected}
             practitionerSearchTermChanged={this.searchPractitioner}
@@ -968,7 +976,8 @@ class PatientSubmissionScreen extends React.Component {
             </Card>
 
             <Form
-              onSubmit={this.handleSubmit}
+              ref={this.form}
+              onFinish={this.handleSubmit}
             >
               { pageContent }
               <div className="submission-form-actions">
@@ -977,7 +986,7 @@ class PatientSubmissionScreen extends React.Component {
                     <Button
                       htmlType="submit"
                       type="primary"
-                      disabled={this.canGoNextPage(currentPageIndex)}
+                      disabled={() => debounce(() => this.canGoNextPage(currentPageIndex), 1500)}
                       onClick={this.submit}
                     >
                       Soumettre
@@ -986,7 +995,11 @@ class PatientSubmissionScreen extends React.Component {
                 }
                 {
                   currentPageIndex !== this.pages.length - 1 && (
-                    <Button type="primary" onClick={() => this.next()} disabled={this.canGoNextPage(currentPageIndex)}>
+                    <Button
+                      type="primary"
+                      onClick={() => this.next()}
+                      disabled={this.canGoNextPage(currentPageIndex)}
+                    >
                       { intl.get('screen.clinicalSubmission.nextButtonTitle') }
                     </Button>
                   )
