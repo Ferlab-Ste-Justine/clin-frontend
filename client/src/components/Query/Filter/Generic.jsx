@@ -18,6 +18,7 @@ import Filter, {
 } from './index';
 import styleFilter from '../styles/filter.module.scss';
 
+
 class GenericFilter extends React.Component {
   /* @NOTE SQON Struct Sample
   {
@@ -174,13 +175,24 @@ class GenericFilter extends React.Component {
 
   handleSearchByQuery(values) {
     const { dataSet } = this.props;
-    const allOptions = cloneDeep(dataSet);
-    const search = values.toLowerCase();
-    const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
-    pullAllBy(allOptions, cloneDeep(toRemove), 'value');
+    const allOptions = cloneDeep(dataSet);
+
+    const search = values.toLowerCase();
+    const toKeep = filter(allOptions, o => (search === '' || o.value.toLowerCase().startsWith(search)));
+
+    allOptions.length = 0;
+    allOptions.push(...toKeep);
+
+    const page = 1;
+    const loadedOptions = allOptions.slice(
+      0,
+      Math.min(allOptions.length, page * 10),
+    );
+
     this.setState({
       allOptions,
+      loadedOptions,
     });
   }
 
