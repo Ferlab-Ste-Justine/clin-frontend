@@ -131,7 +131,10 @@
     "start": "PORT=2000 node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "lint": "eslint --fix --ext .jsx ."
+    "lint": "eslint --fix --ext .jsx .",
+    "theme:css": "lessc --js ./src/style/themes/antd-clin-theme.less ./src/style/themes/antd-clin-theme.css",
+    "theme:scss": "rm ./src/style/themes/colors.scss; less2sass ./src/style/themes/colors.less",
+    "theme": "pnpm run theme:css && pnpm run theme:scss"
   },
   "eslintConfig": {
     "extends": [
