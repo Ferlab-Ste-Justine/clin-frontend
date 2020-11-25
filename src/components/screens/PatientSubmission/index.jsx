@@ -115,6 +115,7 @@ const PatientInformation = ({ patient, validate }) => {
   const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
   const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
   const disabledDate = (current) => current && current > moment().startOf('day');
+  const selectedGender = get(patient, 'gender', '');
   return (
     <Card title="Patient" bordered={false} className="patientContent">
       <Form.Item
@@ -164,14 +165,14 @@ const PatientInformation = ({ patient, validate }) => {
       <Form.Item
         label={intl.get('form.patientSubmission.form.gender')}
         name="gender"
-        initialValue={has(patient, 'gender') ? patient.gender : ''}
         rules={[{
           required: true,
           message: 'Veuillez indiquer le sexe',
         }]}
+        initialValue={selectedGender}
         valuePropName="gender"
       >
-        <Radio.Group buttonStyle="solid">
+        <Radio.Group buttonStyle="solid" defaultValue={selectedGender}>
           {
             Object.values(genderValues).map((gv) => (
               <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
@@ -238,18 +239,18 @@ const PatientInformation = ({ patient, validate }) => {
           <Select.Option value="CUSM">CUSM</Select.Option>
         </Select>
       </Form.Item>
+
+      <span className="optional">Facultatif</span>
       <Form.Item
         label={intl.get('form.patientSubmission.form.ethnicity')}
         name="ethnicity"
         initialValue={ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding}
         rules={[{ required: false }]}
       >
-
         <Select
           className="large"
           placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
           dropdownClassName="selectDropdown"
-          onChange={validate}
         >
           <Select.Option value="CA-FR">Canadien-Français</Select.Option>
           <Select.Option value="EU">Caucasienne Européenne</Select.Option>
@@ -261,20 +262,19 @@ const PatientInformation = ({ patient, validate }) => {
           <Select.Option value="MIX">Origine mixte</Select.Option>
           <Select.Option value="OTH">Autre</Select.Option>
         </Select>
-        <span className="optional">Facultatif</span>
       </Form.Item>
 
       <Form.Item
         label={intl.get('form.patientSubmission.form.consanguinity')}
         name="consanguinity"
-        initialValue={consanguinityValueCoding ? consanguinityValueCoding.display : consanguinityValueCoding}
+        initialValue={get(consanguinityValueCoding, 'display', null)}
         rules={[{ required: false }]}
       >
-        <Radio.Group buttonStyle="solid">
+        <Radio.Group buttonStyle="solid" defaultValue={get(consanguinityValueCoding, 'display', '')}>
           <Radio.Button value="Yes"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span></Radio.Button>
           <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
           <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
-        </Radio.Group>,
+        </Radio.Group>
       </Form.Item>
     </Card>
   );
@@ -287,10 +287,12 @@ const Approval = ({
   initialConsentsValue,
   initialPractitionerValue,
   updateConsentmentsCallback,
+  form,
+  handleSubmit,
 }) => (
   <div>
     <Card title="Consentements" bordered={false} className="patientContent">
-      <Form>
+      <Form form={form}>
         { /* TODO initialValue */ }
 
         <Form.Item
@@ -318,7 +320,10 @@ const Approval = ({
       </Form>
     </Card>
     <Card title="Approbation" bordered={false} className="patientContent">
-      <Form>
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+      >
         <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
         { /* TODO initialValue */ }
 
@@ -343,6 +348,7 @@ const Approval = ({
             optionLabelProp="text"
             classeName="searchInput"
             placeholder="Recherche par nom ou licence…"
+            defaultValue={initialPractitionerValue}
             dataSource={dataSource}
             onSelect={practitionerOptionSelected}
             onChange={practitionerSearchTermChanged}
@@ -401,6 +407,7 @@ export function PatientSubmissionScreen(props) {
 
     if (currentPageIndex === 0) {
       values.ramq = values.ramq.toUpperCase();
+      const gender = typeof values.gender === 'string' ? get(values, 'gender', '') : get(values, 'gender.target.value', '');
 
       values = mapValues(values, (o) => {
         if (typeof o === 'string') {
@@ -410,7 +417,7 @@ export function PatientSubmissionScreen(props) {
       });
       const value = FhirDataManager.createPatient({
         ...values,
-        gender: values.gender.target.value,
+        gender,
         id: patient.id,
         bloodRelationship: values.consanguinity,
         ethnicityCode: values.ethnicity ? values.ethnicity : '',
@@ -436,10 +443,12 @@ export function PatientSubmissionScreen(props) {
   };
 
   const canGoNextPage = (currentPage) => {
-    const { observations, practitionerId } = props;
+    const { observations } = props;
+    const { localStore } = props;
+
     const values = form.getFieldsValue();
     let hasError = null;
-    const gender = get(values, 'gender.target.value', '');
+    const gender = typeof values.gender === 'string' ? get(values, 'gender', '') : get(values, 'gender.target.value', '');
     switch (currentPage) {
       case 0:
         if (values.given && values.family && gender && values.birthDate && values.mrn) {
@@ -504,11 +513,11 @@ export function PatientSubmissionScreen(props) {
         return true;
       }
       case 2:
-        hasError = find(form.getFieldsError(), (o) => o !== undefined);
+        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
         if (hasError) {
           return true;
         }
-        if (values.consent != null && values.consent.length > 0 && practitionerId != null) {
+        if (values.consent != null && values.consent.length > 0 && localStore.practitioner != null && localStore.practitioner.length > 0) {
           return false;
         }
         return true;
@@ -532,6 +541,10 @@ export function PatientSubmissionScreen(props) {
       });
     }
   };
+
+  React.useEffect(() => {
+    validate();
+  });
 
   // eslint-disable-next-line no-unused-vars
   const createFamilyRelationshipResourceList = () => {
@@ -729,12 +742,6 @@ export function PatientSubmissionScreen(props) {
     actions.navigateToPatientSearchScreen();
   };
 
-  const updateFormValues = () => {
-    debounce(() => { form.setFieldsValue({}); }, 500)();
-  };
-
-  updateFormValues();
-
   const isFirstPage = () => {
     const { currentPageIndex } = state;
     return currentPageIndex === 0;
@@ -794,10 +801,10 @@ export function PatientSubmissionScreen(props) {
             });
           }
 
-          setState({
-            ...state,
+          setState((currentState) => ({
+            ...currentState,
             practitionerOptions: result,
-          });
+          }));
 
           if (callback != null) {
             callback();
@@ -842,7 +849,7 @@ export function PatientSubmissionScreen(props) {
     }
 
     setState({ ...state, currentPageIndex: pageIndex });
-    updateFormValues();
+    debounce(validate, 500)();
   };
 
   const previous = () => {
@@ -854,7 +861,7 @@ export function PatientSubmissionScreen(props) {
       saveSecondPageLocalStore();
     }
 
-    updateFormValues();
+    debounce(validate, 500)();
   };
 
   const { actions } = props;
@@ -911,6 +918,8 @@ export function PatientSubmissionScreen(props) {
           initialConsentsValue={consents}
           initialPractitionerValue={initialPractitionerValue}
           updateConsentmentsCallback={actions.updateConsentments}
+          form={form}
+          handleSubmit={handleSubmit}
         />
       ),
       name: 'Approval',

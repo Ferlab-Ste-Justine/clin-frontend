@@ -416,7 +416,10 @@ export const createPatientSubmissionBundle = ({
 
     // CGH
     if (observations.cgh != null && !isEmpty(observations.cgh)) {
-      observations.cgh.subject = patientReference;
+      observations.cgh = {
+        ...observations.cgh,
+        subject: patientReference,
+      };
       const cghEntry = createEntry(observations.cgh);
       bundle.entry.push(cghEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
@@ -424,7 +427,10 @@ export const createPatientSubmissionBundle = ({
 
     // Summary
     if (observations.summary != null && !isEmpty(observations.summary)) {
-      observations.summary.subject = patientReference;
+      observations.summary = {
+        ...observations.summary,
+        subject: patientReference,
+      };
       const summaryEntry = createEntry(observations.summary);
       bundle.entry.push(summaryEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(summaryEntry));
@@ -432,7 +438,10 @@ export const createPatientSubmissionBundle = ({
 
     // Indication
     if (observations.indic != null && !isEmpty(observations.indic)) {
-      observations.indic.subject = patientReference;
+      observations.indic = {
+        ...observations.indic,
+        subject: patientReference,
+      };
       const indicEntry = createEntry(observations.indic);
       bundle.entry.push(indicEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(indicEntry));
@@ -448,7 +457,7 @@ export const createPatientSubmissionBundle = ({
 
     if (observations.hpos != null) {
       observations.hpos.forEach((hpo) => {
-        if (hpo.note.length !== 0) {
+        if (hpo.note != null && hpo.note.length !== 0) {
           hpo.note[0].text.trim();
         }
         const entry = createEntry({ ...hpo, subject: patientReference });

@@ -15,6 +15,7 @@ import intl from 'react-intl-universal';
 import {
   map,
   isEmpty,
+  get,
   has, values as toArray,
 } from 'lodash';
 import {
@@ -520,7 +521,9 @@ class ClinicalInformation extends React.Component {
 
           <Button
             className="delButton"
-            disabled={!(getFieldValue('familyRelationshipNotes')[index]) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
+            disabled={!(get(getFieldValue('familyRelationshipNotes'), index, ''))
+            || !(get(getFieldValue('familyRelationshipCodes'), index, ''))
+            || familyHistoryResources.length === 1}
             shape="round"
             onClick={() => this.deleteFamilyHistory({ code: getFieldValue(`familyRelationshipCodes[${index}]`) })}
           >
@@ -611,7 +614,7 @@ class ClinicalInformation extends React.Component {
 
             )
           }
-
+          <span className="optional">Facultatif</span>
           <Form.Item
             label="Résumé"
             name="summaryNote"
@@ -621,7 +624,6 @@ class ClinicalInformation extends React.Component {
               message: 'Ne peut pas contenir que des espaces',
             }]}
           >
-            <span className="optional">Facultatif</span>
             <TextArea className="input note" rows={4} />
           </Form.Item>
         </Card>
