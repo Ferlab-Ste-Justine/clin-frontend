@@ -11,7 +11,7 @@ import PatientScreen from '../components/screens/Patient';
 import PatientSearchScreen from '../components/screens/PatientSearch';
 import PatientVariantScreen from '../components/screens/PatientVariant';
 import VariantDetailsScreen from '../components/screens/VariantDetails';
-import PatientSubmissionScreen from '../components/screens/PatientSubmission';
+import { PatientSubmissionScreen } from '../components/screens/PatientSubmission';
 import {
   PATIENT_SUBROUTE_SEARCH,
   PATIENT_SUBROUTE_VARIANT,
