@@ -350,7 +350,7 @@ class InteractiveTable extends React.Component {
       <Spin spinning={isLoading}>
         { (isReorderable || isSelectable || isExportable) && (
           <>
-            <Row type="flex" justify="end">
+            <Row className="flex-row" justify="end">
               { isReorderable && (
                 <Col>
                   <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>

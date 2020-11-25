@@ -88,10 +88,9 @@ div.ant-tag {
             padding-right:24px;
 
             .ant-input{
-                border-radius:2px;
                 border:1px solid white;
                 width:100%;
-
+                background-color: white;
                 font-size: 14px;
                 font-family: Roboto;
                 font-weight: normal;
@@ -128,8 +127,8 @@ div.ant-tag {
     .menuCaterogy{
         width:280px;
         background-color: transparent;
-        border: none;
-        
+        border: none;      
+
 
         .category{
             margin-top:24px;
@@ -286,7 +285,8 @@ div.ant-tag {
     }
 
     .table-facet{
-        width:calc(100% - 280px - 24px)
+        width:calc(100% - 280px - 24px);
+        margin-left: 24px;
     }
 }
 

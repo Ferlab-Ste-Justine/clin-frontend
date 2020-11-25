@@ -11,6 +11,7 @@ import IconKit from 'react-icons-kit';
 import {
   ic_add, ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
+import { SearchOutlined } from '@ant-design/icons';
 import {
   debounce,
 } from 'lodash';
@@ -473,7 +474,7 @@ class PatientSearchScreen extends React.Component {
               <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
             </Col>
           </Row>
-          <Row type="flex" justify="space-between" className="searchNav">
+          <Row justify="space-between" className="flex-row searchNav">
             <Col>
               <Button className={isFacetOpen ? 'facet openFacet' : 'facet'} onClick={this.handleOpenFacet}>
                 <div>
@@ -489,8 +490,6 @@ class PatientSearchScreen extends React.Component {
               <AutoComplete
                 size="large"
                 style={{ width: '100%' }}
-                optionLabelProp="text"
-                placeholder={placeholderText}
                 allowClear
                 autoFocus
                 defaultActiveFirstOption={false}
@@ -500,9 +499,10 @@ class PatientSearchScreen extends React.Component {
                 onBlur={this.handleAutoCompleteClose}
               >
                 <Input
-                  // prefix={
-                  //   <Icon type="search" />
-                  // }
+                  prefix={
+                    <SearchOutlined />
+                  }
+                  placeholder={placeholderText}
                   onPressEnter={this.handleAutoCompletePressEnter}
                 />
               </AutoComplete>
@@ -514,7 +514,7 @@ class PatientSearchScreen extends React.Component {
               </Button>
             </Col>
           </Row>
-          <Row type="flex" justify="space-between">
+          <Row className="flex-row">
             { isFacetOpen && (
               <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
                 <Menu

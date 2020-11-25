@@ -58,7 +58,7 @@ const Header = ({
   const langText = intl.get(`lang.${lang}.short`);
   return (
     <Layout.Header id="header">
-      <Row type="flex" justify="space-between" align="middle">
+      <Row className="flex-row">
         <Col>
           <img className="logo" alt={title} src="/assets/logos/cqgc-white.svg" />
         </Col>
@@ -66,7 +66,7 @@ const Header = ({
           { user.username !== null && (
             <>
               <div className="navigation">
-                <Row type="flex" justify="space-between" align="middle">
+                <Row className="flex-row" justify="space-between" align="middle">
                   <Col className="patientList">
                     <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link" role="button">
                       <IconKit size={16} icon={ic_supervisor_account} />
