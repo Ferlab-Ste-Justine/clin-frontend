@@ -128,12 +128,12 @@
     "workbox-webpack-plugin": "5.1.4"
   },
   "scripts": {
-    "start": "PORT=2000 node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js",
+    "start": "PORT=2000 node client/scripts/start.js",
+    "build": "node client/scripts/build.js",
+    "test": "node client/scripts/test.js",
     "lint": "eslint --fix --ext .jsx .",
-    "theme:css": "lessc --js ./src/style/themes/antd-clin-theme.less ./src/style/themes/antd-clin-theme.css",
-    "theme:scss": "rm ./src/style/themes/colors.scss; less2sass ./src/style/themes/colors.less",
+    "theme:css": "lessc --js ./client/src/style/themes/antd-clin-theme.less ./client/src/style/themes/antd-clin-theme.css",
+    "theme:scss": "rm ./client/src/style/themes/colors.scss; less2sass ./client/src/style/themes/colors.less",
     "theme": "pnpm run theme:css && pnpm run theme:scss"
   },
   "eslintConfig": {
