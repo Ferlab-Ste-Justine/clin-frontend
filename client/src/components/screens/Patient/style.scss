@@ -217,45 +217,49 @@
 }
 
 .clinical{
-    .ant-row-flex{
+    
+    &__info{
         flex-wrap: nowrap;
         &:not(:last-of-type){
             margin-bottom: 12px;
         }
-        
-    }
-    &__title{
-        color: $gray-7;
-        min-width: 200px;
-        margin-right: 16px;
-    }
-    &__value{
-        button{
-            height: 22px;
-            i{
-                height: 16px;
-                
-                svg{
-                    vertical-align: sub !important;
+        &__title{
+            color: $gray-7;
+            min-width: 200px;
+            margin-right: 16px;
+        }
+        &__value{
+            button{
+                height: 22px;
+                i{
+                    height: 16px;
+                    
+                    svg{
+                        vertical-align: sub !important;
+                    }
                 }
             }
+            &--abnormal{
+                color: $red-6;
+            }
+            &--normal{
+                color: $green-7;
+            }
+    
         }
-        &--abnormal{
-            color: $red-6;
-        }
-        &--normal{
-            color: $green-7;
-        }
-
     }
-
+    .ant-card-body{
+        width: 100% !important;
+    }
 
 
     .ant-table-body{
         margin: 0 !important;
+        
     }
 
     .familyHistory{
+        width: 100%;
         th{
             &:first-child{
                 width: 200px !important;
@@ -264,6 +268,7 @@
     }
 
     .clinicalSign{
+        width: 100%;
         th{
             &:first-child{
                 width: 70px !important;
@@ -292,4 +297,9 @@ background-color: #fff;
 }
 .unknownIcon{
     color: $gray-8;
+}
+
+//temporaire
+.ant-table-small .ant-table-thead > tr > th{
+    background-color: $gray-2;
 }

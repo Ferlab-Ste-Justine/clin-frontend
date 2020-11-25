@@ -346,7 +346,7 @@ class PatientScreen extends React.Component {
               <div className="patientPage">
                 <div className="page_headerStaticNoMargin">
                   <div className="headerStaticContent">
-                    <Row type="flex" align="middle" className="patientHeader">
+                    <Row align="middle" className="flex-row patientHeader">
                       <Col>
                         <Typography.Title level={3} className="patientName">
                           { patient.lastName.toUpperCase() } { patient.firstName }
@@ -380,7 +380,7 @@ class PatientScreen extends React.Component {
                   >
                     <div className="page-static-content">
                       <Card bordered={false} className="generalInfo">
-                        <Row type="flex">
+                        <Row className="flex-row">
                           <Col>
                             <Card className="nameBlock">
                               <Row align="middle" justify="center">
@@ -392,7 +392,7 @@ class PatientScreen extends React.Component {
                             </Card>
                           </Col>
                           <Col className="content">
-                            <Row type="flex">
+                            <Row className="flex-row">
                               <Col className="grid">
                                 <div className="row">
                                   <span className="title">{ ramq }</span>
@@ -507,7 +507,7 @@ class PatientScreen extends React.Component {
                         find(prescriptions, { status: 'draft' })
                           ? (
                             <Card bordered={false} className="staticCard noInfo">
-                              <Row type="flex" align="middle" className="noInfo__contents">
+                              <Row align="middle" className="flex-row noInfo__contents">
                                 <Col className="noInfo__contents__icon"><IconKit size={72} icon={ic_info} /></Col>
                                 <Col className="noInfo__contents__title"><Title level={2}>Aucune information clinique disponible</Title></Col>
                                 <Col className="noInfo__contents__text"><p>Maecenas sed diam eget risus varius blandit sit amet non magna. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p></Col>
@@ -515,15 +515,15 @@ class PatientScreen extends React.Component {
                               </Row>
                             </Card>
                           ) : (
-                            <Card bordered={false} className="staticCard clinical">
+                            <Card bordered={false} className="flex-row staticCard clinical">
                               <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
-                                <Row type="flex">
-                                  <Col className="clinical__title">MRN</Col>
-                                  <Col className="clinical__value">{ patient.mrn }  |  { patient.organization }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">MRN</Col>
+                                  <Col className="clinical__info__value">{ patient.mrn }  |  { patient.organization }</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Médecin résponsable</Col>
-                                  <Col className="clinical__value">
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Médecin résponsable</Col>
+                                  <Col className="clinical__info__value">
                                     <span className="logoText">
                                       { consultation[0].practitioner.name }
                                       { consultation[0].practitioner.name !== 'N/A' ? (
@@ -535,21 +535,21 @@ class PatientScreen extends React.Component {
                                     </span>
                                   </Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Age du patient</Col>
-                                  <Col className="clinical__value">3 ans</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Age du patient</Col>
+                                  <Col className="clinical__info__value">3 ans</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">CGH</Col>
-                                  <Col className="clinical__value">{ getCGHText(consultation[0].cgh) }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">CGH</Col>
+                                  <Col className="clinical__info__value">{ getCGHText(consultation[0].cgh) }</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Résume de l'investigation</Col>
-                                  <Col className="clinical__value">{ consultation[0].summary }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Résume de l'investigation</Col>
+                                  <Col className="clinical__info__value">{ consultation[0].summary }</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Hypothèse de diagnostique</Col>
-                                  <Col className="clinical__value">{ consultation[0].hypothesis }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Hypothèse de diagnostique</Col>
+                                  <Col className="clinical__info__value">{ consultation[0].hypothesis }</Col>
                                 </Row>
                               </Card>
                               <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">

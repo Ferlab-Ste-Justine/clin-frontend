@@ -313,35 +313,41 @@ div.ant-card {
 }
 //tabs
 .staticTabs{
-  .ant-tabs-bar{
+  .tabName, .ant-tabs-tab-btn{
     &:focus{
       outline: none;
     }
   }
   .ant-tabs-nav-wrap{
     background-color: #ffffff;
-    .ant-tabs-nav-scroll{
+    .ant-tabs-nav-list{
       max-width: $maxWidth;
       margin:0 24px;
       .ant-tabs-tab{
         padding: 12px 0;
+        transition: none !important;
+        &:hover{
+          i{
+            color: $blue-7;
+          }
+        }
         .tabName{
           display: flex;
           align-items: center;
+          
         }
         i{
           padding-right: 8px;
           margin-top:-2px;
-
+          color: $gray-6;
         }
 
       }
-    }
-  }
-  .ant-tabs-tab:not(.ant-tabs-tab-active)
-  {
-    i{
-      color:$gray-6;
+      .ant-tabs-tab-active{
+        .tabName, i{
+          color: $blue-8;
+        }
+      }
     }
   }
 }
@@ -666,14 +672,11 @@ div.ant-card {
 .ant-table-small{
   border: none;
 }
-
 table{
-  border-bottom: 1px solid $gray-4 !important;
   th{
       color: $gray-8 !important;
   }
 }
-
 //Badge
 .ant-badge-status-dot{
   vertical-align: baseline;
@@ -718,11 +721,6 @@ table{
   }
   &:hover{
     border-color: transparent;
-  }
-}
-.ant-input-affix-wrapper .ant-input:not(:first-child){
-  &:focus{
-    padding-left: 29px !important;
   }
 }
 //ROW
