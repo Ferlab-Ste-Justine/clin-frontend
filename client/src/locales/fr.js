@@ -554,6 +554,7 @@ const fr = {
   'components.confirmationModal.title': 'Quitter sans sauvegarder les modifications?',
   'components.confirmationModal.okText': 'Quitter',
   'components.confirmationModal.cancelText': 'Annuler',
+  'components.variantNavigation.moreResults': "Préciser votre recherche pour voir d'autres résultats",
 };
 
 export default fr;
