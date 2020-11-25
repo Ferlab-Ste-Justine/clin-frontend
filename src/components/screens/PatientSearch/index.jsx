@@ -28,10 +28,6 @@ import { updateUserColumns, updateUserColumnsOrder, updateUserColumnsReset } fro
 import { appShape } from '../../../reducers/app';
 import Layout from '../../Layout';
 
-const COLUMN_WIDTHS = {
-  DEFAULT: 150,
-};
-
 class PatientSearchScreen extends React.Component {
   constructor(props) {
     super(props);
