@@ -398,7 +398,7 @@ class ClinicalInformation extends React.Component {
     const { actions, observations } = this.props;
     const { treeData } = this.state;
 
-    const checkedNodes = info.checkedNodes.map((n) => ({ code: n.key, display: n.props.title }));
+    const checkedNodes = info.checkedNodes.map((n) => ({ code: n.key, display: n.title }));
     const hpoResources = observations.hpos;
 
     const toDelete = [];
@@ -471,10 +471,10 @@ class ClinicalInformation extends React.Component {
       <div className="familyLine">
         <div className="familyTop">
           <Form.Item name={`familyRelationshipIds[${index}]`} initialValue={getResourceId(resource) || ''}>
-            <Input size="small" type="hidden" />,
+            <Input size="small" type="hidden" />
           </Form.Item>
           <Form.Item name={`familyRelationshipsToDelete[${index}]`} initialValue={resource.toDelete}>
-            <Input size="small" type="hidden" />,
+            <Input size="small" type="hidden" />
           </Form.Item>
 
           <Form.Item
@@ -486,7 +486,7 @@ class ClinicalInformation extends React.Component {
             initialValue={getFamilyRelationshipNote(resource)}
             validateTrigger={['onChange', 'onBlur']}
           >
-            <Input onChange={(event) => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />,
+            <Input onChange={(event) => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />
           </Form.Item>
 
           <Form.Item
@@ -552,7 +552,7 @@ class ClinicalInformation extends React.Component {
               <Radio.Button value="WXS"><span className="radioText">Exome</span></Radio.Button>
               <Radio.Button value="WGS"><span className="radioText">Génome</span></Radio.Button>
               <Radio.Button value="GP"><span className="radioText">Séquençage ciblé</span></Radio.Button>
-            </Radio.Group>,
+            </Radio.Group>
           </Form.Item>
         </Card>
         <Card

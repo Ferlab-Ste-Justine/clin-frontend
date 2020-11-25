@@ -11,7 +11,7 @@ import {
   AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps, Typography,
 } from 'antd';
 import {
-  find, has, debounce, mapValues,
+  find, has, debounce, mapValues, get,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
@@ -357,6 +357,7 @@ export function PatientSubmissionScreen(props) {
   const [state, setState] = React.useState({
     currentPageIndex: 0,
     practitionerOptions: [],
+    valid: false,
   });
 
   const getPatientData = () => {
@@ -429,10 +430,11 @@ export function PatientSubmissionScreen(props) {
     const { observations, practitionerId } = props;
     const values = form.getFieldsValue();
     let hasError = null;
+    const gender = get(values, 'gender.target.value', '');
     switch (currentPage) {
       case 0:
-        if (values.given && values.family && values.gender && values.birthDate && values.mrn) {
-          hasError = find(form.getFieldsError(), (o) => o !== undefined);
+        if (values.given && values.family && gender && values.birthDate && values.mrn) {
+          hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
           if (hasError) {
             return true;
           }
@@ -507,6 +509,22 @@ export function PatientSubmissionScreen(props) {
         return true;
       default:
         return false;
+    }
+  };
+
+  const validate = () => {
+    const valid = !canGoNextPage(state.currentPageIndex);
+
+    if (valid && !state.valid) {
+      setState({
+        ...state,
+        valid: true,
+      });
+    } else if (!valid && state.valid) {
+      setState({
+        ...state,
+        valid: false,
+      });
     }
   };
 
@@ -706,8 +724,6 @@ export function PatientSubmissionScreen(props) {
     actions.navigateToPatientSearchScreen();
   };
 
-  const nbPages = () => pages.length;
-
   const updateFormValues = () => {
     debounce(() => { form.setFieldsValue({}); }, 500)();
   };
@@ -717,12 +733,6 @@ export function PatientSubmissionScreen(props) {
   const isFirstPage = () => {
     const { currentPageIndex } = state;
     return currentPageIndex === 0;
-  };
-
-  // eslint-disable-next-line no-unused-vars
-  const isLastPage = () => {
-    const { currentPageIndex } = state;
-    return currentPageIndex === nbPages() - 1;
   };
 
   // TODO: Update check
@@ -780,6 +790,7 @@ export function PatientSubmissionScreen(props) {
           }
 
           setState({
+            ...state,
             practitionerOptions: result,
           });
 
@@ -825,14 +836,14 @@ export function PatientSubmissionScreen(props) {
       });
     }
 
-    setState({ currentPageIndex: pageIndex });
+    setState({ ...state, currentPageIndex: pageIndex });
     updateFormValues();
   };
 
   const previous = () => {
     const { currentPageIndex } = state;
     const pageIndex = currentPageIndex - 1;
-    setState({ currentPageIndex: pageIndex });
+    setState({ ...state, currentPageIndex: pageIndex });
 
     if (currentPageIndex === 1) {
       saveSecondPageLocalStore();
@@ -920,6 +931,7 @@ export function PatientSubmissionScreen(props) {
           <Form
             form={form}
             onFinish={handleSubmit}
+            onChange={validate}
           >
             { pageContent }
             <div className="submission-form-actions">
@@ -928,7 +940,7 @@ export function PatientSubmissionScreen(props) {
                   <Button
                     htmlType="submit"
                     type="primary"
-                    disabled={() => debounce(() => canGoNextPage(currentPageIndex), 1500)}
+                    disabled={!state.valid}
                     onClick={submit}
                   >
                     Soumettre
@@ -940,7 +952,7 @@ export function PatientSubmissionScreen(props) {
                   <Button
                     type="primary"
                     onClick={() => next()}
-                    disabled={canGoNextPage(currentPageIndex)}
+                    disabled={!state.valid}
                   >
                     { intl.get('screen.clinicalSubmission.nextButtonTitle') }
                   </Button>
