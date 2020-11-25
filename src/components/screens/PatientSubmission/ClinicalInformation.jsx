@@ -15,7 +15,7 @@ import intl from 'react-intl-universal';
 import {
   map,
   isEmpty,
-  has,
+  has, values as toArray,
 } from 'lodash';
 import {
   CGH_CODES,
@@ -117,6 +117,11 @@ class ClinicalInformation extends React.Component {
     this.handleHpoAgeChanged = this.handleHpoAgeChanged.bind(this);
   }
 
+  componentDidUpdate() {
+    const { validate } = this.props;
+    validate();
+  }
+
   onLoadHpoChildren(treeNode) {
     return new Promise((resolve) => {
       const { treeData } = this.state;
@@ -180,7 +185,7 @@ class ClinicalInformation extends React.Component {
           </div>
           <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} />
           <div className="rightBlock">
-            <Form.Item key={`interpretation-${hpoIndex}`}>
+            <Form.Item name={`interpretation-${hpoIndex}`} label="Interpretation">
               <Select
                 className="select selectObserved"
                 placeholder={intl.get('form.patientSubmission.form.hpo.interpretation')}
@@ -200,7 +205,7 @@ class ClinicalInformation extends React.Component {
                 )) }
               </Select>
             </Form.Item>
-            <Form.Item key={`onset-${hpoIndex}`}>
+            <Form.Item name={`onset-${hpoIndex}`}>
               <Select
                 className="select selectAge"
                 size="small"
@@ -237,8 +242,9 @@ class ClinicalInformation extends React.Component {
   }
 
   handleObservationChanged(observationCode, index) {
-    const { actions } = this.props;
+    const { actions, validate } = this.props;
 
+    validate();
     actions.updateHpoObservation(
       {
         interpretation: {
@@ -250,7 +256,9 @@ class ClinicalInformation extends React.Component {
   }
 
   handleHpoAgeChanged(code, index) {
-    const { actions } = this.props;
+    const { actions, validate } = this.props;
+    validate();
+
     let value = null;
     const keys = Object.keys(hpoOnsetValues);
     // eslint-disable-next-line no-restricted-syntax
@@ -275,10 +283,12 @@ class ClinicalInformation extends React.Component {
       familyRelationshipCodes,
     } = values;
     if (familyRelationshipCodes == null) {
-      familyRelationshipCodes = [];
+      familyRelationshipCodes = {};
     }
-    const index = familyRelationshipCodes.length - 1;
-    return familyRelationshipCodes[index] == null || familyRelationshipCodes[index].length === 0;
+    const frc = toArray(familyRelationshipCodes);
+
+    const index = frc.length - 1;
+    return frc[index] == null || frc[index].length === 0;
   }
 
   addFamilyHistory() {
@@ -292,7 +302,8 @@ class ClinicalInformation extends React.Component {
   }
 
   fmhSelected(fhmCode, index) {
-    const { form } = this.props;
+    const { form, validate } = this.props;
+    validate();
     const values = form.getFieldsValue();
     const {
       familyRelationshipCodes,
@@ -300,10 +311,10 @@ class ClinicalInformation extends React.Component {
 
     let { familyRelationshipNotes } = values;
 
-    familyRelationshipNotes = familyRelationshipNotes.map((n) => n.trim());
+    familyRelationshipNotes = toArray(familyRelationshipNotes).map((n) => n.trim());
     const fmh = [];
     const { observations } = this.props;
-    familyRelationshipCodes.forEach((c, i) => {
+    toArray(familyRelationshipCodes).forEach((c, i) => {
       const code = i === index ? fhmCode : c;
       if (code != null && code.length > 0) {
         const builder = new FamilyMemberHistoryBuilder(code, getFamilyRelationshipDisplayForCode(code));
@@ -335,7 +346,7 @@ class ClinicalInformation extends React.Component {
     const ids = [];
     const notes = [];
 
-    familyRelationshipCodes.forEach((c, i) => {
+    toArray(familyRelationshipCodes).forEach((c, i) => {
       if (c !== code) {
         codes.push(c);
         ids.push(familyRelationshipIds[i]);
@@ -394,7 +405,7 @@ class ClinicalInformation extends React.Component {
     actions.addHpoResource(builder.build());
   }
 
-  handleHpoNodesChecked(_, info) {
+  handleHpoNodesChecked(_e, info) {
     const { actions, observations } = this.props;
     const { treeData } = this.state;
 
@@ -470,10 +481,16 @@ class ClinicalInformation extends React.Component {
     const familyItems = familyHistoryResources.map((resource, index) => ((
       <div className="familyLine">
         <div className="familyTop">
-          <Form.Item name={`familyRelationshipIds[${index}]`} initialValue={getResourceId(resource) || ''}>
+          <Form.Item
+            name={['familyRelationshipIds', `${index}`]}
+            initialValue={getResourceId(resource) || ''}
+          >
             <Input size="small" type="hidden" />
           </Form.Item>
-          <Form.Item name={`familyRelationshipsToDelete[${index}]`} initialValue={resource.toDelete}>
+          <Form.Item
+            name={['familyRelationshipIds', `${index}`]}
+            initialValue={resource.toDelete}
+          >
             <Input size="small" type="hidden" />
           </Form.Item>
 
@@ -482,7 +499,7 @@ class ClinicalInformation extends React.Component {
               whitespace: true,
               message: 'Ne peut pas contenir que des espaces',
             }]}
-            name={`familyRelationshipNotes[${index}]`}
+            name={['familyRelationshipNotes', `${index}`]}
             initialValue={getFamilyRelationshipNote(resource)}
             validateTrigger={['onChange', 'onBlur']}
           >
@@ -490,7 +507,7 @@ class ClinicalInformation extends React.Component {
           </Form.Item>
 
           <Form.Item
-            name={`familyRelationshipCodes[${index}]`}
+            name={['familyRelationshipCodes', `${index}`]}
             initialValue={getFamilyRelationshipCode(resource)}
             validateTrigger={['onChange', 'onBlur']}
           >
@@ -503,7 +520,7 @@ class ClinicalInformation extends React.Component {
 
           <Button
             className="delButton"
-            disabled={!(getFieldValue(`familyRelationshipNotes[${index}]`)) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
+            disabled={!(getFieldValue('familyRelationshipNotes')[index]) || !(getFieldValue(`familyRelationshipCodes[${index}]`)) || familyHistoryResources.length === 1}
             shape="round"
             onClick={() => this.deleteFamilyHistory({ code: getFieldValue(`familyRelationshipCodes[${index}]`) })}
           >

@@ -96,7 +96,6 @@ class PatientSearchScreen extends React.Component {
             }
           },
         }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'patientId',
@@ -105,103 +104,86 @@ class PatientSearchScreen extends React.Component {
           key: 'id',
           handler: this.handleGoToPatientScreen,
         }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'organization',
         label: 'screen.patientsearch.table.organization',
         renderer: createCellRenderer('text', this.getData, { key: 'organization' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'lastName',
         label: 'screen.patientsearch.table.lastName',
         renderer: createCellRenderer('text', this.getData, { key: 'lastName' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'firstName',
         label: 'screen.patientsearch.table.firstName',
         renderer: createCellRenderer('text', this.getData, { key: 'firstName' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'gender',
         label: 'screen.patientsearch.table.gender',
         renderer: createCellRenderer('text', this.getData, { key: 'gender' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'dob',
         label: 'screen.patientsearch.table.dob',
         renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT + 10,
       },
       {
         key: 'practitioner',
         label: 'screen.patientsearch.table.practitioner',
         renderer: createCellRenderer('text', this.getData, { key: 'practitioner' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT + 30,
       },
       {
         key: 'test',
         label: 'screen.patientsearch.table.test',
         renderer: createCellRenderer('text', this.getData, { key: 'test' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'prescription',
         label: 'screen.patientsearch.table.prescription',
         renderer: createCellRenderer('text', this.getData, { key: 'prescription' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'mrn',
         label: 'screen.patientsearch.table.mrn',
         renderer: createCellRenderer('text', this.getData, { key: 'mrn' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'ramq',
         label: 'screen.patientsearch.table.ramq',
         renderer: createCellRenderer('text', this.getData, { key: 'ramq' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'position',
         label: 'screen.patientsearch.table.position',
         renderer: createCellRenderer('text', this.getData, { key: 'position' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'familyId',
         label: 'screen.patientsearch.table.familyId',
         renderer: createCellRenderer('text', this.getData, { key: 'familyId' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'familyType',
         label: 'screen.patientsearch.table.familyType',
         renderer: createCellRenderer('text', this.getData, { key: 'familyType' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'ethnicity',
         label: 'screen.patientsearch.table.ethnicity',
         renderer: createCellRenderer('text', this.getData, { key: 'ethnicity' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'bloodRelationship',
         label: 'screen.patientsearch.table.bloodRelationship',
         renderer: createCellRenderer('text', this.getData, { key: 'bloodRelationship' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'request',
         label: 'screen.patientsearch.table.request',
         renderer: createCellRenderer('text', this.getData, { key: 'request' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
     ];
     this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);

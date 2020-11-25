@@ -11,7 +11,7 @@ import {
   AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps, Typography,
 } from 'antd';
 import {
-  find, has, debounce, mapValues, get,
+  find, has, debounce, mapValues, get, values as toArray,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
@@ -110,7 +110,7 @@ const defaultBirthDate = (patient) => {
   return null;
 };
 
-const PatientInformation = ({ patient }) => {
+const PatientInformation = ({ patient, validate }) => {
   const genderValues = getGenderValues();
   const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
   const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
@@ -228,7 +228,11 @@ const PatientInformation = ({ patient }) => {
         initialValue={defaultOrganizationValue(patient)}
         rules={[{ required: true, message: 'Please select the hospital!' }]}
       >
-        <Select className="small" dropdownClassName="selectDropdown">
+        <Select
+          className="small"
+          dropdownClassName="selectDropdown"
+          onChange={validate}
+        >
           <Select.Option value="CHUSJ">CHUSJ</Select.Option>
           <Select.Option value="CHUM">CHUM</Select.Option>
           <Select.Option value="CUSM">CUSM</Select.Option>
@@ -241,7 +245,12 @@ const PatientInformation = ({ patient }) => {
         rules={[{ required: false }]}
       >
 
-        <Select className="large" placeholder={intl.get('form.patientSubmission.form.ethnicity.select')} dropdownClassName="selectDropdown">
+        <Select
+          className="large"
+          placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
+          dropdownClassName="selectDropdown"
+          onChange={validate}
+        >
           <Select.Option value="CA-FR">Canadien-Français</Select.Option>
           <Select.Option value="EU">Caucasienne Européenne</Select.Option>
           <Select.Option value="AFR">Africain ou caribéen</Select.Option>
@@ -457,8 +466,9 @@ export function PatientSubmissionScreen(props) {
         };
 
         const checkFamilyHistory = () => {
-          if ((checkIfEmptyValue(values.familyRelationshipNotes) && !checkIfEmptyValue(values.familyRelationshipCodes))
-              || (!checkIfEmptyValue(values.familyRelationshipNotes) && checkIfEmptyValue(values.familyRelationshipCodes))) {
+          const frm = toArray(values.familyRelationshipNotes);
+          const frc = toArray(values.familyRelationshipCodes);
+          if ((checkIfEmptyValue(frm) && !checkIfEmptyValue(frc)) || (!checkIfEmptyValue(frm) && checkIfEmptyValue(frc))) {
             return false;
           }
           return true;
@@ -480,12 +490,7 @@ export function PatientSubmissionScreen(props) {
           return false;
         };
 
-        hasError = find(form.getFieldsError(), (o) => {
-          if (Array.isArray(o)) {
-            return !o.includes(undefined);
-          }
-          return o !== undefined;
-        });
+        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
 
         if (values.analyse
             && checkHpo()
@@ -879,7 +884,7 @@ export function PatientSubmissionScreen(props) {
     {
       title: intl.get('screen.clinicalSubmission.patientInformation'),
       content: (
-        <PatientInformation parentForm={this} patient={patient} />
+        <PatientInformation parentForm={this} patient={patient} validate={validate} />
       ),
       name: 'PatientInformation',
       values: {},
@@ -888,7 +893,7 @@ export function PatientSubmissionScreen(props) {
     {
       title: intl.get('screen.clinicalSubmission.clinicalInformation'),
       content: (
-        <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} />
+        <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} validate={validate} />
       ),
       name: 'ClinicalInformation',
       values: {},
