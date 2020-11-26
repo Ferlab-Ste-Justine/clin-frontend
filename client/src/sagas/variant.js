@@ -251,7 +251,7 @@ function* watchGetStatements() {
 }
 
 function* watchGetStatementsSuceeded() {
-  const { activeStatementId } = yield select(state => state.variant);
+  const { activeStatementId } = yield select((state) => state.variant);
   // Only select the default statement if there was not one already selected
   if (activeStatementId) {
     yield takeLatest(actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, selectDefaultStatement);

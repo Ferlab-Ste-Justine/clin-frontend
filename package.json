@@ -1,5 +1,5 @@
 {
-  "name": "new-frontend",
+  "name": "clin-frontend",
   "version": "3.1.0",
   "private": true,
   "dependencies": {
@@ -131,7 +131,7 @@
     "start": "PORT=2000 node client/scripts/start.js",
     "build": "node client/scripts/build.js",
     "test": "node client/scripts/test.js",
-    "lint": "eslint --fix --ext .jsx .",
+    "lint": "eslint --fix .",
     "theme:css": "lessc --js ./client/src/style/themes/antd-clin-theme.less ./client/src/style/themes/antd-clin-theme.css",
     "theme:scss": "rm ./client/src/style/themes/colors.scss; less2sass ./client/src/style/themes/colors.less",
     "theme": "pnpm run theme:css && pnpm run theme:scss"
