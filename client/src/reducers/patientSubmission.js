@@ -234,7 +234,11 @@ const patientSubmissionReducer = (
       draft.local = initialPatientSubmissionState.local;
       draft.patient = action.payload.patient.patient.original;
       draft.groupId = groupId;
-      draft.serviceRequest = { ...draft.serviceRequest, id: serviceRequest.id };
+      draft.serviceRequest = {
+        ...draft.serviceRequest,
+        id: serviceRequest.id,
+        code: get(serviceRequest, 'code.coding[0].code', null),
+      };
       draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
       draft.observations.hpos = hpos;
@@ -243,7 +247,6 @@ const patientSubmissionReducer = (
       draft.observations.indic = { ...observations.indic };
       draft.observations.summary = { ...observations.inves };
 
-      draft.local.serviceRequest.code = get(serviceRequest, 'code.coding[0].code', null);
       draft.local.cgh.interpretation = cgh;
       draft.local.summary.note = summary !== NOT_AVAILABLE ? summary : '';
       draft.local.indic.note = hypothesis !== NOT_AVAILABLE ? hypothesis : '';
