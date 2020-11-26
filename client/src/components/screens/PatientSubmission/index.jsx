@@ -366,7 +366,7 @@ const practitionerOptionFromResource = (resource) => ({
   license: resource.identifier[0].value,
 });
 
-export function PatientSubmissionScreen(props) {
+function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
 
   const [state, setState] = React.useState({
@@ -873,8 +873,8 @@ export function PatientSubmissionScreen(props) {
     ? stringifyPractionerOption(practitionerOptionFromResource(assignedPractitioner))
     : '';
 
-  const { consents } = localStore;
-  const initialPractitionerValue = localStore.practitioner;
+  const consents = get(localStore, 'consents', []);
+  const initialPractitionerValue = get(localStore, 'practitioner', '');
 
   const practitionerOptionsLabels = practitionerOptions.map((practitioner) => (
     <AutoComplete.Option
@@ -1037,9 +1037,7 @@ const mapStateToProps = (state) => ({
   localStore: state.patientSubmission.local,
 });
 
-const WrappedPatientSubmissionForm = PatientSubmissionScreen;
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(WrappedPatientSubmissionForm);
+)(PatientSubmissionScreen);
