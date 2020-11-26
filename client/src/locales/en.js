@@ -146,7 +146,7 @@ const en = {
   'screen.patientsearch.yes': 'Yes',
   'screen.patientsearch.no': 'No',
   'screen.patientsearch.title': 'Patient List',
-  'screen.patientsearch.button.new': 'Prescription',
+  'screen.patientsearch.button.new': 'Patient',
   'screen.patientsearch.placeholder': 'MRN, patient ID, RAMQ, last name, first name, family ID, specimen ID and study',
   'screen.patientsearch.table.patientId': 'Patient ID',
   'screen.patientsearch.table.mrn': 'MRN',
