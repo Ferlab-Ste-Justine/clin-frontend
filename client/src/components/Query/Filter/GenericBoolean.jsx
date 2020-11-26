@@ -112,13 +112,16 @@ class GenericBooleanFilter extends React.Component {
           <Row>
             <Col span={24}>
               <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
-                { options.map((option) => (
-                  <Row key={shortid.generate()}>
-                    <Col>
-                      <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
-                    </Col>
-                  </Row>
-                )) }
+                <div className="scrollFilter">
+                  { options.map((option) => (
+                    <Row key={shortid.generate()}>
+                      <Col>
+                        <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                      </Col>
+                    </Row>
+                  )) }
+                </div>
+
               </Checkbox.Group>
             </Col>
           </Row>

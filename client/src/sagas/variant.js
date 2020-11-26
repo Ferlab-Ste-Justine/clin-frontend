@@ -71,7 +71,7 @@ function* countVariantsForPatient(action) {
 function* selectDefaultStatement() {
   const { profile } = yield select((state) => state.user);
 
-  if (profile.defaultStatement != null) {
+  if (profile.defaultStatement) {
     yield put({
       type: actionTypes.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED,
       payload: {
@@ -251,7 +251,11 @@ function* watchGetStatements() {
 }
 
 function* watchGetStatementsSuceeded() {
-  yield takeLatest(actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, selectDefaultStatement);
+  const { activeStatementId } = yield select(state => state.variant);
+  // Only select the default statement if there was not one already selected
+  if (activeStatementId) {
+    yield takeLatest(actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, selectDefaultStatement);
+  }
 }
 
 function* watchUpdateStatement() {

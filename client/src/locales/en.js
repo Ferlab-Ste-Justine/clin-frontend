@@ -552,6 +552,7 @@ const en = {
   'components.confirmationModal.title': 'Quit without saving your changes?',
   'components.confirmationModal.okText': 'Quit',
   'components.confirmationModal.cancelText': 'Cancel',
+  'components.variantNavigation.moreResults': 'Refine your search to see other results',
 };
 
 export default en;
