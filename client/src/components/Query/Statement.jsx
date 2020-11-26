@@ -790,7 +790,7 @@ class Statement extends React.Component {
 
         </Modal>
         <div className={styleStatement.header}>
-          <Row type="flex" align={"bottom"} className={styleStatement.toolbar}>
+          <Row align={"bottom"} className={`flex-row ${styleStatement.toolbar}`}>
             <div className={styleStatement.message}>
               {this.isDirty() && (
               <>
@@ -801,7 +801,7 @@ class Statement extends React.Component {
               {!this.isDirty() && (<>&nbsp;</>)}
             </div>
           </Row>
-          <Row type="flex" className={styleStatement.toolbar}>
+          <Row  className={`flex-row ${styleStatement.toolbar}`}>
             <div className={styleStatement.navigation}>
               <div>
                 <div className={styleStatement.title}>

@@ -13,7 +13,7 @@ const { Text } = Typography;
 
 const Footer = () => (
   <Layout.Footer id="footer">
-    <Row className="footerPrimary" type="flex" align="middle">
+    <Row className="flex-row footerPrimary" align="middle">
       <div className="footerNav">
         <Col>
           <Text type="primary" className="navTitle">{ intl.get('footer.navigation.primary.information') }</Text>
@@ -56,7 +56,7 @@ const Footer = () => (
         </Col>
       </div>
     </Row>
-    <Row className="footerSecondary" type="flex" align="middle">
+    <Row className="flex-row footerSecondary" align="middle">
       <div className="footerLogo">
         <nav>
           <ul>

@@ -259,7 +259,7 @@ class NumericalComparisonWidget extends React.Component {
             disabled={disabled}
           />
         </Row>
-        <Row type="flex" justify="space-between" className={styleFilter.rangeInput}>
+        <Row className={`flex-row ${styleFilter.rangeInput}`}>
           <Col>
             <InputNumber
               step={tick}
@@ -273,7 +273,7 @@ class NumericalComparisonWidget extends React.Component {
               onFocus={(e) => { e.target.select(); }}
             />
           </Col>
-          <Col>
+          <Col className="input-right">
             <InputNumber
               step={tick}
               value={currentHigh}

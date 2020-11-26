@@ -1,4 +1,5 @@
 @import './variables.scss';
+@import '../../../../style/themes/colors.scss';
 
 .navigationFilter{
     margin-bottom:24px;
@@ -70,7 +71,7 @@
         height:56px;
 
         li{
-                margin:0;
+                margin:0 !important;
                 top:0;
                 border:none;
                 display:flex;
@@ -95,9 +96,12 @@
                 }
                 &:hover{
 
-                    border:none;
-                    background-color:#125a90;
+                    border:none !important;
+                    background-color:$blue-10;
                 }
+        }
+        .ant-menu-submenu-active{
+            border: none !important;
         }
 
         i{

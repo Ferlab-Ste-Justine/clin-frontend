@@ -313,7 +313,16 @@ div.ant-card {
 }
 //tabs
 .staticTabs{
+  &:focus{
+    outline: none;
+  }
   .tabName, .ant-tabs-tab-btn{
+    &:focus{
+      outline: none;
+    }
+  }
+
+  .ant-tabs-content, .ant-tabs-tabpane{
     &:focus{
       outline: none;
     }

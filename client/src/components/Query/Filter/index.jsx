@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import {
   Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Input, Tooltip,
 } from 'antd';
+import Icon from '@ant-design/icons';
 import {
   cloneDeep,
 } from 'lodash';
@@ -13,33 +14,34 @@ import {
   ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down, ic_replay,
 } from 'react-icons-kit/md';
 
+import '../../../style/themes/antd-clin-theme.css';
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 
-// import {
-//   OPERATOR_TYPE_UNION,
-//   OPERATOR_TYPE_INTERSECTION,
-//   OPERATOR_TYPE_NOT_EQUAL,
-//   OPERATOR_TYPE_EQUAL,
-// } from '../Operator';
+import {
+  OPERATOR_TYPE_UNION,
+  OPERATOR_TYPE_INTERSECTION,
+  OPERATOR_TYPE_NOT_EQUAL,
+  OperatorIconComponent,
+} from '../Operator';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
 export const FILTER_OPERAND_TYPE_NONE = 'none';
 export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
 
-// const operatorFromOperand = (operand) => {
-//   switch (operand) {
-//     case FILTER_OPERAND_TYPE_ONE:
-//       return OPERATOR_TYPE_UNION;
-//     case FILTER_OPERAND_TYPE_ALL:
-//       return OPERATOR_TYPE_INTERSECTION;
-//     case FILTER_OPERAND_TYPE_NONE:
-//       return OPERATOR_TYPE_NOT_EQUAL;
-//     default:
-//       return OPERATOR_TYPE_UNION;
-//   }
-// };
+const operatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_UNION;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_INTERSECTION;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_NOT_EQUAL;
+    default:
+      return OPERATOR_TYPE_UNION;
+  }
+};
 
 // const OuterOperatorFromOperand = (operand) => {
 //   switch (operand) {
@@ -66,7 +68,6 @@ export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
 //       return OPERATOR_TYPE_UNION;
 //   }
 // };
-
 const PillOuterIconForOperand = (operand) => (props) => (
   <div {...props}>{ operand }</div>
   // <Icon
@@ -370,7 +371,7 @@ class Filter extends React.Component {
       <Menu onClick={(e) => handleMenuClick(e)} className={styleFilter.operandDropdown}>
         { cfg.operands.map((configOperand) => (
           <Menu.Item key={shortid.generate()}>
-            { /* <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} /> */ }
+            <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
             { intl.get(`screen.patientvariant.filter.operand.${configOperand}`) }
           </Menu.Item>
         )) }
@@ -386,9 +387,10 @@ class Filter extends React.Component {
         disabled={haveChange || !canApply}
         icon={(
           <>
-            { /* <Icon
-              component={OperatorIconComponent(operatorFromOperand(operand))}
-            /> */ }
+            <Icon
+              className="operator-icon"
+              component={OperatorIconComponent(operatorFromOperand(data.operand))}
+            />
             <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
           </>
         )}
@@ -423,35 +425,35 @@ class Filter extends React.Component {
         visible={this.isOpened()}
       >
         <Card className={styleFilter.filterCard}>
-          <div className={styleFilter.fieldHeader}>
-            <Row type="flex" justify="start" align="middle">
-              <Typography.Title className={styleFilter.labelTitle}>
+          <div className={`filter-header ${styleFilter.fieldHeader}`} justify="start" align="middle">
+            <Row className="flex-row">
+              <Typography.Title level={4} className="labelTitle">
                 { filterLabel }
               </Typography.Title>
-              <Tooltip overlayClassName={styleFilter.tooltip} placement="right" title={filterDescription}>
-                <Button>
-                  <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
+              <Tooltip overlayClassName="tooltip" placement="rig" title={filterDescription}>
+                <Button type="link">
+                  <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
                 </Button>
               </Tooltip>
               { (searchable) && (
-                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                <Button type="link" className="iconSearch" onClick={this.handleInputView}>
                   <IconKit size={24} icon={ic_search} />
                 </Button>
               ) }
               { (resettable && canApply) && (
-                <Button className={styleFilter.iconSearch} onClick={onReset}>
+                <Button className="iconSearch" onClick={onReset} type="link">
                   <IconKit size={24} icon={ic_replay} />
                 </Button>
               ) }
             </Row>
             { (searchable) && (
               <>
-                <Row className={visibleInput ? null : `${styleFilter.searchInputClose}`}>
+                <Row className={visibleInput ? null : 'searchInputClose'}>
                   <Input
                     allowClear
                     placeholder={filterSearch}
                     onChange={this.handleSearchByQuery}
-                    className={`${styleFilter.searchInput} ${data.id}searchInput`}
+                    className={`searchInput ${data.id}searchInput`}
                     autoFocus
                   />
                 </Row>
@@ -463,12 +465,12 @@ class Filter extends React.Component {
           { allOptions && (
             allOptions.length >= size
               ? (
-                <Row className={styleFilter.paginationInfo} type="flex" align="middle" justify="space-between">
+                <Row className={`flex-row ${styleFilter.paginationInfo}`}>
                   <Col className={styleFilter.valueCount}>{ allOptions.length } { valueText }</Col>
                 </Row>
               ) : null
           ) }
-          <Row type="flex" justify="end" className={styleFilter.actionToolBar}>
+          <Row justify="end" className={`flex-row ${styleFilter.actionToolBar}`}>
             <Col>
               <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
                 <IconKit size={16} icon={ic_chevron_left} />

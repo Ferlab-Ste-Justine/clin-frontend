@@ -1,5 +1,11 @@
 .entity{
     background-color:#EDF0F3;
     .ant-card-body{
+        &:focus{
+            outline: none;
+          }
     }
+    &:focus{
+        outline: none;
+      }
 }
