@@ -61,16 +61,16 @@ const HpoHiddenFields = ({
   hpoIndex,
 }) => (
   <div>
-    <Form.Item name={`hpoIds[${hpoIndex}]`} initialValue={getResourceId(hpoResource) || ''}>
+    <Form.Item name={`hpoIds[${hpoIndex}]`} initialValue={getResourceId(hpoResource) || ''} className="hidden-form">
       <Input size="small" type="hidden" />
     </Form.Item>
-    <Form.Item name={`hposToDelete[${hpoIndex}]`} initialValue={hpoResource.toDelete}>
+    <Form.Item name={`hposToDelete[${hpoIndex}]`} initialValue={hpoResource.toDelete} className="hidden-form">
       <Input size="small" type="hidden" />
     </Form.Item>
-    <Form.Item name={`hpoCodes[${hpoIndex}]`} initialValue={getHPOCode(hpoResource) || ''}>
+    <Form.Item name={`hpoCodes[${hpoIndex}]`} initialValue={getHPOCode(hpoResource) || ''} className="hidden-form">
       <Input size="small" type="hidden" />
     </Form.Item>
-    <Form.Item name={`hpoDisplays[${hpoIndex}]`} initialValue={getHPODisplay(hpoResource) || ''}>
+    <Form.Item name={`hpoDisplays[${hpoIndex}]`} initialValue={getHPODisplay(hpoResource) || ''} className="hidden-form">
       <Input size="small" type="hidden" />
     </Form.Item>
   </div>
@@ -186,7 +186,7 @@ class ClinicalInformation extends React.Component {
           </div>
           <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} />
           <div className="rightBlock">
-            <Form.Item name={`interpretation-${hpoIndex}`} label="Interpretation">
+            <Form.Item name={`interpretation-${hpoIndex}`}>
               <Select
                 className="select selectObserved"
                 placeholder={intl.get('form.patientSubmission.form.hpo.interpretation')}
@@ -559,7 +559,7 @@ class ClinicalInformation extends React.Component {
       <div>
         <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
 
-          <Form.Item name="cghId" initialValue={cghId}>
+          <Form.Item name="cghId" initialValue={cghId} className="hidden-form">
             <Input size="small" type="hidden" />
           </Form.Item>
 
@@ -614,7 +614,7 @@ class ClinicalInformation extends React.Component {
 
             )
           }
-          <span className="optional">Facultatif</span>
+
           <Form.Item
             label="Résumé"
             name="summaryNote"
@@ -624,7 +624,10 @@ class ClinicalInformation extends React.Component {
               message: 'Ne peut pas contenir que des espaces',
             }]}
           >
-            <TextArea className="input note" rows={4} />
+            <div className="optional-info">
+              <TextArea className="input note" rows={4} />
+              <span className="optional">Facultatif</span>
+            </div>
           </Form.Item>
         </Card>
         <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
@@ -644,7 +647,7 @@ class ClinicalInformation extends React.Component {
             <div className="cardSeparator">
               <Form.Item className="searchInput searchInputFull">
                 <AutoComplete
-                  classeName="searchInput"
+                  className="searchInput"
                   placeholder="Chercher un signe clinique ..."
                   dataSource={hpoOptionsLabels}
                   onSelect={this.handleHpoOptionSelected}

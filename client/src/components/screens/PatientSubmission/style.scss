@@ -5,6 +5,10 @@
 }
 
 .step{
+
+    .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item{
+        margin-right: 0;
+    }
     margin-bottom: 8px;
     .ant-card-body{
         display: flex;
@@ -114,7 +118,7 @@
     }
     .ant-form-item-required{
         &::before{
-            display: none;
+            display: none !important;
         }
     }
     .ant-form-item{
@@ -145,9 +149,8 @@
                 font-size: 14px;
                 letter-spacing: 0.25px;
                 color: #233750;
-                margin: 8px 0px;
                 &::after{
-                    display: none;
+                    display: none !important;
                 }
             }
         }
@@ -277,7 +280,7 @@
         }
         .leftBlock{
             flex:1;
-
+            height: auto;
             .hpoTitle{
                 font-family: $font;
                 font-weight: 500;
@@ -293,6 +296,9 @@
         }
         .rightBlock{
             display: flex;
+            .ant-row{
+                margin-bottom: 0;
+            }
             .ant-form-item{
                 &:first-child{
                     margin-right: 8px;
@@ -332,9 +338,19 @@
         }
     }
 
+    .searchInput{
+        input{
+
+            &:hover{
+                border: none !important;
+                box-shadow: none;
+            }
+        }
+    }
     .searchInput340{
         input{
             color: $textLightBlack;   
+
         }
         .ant-form-item-control-wrapper{
             width: 340px;
@@ -346,7 +362,7 @@
     .note{
         width: 640px;
     }
-
+    
     .optional{
         font-family: $font;
         font-size: 12px;
@@ -430,6 +446,7 @@
 
 }
 
+
 .page3{
     &__autocomplete{
         //styleName: Regular / 14px | 22px;
@@ -441,7 +458,7 @@
         letter-spacing: 0.25px;
         text-align: left;
         color: $textLightBlack;
-
+        
         &__family-name{
             font-family: Roboto;
             font-size: 14px;
@@ -452,4 +469,13 @@
             text-align: left;
         }
     }
+}
+
+.hidden-form{
+    display: none !important;
+}
+
+.optional-info{
+    display: flex;
+    align-items: flex-start;    
 }

@@ -202,6 +202,7 @@ const PatientInformation = ({ patient, validate }) => {
         }]}
       >
         <Input placeholder="ABCD 0000 0000" className="input large" />
+        <span className="optional">Facultatif</span>
       </Form.Item>
 
       <Form.Item
@@ -240,7 +241,6 @@ const PatientInformation = ({ patient, validate }) => {
         </Select>
       </Form.Item>
 
-      <span className="optional">Facultatif</span>
       <Form.Item
         label={intl.get('form.patientSubmission.form.ethnicity')}
         name="ethnicity"
@@ -262,6 +262,7 @@ const PatientInformation = ({ patient, validate }) => {
           <Select.Option value="MIX">Origine mixte</Select.Option>
           <Select.Option value="OTH">Autre</Select.Option>
         </Select>
+        <span className="optional">Facultatif</span>
       </Form.Item>
 
       <Form.Item
@@ -275,6 +276,7 @@ const PatientInformation = ({ patient, validate }) => {
           <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
           <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
         </Radio.Group>
+        <span className="optional">Facultatif</span>
       </Form.Item>
     </Card>
   );
@@ -847,7 +849,7 @@ function PatientSubmissionScreen(props) {
         handlePractitionerOptionSelected(practitioner);
       });
     }
-
+    console.log('coucou', pageIndex);
     setState({ ...state, currentPageIndex: pageIndex });
     debounce(validate, 500)();
   };
@@ -929,6 +931,7 @@ function PatientSubmissionScreen(props) {
   const { Title } = Typography;
   const currentPage = pages[currentPageIndex];
   const pageContent = currentPage.content;
+  console.log('allo', currentPageIndex);
   return (
     <Layout>
       <>
