@@ -10,7 +10,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_tune, ic_add, ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay, ic_keyboard_arrow_right, ic_keyboard_arrow_down, ic_close, /* eslint-disable-line */
+  ic_swap_horiz, ic_view_column, ic_cloud_download, ic_search, ic_replay
 } from 'react-icons-kit/md';
 import DataTablePagination from './Pagination';
 import DataTable from './index';
@@ -202,17 +202,18 @@ class InteractiveTable extends React.Component {
 
     if (this.isSelectable()) {
       const { visibleColumns, matchingColumns } = this.state;
+      const newVisibleColumns = cloneDeep(visibleColumns);
       const orderedColumns = this.getOrderedColumns();
       const uncheckedColumns = matchingColumns.filter((name) => !selection.includes(name));
       const toRemove = filter(visibleColumns, (column) => uncheckedColumns.includes(column));
-      pullAll(visibleColumns, toRemove);
+      pullAll(newVisibleColumns, toRemove);
 
       const toAdd = selection.filter((name) => !visibleColumns.includes(name));
       const addColumn = find(orderedColumns, (column) => toAdd.includes(column.label));
       const index = findIndex(orderedColumns, addColumn);
-      addColumn ? visibleColumns.splice(index, 0, toAdd[0]) : null; /* eslint-disable-line */
+      addColumn ? newVisibleColumns.splice(index, 0, toAdd[0]) : null;
       this.setState({
-        visibleColumns,
+        visibleColumns: newVisibleColumns,
       });
     }
   }
@@ -327,21 +328,21 @@ class InteractiveTable extends React.Component {
       >
         { !isEqual(orderedColumns.map((column) => column.label), visibleColumns) && (
           <Row>
-            <a onClick={this.handleResetClick}> { /* eslint-disable-line */ }
-              {intl.get('components.table.action.reset')} <IconKit size={16} icon={ic_replay} /> { /* eslint-disable-line */ }
+            <a onClick={this.handleResetClick}> { /* eslint-disable-line */}
+              {intl.get('components.table.action.reset')} <IconKit size={16} icon={ic_replay} /> { /* eslint-disable-line */}
             </a>
           </Row>
-        ) }
+        )}
         <Row>
 
           <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map((column) => column.key)} className={`${style.checkbox} `} value={cloneDeep(visibleColumns)}>
-            { matchingColumns.map((key) => (
+            {matchingColumns.map((key) => (
               <Row key={key}>
                 <Col>
-                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{ intl.get(key) }</Checkbox>
+                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{intl.get(key)}</Checkbox>
                 </Col>
               </Row>
-            )) }
+            ))}
           </Checkbox.Group>
         </Row>
       </Card>
@@ -351,15 +352,15 @@ class InteractiveTable extends React.Component {
         { (isReorderable || isSelectable || isExportable) && (
           <>
             <Row className="flex-row" justify="end">
-              { isReorderable && (
+              {isReorderable && (
                 <Col>
                   <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                     <IconKit size={16} icon={ic_swap_horiz} />
-                    { intl.get('components.table.action.organize') }
+                    {intl.get('components.table.action.organize')}
                   </Button>
                 </Col>
-              ) }
-              { isSelectable && (
+              )}
+              {isSelectable && (
                 <Col>
                   <Popover
                     trigger="click"
@@ -369,24 +370,24 @@ class InteractiveTable extends React.Component {
                   >
                     <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
                       <IconKit size={16} icon={ic_view_column} />
-                      { intl.get('components.table.action.display') }
+                      {intl.get('components.table.action.display')}
                     </Button>
                   </Popover>
                 </Col>
-              ) }
-              { isExportable && (
+              )}
+              {isExportable && (
                 <Col>
                   <Button onClick={this.handleExport} className={`${style.btn} ${style.btnSec}`}>
-                    <IconKit size={16} icon={ic_cloud_download} /> { intl.get('components.table.action.export') }
+                    <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.export')}
                   </Button>
                 </Col>
-              ) }
+              )}
 
               {
                 canCreateReport && (
                   <Col>
                     <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
-                      <IconKit size={16} icon={ic_cloud_download} /> { intl.get('components.table.action.createReport') }
+                      <IconKit size={16} icon={ic_cloud_download} /> {intl.get('components.table.action.createReport')}
                     </Button>
                   </Col>
                 )
@@ -394,7 +395,7 @@ class InteractiveTable extends React.Component {
             </Row>
             <br />
           </>
-        ) }
+        )}
         <Row>
           <Col>
             <DataTable
@@ -467,15 +468,15 @@ InteractiveTable.defaultProps = {
   canCreateReport: false,
   isReportAvailable: false,
   numFrozenColumns: 0,
-  exportCallback: () => {},
-  createReportCallback: () => {},
-  resizeColumnCallback: () => {},
-  pageChangeCallback: () => {},
-  pageSizeChangeCallback: () => {},
-  getData: () => {},
-  columnsUpdated: () => {},
+  exportCallback: () => { },
+  createReportCallback: () => { },
+  resizeColumnCallback: () => { },
+  pageChangeCallback: () => { },
+  pageSizeChangeCallback: () => { },
+  getData: () => { },
+  columnsUpdated: () => { },
   columnsOrderUpdated: null,
-  columnsReset: () => {},
+  columnsReset: () => { },
   rowHeights: null,
 };
 
