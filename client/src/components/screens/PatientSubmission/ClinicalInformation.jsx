@@ -615,20 +615,23 @@ class ClinicalInformation extends React.Component {
             )
           }
 
-          <Form.Item
-            label="Résumé"
-            name="summaryNote"
-            initialValue={summaryNoteValue}
-            rules={[{
-              whitespace: true,
-              message: 'Ne peut pas contenir que des espaces',
-            }]}
-          >
-            <div className="optional-info">
-              <TextArea className="input note" rows={4} />
-              <span className="optional">Facultatif</span>
-            </div>
-          </Form.Item>
+          <div className="optional-item">
+            <Form.Item
+              label="Résumé"
+              name="summaryNote"
+              initialValue={summaryNoteValue}
+              rules={[{
+                whitespace: true,
+                message: 'Ne peut pas contenir que des espaces',
+              }]}
+            >
+              <div className="optional-info">
+                <TextArea className="input note" rows={4} />
+              </div>
+            </Form.Item>
+            <span className="optional-item__label">Facultatif</span>
+          </div>
+
         </Card>
         <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
           <div className="familyLines">

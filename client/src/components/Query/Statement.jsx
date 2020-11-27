@@ -704,7 +704,10 @@ class Statement extends React.Component {
       if (isDirty) { classNames.push(styleStatement.dirtyContainer); }
       if (isActive) { classNames.push(styleStatement.activeContainer); } else { classNames.push(styleStatement.inactiveContainer); }
       if (!query.title) {
-        query.title = intl.get('screen.patientvariant.query.title.increment', {count: (index + 1)});
+        query = {
+          ...query, 
+          title: intl.get('screen.patientvariant.query.title.increment', {count: (index + 1)})
+        };
       }
 
       return [...accumulator, (

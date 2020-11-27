@@ -367,7 +367,7 @@ class PatientScreen extends React.Component {
 
                   </div>
                 </div>
-                <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
+                <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs" animated>
                   <Tabs.TabPane
                     key="personal"
                     style={{ height: '100%' }}
