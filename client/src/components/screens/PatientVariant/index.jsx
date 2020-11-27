@@ -692,7 +692,7 @@ class PatientVariantScreen extends React.Component {
       actions,
     } = this.props;
 
-    const mutationId = e.target.getAttribute('data-id');
+    const mutationId = e.currentTarget.getAttribute('data-id');
     actions.navigateToVariantDetailsScreen(mutationId, 'patients');
   }
 
@@ -879,7 +879,7 @@ class PatientVariantScreen extends React.Component {
       actions,
     } = this.props;
 
-    const mutationId = e.target.getAttribute('data-id');
+    const mutationId = e.currentTarget.getAttribute('data-id');
     actions.navigateToVariantDetailsScreen(mutationId);
   }
 

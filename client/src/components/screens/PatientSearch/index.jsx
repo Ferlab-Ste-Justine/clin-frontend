@@ -376,7 +376,7 @@ class PatientSearchScreen extends React.Component {
 
   handleGoToPatientScreen(e) {
     const { actions } = this.props;
-    const value = e.target.getAttribute('data-id');
+    const value = e.currentTarget.getAttribute('data-id');
     actions.navigateToPatientScreen(value);
   }
 
@@ -466,7 +466,6 @@ class PatientSearchScreen extends React.Component {
             </Col>
             <Col className="autoSearch">
               <AutoComplete
-                size="large"
                 style={{ width: '100%' }}
                 allowClear
                 autoFocus
@@ -480,6 +479,7 @@ class PatientSearchScreen extends React.Component {
                   prefix={
                     <SearchOutlined />
                   }
+                  size="large"
                   placeholder={placeholderText}
                   onPressEnter={this.handleAutoCompletePressEnter}
                 />
