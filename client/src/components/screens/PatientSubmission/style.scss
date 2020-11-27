@@ -1,481 +1,494 @@
 @import './variables.scss';
 
 .ant-layout{
-    background: #EDF0F3;
+  background: #EDF0F3;
 }
 
 .step{
 
-    .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item{
-        margin-right: 0;
-    }
-    margin-bottom: 8px;
-    .ant-card-body{
-        display: flex;
-        justify-content: center;
-    }
+  .ant-steps-horizontal:not(.ant-steps-label-vertical) .ant-steps-item{
+    margin-right: 0;
+  }
+  margin-bottom: 8px;
+  .ant-card-body{
+    display: flex;
+    justify-content: center;
+  }
 
-    .ant-steps{
-        width: auto;
+  .ant-steps{
+    width: auto;
+  }
+  .ant-steps-item{
+    flex: none;
+    padding-right: 180px !important;
+    &:last-of-type{
+      padding-right: 0 !important;
     }
-    .ant-steps-item{
-        flex: none;
-        padding-right: 180px !important;
-        &:last-of-type{
-            padding-right: 0 !important;
-        }
-    }
-    .ant-steps-item-container{
-        display: flex;
-        align-items: center;
-        .ant-steps-item-icon{
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: $font;
-            font-size: 14px;
-            line-height: 22px;
-            text-align: center;
-            letter-spacing: 0.25px;
-            color: #FFFFFF;
+  }
+  .ant-steps-item-container{
+    display: flex;
+    align-items: center;
+    .ant-steps-item-icon{
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: $font;
+      font-size: 14px;
+      line-height: 22px;
+      text-align: center;
+      letter-spacing: 0.25px;
+      color: #FFFFFF;
             
-            .ant-steps-icon{
-                margin-top: 2px;
-            }            
-        }
-        .ant-steps-item-title{
-            font-family: $font;
-            font-size: 16px;
-            line-height: 24px;
-            letter-spacing: 0.15px;   
-            height: 24px;
-            display: flex;
-
-            &::after{
-                background-color: #E1E8EF !important;
-                top:12px;
-                height: 2px;
-                max-width: 180px;
-            }
-        }
+      .ant-steps-icon{
+        margin-top: 2px;
+      }            
     }
-    .ant-steps-item-process {
-        .ant-steps-item-icon{
-            background: #2AABE8;
-            border: 1px solid #2AABE8;
-        }
-        .ant-steps-item-title{
-            font-weight: 500;
-            color: #125A90 !important;
-        }
+    .ant-steps-item-title{
+      font-family: $font;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: 0.15px;   
+      height: 24px;
+      display: flex;
 
+      &::after{
+        background-color: #E1E8EF !important;
+        top:12px;
+        height: 2px;
+        max-width: 180px;
+      }
     }
-    .ant-steps-item-wait {
+  }
+  .ant-steps-item-process {
+    .ant-steps-item-icon{
+      background: #2AABE8;
+      border: 1px solid #2AABE8;
+    }
+    .ant-steps-item-title{
+      font-weight: 500;
+      color: #125A90 !important;
+    }
+
+  }
+  .ant-steps-item-wait {
         
-        .ant-steps-item-icon{
-            border: 1px solid #ABB3BC;
-        }
-        .ant-steps-item-title{
-            color: #858E99 !important;
-        }
-
+    .ant-steps-item-icon{
+      border: 1px solid #ABB3BC;
+    }
+    .ant-steps-item-title{
+      color: #858E99 !important;
     }
 
-    .ant-steps-item-finish{
-        .ant-steps-item-title{
-            &::after{
-                background-color: #2AABE8 !important;
-            }
-        }
-        .ant-steps-item-icon{
-            border: 1px solid #2AABE8;
-            .ant-steps-icon{
-                color:#2AABE8;
-            }
-        }
+  }
+
+  .ant-steps-item-finish{
+    .ant-steps-item-title{
+      &::after{
+        background-color: #2AABE8 !important;
+      }
     }
+    .ant-steps-item-icon{
+      border: 1px solid #2AABE8;
+      .ant-steps-icon{
+        color:#2AABE8;
+      }
+    }
+  }
 }
 
 .patientContent{
-    margin-bottom: 8px !important;
-    .ant-card-head{
-        background: #FFFFFF;
-        padding: 12px 16px;
-        .ant-card-head-title{
-            padding: 0;
-            font-family: $font;
-            font-weight: 500;
-            font-size: 16px;
-            line-height: 24px;
-            letter-spacing: 0.15px;
-            color: #125A90;
-        }
+  margin-bottom: 8px !important;
+  .ant-card-head{
+    background: #FFFFFF;
+    padding: 12px 16px;
+    .ant-card-head-title{
+      padding: 0;
+      font-family: $font;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: 0.15px;
+      color: #125A90;
     }
-    .ant-card-body{
-        padding: 16px;
+  }
+  .ant-card-body{
+    padding: 16px;
+  }
+  .ant-form-item-required{
+    &::before{
+      display: none !important;
     }
-    .ant-form-item-required{
-        &::before{
-            display: none !important;
-        }
+  }
+  .ant-form-item{
+    display: flex;
+    margin-bottom: 16px;
+    &:last-child{
+      margin-bottom: 0;
     }
-    .ant-form-item{
-        display: flex;
-        margin-bottom: 16px;
-        &:last-child{
-            margin-bottom: 0;
-        }
 
-        .large{
-            width: 256px;
-        }
-
-        .small{
-            width: 140px;
-        }
-
-        .ant-form-item-label{
-            width: 180px;
-            text-align: left;
-            line-height: 15px;
-            display: flex;
-            align-items: center;
-            white-space: normal;
-            margin-right: 8px;
-            label{
-                font-family: $font;
-                font-size: 14px;
-                letter-spacing: 0.25px;
-                color: #233750;
-                &::after{
-                    display: none !important;
-                }
-            }
-        }
-
-        .ant-form-item-children{
-            display: flex;
-            align-items: baseline;
-        }
-
-        .ant-form-explain{
-            .errorMessage:not(:first-child){
-                display: none;
-            }
-        }
-
-        .ant-form-item-control{
-            line-height: 0; 
-        }
-
-
+    .large{
+      width: 256px;
     }
-    .labelTop{
-        .ant-form-item-label{
-            align-items: baseline !important;
-            label{
-                margin:4px 0px;
-            }
+
+    .small{
+      width: 140px;
+    }
+
+    .ant-form-item-label{
+      width: 180px;
+      text-align: left;
+      line-height: 15px;
+      display: flex;
+      align-items: center;
+      white-space: normal;
+      margin-right: 8px;
+      label{
+        font-family: $font;
+        font-size: 14px;
+        letter-spacing: 0.25px;
+        color: #233750;
+        &::after{
+          display: none !important;
         }
+      }
+    }
+
+    .ant-form-item-children{
+      display: flex;
+      align-items: baseline;
+    }
+
+    .ant-form-explain{
+      .errorMessage:not(:first-child){
+        display: none;
+      }
+    }
+
+    .ant-form-item-control{
+      line-height: 0; 
+    }
+
+
+  }
+  .labelTop{
+    .ant-form-item-label{
+      align-items: baseline !important;
+      label{
+        margin:4px 0px;
+      }
+    }
         
+  }
+
+  .addFamilyButton{
+    border: 0;
+    padding: 0;
+    box-shadow: none;
+    font-family: $font;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 0px;
+    letter-spacing: 0.25px;
+        
+
+    span, i{
+      color: #1D8BC6;
     }
 
-    .addFamilyButton{
-        border: 0;
+    &:disabled{
+      background-color: white;
+      span, i{
+        color: #ABB3BC;
+      }
+    }
+  }
+  .familyLines{
+    margin-bottom: 16px;
+
+  }
+  .familyLine{
+    margin-bottom: 16px;
+    .familyTop{
+      display: flex;
+      align-items: center;
+            
+      .ant-form-item{
+        margin: 0;
+      }
+    
+      .noteInput{
+        margin-right: 8px;
+      }
+    
+      .selectRelation{
+        width: 260px;
+        margin-right: 8px;
+      }
+      .delButton{
+        width: 24px;
+        height: 24px;
         padding: 0;
-        box-shadow: none;
+        border: 1px solid #1D8BC6;
+        &:disabled{
+          border: 1px solid #D2DBE4;
+          i{
+            color: #ABB3BC;
+          }
+        }
+    
+        i{
+          color: #1D8BC6;;
+        }
+      }
+    }
+    .familyBottom{
+      margin-top: 4px;
+    }
+
+  }
+    
+
+  .separator{
+       
+    display: grid;
+    grid-template-columns: 536px 800px;
+    grid-template-rows: 1fr;
+    gap: 0px 24px;
+    grid-template-areas: ". .";
+
+    .cardSeparator:first-child{
+      padding: 16px;
+      overflow: scroll;
+      max-height: 600px;
+    }
+
+    .message{
+      display: flex;
+      align-items: center;
+      text-align: center;
+    }
+  }
+  .phenotypeBlock:not(:first-child){
+    padding-top: 24px;
+  }
+  .phenotypeFirstLine{
+    display: flex;
+    .ant-form-item{
+      margin-bottom: 8px;
+    }
+    .leftBlock{
+      flex:1;
+      height: auto;
+      .hpoTitle{
         font-family: $font;
         font-weight: 500;
         font-size: 14px;
-        line-height: 0px;
-        letter-spacing: 0.25px;
-        
-
-        span, i{
-            color: #1D8BC6;
-        }
-
-        &:disabled{
-            background-color: white;
-            span, i{
-                color: #ABB3BC;
-            }
-        }
-    }
-    .familyLines{
-        margin-bottom: 16px;
-
-    }
-    .familyLine{
-        margin-bottom: 16px;
-        .familyTop{
-            display: flex;
-            align-items: center;
-            
-            .ant-form-item{
-                margin: 0;
-            }
-    
-            .noteInput{
-                margin-right: 8px;
-            }
-    
-            .selectRelation{
-                width: 260px;
-                margin-right: 8px;
-            }
-            .delButton{
-                width: 24px;
-                height: 24px;
-                padding: 0;
-                border: 1px solid #1D8BC6;
-                &:disabled{
-                    border: 1px solid #D2DBE4;
-                    i{
-                        color: #ABB3BC;
-                    }
-                }
-    
-                i{
-                    color: #1D8BC6;;
-                }
-            }
-        }
-        .familyBottom{
-            margin-top: 4px;
-        }
-
-    }
-    
-
-    .separator{
-       
-            display: grid;
-            grid-template-columns: 536px 800px;
-            grid-template-rows: 1fr;
-            gap: 0px 24px;
-            grid-template-areas: ". .";
-
-            .cardSeparator:first-child{
-                padding: 16px;
-                overflow: scroll;
-                max-height: 600px;
-            }
-
-            .message{
-                display: flex;
-                align-items: center;
-                text-align: center;
-              }
-    }
-    .phenotypeBlock:not(:first-child){
-        padding-top: 24px;
-    }
-    .phenotypeFirstLine{
-        display: flex;
-        .ant-form-item{
-            margin-bottom: 8px;
-        }
-        .leftBlock{
-            flex:1;
-            height: auto;
-            .hpoTitle{
-                font-family: $font;
-                font-weight: 500;
-                font-size: 14px;
-                line-height: 22px;
-                letter-spacing: 0.25px;
-                color: #536377;
-
-            }
-            .deleteButton{
-                font-size: 12px;
-            }
-        }
-        .rightBlock{
-            display: flex;
-            .ant-row{
-                margin-bottom: 0;
-            }
-            .ant-form-item{
-                &:first-child{
-                    margin-right: 8px;
-                }
-
-                .observedIcon{
-                    color: #52C41A;;
-                }
-                .notObservedIcon{
-                    color: #FF4D4F;;
-                }
-                .unknownIcon{
-                    color:#536377;
-                }
-            }
-        }
-
-        .select{
-            width: 160px;
-
-        }
-    }
-
-    .phenotypeSecondLine{
-        .ant-form-item-control-wrapper{
-            width: 100%;
-        }
-        .hpoNote{
-            width: 100%;
-        }
-    }
-
-
-    .searchInputFull{
-        .ant-form-item-control-wrapper{
-            width: 100%;
-        }
-    }
-
-    .searchInput{
-        input{
-
-            &:hover{
-                border: none !important;
-                box-shadow: none;
-            }
-        }
-    }
-    .searchInput340{
-        input{
-            color: $textLightBlack;   
-
-        }
-        .ant-form-item-control-wrapper{
-            width: 340px;
-        }
-    }
-
-
-
-    .note{
-        width: 640px;
-    }
-    
-    .optional{
-        font-family: $font;
-        font-size: 12px;
-        line-height: 20px;
-        letter-spacing: 0.4px;
-        color: #858E99;
-        margin-left: 8px;
-    }
-
-    .cardDescription{
-        font-family: $font;
-        font-size: 14px;
         line-height: 22px;
-        display: flex;
-        align-items: center;
         letter-spacing: 0.25px;
-        color: #858E99;
-        margin-bottom: 24px;
+        color: #536377;
+
+      }
+      .deleteButton{
+        font-size: 12px;
+      }
     }
+    .rightBlock{
+      display: flex;
+      .ant-row{
+        margin-bottom: 0;
+      }
+      .ant-form-item{
+        &:first-child{
+          margin-right: 8px;
+        }
+
+        .observedIcon{
+          color: #52C41A;;
+        }
+        .notObservedIcon{
+          color: #FF4D4F;;
+        }
+        .unknownIcon{
+          color:#536377;
+        }
+      }
+    }
+
+    .select{
+      width: 160px;
+
+    }
+  }
+
+  .phenotypeSecondLine{
+    .ant-form-item-control-wrapper{
+      width: 100%;
+    }
+    .hpoNote{
+      width: 100%;
+    }
+  }
+
+
+  .searchInputFull{
+    .ant-form-item-control-wrapper{
+      width: 100%;
+    }
+  }
+
+  .searchInput{
+    input{
+
+      &:hover{
+        border: none !important;
+        box-shadow: none;
+      }
+    }
+  }
+  .searchInput340{
+    input{
+      color: $textLightBlack;   
+
+    }
+    .ant-form-item-control-wrapper{
+      width: 340px;
+    }
+  }
+
+
+
+  .note{
+    width: 640px;
+  }
+    
+  .optional{
+    font-family: $font;
+    font-size: 12px;
+    line-height: 20px;
+    letter-spacing: 0.4px;
+    color: #858E99;
+    margin-left: 8px;
+  }
+
+  .cardDescription{
+    font-family: $font;
+    font-size: 14px;
+    line-height: 22px;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.25px;
+    color: #858E99;
+    margin-bottom: 24px;
+  }
+}
+
+.optional-item{
+  display: flex;
+
+  &__label{
+    font-family: $font;
+    font-size: 12px;
+    line-height: 20px;
+    letter-spacing: 0.4px;
+    color: #858E99;
+    margin: 6px 0 0 8px;
+  }
 }
 
 .selectDropdown{
-    li{
-        .observedIcon{
-            color: #52C41A;;
-        }
-        .notObservedIcon{
-            color: #FF4D4F;;
-        }
-        .unknownIcon{
-            color:#536377;
-        }
-        
+  li{
+    .observedIcon{
+      color: #52C41A;;
     }
+    .notObservedIcon{
+      color: #FF4D4F;;
+    }
+    .unknownIcon{
+      color:#536377;
+    }
+        
+  }
 }
 
 .submission-form-actions{
-    background-color: #ffffff;
-    padding: 24px 16px;
-    width: 1392px;
-    margin-bottom: 24px;
-    button{
-        border-radius: 2px;
-        border: 1px solid  #1D8BC6;
-        font-family: $font;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 21px;
-        letter-spacing: 0.25px;
-        color: #1D8BC6;
-        margin-right: 8px;
-        i{
-            margin-right: 4px;
-            svg{
-                vertical-align:top !important;
-            }
-        }
-
-        &:disabled{
-            background-color: transparent;
-            border: 1px solid #D2DBE4;
-            color: #ABB3BC;
-            &:hover{
-                background-color: transparent;
-            }
-        }
+  background-color: #ffffff;
+  padding: 24px 16px;
+  width: 1392px;
+  margin-bottom: 24px;
+  button{
+    border-radius: 2px;
+    border: 1px solid  #1D8BC6;
+    font-family: $font;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
+    letter-spacing: 0.25px;
+    color: #1D8BC6;
+    margin-right: 8px;
+    i{
+      margin-right: 4px;
+      svg{
+        vertical-align:top !important;
+      }
     }
 
-    .ant-btn-primary{
-        background-color:  #1D8BC6;
-        border: 1px solid  #1D8BC6;
-        color: #FFFFFF;
+    &:disabled{
+      background-color: transparent;
+      border: 1px solid #D2DBE4;
+      color: #ABB3BC;
+      &:hover{
+        background-color: transparent;
+      }
     }
+  }
 
-    .cancelButton{
-        border: none;
-        padding: 0 8px;
-    }
+  .ant-btn-primary{
+    background-color:  #1D8BC6;
+    border: 1px solid  #1D8BC6;
+    color: #FFFFFF;
+  }
+
+  .cancelButton{
+    border: none;
+    padding: 0 8px;
+  }
 
 
 }
 
 
 .page3{
-    &__autocomplete{
-        //styleName: Regular / 14px | 22px;
-        font-family: Roboto;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 22px;
-        letter-spacing: 0.25px;
-        text-align: left;
-        color: $textLightBlack;
+  &__autocomplete{
+    //styleName: Regular / 14px | 22px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.25px;
+    text-align: left;
+    color: $textLightBlack;
         
-        &__family-name{
-            font-family: Roboto;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 500;
-            line-height: 22px;
-            letter-spacing: 0.25px;
-            text-align: left;
-        }
+    &__family-name{
+      font-family: Roboto;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 22px;
+      letter-spacing: 0.25px;
+      text-align: left;
     }
+  }
 }
 
 .hidden-form{
-    display: none !important;
+  display: none !important;
 }
 
 .optional-info{
-    display: flex;
-    align-items: flex-start;    
+  display: flex;
+  align-items: flex-start;    
 }

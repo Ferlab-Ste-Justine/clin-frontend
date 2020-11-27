@@ -1,11 +1,11 @@
 .entity{
-    background-color:#EDF0F3;
-    .ant-card-body{
-        &:focus{
-            outline: none;
-          }
-    }
+  background-color:#EDF0F3;
+  .ant-card-body{
     &:focus{
-        outline: none;
-      }
+      outline: none;
+    }
+  }
+  &:focus{
+    outline: none;
+  }
 }
