@@ -1,8 +1,8 @@
-FROM node:10.14.1-alpine as builder
+FROM node:14.15.1 as builder
 ADD . /code
 WORKDIR /code
-RUN npm install
-RUN npm run build
+RUN yarn --no-lockfile
+RUN yarn run build
 
 FROM nginx:1 as server
 
