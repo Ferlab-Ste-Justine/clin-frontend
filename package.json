@@ -5,7 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@babel/core": "7.12.3",
-    "@blueprintjs/core": "3.36.0",
+    "@blueprintjs/core": "3.34.0",
     "@blueprintjs/table": "3.8.18",
     "@clarketm/saga-monitor": "^2.0.1",
     "@hapi/joi": "^15.1.0",
@@ -131,7 +131,7 @@
     "start": "PORT=2000 node client/scripts/start.js",
     "build": "node client/scripts/build.js",
     "test": "node client/scripts/test.js",
-    "lint": "eslint --fix .",
+    "lint": "eslint --fix . --ext .jsx",
     "theme:css": "lessc --js ./client/src/style/themes/antd-clin-theme.less ./client/src/style/themes/antd-clin-theme.css",
     "theme:scss": "rm ./client/src/style/themes/colors.scss; less2sass ./client/src/style/themes/colors.less",
     "theme": "pnpm run theme:css && pnpm run theme:scss"

@@ -182,7 +182,7 @@ class VariantNavigation extends React.Component {
     }
     const clickX = event.clientX;
     const clickY = event.clientY;
-    if (openMenu) {
+    if (openMenu && openMenu.offsetWidth != null) {
       const rect = openMenu.getBoundingClientRect();
       const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
       const menuX = rect.left + scrollLeft;
@@ -766,7 +766,7 @@ VariantNavigation.propTypes = {
 };
 
 VariantNavigation.defaultProps = {
-  onEditCallback: () => {},
+  onEditCallback: () => { },
   data: [],
   queries: [],
   activeQuery: '',

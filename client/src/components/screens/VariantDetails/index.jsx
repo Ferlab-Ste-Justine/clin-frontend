@@ -582,7 +582,9 @@ class VariantDetailsScreen extends React.Component {
       let totalValue = null;
       const rows = [];
       internalCohortsKeys.forEach((key) => {
-        const frequency = frequencies[key];
+        const frequency = {
+          ...frequencies[key],
+        };
         const isInterne = key === 'internal';
         frequency.key = isInterne ? totalKey : key;
         frequency.af = Number.parseFloat(frequency.af).toExponential(5);
@@ -619,7 +621,9 @@ class VariantDetailsScreen extends React.Component {
       const url = `https://gnomad.broadinstitute.org/variant/${chromosome}-${start}-${reference}-${alternate}?dataset=gnomad_r3`;
       const externalCohortsKeys = Object.keys(frequencies).filter((k) => k !== 'internal' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
-        const frequency = frequencies[key];
+        const frequency = {
+          ...frequencies[key],
+        };
         frequency.key = key;
         frequency.af = Number.parseFloat(frequency.af).toExponential(5);
         frequency.info = (
@@ -968,52 +972,52 @@ class VariantDetailsScreen extends React.Component {
                         {
                           label: 'OMIM',
                           value:
-                          ext_db && ext_db.is_omim ? (
-                            <div className="variantPageContentRow">
-                              { omimLinks(omim) }
-                            </div>
-                          ) : (
-                            '--'
-                          ),
+                            ext_db && ext_db.is_omim ? (
+                              <div className="variantPageContentRow">
+                                { omimLinks(omim) }
+                              </div>
+                            ) : (
+                              '--'
+                            ),
                         },
                         {
                           label: 'dbSNP',
                           value:
-                          ext_db && ext_db.is_dbsnp ? (
-                            <Link
-                              url={`https://www.ncbi.nlm.nih.gov/snp/${dbsnp}`}
-                              text={dbsnp}
-                            />
-                          ) : (
-                            '--'
-                          ),
+                            ext_db && ext_db.is_dbsnp ? (
+                              <Link
+                                url={`https://www.ncbi.nlm.nih.gov/snp/${dbsnp}`}
+                                text={dbsnp}
+                              />
+                            ) : (
+                              '--'
+                            ),
                         },
                         {
                           label: 'Pubmed',
                           value:
-                          ext_db && ext_db.is_pubmed
-                            ? (
-                              <>
-                                {
-                                  pubmed.length === 1
-                                    ? (
-                                      <Link
-                                        className="link"
-                                        url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed[0]}`}
-                                        text={`${pubmed.length} publication`}
-                                      />
-                                    )
-                                    : (
-                                      <Link
-                                        className="link"
-                                        url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed.join('+')}`}
-                                        text={`${pubmed.length} publications`}
-                                      />
-                                    )
-                                }
-                              </>
-                            )
-                            : '--',
+                            ext_db && ext_db.is_pubmed
+                              ? (
+                                <>
+                                  {
+                                    pubmed.length === 1
+                                      ? (
+                                        <Link
+                                          className="link"
+                                          url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed[0]}`}
+                                          text={`${pubmed.length} publication`}
+                                        />
+                                      )
+                                      : (
+                                        <Link
+                                          className="link"
+                                          url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed.join('+')}`}
+                                          text={`${pubmed.length} publications`}
+                                        />
+                                      )
+                                  }
+                                </>
+                              )
+                              : '--',
                         },
                       ] : []}
                     />
@@ -1207,8 +1211,7 @@ class VariantDetailsScreen extends React.Component {
                     <Row>
                       <Col>
                         <div>
-                          { `${
-                            this.getDonors().length
+                          { `${this.getDonors().length
                           } patient(s) sont porteur(s) de ce variant` }
                         </div>
                       </Col>
