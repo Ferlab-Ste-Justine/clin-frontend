@@ -178,7 +178,7 @@ class VariantNavigation extends React.Component {
     let clickOutside = false;
     if (activeMenu.length > 0) {
       if (activeMenu[0].includes('overflowed-indicator') && !openMenu) openMenu = document.getElementById(`${activeMenu[0]}$Menu`);
-      openOverflowMenu = activeMenu.length > 1 ? document.getElementById(`${activeMenu[0]}$Menu`) : null;
+      openOverflowMenu = activeMenu.length > 1 ? document.getElementById('ant-menu-submenu') : null;
     }
     const clickX = event.clientX;
     const clickY = event.clientY;
@@ -201,6 +201,8 @@ class VariantNavigation extends React.Component {
 
       if (clickOutside) {
         this.setState({
+          activeFilterId: null,
+          searchSelection: {},
           activeMenu: [],
         });
       }
@@ -360,8 +362,6 @@ class VariantNavigation extends React.Component {
   handleFilterSelection({ key }) {
     this.setState({
       activeFilterId: key,
-      searchSelection: {},
-      activeMenu: [],
     });
   }
 
@@ -408,7 +408,12 @@ class VariantNavigation extends React.Component {
           });
         }
         updatedQuery.instructions = sanitizeInstructions(updatedInstructions);
+
         onEditCallback(updatedQuery);
+        this.setState({
+          activeFilterId: null,
+          searchSelection: {},
+        });
       }
     }
   }
@@ -607,6 +612,9 @@ class VariantNavigation extends React.Component {
             onOpenChange={this.handleCategoryOpenChange}
             className="menu"
             openKeys={activeMenu}
+            onClick={this.handleFilterSelection}
+            triggerSubMenuAction="click"
+            selectable={false}
           >
             { children }
           </Menu>
@@ -651,6 +659,7 @@ class VariantNavigation extends React.Component {
             const categoryData = find(categoryInfo.filters, ['id', (searchSelection.filter || activeFilterId)]);
             const filter = categoryData ? this.renderFilterType(categoryData) : null;
             return (
+              // Main level
               <Menu.SubMenu
                 key={id}
                 onTitleClick={this.handleMenuSelection}
@@ -708,23 +717,29 @@ class VariantNavigation extends React.Component {
 
                   </div>
                 ) }
-                { (!geneSearch || category.label !== 'category_genomic') && activeFilterId === null && !searchSelection.category && category.filters.map((f) => (f.search && f.label !== 'filter_gene_symbol') && (
-                  <Menu.SubMenu
-                    key={f.id}
-                    title={
-                      f.label === 'filter_gene_symbol' ? null
-                        : (
-                          <div className={category.label === 'category_variant' ? 'subMenuVariant' : 'subMenuTitle'}>
-                            { intl.get(`screen.patientvariant.${f.label}`) }
-                            <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrow" />
-                          </div>
-                        )
 
-                    }
-                    onTitleClick={this.handleFilterSelection}
-                    className="filterChoise"
-                  />
-                )) }
+                { /* This is the submenu elements */ }
+                { (!geneSearch || category.label !== 'category_genomic')
+                  && activeFilterId === null
+                  && !searchSelection.category
+                 && category.filters.map((f) => (f.search && f.label !== 'filter_gene_symbol') && (
+                   <Menu.Item
+                     key={f.id}
+                     className="filterChoise"
+                   >
+                     {
+                       f.label === 'filter_gene_symbol' ? null
+                         : (
+                           <div className={category.label === 'category_variant' ? 'subMenuVariant' : 'subMenuTitle'}>
+                             <span className="menu__item__label">{ intl.get(`screen.patientvariant.${f.label}`) }</span>
+                             <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrow" />
+                           </div>
+                         )
+                     }
+                   </Menu.Item>
+                 )) }
+
+                { /* This is the elements when doing a research */ }
                 { geneSearch && variant.geneResult.hits && category.label === 'category_genomic' && (
                   <Menu
                     className="geneMenuList"
@@ -735,7 +750,7 @@ class VariantNavigation extends React.Component {
                           <div className="geneValues">
                             <div className="geneSymbol">{ this.getHighlightSearchGene(item.geneSymbol) }</div>
                             <div className="alias">{ this.getHighlightSearchGene(item.alias) }</div>
-                          </div>
+                          </div>b
 
                         </Menu.Item>
                       ))

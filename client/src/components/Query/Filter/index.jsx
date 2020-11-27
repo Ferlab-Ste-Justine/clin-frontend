@@ -3,7 +3,7 @@ import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Input, Tooltip,
+  Row, Col, Typography, Card, Tag, Dropdown, Button, Menu, Input, Tooltip,
 } from 'antd';
 import Icon from '@ant-design/icons';
 import {
@@ -421,82 +421,68 @@ class Filter extends React.Component {
       actionTargets.sort();
     }
     const overlay = (
-      <Popover
-        visible={this.isOpened()}
-      >
-        <Card className={styleFilter.filterCard}>
-          <div className={`filter-header ${styleFilter.fieldHeader}`} justify="start" align="middle">
-            <Row className="flex-row">
-              <Typography.Title level={4} className="labelTitle">
-                { filterLabel }
-              </Typography.Title>
-              <Tooltip overlayClassName="tooltip" placement="rig" title={filterDescription}>
-                <Button type="link">
-                  <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
-                </Button>
-              </Tooltip>
-              { (searchable) && (
-                <Button type="link" className="iconSearch" onClick={this.handleInputView}>
-                  <IconKit size={24} icon={ic_search} />
-                </Button>
-              ) }
-              { (resettable && canApply) && (
-                <Button className="iconSearch" onClick={onReset} type="link">
-                  <IconKit size={24} icon={ic_replay} />
-                </Button>
-              ) }
-            </Row>
-            { (searchable) && (
-              <>
-                <Row className={visibleInput ? null : 'searchInputClose'}>
-                  <Input
-                    allowClear
-                    placeholder={filterSearch}
-                    onChange={this.handleSearchByQuery}
-                    className={`searchInput ${data.id}searchInput`}
-                    autoFocus
-                  />
-                </Row>
-              </>
-            ) }
-          </div>
-
-          { editor.contents }
-          { allOptions && (
-            allOptions.length >= size
-              ? (
-                <Row className={`flex-row ${styleFilter.paginationInfo}`}>
-                  <Col className={styleFilter.valueCount}>{ allOptions.length } { valueText }</Col>
-                </Row>
-              ) : null
-          ) }
-          <Row justify="end" className={`flex-row ${styleFilter.actionToolBar}`}>
-            <Col>
-              <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
-                <IconKit size={16} icon={ic_chevron_left} />
-                { intl.get('components.query.filter.button.cancel') }
+      <Card className={styleFilter.filterCard}>
+        <div className={`filter-header ${styleFilter.fieldHeader}`} justify="start" align="middle">
+          <Row className="flex-row">
+            <Typography.Title level={4} className="labelTitle">
+              { filterLabel }
+            </Typography.Title>
+            <Tooltip overlayClassName="tooltip" placement="rig" title={filterDescription}>
+              <Button type="link">
+                <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
               </Button>
-            </Col>
-            <Col>
-              <ApplyButton cfg={config} />
-            </Col>
+            </Tooltip>
+            { (searchable) && (
+              <Button type="link" className="iconSearch" onClick={this.handleInputView}>
+                <IconKit size={24} icon={ic_search} />
+              </Button>
+            ) }
+            { (resettable && canApply) && (
+              <Button className="iconSearch" onClick={onReset} type="link">
+                <IconKit size={24} icon={ic_replay} />
+              </Button>
+            ) }
           </Row>
-        </Card>
-      </Popover>
+          { (searchable) && (
+            <>
+              <Row className={visibleInput ? null : 'searchInputClose'}>
+                <Input
+                  allowClear
+                  placeholder={filterSearch}
+                  onChange={this.handleSearchByQuery}
+                  className={`searchInput ${data.id}searchInput`}
+                  autoFocus
+                />
+              </Row>
+            </>
+          ) }
+        </div>
+
+        { editor.contents }
+        { allOptions && (
+          allOptions.length >= size
+            ? (
+              <Row className={`flex-row ${styleFilter.paginationInfo}`}>
+                <Col className={styleFilter.valueCount}>{ allOptions.length } { valueText }</Col>
+              </Row>
+            ) : null
+        ) }
+        <Row justify="end" className={`flex-row ${styleFilter.actionToolBar}`}>
+          <Col>
+            <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
+              <IconKit size={16} icon={ic_chevron_left} />
+              { intl.get('components.query.filter.button.cancel') }
+            </Button>
+          </Col>
+          <Col>
+            <ApplyButton cfg={config} />
+          </Col>
+        </Row>
+      </Card>
     );
 
     if (overlayOnly === true) {
-      return (
-        <Dropdown
-          trigger="click"
-          onVisibleChange={this.toggleMenu}
-          overlay={overlay}
-          visible={this.isOpened()}
-          placement="bottomLeft"
-        >
-          <span />
-        </Dropdown>
-      );
+      return overlay;
     }
     return (
       <span>

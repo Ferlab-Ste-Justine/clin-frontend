@@ -452,10 +452,10 @@
 
 
 .menuDropdown{
-  .ant-menu-submenu:not(.filterChoise){
+  .ant-menu-item:not(.filterChoise) {
     &:hover{
       background: rgba(29, 139, 198, 0.08);
-      .ant-menu-submenu-title{
+      .menu__item__label{
         >span{
           color:#125a90;  
           border-top:1px solid transparent;
@@ -463,28 +463,28 @@
         }
       }
     }
-
-    &:hover + .ant-menu-submenu:not(.filterChoise){
-      .ant-menu-submenu-title{
+  
+    &:hover + .ant-menu-item:not(.filterChoise){
+      .menu__item__label{
         >span{
           border-top:1px solid transparent;
           padding: 2px 0;
         }
       }
     }
-
+  
     &:first-of-type{
-      .ant-menu-submenu-title{
+      .menu__item__label{
         >span{
           border-top:1px solid transparent;
           padding: 2px 0;
         }
       }
     }
-    .ant-menu-submenu-title{
+    .menu__item__label{
       margin:0;
       height: 48px;
-
+  
       >span{
         color: rgba(35, 55, 80, 0.78);
         display: flex;
@@ -492,7 +492,7 @@
         align-items: center;
         border-top: 1px solid rgba(35, 55, 80,0.12);
         padding: 2px 0;
-
+  
         div{
           display: flex;
           align-items: center;
@@ -514,10 +514,13 @@
       }
     }
   }
-    
 }
 
-
+.ant-menu-item {
+  height: auto!important;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+}
 
 .tooltip{
   >div{
