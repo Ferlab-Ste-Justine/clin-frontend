@@ -56,5 +56,10 @@ module.exports = {
     'no-useless-constructor': 'off',
     'no-empty-function': 'off',
     'max-classes-per-file': 'off',
+    // Disabling `no-unused-vars` in favor of the TS one. The TS version covers the JS code too
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+    ],
   },
 };

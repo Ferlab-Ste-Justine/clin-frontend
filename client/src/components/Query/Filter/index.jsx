@@ -3,45 +3,25 @@ import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Dropdown, Button, Menu, Input, Tooltip,
+  Tag, Dropdown,
 } from 'antd';
-import Icon from '@ant-design/icons';
 import {
   cloneDeep,
 } from 'lodash';
 import IconKit from 'react-icons-kit';
 import {
-  ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down, ic_replay,
+  ic_cancel,
 } from 'react-icons-kit/md';
 
 import '../../../style/themes/antd-clin-theme.css';
 import style from '../styles/term.module.scss';
-import styleFilter from '../styles/filter.module.scss';
 
-import {
-  OPERATOR_TYPE_UNION,
-  OPERATOR_TYPE_INTERSECTION,
-  OPERATOR_TYPE_NOT_EQUAL,
-  OperatorIconComponent,
-} from '../Operator';
+import FilterContent from './FilterContent';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';
 export const FILTER_OPERAND_TYPE_NONE = 'none';
 export const FILTER_OPERAND_TYPE_DEFAULT = FILTER_OPERAND_TYPE_ONE;
-
-const operatorFromOperand = (operand) => {
-  switch (operand) {
-    case FILTER_OPERAND_TYPE_ONE:
-      return OPERATOR_TYPE_UNION;
-    case FILTER_OPERAND_TYPE_ALL:
-      return OPERATOR_TYPE_INTERSECTION;
-    case FILTER_OPERAND_TYPE_NONE:
-      return OPERATOR_TYPE_NOT_EQUAL;
-    default:
-      return OPERATOR_TYPE_UNION;
-  }
-};
 
 // const OuterOperatorFromOperand = (operand) => {
 //   switch (operand) {
@@ -360,129 +340,42 @@ class Filter extends React.Component {
       canApply,
     } = this.props;
     const {
-      allOptions, size, visibleInput, selected,
+      allOptions, selected,
     } = this.state;
 
-    const handleMenuClick = (e) => {
-      onOperandChangeCallBack(e.key);
-    };
-
-    const applyMenu = (cfg) => (!cfg ? null : (
-      <Menu onClick={(e) => handleMenuClick(e)} className={styleFilter.operandDropdown}>
-        { cfg.operands.map((configOperand) => (
-          <Menu.Item key={shortid.generate()}>
-            <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
-            { intl.get(`screen.patientvariant.filter.operand.${configOperand}`) }
-          </Menu.Item>
-        )) }
-      </Menu>
-    ));
-
     const savedOperand = data.operand;
-    const haveChange = ((data.type === 'generic' || data.type === 'specific' || data.type === 'genericbool') && draft.values.length === 0 && !selected) || (data.type === 'numcomparison' && !selected && draft.values[0].value === 0 && draft.values[1].value === 0) ? true : null;
-    const ApplyButton = ({ cfg }) => (this.hasOperands() ? (
-      <Dropdown.Button
-        type="primary"
-        className={`composite-filter-apply-button ${styleFilter.dropDownApplyButton}`}
-        disabled={haveChange || !canApply}
-        icon={(
-          <>
-            <Icon
-              className="operator-icon"
-              component={OperatorIconComponent(operatorFromOperand(data.operand))}
-            />
-            <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
-          </>
-        )}
-        onClick={this.handleApply}
-        overlay={applyMenu(cfg)}
-        placement="bottomLeft"
-      >
-        { intl.get('components.query.filter.button.apply') }
-      </Dropdown.Button>
-    ) : (
-      <Button
-        type="primary"
-        onClick={this.handleApply}
-        className={`composite-filter-apply-button ${styleFilter.applyButton}`}
-        disabled={haveChange || !canApply}
-      >
-        { intl.get('components.query.filter.button.apply') }
-      </Button>
-    ));
+    const haveChange = (
+      (data.type === 'generic' || data.type === 'specific' || data.type === 'genericbool')
+      && draft.values.length === 0 && !selected
+    ) || (data.type === 'numcomparison' && !selected && draft.values[0].value === 0 && draft.values[1].value === 0)
+      ? true : null;
     const filterLabel = intl.get(`screen.patientvariant.filter_${data.id}`);
-    const filterDescription = intl.get(`screen.patientvariant.filter_${data.id}.description`);
-    const filterSearch = intl.get('screen.patientvariant.filter.search');
-    const valueText = intl.get('screen.patientvariant.filter.pagination.value');
     const editorLabels = editor.getLabels();
 
     const actionTargets = editorLabels.targets;
     if (data.id === 'gene_symbol') {
       actionTargets.sort();
     }
-    const overlay = (
-      <Card className={styleFilter.filterCard}>
-        <div className={`filter-header ${styleFilter.fieldHeader}`} justify="start" align="middle">
-          <Row className="flex-row">
-            <Typography.Title level={4} className="labelTitle">
-              { filterLabel }
-            </Typography.Title>
-            <Tooltip overlayClassName="tooltip" placement="rig" title={filterDescription}>
-              <Button type="link">
-                <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
-              </Button>
-            </Tooltip>
-            { (searchable) && (
-              <Button type="link" className="iconSearch" onClick={this.handleInputView}>
-                <IconKit size={24} icon={ic_search} />
-              </Button>
-            ) }
-            { (resettable && canApply) && (
-              <Button className="iconSearch" onClick={onReset} type="link">
-                <IconKit size={24} icon={ic_replay} />
-              </Button>
-            ) }
-          </Row>
-          { (searchable) && (
-            <>
-              <Row className={visibleInput ? null : 'searchInputClose'}>
-                <Input
-                  allowClear
-                  placeholder={filterSearch}
-                  onChange={this.handleSearchByQuery}
-                  className={`searchInput ${data.id}searchInput`}
-                  autoFocus
-                />
-              </Row>
-            </>
-          ) }
-        </div>
-
-        { editor.contents }
-        { allOptions && (
-          allOptions.length >= size
-            ? (
-              <Row className={`flex-row ${styleFilter.paginationInfo}`}>
-                <Col className={styleFilter.valueCount}>{ allOptions.length } { valueText }</Col>
-              </Row>
-            ) : null
-        ) }
-        <Row justify="end" className={`flex-row ${styleFilter.actionToolBar}`}>
-          <Col>
-            <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
-              <IconKit size={16} icon={ic_chevron_left} />
-              { intl.get('components.query.filter.button.cancel') }
-            </Button>
-          </Col>
-          <Col>
-            <ApplyButton cfg={config} />
-          </Col>
-        </Row>
-      </Card>
+    const filterContent = (
+      <FilterContent
+        canApply={canApply}
+        config={config}
+        data={data}
+        editor={editor}
+        hasChanges={haveChange}
+        onApply={this.handleApply}
+        onCancelCallback={this.handleCancel}
+        onOperandChangeCallBack={onOperandChangeCallBack}
+        onReset={onReset}
+        onSearchCallback={this.handleSearchByQuery}
+        resettable={resettable}
+        searchable={searchable}
+        allOptions={allOptions}
+      />
     );
 
     if (overlayOnly === true) {
-      return overlay;
+      return filterContent;
     }
     return (
       <span>
@@ -508,7 +401,7 @@ class Filter extends React.Component {
             <Dropdown
               trigger={['click']}
               onVisibleChange={this.toggleMenu}
-              overlay={overlay}
+              overlay={filterContent}
               visible={this.isOpened()}
               placement="bottomLeft"
             >

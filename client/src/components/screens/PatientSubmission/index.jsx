@@ -555,7 +555,7 @@ function PatientSubmissionScreen(props) {
     validate();
   });
 
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const createFamilyRelationshipResourceList = () => {
     const values = form.getFieldsValue();
 
@@ -757,7 +757,7 @@ function PatientSubmissionScreen(props) {
   };
 
   // TODO: Update check
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isClinicalInformationComplete = () => {
     const { observations } = props;
     if (observations.cgh == null) {

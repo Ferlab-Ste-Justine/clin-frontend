@@ -119,7 +119,7 @@ const nucleotidicVariation = (variant, gene) => {
  * @param {*} variant
  * @param {*} gene
  */
-const parentalOriginLines = (variant, _gene) => {
+const parentalOriginLines = (variant) => {
   const zygosity = (donor) => {
     const zygoCode = (d) => getValue(d, 'zygosity');
     return zygoCode(donor) === 'HOM'
@@ -151,7 +151,7 @@ const parentalOriginLines = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
-const allelicFrequency = (variant, _gene) => {
+const allelicFrequency = (variant) => {
   if (has(variant, 'frequencies.exac')) {
     return getValue(variant.frequencies.exac, 'af');
   }
@@ -172,7 +172,7 @@ const allelicFrequency = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
-const inSilicoPredictions = (variant, _gene) => {
+const inSilicoPredictions = (variant) => {
   const preds = variant.consequences
     .map((c) => (c.predictions ? c.predictions.sift_converted_rank_score : null))
     .filter(valuePresent)
@@ -186,7 +186,7 @@ const inSilicoPredictions = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
-const clinVar = (variant, _gene) => {
+const clinVar = (variant) => {
   if (!variant.clinvar) {
     return 0;
   }
@@ -688,7 +688,6 @@ class PatientVariantScreen extends React.Component {
 
   goToVariantPatientTab(e) {
     const {
-      variant,
       actions,
     } = this.props;
 
@@ -875,7 +874,6 @@ class PatientVariantScreen extends React.Component {
 
   handleNavigationToVariantDetailsScreen(e) {
     const {
-      variant,
       actions,
     } = this.props;
 
