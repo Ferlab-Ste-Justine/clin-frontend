@@ -192,21 +192,18 @@ const PatientInformation = ({ patient, validate }) => {
         <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />
       </Form.Item>
 
-      <div className="optional-item">
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.ramq')}
-          name="ramq"
-          initialValue={ramqValue(patient)}
-          rules={[{
-            pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
-            message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
-          }]}
-        >
-          <Input placeholder="ABCD 0000 0000" className="input large" />
-        </Form.Item>
-
-        <span className="optional-item__label">Facultatif</span>
-      </div>
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.ramq')}
+        name="ramq"
+        initialValue={ramqValue(patient)}
+        rules={[{
+          pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
+          message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
+        }]}
+      >
+        <Input placeholder="ABCD 0000 0000" className="input large" />
+        <span className="optional">Facultatif</span>
+      </Form.Item>
 
       <Form.Item
         label={intl.get('form.patientSubmission.form.mrn')}
@@ -244,47 +241,43 @@ const PatientInformation = ({ patient, validate }) => {
         </Select>
       </Form.Item>
 
-      <div className="optional-item">
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.ethnicity')}
-          name="ethnicity"
-          initialValue={ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding}
-          rules={[{ required: false }]}
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.ethnicity')}
+        name="ethnicity"
+        initialValue={ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding}
+        rules={[{ required: false }]}
+      >
+        <Select
+          className="large"
+          placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
+          dropdownClassName="selectDropdown"
         >
-          <Select
-            className="large"
-            placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
-            dropdownClassName="selectDropdown"
-          >
-            <Select.Option value="CA-FR">Canadien-Français</Select.Option>
-            <Select.Option value="EU">Caucasienne Européenne</Select.Option>
-            <Select.Option value="AFR">Africain ou caribéen</Select.Option>
-            <Select.Option value="LAT- AM">Hispanique</Select.Option>
-            <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
-            <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
-            <Select.Option value="ABOR">Aboriginal</Select.Option>
-            <Select.Option value="MIX">Origine mixte</Select.Option>
-            <Select.Option value="OTH">Autre</Select.Option>
-          </Select>
-        </Form.Item>
-        <span className="optional-item__label">Facultatif</span>
-      </div>
+          <Select.Option value="CA-FR">Canadien-Français</Select.Option>
+          <Select.Option value="EU">Caucasienne Européenne</Select.Option>
+          <Select.Option value="AFR">Africain ou caribéen</Select.Option>
+          <Select.Option value="LAT- AM">Hispanique</Select.Option>
+          <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
+          <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
+          <Select.Option value="ABOR">Aboriginal</Select.Option>
+          <Select.Option value="MIX">Origine mixte</Select.Option>
+          <Select.Option value="OTH">Autre</Select.Option>
+        </Select>
+        <span className="optional">Facultatif</span>
+      </Form.Item>
 
-      <div className="optional-item">
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.consanguinity')}
-          name="consanguinity"
-          initialValue={get(consanguinityValueCoding, 'display', null)}
-          rules={[{ required: false }]}
-        >
-          <Radio.Group buttonStyle="solid" defaultValue={get(consanguinityValueCoding, 'display', '')}>
-            <Radio.Button value="Yes"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span></Radio.Button>
-            <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
-            <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-        <span className="optional-item__label">Facultatif</span>
-      </div>
+      <Form.Item
+        label={intl.get('form.patientSubmission.form.consanguinity')}
+        name="consanguinity"
+        initialValue={get(consanguinityValueCoding, 'display', null)}
+        rules={[{ required: false }]}
+      >
+        <Radio.Group buttonStyle="solid" defaultValue={get(consanguinityValueCoding, 'display', '')}>
+          <Radio.Button value="Yes"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span></Radio.Button>
+          <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
+          <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
+        </Radio.Group>
+        <span className="optional">Facultatif</span>
+      </Form.Item>
     </Card>
   );
 };
@@ -539,15 +532,15 @@ function PatientSubmissionScreen(props) {
     const valid = !canGoNextPage(state.currentPageIndex);
 
     if (valid && !state.valid) {
-      setState((currentState) => ({
-        ...currentState,
+      setState({
+        ...state,
         valid: true,
-      }));
+      });
     } else if (!valid && state.valid) {
-      setState((currentState) => ({
-        ...currentState,
+      setState({
+        ...state,
         valid: false,
-      }));
+      });
     }
   };
 
@@ -856,7 +849,7 @@ function PatientSubmissionScreen(props) {
         handlePractitionerOptionSelected(practitioner);
       });
     }
-    console.log('coucou', pageIndex);
+
     setState({ ...state, currentPageIndex: pageIndex });
     debounce(validate, 500)();
   };
@@ -938,7 +931,6 @@ function PatientSubmissionScreen(props) {
   const { Title } = Typography;
   const currentPage = pages[currentPageIndex];
   const pageContent = currentPage.content;
-  console.log('allo', currentPageIndex);
   return (
     <Layout>
       <>

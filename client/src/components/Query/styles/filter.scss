@@ -37,6 +37,9 @@
 .scrollFilter{
   overflow: auto;
   max-height: 250px;
+  .checkboxLine{
+    width: 100%;
+  }
 }
 
 .filter-header{
@@ -81,6 +84,8 @@
   }
   .searchInput{
     margin: 16px 0;
+    padding: 0 !important;
+    height: 32px;
     input{
       background-color:rgba(35, 55, 80,0.08) ;
       border: none !important;
@@ -96,6 +101,9 @@
       &:disabled{
         background: rgba(35, 55, 80, 0.14);
       }
+    }
+    .ant-input-suffix{
+      display: none;
     }
 
 

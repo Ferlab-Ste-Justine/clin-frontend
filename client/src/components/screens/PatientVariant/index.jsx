@@ -469,7 +469,11 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <>
-                    <Row><Button className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{ data.frequencies.internal.ac }</Button><span> / </span>{ data.frequencies.internal.an }</Row>
+                    <Row className="frequenciesLine">
+                      <Button type="link" className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{ data.frequencies.internal.ac }</Button>
+                      <span> / </span>
+                      { data.frequencies.internal.an }
+                    </Row>
                   </>
                 );
               } catch (e) { return ''; }

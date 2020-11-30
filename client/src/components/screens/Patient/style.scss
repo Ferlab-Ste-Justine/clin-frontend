@@ -16,6 +16,10 @@
     width: 240px;
     text-align: center;
     background-color: $gray-2;
+
+    &__info{
+      flex-direction: column;
+    }
     i{
       color: $gray-5;
       margin-bottom: 8px;

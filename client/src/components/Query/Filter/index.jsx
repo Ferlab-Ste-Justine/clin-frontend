@@ -430,7 +430,7 @@ class Filter extends React.Component {
               <Typography.Title level={4} className="labelTitle">
                 { filterLabel }
               </Typography.Title>
-              <Tooltip overlayClassName="tooltip" placement="rig" title={filterDescription}>
+              <Tooltip overlayClassName="tooltip" title={filterDescription}>
                 <Button type="link">
                   <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
                 </Button>

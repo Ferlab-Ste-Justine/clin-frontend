@@ -435,8 +435,8 @@ class PatientSearchScreen extends React.Component {
               </Typography.Text>
             </Col>
             <Col>
-              <Typography.Text className="autocomplete-row__mrn">MRN:
-                { result.mrn }
+              <Typography.Text className="autocomplete-row__mrn">
+                MRN: { result.mrn }
               </Typography.Text>
             </Col>
           </Row>
@@ -474,12 +474,12 @@ class PatientSearchScreen extends React.Component {
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
                 onBlur={this.handleAutoCompleteClose}
+                className="autocomplete"
               >
                 <Input
                   prefix={
                     <SearchOutlined />
                   }
-                  size="large"
                   placeholder={placeholderText}
                   onPressEnter={this.handleAutoCompletePressEnter}
                 />

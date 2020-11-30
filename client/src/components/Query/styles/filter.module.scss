@@ -47,10 +47,11 @@
 
   .rangeSlider{
     padding: 0 16px ;
+   
 
     >div{
       margin:24px 0 16px 0;
-
+      width: 100%;
       >div{
         &:nth-child(1){
           background-color: rgba(134, 213, 242,0.38);
@@ -95,7 +96,6 @@
             }
             span{
               border: none;
-              height: 40%;
               i{
                 width: 16px;
                 right: 0;
@@ -108,7 +108,6 @@
                 height: auto;
               }
               &:nth-child(1){
-                margin-bottom: 4px;
                 i{
                   &:nth-child(1){
                     margin-top: auto;
@@ -116,7 +115,6 @@
                 }
               }
               &:hover{
-                height: 40% !important;
               }
             }
           }
@@ -210,7 +208,7 @@
           letter-spacing: 0.4px;
           line-height:12.5px;
           text-align: center;
-          margin:0 0 0 12px;
+          margin:0 0 0 auto;
           border: none;
           border-radius: 2px;
           height: 18px;

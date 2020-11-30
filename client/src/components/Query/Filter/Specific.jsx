@@ -348,7 +348,7 @@ class SpecificFilter extends Filter {
                   >
                     { options.map((option) => (
                       <Row>
-                        <Col>
+                        <Col className="checkboxLine">
                           <Checkbox className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                         </Col>
                       </Row>

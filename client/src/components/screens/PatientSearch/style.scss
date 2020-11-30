@@ -39,12 +39,6 @@ div.ant-tag {
     letter-spacing: 0.25px;
     line-height: 30px;
   }
-  .ant-input-affix-wrapper .ant-input:not(:first-child){
-    &:focus{
-      padding-left: 29px !important;
-    }
-  }
-
 
   .searchNav{
 
@@ -90,33 +84,40 @@ div.ant-tag {
     .autoSearch{
       flex: 2 2 20em;
       padding-right:24px;
-
+      .ant-input-affix-wrapper{
+        padding: 0 12px;
+        height: 40px;
+        
+      }
       .ant-input{
         border:1px solid white;
         width:100%;
-        background-color: white;
+        background-color: transparent;
         font-size: 14px;
-        font-family: Roboto;
-        font-weight: normal;
+        height: 40px;
         letter-spacing: 0.25px;
         line-height: 20px;
+        padding-left: 30px;
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        &:focus{
+          box-shadow: none;
+          border: 2px solid rgb(29, 139, 198);
+          border-right-width: 2px !important
+        }
+
+        &:hover{
+          border-color:#CFE6F2;
+        }
       }
 
-      .ant-input:focus{
-        box-shadow: none;
-        border: 2px solid rgb(29, 139, 198);
-        border-right-width: 2px !important
-      }
-
-      .ant-input:hover{
-        border-color:#CFE6F2;
-      }
 
       .ant-select-selection__placeholder{
         color: $light-text;
       }
       i{
-        padding-right:8px;
         display:inline-block;
       }
 
@@ -297,6 +298,7 @@ div.ant-tag {
 .autocomplete-row{
   border-bottom: 1px solid $gray-5;
   margin-bottom: -5px;
+  flex-direction: column;
 
   &__name{
     font-weight: 500;

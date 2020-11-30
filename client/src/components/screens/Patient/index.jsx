@@ -383,7 +383,7 @@ class PatientScreen extends React.Component {
                         <Row className="flex-row">
                           <Col>
                             <Card className="nameBlock">
-                              <Row align="middle" justify="center">
+                              <Row className="flex-row nameBlock__info" align="middle" justify="center">
                                 <IconKit size={56} icon={ic_perm_contact_calendar} />
                                 <Col><Typography.Title level={3} className="patientName">{ patient.lastName }</Typography.Title></Col>
                                 <Col><Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title></Col>

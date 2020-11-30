@@ -631,12 +631,11 @@ class VariantNavigation extends React.Component {
           key="autocompleter"
           allowClear
           autoFocus
-          size="large"
           dataSource={autocompletes}
           onSearch={this.handleNavigationSearch}
           onSelect={this.handleNavigationSelection}
           value={this.searchQuery}
-          className="autocomplete"
+          className="autocomplete large-input"
           dropdownClassName="dropwDownAutoComplete"
           onChange={this.handleAutoCompleteChange}
           open

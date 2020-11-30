@@ -422,6 +422,13 @@ div.ant-card {
   }
 }
 
+.large-input{
+  .ant-input-affix-wrapper{
+    height: 40px;
+  }
+  height: 40px;
+}
+
 //Date Picker
 .ant-calendar-picker{
   border-radius: 2px;
