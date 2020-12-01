@@ -743,3 +743,7 @@ table{
 .flex-row{
   display: flex !important;
 }
+
+.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item:hover{
+  border: none;
+}
