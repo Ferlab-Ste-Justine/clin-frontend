@@ -210,7 +210,7 @@ class DataTable extends React.Component {
       enableResizing,
       renderContextMenuCallback,
       reorderColumnsCallback,
-      resizeColumnCallback,
+      onColumnWidthChanged,
       numFrozenColumns,
       enableGhostCells,
       enableRowHeader,
@@ -260,7 +260,7 @@ class DataTable extends React.Component {
         enableColumnResizing={enableResizing}
         bodyContextMenuRenderer={renderContextMenuCallback}
         onColumnsReordered={handleColumnsReordered}
-        onColumnWidthChanged={resizeColumnCallback}
+        onColumnWidthChanged={onColumnWidthChanged}
         rowHeights={rowHeights}
         getCellClipboardData={(row, col) => `(${row}, ${col})`}
         columnWidths={columns.map((c) => c.columnWidth)}
@@ -294,7 +294,7 @@ DataTable.propTypes = {
   enableGhostCells: PropTypes.bool,
   renderContextMenuCallback: PropTypes.func,
   reorderColumnsCallback: PropTypes.func,
-  resizeColumnCallback: PropTypes.func,
+  onColumnWidthChanged: PropTypes.func,
   getData: PropTypes.func,
   rowHeights: PropTypes.array,
   enableRowHeader: PropTypes.bool,
@@ -310,7 +310,7 @@ DataTable.defaultProps = {
   enableGhostCells: false,
   renderContextMenuCallback: () => {},
   reorderColumnsCallback: () => {},
-  resizeColumnCallback: () => {},
+  onColumnWidthChanged: () => {},
   getData: () => {},
   rowHeights: [],
   enableRowHeader: true,

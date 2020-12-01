@@ -272,6 +272,7 @@ class PatientVariantScreen extends React.Component {
     this.goToVariantPatientTab = this.goToVariantPatientTab.bind(this);
     this.handleSelectVariant = this.handleSelectVariant.bind(this);
     this.handleCreateReport = this.handleCreateReport.bind(this);
+    this.onVariantColumnWidthChanged = this.onVariantColumnWidthChanged.bind(this);
 
     this.state.selectedVariants = {};
 
@@ -941,6 +942,12 @@ class PatientVariantScreen extends React.Component {
     }
   }
 
+  onVariantColumnWidthChanged(index, size) {
+    const { columnPreset } = this.state;
+    columnPreset[VARIANT_TAB][index].columnWidth = size;
+    this.setState({ columnPreset });
+  }
+
   render() {
     const {
       app, variant, patient, user,
@@ -1094,6 +1101,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
+                  onColumnWidthChanged={this.onVariantColumnWidthChanged}
                   schema={columnPreset[VARIANT_TAB]}
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
