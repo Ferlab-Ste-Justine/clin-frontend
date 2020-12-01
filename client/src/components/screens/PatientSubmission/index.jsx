@@ -543,15 +543,15 @@ function PatientSubmissionScreen(props) {
     const valid = !canGoNextPage(state.currentPageIndex);
 
     if (valid && !state.valid) {
-      setState({
-        ...state,
+      setState((currentState) => ({
+        ...currentState,
         valid: true,
-      });
+      }));
     } else if (!valid && state.valid) {
-      setState({
-        ...state,
+      setState((currentState) => ({
+        ...currentState,
         valid: false,
-      });
+      }));
     }
   };
 
