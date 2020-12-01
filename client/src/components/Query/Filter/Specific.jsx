@@ -45,7 +45,6 @@ const isObservedNeg = (ontology) => {
 
 const optionObservedPos = (externalDataSet) => (option) => {
   const observedPos = externalDataSet.hpos.filter(isObservedPos);
-  console.log(observedPos.length);
   const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
   const code = option.value.match(hpoRegexp).toString();
   const obsPos = find(observedPos, { code });

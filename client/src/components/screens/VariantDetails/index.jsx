@@ -743,7 +743,6 @@ class VariantDetailsScreen extends React.Component {
     if (genes.filter((g) => !!g.hpo).length > 0) {
       return genes.map((g) => {
         const lis = g.hpo ? g.hpo.map((h) => {
-          console.log('hpo', h);
           const url = `https://hpo.jax.org/app/browse/term/${h.hpo_term_id}`;
           return (<a href={url}>{ h.hpo_term_label }</a>);
         }) : '--';
