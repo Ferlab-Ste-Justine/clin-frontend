@@ -190,18 +190,21 @@ const PatientInformation = ({ patient, validate }) => {
         <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />
       </Form.Item>
 
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.ramq')}
-        name="ramq"
-        initialValue={ramqValue(patient)}
-        rules={[{
-          pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
-          message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
-        }]}
-      >
-        <Input placeholder="ABCD 0000 0000" className="input large" />
-        <span className="optional">Facultatif</span>
-      </Form.Item>
+      <div className="optional-item">
+        <Form.Item
+          label={intl.get('form.patientSubmission.form.ramq')}
+          name="ramq"
+          initialValue={ramqValue(patient)}
+          rules={[{
+            pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
+            message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
+          }]}
+        >
+          <Input placeholder="ABCD 0000 0000" className="input large" />
+        </Form.Item>
+
+        <span className="optional-item__label">Facultatif</span>
+      </div>
 
       <Form.Item
         label={intl.get('form.patientSubmission.form.mrn')}
@@ -239,43 +242,53 @@ const PatientInformation = ({ patient, validate }) => {
         </Select>
       </Form.Item>
 
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.ethnicity')}
-        name="ethnicity"
-        initialValue={ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding}
-        rules={[{ required: false }]}
-      >
-        <Select
-          className="large"
-          placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
-          dropdownClassName="selectDropdown"
+      <div className="optional-item">
+        <Form.Item
+          label={intl.get('form.patientSubmission.form.ethnicity')}
+          name="ethnicity"
+          initialValue={ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding}
+          rules={[{ required: false }]}
         >
-          <Select.Option value="CA-FR">Canadien-Français</Select.Option>
-          <Select.Option value="EU">Caucasienne Européenne</Select.Option>
-          <Select.Option value="AFR">Africain ou caribéen</Select.Option>
-          <Select.Option value="LAT- AM">Hispanique</Select.Option>
-          <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
-          <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
-          <Select.Option value="ABOR">Aboriginal</Select.Option>
-          <Select.Option value="MIX">Origine mixte</Select.Option>
-          <Select.Option value="OTH">Autre</Select.Option>
-        </Select>
-        <span className="optional">Facultatif</span>
-      </Form.Item>
+          <Select
+            className="large"
+            placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
+            dropdownClassName="selectDropdown"
+          >
+            <Select.Option value="CA-FR">Canadien-Français</Select.Option>
+            <Select.Option value="EU">Caucasienne Européenne</Select.Option>
+            <Select.Option value="AFR">Africain ou caribéen</Select.Option>
+            <Select.Option value="LAT- AM">Hispanique</Select.Option>
+            <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
+            <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
+            <Select.Option value="ABOR">Aboriginal</Select.Option>
+            <Select.Option value="MIX">Origine mixte</Select.Option>
+            <Select.Option value="OTH">Autre</Select.Option>
+          </Select>
+        </Form.Item>
+        <span className="optional-item__label">Facultatif</span>
+      </div>
 
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.consanguinity')}
-        name="consanguinity"
-        initialValue={get(consanguinityValueCoding, 'display', null)}
-        rules={[{ required: false }]}
-      >
-        <Radio.Group buttonStyle="solid" defaultValue={get(consanguinityValueCoding, 'display', '')}>
-          <Radio.Button value="Yes"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span></Radio.Button>
-          <Radio.Button value="No"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span></Radio.Button>
-          <Radio.Button value="Unknown"><span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span></Radio.Button>
-        </Radio.Group>
-        <span className="optional">Facultatif</span>
-      </Form.Item>
+      <div className="optional-item">
+        <Form.Item
+          label={intl.get('form.patientSubmission.form.consanguinity')}
+          name="consanguinity"
+          initialValue={get(consanguinityValueCoding, 'display', null)}
+          rules={[{ required: false }]}
+        >
+          <Radio.Group buttonStyle="solid" defaultValue={get(consanguinityValueCoding, 'display', '')}>
+            <Radio.Button value="Yes">
+              <span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span>
+            </Radio.Button>
+            <Radio.Button value="No">
+              <span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span>
+            </Radio.Button>
+            <Radio.Button value="Unknown">
+              <span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span>
+            </Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <span className="optional-item__label">Facultatif</span>
+      </div>
     </Card>
   );
 };
