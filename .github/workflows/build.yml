@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - feat/project-update
+      - master
 
 jobs:
   build:

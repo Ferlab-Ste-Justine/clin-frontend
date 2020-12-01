@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');

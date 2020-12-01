@@ -30,7 +30,6 @@ const PRACTITIONER_NOT_FOUND: PractitionerData = {
 };
 
 export class DataExtractor {
-  // eslint-disable-next-line no-unused-vars
   constructor(private readonly data: Data) {}
 
   public extractBundle(type: BundleType): any {

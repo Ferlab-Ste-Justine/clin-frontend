@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
@@ -119,6 +118,7 @@ const nucleotidicVariation = (variant, gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const parentalOriginLines = (variant, _gene) => {
   const zygosity = (donor) => {
     const zygoCode = (d) => getValue(d, 'zygosity');
@@ -151,6 +151,7 @@ const parentalOriginLines = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const allelicFrequency = (variant, _gene) => {
   if (has(variant, 'frequencies.exac')) {
     return getValue(variant.frequencies.exac, 'af');
@@ -172,6 +173,7 @@ const allelicFrequency = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const inSilicoPredictions = (variant, _gene) => {
   const preds = variant.consequences
     .map((c) => (c.predictions ? c.predictions.sift_converted_rank_score : null))
@@ -186,6 +188,7 @@ const inSilicoPredictions = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const clinVar = (variant, _gene) => {
   if (!variant.clinvar) {
     return 0;
@@ -693,7 +696,6 @@ class PatientVariantScreen extends React.Component {
 
   goToVariantPatientTab(e) {
     const {
-      variant,
       actions,
     } = this.props;
 
@@ -880,7 +882,6 @@ class PatientVariantScreen extends React.Component {
 
   handleNavigationToVariantDetailsScreen(e) {
     const {
-      variant,
       actions,
     } = this.props;
 

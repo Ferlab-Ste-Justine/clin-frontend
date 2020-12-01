@@ -37,11 +37,9 @@ import './style.scss';
 import {
   cghDisplay,
   createPractitionerResource,
-  getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
-import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
 import Layout from '../../Layout';
 import ConfirmationModal from '../../ConfirmationModal';
 
@@ -548,44 +546,6 @@ function PatientSubmissionScreen(props) {
     validate();
   });
 
-  // eslint-disable-next-line no-unused-vars
-  const createFamilyRelationshipResourceList = () => {
-    const values = form.getFieldsValue();
-
-    if (values.familyRelationshipCodes === undefined) {
-      return [];
-    }
-
-    const {
-      familyRelationshipIds,
-      familyRelationshipCodes,
-      familyRelationshipNotes,
-      familyRelationshipsToDelete,
-    } = values;
-
-    return familyRelationshipCodes.map((code, index) => {
-      const id = familyRelationshipIds[index];
-      const toDelete = familyRelationshipsToDelete[index];
-      if (id == null || id.length === 0) {
-        const builder = new FamilyMemberHistoryBuilder({
-          coding: [{
-            code,
-            display: getFamilyRelationshipDisplayForCode(familyRelationshipCodes[index]),
-          }],
-        });
-        const note = familyRelationshipNotes[index];
-        if (note != null && note.length > 0) {
-          builder.withNote(note);
-        }
-        if (toDelete) {
-          builder.withStatus('entered-in-error');
-        }
-        return builder.build();
-      }
-      return null;
-    }).filter((r) => r != null);
-  };
-
   const createCGHResourceList = () => {
     const values = form.getFieldsValue();
     if (values.cghInterpretationValue === undefined) {
@@ -747,23 +707,6 @@ function PatientSubmissionScreen(props) {
   const isFirstPage = () => {
     const { currentPageIndex } = state;
     return currentPageIndex === 0;
-  };
-
-  // TODO: Update check
-  // eslint-disable-next-line no-unused-vars
-  const isClinicalInformationComplete = () => {
-    const { observations } = props;
-    if (observations.cgh == null) {
-      return false;
-    }
-    if (observations.hpos.length === 0) {
-      return false;
-    }
-
-    if (observations.indic == null) {
-      return false;
-    }
-    return true;
   };
 
   const handlePractitionerOptionSelected = (license) => {

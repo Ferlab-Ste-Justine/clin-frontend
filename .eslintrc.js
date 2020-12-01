@@ -55,5 +55,9 @@ module.exports = {
     'no-useless-constructor': 'off',
     'no-empty-function': 'off',
     'max-classes-per-file': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+    ],
   },
 };

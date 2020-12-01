@@ -5,7 +5,6 @@ import {
 } from 'antd';
 import intl from 'react-intl-universal';
 import style from './styles/term.module.scss';
-// import styleFilter from './styles/filter.module.scss';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
