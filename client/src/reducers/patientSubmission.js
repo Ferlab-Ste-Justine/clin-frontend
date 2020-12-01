@@ -231,7 +231,6 @@ const patientSubmissionReducer = (
 
       const groupId = getExtension(patient, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id');
 
-      draft.local = initialPatientSubmissionState.local;
       draft.patient = action.payload.patient.patient.original;
       draft.groupId = groupId;
       draft.serviceRequest = {
@@ -246,17 +245,28 @@ const patientSubmissionReducer = (
       draft.observations.cgh = { ...observations.cgh };
       draft.observations.indic = { ...observations.indic };
       draft.observations.summary = { ...observations.inves };
+      draft.observations.fmh.push({});
 
-      draft.local.cgh.interpretation = cgh;
-      draft.local.summary.note = summary !== NOT_AVAILABLE ? summary : '';
-      draft.local.indic.note = hypothesis !== NOT_AVAILABLE ? hypothesis : '';
-      draft.local.consents = range(1, 5).map((value) => `consent-${value}`);
+      draft.local = {
+        serviceRequest: {
+          code: get(serviceRequest, 'code.coding[0].code', null),
+        },
+        cgh: {
+          interpretation: cgh,
+        },
+        summary: {
+          note: summary !== NOT_AVAILABLE ? summary : '',
+        },
+        indic: {
+          note: hypothesis !== NOT_AVAILABLE ? hypothesis : '',
+        },
+        consents: range(1, 5).map((value) => `consent-${value}`),
+        practitioner: '',
+      };
 
       if (get(generalPractitioner, 'length', 0) > 0) {
         draft.local.practitioner = performer.mrn;
       }
-
-      draft.observations.fmh.push({});
       break;
     }
     default:
