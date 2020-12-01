@@ -552,7 +552,7 @@ class VariantNavigation extends React.Component {
           }
 
           const geneObj = {
-            geneSymbol: item._source.geneSymbol,
+            geneSymbol: item._source.symbol,
             alias: alias.join(', '),
           };
           geneItem.push(geneObj);
