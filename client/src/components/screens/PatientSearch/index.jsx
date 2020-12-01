@@ -4,13 +4,14 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Icon, Typography, Button, Menu, Divider, Checkbox,
+  Card, AutoComplete, Row, Col, Input, Typography, Button, Menu, Divider, Checkbox,
 } from 'antd';
 import { ExportToCsv } from 'export-to-csv';
 import IconKit from 'react-icons-kit';
 import {
   ic_add, ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
+import { SearchOutlined } from '@ant-design/icons';
 import {
   debounce,
 } from 'lodash';
@@ -26,10 +27,6 @@ import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelect
 import { updateUserColumns, updateUserColumnsOrder, updateUserColumnsReset } from '../../../actions/user';
 import { appShape } from '../../../reducers/app';
 import Layout from '../../Layout';
-
-const COLUMN_WIDTHS = {
-  DEFAULT: 150,
-};
 
 class PatientSearchScreen extends React.Component {
   constructor(props) {
@@ -95,7 +92,6 @@ class PatientSearchScreen extends React.Component {
             }
           },
         }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'patientId',
@@ -104,103 +100,86 @@ class PatientSearchScreen extends React.Component {
           key: 'id',
           handler: this.handleGoToPatientScreen,
         }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'organization',
         label: 'screen.patientsearch.table.organization',
         renderer: createCellRenderer('text', this.getData, { key: 'organization' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'lastName',
         label: 'screen.patientsearch.table.lastName',
         renderer: createCellRenderer('text', this.getData, { key: 'lastName' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'firstName',
         label: 'screen.patientsearch.table.firstName',
         renderer: createCellRenderer('text', this.getData, { key: 'firstName' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'gender',
         label: 'screen.patientsearch.table.gender',
         renderer: createCellRenderer('text', this.getData, { key: 'gender' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'dob',
         label: 'screen.patientsearch.table.dob',
         renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT + 10,
       },
       {
         key: 'practitioner',
         label: 'screen.patientsearch.table.practitioner',
         renderer: createCellRenderer('text', this.getData, { key: 'practitioner' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT + 30,
       },
       {
         key: 'test',
         label: 'screen.patientsearch.table.test',
         renderer: createCellRenderer('text', this.getData, { key: 'test' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'prescription',
         label: 'screen.patientsearch.table.prescription',
         renderer: createCellRenderer('text', this.getData, { key: 'prescription' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'mrn',
         label: 'screen.patientsearch.table.mrn',
         renderer: createCellRenderer('text', this.getData, { key: 'mrn' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'ramq',
         label: 'screen.patientsearch.table.ramq',
         renderer: createCellRenderer('text', this.getData, { key: 'ramq' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'position',
         label: 'screen.patientsearch.table.position',
         renderer: createCellRenderer('text', this.getData, { key: 'position' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'familyId',
         label: 'screen.patientsearch.table.familyId',
         renderer: createCellRenderer('text', this.getData, { key: 'familyId' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'familyType',
         label: 'screen.patientsearch.table.familyType',
         renderer: createCellRenderer('text', this.getData, { key: 'familyType' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'ethnicity',
         label: 'screen.patientsearch.table.ethnicity',
         renderer: createCellRenderer('text', this.getData, { key: 'ethnicity' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'bloodRelationship',
         label: 'screen.patientsearch.table.bloodRelationship',
         renderer: createCellRenderer('text', this.getData, { key: 'bloodRelationship' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
       {
         key: 'request',
         label: 'screen.patientsearch.table.request',
         renderer: createCellRenderer('text', this.getData, { key: 'request' }),
-        columnWidth: COLUMN_WIDTHS.DEFAULT,
       },
     ];
     this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
@@ -271,11 +250,11 @@ class PatientSearchScreen extends React.Component {
     const { data } = this.state;
     let value = [];
     if (type === 'practitioner') {
-      data.map(d => (
+      data.map((d) => (
         !value.includes(d.practitioner) ? value.push(d.practitioner) : null
       ));
     } else if (type === 'status') {
-      data.map(d => (
+      data.map((d) => (
         !value.includes(d.status) ? value.push(d.status) : null
       ));
     } else if (type === 'familyComposition') {
@@ -283,11 +262,10 @@ class PatientSearchScreen extends React.Component {
     } else if (type === 'position') {
       value = ['Proband', 'Parent'];
     } else if (type === 'organization') {
-      data.map(d => (
+      data.map((d) => (
         !value.includes(d.organization) ? value.push(d.organization) : null
       ));
     }
-
 
     return value;
   }
@@ -398,7 +376,7 @@ class PatientSearchScreen extends React.Component {
 
   handleGoToPatientScreen(e) {
     const { actions } = this.props;
-    const value = e.target.getAttribute('data-id');
+    const value = e.currentTarget.getAttribute('data-id');
     actions.navigateToPatientScreen(value);
   }
 
@@ -446,16 +424,20 @@ class PatientSearchScreen extends React.Component {
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
 
     const rowHeights = Array(size).fill(36);
-    const autoCompleteResults = search.autocomplete.results.map(result => ({
+    const autoCompleteResults = search.autocomplete.results.map((result) => ({
       value: result.id,
       text: (
         <>
           <Row className="autocomplete-row">
             <Col>
-              <Typography.Text className="autocomplete-row__name">{ result.firstName.toUpperCase() } { result.lastName }</Typography.Text>
+              <Typography.Text className="autocomplete-row__name">
+                { result.firstName.toUpperCase() } { result.lastName }
+              </Typography.Text>
             </Col>
             <Col>
-              <Typography.Text className="autocomplete-row__mrn">MRN: { result.mrn }</Typography.Text>
+              <Typography.Text className="autocomplete-row__mrn">
+                MRN: { result.mrn }
+              </Typography.Text>
             </Col>
           </Row>
         </>
@@ -470,7 +452,7 @@ class PatientSearchScreen extends React.Component {
               <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
             </Col>
           </Row>
-          <Row type="flex" justify="space-between" className="searchNav">
+          <Row justify="space-between" className="flex-row searchNav">
             <Col>
               <Button className={isFacetOpen ? 'facet openFacet' : 'facet'} onClick={this.handleOpenFacet}>
                 <div>
@@ -484,10 +466,7 @@ class PatientSearchScreen extends React.Component {
             </Col>
             <Col className="autoSearch">
               <AutoComplete
-                size="large"
                 style={{ width: '100%' }}
-                optionLabelProp="text"
-                placeholder={placeholderText}
                 allowClear
                 autoFocus
                 defaultActiveFirstOption={false}
@@ -495,8 +474,15 @@ class PatientSearchScreen extends React.Component {
                 onChange={this.handleAutoCompleteChange}
                 onSelect={this.handleAutoCompleteSelect}
                 onBlur={this.handleAutoCompleteClose}
+                className="autocomplete"
               >
-                <Input prefix={<Icon type="search" />} onPressEnter={this.handleAutoCompletePressEnter} />
+                <Input
+                  prefix={
+                    <SearchOutlined />
+                  }
+                  placeholder={placeholderText}
+                  onPressEnter={this.handleAutoCompletePressEnter}
+                />
               </AutoComplete>
             </Col>
             <Col>
@@ -506,7 +492,7 @@ class PatientSearchScreen extends React.Component {
               </Button>
             </Col>
           </Row>
-          <Row type="flex" justify="space-between">
+          <Row className="flex-row">
             { isFacetOpen && (
               <Col className={isFacetOpen ? 'openFacet' : 'closeFacet'}>
                 <Menu
@@ -515,7 +501,7 @@ class PatientSearchScreen extends React.Component {
                   className="menuCaterogy"
                   onOpenChange={this.handleCategoriesOpenChange}
                 >{
-                    facet.map(type => (
+                    facet.map((type) => (
                       <SubMenu
                         className="category"
                         key={type}
@@ -545,7 +531,7 @@ class PatientSearchScreen extends React.Component {
                           <Row>
                             <Col span={24}>
                               <Checkbox.Group className="checkboxGroup" onChange={this.handleSelectionChange}>
-                                { this.getValue(type).map(option => (
+                                { this.getValue(type).map((option) => (
                                   <Row>
                                     <Col>
                                       <Checkbox className="checkboxLabel" value={option}><span className="checkboxValue">{ option }</span></Checkbox>
@@ -573,7 +559,7 @@ class PatientSearchScreen extends React.Component {
                     defaultVisibleColumns={defaultColumns}
                     defaultColumnsOrder={defaultColumnsOrder}
                     schema={this.columnPreset}
-                    columnWidth={this.columnPreset.map(c => c.columnWidth)}
+                    columnWidth={this.columnPreset.map((c) => c.columnWidth)}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     exportCallback={this.exportToTsv}
@@ -602,7 +588,7 @@ PatientSearchScreen.propTypes = {
   defaultColumnsOrder: PropTypes.array,
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
     navigateToSubmissionScreen,
@@ -615,13 +601,12 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   app: state.app,
   search: state.search,
   defaultColumns: state.user.columns,
   defaultColumnsOrder: state.user.columnsOrder,
 });
-
 
 PatientSearchScreen.defaultProps = {
   defaultColumns: null,

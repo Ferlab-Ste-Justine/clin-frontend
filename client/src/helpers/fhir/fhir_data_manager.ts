@@ -1,4 +1,6 @@
-import { ClinicalImpression, Patient, ServiceRequest } from "./types";
+import {
+  ClinicalImpression, Patient, Reference, ServiceRequest,
+} from './types';
 
 type InitializePatientOptions = {
   id: string;
@@ -17,17 +19,17 @@ type InitializePatientOptions = {
   organization: string;
 };
 
-type ServiceRequestCoding = "WXS" | "WGS" | "GP" | undefined;
+type ServiceRequestCoding = 'WXS' | 'WGS' | 'GP' | undefined;
 
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
-  let month = "" + (date.getMonth() + 1);
-  let day = "" + date.getDate();
+  let month = `${date.getMonth() + 1}`;
+  let day = `${date.getDate()}`;
 
-  if (month.length < 2) month = "0" + month;
-  if (day.length < 2) day = "0" + day;
+  if (month.length < 2) month = `0${month}`;
+  if (day.length < 2) day = `0${day}`;
 
-  return [year, month, day].join("-");
+  return [year, month, day].join('-');
 };
 
 export class FhirDataManager {
@@ -35,15 +37,15 @@ export class FhirDataManager {
     const formattedBirthDate = formatDate(options.birthDate);
 
     const patient: Patient = {
-      resourceType: "Patient",
+      resourceType: 'Patient',
       meta: {
-        profile: ["http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient"],
+        profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
       },
       active: options.active,
       birthDate: formattedBirthDate,
       extension: [
         {
-          url: "http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband",
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
           valueBoolean: true,
         },
       ],
@@ -54,12 +56,12 @@ export class FhirDataManager {
           type: {
             coding: [
               {
-                code: "MR",
-                display: "Medical record number",
-                system: "http://terminology.hl7.org/CodeSystem/v2-0203",
+                code: 'MR',
+                display: 'Medical record number',
+                system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
               },
             ],
-            text: "Numéro du dossier médical",
+            text: 'Numéro du dossier médical',
           },
           value: options.mrn,
         },
@@ -75,15 +77,15 @@ export class FhirDataManager {
       ],
     };
     if (
-      options.ethnicityCode != null &&
-      options.ethnicityDisplay != null &&
-      options.ethnicityCode.length > 0 &&
-      options.ethnicityDisplay.length > 0
+      options.ethnicityCode != null
+      && options.ethnicityDisplay != null
+      && options.ethnicityCode.length > 0
+      && options.ethnicityDisplay.length > 0
     ) {
       patient.extension.push({
-        url: "http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity",
+        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity',
         valueCoding: {
-          system: "http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity",
+          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity',
           code: options.ethnicityCode,
           display: options.ethnicityDisplay,
         },
@@ -92,11 +94,11 @@ export class FhirDataManager {
     if (options.bloodRelationship != null && options.bloodRelationship.length > 0) {
       const code = options.bloodRelationship.charAt(0);
       patient.extension.push({
-        url: "http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship",
+        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship',
         valueCoding: {
-          system: "http://fhir.cqgc.ferlab.bio/CodeSystem/blood-relationship",
-          code: code,
-          display: code === "Y" ? "Yes" : code === "N" ? "No" : "Unknown",
+          system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/blood-relationship',
+          code,
+          display: code === 'Y' ? 'Yes' : code === 'N' ? 'No' : 'Unknown',
         },
       });
     }
@@ -106,12 +108,12 @@ export class FhirDataManager {
         type: {
           coding: [
             {
-              system: "http://terminology.hl7.org/CodeSystem/v2-0203",
-              code: "JHN",
-              display: "Jurisdictional health number (Canada)",
+              system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+              code: 'JHN',
+              display: 'Jurisdictional health number (Canada)',
             },
           ],
-          text: "Numéro du dossier médical",
+          text: 'Numéro du dossier médical',
         },
         value: options.ramq,
       });
@@ -124,9 +126,9 @@ export class FhirDataManager {
     return patient;
   }
 
-  private static getPractitionerReference(id: string) {
+  private static getPractitionerReference(id: string) : Reference | undefined {
     if (id == null) {
-      return null;
+      return undefined;
     }
     return {
       reference: `Practitioner/${id}`,
@@ -137,59 +139,59 @@ export class FhirDataManager {
     requesterId: string,
     subjectId: string,
     status: string,
-    coding: ServiceRequestCoding
+    coding: ServiceRequestCoding,
   ): ServiceRequest {
     const serviceRequest: ServiceRequest = {
-      resourceType: "ServiceRequest",
-      status: status,
+      resourceType: 'ServiceRequest',
+      status,
       meta: {
-        profile: [`http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-service-request`],
+        profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-service-request'],
       },
       extension: [],
-      intent: "order",
+      intent: 'order',
       category: [
         {
-          text: "MedicalRequest",
+          text: 'MedicalRequest',
         },
       ],
-      priority: "routine",
+      priority: 'routine',
       subject: {
-        reference: subjectId.startsWith("urn:") ? subjectId : `Patient/${subjectId}`,
+        reference: subjectId.startsWith('urn:') ? subjectId : `Patient/${subjectId}`,
       },
       authoredOn: formatDate(new Date()),
     };
 
-    if (coding != undefined) {
+    if (coding !== undefined) {
       switch (coding) {
-        case "WXS":
+        case 'WXS':
           serviceRequest.code = {
             coding: [
               {
-                system: `http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code`,
-                code: "WXS",
-                display: "Whole Exome Sequencing",
+                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
+                code: 'WXS',
+                display: 'Whole Exome Sequencing',
               },
             ],
           };
           break;
-        case "WGS":
+        case 'WGS':
           serviceRequest.code = {
             coding: [
               {
-                system: `http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code`,
-                code: "WGS",
-                display: "Whole Genome Sequencing",
+                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
+                code: 'WGS',
+                display: 'Whole Genome Sequencing',
               },
             ],
           };
           break;
-        case "GP":
+        case 'GP':
           serviceRequest.code = {
             coding: [
               {
-                system: `http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code`,
-                code: "GP",
-                display: "Gene Panel",
+                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
+                code: 'GP',
+                display: 'Gene Panel',
               },
             ],
           };
@@ -199,9 +201,9 @@ export class FhirDataManager {
       }
     }
 
-    serviceRequest.requester = this.getPractitionerReference("PR00106");
+    serviceRequest.requester = this.getPractitionerReference('PR00106');
     if (requesterId != null) {
-      serviceRequest.performer = [this.getPractitionerReference(requesterId)];
+      serviceRequest.performer = [this.getPractitionerReference(requesterId)!];
     }
 
     return serviceRequest;
@@ -209,32 +211,32 @@ export class FhirDataManager {
 
   public static createClinicalImpression(assessorId: string, subjectId: string, age: number = 1): ClinicalImpression {
     const clinicalImpression: ClinicalImpression = {
-      resourceType: "ClinicalImpression",
+      resourceType: 'ClinicalImpression',
       meta: {
-        profile: ["http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-clinical-impression"],
+        profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-clinical-impression'],
       },
 
       extension: [
         {
-          url: `http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-event`,
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-event',
           valueAge: {
             value: age,
-            unit: "days",
-            system: "http://unitsofmeasure.org",
-            code: "d",
+            unit: 'days',
+            system: 'http://unitsofmeasure.org',
+            code: 'd',
           },
         },
       ],
-      status: "in-progress",
+      status: 'in-progress',
       assessor: this.getPractitionerReference(assessorId),
       date: formatDate(new Date()),
       subject: {
-        reference: subjectId.startsWith("urn:") ? subjectId : `Patient/${subjectId}`,
+        reference: subjectId.startsWith('urn:') ? subjectId : `Patient/${subjectId}`,
       },
       investigation: [
         {
           code: {
-            text: "initial-examination",
+            text: 'initial-examination',
           },
           item: [],
         },

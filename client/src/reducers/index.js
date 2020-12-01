@@ -9,7 +9,7 @@ import variantReducer from './variant';
 import variantDetailsReducer from './variantDetails';
 import patientSubmissionReducer from './patientSubmission';
 
-const rootReducer = history => combineReducers({
+const rootReducer = (history) => combineReducers({
   router: connectRouter(history),
   app: appReducer,
   user: userReducer,

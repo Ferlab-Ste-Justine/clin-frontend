@@ -1,0 +1,13 @@
+{
+    "rules": {
+        "indentation": [
+            2,
+            {
+                "except": [
+                    "value"
+                ],
+                "severity": "warning"
+            }
+        ]
+    }
+}

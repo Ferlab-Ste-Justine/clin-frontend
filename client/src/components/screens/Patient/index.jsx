@@ -6,12 +6,12 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input, Icon,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input,
 } from 'antd';
+
 import {
   find,
 } from 'lodash';
-
 
 import IconKit from 'react-icons-kit';
 import {
@@ -29,7 +29,7 @@ import '../../../style/themes/antd-clin-theme.css';
 import './style.scss';
 import Layout from '../../Layout';
 
-const columnPresetToColumn = c => ({
+const columnPresetToColumn = (c) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
@@ -111,11 +111,10 @@ class PatientScreen extends React.Component {
     ];
   }
 
-
   getRequest() {
     const { prescriptions } = this.props;
 
-    const requests = prescriptions.map(prescription => ({
+    const requests = prescriptions.map((prescription) => ({
       status: prescription.status,
       date: prescription.date,
       requester: prescription.requester,
@@ -145,7 +144,7 @@ class PatientScreen extends React.Component {
         };
         const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{ intl.get(`screen.patient.details.status.${r.status}`) }</span>;
 
-        const requesterPopOverText = info => (
+        const requesterPopOverText = (info) => (
           <Card title="Médecin prescripteur" bordered={false}>
             <p><span className="popOverName">{ info.name }</span>  |  4425615</p>
             <p>{ info.organization }</p>
@@ -180,8 +179,9 @@ class PatientScreen extends React.Component {
         );
         const action = (
           <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-            <Button type="link" onClick={e => e.preventDefault()}>
-              Action <Icon className="dropdown-icon" type="down" />
+            <Button type="link" onClick={(e) => e.preventDefault()}>
+              Action
+              { /* <Icon className="dropdown-icon" type="down" /> */ }
             </Button>
           </Dropdown>
         );
@@ -195,13 +195,13 @@ class PatientScreen extends React.Component {
 
   getFamilyHistory() {
     const { fmhs } = this.props;
-    const familyHistory = fmhs.map(fmh => (
+    const familyHistory = fmhs.map((fmh) => (
       {
         note: fmh.note,
         link: fmh.link,
       }));
     if (familyHistory) {
-      return familyHistory.map(f => ({
+      return familyHistory.map((f) => ({
         link: f.link, notes: f.note,
       }));
     }
@@ -210,7 +210,7 @@ class PatientScreen extends React.Component {
 
   getClinical() {
     const { hpos } = this.props;
-    const ontology = hpos.map(hpo => (
+    const ontology = hpos.map((hpo) => (
       {
         observed: hpo.observed,
         term: hpo.term,
@@ -300,7 +300,7 @@ class PatientScreen extends React.Component {
     const familyType = intl.get('screen.patient.details.familyType');
     const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
-    const practitionerPopOverText = info => (
+    const practitionerPopOverText = (info) => (
       <Card title="Médecin résponsable" bordered={false}>
         <p><span className="popOverName">{ info.name }</span>  | { info.mrn }</p>
         <p>{ info.organization }</p>
@@ -346,7 +346,7 @@ class PatientScreen extends React.Component {
               <div className="patientPage">
                 <div className="page_headerStaticNoMargin">
                   <div className="headerStaticContent">
-                    <Row type="flex" align="middle" className="patientHeader">
+                    <Row align="middle" className="flex-row patientHeader">
                       <Col>
                         <Typography.Title level={3} className="patientName">
                           { patient.lastName.toUpperCase() } { patient.firstName }
@@ -365,10 +365,9 @@ class PatientScreen extends React.Component {
                       </Col>
                     </Row>
 
-
                   </div>
                 </div>
-                <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
+                <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs" animated>
                   <Tabs.TabPane
                     key="personal"
                     style={{ height: '100%' }}
@@ -381,10 +380,10 @@ class PatientScreen extends React.Component {
                   >
                     <div className="page-static-content">
                       <Card bordered={false} className="generalInfo">
-                        <Row type="flex">
+                        <Row className="flex-row">
                           <Col>
                             <Card className="nameBlock">
-                              <Row align="middle" justify="center">
+                              <Row className="flex-row nameBlock__info" align="middle" justify="center">
                                 <IconKit size={56} icon={ic_perm_contact_calendar} />
                                 <Col><Typography.Title level={3} className="patientName">{ patient.lastName }</Typography.Title></Col>
                                 <Col><Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title></Col>
@@ -393,7 +392,7 @@ class PatientScreen extends React.Component {
                             </Card>
                           </Col>
                           <Col className="content">
-                            <Row type="flex">
+                            <Row className="flex-row">
                               <Col className="grid">
                                 <div className="row">
                                   <span className="title">{ ramq }</span>
@@ -508,7 +507,7 @@ class PatientScreen extends React.Component {
                         find(prescriptions, { status: 'draft' })
                           ? (
                             <Card bordered={false} className="staticCard noInfo">
-                              <Row type="flex" align="middle" className="noInfo__contents">
+                              <Row align="middle" className="flex-row noInfo__contents">
                                 <Col className="noInfo__contents__icon"><IconKit size={72} icon={ic_info} /></Col>
                                 <Col className="noInfo__contents__title"><Title level={2}>Aucune information clinique disponible</Title></Col>
                                 <Col className="noInfo__contents__text"><p>Maecenas sed diam eget risus varius blandit sit amet non magna. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p></Col>
@@ -516,15 +515,15 @@ class PatientScreen extends React.Component {
                               </Row>
                             </Card>
                           ) : (
-                            <Card bordered={false} className="staticCard clinical">
+                            <Card bordered={false} className="flex-row staticCard clinical">
                               <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
-                                <Row type="flex">
-                                  <Col className="clinical__title">MRN</Col>
-                                  <Col className="clinical__value">{ patient.mrn }  |  { patient.organization }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">MRN</Col>
+                                  <Col className="clinical__info__value">{ patient.mrn }  |  { patient.organization }</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Médecin résponsable</Col>
-                                  <Col className="clinical__value">
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Médecin résponsable</Col>
+                                  <Col className="clinical__info__value">
                                     <span className="logoText">
                                       { consultation[0].practitioner.name }
                                       { consultation[0].practitioner.name !== 'N/A' ? (
@@ -536,21 +535,21 @@ class PatientScreen extends React.Component {
                                     </span>
                                   </Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Age du patient</Col>
-                                  <Col className="clinical__value">3 ans</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Age du patient</Col>
+                                  <Col className="clinical__info__value">3 ans</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">CGH</Col>
-                                  <Col className="clinical__value">{ getCGHText(consultation[0].cgh) }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">CGH</Col>
+                                  <Col className="clinical__info__value">{ getCGHText(consultation[0].cgh) }</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Résume de l'investigation</Col>
-                                  <Col className="clinical__value">{ consultation[0].summary }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Résume de l'investigation</Col>
+                                  <Col className="clinical__info__value">{ consultation[0].summary }</Col>
                                 </Row>
-                                <Row type="flex">
-                                  <Col className="clinical__title">Hypothèse de diagnostique</Col>
-                                  <Col className="clinical__value">{ consultation[0].hypothesis }</Col>
+                                <Row className="flex-row clinical__info">
+                                  <Col className="clinical__info__title">Hypothèse de diagnostique</Col>
+                                  <Col className="clinical__info__value">{ consultation[0].hypothesis }</Col>
                                 </Row>
                               </Card>
                               <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
@@ -577,7 +576,6 @@ class PatientScreen extends React.Component {
                             </Card>
                           )
                       }
-
 
                     </div>
                   </Tabs.TabPane>
@@ -612,8 +610,7 @@ PatientScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
 };
 
-
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
     navigateToPatientVariantScreen,
@@ -622,16 +619,15 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   app: state.app,
   router: state.router,
   patient: state.patient.patient.parsed,
-  prescriptions: state.patient.prescriptions.map(prescription => prescription.parsed),
-  consultation: state.patient.consultation.map(cons => cons.parsed),
-  fmhs: state.patient.fmhs.map(fmh => fmh.parsed),
-  hpos: state.patient.hpos.map(hpo => hpo.parsed),
+  prescriptions: state.patient.prescriptions.map((prescription) => prescription.parsed),
+  consultation: state.patient.consultation.map((cons) => cons.parsed),
+  fmhs: state.patient.fmhs.map((fmh) => fmh.parsed),
+  hpos: state.patient.hpos.map((hpo) => hpo.parsed),
 });
-
 
 export default connect(
   mapStateToProps,

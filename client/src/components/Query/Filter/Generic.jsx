@@ -18,7 +18,6 @@ import Filter, {
 } from './index';
 import styleFilter from '../styles/filter.module.scss';
 
-
 class GenericFilter extends React.Component {
   /* @NOTE SQON Struct Sample
   {
@@ -71,10 +70,10 @@ class GenericFilter extends React.Component {
 
     const { selection, allOptions } = this.state;
     if (selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
+      const value = filter(cloneDeep(dataSet), (o) => selection.includes(o.value));
       if (value.length === 0) {
         const selectedValue = [];
-        selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        selection.map((x) => selectedValue.push({ value: x, count: 0 }));
         allOptions.unshift(...selectedValue);
       } else {
         const sorted = orderBy(value, ['count'], ['desc']);
@@ -121,7 +120,7 @@ class GenericFilter extends React.Component {
           </Row>
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
                 <div className="scrollFilter" ref={(ref) => { this.scrollParentRef = ref; }}>
                   <InfiniteScroll
                     pageStart={0}
@@ -131,9 +130,9 @@ class GenericFilter extends React.Component {
                     useWindow={false}
                     getScrollParent={() => this.scrollParentRef}
                   >
-                    { options.map(option => (
+                    { options.map((option) => (
                       <Row key={shortid.generate()}>
-                        <Col>
+                        <Col className="checkboxLine">
                           <Checkbox key={`${option.value}`} className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                         </Col>
                       </Row>
@@ -179,7 +178,7 @@ class GenericFilter extends React.Component {
     const allOptions = cloneDeep(dataSet);
 
     const search = values.toLowerCase();
-    const toKeep = filter(allOptions, o => (search === '' || o.value.toLowerCase().startsWith(search)));
+    const toKeep = filter(allOptions, (o) => (search === '' || o.value.toLowerCase().startsWith(search)));
 
     allOptions.length = 0;
     allOptions.push(...toKeep);
@@ -215,7 +214,7 @@ class GenericFilter extends React.Component {
   handleSelectAll() {
     const { draft } = this.state;
     const { dataSet } = this.props;
-    const selection = dataSet.map(option => option.value);
+    const selection = dataSet.map((option) => option.value);
     draft.values = selection;
     this.setState({
       selection,

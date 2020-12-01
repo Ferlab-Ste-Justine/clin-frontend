@@ -69,10 +69,10 @@ class AutocompleteFilter extends React.Component {
     this.state.selection = cloneDeep(dataSet);
     const { selection, allOptions } = this.state;
     if (selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => selection.includes(o));
+      const value = filter(cloneDeep(dataSet), (o) => selection.includes(o));
       if (value.length === 0) {
         const selectedValue = [];
-        selection.map(x => selectedValue.push({ value: x }));
+        selection.map((x) => selectedValue.push({ value: x }));
         allOptions.unshift(...selectedValue);
       } else {
         const sorted = orderBy(value, ['count'], ['desc']);
@@ -113,8 +113,8 @@ class AutocompleteFilter extends React.Component {
         <>
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
-                { options.map(option => (
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+                { options.map((option) => (
                   <Row>
                     <Col>
                       <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
@@ -155,7 +155,7 @@ class AutocompleteFilter extends React.Component {
     const { dataSet } = this.props;
     const allOptions = cloneDeep(dataSet);
     const search = values.toLowerCase();
-    const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.toLowerCase().startsWith(search) : null));
+    const toRemove = filter(cloneDeep(allOptions), (o) => (search !== '' ? !o.toLowerCase().startsWith(search) : null));
     pullAll(allOptions, toRemove);
     this.setState({
       allOptions,
@@ -181,7 +181,7 @@ class AutocompleteFilter extends React.Component {
   handleSelectAll() {
     const { draft } = this.state;
     const { dataSet } = this.props;
-    const selection = dataSet.map(option => option.value);
+    const selection = dataSet.map((option) => option.value);
     draft.values = selection;
     this.setState({
       selection,

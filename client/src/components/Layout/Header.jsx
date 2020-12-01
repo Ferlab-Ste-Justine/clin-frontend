@@ -1,33 +1,32 @@
-/* eslint-disable camelcase, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
-  Layout, Row, Col, Dropdown, Menu, Icon, Divider,
+  Layout, Row, Col, Dropdown, Menu, Divider,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import { ic_translate, ic_account_circle, ic_supervisor_account } from 'react-icons-kit/md';
+import { LogoutOutlined } from '@ant-design/icons';
 import { logoutUser } from '../../actions/user';
 import { changeLanguage } from '../../actions/app';
 import { navigateToPatientSearchScreen } from '../../actions/router';
 import { appShape } from '../../reducers/app';
 import { userShape } from '../../reducers/user';
 
-
-const userMenu = actions => (
+const userMenu = (actions) => (
   <Menu>
     <Menu.Item key="logout" onClick={actions.logoutUser}>
       <span>
-        <Icon type="logout" />
+        <LogoutOutlined />
         { ` ${intl.get('header.navigation.user.logout')}` }
       </span>
     </Menu.Item>
   </Menu>
 );
 
-const languageMenu = actions => (
+const languageMenu = (actions) => (
   <Menu>
     <Menu.Item
       onClick={() => {
@@ -38,7 +37,6 @@ const languageMenu = actions => (
         { intl.get('lang.fr.long') }
       </span>
     </Menu.Item>
-
 
     <Menu.Item
       onClick={() => {
@@ -52,7 +50,6 @@ const languageMenu = actions => (
   </Menu>
 );
 
-
 const Header = ({
   user, app, actions,
 }) => {
@@ -61,35 +58,33 @@ const Header = ({
   const langText = intl.get(`lang.${lang}.short`);
   return (
     <Layout.Header id="header">
-      <Row type="flex" justify="space-between" align="middle">
+      <Row className="flex-row">
         <Col>
           <img className="logo" alt={title} src="/assets/logos/cqgc-white.svg" />
         </Col>
         <div className="secondaryNav">
           { user.username !== null && (
-          <>
-            <div className="navigation">
-              <Row type="flex" justify="space-between" align="middle">
-                <Col className="patientList">
-                  { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
-                  <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link">
-                    <IconKit size={16} icon={ic_supervisor_account} />
-                    { intl.get('header.navigation.patient') }
+            <>
+              <div className="navigation">
+                <Row className="flex-row" justify="space-between" align="middle">
+                  <Col className="patientList">
+                    <a onClick={actions.navigateToPatientSearchScreen} className="ant-dropdown-link" role="button">
+                      <IconKit size={16} icon={ic_supervisor_account} />
+                      { intl.get('header.navigation.patient') }
+                    </a>
+                  </Col>
+                  <Divider type="vertical" />
+                </Row>
+              </div>
+              <Col className="userName">
+                <Dropdown overlay={userMenu(actions)} trigger={['click']}>
+                  <a className="ant-dropdown-link">
+                    <IconKit size={16} icon={ic_account_circle} />
+                    { ` ${user.firstName} ` }
                   </a>
-                </Col>
-                <Divider type="vertical" />
-              </Row>
-            </div>
-            <Col className="userName">
-              <Dropdown overlay={userMenu(actions)} trigger={['click']}>
-                { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
-                <a className="ant-dropdown-link">
-                  <IconKit size={16} icon={ic_account_circle} />
-                  { ` ${user.firstName} ` }
-                </a>
-              </Dropdown>
-            </Col>
-          </>
+                </Dropdown>
+              </Col>
+            </>
           ) }
           <Col>
             { app.locale.lang !== null && (
@@ -115,7 +110,7 @@ Header.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     logoutUser,
     changeLanguage,
@@ -123,7 +118,7 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.user,
   app: state.app,
 });

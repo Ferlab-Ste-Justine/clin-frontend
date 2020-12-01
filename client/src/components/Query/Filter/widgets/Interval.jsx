@@ -3,8 +3,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import style from '../../styles/term.module.scss';
 
-const hasComparator = t => !!t.comparator;
-const isNotMarkedForDeletion = t => !t.markedForDeletion;
+const hasComparator = (t) => !!t.comparator;
+const isNotMarkedForDeletion = (t) => !t.markedForDeletion;
 
 const Interval = ({ terms }) => {
   const termList = terms.filter(hasComparator).filter(isNotMarkedForDeletion);

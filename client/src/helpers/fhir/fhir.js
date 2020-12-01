@@ -15,7 +15,6 @@ const RESOURCE_TYPE_BUNDLE = 'Bundle';
 const RESOURCE_TYPE_OBSERVATION = 'Observation';
 const RESOURCE_TYPE_PRACTITIONER = 'Practitioner';
 
-
 const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
 
 const HL7_CODE_SYSTEM_URL = '';
@@ -28,11 +27,11 @@ export const getResourceCode = (r) => {
   }
 };
 
-export const isCGH = o => getResourceCode(o) === OBSERVATION_CGH_CODE;
-export const isHPO = o => getResourceCode(o) === OBSERVATION_HPO_CODE;
+export const isCGH = (o) => getResourceCode(o) === OBSERVATION_CGH_CODE;
+export const isHPO = (o) => getResourceCode(o) === OBSERVATION_HPO_CODE;
 
-export const isFamilyHistoryResource = resource => resource.resourceType === RESOURCE_TYPE_FAMILY_HISTORY;
-export const isIndication = o => getResourceCode(o) === OBSERVATION_INDICATION_CODE;
+export const isFamilyHistoryResource = (resource) => resource.resourceType === RESOURCE_TYPE_FAMILY_HISTORY;
+export const isIndication = (o) => getResourceCode(o) === OBSERVATION_INDICATION_CODE;
 
 export const cghInterpretation = (cgh) => {
   if (cgh.interpretation && cgh.interpretation.length) {
@@ -90,7 +89,7 @@ export const CGH_VALUES = () => (
 );
 
 export const cghDisplay = (code) => {
-  const item = CGH_VALUES().find(cgh => cgh.value === code);
+  const item = CGH_VALUES().find((cgh) => cgh.value === code);
   if (item) {
     return item.display;
   }
@@ -121,14 +120,14 @@ export const createRequest = (resource) => {
   };
 };
 
-const createFullUrl = resource => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuid()}`);
-const createEntry = resource => ({
+const createFullUrl = (resource) => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuid()}`);
+const createEntry = (resource) => ({
   fullUrl: createFullUrl(resource),
   resource,
   request: createRequest(resource),
 });
 
-const getReference = entry => ({ reference: entry.fullUrl });
+const getReference = (entry) => ({ reference: entry.fullUrl });
 
 export const createClinicalImpressionResource = ({
   id, status, age, date, assessor,
@@ -297,7 +296,7 @@ export const createPractitionerResource = ({
   }
 );
 
-export const createGetPatientDataBundle = id => (
+export const createGetPatientDataBundle = (id) => (
   {
     resourceType: 'Bundle',
     id: 'bundle-request-patient-data',
@@ -336,7 +335,7 @@ export const createGetPractitionersDataBundle = (data) => {
   data.entry.forEach((bundle) => {
     if (bundle.resource.entry != null) {
       bundle.resource.entry.forEach((entry) => {
-        if (get(entry, 'resource.resourceType', '') === 'Practitioner' && ids.find(id => id === entry.resource.id) == null) {
+        if (get(entry, 'resource.resourceType', '') === 'Practitioner' && ids.find((id) => id === entry.resource.id) == null) {
           ids.push(entry.resource.id);
         }
       });
@@ -417,7 +416,10 @@ export const createPatientSubmissionBundle = ({
 
     // CGH
     if (observations.cgh != null && !isEmpty(observations.cgh)) {
-      observations.cgh.subject = patientReference;
+      observations.cgh = {
+        ...observations.cgh,
+        subject: patientReference,
+      };
       const cghEntry = createEntry(observations.cgh);
       bundle.entry.push(cghEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
@@ -425,7 +427,10 @@ export const createPatientSubmissionBundle = ({
 
     // Summary
     if (observations.summary != null && !isEmpty(observations.summary)) {
-      observations.summary.subject = patientReference;
+      observations.summary = {
+        ...observations.summary,
+        subject: patientReference,
+      };
       const summaryEntry = createEntry(observations.summary);
       bundle.entry.push(summaryEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(summaryEntry));
@@ -433,14 +438,17 @@ export const createPatientSubmissionBundle = ({
 
     // Indication
     if (observations.indic != null && !isEmpty(observations.indic)) {
-      observations.indic.subject = patientReference;
+      observations.indic = {
+        ...observations.indic,
+        subject: patientReference,
+      };
       const indicEntry = createEntry(observations.indic);
       bundle.entry.push(indicEntry);
       clinicalImpressionResource.investigation[0].item.push(getReference(indicEntry));
     }
 
     if (observations.fmh != null) {
-      observations.fmh.filter(fmh => !isEmpty(fmh)).forEach((fmh) => {
+      observations.fmh.filter((fmh) => !isEmpty(fmh)).forEach((fmh) => {
         const entry = createEntry({ ...fmh, patient: patientReference });
         bundle.entry.push(entry);
         clinicalImpressionResource.investigation[0].item.push(getReference(entry));
@@ -473,7 +481,7 @@ export const createPatientSubmissionBundle = ({
     const familyGroup = familyGroupBuilder.build();
     const entry = createEntry(familyGroup);
     const familyGroupReference = getReference(entry);
-    patient.extension = patient.extension.filter(extension => extension.url !== familyIdUrl);
+    patient.extension = patient.extension.filter((extension) => extension.url !== familyIdUrl);
     patient.extension.push(
       {
         url: familyIdUrl,
@@ -483,7 +491,7 @@ export const createPatientSubmissionBundle = ({
     bundle.entry.push(entry);
   }
   if (groupId != null) {
-    patient.extension = patient.extension.filter(extension => extension.url !== familyIdUrl);
+    patient.extension = patient.extension.filter((extension) => extension.url !== familyIdUrl);
     patient.extension.push(
       {
         url: familyIdUrl,
@@ -803,10 +811,9 @@ export const hpoOnsetValues = [
   },
 ];
 
-
 export const hpoInterpretationDisplayForCode = (code) => {
   try {
-    return hpoInterpretationValues().find(v => v.value === code).display;
+    return hpoInterpretationValues().find((v) => v.value === code).display;
   } catch (e) {
     return '';
   }
@@ -816,7 +823,7 @@ export const getHPOOnsetDisplayFromCode = (code) => {
   try {
     return hpoOnsetValues()
       .reduce((acc, group) => [...acc, ...group.options], [])
-      .find(option => option.code === code)
+      .find((option) => option.code === code)
       .display;
   } catch (e) {
     return '';
@@ -924,7 +931,7 @@ export const getFamilyRelationshipValues = () => ({
 
 export const getFamilyRelationshipDisplayForCode = (code) => {
   try {
-    return Object.values(getFamilyRelationshipValues()).find(v => v.value === code).label;
+    return Object.values(getFamilyRelationshipValues()).find((v) => v.value === code).label;
   } catch (e) {
     return '';
   }

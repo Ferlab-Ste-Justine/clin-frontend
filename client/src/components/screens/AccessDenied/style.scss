@@ -1,55 +1,55 @@
 @import '../../../containers/App/variables.scss';
 
 .accessDeniedBackground{
+  height: 100%;
+  background: #EDF0F3;
+  .ant-card-body{
     height: 100%;
-    background: #EDF0F3;
-    .ant-card-body{
-        height: 100%;
-    }
-    .accessDeniedContent{
-        height: 100%;
+  }
+  .accessDeniedContent{
+    height: 100%;
 
-        .ant-row{
-            display: flex;
-            justify-content: center;
-            flex-basis: 100%;
+    .ant-row{
+      display: flex;
+      justify-content: center;
+      flex-basis: 100%;
             
-            span{
-                font-family: $font;
-            }
-            .iconLock{
-                color: #FF4D4F;
-                margin-bottom: 24px;
-                margin-top: 128px;
+      span{
+        font-family: $font;
+      }
+      .iconLock{
+        color: #FF4D4F;
+        margin-bottom: 24px;
+        margin-top: 128px;
                 
-            }
-            .title{
-                font-weight: 500;
-                font-size: 24px;
-                line-height: 32px;
-                margin-bottom: 8px;
-                color: #233750;
-            }
+      }
+      .title{
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 32px;
+        margin-bottom: 8px;
+        color: #233750;
+      }
 
-            .text{
-                font-size: 14px;
-                line-height: 22px;
-                letter-spacing: 0.25px;
-                color: #536377;
-                margin-bottom: 32px !important;
-            }
+      .text{
+        font-size: 14px;
+        line-height: 22px;
+        letter-spacing: 0.25px;
+        color: #536377;
+        margin-bottom: 32px !important;
+      }
 
-            .buttonBack{
-                background: #1D8BC6;
-                border-radius: 2px;
-                border:none;
-                font-family: $font;
-                font-size: 14px;
-                line-height: 22px;
-                color: #FFFFFF;
-                padding: 5px 16px;
-            }
-        }
+      .buttonBack{
+        background: #1D8BC6;
+        border-radius: 2px;
+        border:none;
+        font-family: $font;
+        font-size: 14px;
+        line-height: 22px;
+        color: #FFFFFF;
+        padding: 5px 16px;
+      }
     }
+  }
 
 }

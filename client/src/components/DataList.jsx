@@ -4,7 +4,6 @@ import {
   Card, List, Row, Col, Typography, Empty,
 } from 'antd';
 
-
 const DataList = (props) => {
   const {
     title, dataSource, style, extraInfo,
@@ -16,7 +15,7 @@ const DataList = (props) => {
         locale={{
           emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
         }}
-        renderItem={item => (
+        renderItem={(item) => (
           <List.Item className="listRow">
             <Row type="flex" justify="space-between" align="middle" style={{ width: '100%' }}>
               <Col className="rowTitle">

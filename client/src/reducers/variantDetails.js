@@ -18,7 +18,7 @@ export const variantDetailsShape = {
   data: PropTypes.shape({}),
 };
 
-const variantDetailsReducer = (state = Object.assign({}, initialVariantDetailsState), action) => produce(state, (draft) => {
+const variantDetailsReducer = (state = ({ ...initialVariantDetailsState }), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.VARIANT_ID_SET:
       draft.variantID = action.payload;

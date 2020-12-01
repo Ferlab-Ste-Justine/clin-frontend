@@ -33,7 +33,7 @@ export type Prescription = {
 };
 
 export type ClinicalObservation = {
-  observed: "NEG" | "POS" | "IND";
+  observed: 'NEG' | 'POS' | 'IND';
   term: string;
   ageAtOnset: string;
   note: string;
@@ -51,4 +51,4 @@ export type ConsultationSummary = {
   hypothesis: string;
 };
 
-export type PositionType = "proband" | "parent";
+export type PositionType = 'proband' | 'parent';

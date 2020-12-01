@@ -21,7 +21,6 @@ import {
   ROUTE_NAME_VARIANT,
 } from '../helpers/route';
 
-
 function* navigateToVariantDetailsScreen(action) {
   try {
     const { uid, tab } = action.payload;
@@ -43,7 +42,7 @@ function* navigateToPatientScreen(action) {
     if (tab) { url += `/#${tab}`; }
 
     // @NOTE Only fetch patient if it is not the currently active one
-    const { patient } = yield select(state => state.patient);
+    const { patient } = yield select((state) => state.patient);
     if (get(patient, 'parsed.id', '') !== uid) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
@@ -67,7 +66,7 @@ function* navigateToPatientVariantScreen(action) {
     if (tab) { url += `/#${tab}`; }
 
     // @NOTE Only fetch patient if it is not the currently active one
-    const { patient } = yield select(state => state.patient);
+    const { patient } = yield select((state) => state.patient);
     if (get(patient, 'parsed.id', '') !== uid) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
@@ -96,7 +95,7 @@ function* navigateToSubmissionScreen() {
 
 function* navigateToSubmissionScreenWithPatient() {
   try {
-    const patient = yield select(state => state.patient);
+    const patient = yield select((state) => state.patient);
     yield put(push(yield put(push('/submission'))));
     window.scrollTo(0, 0);
     yield put({ type: actions.PATIENT_SUBMISSION_UPDATE_DATA, payload: { patient } });
@@ -131,7 +130,7 @@ function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
 
   if (isFirstRendering) {
-    const { referrer } = yield select(state => state.app);
+    const { referrer } = yield select((state) => state.app);
     const location = !referrer.location ? action.payload : referrer.location;
     const { pathname, search, hash } = location;
     const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);

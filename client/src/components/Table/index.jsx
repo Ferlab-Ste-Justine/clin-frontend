@@ -25,28 +25,28 @@ export const createCellRenderer = (type, getData, options = {}) => {
     switch (type) {
       default:
       case 'text':
-        valueRenderer = value => (
-          <Fragment>
+        valueRenderer = (value) => (
+          <>
             <Typography.Text {...options.style} type={options.type} ellipsis>{ value }</Typography.Text>
-          </Fragment>
+          </>
         );
         break;
       case 'paragraph':
-        valueRenderer = value => (
-          <Fragment>
+        valueRenderer = (value) => (
+          <>
             <Typography.Paragraph ellipsis>{ value }</Typography.Paragraph>
-          </Fragment>
+          </>
         );
         break;
       case 'capitalText':
-        valueRenderer = value => (
-          <Fragment>
+        valueRenderer = (value) => (
+          <>
             <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{ value }</Typography.Text>
-          </Fragment>
+          </>
         );
         break;
       case 'link':
-        valueRenderer = value => (
+        valueRenderer = (value) => (
           <a
             type="link"
             href={(options.renderer ? options.renderer(value) : '#')}
@@ -57,7 +57,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
         );
         break;
       case 'wrapTextLink':
-        valueRenderer = value => (
+        valueRenderer = (value) => (
           <div className="wrapTextLinkContainer">
             <a
               type="link"
@@ -70,8 +70,8 @@ export const createCellRenderer = (type, getData, options = {}) => {
         );
         break;
       case 'button':
-        valueRenderer = value => (
-          <Fragment>
+        valueRenderer = (value) => (
+          <>
             <Button
               type={options.type}
               size={options.size}
@@ -83,11 +83,11 @@ export const createCellRenderer = (type, getData, options = {}) => {
             >
               { options.label || value }
             </Button>
-          </Fragment>
+          </>
         );
         break;
       case 'tooltipButton':
-        valueRenderer = value => (
+        valueRenderer = (value) => (
           <Tooltip title={options.label || value} mouseEnterDelay={1}>
             <Button
               type={options.type}
@@ -104,10 +104,10 @@ export const createCellRenderer = (type, getData, options = {}) => {
         );
         break;
       case 'badge':
-        valueRenderer = value => (<Badge count={value} />);
+        valueRenderer = (value) => (<Badge count={value} />);
         break;
       case 'dot':
-        valueRenderer = value => (<Badge className="badge" color={options.renderer(value)} text={value} />);
+        valueRenderer = (value) => (<Badge className="badge" color={options.renderer(value)} text={value} />);
         break;
       case 'custom':
         valueRenderer = options.renderer;
@@ -210,7 +210,7 @@ class DataTable extends React.Component {
       enableResizing,
       renderContextMenuCallback,
       reorderColumnsCallback,
-      resizeColumnCallback,
+      onColumnWidthChanged,
       numFrozenColumns,
       enableGhostCells,
       enableRowHeader,
@@ -260,17 +260,17 @@ class DataTable extends React.Component {
         enableColumnResizing={enableResizing}
         bodyContextMenuRenderer={renderContextMenuCallback}
         onColumnsReordered={handleColumnsReordered}
-        onColumnWidthChanged={resizeColumnCallback}
+        onColumnWidthChanged={onColumnWidthChanged}
         rowHeights={rowHeights}
         getCellClipboardData={(row, col) => `(${row}, ${col})`}
-        columnWidths={columns.map(c => c.columnWidth)}
+        columnWidths={columns.map((c) => c.columnWidth)}
         enableRowHeader={enableRowHeader}
         selectionMode={SelectionModes.ROWS_AND_CELLS}
         // selectionMode={SelectionModes.NONE}
         onCopy={this.copyCallback}
         onSelection={this.selectionCallback}
       >
-        { columns.map(definition => (
+        { columns.map((definition) => (
           <Column
             key={shortid.generate()}
             id={definition.key}
@@ -294,7 +294,7 @@ DataTable.propTypes = {
   enableGhostCells: PropTypes.bool,
   renderContextMenuCallback: PropTypes.func,
   reorderColumnsCallback: PropTypes.func,
-  resizeColumnCallback: PropTypes.func,
+  onColumnWidthChanged: PropTypes.func,
   getData: PropTypes.func,
   rowHeights: PropTypes.array,
   enableRowHeader: PropTypes.bool,
@@ -310,7 +310,7 @@ DataTable.defaultProps = {
   enableGhostCells: false,
   renderContextMenuCallback: () => {},
   reorderColumnsCallback: () => {},
-  resizeColumnCallback: () => {},
+  onColumnWidthChanged: () => {},
   getData: () => {},
   rowHeights: [],
   enableRowHeader: true,

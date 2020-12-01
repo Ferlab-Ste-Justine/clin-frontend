@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Route, withRouter } from 'react-router-dom';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PublicRoute = ({ Component, roles, ...rest }) => (
   <Route
     {...rest}
-    render={props => (
+    render={(props) => (
       <Component {...props} />
     )}
   />

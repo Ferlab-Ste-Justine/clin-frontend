@@ -1,7 +1,6 @@
 import * as actions from './type';
 
-
-export const navigate = location => ({
+export const navigate = (location) => ({
   type: actions.ROUTER_NAVIGATION_REQUESTED,
   payload: {
     location,

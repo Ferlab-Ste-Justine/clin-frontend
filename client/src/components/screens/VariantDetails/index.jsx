@@ -6,9 +6,9 @@ import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import uuidv1 from 'uuid/v1';
+import { v1 as uuidv1 } from 'uuid';
 import {
-  Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Icon, Tooltip, Card,
+  Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Tooltip, Card,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
@@ -22,7 +22,6 @@ import './style.scss';
 import fetchVariantDetails from '../../../actions/variantDetails';
 import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
 import Layout from '../../Layout';
-
 
 const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';
@@ -40,11 +39,11 @@ const COLUMN_WIDTH = {
 
 };
 
-const columnPresetToColumn = c => ({
+const columnPresetToColumn = (c) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
-const header = title => (
+const header = (title) => (
   <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{ title }</Typography.Title>
 );
 
@@ -133,7 +132,7 @@ const impact = (c) => {
       ? (<li><span className="consequenceTerm">DANN score: </span>{ c.predictions.dann_score }</li>) : null;
     const revel = c.predictions && c.predictions.revel_rankscore
       ? (<li><span className="consequenceTerm">REVEL score: </span>{ c.predictions.revel_rankscore }</li>) : null;
-    items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter(item => !!item));
+    items = items.concat([sift, polyphen2, lrt, fathmm, cadd, dann, revel].filter((item) => !!item));
   }
   return (
     <>
@@ -162,14 +161,14 @@ class VariantDetailsScreen extends React.Component {
       {
         key: 'geneAffectedId',
         label: 'screen.variantDetails.summaryTab.consequencesTable.GeneColumn',
-        renderer: c => (
+        renderer: (c) => (
           <Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${c.ensembl_gene_id}`} text={c.symbol} /> || ''
         ),
       },
       {
         key: 'aaChange',
         label: 'screen.variantDetails.summaryTab.consequencesTable.AAColumn',
-        renderer: c => c.aa_change || '',
+        renderer: (c) => c.aa_change || '',
       },
       {
         key: 'consequence',
@@ -177,7 +176,7 @@ class VariantDetailsScreen extends React.Component {
           'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn',
         renderer: (c) => {
           const valueArray = c.consequence.split('_');
-          const arrayFilter = valueArray.filter(item => item !== 'variant');
+          const arrayFilter = valueArray.filter((item) => item !== 'variant');
           const finalString = arrayFilter.join(' ');
           return <span className="capitalize">{ finalString }</span>;
         },
@@ -186,19 +185,19 @@ class VariantDetailsScreen extends React.Component {
         key: 'cdnaChange',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.CDNAChangeColumn',
-        renderer: c => c.coding_dna_change || '',
+        renderer: (c) => c.coding_dna_change || '',
       },
       {
         key: 'strand',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.StrandColumn',
-        renderer: c => (c.strand === +1 ? '+' : '-'),
+        renderer: (c) => (c.strand === +1 ? '+' : '-'),
       },
       {
         key: 'impact',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.ImpactColumn',
-        renderer: c => impact(c),
+        renderer: (c) => impact(c),
       },
       {
         key: 'PhyloP17Way',
@@ -340,7 +339,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{ o }</li>));
+              const lis = data.orphanet.map((o) => (<li key={shortid.generate()}>{ o }</li>));
               return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
@@ -355,7 +354,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{ r }</li>));
+              const lis = data.radboudumc.map((r) => (<li key={shortid.generate()}>{ r }</li>));
               return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
@@ -381,7 +380,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.orphanet.map(o => (<li key={shortid.generate()}>{ o }</li>));
+              const lis = data.orphanet.map((o) => (<li key={shortid.generate()}>{ o }</li>));
               return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
@@ -396,7 +395,7 @@ class VariantDetailsScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => {
             try {
-              const lis = data.radboudumc.map(r => (<li key={shortid.generate()}>{ r }</li>));
+              const lis = data.radboudumc.map((r) => (<li key={shortid.generate()}>{ r }</li>));
               return (<ul>{ lis }</ul>);
             } catch (e) {
               return '';
@@ -578,12 +577,14 @@ class VariantDetailsScreen extends React.Component {
         frequencies,
       } = data;
 
-      const internalCohortsKeys = Object.keys(frequencies).filter(k => k === 'internal' || k.indexOf('LDx') !== -1);
+      const internalCohortsKeys = Object.keys(frequencies).filter((k) => k === 'internal' || k.indexOf('LDx') !== -1);
       const totalKey = 'Total';
       let totalValue = null;
       const rows = [];
       internalCohortsKeys.forEach((key) => {
-        const frequency = frequencies[key];
+        const frequency = {
+          ...frequencies[key],
+        };
         const isInterne = key === 'internal';
         frequency.key = isInterne ? totalKey : key;
         frequency.af = Number.parseFloat(frequency.af).toExponential(5);
@@ -618,9 +619,11 @@ class VariantDetailsScreen extends React.Component {
       } = data;
 
       const url = `https://gnomad.broadinstitute.org/variant/${chromosome}-${start}-${reference}-${alternate}?dataset=gnomad_r3`;
-      const externalCohortsKeys = Object.keys(frequencies).filter(k => k !== 'internal' && k.indexOf('LDx') === -1);
+      const externalCohortsKeys = Object.keys(frequencies).filter((k) => k !== 'internal' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
-        const frequency = frequencies[key];
+        const frequency = {
+          ...frequencies[key],
+        };
         frequency.key = key;
         frequency.af = Number.parseFloat(frequency.af).toExponential(5);
         frequency.info = (
@@ -677,10 +680,10 @@ class VariantDetailsScreen extends React.Component {
     };
 
     return this.getGenes()
-      .filter(gene => gene.radboudumc != null || gene.orphanet != null)
+      .filter((gene) => gene.radboudumc != null || gene.orphanet != null)
       .map((g) => {
         // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-        const test = g.orphanet ? g.orphanet.map(on => (orphanetLink(on))) : null;
+        const test = g.orphanet ? g.orphanet.map((on) => (orphanetLink(on))) : null;
         const orphanetLine = test || '--';
         return { symbol: g.symbol, orphanet: (<span className="orphanetValue">{ orphanetLine }</span>) };
       });
@@ -694,12 +697,12 @@ class VariantDetailsScreen extends React.Component {
         <span>{ g.symbol } { g.omim_gene_id
           ? (
             <Fragment key={shortid.generate()}>
-            (MIM:
+              (MIM:
               <Link
                 url={`https://omim.org/entry/${g.omim_gene_id}`}
                 text={g.omim_gene_id}
               />
-            )
+              )
             </Fragment>
           ) : '' }
         </span>
@@ -707,7 +710,7 @@ class VariantDetailsScreen extends React.Component {
       let phenotype = '--';
       let transmission = '--';
       if (g.omim && g.omim.length > 0) {
-        phenotype = g.omim.map(o => (
+        phenotype = g.omim.map((o) => (
           <li key={shortid.generate()}>
             { o.name } (MIM:
             <Link
@@ -737,10 +740,9 @@ class VariantDetailsScreen extends React.Component {
     const { data } = variantDetails;
     const { genes } = data;
 
-    if (genes.filter(g => !!g.hpo).length > 0) {
-      return genes.map((g, index) => {
+    if (genes.filter((g) => !!g.hpo).length > 0) {
+      return genes.map((g) => {
         const lis = g.hpo ? g.hpo.map((h) => {
-          console.log('hpo', h);
           const url = `https://hpo.jax.org/app/browse/term/${h.hpo_term_id}`;
           return (<a href={url}>{ h.hpo_term_label }</a>);
         }) : '--';
@@ -750,7 +752,7 @@ class VariantDetailsScreen extends React.Component {
             {
               lis !== '--' ? (
                 <span className="iconPlus">
-                  <Icon onClick={() => this.handleMoreHpo(index)} type="plus" />
+                  { /* <Icon onClick={() => this.handleMoreHpo(index)} type="plus" /> */ }
                 </span>
               ) : null
             }
@@ -840,9 +842,9 @@ class VariantDetailsScreen extends React.Component {
       HPOColumnPreset,
       donorsColumnPreset,
     } = this.state;
-    const impactsSummary = consequences.map(c => impactSummary(c)).filter(i => !!i).map(i => (<li key={uuidv1()}>{ i }</li>));
+    const impactsSummary = consequences.map((c) => impactSummary(c)).filter((i) => !!i).map((i) => (<li key={uuidv1()}>{ i }</li>));
 
-    const omimLinks = omims => omims.map(o => (
+    const omimLinks = (omims) => omims.map((o) => (
       <div className="variantPageContentRow">
         <Link
           className="link"
@@ -927,14 +929,12 @@ class VariantDetailsScreen extends React.Component {
                           label: 'Gène(s)',
                           value: (
                             <ul>
-                              { genes.map(g => (
+                              { genes.map((g) => (
                                 <li key={g.symbol}>
-                                  {
-                                    <Link
-                                      url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensembl_gene_id}`}
-                                      text={g.symbol}
-                                    />
-                                  }
+                                  <Link
+                                    url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${g.ensembl_gene_id}`}
+                                    text={g.symbol}
+                                  />
                                 </li>
                               )) }
                             </ul>
@@ -956,7 +956,6 @@ class VariantDetailsScreen extends React.Component {
                   <Col className="refExt" span={8}>
                     <DataList
                       title="Références externes"
-
                       dataSource={ext_db ? [
                         {
                           label: 'Clin Var',
@@ -972,52 +971,52 @@ class VariantDetailsScreen extends React.Component {
                         {
                           label: 'OMIM',
                           value:
-                          ext_db && ext_db.is_omim ? (
-                            <div className="variantPageContentRow">
-                              { omimLinks(omim) }
-                            </div>
-                          ) : (
-                            '--'
-                          ),
+                            ext_db && ext_db.is_omim ? (
+                              <div className="variantPageContentRow">
+                                { omimLinks(omim) }
+                              </div>
+                            ) : (
+                              '--'
+                            ),
                         },
                         {
                           label: 'dbSNP',
                           value:
-                          ext_db && ext_db.is_dbsnp ? (
-                            <Link
-                              url={`https://www.ncbi.nlm.nih.gov/snp/${dbsnp}`}
-                              text={dbsnp}
-                            />
-                          ) : (
-                            '--'
-                          ),
+                            ext_db && ext_db.is_dbsnp ? (
+                              <Link
+                                url={`https://www.ncbi.nlm.nih.gov/snp/${dbsnp}`}
+                                text={dbsnp}
+                              />
+                            ) : (
+                              '--'
+                            ),
                         },
                         {
                           label: 'Pubmed',
                           value:
-                          ext_db && ext_db.is_pubmed
-                            ? (
-                              <>
-                                {
-                                  pubmed.length === 1
-                                    ? (
-                                      <Link
-                                        className="link"
-                                        url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed[0]}`}
-                                        text={`${pubmed.length} publication`}
-                                      />
-                                    )
-                                    : (
-                                      <Link
-                                        className="link"
-                                        url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed.join('+')}`}
-                                        text={`${pubmed.length} publications`}
-                                      />
-                                    )
-                                }
-                              </>
-                            )
-                            : '--',
+                            ext_db && ext_db.is_pubmed
+                              ? (
+                                <>
+                                  {
+                                    pubmed.length === 1
+                                      ? (
+                                        <Link
+                                          className="link"
+                                          url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed[0]}`}
+                                          text={`${pubmed.length} publication`}
+                                        />
+                                      )
+                                      : (
+                                        <Link
+                                          className="link"
+                                          url={`https://www.ncbi.nlm.nih.gov/pubmed?term=${pubmed.join('+')}`}
+                                          text={`${pubmed.length} publications`}
+                                        />
+                                      )
+                                  }
+                                </>
+                              )
+                              : '--',
                         },
                       ] : []}
                     />
@@ -1031,7 +1030,7 @@ class VariantDetailsScreen extends React.Component {
                           value: (
                             <span>
                               <Button className="patientLink" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.ac }</Button>
-                            /{ frequencies.internal.an }
+                              /{ frequencies.internal.an }
                             </span>),
                         },
                         {
@@ -1211,8 +1210,7 @@ class VariantDetailsScreen extends React.Component {
                     <Row>
                       <Col>
                         <div>
-                          { `${
-                            this.getDonors().length
+                          { `${this.getDonors().length
                           } patient(s) sont porteur(s) de ce variant` }
                         </div>
                       </Col>
@@ -1247,14 +1245,14 @@ VariantDetailsScreen.propTypes = {
   router: PropTypes.shape({}).isRequired,
   variantDetails: PropTypes.shape({}).isRequired,
 };
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     fetchVariantDetails,
     navigateToPatientScreen,
     navigateToVariantDetailsScreen,
   }, dispatch),
 });
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   app: state.app,
   router: state.router,
   user: state.user,

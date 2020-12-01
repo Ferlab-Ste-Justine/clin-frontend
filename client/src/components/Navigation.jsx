@@ -10,7 +10,6 @@ import {
 import { userShape } from '../reducers/user';
 import { navigateToPatientSearchScreen, navigate } from '../actions/router';
 
-
 const navigationMenu = (router, actions) => {
   const patientSearch = intl.get('navigation.main.searchPatient');
   let tabForRoute = router.location.pathname;
@@ -52,14 +51,14 @@ Navigation.propTypes = {
   router: PropTypes.shape({}).isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     navigateToPatientSearchScreen,
     navigate,
   }, dispatch),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.user,
   router: state.router,
 });

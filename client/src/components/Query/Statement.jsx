@@ -8,7 +8,7 @@ import {
 import {
   cloneDeep, find, findIndex, pull, isEmpty, isEqual,
 } from 'lodash';
-import uuidv1 from 'uuid/v1';
+import { v1 as uuidv1 } from 'uuid';
 import DragSortableList from 'react-drag-sortable';
 import IconKit from 'react-icons-kit';
 import {
@@ -24,6 +24,8 @@ import {
 import { calculateTitleWidth } from './helpers/query';
 import './styles/statement.scss';
 import styleStatement from './styles/statement.module.scss';
+
+import { InfoCircleFilled, StarFilled } from '@ant-design/icons';
 
 class Statement extends React.Component {
   constructor(props) {
@@ -702,7 +704,10 @@ class Statement extends React.Component {
       if (isDirty) { classNames.push(styleStatement.dirtyContainer); }
       if (isActive) { classNames.push(styleStatement.activeContainer); } else { classNames.push(styleStatement.inactiveContainer); }
       if (!query.title) {
-        query.title = intl.get('screen.patientvariant.query.title.increment', {count: (index + 1)});
+        query = {
+          ...query, 
+          title: intl.get('screen.patientvariant.query.title.increment', {count: (index + 1)})
+        };
       }
 
       return [...accumulator, (
@@ -788,18 +793,18 @@ class Statement extends React.Component {
 
         </Modal>
         <div className={styleStatement.header}>
-          <Row type="flex" align={"bottom"} className={styleStatement.toolbar}>
+          <Row align={"bottom"} className={`flex-row ${styleStatement.toolbar}`}>
             <div className={styleStatement.message}>
               {this.isDirty() && (
               <>
-                <Icon type="info-circle" className={styleStatement.icon} />
+                <InfoCircleFilled />
                 { intl.get('screen.patientvariant.form.statement.unsavedChanges') }
               </>
               )}
               {!this.isDirty() && (<>&nbsp;</>)}
             </div>
           </Row>
-          <Row type="flex" className={styleStatement.toolbar}>
+          <Row  className={`flex-row ${styleStatement.toolbar}`}>
             <div className={styleStatement.navigation}>
               <div>
                 <div className={styleStatement.title}>
@@ -858,11 +863,12 @@ class Statement extends React.Component {
                       onClick={this.toggleStatementAsDefault}
                       disabled={activeStatementId == null}
                     >
-                      <Icon
+                      <StarFilled></StarFilled>
+                      {/* <Icon
                         className={(activeStatement.uid === defaultStatementId) ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
                         type="star"
                         theme={(activeStatement.uid === defaultStatementId) ? 'filled' : 'outlined'}
-                      />
+                      /> */}
                     </Button>
                   </Tooltip>
                   )}
@@ -979,14 +985,14 @@ class Statement extends React.Component {
                                   className={styleStatement.displayOnHover}
                                 />
                               </Popconfirm>
-                              { (<Icon
+                              {/* { (<Icon
                                 type="star"
                                 size={20}
                                 className={(key === defaultStatementId) ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
                                 theme={(key === defaultStatementId) ? 'filled' : 'outlined'}
                                 dataid={(statements[key].uid === defaultStatementId) ? '' : statements[key].uid}
                                 onClick={this.toggleStatementAsDefault}
-                              />)}
+                              />)} */}
                             </div>
                           </Menu.Item>
                         ))

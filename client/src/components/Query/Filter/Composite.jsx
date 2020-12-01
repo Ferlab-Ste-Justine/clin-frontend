@@ -30,7 +30,7 @@ const SCORE_SELECTION = '_score_';
 const VALUE_TICK = 0.01;
 const VALUE_DECIMALS = 2;
 
-const hasNoComparator = v => !v.comparator;
+const hasNoComparator = (v) => !v.comparator;
 
 class CompositeFilter extends React.Component {
   /* @NOTE SQON Struct Sample
@@ -63,7 +63,7 @@ class CompositeFilter extends React.Component {
   ]) {
     return {
       comparator,
-      values: values.filter(term => !term.markedForDeletion),
+      values: values.filter((term) => !term.markedForDeletion),
     };
   }
 
@@ -106,17 +106,17 @@ class CompositeFilter extends React.Component {
     const { data, dataSet } = props;
     this.state.draft = cloneDeep(data);
 
-    const selection = data.values ? cloneDeep(data.values.filter(hasNoComparator)).map(v => v.value) : [];
+    const selection = data.values ? cloneDeep(data.values.filter(hasNoComparator)).map((v) => v.value) : [];
 
     const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
     this.state.selection = selection;
     this.state.page = 1;
     this.state.size = 10;
     if (selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
+      const value = filter(cloneDeep(dataSet), (o) => selection.includes(o.value));
       if (value.length === 0) {
         const selectedValue = [];
-        selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        selection.map((x) => selectedValue.push({ value: x, count: 0 }));
         allOptions.unshift(...selectedValue);
       } else {
         const sorted = orderBy(value, ['count'], ['desc']);
@@ -188,20 +188,22 @@ class CompositeFilter extends React.Component {
 
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
-                { options.map(option => (
-                  <Row>
-                    <Col>
-                      <Checkbox
-                        className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
-                        value={option.value}
-                        disabled={!selectionActive}
-                      >
-                        { option.label }
-                      </Checkbox>
-                    </Col>
-                  </Row>
-                )) }
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+                <div className="scrollFilter" ref={(ref) => { this.scrollParentRef = ref; }}>
+                  { options.map((option) => (
+                    <Row>
+                      <Col className="checkboxLine">
+                        <Checkbox
+                          className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
+                          value={option.value}
+                          disabled={!selectionActive}
+                        >
+                          { option.label }
+                        </Checkbox>
+                      </Col>
+                    </Row>
+                  )) }
+                </div>
               </Checkbox.Group>
             </Col>
           </Row>
@@ -214,7 +216,7 @@ class CompositeFilter extends React.Component {
     const { draft } = this.state;
     const { id, comparator, values } = draft;
 
-    const trimmedValues = values.filter(v => !v.markedForDeletion);
+    const trimmedValues = values.filter((v) => !v.markedForDeletion);
 
     const composition = comparator
       ? CompositeFilter.numericalCompositionStructFromArgs(comparator, trimmedValues)
@@ -227,7 +229,7 @@ class CompositeFilter extends React.Component {
     const { data } = this.props;
     const { id, comparator, values } = data;
 
-    const trimmedValues = values.filter(v => !v.markedForDeletion);
+    const trimmedValues = values.filter((v) => !v.markedForDeletion);
     const composition = comparator
       ? CompositeFilter.numericalCompositionStructFromArgs(comparator, trimmedValues)
       : CompositeFilter.qualityCompositionStructFromArgs(trimmedValues);
@@ -244,7 +246,7 @@ class CompositeFilter extends React.Component {
 
     const labels = {
       action: comparator || 'selection',
-      targets: data.values.map(v => v.value),
+      targets: data.values.map((v) => v.value),
     };
 
     return labels;
@@ -355,7 +357,7 @@ class CompositeFilter extends React.Component {
       } else if (values.includes(x.value)) { selection.push(x.value); }
     });
 
-    draft.values = selection.filter(s => !s.comparator).map(v => ({ value: v }));
+    draft.values = selection.filter((s) => !s.comparator).map((v) => ({ value: v }));
     draft.type = FILTER_TYPE_GENERIC;
     this.setState({
       selection,
@@ -390,7 +392,7 @@ class CompositeFilter extends React.Component {
     } = this.props;
 
     const draftClone = cloneDeep(draft);
-    draftClone.values = draftClone.values.filter(term => !term.markedForDeletion);
+    draftClone.values = draftClone.values.filter((term) => !term.markedForDeletion);
 
     const vals = draftClone.values;
 

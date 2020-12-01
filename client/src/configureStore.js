@@ -86,7 +86,6 @@ const configureStoreProd = (preloadedState = {}) => {
   return store;
 };
 
-
 export default function configureStore(preloadedState = {}) {
   if (process.env.NODE_ENV === 'development') {
     return configureStoreDev(preloadedState);

@@ -1,5 +1,5 @@
 $use-all: true;
-@import '/../../../../node_modules/animate-sass/animate';
+@import '~animate-sass/animate';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 @import './variables.scss';
 @import '../../style/themes/colors.scss';
@@ -29,60 +29,61 @@ body{
 }
 
 header#header {
-height: 56px;
-background: $primary-blue;
-border-radius: 0px;
-padding:12px 0 0 40px ;
-line-height: 0;
+  height: 56px;
+  background: $primary-blue;
+  border-radius: 0px;
+  padding:12px 0 0 40px ;
+  line-height: 0;
 
   h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
     line-height: unset;
     color: $header-font-color;
   }
 
-    img.logo {
-      height: 32px;
-    };
+  img.logo {
+    height: 32px;
+  };
 
   .secondaryNav{
-      padding-left:56px;
-      padding-right:40px;
-      display:flex;
-      align-items: center;
-      .userName{
-          padding-right:24px
-      }
-      a{
-        color:$text-onprimary-medium;
-        padding-top: 2px;
-        letter-spacing: 1.25px;
-        text-transform: uppercase;
-        font-family: $font;
-        font-weight: 500;
-        font-size: 12px;
-        height: 16px;
+    padding-left:56px;
+    padding-right:40px;
+    display:flex;
+    align-items: center;
+    margin-left: auto;
+    .userName{
+      padding-right:24px
+    }
+    a{
+      color:$text-onprimary-medium;
+      padding-top: 2px;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+      font-family: $font;
+      font-weight: 500;
+      font-size: 12px;
+      height: 16px;
 
-          i{
-            padding-right: 8px;
-            position:relative;
-            top:-2px;
-              svg{
-                width: 20px;
-                height: 20px;
-              }
-          };
+      i{
+        padding-right: 8px;
+        position:relative;
+        top:-2px;
+        svg{
+          width: 20px;
+          height: 20px;
+        }
       };
+    };
 
-      .ant-divider{
-        height:32px;
-        background-color:rgba(255, 255, 255, 0.54);
-        margin:0 28px;
+    .ant-divider{
+      height:32px;
+      background-color:rgba(255, 255, 255, 0.54);
+      margin:0 28px;
 
-      }
-      a:hover{
-        color:#ffffff;
-        text-decoration:none;
-      }
+    }
+    a:hover{
+      color:#ffffff;
+      text-decoration:none;
+    }
   }
 }
 
@@ -113,58 +114,58 @@ footer#footer {
     align-items:center;
 
     .footerNav{
-        width: 1200px;
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin:0 auto;
-        padding:0 24px;
+      width: 1200px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:0 auto;
+      padding:0 24px;
 
-        .logo{
-          margin-top: -7px;
-          height:57px;
-        }
+      .logo{
+        margin-top: -7px;
+        height:57px;
+      }
 
-        .navTitle{
-          font-family: $font;
-          font-weight: 500;
-          letter-spacing: 0.25px;
-          font-size: 20px;
-          color: rgb(255, 255, 255);
-          margin-bottom:8px;
-          display:block
-        }
+      .navTitle{
+        font-family: $font;
+        font-weight: 500;
+        letter-spacing: 0.25px;
+        font-size: 20px;
+        color: rgb(255, 255, 255);
+        margin-bottom:8px;
+        display:block
+      }
 
-        ul{
-          list-style-type:none;
-          margin:0;
-          padding:0;
-          font-family: $font;
-          font-size: 14px;
-          letter-spacing: 0.25px;
-          line-height: 20px;
+      ul{
+        list-style-type:none;
+        margin:0;
+        padding:0;
+        font-family: $font;
+        font-size: 14px;
+        letter-spacing: 0.25px;
+        line-height: 20px;
 
-          li{
-            padding-bottom:8px;
-              i{
-                margin-right:4px;
-                color:rgba(255, 255, 255, 0.54);
-                svg{
-                  width:16px;
-                  height:16px;
-                }
-              }
+        li{
+          padding-bottom:8px;
+          i{
+            margin-right:4px;
+            color:rgba(255, 255, 255, 0.54);
+            svg{
+              width:16px;
+              height:16px;
+            }
+          }
 
-              a{
-                color:#ffffff;
-              }
-              a:hover{
-                i{
-                    color:#ffffff
-                }
-              }
+          a{
+            color:#ffffff;
+          }
+          a:hover{
+            i{
+              color:#ffffff
+            }
           }
         }
+      }
     }
   }
 
@@ -174,45 +175,45 @@ footer#footer {
     height:104px;
 
     .footerLogo{
+      display:flex;
+      justify-content:space-between;
+      width:1200px;
+      margin:0 auto;
+      padding:0 24px;
+
+      nav{
         display:flex;
-        justify-content:space-between;
-        width:1200px;
-        margin:0 auto;
-        padding:0 24px;
+        align-items:center;
+        width:90%;
+        ul {
 
-        nav{
-            display:flex;
-            align-items:center;
-            width:90%;
-            ul {
+          padding:0;
+          margin:0;
+          list-style-type:none;
+          width:100%;
 
-                padding:0;
-                margin:0;
-                list-style-type:none;
-                width:100%;
+          li{
+            display:inline-block;
+            font-family: $font;
+            font-size: 14px;
+            letter-spacing: 0.25px;
+            line-height: 20px;
+            padding-right: 2%;
 
-               li{
-                    display:inline-block;
-                    font-family: $font;
-                    font-size: 14px;
-                    letter-spacing: 0.25px;
-                    line-height: 20px;
-                    padding-right: 2%;
-
-                    a{
-                        color: rgba(35, 55, 80, 0.78);
-                    }
-
-                    a:hover{
-                        color:#233750;
-                    }
-                }
+            a{
+              color: rgba(35, 55, 80, 0.78);
             }
+
+            a:hover{
+              color:#233750;
+            }
+          }
         }
-        img{
-            height: 55px;
-            width: 184px;
-        }
+      }
+      img{
+        height: 55px;
+        width: 184px;
+      }
     }
 
 
@@ -241,7 +242,7 @@ div.ant-page-header {
 div.ant-spin-nested-loading, div.ant-spin-container, div.ant-col-24, div#spinner, section#layout, div#content {
   display: flex;
   flex-direction: column;
-  }
+}
 
 div.ant-card {
   flex: 1;
@@ -312,35 +313,50 @@ div.ant-card {
 }
 //tabs
 .staticTabs{
-  .ant-tabs-bar{
+  &:focus{
+    outline: none;
+  }
+  .tabName, .ant-tabs-tab-btn{
+    &:focus{
+      outline: none;
+    }
+  }
+
+  .ant-tabs-content, .ant-tabs-tabpane{
     &:focus{
       outline: none;
     }
   }
   .ant-tabs-nav-wrap{
     background-color: #ffffff;
-    .ant-tabs-nav-scroll{
+    .ant-tabs-nav-list{
       max-width: $maxWidth;
       margin:0 24px;
       .ant-tabs-tab{
         padding: 12px 0;
+        transition: none !important;
+        &:hover{
+          i{
+            color: $blue-7;
+          }
+        }
         .tabName{
           display: flex;
           align-items: center;
+          
         }
         i{
           padding-right: 8px;
           margin-top:-2px;
-
+          color: $gray-6;
         }
 
       }
-    }
-  }
-  .ant-tabs-tab:not(.ant-tabs-tab-active)
-  {
-    i{
-      color:$gray-6;
+      .ant-tabs-tab-active{
+        .tabName, i{
+          color: $blue-8;
+        }
+      }
     }
   }
 }
@@ -367,7 +383,7 @@ div.ant-card {
   letter-spacing: 0.25px;
   color: #536377;
   &::placeholder{
-      color: #ABB3BC;;
+    color: #ABB3BC;;
   }
 
   &:hover{
@@ -391,7 +407,7 @@ div.ant-card {
     letter-spacing: 0.25px;
     color: #536377;
     &::placeholder{
-        color: #ABB3BC;;
+      color: #ABB3BC;;
     }
   
     &:hover{
@@ -404,6 +420,13 @@ div.ant-card {
       box-shadow: 0px 0px 4px rgba(24, 144, 255, 0.5);
     }
   }
+}
+
+.large-input{
+  .ant-input-affix-wrapper{
+    height: 40px;
+  }
+  height: 40px;
 }
 
 //Date Picker
@@ -469,24 +492,24 @@ div.ant-card {
   box-shadow:none;
   line-height: 33px;
   &:not(:first-child){
-      &::before{
-          background-color: transparent;
-      }
-      border-left: none;
+    &::before{
+      background-color: transparent;
+    }
+    border-left: none;
   }
   &:first-child{
-      border-radius: 2px 0 0 2px;
-      border-left: 1px solid #ABBED3;;
+    border-radius: 2px 0 0 2px;
+    border-left: 1px solid #ABBED3;;
   }
   &:last-child{
-      border-radius: 0 2px 2px 0;
+    border-radius: 0 2px 2px 0;
   }
   .radioText{
-      font-family: $font;
-      font-size: 14px;
-      line-height: 22px;
-      letter-spacing: 0.25px;
-      color: #536377;
+    font-family: $font;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0.25px;
+    color: #536377;
       
   }
 
@@ -502,7 +525,7 @@ div.ant-card {
   border:1px solid #1D8BC6 !important;
   box-shadow:none;
   .radioText{
-      color: #ffffff;
+    color: #ffffff;
   }
 
   &:hover{
@@ -541,7 +564,7 @@ div.ant-card {
   }
 
   .ant-select-selection__placeholder{
-      padding-left: 0;
+    padding-left: 0;
   }
 
   &:hover{
@@ -560,23 +583,23 @@ div.ant-card {
 
 .selectDropdown{
   li{
-      font-family: $font;
-      font-size: 14px;
-      line-height: 22px;
-      letter-spacing: 0.25px;
-      color: #536377;
+    font-family: $font;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0.25px;
+    color: #536377;
 
-      .icon{
-        margin-right: 4px;
-        svg{
-          margin-top: -3px;
-        }
-      }
-    
-      .selectIcon{
+    .icon{
+      margin-right: 4px;
+      svg{
         margin-top: -3px;
-    
       }
+    }
+    
+    .selectIcon{
+      margin-top: -3px;
+    
+    }
   }
 
   .ant-select-dropdown-menu-item-group-title{
@@ -665,14 +688,11 @@ div.ant-card {
 .ant-table-small{
   border: none;
 }
-
 table{
-  border-bottom: 1px solid $gray-4 !important;
   th{
-      color: $gray-8 !important;
+    color: $gray-8 !important;
   }
 }
-
 //Badge
 .ant-badge-status-dot{
   vertical-align: baseline;
@@ -706,5 +726,20 @@ table{
 
 //AUTOCOMPLETE
 .ant-select-selection:hover{
-    border:0px solid transparent !important;
+  border:0px solid transparent !important;
+}
+.ant-input-affix-wrapper{
+  border: none;
+  outline: none;
+  box-shadow:none;
+  &::before{
+    display: none;
+  }
+  &:hover{
+    border-color: transparent;
+  }
+}
+//ROW
+.flex-row{
+  display: flex !important;
 }

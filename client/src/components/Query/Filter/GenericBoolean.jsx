@@ -59,10 +59,10 @@ class GenericBooleanFilter extends React.Component {
     this.state.page = 1;
     this.state.size = 10;
     if (selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
+      const value = filter(cloneDeep(dataSet), (o) => selection.includes(o.value));
       if (value.length === 0) {
         const selectedValue = [];
-        selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        selection.map((x) => selectedValue.push({ value: x, count: 0 }));
         allOptions.unshift(...selectedValue);
       } else {
         const sorted = orderBy(value, ['count'], ['desc']);
@@ -111,11 +111,11 @@ class GenericBooleanFilter extends React.Component {
           </Row>
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map(option => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
                 <div className="scrollFilter">
-                  { options.map(option => (
+                  { options.map((option) => (
                     <Row key={shortid.generate()}>
-                      <Col>
+                      <Col className="checkboxLine">
                         <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                       </Col>
                     </Row>
@@ -164,7 +164,7 @@ class GenericBooleanFilter extends React.Component {
   handleSelectAll() {
     const { draft } = this.state;
     const { dataSet } = this.props;
-    const selection = dataSet.map(option => option.value);
+    const selection = dataSet.map((option) => option.value);
     draft.values = selection;
     this.setState({
       selection,
@@ -176,7 +176,7 @@ class GenericBooleanFilter extends React.Component {
     const { dataSet } = this.props;
     const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
     const search = values;
-    const toRemove = filter(cloneDeep(allOptions), o => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
+    const toRemove = filter(cloneDeep(allOptions), (o) => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
 
     pullAllBy(allOptions, cloneDeep(toRemove), 'value');
     this.setState({

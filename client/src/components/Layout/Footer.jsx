@@ -1,4 +1,3 @@
-/* eslint-disable camelcase, jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import { connect } from 'react-redux';
 import {
@@ -10,18 +9,19 @@ import {
   ic_phone, ic_launch, ic_email, ic_location_on,
 } from 'react-icons-kit/md';
 
-
 const { Text } = Typography;
 
 const Footer = () => (
   <Layout.Footer id="footer">
-    <Row className="footerPrimary" type="flex" align="middle">
+    <Row className="flex-row footerPrimary" align="middle">
       <div className="footerNav">
         <Col>
           <Text type="primary" className="navTitle">{ intl.get('footer.navigation.primary.information') }</Text>
           <nav>
             <ul>
-              <li><a href="#">{ intl.get('footer.navigation.primary.documentation') }</a></li>
+              <li>
+                <a href="#">{ intl.get('footer.navigation.primary.documentation') }</a>
+              </li>
               <li><a href="#">{ intl.get('footer.navigation.primary.faq') }</a></li>
               <li>
                 <a href="#">
@@ -56,7 +56,7 @@ const Footer = () => (
         </Col>
       </div>
     </Row>
-    <Row className="footerSecondary" type="flex" align="middle">
+    <Row className="flex-row footerSecondary" align="middle">
       <div className="footerLogo">
         <nav>
           <ul>

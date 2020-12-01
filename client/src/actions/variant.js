@@ -4,28 +4,28 @@ export const fetchSchema = () => ({
   type: actions.VARIANT_SCHEMA_REQUESTED,
 });
 
-export const selectQuery = key => ({
+export const selectQuery = (key) => ({
   type: actions.PATIENT_VARIANT_QUERY_SELECTION,
   payload: {
     key,
   },
 });
 
-export const replaceQuery = query => ({
+export const replaceQuery = (query) => ({
   type: actions.PATIENT_VARIANT_QUERY_REPLACEMENT,
   payload: {
     query,
   },
 });
 
-export const replaceQueries = queries => ({
+export const replaceQueries = (queries) => ({
   type: actions.PATIENT_VARIANT_QUERIES_REPLACEMENT,
   payload: {
     queries,
   },
 });
 
-export const removeQuery = keys => ({
+export const removeQuery = (keys) => ({
   type: actions.PATIENT_VARIANT_QUERY_REMOVAL,
   payload: {
     keys,
@@ -40,7 +40,7 @@ export const duplicateQuery = (query, index) => ({
   },
 });
 
-export const sortStatement = statement => ({
+export const sortStatement = (statement) => ({
   type: actions.PATIENT_VARIANT_STATEMENT_SORT,
   payload: {
     statement,
@@ -77,7 +77,7 @@ export const countVariants = (patient, statement, queries) => ({
   },
 });
 
-export const commitHistory = version => ({
+export const commitHistory = (version) => ({
   type: actions.PATIENT_VARIANT_COMMIT_HISTORY,
   payload: {
     version,
@@ -88,12 +88,11 @@ export const undo = () => ({
   type: actions.PATIENT_VARIANT_UNDO,
 });
 
-
 export const getStatements = () => ({
   type: actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED,
 });
 
-export const createDraftStatement = statement => ({
+export const createDraftStatement = (statement) => ({
   type: actions.PATIENT_VARIANT_CREATE_DRAFT_STATEMENT,
   payload: {
     statement,
@@ -120,21 +119,21 @@ export const createStatement = (id, title, description, queries) => ({
   },
 });
 
-export const deleteStatement = id => ({
+export const deleteStatement = (id) => ({
   type: actions.PATIENT_VARIANT_DELETE_STATEMENT_REQUESTED,
   payload: {
     id,
   },
 });
 
-export const selectStatement = id => ({
+export const selectStatement = (id) => ({
   type: actions.PATIENT_VARIANT_SELECT_STATEMENT_REQUESTED,
   payload: {
     id,
   },
 });
 
-export const duplicateStatement = id => ({
+export const duplicateStatement = (id) => ({
   type: actions.PATIENT_VARIANT_DUPLICATE_STATEMENT_REQUESTED,
   payload: {
     id,

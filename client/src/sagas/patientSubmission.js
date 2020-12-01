@@ -6,25 +6,25 @@ import { isEmpty } from 'lodash';
 import * as actionTypes from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 
-const extractResponses = e => e.response;
-const getLocation = response => response.location;
+const extractResponses = (e) => e.response;
+const getLocation = (response) => response.location;
 const getFieldName = (response) => {
   const type = getLocation(response).split('/')[0];
   const fieldname = type[0].toLowerCase() + type.substring(1);
   return fieldname;
 };
-const getId = response => getLocation(response).split('/')[1];
+const getId = (response) => getLocation(response).split('/')[1];
 // const getVersion = response => getLocation(response).split('/')[3];
-const isPatient = r => getFieldName(r) === 'patient';
-const isServiceRequest = r => getFieldName(r) === 'serviceRequest';
-const isObservation = r => getFieldName(r) === 'observation';
-const isFamilyRelationship = r => getFieldName(r) === 'familyMemberHistory';
-const isInvestigation = r => isObservation(r) || isFamilyRelationship(r);
-const isClinicalImpression = r => getFieldName(r) === 'clinicalImpression';
+const isPatient = (r) => getFieldName(r) === 'patient';
+const isServiceRequest = (r) => getFieldName(r) === 'serviceRequest';
+const isObservation = (r) => getFieldName(r) === 'observation';
+const isFamilyRelationship = (r) => getFieldName(r) === 'familyMemberHistory';
+const isInvestigation = (r) => isObservation(r) || isFamilyRelationship(r);
+const isClinicalImpression = (r) => getFieldName(r) === 'clinicalImpression';
 
-const getStatusCode = r => r.status.split(' ')[0];
-const isCreate = r => getStatusCode(r) === '201';
-const isDelete = r => getStatusCode(r) === '204';
+const getStatusCode = (r) => r.status.split(' ')[0];
+const isCreate = (r) => getStatusCode(r) === '201';
+const isDelete = (r) => getStatusCode(r) === '204';
 
 const processBundleResponse = (r) => {
   if (r && isCreate(r)) {
@@ -64,7 +64,6 @@ function* savePatientSubmission(action) {
       result.indic = processBundleResponse(responses[5]);
     }
 
-
     result.fmh = [];
     result.hpos = [];
     if (payload.observations.fmh != null && responses.length > 6) {
@@ -73,7 +72,7 @@ function* savePatientSubmission(action) {
       }
     }
 
-    const fmhLength = payload.observations.fmh != null ? payload.observations.fmh.filter(f => !isEmpty(f)).length : 0;
+    const fmhLength = payload.observations.fmh != null ? payload.observations.fmh.filter((f) => !isEmpty(f)).length : 0;
     const hpoStartIndex = 6 + fmhLength;
     if (responses.length > hpoStartIndex) {
       for (let i = 0; i < payload.observations.hpos.length; i += 1) {

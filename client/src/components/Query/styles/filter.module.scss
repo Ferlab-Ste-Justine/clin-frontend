@@ -2,527 +2,457 @@
 
 
 .filterCard{
-    min-width: 300px;
-    max-width: 420px;
-    border:none;
-    position: absolute;
-    box-shadow: 0px 6px 10px 0px rgba(89, 121, 144, 0.14),
-                0px 1px 18px 0px rgba(89, 121, 144, 0.12),
-                0px 3px 5px -1px rgba(89, 121, 144, 0.2);
+  min-width: 300px;
+  max-width: 420px;
+  border:none;
+  position: absolute;
+  box-shadow: 0px 6px 10px 0px rgba(89, 121, 144, 0.14),
+  0px 1px 18px 0px rgba(89, 121, 144, 0.12),
+  0px 3px 5px -1px rgba(89, 121, 144, 0.2);
+  >div{
+    padding: 0;
+
+  }
+
+  .selectionToolBar{
+    margin:0 16px 16px 16px;
+    button{
+      border:none;
+      padding: 0;
+      box-shadow: none;
+      height: auto;
+      span{
+        color: rgba(35, 55, 80, 0.78);
+        font-size: $little-font;
+        font-family: $font;
+        text-decoration: underline;
+        letter-spacing: 0.4px;
+      }
+      &:hover{
+        span{
+          color: rgb(35, 55, 80);  
+          text-decoration: none;
+        }
+      }
+
+
+      &:after{
+        animation: 0s !important;
+      } 
+    }
     >div{
-        padding: 0;
-
+      margin: 0 4px;
     }
-    .fieldHeader{
-        border-bottom: 1px solid rgba(35, 55, 80,0.12);
-        margin: 16px;
-        padding-bottom: 16px;
-        .labelTitle{
-            color: rgb(35, 55, 80);
-            font-size: $medium-font;
-            font-family: $font;
-            font-weight: $font-weight-medium;
-            letter-spacing: 0.15px;
-            display: inline;
-            margin: 0;
-        }
-        button{
-            border:none;
-            padding: 0;
-            box-shadow: none;
-            margin-left: 8px;
-            height: auto;
+  }
 
-            &:after{
-             animation: 0s !important;
-            }
-            i{
-                color: rgba(35, 55, 80, 0.38);
-            }
-    
+  .rangeSlider{
+    padding: 0 16px ;
+   
+
+    >div{
+      margin:24px 0 16px 0;
+      width: 100%;
+      >div{
+        &:nth-child(1){
+          background-color: rgba(134, 213, 242,0.38);
+          height: 2px;
         }
-        .iconSearch{
-            margin-left: auto;
-                &:hover{
-                    i{
-                        color: #233750;
-                    }
-                    
-                }    
+        &:nth-child(2){
+          height: 2px;
+          background-color: #249ed9;
         }
 
-        .searchInput{
-            margin: 16px 0;
-            input{
-                background-color:rgba(35, 55, 80,0.08) ;
-                border: none;
-                border-radius: 2px;
-                color: #233750;
-                font-size: $small-font;
-                font-family: $font;
-                letter-spacing: $small-letter-spacing;
-                line-height: 20px;
-                &::placeholder{
-                    color: rgba(35, 55, 80, 0.38);
-                }
-                &:focus{
-                    box-shadow: none;
-                }
-        
-                &:disabled{
-                    background: rgba(35, 55, 80, 0.14);
-                }
-            }
-
-
+        &:nth-child(4), &:nth-child(5){
+          background-color: #1d8bc6;
+          border: none;
+          width: 12px;
+          height: 12px;
         }
-        .searchInputClose{
-            display: none;
-        }
+      }
     }
+  }
 
-    .selectionToolBar{
-        margin:0 16px 16px 16px;
-        button{
-            border:none;
-            padding: 0;
-            box-shadow: none;
-            height: auto;
+  .rangeInput{
+    padding: 0 16px ;
+    margin-bottom: 24px;
+    >div{
+      >div{
+        width: 60px;
+        border-radius: 2px;
+        height: 26px;
+        border: 1px solid rgba(18, 90, 144, 0.3);
+        box-shadow: none;
+        >div{
+          &:nth-child(1){
+            opacity: 1;
+            border: none;
+            width: 16px;
+            margin-right: 4px;
+
+            &:hover{
+              span{
+                height: 40% !important;
+              }
+            }
             span{
-                color: rgba(35, 55, 80, 0.78);
-                font-size: $little-font;
-                font-family: $font;
-                text-decoration: underline;
-                letter-spacing: 0.4px;
-            }
-            &:hover{
-                span{
-                    color: rgb(35, 55, 80);  
-                    text-decoration: none;
-                }
-            }
-
-
-            &:after{
-                animation: 0s !important;
-               } 
-        }
-        >div{
-            margin: 0 4px;
-        }
-    }
-
-    .rangeSlider{
-        padding: 0 16px ;
-
-        >div{
-            margin:24px 0 16px 0;
-
-            >div{
-                &:nth-child(1){
-                    background-color: rgba(134, 213, 242,0.38);
-                    height: 2px;
-                }
-                &:nth-child(2){
-                    height: 2px;
-                    background-color: #249ed9;
-                }
-
-                &:nth-child(4), &:nth-child(5){
-                    background-color: #1d8bc6;
-                    border: none;
-                    width: 12px;
-                    height: 12px;
-                }
-            }
-        }
-    }
-
-    .rangeInput{
-        padding: 0 16px ;
-        margin-bottom: 24px;
-        >div{
-            >div{
-                width: 60px;
-                border-radius: 2px;
-                height: 26px;
-                border: 1px solid rgba(18, 90, 144, 0.3);
-                box-shadow: none;
-                >div{
-                    &:nth-child(1){
-                        opacity: 1;
-                        border: none;
-                        width: 16px;
-                        margin-right: 4px;
-
-                        &:hover{
-                            span{
-                                height: 40% !important;
-                            }
-                        }
-                        span{
-                            border: none;
-                            height: 40%;
-                            i{
-                                width: 16px;
-                                right: 0;
-                                transform: none;
-                                font-size: 7px !important;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                top:45%;
-                                height: auto;
-                            }
-                            &:nth-child(1){
-                                margin-bottom: 4px;
-                                i{
-                                    &:nth-child(1){
-                                        margin-top: auto;
-                                    }
-                                }
-                            }
-                            &:hover{
-                                height: 40% !important;
-                            }
-                        }
-                    }
-                }
-                input{
-                    height: 20px;
-                    color: rgb(35, 55, 80);
-                    font-size: $small-font;
-                    font-family: $font;
-                    letter-spacing: $small-letter-spacing;
-                    margin: 2px 0;
-                    padding-left: 8px;
-                    padding-right: 14px;
-                    &:focus{
-                        outline: none;
-                    }
-
-
-                    
-                }
-
-                &:focus{
-                    box-shadow: none;
-                }
-            }
-        }
-
-    }
-
-
-    .checkboxGroup{
-        .checkboxLabel{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2px 16px;
-
-            &:hover{
-                background-color: rgba(29, 139, 198,0.08);
-                .checkboxValue{
-                    .valueCount{
-                        background-color: #fff;
-                        
+              border: none;
+              i{
+                width: 16px;
+                right: 0;
+                transform: none;
+                font-size: 7px !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                top:45%;
+                height: auto;
+              }
+              &:nth-child(1){
+                i{
+                  &:nth-child(1){
+                    margin-top: auto;
                   }
                 }
+              }
+              &:hover{
+              }
             }
-
-            >span:nth-child(1){
-                top:0;
-                margin:3px 3px 3px 0;
-                >span{
-                    width: 18px;
-                    height: 18px;
-                    border: 2px solid rgba(35, 55, 80, 0.38);
-                    background-color: transparent;
-                }
-
-            }
-
-            >span:nth-child(2){
-                width: 100%;
-                padding: 0;
-                >span::nth-child(2){
-                    margin:0;
-
-                }
-
-            }
-
-            .checkboxValue{
-                display: flex;
-                justify-content: space-between;
-                margin-left: 8px;
-
-                .tag{
-                    margin-left: 8px;
-                    span{
-                        width: 8px;
-                        height: 8px;
-                    }
-
-                }
-                .observedTag{
-                    background-color: red;
-                }
-                .valueCount{
-                    padding:3px 4px;
-                    color: rgba(35, 55, 80, 0.78);
-                    background-color: #f0f2f5;
-                    font-family: $font;
-                    font-size: $little-font;
-                    letter-spacing: 0.4px;
-                    line-height:12.5px;
-                    text-align: center;
-                    margin:0 0 0 12px;
-                    border: none;
-                    border-radius: 2px;
-                    height: 18px;
-                 } 
-                 .valueCountDisabled{
-                    background-color: #fff;
-                    color: rgba(35, 55, 80, 0.38);
-                 }
-            }
-
+          }
         }
-
-        .check{
-            >span:first-child{
-                span{
-                 background-color:#1b7ab2  ;
-                 border: 2px solid #1b7ab2;
-                }
-
-                &:after{
-                    border: none;
-                }
-            }
-        
-            &:hover{
-                >span:first-child{
-                    span{
-                        background-color:#1b7ab2  ;
-                        border: 2px solid #1b7ab2;
-                        &:after{
-                            left:22%;
-                        }
-                       }
-                }
-            }
-        }
-
-
-
-    }
-    .paginationInfo{
-        padding:0 16px;
-        margin-top:16px ;
-        .valueCount{
-            color: rgba(35, 55, 80, 0.78);
-            font-size: 12px;
-            font-family: $font;
-            letter-spacing: 0.4px;
-        }
-        .pagination{
-            li{
-                border: 1px solid rgba(18, 90, 144, 0.3) !important;
-                margin: 0 2px;
-                a{
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    span{
-                        left: -4px;
-                    }
-                }
-            }
-            li:last-of-type{
-                margin-right: 0; 
-            }
-        }
-    }
-    .actionToolBar{
-        padding:16px 0;
-        border-top: 1px solid rgba(35, 55, 80, 0.12);
-        margin: 16px 16px 0 16px;
-        .cancelButton{
-            border-radius: 2px;
-            border: 1px solid rgba(18, 90, 144, 0.15);
-            margin-right: 8px;
-            height: 24px;
-            padding:0 8px 0 4px;
-
-            &:hover{
-                border: 1px solid rgb(29, 139, 198);
-                transition: none;
-                span{
-                    color: rgb(18, 90, 144); 
-                }
-                i{
-                    color:rgb(27, 122, 178);
-                }
-
-            }
-            i{
-                color: rgba(35, 55, 80, 0.54);
-            }
-            span{
-                color: rgba(35, 55, 80, 0.78);
-                font-size: $little-font;
-                font-family: $font;
-                letter-spacing: 0.4px;
-            }
-        }
-
-        .dropDownApplyButton{
-            display: flex;
-            flex-direction: row-reverse;
-            button{
-                height: 24px;
-                background-color: #1b7ab2;
-                border: none;
-                padding: 0 8px;
-
-
-                &:first-of-type{
-                    border-top-left-radius: 0;
-                    border-bottom-left-radius: 0;
-                    border-top-right-radius: 2px;
-                    border-bottom-right-radius: 2px;
-                }
-
-                &:nth-child(2){
-                    border-top-left-radius: 2px;
-                    border-bottom-left-radius: 2px;
-                    border-top-right-radius: 0;
-                    border-bottom-right-radius: 0;
-                    border-right: 1px solid rgba(255, 255, 255, 0.3);
-                    display: flex;
-                    align-items: center;
-                    padding:0 0 0 4px !important;
-
-                    i{
-                        color:rgba(255, 255, 255, 0.54);
-                    }
-                    i:first-of-type{
-                        line-height: 0;
-                        svg{
-                            width: 16px;
-                            height: 16px;
-                        }
-
-                    }
-                }
-
-                span{
-                    color: rgb(255, 255, 255);
-                    font-size: $little-font;
-                    font-family: $font;
-                    font-weight: $font-weight-medium;
-                    letter-spacing:$small-letter-spacing;
-                }
-
-                &:hover{
-                    background-color:rgba(27, 122, 178, 0.92);
-                }
-
-                &:disabled{
-                    background: rgba(35, 55, 80,0.12);
-                    span{
-                        color: $color-disable;
-                    }
-                    i svg{
-                        color: $color-disable;
-                    }
+        input{
+          height: 20px;
+          color: rgb(35, 55, 80);
+          font-size: $small-font;
+          font-family: $font;
+          letter-spacing: $small-letter-spacing;
+          margin: 2px 0;
+          padding-left: 8px;
+          padding-right: 14px;
+          &:focus{
+            outline: none;
+          }
                     
-                }
-            }
-
         }
-
-        .applyButton{
-            height: 24px;
-            background-color: #1b7ab2;
-            border: none;
-            padding: 0 8px;
-            border-radius: 2px;
-            span{
-                color: rgb(255, 255, 255);
-                font-size: $little-font;
-                font-family: $font;
-                font-weight: $font-weight-medium;
-                letter-spacing: $small-letter-spacing;
-            }
-            &:hover{
-                background-color:rgba(27, 122, 178, 0.92)
-            }
-            &:disabled{
-                background: rgba(35, 55, 80,0.12);
-                span{
-                    color: $color-disable;
-                }                
-            }
+        &:focus{
+          box-shadow: none;
         }
+      }
     }
+    .input-right{
+      margin-left: auto;
+    }
+  }
+
+
+  .checkboxGroup{
+    .checkboxLabel{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 16px;
+
+      &:hover{
+        background-color: rgba(29, 139, 198,0.08);
+        .checkboxValue{
+          .valueCount{
+            background-color: #fff;
+                        
+          }
+        }
+      }
+
+      >span:nth-child(1){
+        top:0;
+        margin:3px 3px 3px 0;
+        >span{
+          width: 18px;
+          height: 18px;
+          border: 2px solid rgba(35, 55, 80, 0.38);
+          background-color: transparent;
+        }
+
+      }
+
+      >span:nth-child(2){
+        width: 100%;
+        padding: 0;
+        >span::nth-child(2){
+          margin:0;
+
+        }
+
+      }
+
+      .checkboxValue{
+        display: flex;
+        justify-content: space-between;
+        margin-left: 8px;
+
+        .tag{
+          margin-left: 8px;
+          span{
+            width: 8px;
+            height: 8px;
+          }
+
+        }
+        .observedTag{
+          background-color: red;
+        }
+        .valueCount{
+          padding:3px 4px;
+          color: rgba(35, 55, 80, 0.78);
+          background-color: #f0f2f5;
+          font-family: $font;
+          font-size: $little-font;
+          letter-spacing: 0.4px;
+          line-height:12.5px;
+          text-align: center;
+          margin:0 0 0 auto;
+          border: none;
+          border-radius: 2px;
+          height: 18px;
+        } 
+        .valueCountDisabled{
+          background-color: #fff;
+          color: rgba(35, 55, 80, 0.38);
+        }
+      }
+
+    }
+
+    .check{
+      >span:first-child{
+        span{
+          background-color:#1b7ab2  ;
+          border: 2px solid #1b7ab2;
+        }
+
+        &:after{
+          border: none;
+        }
+      }
+        
+      &:hover{
+        >span:first-child{
+          span{
+            background-color:#1b7ab2  ;
+            border: 2px solid #1b7ab2;
+            &:after{
+              left:22%;
+            }
+          }
+        }
+      }
+    }
+
+
+
+  }
+  .paginationInfo{
+    padding:0 16px;
+    margin-top:16px ;
+    .valueCount{
+      color: rgba(35, 55, 80, 0.78);
+      font-size: 12px;
+      font-family: $font;
+      letter-spacing: 0.4px;
+    }
+    .pagination{
+      li{
+        border: 1px solid rgba(18, 90, 144, 0.3) !important;
+        margin: 0 2px;
+        a{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          span{
+            left: -4px;
+          }
+        }
+      }
+      li:last-of-type{
+        margin-right: 0; 
+      }
+    }
+  }
+  .actionToolBar{
+    padding:16px 0;
+    border-top: 1px solid rgba(35, 55, 80, 0.12);
+    margin: 16px 16px 0 16px;
+    .cancelButton{
+      border-radius: 2px;
+      border: 1px solid rgba(18, 90, 144, 0.15);
+      margin-right: 8px;
+      height: 24px;
+      padding:0 8px 0 4px;
+
+      &:hover{
+        border: 1px solid rgb(29, 139, 198);
+        transition: none;
+        span{
+          color: rgb(18, 90, 144); 
+        }
+        i{
+          color:rgb(27, 122, 178);
+        }
+
+      }
+      i{
+        color: rgba(35, 55, 80, 0.54);
+      }
+      span{
+        color: rgba(35, 55, 80, 0.78);
+        font-size: $little-font;
+        font-family: $font;
+        letter-spacing: 0.4px;
+      }
+    }
+
+    .dropDownApplyButton{
+      display: flex;
+      flex-direction: row-reverse;
+      button{
+        height: 24px;
+        background-color: #1b7ab2;
+        border: none;
+        padding: 0 8px;
+
+
+        &:first-of-type{
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+          border-top-right-radius: 2px;
+          border-bottom-right-radius: 2px;
+        }
+
+        &:nth-child(2){
+          border-top-left-radius: 2px;
+          border-bottom-left-radius: 2px;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+          border-right: 1px solid rgba(255, 255, 255, 0.3);
+          display: flex;
+          align-items: center;
+          padding:0 30px 0 4px !important;
+
+          i{
+            color:rgba(255, 255, 255, 0.54);
+          }
+          i:first-of-type{
+            line-height: 0;
+            svg{
+              width: 16px;
+              height: 16px;
+            }
+
+          }
+        }
+
+        span{
+          color: rgb(255, 255, 255);
+          font-size: $little-font;
+          font-family: $font;
+          font-weight: $font-weight-medium;
+          letter-spacing:$small-letter-spacing;
+        }
+
+        &:hover{
+          background-color:rgba(27, 122, 178, 0.92);
+        }
+
+        &:disabled{
+          background: rgba(35, 55, 80,0.12);
+          span{
+            color: $color-disable;
+          }
+          i svg{
+            color: $color-disable;
+          }
+                    
+        }
+      }
+
+    }
+
+    .applyButton{
+      height: 24px;
+      background-color: #1b7ab2;
+      border: none;
+      padding: 0 8px;
+      border-radius: 2px;
+      span{
+        color: rgb(255, 255, 255);
+        font-size: $little-font;
+        font-family: $font;
+        font-weight: $font-weight-medium;
+        letter-spacing: $small-letter-spacing;
+      }
+      &:hover{
+        background-color:rgba(27, 122, 178, 0.92)
+      }
+      &:disabled{
+        background: rgba(35, 55, 80,0.12);
+        span{
+          color: $color-disable;
+        }                
+      }
+    }
+  }
 
 }
 
 .tooltip{
-    >div{
-        opacity: 1;
-        div:first-child{
-            display: none;
-        }
-        div:nth-child(2){
-            background-color: #e7ebef;
-            color: rgba(35, 55, 80, 0.78);
-            font-size: $little-font;
-            font-family: $font;
-            letter-spacing: 0.4px;
-            line-height: 16px;
-            border-radius: 2px;
-            padding: 12px;
-            width: 240px;
-}
+  >div{
+    opacity: 1;
+    div:first-child{
+      display: none;
     }
+    div:nth-child(2){
+      background-color: #e7ebef;
+      color: rgba(35, 55, 80, 0.78);
+      font-size: $little-font;
+      font-family: $font;
+      letter-spacing: 0.4px;
+      line-height: 16px;
+      border-radius: 2px;
+      padding: 12px;
+      width: 240px;
+    }
+  }
 }
 
 
 
 .operandDropdown{
-    border-radius: 2px;
-    li{
-        display: flex;
-        padding:4px 8px;
-        color: rgb(35, 55, 80);
-        font-size: $small-font;
-        font-family: $font;
-        letter-spacing:$small-letter-spacing;
-        align-items: center;
-        .graySvgIcon{
-            margin-right: 8px;
-            svg{
-                width:24px;
-                height:24px;
-            }
-            path, polygon{
-                fill:rgba(35, 55, 80, 0.38);
-            }
-        }
-
-        &:hover{
-            .graySvgIcon{
-                path, polygon{
-                    fill:#1b7ab2;
-                }
-            } 
-        }
+  border-radius: 2px;
+  li{
+    display: flex;
+    padding:4px 8px;
+    color: rgb(35, 55, 80);
+    font-size: $small-font;
+    font-family: $font;
+    letter-spacing:$small-letter-spacing;
+    align-items: center;
+    .graySvgIcon{
+      margin-right: 8px;
+      svg{
+        width:24px;
+        height:24px;
+      }
+      path, polygon{
+        fill:rgba(35, 55, 80, 0.38);
+      }
     }
+
+    &:hover{
+      .graySvgIcon{
+        path, polygon{
+          fill:#1b7ab2;
+        }
+      } 
+    }
+  }
 
 }
 

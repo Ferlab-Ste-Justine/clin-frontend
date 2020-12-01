@@ -1,4 +1,4 @@
-@import '../../../../node_modules/antd/dist/antd.less' ;
+@import '~antd/dist/antd.less' ;
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 
 $blue-base: #00ACEB;
@@ -25,7 +25,7 @@ $gray-9: #233750;
 $gray-10: #0F1824;
 
 $preset-colors: pink, magenta, red, volcano, orange, yellow, gold, cyan, lime, green, blue, geekblue,
-  purple;
+purple;
 
 // Colors
 $primary-color: $blue-8;
@@ -132,7 +132,7 @@ $radio-disabled-button-checked-bg: $gray-6;
 }
 .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within,
 .ant-radio-group-solid
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
+.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
   box-shadow: none;
 }
 

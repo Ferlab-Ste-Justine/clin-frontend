@@ -150,10 +150,10 @@ class NumericalComparisonWidget extends React.Component {
     const { values } = draft;
 
     let valueObject = null;
-    valueObject = values.find(vo => vo.comparator === comparator);
+    valueObject = values.find((vo) => vo.comparator === comparator);
 
     if (!valueObject) {
-      valueObject = this.cachedValues.find(vo => vo.comparator === comparator);
+      valueObject = this.cachedValues.find((vo) => vo.comparator === comparator);
     }
 
     return valueObject;
@@ -210,7 +210,7 @@ class NumericalComparisonWidget extends React.Component {
 
   sanitizeDraft() {
     const { draft } = this.props;
-    draft.values = draft.values.filter(v => !!v.comparator);
+    draft.values = draft.values.filter((v) => !!v.comparator);
   }
 
   handleSliderValueChange(range) {
@@ -259,7 +259,7 @@ class NumericalComparisonWidget extends React.Component {
             disabled={disabled}
           />
         </Row>
-        <Row type="flex" justify="space-between" className={styleFilter.rangeInput}>
+        <Row className={`flex-row ${styleFilter.rangeInput}`}>
           <Col>
             <InputNumber
               step={tick}
@@ -273,7 +273,7 @@ class NumericalComparisonWidget extends React.Component {
               onFocus={(e) => { e.target.select(); }}
             />
           </Col>
-          <Col>
+          <Col className="input-right">
             <InputNumber
               step={tick}
               value={currentHigh}

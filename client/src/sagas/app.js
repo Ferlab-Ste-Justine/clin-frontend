@@ -8,7 +8,6 @@ import * as actions from '../actions/type';
 import { error } from '../actions/app';
 import locales from '../locales';
 
-
 function* loadApp() {
   try {
     yield put({ type: actions.APP_FETCH_SUCCEEDED });

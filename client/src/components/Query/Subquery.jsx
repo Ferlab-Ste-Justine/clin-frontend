@@ -55,7 +55,6 @@ class Subquery extends React.Component {
     return selectable === true;
   }
 
-
   isSelected() {
     const { selected } = this.state;
     return selected === true;
@@ -67,7 +66,7 @@ class Subquery extends React.Component {
   }
 
   serialize() {
-    return Object.assign({}, this.props, this.state);
+    return { ...this.props, ...this.state };
   }
 
   handleSelect() {
@@ -107,8 +106,7 @@ class Subquery extends React.Component {
           </Tag>
           { autoSelect
             ? <IconKit className={`${style.closingIcon}`} onClick={this.handleClose} size={16} icon={ic_cancel} />
-            : null
-          }
+            : null }
         </Tag>
       </span>
     );
@@ -137,7 +135,7 @@ Subquery.defaultProps = {
 
 export default Subquery;
 
-export const createSubqueryInstruction = query => ({
+export const createSubqueryInstruction = (query) => ({
   type: INSTRUCTION_TYPE_SUBQUERY,
   data: Subquery.structFromArgs(query),
 });

@@ -9,7 +9,7 @@ import { message } from 'antd';
 import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
 
-const getExtension = (resource, url) => get(resource, 'extension', []).find(ext => ext.url === url);
+const getExtension = (resource, url) => get(resource, 'extension', []).find((ext) => ext.url === url);
 
 // @TODO change item values
 export const initialPatientSubmissionState = {
@@ -55,7 +55,7 @@ export const patientSubmissionShape = {
 
 const NOT_AVAILABLE = 'N/A';
 const patientSubmissionReducer = (
-  state = Object.assign({}, initialPatientSubmissionState),
+  state = ({ ...initialPatientSubmissionState }),
   action,
 ) => produce(state, (draft) => {
   switch (action.type) {
@@ -78,7 +78,7 @@ const patientSubmissionReducer = (
         indic: {
           ...draft.observations.indic, ...action.payload.result.indic,
         },
-        fmh: draft.observations.fmh.filter(fmh => !isEmpty(fmh)).map((fmh, index) => ({
+        fmh: draft.observations.fmh.filter((fmh) => !isEmpty(fmh)).map((fmh, index) => ({
           ...fmh,
           ...action.payload.result.fmh[index],
         })),
@@ -141,12 +141,12 @@ const patientSubmissionReducer = (
       draft.observations.hpos.push(action.payload);
       break;
     case actions.PATIENT_SUBMISSION_MARK_HPO_FOR_DELETION:
-      if (draft.observations.hpos.find(hpo => hpo.valueCodeableConcept.coding[0].code === action.payload.code) != null) {
-        if (draft.observations.hpos.find(hpo => hpo.valueCodeableConcept.coding[0].code === action.payload.code).id != null) {
-          draft.deleted.hpos.push(draft.observations.hpos.find(hpo => hpo.valueCodeableConcept.coding[0].code === action.payload.code));
+      if (draft.observations.hpos.find((hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code) != null) {
+        if (draft.observations.hpos.find((hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code).id != null) {
+          draft.deleted.hpos.push(draft.observations.hpos.find((hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code));
         }
       }
-      draft.observations.hpos = draft.observations.hpos.filter(hpo => hpo.valueCodeableConcept.coding[0].code !== action.payload.code);
+      draft.observations.hpos = draft.observations.hpos.filter((hpo) => hpo.valueCodeableConcept.coding[0].code !== action.payload.code);
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_HPO_NOTE:
       draft.observations.hpos[action.payload.index].note = [{
@@ -164,7 +164,7 @@ const patientSubmissionReducer = (
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_HPO_AGE_ON_SET:
       draft.observations.hpos[action.payload.index].extension = draft.observations.hpos[action.payload.index].extension
-        .filter(ext => ext.url !== 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset');
+        .filter((ext) => ext.url !== 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset');
       draft.observations.hpos[action.payload.index].extension.push({
         url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
         valueCoding: {
@@ -225,8 +225,8 @@ const patientSubmissionReducer = (
 
       const { generalPractitioner } = patient;
 
-      const hpos = action.payload.patient.hpos.map(hpo => hpo.original);
-      const fmhs = action.payload.patient.fmhs.map(fmh => fmh.original);
+      const hpos = action.payload.patient.hpos.map((hpo) => hpo.original);
+      const fmhs = action.payload.patient.fmhs.map((fmh) => fmh.original);
       const { observations } = action.payload.patient;
 
       const groupId = getExtension(patient, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id');
@@ -234,7 +234,11 @@ const patientSubmissionReducer = (
       draft.local = initialPatientSubmissionState.local;
       draft.patient = action.payload.patient.patient.original;
       draft.groupId = groupId;
-      draft.serviceRequest = { ...draft.serviceRequest, id: serviceRequest.id };
+      draft.serviceRequest = {
+        ...draft.serviceRequest,
+        id: serviceRequest.id,
+        code: get(serviceRequest, 'code.coding[0].code', null),
+      };
       draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
       draft.observations.hpos = hpos;
@@ -243,11 +247,10 @@ const patientSubmissionReducer = (
       draft.observations.indic = { ...observations.indic };
       draft.observations.summary = { ...observations.inves };
 
-      draft.local.serviceRequest.code = get(serviceRequest, 'code.coding[0].code', null);
       draft.local.cgh.interpretation = cgh;
       draft.local.summary.note = summary !== NOT_AVAILABLE ? summary : '';
       draft.local.indic.note = hypothesis !== NOT_AVAILABLE ? hypothesis : '';
-      draft.local.consents = range(1, 5).map(value => `consent-${value}`);
+      draft.local.consents = range(1, 5).map((value) => `consent-${value}`);
 
       if (get(generalPractitioner, 'length', 0) > 0) {
         draft.local.practitioner = performer.mrn;

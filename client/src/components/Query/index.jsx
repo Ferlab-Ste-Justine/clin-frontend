@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import {
   Input, Tooltip, Popconfirm,
 } from 'antd';
-import uuidv1 from 'uuid/v1';
+import { v1 as uuidv1 } from 'uuid';
 import copy from 'copy-to-clipboard';
 
 import IconKit from 'react-icons-kit';
@@ -106,7 +106,7 @@ class Query extends React.Component {
   addInstruction(instruction) {
     // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
     const { draft } = this.props;
-    const andNotOperator = find(draft.instructions, dInstruction => (dInstruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
+    const andNotOperator = find(draft.instructions, (dInstruction) => (dInstruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
     if (!andNotOperator) {
       const { display, index, onEditCallback } = this.props;
       const newDraft = cloneDeep(draft);
@@ -528,8 +528,7 @@ class Query extends React.Component {
                 }
               }) }
             </div>
-          )
-        }
+          ) }
       </div>
     );
   }

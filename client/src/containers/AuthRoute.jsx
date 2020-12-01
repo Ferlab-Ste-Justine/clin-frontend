@@ -32,7 +32,7 @@ const AuthRoute = ({ Component, roles, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={props => (
+      render={(props) => (
         isAuthorized(roles)
           ? <Component {...props} />
           : (

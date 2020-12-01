@@ -8,7 +8,6 @@ import * as actionTypes from '../actions/type';
 import * as actions from '../actions/app';
 import Api, { ApiError } from '../helpers/api';
 
-
 function* fetchSchema() {
   try {
     const schemaResponse = yield Api.getVariantSchema();
@@ -70,7 +69,7 @@ function* countVariantsForPatient(action) {
 }
 
 function* selectDefaultStatement() {
-  const { profile } = yield select(state => state.user);
+  const { profile } = yield select((state) => state.user);
 
   if (profile.defaultStatement) {
     yield put({
@@ -98,7 +97,7 @@ function* getStatements() {
 function* updateStatement(action) {
   try {
     const statementKey = action.payload.id;
-    const { statements } = yield select(state => state.variant);
+    const { statements } = yield select((state) => state.variant);
     const title = action.payload.title ? action.payload.title : statements[statementKey].title;
     const description = action.payload.description ? action.payload.description : statements[statementKey].description;
     const queries = action.payload.queries ? action.payload.queries : statements[statementKey].queries;
@@ -117,7 +116,7 @@ function* updateStatement(action) {
 
 function* createStatement(action) {
   try {
-    const { draftQueries } = yield select(state => state.variant);
+    const { draftQueries } = yield select((state) => state.variant);
     const title = action.payload.title ? action.payload.title : '';
     const description = action.payload.description ? action.payload.description : '';
     const statementResponse = yield Api.createStatement(title, description, draftQueries, false);
@@ -135,7 +134,7 @@ function* createStatement(action) {
 
 function* duplicateStatement(action) {
   try {
-    const { draftQueries, statements } = yield select(state => state.variant);
+    const { draftQueries, statements } = yield select((state) => state.variant);
     const statement = cloneDeep(statements[action.payload.id]);
     if (!statement) {
       throw new Error('Filtre non-trouvé.');
@@ -175,22 +174,22 @@ function* selectStatement(action) {
 }
 
 function* refreshCount() {
-  const { patient } = yield select(state => state.patient);
-  const { draftQueries } = yield select(state => state.variant);
+  const { patient } = yield select((state) => state.patient);
+  const { draftQueries } = yield select((state) => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_COUNT_REQUESTED,
     payload: {
       patient: patient.parsed.id,
       statement: draftQueries,
-      queries: draftQueries.map(query => query.key),
+      queries: draftQueries.map((query) => query.key),
     },
   });
 }
 
 function* refreshResults() {
-  const { patient } = yield select(state => state.patient);
-  const { draftQueries, activeQuery } = yield select(state => state.variant);
+  const { patient } = yield select((state) => state.patient);
+  const { draftQueries, activeQuery } = yield select((state) => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_SEARCH_REQUESTED,
@@ -203,8 +202,8 @@ function* refreshResults() {
 }
 
 function* refreshFacets() {
-  const { patient } = yield select(state => state.patient);
-  const { draftQueries, activeQuery } = yield select(state => state.variant);
+  const { patient } = yield select((state) => state.patient);
+  const { draftQueries, activeQuery } = yield select((state) => state.variant);
 
   yield put({
     type: actionTypes.PATIENT_VARIANT_FACET_REQUESTED,
@@ -231,7 +230,6 @@ function* fetchGenebyAutocomplete(action) {
   }
 }
 
-
 function* watchVariantSchemaFetch() {
   yield takeLatest(actionTypes.VARIANT_SCHEMA_REQUESTED, fetchSchema);
 }
@@ -253,7 +251,7 @@ function* watchGetStatements() {
 }
 
 function* watchGetStatementsSuceeded() {
-  const { activeStatementId } = yield select(state => state.variant);
+  const { activeStatementId } = yield select((state) => state.variant);
   // Only select the default statement if there was not one already selected
   if (activeStatementId) {
     yield takeLatest(actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, selectDefaultStatement);

@@ -10,7 +10,6 @@ import * as frFr from 'antd/lib/locale-provider/fr_FR';
 import * as enUS from 'antd/lib/locale-provider/en_US';
 import * as actions from '../actions/type';
 
-
 export const initialAppState = {
   showLoadingAnimation: false,
   showSubloadingAnimation: false,
@@ -34,7 +33,7 @@ export const appShape = {
   loginMessage: PropTypes.string,
 };
 
-const appReducer = (state = Object.assign({}, initialAppState), action) => produce(state, (draft) => {
+const appReducer = (state = ({ ...initialAppState }), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.START_LOADING_ANIMATION:
     case actions.APP_FETCH_REQUESTED:

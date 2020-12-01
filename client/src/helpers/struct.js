@@ -1,7 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { find } from 'lodash';
 
-
 const initialPatientState = {
   details: {
     id: null,
@@ -35,9 +34,8 @@ const initialPatientState = {
   indications: [],
 };
 
-
 export const normalizePatientDetails = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.details);
+  const struct = { ...initialPatientState.details };
 
   struct.id = fhirPatient.id;
   struct.firstName = (fhirPatient.name ? fhirPatient.name[0].given[0] : '');
@@ -53,7 +51,7 @@ export const normalizePatientDetails = (fhirPatient) => {
 };
 
 export const normalizePatientFamily = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.family);
+  const struct = { ...initialPatientState.family };
   const mother = find(fhirPatient.link, { relationship: 'MTH' });
   const father = find(fhirPatient.link, { relationship: 'FTH' });
 
@@ -67,7 +65,7 @@ export const normalizePatientFamily = (fhirPatient) => {
 };
 
 export const normalizePatientStudy = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.study);
+  const struct = { ...initialPatientState.study };
 
   if (fhirPatient.studies && fhirPatient.studies[0]) {
     struct.id = fhirPatient.studies[0].id;
@@ -77,9 +75,8 @@ export const normalizePatientStudy = (fhirPatient) => {
   return struct;
 };
 
-
 export const normalizePatientPractitioner = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.practitioner);
+  const struct = { ...initialPatientState.practitioner };
 
   if (fhirPatient.practitioners && fhirPatient.practitioners[0]) {
     struct.id = fhirPatient.practitioners[0].id;
@@ -102,7 +99,7 @@ export const normalizePatientPractitioner = (fhirPatient) => {
 };
 
 export const normalizePatientOrganization = (fhirPatient) => {
-  const struct = Object.assign({}, initialPatientState.organization);
+  const struct = { ...initialPatientState.organization };
 
   if (fhirPatient.organization) {
     struct.id = fhirPatient.organization.id;
@@ -112,7 +109,7 @@ export const normalizePatientOrganization = (fhirPatient) => {
   return struct;
 };
 
-export const normalizePatientConsultations = fhirPatient => (fhirPatient.clinicalImpressions
+export const normalizePatientConsultations = (fhirPatient) => (fhirPatient.clinicalImpressions
   ? fhirPatient.clinicalImpressions.reduce((result, current) => {
     const nameParts = [
       current.assessor_name[0].given[0],
@@ -135,7 +132,7 @@ export const normalizePatientConsultations = fhirPatient => (fhirPatient.clinica
     return result;
   }, []) : []);
 
-export const normalizePatientRequests = fhirPatient => (fhirPatient.serviceRequests
+export const normalizePatientRequests = (fhirPatient) => (fhirPatient.serviceRequests
   ? fhirPatient.serviceRequests.reduce((result, current) => {
     const nameParts = [
       current.requester_name[0].given[0],
@@ -162,7 +159,7 @@ export const normalizePatientRequests = fhirPatient => (fhirPatient.serviceReque
     return result;
   }, []) : []);
 
-export const normalizePatientSamples = fhirPatient => fhirPatient.specimens.reduce((result, current) => {
+export const normalizePatientSamples = (fhirPatient) => fhirPatient.specimens.reduce((result, current) => {
   result.push({
     type: 'DNA',
     id: current.id,
@@ -179,7 +176,7 @@ const emptyImpressions = {
   ontology: [],
   history: [],
 };
-export const normalizePatientImpressions = fhirPatient => (fhirPatient.clinicalImpressions
+export const normalizePatientImpressions = (fhirPatient) => (fhirPatient.clinicalImpressions
   ? fhirPatient.clinicalImpressions.reduce((result, current) => {
     if (current.familyMemberHistory) {
       current.familyMemberHistory.forEach((history) => {

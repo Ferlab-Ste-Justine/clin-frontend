@@ -1,11 +1,10 @@
-FROM node:10.14.1-stretch
+FROM node:14.15.1-stretch
 
 WORKDIR /code
-RUN npm install -g pnpm
-
 COPY package.json /code/package.json
-RUN pnpm install
+
+RUN yarn --no-lockfile
 
 COPY . /code
 
-CMD ["pnpm", "run", "start"]
+CMD ["yarn", "run", "start"]

@@ -9,7 +9,6 @@ import {
   defaultColumnsOrder,
 } from '../helpers/search_table_helper';
 
-
 export const initialUserState = {
   username: null,
   firstName: null,
@@ -42,7 +41,7 @@ const retrieveColumns = () => {
   if (columnsItem != null) {
     const columns = columnsItem.split(',');
     // Correct the item's content if invalid
-    if (columns.length > 0 && columns.filter(str => !str.startsWith('screen.patientsearch.table.')).length > 0) {
+    if (columns.length > 0 && columns.filter((str) => !str.startsWith('screen.patientsearch.table.')).length > 0) {
       window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultColumns.join(','));
       return defaultColumns;
     }
@@ -60,7 +59,7 @@ const retrieveColumnsOrder = () => {
   }
 };
 
-const userReducer = (state = Object.assign({}, initialUserState), action) => produce(state, (draft) => {
+const userReducer = (state = ({ ...initialUserState }), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
     case actions.USER_IDENTITY_FAILED:

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
@@ -50,7 +49,6 @@ import './style.scss';
 import style from './style.module.scss';
 import { userShape } from '../../../reducers/user';
 
-
 const VARIANT_TAB = 'VARIANTS';
 const GENE_TAB = 'GENES';
 
@@ -71,9 +69,9 @@ const COLUMN_WIDTHS = {
 };
 
 const getValue = curryRight(get)('');
-const valuePresent = x => (!isNil(x) && x !== '');
-const isCanonical = t => t.canonical;
-const insertCR = lines => lines.flatMap(l => [...l, '\n']);
+const valuePresent = (x) => (!isNil(x) && x !== '');
+const isCanonical = (t) => t.canonical;
+const insertCR = (lines) => lines.flatMap((l) => [...l, '\n']);
 const _has = curryRight(has);
 
 /**
@@ -101,15 +99,15 @@ const nucleotidicVariation = (variant, gene) => {
 
   lines.push(...geneLine);
 
-  const refTranscripts = variant.consequences.filter(isCanonical).map(t => getValue(t, 'ensembl_feature_id')).filter(valuePresent);
+  const refTranscripts = variant.consequences.filter(isCanonical).map((t) => getValue(t, 'ensembl_feature_id')).filter(valuePresent);
   lines.push(...insertCR(refTranscripts));
 
   // For some reason, point form doesn't work in filter for the _ghas function ...
-  const cdnaChanges = variant.consequences.filter(c => _has('cdnaChange')(c)).map(c => `c.${getValue(c, 'cdnaChange')}`);
+  const cdnaChanges = variant.consequences.filter((c) => _has('cdnaChange')(c)).map((c) => `c.${getValue(c, 'cdnaChange')}`);
   lines.push(...insertCR(cdnaChanges));
 
   // Same as above ...
-  const aaChanges = variant.consequences.filter(c => _has('aaChange')(c)).map(c => `p.(${getValue(c, 'aaChange')}`);
+  const aaChanges = variant.consequences.filter((c) => _has('aaChange')(c)).map((c) => `p.(${getValue(c, 'aaChange')}`);
   lines.push(...insertCR(aaChanges));
 
   return lines;
@@ -120,15 +118,16 @@ const nucleotidicVariation = (variant, gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const parentalOriginLines = (variant, _gene) => {
   const zygosity = (donor) => {
-    const zygoCode = d => getValue(d, 'zygosity');
+    const zygoCode = (d) => getValue(d, 'zygosity');
     return zygoCode(donor) === 'HOM'
       ? intl.get('screen.variantDetails.homozygote')
       : intl.get('screen.variantDetails.homozygote');
   };
 
-  const coverage = donor => [
+  const coverage = (donor) => [
     intl.get('screen.patientvariant.parentalOrigin.variantConverage'),
     `${getValue(donor, 'ad_alt')}/${getValue(donor, 'ad_total')} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
   ];
@@ -143,7 +142,7 @@ const parentalOriginLines = (variant, _gene) => {
         return '(-)';
     }
   };
-  const parentalOriginForDonor = d => [zygosity(d), origin(d), ...coverage(d)];
+  const parentalOriginForDonor = (d) => [zygosity(d), origin(d), ...coverage(d)];
   return insertCR(variant.donors.flatMap(parentalOriginForDonor).filter(valuePresent));
 };
 
@@ -152,6 +151,7 @@ const parentalOriginLines = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const allelicFrequency = (variant, _gene) => {
   if (has(variant, 'frequencies.exac')) {
     return getValue(variant.frequencies.exac, 'af');
@@ -173,9 +173,10 @@ const allelicFrequency = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const inSilicoPredictions = (variant, _gene) => {
   const preds = variant.consequences
-    .map(c => (c.predictions ? c.predictions.sift_converted_rank_score : null))
+    .map((c) => (c.predictions ? c.predictions.sift_converted_rank_score : null))
     .filter(valuePresent)
     .join(', ');
 
@@ -187,6 +188,7 @@ const inSilicoPredictions = (variant, _gene) => {
  * @param {*} variant
  * @param {*} gene
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const clinVar = (variant, _gene) => {
   if (!variant.clinvar) {
     return 0;
@@ -233,8 +235,8 @@ const showNotification = (message, description) => {
   });
 };
 
-const formatConsequences = consequences => consequences.map((consequence) => {
-  consequence.consequence = consequence.consequence.split('_').filter(item => item !== 'variant').join(' ');
+const formatConsequences = (consequences) => consequences.map((consequence) => {
+  consequence.consequence = consequence.consequence.split('_').filter((item) => item !== 'variant').join(' ');
   return consequence;
 });
 
@@ -273,6 +275,7 @@ class PatientVariantScreen extends React.Component {
     this.goToVariantPatientTab = this.goToVariantPatientTab.bind(this);
     this.handleSelectVariant = this.handleSelectVariant.bind(this);
     this.handleCreateReport = this.handleCreateReport.bind(this);
+    this.onVariantColumnWidthChanged = this.onVariantColumnWidthChanged.bind(this);
 
     this.state.selectedVariants = {};
 
@@ -367,7 +370,7 @@ class PatientVariantScreen extends React.Component {
                 return (
                   <div>
                     {
-                      consequences.map(consequence => (
+                      consequences.map((consequence) => (
                         consequence.pick === true ? (
                           <Row className="consequences" key={shortid.generate()}>
                             <Col>{ this.getImpactTag(consequence.impact) }</Col>
@@ -395,7 +398,7 @@ class PatientVariantScreen extends React.Component {
           excelRenderer: (data) => {
             try {
               const consequences = formatConsequences(data.consequences);
-              return consequences.map(consequence => (consequence.pick === true
+              return consequences.map((consequence) => (consequence.pick === true
                 ? `${consequence.consequence[0]} ${consequence.symbol ? consequence.symbol : ''} ${consequence.aa_change ? consequence.aa_change : ''}`
                 : ''));
             } catch (e) { return ''; }
@@ -440,7 +443,7 @@ class PatientVariantScreen extends React.Component {
             renderer: (data) => {
               try {
                 return (
-                  data.consequences.map(consequence => (
+                  data.consequences.map((consequence) => (
                     consequence.pick === true ? (
                       <Row key={shortid.generate()}>{ consequence.predictions.cadd_score }</Row>
                     ) : null
@@ -452,7 +455,7 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => {
             try {
-              return data.consequences.map(consequence => (
+              return data.consequences.map((consequence) => (
                 consequence.pick === true
                   ? `${consequence.predictions.cadd_score}`
                   : ''
@@ -470,7 +473,11 @@ class PatientVariantScreen extends React.Component {
               try {
                 return (
                   <>
-                    <Row><Button className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{ data.frequencies.internal.ac }</Button><span> / </span>{ data.frequencies.internal.an }</Row>
+                    <Row className="frequenciesLine">
+                      <Button type="link" className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{ data.frequencies.internal.ac }</Button>
+                      <span> / </span>
+                      { data.frequencies.internal.an }
+                    </Row>
                   </>
                 );
               } catch (e) { return ''; }
@@ -621,7 +628,6 @@ class PatientVariantScreen extends React.Component {
     this.handleGetStatements();
   }
 
-
   // eslint-disable-next-line class-methods-use-this
   getImpactTag(impact) {
     switch (impact) {
@@ -684,18 +690,16 @@ class PatientVariantScreen extends React.Component {
   }
 
   getVariantData(mutationId) {
-    const variants = this.getData().filter(v => v.id === mutationId);
+    const variants = this.getData().filter((v) => v.id === mutationId);
     return variants.length ? variants[0] : null;
   }
 
   goToVariantPatientTab(e) {
     const {
-      variant,
       actions,
     } = this.props;
 
-
-    const mutationId = e.target.getAttribute('data-id');
+    const mutationId = e.currentTarget.getAttribute('data-id');
     actions.navigateToVariantDetailsScreen(mutationId, 'patients');
   }
 
@@ -878,12 +882,10 @@ class PatientVariantScreen extends React.Component {
 
   handleNavigationToVariantDetailsScreen(e) {
     const {
-      variant,
       actions,
     } = this.props;
 
-
-    const mutationId = e.target.getAttribute('data-id');
+    const mutationId = e.currentTarget.getAttribute('data-id');
     actions.navigateToVariantDetailsScreen(mutationId);
   }
 
@@ -922,16 +924,16 @@ class PatientVariantScreen extends React.Component {
 
     const variants = Object.values(selectedVariants);
 
-    const headerRow = reportSchema().map(h => ({
+    const headerRow = reportSchema().map((h) => ({
       value: h.header, type: h.type,
     }));
 
-    const reportRow = curry((variant, gene) => reportSchema().map(c => ({
+    const reportRow = curry((variant, gene) => reportSchema().map((c) => ({
       type: c.type,
       value: c.cellGenerator(variant, gene),
     })));
 
-    const variantRows = variant => variant.genes.map(reportRow(variant));
+    const variantRows = (variant) => variant.genes.map(reportRow(variant));
     const dataRows = variants.flatMap(variantRows);
 
     try {
@@ -939,6 +941,12 @@ class PatientVariantScreen extends React.Component {
     } catch (e) {
       showNotification('Error', 'Could not create report');
     }
+  }
+
+  onVariantColumnWidthChanged(index, size) {
+    const { columnPreset } = this.state;
+    columnPreset[VARIANT_TAB][index].columnWidth = size;
+    this.setState({ columnPreset });
   }
 
   render() {
@@ -993,7 +1001,7 @@ class PatientVariantScreen extends React.Component {
             subid: key,
             type: 'filter',
             label: intl.get(`screen.patientvariant.filter_${key}`),
-            data: facets[activeQuery][key].map(value => ({
+            data: facets[activeQuery][key].map((value) => ({
               id: value.value,
               value: value.value,
               count: value.count,
@@ -1094,6 +1102,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
+                  onColumnWidthChanged={this.onVariantColumnWidthChanged}
                   schema={columnPreset[VARIANT_TAB]}
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
@@ -1137,7 +1146,7 @@ PatientVariantScreen.propTypes = {
   actions: PropTypes.shape({}).isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     fetchSchema,
     selectQuery,
@@ -1163,7 +1172,7 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   app: state.app,
   user: state.user,
   patient: state.patient,

@@ -15,27 +15,26 @@ const patientIdMatch = new RegExp('PA[0-9]{1,}', 'gi');
 const variantIdMatch = new RegExp('[a-f0-9]{40}', 'gi');
 const tabIdMatch = new RegExp('//.*[#]([\\w+]{1,})', 'gi');
 
+export const isRootRoute = (location) => rootRoutePattern.test(location);
 
-export const isRootRoute = location => rootRoutePattern.test(location);
+export const isPatientSearchRoute = (location) => patientSearchRoutePattern.test(location);
 
-export const isPatientSearchRoute = location => patientSearchRoutePattern.test(location);
+export const isPatientPageRoute = (location) => patientPageRoutePattern.test(location);
 
-export const isPatientPageRoute = location => patientPageRoutePattern.test(location);
+export const isPatientVariantPageRoute = (location) => patientVariantPageRoutePattern.test(location);
 
-export const isPatientVariantPageRoute = location => patientVariantPageRoutePattern.test(location);
+export const isVariantPageRoute = (location) => variantPageRoutePattern.test(location);
 
-export const isVariantPageRoute = location => variantPageRoutePattern.test(location);
+export const isSubmissionPageRoute = (location) => submissionPageRoutePattern.test(location);
 
-export const isSubmissionPageRoute = location => submissionPageRoutePattern.test(location);
+export const getPatientIdFromPatientPageRoute = (location) => location.match(patientIdMatch);
 
-export const getPatientIdFromPatientPageRoute = location => location.match(patientIdMatch);
+export const getTabIdFromPatientPageRoute = (location) => location.match(tabIdMatch);
 
-export const getTabIdFromPatientPageRoute = location => location.match(tabIdMatch);
+export const getPatientIdFromPatientVariantPageRoute = (location) => location.match(patientIdMatch);
 
-export const getPatientIdFromPatientVariantPageRoute = location => location.match(patientIdMatch);
+export const getTabIdFromPatientVariantPageRoute = (location) => location.match(tabIdMatch);
 
-export const getTabIdFromPatientVariantPageRoute = location => location.match(tabIdMatch);
+export const getVariantIdFromVariantPageRoute = (location) => location.match(variantIdMatch);
 
-export const getVariantIdFromVariantPageRoute = location => location.match(variantIdMatch);
-
-export const getTabIdFromVariantPageRoute = location => location.match(tabIdMatch);
+export const getTabIdFromVariantPageRoute = (location) => location.match(tabIdMatch);

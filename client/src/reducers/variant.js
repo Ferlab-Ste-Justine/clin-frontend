@@ -5,7 +5,7 @@ import {
   cloneDeep, findIndex, isEqual, last, head,
 } from 'lodash';
 import intl from 'react-intl-universal';
-import uuidv1 from 'uuid/v1';
+import { v1 as uuidv1 } from 'uuid';
 
 import * as actions from '../actions/type';
 import { normalizePatientDetails } from '../helpers/struct.ts';
@@ -55,12 +55,12 @@ const createDraftStatement = (title, description = '', queries = null) => ({
   queries: queries || [{ key: uuidv1(), title: intl.get('screen.patientvariant.query.title.increment', { count: 1 }), instructions: [] }],
 });
 
-const variantReducer = (state = Object.assign({}, initialVariantState), action) => produce(state, (draft) => {
+const variantReducer = (state = ({ ...initialVariantState }), action) => produce(state, (draft) => {
   const { draftQueries, draftHistory } = draft;
   const { payload } = action;
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
-      draft = Object.assign({}, initialVariantState);
+      draft = { ...initialVariantState };
       break;
 
     case actions.USER_PROFILE_SUCCEEDED: {
@@ -107,10 +107,10 @@ const variantReducer = (state = Object.assign({}, initialVariantState), action) 
 
     case actions.PATIENT_VARIANT_QUERY_REMOVAL:
       if (draft.draftQueries.length > 1) {
-        draft.draftQueries = draft.draftQueries.filter(query => action.payload.keys.indexOf(query.key) === -1);
+        draft.draftQueries = draft.draftQueries.filter((query) => action.payload.keys.indexOf(query.key) === -1);
         // @NOTE Remove matching subquery instructions
         const filteredDrafts = draft.draftQueries.map((draftQuery) => {
-          const filteredInstructions = draftQuery.instructions.filter(instruction => !(instruction.type === INSTRUCTION_TYPE_SUBQUERY && action.payload.keys.indexOf(instruction.data.query) !== -1));
+          const filteredInstructions = draftQuery.instructions.filter((instruction) => !(instruction.type === INSTRUCTION_TYPE_SUBQUERY && action.payload.keys.indexOf(instruction.data.query) !== -1));
           draftQuery.instructions = sanitizeInstructions(filteredInstructions);
           return draftQuery;
         });

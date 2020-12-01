@@ -1,6 +1,6 @@
-import { Dictionary, keyBy } from "lodash";
-//@ts-ignore
-import { DataExtractor } from "./extractor.ts";
+import { Dictionary, keyBy } from 'lodash';
+// @ts-ignore
+import { DataExtractor } from './extractor.ts';
 
 export type Record<T, V> = {
   original: T;
@@ -27,6 +27,7 @@ export abstract class Provider<T, V> {
 
 export class ProviderChain {
   private readonly providers: Provider<any, any>[] = [];
+
   constructor(private readonly data: any) {}
 
   public add<T, V>(provider: Provider<T, V>) {
@@ -38,6 +39,6 @@ export class ProviderChain {
     const dataExtrator: DataExtractor = new DataExtractor(this.data);
     const result = this.providers.map((provider) => provider.provide(dataExtrator));
 
-    return keyBy(result, "name");
+    return keyBy(result, 'name');
   }
 }

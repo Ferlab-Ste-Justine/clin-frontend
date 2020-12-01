@@ -1,13 +1,13 @@
 export type ResourceType =
-  | "Practitioner"
-  | "Patient"
-  | "Observation"
-  | "ClinicalImpression"
-  | "FamilyMemberHistory"
-  | "ServiceRequest"
-  | "Organization"
-  | "PractitionerRole"
-  | "Group";
+  | 'Practitioner'
+  | 'Patient'
+  | 'Observation'
+  | 'ClinicalImpression'
+  | 'FamilyMemberHistory'
+  | 'ServiceRequest'
+  | 'Organization'
+  | 'PractitionerRole'
+  | 'Group';
 
 export interface Meta {
   profile: string[];
@@ -102,7 +102,7 @@ export interface ClinicalImpression {
   resourceType: ResourceType;
   meta: Meta;
   extension: Extension[];
-  status: "in-progress" | "completed" | "entered-in-error";
+  status: 'in-progress' | 'completed' | 'entered-in-error';
   subject: Reference;
   date: string;
   assessor?: Reference;
@@ -148,7 +148,7 @@ export interface Observation {
   valueCodeableConcept?: CodeableConcept;
 }
 
-export type FamilyGroupType = "person" | "animal" | "practitioner" | "device" | "medication" | "substance";
+export type FamilyGroupType = 'person' | 'animal' | 'practitioner' | 'device' | 'medication' | 'substance';
 
 export interface BackboneElement {
   entity: Reference;

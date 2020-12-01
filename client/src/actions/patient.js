@@ -1,7 +1,6 @@
 import * as actions from './type';
 
-
-export const fetchPatient = uid => ({
+export const fetchPatient = (uid) => ({
   type: actions.PATIENT_FETCH_REQUESTED,
   payload: {
     uid,
@@ -17,7 +16,6 @@ export const autoCompletePatients = (type, query, page, size) => ({
     size: size || 25,
   },
 });
-
 
 export const autoCompletePatientsSelected = () => ({
   type: actions.PATIENT_AUTOCOMPLETE_SELECTED,

@@ -18,14 +18,14 @@ export const updateUserProfile = (id, defaultStatement, patientTableConfig, vari
   },
 });
 
-export const updateUserColumns = columns => ({
+export const updateUserColumns = (columns) => ({
   type: actions.USER_PROFILE_UPDATE_COLUMNS,
   payload: {
     columns,
   },
 });
 
-export const updateUserColumnsOrder = columnsOrder => ({
+export const updateUserColumnsOrder = (columnsOrder) => ({
   type: actions.USER_PROFILE_UPDATE_COLUMNS_ORDER,
   payload: {
     columnsOrder,

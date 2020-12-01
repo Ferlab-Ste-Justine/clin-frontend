@@ -1,19 +1,19 @@
 import Http from './http-client';
 import { createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle } from './fhir/fhir';
 
-const successCallback = payload => ({ payload });
-const errorCallback = error => ({ error });
+const successCallback = (payload) => ({ payload });
+const errorCallback = (error) => ({ error });
 
-const getPatientById = uid => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
+const getPatientById = (uid) => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientDataById = id => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+const getPatientDataById = (id) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
   createGetPatientDataBundle(id))
   .then(successCallback)
   .catch(errorCallback);
 
-const getPractitionersData = data => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+const getPractitionersData = (data) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
   createGetPractitionersDataBundle(data))
   .then(successCallback)
   .catch(errorCallback);
@@ -48,7 +48,7 @@ export class ApiError extends Error {
   }
 }
 
-const getVariantDetails = id => Http.secureClinAxios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
+const getVariantDetails = (id) => Http.secureClinAxios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
   .then(successCallback)
   .catch(errorCallback);
 
@@ -104,7 +104,7 @@ const updateStatement = (uid, title, description, queries) => Http.secureClinAxi
   .then(successCallback)
   .catch(errorCallback);
 
-const deleteStatement = uid => Http.secureClinAxios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const deleteStatement = (uid) => Http.secureClinAxios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
   data: { uid },
 })
   .then(successCallback)
@@ -131,7 +131,7 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
-const convertToExcelData = data => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
+const convertToExcelData = (data) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
   .then(successCallback)
   .catch(errorCallback);
 

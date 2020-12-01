@@ -1,21 +1,18 @@
-import { Provider } from 'react-redux';
+// @ts-nocheck
 import React from 'react';
-import ReactDOM from '@hot-loader/react-dom';
-
+import { Provider } from 'react-redux';
+import ReactDOM from 'react-dom';
+import './index.css';
+import 'antd/dist/antd.css';
 import { KeycloakProvider } from '@react-keycloak/web';
+import reportWebVitals from './reportWebVitals';
 import keycloak from './keycloak';
-
-import HotConnectedApp, { ConnectedApp } from './containers/App';
+import { ConnectedApp } from './containers/App';
 import configureStore, { history, initialState } from './configureStore';
-import { unregister } from './serviceWorker';
-import './helpers/chromi';
 
 const store = configureStore(initialState);
-const App = module.hot ? HotConnectedApp : ConnectedApp;
-
-
-const render = () => {
-  ReactDOM.render(
+ReactDOM.render(
+  <React.StrictMode>
     <KeycloakProvider
       keycloak={keycloak}
       initConfig={{
@@ -26,18 +23,11 @@ const render = () => {
       }}
     >
       <Provider id="provider" store={store}>
-        <App id="app" history={history} />
+        <ConnectedApp id="app" history={history} />
       </Provider>
     </KeycloakProvider>,
-    document.getElementById('root'),
-  );
-};
+  </React.StrictMode>,
+  document.getElementById('root'),
+);
 
-render();
-unregister();
-
-if (module.hot) {
-  module.hot.accept('./containers/App', () => {
-    render();
-  });
-}
+reportWebVitals();

@@ -1,4 +1,3 @@
-
 import { hot } from 'react-hot-loader/root';
 
 import React from 'react';
@@ -15,7 +14,6 @@ import MaintenanceScreen from '../../components/screens/Maintenance';
 import { loadApp } from '../../actions/app';
 import { appShape } from '../../reducers/app';
 import AppRouter from '../AppRouter';
-
 
 export class App extends React.Component {
   constructor() {
@@ -60,11 +58,11 @@ App.propTypes = {
   history: PropTypes.shape({}).isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   app: state.app,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     loadApp,
   }, dispatch),

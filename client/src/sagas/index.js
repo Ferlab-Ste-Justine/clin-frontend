@@ -10,7 +10,7 @@ import watchedVariantDetailsSagas from './variantDetails';
 import watchedRouterSagas from './router';
 import watchSavePatientSubmission from './patientSubmission';
 
-const makeRestartable = saga => function* restableSaga() {
+const makeRestartable = (saga) => function* restableSaga() {
   yield spawn(function* spawnedRestableSaga() {
     while (true) {
       try {
@@ -35,5 +35,5 @@ const rootSagas = [
 ].map(makeRestartable);
 
 export default function* rootSaga() {
-  yield all(rootSagas.map(saga => call(saga)));
+  yield all(rootSagas.map((saga) => call(saga)));
 }

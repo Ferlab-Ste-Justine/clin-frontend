@@ -1,4 +1,3 @@
-
 const createSavePatientBundleRequestField = () => (
   {
     method: 'POST',
@@ -6,14 +5,14 @@ const createSavePatientBundleRequestField = () => (
   }
 );
 
-const createUpdatePatientBundleRequestField = id => (
+const createUpdatePatientBundleRequestField = (id) => (
   {
     method: 'PUT',
     url: `Patient/${id}`,
   }
 );
 
-const createPatientResource = patient => (
+const createPatientResource = (patient) => (
   {
     resourceType: 'Patient',
     name: patient.name,
@@ -29,7 +28,7 @@ const createPatientResource = patient => (
   }
 );
 
-export const createSavePatientBundle = patient => (
+export const createSavePatientBundle = (patient) => (
   {
     resourceType: 'Bundle',
     type: 'transaction',

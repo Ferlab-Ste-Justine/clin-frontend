@@ -1,295 +1,309 @@
 @import './variables.scss';
 @import '../../../style/themes/colors.scss';
 
- .patientHeader{
-     .ant-col{
-        padding-right: 12px;
-     }
+.patientHeader{
+  .ant-col{
+    padding-right: 12px;
+  }
 }
 
 .generalInfo{
-    margin-bottom: 24px;
-    .ant-card-body{
-        padding: 16px 32px;
-    }
-    .nameBlock{
-        width: 240px;
-        text-align: center;
-        background-color: $gray-2;
-        i{
-            color: $gray-5;
-            margin-bottom: 8px;
-        }
+  margin-bottom: 24px;
+  .ant-card-body{
+    padding: 16px 32px;
+  }
+  .nameBlock{
+    width: 240px;
+    text-align: center;
+    background-color: $gray-2;
 
-        .ant-tag{
-            margin: 0;
-            margin-top: 8px;
-        }
+    &__info{
+      flex-direction: column;
+    }
+    i{
+      color: $gray-5;
+      margin-bottom: 8px;
     }
 
-    .content{
-        flex: 1;
-        margin-left: 40px;
-        display: flex;
-        align-items: center;
-        .ant-divider{
-            height: auto;
-            margin: 0 48px;
-        }
-
-        .grid{
-            flex:2;
-            display: grid;
-            grid-template-columns: 200px 200px;
-            grid-template-rows: 44px auto;
-            gap: 16px 40px;
-            grid-template-areas:
-              ". ."
-              ". .";
-        }
-        .row{
-            display: flex;
-            flex-direction: column;
-            .title{
-                color: $gray-7;
-                font-size: 12px;
-                line-height: 20px;
-                font-weight: 500;
-            }
-
-            .view{
-                color: $blue-8;
-                font-size: 12px;
-                line-height: 20px;
-                text-decoration-line: underline;
-            }
-
-            .mrn{
-                margin-bottom: 8px;
-            }
-
-            .info{
-                .ant-btn{
-                    height: auto;
-                }
-                .familyTypeTag{
-                    display: flex;
-                    align-items: center;
-                    width: fit-content;
-                    color: $cyan-7;
-                }
-            }
-        }
-
+    .ant-tag{
+      margin: 0;
+      margin-top: 8px;
     }
+  }
+
+  .content{
+    flex: 1;
+    margin-left: 40px;
+    display: flex;
+    align-items: center;
+    .ant-divider{
+      height: auto;
+      margin: 0 48px;
+    }
+
+    .grid{
+      flex:2;
+      display: grid;
+      grid-template-columns: 200px 200px;
+      grid-template-rows: 44px auto;
+      gap: 16px 40px;
+      grid-template-areas:
+      ". ."
+      ". .";
+    }
+    .row{
+      display: flex;
+      flex-direction: column;
+      .title{
+        color: $gray-7;
+        font-size: 12px;
+        line-height: 20px;
+        font-weight: 500;
+      }
+
+      .view{
+        color: $blue-8;
+        font-size: 12px;
+        line-height: 20px;
+        text-decoration-line: underline;
+      }
+
+      .mrn{
+        margin-bottom: 8px;
+      }
+
+      .info{
+        .ant-btn{
+          height: auto;
+        }
+        .familyTypeTag{
+          display: flex;
+          align-items: center;
+          width: fit-content;
+          color: $cyan-7;
+        }
+      }
+    }
+
+  }
 }
 
 
 .prescription{
-    margin-bottom: 24px;
-    //logo
-    .logoText{
-        display: flex;
-        align-items: center;
-        width: fit-content;
-        i{
-            height: 16px;
-            margin-top: 2px;
-            svg{
-                vertical-align: top !important;
-            }
-        }
+  margin-bottom: 24px;
+  //logo
+  .logoText{
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    i{
+      height: 16px;
+      margin-top: 2px;
+      svg{
+        vertical-align: top !important;
+      }
     }
+  }
 
-    .dropdown-icon{
-        margin-left: 4px !important;
-    }
+  .dropdown-icon{
+    margin-left: 4px !important;
+  }
 }
 
 .dropDownButton{
-    color: $gray-8;
+  color: $gray-8;
     
 }
 
 .statusModal{
-    .modalRadio{
-        display: flex;
-        flex-direction: column;
+  .modalRadio{
+    display: flex;
+    flex-direction: column;
 
-        .ant-radio-wrapper{
-            line-height: 0;
-            margin-bottom: 12px;
-            margin-right: 0;
-            .description{
-                color: $gray-8;
-                display: block;
-                margin-left: 24px;
-                white-space:normal;
-                font-size: 12px;
-                line-height: 20px;
-            }
-            textarea{
-                margin-top: 12px;
-                margin-left: 24px;
-                width: calc(100% - 24px);
-            }
-        }
+    .ant-radio-wrapper{
+      line-height: 0;
+      margin-bottom: 12px;
+      margin-right: 0;
+      .description{
+        color: $gray-8;
+        display: block;
+        margin-left: 24px;
+        white-space:normal;
+        font-size: 12px;
+        line-height: 20px;
+      }
+      textarea{
+        margin-top: 12px;
+        margin-left: 24px;
+        width: calc(100% - 24px);
+      }
+    }
 
-        .submitted{
-            color:$orange-7;
-        }
-        .approuved{
-            color: $blue-7;
-        }
-        .incomplete{
-            color:$magenta-6;
-        }
-        .refused{
-            color: $red-6;
-        }
-        .completed{
-            color: $green-7;
-        }
+    .submitted{
+      color:$orange-7;
     }
-    .ant-modal-footer{
-        button{
-            border-color: $gray-5; 
-        }
-        .cancel{
-            color: $gray-8;
-            border-color: $gray-5;
-        }
+    .approuved{
+      color: $blue-7;
     }
+    .incomplete{
+      color:$magenta-6;
+    }
+    .refused{
+      color: $red-6;
+    }
+    .completed{
+      color: $green-7;
+    }
+  }
+  .ant-modal-footer{
+    button{
+      border-color: $gray-5; 
+    }
+    .cancel{
+      color: $gray-8;
+      border-color: $gray-5;
+    }
+  }
 }
 
 .practitionerInfo{
-    width: 350px;
-    .ant-popover-inner-content{
-        padding: 0;
+  width: 350px;
+  .ant-popover-inner-content{
+    padding: 0;
+  }
+  .ant-card-head{
+    padding: 8px 16px;
+    height: auto;
+    min-height: auto;
+    .ant-card-head-title{
+      font-size: 14px;
+      padding: 0;
     }
-    .ant-card-head{
-        padding: 8px 16px;
-        height: auto;
-        min-height: auto;
-        .ant-card-head-title{
-            font-size: 14px;
-            padding: 0;
-        }
+  }
+  .ant-card-body{
+    padding: 12px 16px;
+    p{
+      margin: 0;
     }
-    .ant-card-body{
-        padding: 12px 16px;
-        p{
-            margin: 0;
-        }
-        .popOverName{
-            font-weight: 500;
-        }
-        a{
-            color: $blue-8;
-        }
+    .popOverName{
+      font-weight: 500;
     }
+    a{
+      color: $blue-8;
+    }
+  }
 
 
 }
 
 .noInfo{
-    &__contents{
-        flex-direction: column;
-        padding: 80px 0;
-        .ant-col{
-            width: 1135px;
-            text-align: center;
-        }
-        &__icon{
-            margin-bottom: 24px;
-            i{
-                color: $blue-6;
-            }
-        }
-
-        &__title{
-            margin-bottom: 8px; 
-        }
-        &__text{
-            margin-bottom: 32px;
-        }
+  &__contents{
+    flex-direction: column;
+    padding: 80px 0;
+    .ant-col{
+      width: 1135px;
+      text-align: center;
     }
+    &__icon{
+      margin-bottom: 24px;
+      i{
+        color: $blue-6;
+      }
+    }
+
+    &__title{
+      margin-bottom: 8px; 
+    }
+    &__text{
+      margin-bottom: 32px;
+    }
+  }
 }
 
 .clinical{
-    .ant-row-flex{
-        flex-wrap: nowrap;
-        &:not(:last-of-type){
-            margin-bottom: 12px;
-        }
-        
+    
+  &__info{
+    flex-wrap: nowrap;
+    &:not(:last-of-type){
+      margin-bottom: 12px;
     }
     &__title{
-        color: $gray-7;
-        min-width: 200px;
-        margin-right: 16px;
+      color: $gray-7;
+      min-width: 200px;
+      margin-right: 16px;
     }
     &__value{
-        button{
-            height: 22px;
-            i{
-                height: 16px;
-                
-                svg{
-                    vertical-align: sub !important;
-                }
-            }
+      button{
+        height: 22px;
+        i{
+          height: 16px;
+                    
+          svg{
+            vertical-align: sub !important;
+          }
         }
-        &--abnormal{
-            color: $red-6;
-        }
-        &--normal{
-            color: $green-7;
-        }
+      }
+      &--abnormal{
+        color: $red-6;
+      }
+      &--normal{
+        color: $green-7;
+      }
+    
+    }
+  }
+  .ant-card-body{
+    width: 100% !important;
+  }
 
+
+  .ant-table-body{
+    margin: 0 !important;
+        
+  }
+
+  .familyHistory{
+    width: 100%;
+    th{
+      &:first-child{
+        width: 200px !important;
+      }
+    }
+  }
+
+  .clinicalSign{
+    width: 100%;
+    th{
+      &:first-child{
+        width: 70px !important;
+        text-align: center;
+      }
     }
 
-
-
-    .ant-table-body{
-        margin: 0 !important;
+    td{
+      &:first-child{
+        text-align: center;
+      }
     }
-
-    .familyHistory{
-        th{
-            &:first-child{
-                width: 200px !important;
-            }
-        }
-    }
-
-    .clinicalSign{
-        th{
-            &:first-child{
-                width: 70px !important;
-                text-align: center;
-            }
-        }
-
-        td{
-            &:first-child{
-                text-align: center;
-            }
-        }
-    }
+  }
 }
 
 
 .ant-tabs-nav-scroll{
-background-color: #fff;
+  background-color: #fff;
 }
 
 .observedIcon{
-    color: $green-6;
+  color: $green-6;
 }
 .notObservedIcon{
-    color: $red-5;
+  color: $red-5;
 }
 .unknownIcon{
-    color: $gray-8;
+  color: $gray-8;
+}
+
+//temporaire
+.ant-table-small .ant-table-thead > tr > th{
+  background-color: $gray-2;
 }

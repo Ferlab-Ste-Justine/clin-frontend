@@ -3,8 +3,9 @@ import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Input, Icon, Tooltip,
+  Row, Col, Typography, Card, Tag, Popover, Dropdown, Button, Menu, Input, Tooltip,
 } from 'antd';
+import Icon from '@ant-design/icons';
 import {
   cloneDeep,
 } from 'lodash';
@@ -13,6 +14,7 @@ import {
   ic_cancel, ic_info_outline, ic_search, ic_chevron_left, ic_arrow_drop_down, ic_replay,
 } from 'react-icons-kit/md';
 
+import '../../../style/themes/antd-clin-theme.css';
 import style from '../styles/term.module.scss';
 import styleFilter from '../styles/filter.module.scss';
 
@@ -20,7 +22,6 @@ import {
   OPERATOR_TYPE_UNION,
   OPERATOR_TYPE_INTERSECTION,
   OPERATOR_TYPE_NOT_EQUAL,
-  OPERATOR_TYPE_EQUAL,
   OperatorIconComponent,
 } from '../Operator';
 
@@ -42,46 +43,47 @@ const operatorFromOperand = (operand) => {
   }
 };
 
-const OuterOperatorFromOperand = (operand) => {
-  switch (operand) {
-    case FILTER_OPERAND_TYPE_ONE:
-      return OPERATOR_TYPE_EQUAL;
-    case FILTER_OPERAND_TYPE_ALL:
-      return OPERATOR_TYPE_EQUAL;
-    case FILTER_OPERAND_TYPE_NONE:
-      return OPERATOR_TYPE_NOT_EQUAL;
-    default:
-      return OPERATOR_TYPE_EQUAL;
-  }
-};
+// const OuterOperatorFromOperand = (operand) => {
+//   switch (operand) {
+//     case FILTER_OPERAND_TYPE_ONE:
+//       return OPERATOR_TYPE_EQUAL;
+//     case FILTER_OPERAND_TYPE_ALL:
+//       return OPERATOR_TYPE_EQUAL;
+//     case FILTER_OPERAND_TYPE_NONE:
+//       return OPERATOR_TYPE_NOT_EQUAL;
+//     default:
+//       return OPERATOR_TYPE_EQUAL;
+//   }
+// };
 
-const InnerOperatorFromOperand = (operand) => {
-  switch (operand) {
-    case FILTER_OPERAND_TYPE_ONE:
-      return OPERATOR_TYPE_UNION;
-    case FILTER_OPERAND_TYPE_ALL:
-      return OPERATOR_TYPE_INTERSECTION;
-    case FILTER_OPERAND_TYPE_NONE:
-      return OPERATOR_TYPE_UNION;
-    default:
-      return OPERATOR_TYPE_UNION;
-  }
-};
-
-const PillOuterIconForOperand = operand => props => (
-  <Icon
-    {...props}
-    className={styleFilter.svgIcon}
-    component={OperatorIconComponent(OuterOperatorFromOperand(operand))}
-  />
+// const InnerOperatorFromOperand = (operand) => {
+//   switch (operand) {
+//     case FILTER_OPERAND_TYPE_ONE:
+//       return OPERATOR_TYPE_UNION;
+//     case FILTER_OPERAND_TYPE_ALL:
+//       return OPERATOR_TYPE_INTERSECTION;
+//     case FILTER_OPERAND_TYPE_NONE:
+//       return OPERATOR_TYPE_UNION;
+//     default:
+//       return OPERATOR_TYPE_UNION;
+//   }
+// };
+const PillOuterIconForOperand = (operand) => (props) => (
+  <div {...props}>{ operand }</div>
+  // <Icon
+  //   {...props}
+  //   className={styleFilter.svgIcon}
+  //   component={OperatorIconComponent(OuterOperatorFromOperand(operand))}
+  // />
 );
 
-const PillInnerIconForOperand = operand => props => (
-  <Icon
-    {...props}
-    className={style.innerIconOperand}
-    component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
-  />
+const PillInnerIconForOperand = (operand) => (props) => (
+  <div {...props}>{ operand }</div>
+  // <Icon
+  //   {...props}
+  //   className={style.innerIconOperand}
+  //   component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
+  // />
 );
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';
@@ -99,7 +101,7 @@ export const FILTER_TYPES = [
   FILTER_TYPE_AUTOCOMPLETE,
 ];
 
-export const createFilter = type => ({
+export const createFilter = (type) => ({
   type: INSTRUCTION_TYPE_FILTER,
   data: {
     type: (FILTER_TYPES.indexOf(type) !== -1 ? type : FILTER_TYPE_GENERIC),
@@ -190,7 +192,7 @@ class Filter extends React.Component {
   }
 
   serialize() {
-    return Object.assign({}, this.props, this.state);
+    return { ...this.props, ...this.state };
   }
 
   handleClose(force = false) {
@@ -299,7 +301,6 @@ class Filter extends React.Component {
       return getPillOuterIcon();
     }
 
-
     return actionLabel;
   }
 
@@ -366,9 +367,9 @@ class Filter extends React.Component {
       onOperandChangeCallBack(e.key);
     };
 
-    const applyMenu = cfg => (!cfg ? null : (
-      <Menu onClick={e => handleMenuClick(e)} className={styleFilter.operandDropdown}>
-        { cfg.operands.map(configOperand => (
+    const applyMenu = (cfg) => (!cfg ? null : (
+      <Menu onClick={(e) => handleMenuClick(e)} className={styleFilter.operandDropdown}>
+        { cfg.operands.map((configOperand) => (
           <Menu.Item key={shortid.generate()}>
             <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
             { intl.get(`screen.patientvariant.filter.operand.${configOperand}`) }
@@ -377,7 +378,6 @@ class Filter extends React.Component {
       </Menu>
     ));
 
-    const { operand } = draft;
     const savedOperand = data.operand;
     const haveChange = ((data.type === 'generic' || data.type === 'specific' || data.type === 'genericbool') && draft.values.length === 0 && !selected) || (data.type === 'numcomparison' && !selected && draft.values[0].value === 0 && draft.values[1].value === 0) ? true : null;
     const ApplyButton = ({ cfg }) => (this.hasOperands() ? (
@@ -388,14 +388,14 @@ class Filter extends React.Component {
         icon={(
           <>
             <Icon
-              component={OperatorIconComponent(operatorFromOperand(operand))}
+              className="operator-icon"
+              component={OperatorIconComponent(operatorFromOperand(data.operand))}
             />
             <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
           </>
         )}
         onClick={this.handleApply}
-        overlay={applyMenu(cfg)
-        }
+        overlay={applyMenu(cfg)}
         placement="bottomLeft"
       >
         { intl.get('components.query.filter.button.apply') }
@@ -425,39 +425,39 @@ class Filter extends React.Component {
         visible={this.isOpened()}
       >
         <Card className={styleFilter.filterCard}>
-          <div className={styleFilter.fieldHeader}>
-            <Row type="flex" justify="start" align="middle">
-              <Typography.Title className={styleFilter.labelTitle}>
+          <div className={`filter-header ${styleFilter.fieldHeader}`} justify="start" align="middle">
+            <Row className="flex-row">
+              <Typography.Title level={4} className="labelTitle">
                 { filterLabel }
               </Typography.Title>
-              <Tooltip overlayClassName={styleFilter.tooltip} placement="right" title={filterDescription}>
-                <Button>
-                  <IconKit size={16} className={styleFilter.iconInfo} icon={ic_info_outline} />
+              <Tooltip overlayClassName="tooltip" title={filterDescription}>
+                <Button type="link">
+                  <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
                 </Button>
               </Tooltip>
               { (searchable) && (
-                <Button className={styleFilter.iconSearch} onClick={this.handleInputView}>
+                <Button type="link" className="iconSearch" onClick={this.handleInputView}>
                   <IconKit size={24} icon={ic_search} />
                 </Button>
               ) }
               { (resettable && canApply) && (
-                <Button className={styleFilter.iconSearch} onClick={onReset}>
+                <Button className="iconSearch" onClick={onReset} type="link">
                   <IconKit size={24} icon={ic_replay} />
                 </Button>
               ) }
             </Row>
             { (searchable) && (
-            <>
-              <Row className={visibleInput ? null : `${styleFilter.searchInputClose}`}>
-                <Input
-                  allowClear
-                  placeholder={filterSearch}
-                  onChange={this.handleSearchByQuery}
-                  className={`${styleFilter.searchInput} ${data.id}searchInput`}
-                  autoFocus
-                />
-              </Row>
-            </>
+              <>
+                <Row className={visibleInput ? null : 'searchInputClose'}>
+                  <Input
+                    allowClear
+                    placeholder={filterSearch}
+                    onChange={this.handleSearchByQuery}
+                    className={`searchInput ${data.id}searchInput`}
+                    autoFocus
+                  />
+                </Row>
+              </>
             ) }
           </div>
 
@@ -465,12 +465,12 @@ class Filter extends React.Component {
           { allOptions && (
             allOptions.length >= size
               ? (
-                <Row className={styleFilter.paginationInfo} type="flex" align="middle" justify="space-between">
+                <Row className={`flex-row ${styleFilter.paginationInfo}`}>
                   <Col className={styleFilter.valueCount}>{ allOptions.length } { valueText }</Col>
                 </Row>
               ) : null
           ) }
-          <Row type="flex" justify="end" className={styleFilter.actionToolBar}>
+          <Row justify="end" className={`flex-row ${styleFilter.actionToolBar}`}>
             <Col>
               <Button onClick={this.handleCancel} className={styleFilter.cancelButton}>
                 <IconKit size={16} icon={ic_chevron_left} />
@@ -541,8 +541,7 @@ class Filter extends React.Component {
                         </Fragment>
                       )) }
                     </div>
-                  )
-                }
+                  ) }
 
               </Tag>
             </Dropdown>

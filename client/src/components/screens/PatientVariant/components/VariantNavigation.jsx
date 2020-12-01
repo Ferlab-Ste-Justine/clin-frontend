@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
@@ -78,7 +77,6 @@ const getCategoryIcon = (label) => {
   }
 };
 
-
 class VariantNavigation extends React.Component {
   constructor(props) {
     super(props);
@@ -133,9 +131,9 @@ class VariantNavigation extends React.Component {
     }
 
     return highlightPart.map((stringPart, index) => (
-      <React.Fragment>
+      <>
         { index === 0 ? null : <span className="highlight">{ highlightValue[index - 1] }</span> }{ stringPart }
-      </React.Fragment>
+      </>
     ));
   }
 
@@ -158,9 +156,9 @@ class VariantNavigation extends React.Component {
     }
 
     return highlightPart.map((stringPart, index) => (
-      <React.Fragment>
+      <>
         { index === 0 ? null : <span className="highlight">{ highlightValue[index - 1] }</span> }{ stringPart }
-      </React.Fragment>
+      </>
     ));
   }
 
@@ -184,7 +182,7 @@ class VariantNavigation extends React.Component {
     }
     const clickX = event.clientX;
     const clickY = event.clientY;
-    if (openMenu) {
+    if (openMenu && openMenu.offsetWidth != null) {
       const rect = openMenu.getBoundingClientRect();
       const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
       const menuX = rect.left + scrollLeft;
@@ -200,7 +198,6 @@ class VariantNavigation extends React.Component {
           clickOutside = true;
         }
       }
-
 
       if (clickOutside) {
         this.setState({
@@ -229,7 +226,7 @@ class VariantNavigation extends React.Component {
             return accumulator;
           }, {});
           this.setState({
-            searchResults: Object.values(groupedResults).filter(group => group.matches.length > 0),
+            searchResults: Object.values(groupedResults).filter((group) => group.matches.length > 0),
             searchResultsTotalCount: searchResults.length,
           });
         }, 750, { leading: true }));
@@ -315,7 +312,7 @@ class VariantNavigation extends React.Component {
         const query = find(queries, { key: activeQuery });
         let filter = null;
         if (query) {
-          filter = find(query.instructions, instruction => instruction.data.id === selection.subid);
+          filter = find(query.instructions, (instruction) => instruction.data.id === selection.subid);
         }
         const { schema } = this.props;
         const category = find(schema.categories, ['id', selection.id]);
@@ -360,7 +357,6 @@ class VariantNavigation extends React.Component {
     }
   }
 
-
   handleFilterSelection({ key }) {
     this.setState({
       activeFilterId: key,
@@ -373,7 +369,6 @@ class VariantNavigation extends React.Component {
     filter.remove = true;
     this.handleFilterChange(filter);
   }
-
 
   handleFilterChange(filter) {
     const { onEditCallback } = this.props;
@@ -396,7 +391,7 @@ class VariantNavigation extends React.Component {
             return instruction;
           });
           if (!updated) {
-            const andNotOperator = find(updatedQuery.instructions, instruction => (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
+            const andNotOperator = find(updatedQuery.instructions, (instruction) => (instruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
             if (!andNotOperator) {
               updatedInstructions.push({
                 type: 'filter',
@@ -418,7 +413,6 @@ class VariantNavigation extends React.Component {
     }
   }
 
-
   handleCategoryOpenChange() {
     this.setState({
       activeFilterId: null,
@@ -430,7 +424,6 @@ class VariantNavigation extends React.Component {
     e = !e ? '' : e;
     this.setState({ searchValue: e });
   }
-
 
   handleGeneAutoCompleteChange(e) {
     e = !e ? null : e;
@@ -445,7 +438,7 @@ class VariantNavigation extends React.Component {
     const { searchSelection, activeFilterId } = this.state;
     const currentActiveFilterId = searchSelection.filter ? searchSelection.filter : activeFilterId;
     const activeQueryData = find(queries, { key: activeQuery });
-    const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, q => q.data.id === currentActiveFilterId) : null;
+    const activeFilterForActiveQuery = activeQueryData ? find(activeQueryData.instructions, (q) => q.data.id === currentActiveFilterId) : null;
     const dataSet = data[currentActiveFilterId] ? data[currentActiveFilterId] : [];
     const config = categoryData.config && categoryData.config[categoryData.id];
     const filterOptions = {
@@ -539,7 +532,6 @@ class VariantNavigation extends React.Component {
     }
   }
 
-
   render() {
     // eslint-disable-next-line react/prop-types
     const { schema, variant } = this.props;
@@ -569,11 +561,11 @@ class VariantNavigation extends React.Component {
       });
     }
 
-    const autocompletes = searchValue !== '' ? searchResults.filter(group => group.label !== '').map((group) => {
+    const autocompletes = searchValue !== '' ? searchResults.filter((group) => group.label !== '').map((group) => {
       autocompletesCount += group.matches.length;
       return (
         <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong className="label">{ group.label }</Typography.Text>)}>
-          { group.matches.map(match => (
+          { group.matches.map((match) => (
             <AutoComplete.Option key={match.id} value={JSON.stringify(match)} className="value">
               <Col>
                 <Typography.Text style={{ maxWidth: 280 }} ellipsis>
@@ -639,12 +631,11 @@ class VariantNavigation extends React.Component {
           key="autocompleter"
           allowClear
           autoFocus
-          size="large"
           dataSource={autocompletes}
           onSearch={this.handleNavigationSearch}
           onSelect={this.handleNavigationSelection}
           value={this.searchQuery}
-          className="autocomplete"
+          className="autocomplete large-input"
           dropdownClassName="dropwDownAutoComplete"
           onChange={this.handleAutoCompleteChange}
           open
@@ -676,7 +667,7 @@ class VariantNavigation extends React.Component {
                 { activeFilterId === null && category.label === 'category_variant' && (
                   <div className="variantsHeader">
                     <Typography.Text>
-                    Identifiant
+                      Identifiant
                       <Tooltip overlayClassName="tooltip" placement="right" title="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.">
                         <Button>
                           <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
@@ -686,7 +677,7 @@ class VariantNavigation extends React.Component {
                     <Input placeholder="ex: chr7:g:399383 A>T, rs93939, etc" />
                     <Button>
                       <IconKit size={18} icon={ic_cloud_upload} />
-                    Importer une liste
+                      Importer une liste
                     </Button>
 
                   </div>
@@ -694,7 +685,7 @@ class VariantNavigation extends React.Component {
                 { activeFilterId === null && category.label === 'category_genomic' && (
                   <div className="variantsHeader">
                     <Typography.Text>
-                    Identifiant de gêne
+                      Identifiant de gêne
                       <Tooltip overlayClassName="tooltip" placement="right" title="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.">
                         <Button>
                           <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
@@ -716,7 +707,7 @@ class VariantNavigation extends React.Component {
 
                   </div>
                 ) }
-                { (!geneSearch || category.label !== 'category_genomic') && activeFilterId === null && !searchSelection.category && category.filters.map(f => (f.search && f.label !== 'filter_gene_symbol') && (
+                { (!geneSearch || category.label !== 'category_genomic') && activeFilterId === null && !searchSelection.category && category.filters.map((f) => (f.search && f.label !== 'filter_gene_symbol') && (
                   <Menu.SubMenu
                     key={f.id}
                     title={
@@ -729,7 +720,6 @@ class VariantNavigation extends React.Component {
                         )
 
                     }
-
                     onTitleClick={this.handleFilterSelection}
                     className="filterChoise"
                   />
@@ -739,7 +729,7 @@ class VariantNavigation extends React.Component {
                     className="geneMenuList"
                   >
                     {
-                      geneItem.map(item => (
+                      geneItem.map((item) => (
                         <Menu.Item key={item.geneSymbol} onClick={this.handleGeneSelection}>
                           <div className="geneValues">
                             <div className="geneSymbol">{ this.getHighlightSearchGene(item.geneSymbol) }</div>
@@ -775,19 +765,19 @@ VariantNavigation.propTypes = {
 };
 
 VariantNavigation.defaultProps = {
-  onEditCallback: () => {},
+  onEditCallback: () => { },
   data: [],
   queries: [],
   activeQuery: '',
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     fetchGenesByAutocomplete,
   }, dispatch),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   variant: state.variant,
 });
 

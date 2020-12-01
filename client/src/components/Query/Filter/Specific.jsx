@@ -43,16 +43,15 @@ const isObservedNeg = (ontology) => {
   return false;
 };
 
-const optionObservedPos = externalDataSet => (option) => {
+const optionObservedPos = (externalDataSet) => (option) => {
   const observedPos = externalDataSet.hpos.filter(isObservedPos);
-  console.log(observedPos.length);
   const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
   const code = option.value.match(hpoRegexp).toString();
   const obsPos = find(observedPos, { code });
   return obsPos;
 };
 
-const optionObservedNeg = externalDataSet => (option) => {
+const optionObservedNeg = (externalDataSet) => (option) => {
   const observedNeg = externalDataSet.hpos.filter(isObservedNeg);
   const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
   const code = option.value.match(hpoRegexp).toString();
@@ -60,10 +59,10 @@ const optionObservedNeg = externalDataSet => (option) => {
   return obsNeg;
 };
 
-const sortOptions = externalDataSet => (options) => {
+const sortOptions = (externalDataSet) => (options) => {
   const observedPos = options.filter(optionObservedPos(externalDataSet));
   const observedNeg = options.filter(optionObservedNeg(externalDataSet));
-  const notObserved = options.filter(o => !optionObservedPos(externalDataSet)(o) && !optionObservedNeg(externalDataSet)(o));
+  const notObserved = options.filter((o) => !optionObservedPos(externalDataSet)(o) && !optionObservedNeg(externalDataSet)(o));
   return [...observedPos, ...observedNeg, ...notObserved];
 };
 
@@ -126,10 +125,10 @@ class SpecificFilter extends Filter {
 
     const { selection, allOptions } = this.state;
     if (selection.length > 0) {
-      const value = filter(cloneDeep(dataSet), o => selection.includes(o.value));
+      const value = filter(cloneDeep(dataSet), (o) => selection.includes(o.value));
       if (value.length === 0) {
         const selectedValue = [];
-        selection.map(x => selectedValue.push({ value: x, count: 0 }));
+        selection.map((x) => selectedValue.push({ value: x, count: 0 }));
         allOptions.unshift(...selectedValue);
       } else {
         const sorted = orderBy(value, ['count'], ['desc']);
@@ -146,7 +145,7 @@ class SpecificFilter extends Filter {
     allOptions = sortOptions(externalDataSet)(allOptions);
 
     const search = values.toLowerCase();
-    const toKeep = filter(allOptions, o => (search === '' || o.value.toLowerCase().startsWith(search)));
+    const toKeep = filter(allOptions, (o) => (search === '' || o.value.toLowerCase().startsWith(search)));
 
     allOptions.length = 0;
     allOptions.push(...toKeep);
@@ -197,7 +196,7 @@ class SpecificFilter extends Filter {
           break;
         case SELECTOR_INTERSECTION:
           selectorDataSet = externalDataSet.hpos.filter(isObservedPos)
-            .map(ontology => ontology.code);
+            .map((ontology) => ontology.code);
           selectedValues = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
             return hpoValue ? (selectorDataSet.indexOf(hpoValue) !== -1) : false;
@@ -205,7 +204,7 @@ class SpecificFilter extends Filter {
           break;
         case SELECTOR_DIFFERENCE:
           selectorDataSet = externalDataSet.hpos.filter(isObservedNeg)
-            .map(ontology => ontology.code);
+            .map((ontology) => ontology.code);
           selectedValues = dataSet.filter((option) => {
             const hpoValue = option.value.match(hpoRegexp).toString();
             return hpoValue ? (selectorDataSet.indexOf(hpoValue) !== -1) : false;
@@ -213,7 +212,7 @@ class SpecificFilter extends Filter {
           break;
       }
 
-      draft.values = selectedValues.map(option => option.value);
+      draft.values = selectedValues.map((option) => option.value);
       draft.selector = selector;
       this.setState({
         draft,
@@ -284,8 +283,8 @@ class SpecificFilter extends Filter {
 
     const options = loadedOptionsClone.map((option) => {
       const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
-      const observedPos = externalDataSet.hpos.filter(ontology => ontology.parsed.observed === HPO_POSITIVE_CODE);
-      const observedNeg = externalDataSet.hpos.filter(ontology => ontology.parsed.observed === HPO_NEGATIVE_CODE);
+      const observedPos = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_POSITIVE_CODE);
+      const observedNeg = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_NEGATIVE_CODE);
       const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
       const code = option.value.match(hpoRegexp).toString();
       const isObservePos = find(observedPos, { code });
@@ -346,9 +345,9 @@ class SpecificFilter extends Filter {
                     useWindow={false}
                     getScrollParent={() => this.scrollParentRef}
                   >
-                    { options.map(option => (
+                    { options.map((option) => (
                       <Row>
-                        <Col>
+                        <Col className="checkboxLine">
                           <Checkbox className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
                         </Col>
                       </Row>
@@ -397,7 +396,7 @@ SpecificFilter.defaultProps = {
   renderCustomDataSelector: (onChangeCallback, values) => (
     // @NOTE Contained in both dataSet and externalDataSet -> intersection / not intersection
     <Row className={styleFilter.selectionToolBar}>
-      { values.map(value => (
+      { values.map((value) => (
         <>
           <Button onClick={() => onChangeCallback(value.value)} className={value.value}>{ value.label }</Button>
           <Divider className="divider" type="vertical" />

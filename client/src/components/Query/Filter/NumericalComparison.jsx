@@ -75,7 +75,7 @@ class NumericalComparisonFilter extends React.Component {
     const { draft } = this.state;
     const { id } = draft;
 
-    const values = draft.values.filter(term => !term.markedForDeletion);
+    const values = draft.values.filter((term) => !term.markedForDeletion);
 
     return {
       id,
@@ -88,7 +88,7 @@ class NumericalComparisonFilter extends React.Component {
     const { data } = this.props;
     const { id, values } = data;
 
-    const trimmedValues = values.filter(v => !v.markedForDeletion);
+    const trimmedValues = values.filter((v) => !v.markedForDeletion);
     return {
       id,
       type: FILTER_TYPE_NUMERICAL_COMPARISON,
@@ -211,7 +211,7 @@ class NumericalComparisonFilter extends React.Component {
 
     const draftClone = cloneDeep(draft);
 
-    draftClone.values = draftClone.values.filter(term => !term.markedForDeletion);
+    draftClone.values = draftClone.values.filter((term) => !term.markedForDeletion);
 
     if (!draftClone.values.length) return;
 

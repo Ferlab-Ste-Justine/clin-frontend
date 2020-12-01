@@ -4,215 +4,215 @@
 
 
 .btn{
-    border:none;
-    border-radius:$border-radius;
-    outline:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:none;
-    i{
-        margin-right: $defaultSpacing;
-    }
+  border:none;
+  border-radius:$border-radius;
+  outline:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:none;
+  i{
+    margin-right: $defaultSpacing;
+  }
 }
 
 .btnPrimary{
-    background-color:$blue-800;
-    color:$light;
-    span{
-      text-transform: uppercase;
-      letter-spacing: $letter-spacing;
-      font-size: $small-font;
-      font-weight: $font-weight-medium;
-    }
+  background-color:$blue-800;
+  color:$light;
+  span{
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing;
+    font-size: $small-font;
+    font-weight: $font-weight-medium;
+  }
 }
 .btnPrimary:hover{
-    background-color:$primary-hover;
-    color:$light;
+  background-color:$primary-hover;
+  color:$light;
 }
 .btnPrimary:disabled,.btnPrimary:disabled:hover {
-    background-color:$disabledColor;
-    color: $primary-text-disabled;
+  background-color:$disabledColor;
+  color: $primary-text-disabled;
 }
 .btnPrimary:focus{
-    background-color:#5199C4;
-    color:$light;
+  background-color:#5199C4;
+  color:$light;
 }
 
 
 .btnSecondary{
-    background-color:$light;
-    color:$primary;
-    span{
-      text-transform: uppercase;
-      letter-spacing: $letter-spacing;
-      line-height: $default-line-height;
-      font-size: $small-font;
-      font-weight: $font-weight-medium;
-    }
+  background-color:$light;
+  color:$primary;
+  span{
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing;
+    line-height: $default-line-height;
+    font-size: $small-font;
+    font-weight: $font-weight-medium;
+  }
 }
 .btnSecondary:hover{
-    background-color:$light-hover;
-    color:$primary;
+  background-color:$light-hover;
+  color:$primary;
 }
 
 .btnSecondary:disabled,.btnWhite:disabled:hover {
-    background-color:$disabledColor;
+  background-color:$disabledColor;
 }
 
 .btnSecondary:focus{
-    background-color:$primary-light;
+  background-color:$primary-light;
 }
 
 
 
 
 .btnSec{
-    background-color:$light;
-    color:$primary-dark;
-    padding:$smallSpacing;
-    margin-left:$mediumSpacing;
-    span{
-        font-size: $small-font;
-        font-family: $font;
-        letter-spacing: $small-letter-spacing;
+  background-color:$light;
+  color:$primary-dark;
+  padding:$smallSpacing;
+  margin-left:$mediumSpacing;
+  span{
+    font-size: $small-font;
+    font-family: $font;
+    letter-spacing: $small-letter-spacing;
+  }
+  i{
+    color:rgba(35, 55, 80, 0.38);
+    margin-right:$defaultSpacing;
+    svg{
+      height: 24px;
+      width: 24px;
     }
-    i{
-        color:rgba(35, 55, 80, 0.38);
-        margin-right:$defaultSpacing;
-        svg{
-          height: 24px;
-          width: 24px;
-        }
 
-    }
+  }
 }
 .btnSec:hover{
-    background-color:$primary-light;
-    color:$primary-dark;
+  background-color:$primary-light;
+  color:$primary-dark;
 }
 .btnSec:disabled,.btnSec:disabled:hover {
-    background-color:$background;
-    color: rgba(35, 55, 80, 0.38);
+  background-color:$background;
+  color: rgba(35, 55, 80, 0.38);
 }
 .btnSec:focus{
-    background-color:$primary-light;
-    color:#233750;
+  background-color:$primary-light;
+  color:#233750;
 }
 
 
 
 .input{
-    border:none;
+  border:none;
 
-    input{
-        padding:$mediumSpacing 16px;
-        font-family: $font;
-        font-size: $medium-font;
-        letter-spacing: $small-letter-spacing;
-        line-height: 24px;
-        height: 24px;
+  input{
+    padding:$mediumSpacing 16px;
+    font-family: $font;
+    font-size: $medium-font;
+    letter-spacing: $small-letter-spacing;
+    line-height: 24px;
+    height: 24px;
 
-        outline:none;
-        -webkit-box-shadow: none;
-        -moz-box-shadow: none;
-        box-shadow: none;
+    outline:none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 
-        border:1px solid #abb3bc;
-        border-radius:$border-radius;
+    border:1px solid #abb3bc;
+    border-radius:$border-radius;
 
-    }
+  }
 
-    input:focus{
-       border-radius:$border-radius;
-       -webkit-box-shadow: none;
-       -moz-box-shadow: none;
-       box-shadow: none;
-       border: 2px solid #1d8bc6;
-       border-right-width: 2px !important;
-    }
-    input:active{
-       border-radius:$border-radius;
-       -webkit-box-shadow: none;
-       -moz-box-shadow: none;
-       box-shadow: none;
-       border: 1px solid #1d8bc6;
+  input:focus{
+    border-radius:$border-radius;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border: 2px solid #1d8bc6;
+    border-right-width: 2px !important;
+  }
+  input:active{
+    border-radius:$border-radius;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border: 1px solid #1d8bc6;
 
-    }
+  }
 }
 
 .input:hover{
-     border: 1px solid rgba(28, 132, 189, 0.2);
-     border-radius:$border-radius;
+  border: 1px solid rgba(28, 132, 189, 0.2);
+  border-radius:$border-radius;
 
-    input{
-           border-radius:$border-radius;
-           border:none;
-           -webkit-box-shadow: none;
-           -moz-box-shadow: none;
-           box-shadow: none;
-    }
+  input{
+    border-radius:$border-radius;
+    border:none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
 }
 
 .input:focus:hover{
-     border: 2px solid rgba(28, 132, 189, 0.2);
-     border-radius:$border-radius;
+  border: 2px solid rgba(28, 132, 189, 0.2);
+  border-radius:$border-radius;
 
-    input{
-           border-radius:$border-radius;
-           border:none;
-           -webkit-box-shadow: none;
-           -moz-box-shadow: none;
-           box-shadow: none;
-    }
+  input{
+    border-radius:$border-radius;
+    border:none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
 }
 
 .input:invalid {
-    input{
-        background:red;
-    }
+  input{
+    background:red;
+  }
 
 }
 
 
 .checkbox{
-    width:100%;
+  width:100%;
 
-    span:first-child{
-       padding:$smallSpacing 0;
+  span:first-child{
+    padding:$smallSpacing 0;
 
-       span{
-         height:18px;
-         width:18px;
+    span{
+      height:18px;
+      width:18px;
 
-       }
-        &:after{
-         border:none;
-        }
     }
+    &:after{
+      border:none;
+    }
+  }
 
 }
 
 .check{
-    span:first-child{
-        span{
-         background-color:#1d8bc6  ;
-         border:none ;
-         &:after{
-             left:25%;
-         }
-        }
+  span:first-child{
+    span{
+      background-color:#1d8bc6  ;
+      border:none ;
+      &:after{
+        left:25%;
+      }
     }
+  }
 
-    &:hover{
-        span span{
-            border:none;
+  &:hover{
+    span span{
+      border:none;
 
-            &:after{
-                left:25%;
-            }
-        }
+      &:after{
+        left:25%;
+      }
     }
+  }
 }
 
 

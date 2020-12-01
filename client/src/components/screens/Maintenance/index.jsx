@@ -7,8 +7,7 @@ import Navigation from '../../Navigation';
 import './style.scss';
 import Layout from '../../Layout';
 
-
-const MaintenanceScreen = error => (
+const MaintenanceScreen = (error) => (
   <Layout>
     <>
       <Navigation />

@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Menu, Dropdown, Icon,
+  Menu, Dropdown,
 } from 'antd';
 import intl from 'react-intl-universal';
 import style from './styles/term.module.scss';
-import styleFilter from './styles/filter.module.scss';
 
 export const INSTRUCTION_TYPE_OPERATOR = 'operator';
 export const OPERATOR_TYPE_AND = 'and';
@@ -72,18 +71,19 @@ export const getSvgPathFromOperatorType = (type) => {
   }
 };
 
-export const OperatorIconComponent = operator => props => (
+export const OperatorIconComponent = (operator) => (props) => (
   <svg width="10em" height="10em" viewBox="0 0 24 24" {...props}>
     { getSvgPathFromOperatorType(operator) }
   </svg>
 );
 
-export const IconForOperator = operator => (
-  <Icon
-    // {...props}
-    className={styleFilter.svgIcon}
-    component={OperatorIconComponent(operator)}
-  />
+export const IconForOperator = (operator) => (
+  <div>{ operator }</div>
+  // <Icon
+  //   // {...props}
+  //   className={styleFilter.svgIcon}
+  //   component={OperatorIconComponent(operator)}
+  // />
 );
 
 class Operator extends React.Component {
@@ -134,7 +134,7 @@ class Operator extends React.Component {
   }
 
   serialize() {
-    return Object.assign({}, this.props, this.state);
+    return { ...this.props, ...this.state };
   }
 
   handleApply({ key }) {
@@ -193,7 +193,7 @@ Operator.defaultProps = {
 
 export default Operator;
 
-export const createOperatorInstruction = type => ({
+export const createOperatorInstruction = (type) => ({
   type: INSTRUCTION_TYPE_OPERATOR,
   data: Operator.structFromArgs(type),
 });

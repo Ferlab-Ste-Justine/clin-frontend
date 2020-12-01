@@ -9,7 +9,6 @@ import {
 import { INSTRUCTION_TYPE_FILTER } from '../Filter';
 import { INSTRUCTION_TYPE_SUBQUERY } from '../Subquery';
 
-
 export const sanitizeOperators = (instructions) => {
   // @NOTE No subsequent operators
   let lastOperatorIndex = null;
@@ -78,7 +77,7 @@ export const sanitizeFilters = (instructions) => {
   });
 };
 
-export const sanitizeInstructions = instructions => sanitizeOperators(sanitizeSubqueries(sanitizeFilters(instructions)));
+export const sanitizeInstructions = (instructions) => sanitizeOperators(sanitizeSubqueries(sanitizeFilters(instructions)));
 
 // @TODO Refactor
 export const calculateTitleWidth = (value) => {
@@ -159,6 +158,5 @@ export const calculateTitleWidth = (value) => {
     + (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33) + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
   return width;
 };
-
 
 export default sanitizeInstructions;

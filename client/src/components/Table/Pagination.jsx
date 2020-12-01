@@ -3,7 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Pagination } from 'antd';
 
-
 const DataTablePagination = (props) => {
   const {
     total, page, defaultPage, size, defaultSize, sizeOptions, canChangeSize, isDisabled, pageChangeCallback, pageSizeChangeCallback,

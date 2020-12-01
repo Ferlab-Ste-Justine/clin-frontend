@@ -40,15 +40,15 @@ export const searchShape = {
   }),
 };
 
-const searchReducer = (state = Object.assign({}, initialSearchState), action) => produce(state, (draft) => {
+const searchReducer = (state = ({ ...initialSearchState }), action) => produce(state, (draft) => {
   switch (action.type) {
     case actions.USER_LOGOUT_SUCCEEDED:
-      draft = Object.assign({}, initialSearchState);
+      draft = { ...initialSearchState };
       break;
 
     case actions.PATIENT_SEARCH_SUCCEEDED:
       draft.patient.total = action.payload.data.data.total;
-      draft.patient.results = action.payload.data.data.hits.map(hit => hit._source);
+      draft.patient.results = action.payload.data.data.hits.map((hit) => hit._source);
       break;
 
     case actions.PATIENT_SEARCH_REQUESTED:
@@ -84,7 +84,7 @@ const searchReducer = (state = Object.assign({}, initialSearchState), action) =>
 
     case actions.PATIENT_AUTOCOMPLETE_SUCCEEDED:
       draft.autocomplete.total = action.payload.data.data.total;
-      draft.autocomplete.results = action.payload.data.data.hits.map(hit => hit._source);
+      draft.autocomplete.results = action.payload.data.data.hits.map((hit) => hit._source);
       break;
 
     default:
