@@ -23,6 +23,7 @@ import {
   OPERATOR_TYPE_INTERSECTION,
   OPERATOR_TYPE_NOT_EQUAL,
   OperatorIconComponent,
+  OPERATOR_TYPE_EQUAL,
 } from '../Operator';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
@@ -43,47 +44,46 @@ const operatorFromOperand = (operand) => {
   }
 };
 
-// const OuterOperatorFromOperand = (operand) => {
-//   switch (operand) {
-//     case FILTER_OPERAND_TYPE_ONE:
-//       return OPERATOR_TYPE_EQUAL;
-//     case FILTER_OPERAND_TYPE_ALL:
-//       return OPERATOR_TYPE_EQUAL;
-//     case FILTER_OPERAND_TYPE_NONE:
-//       return OPERATOR_TYPE_NOT_EQUAL;
-//     default:
-//       return OPERATOR_TYPE_EQUAL;
-//   }
-// };
+const OuterOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_EQUAL;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_NOT_EQUAL;
+    default:
+      return OPERATOR_TYPE_EQUAL;
+  }
+};
 
-// const InnerOperatorFromOperand = (operand) => {
-//   switch (operand) {
-//     case FILTER_OPERAND_TYPE_ONE:
-//       return OPERATOR_TYPE_UNION;
-//     case FILTER_OPERAND_TYPE_ALL:
-//       return OPERATOR_TYPE_INTERSECTION;
-//     case FILTER_OPERAND_TYPE_NONE:
-//       return OPERATOR_TYPE_UNION;
-//     default:
-//       return OPERATOR_TYPE_UNION;
-//   }
-// };
+const InnerOperatorFromOperand = (operand) => {
+  switch (operand) {
+    case FILTER_OPERAND_TYPE_ONE:
+      return OPERATOR_TYPE_UNION;
+    case FILTER_OPERAND_TYPE_ALL:
+      return OPERATOR_TYPE_INTERSECTION;
+    case FILTER_OPERAND_TYPE_NONE:
+      return OPERATOR_TYPE_UNION;
+    default:
+      return OPERATOR_TYPE_UNION;
+  }
+};
 const PillOuterIconForOperand = (operand) => (props) => (
-  <div {...props}>{ operand }</div>
-  // <Icon
-  //   {...props}
-  //   className={styleFilter.svgIcon}
-  //   component={OperatorIconComponent(OuterOperatorFromOperand(operand))}
-  // />
+  <Icon
+    {...props}
+    className={styleFilter.svgIcon}
+    component={OperatorIconComponent(OuterOperatorFromOperand(operand))}
+  />
 );
 
 const PillInnerIconForOperand = (operand) => (props) => (
-  <div {...props}>{ operand }</div>
-  // <Icon
-  //   {...props}
-  //   className={style.innerIconOperand}
-  //   component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
-  // />
+  <Icon
+    {...props}
+    className={style.innerIconOperand}
+    component={OperatorIconComponent(InnerOperatorFromOperand(operand))}
+  />
+
 );
 
 export const INSTRUCTION_TYPE_FILTER = 'filter';

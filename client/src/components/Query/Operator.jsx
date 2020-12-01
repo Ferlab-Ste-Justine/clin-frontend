@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Menu, Dropdown,
 } from 'antd';
+import Icon from '@ant-design/icons';
 import intl from 'react-intl-universal';
 import style from './styles/term.module.scss';
 
@@ -78,12 +79,13 @@ export const OperatorIconComponent = (operator) => (props) => (
 );
 
 export const IconForOperator = (operator) => (
-  <div>{ operator }</div>
-  // <Icon
-  //   // {...props}
-  //   className={styleFilter.svgIcon}
-  //   component={OperatorIconComponent(operator)}
-  // />
+  <>
+    <div>{ operator }</div>
+    <Icon
+    // {...props}
+      component={OperatorIconComponent(operator)}
+    />
+  </>
 );
 
 class Operator extends React.Component {

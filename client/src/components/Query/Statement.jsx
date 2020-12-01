@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import {
   Menu, Button, Checkbox, Tooltip, Dropdown, Icon, Modal, Row, Divider, Input, Popconfirm, Typography,
 } from 'antd';
+import { StarOutlined, StarFilled, InfoCircleFilled } from '@ant-design/icons';
 import {
   cloneDeep, find, findIndex, pull, isEmpty, isEqual,
 } from 'lodash';
@@ -24,8 +25,6 @@ import {
 import { calculateTitleWidth } from './helpers/query';
 import './styles/statement.scss';
 import styleStatement from './styles/statement.module.scss';
-
-import { InfoCircleFilled, StarFilled } from '@ant-design/icons';
 
 class Statement extends React.Component {
   constructor(props) {
@@ -863,12 +862,21 @@ class Statement extends React.Component {
                       onClick={this.toggleStatementAsDefault}
                       disabled={activeStatementId == null}
                     >
-                      <StarFilled></StarFilled>
-                      {/* <Icon
-                        className={(activeStatement.uid === defaultStatementId) ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.star}`}
-                        type="star"
-                        theme={(activeStatement.uid === defaultStatementId) ? 'filled' : 'outlined'}
-                      /> */}
+                    {
+                      activeStatement.uid === defaultStatementId ?                               
+                      (<StarFilled  
+                        style={{ fontSize: '16px' }}
+                      className={`${styleStatement.starFilled} ${styleStatement.star}`}
+                      dataid=''
+                      onClick={this.toggleStatementAsDefault}
+                      />) : 
+                      (<StarOutlined 
+                        style={{ fontSize: '16px' }}
+                        className={`${styleStatement.starOutlined} ${styleStatement.star}`}
+                        dataid={activeStatement.uid}
+                        onClick={this.toggleStatementAsDefault} />)
+                        
+                    }
                     </Button>
                   </Tooltip>
                   )}
@@ -985,14 +993,21 @@ class Statement extends React.Component {
                                   className={styleStatement.displayOnHover}
                                 />
                               </Popconfirm>
-                              {/* { (<Icon
-                                type="star"
-                                size={20}
-                                className={(key === defaultStatementId) ? `${styleStatement.starFilled} ${styleStatement.star}` : `${styleStatement.starOutlined} ${styleStatement.displayOnHover} ${styleStatement.star}`}
-                                theme={(key === defaultStatementId) ? 'filled' : 'outlined'}
+                              {
+                                key === defaultStatementId ?                               
+                                (<StarFilled  
+                                  style={{ fontSize: '20px' }}
+                                className={`${styleStatement.starFilled} ${styleStatement.star}`}
                                 dataid={(statements[key].uid === defaultStatementId) ? '' : statements[key].uid}
                                 onClick={this.toggleStatementAsDefault}
-                              />)} */}
+                                />) : 
+                                (<StarOutlined 
+                                  style={{ fontSize: '20px' }}
+                                  className={`${styleStatement.starOutlined} ${styleStatement.star}`}
+                                  dataid={(statements[key].uid === defaultStatementId) ? '' : statements[key].uid}
+                                  onClick={this.toggleStatementAsDefault} />)
+                                  
+                              }
                             </div>
                           </Menu.Item>
                         ))
