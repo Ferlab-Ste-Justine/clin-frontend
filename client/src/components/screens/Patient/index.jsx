@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import {
   Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input,
 } from 'antd';
-
+import { DownOutlined } from '@ant-design/icons';
 import {
   find,
 } from 'lodash';
@@ -181,7 +181,7 @@ class PatientScreen extends React.Component {
           <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
             <Button type="link" onClick={(e) => e.preventDefault()}>
               Action
-              { /* <Icon className="dropdown-icon" type="down" /> */ }
+              <DownOutlined />
             </Button>
           </Dropdown>
         );

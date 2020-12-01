@@ -10,6 +10,7 @@ import { v1 as uuidv1 } from 'uuid';
 import {
   Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Tooltip, Card,
 } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import IconKit from 'react-icons-kit';
 import {
   ic_assessment, ic_show_chart, ic_local_library, ic_people,
@@ -752,7 +753,7 @@ class VariantDetailsScreen extends React.Component {
             {
               lis !== '--' ? (
                 <span className="iconPlus">
-                  { /* <Icon onClick={() => this.handleMoreHpo(index)} type="plus" /> */ }
+                  <PlusOutlined />
                 </span>
               ) : null
             }
