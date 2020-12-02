@@ -280,13 +280,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'key',
         label: 'screen.variantDetails.frequenciesTab.LDMColumn',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          renderer: (data) => {
-            try {
-              return data.key;
-            } catch (e) {
-              return '';
-            }
-          },
+          renderer: (data) => { try { return data.key; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -302,11 +296,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'af',
         label: 'screen.variantDetails.frequenciesTab.frequencies',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          renderer: (data) => {
-            try {
-              return data.af;
-            } catch (e) { return ''; }
-          },
+          renderer: (data) => { try { return data.af; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -322,13 +312,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'hom',
         label: 'screen.variantDetails.frequenciesTab.nbHomozygotes',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          renderer: (data) => {
-            try {
-              return data.hom;
-            } catch (e) {
-              return '';
-            }
-          },
+          renderer: (data) => { try { return data.hom; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
