@@ -306,11 +306,18 @@ div.ant-card {
   width: $maxWidth;
 }
 
+.variant-frequencies{
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
 //Card
 .staticCard{
   margin-bottom: 24px !important;
   max-width: $maxWidth;
 }
+
 //tabs
 .staticTabs{
   &:focus{

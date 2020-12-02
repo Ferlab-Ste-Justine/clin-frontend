@@ -280,13 +280,7 @@ class VariantDetailsScreen extends React.Component {
         key: 'key',
         label: 'screen.variantDetails.frequenciesTab.LDMColumn',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          renderer: (data) => {
-            try {
-              return data.key;
-            } catch (e) {
-              return '';
-            }
-          },
+          renderer: (data) => { try { return data.key; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -305,6 +299,22 @@ class VariantDetailsScreen extends React.Component {
           renderer: (data) => { try { return data.af; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'an',
+        label: 'screen.variantDetails.frequenciesTab.nbAllelesAltRef',
+        renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
+          renderer: (data) => { try { return data.an; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.MEDIUM,
+      },
+      {
+        key: 'hom',
+        label: 'screen.variantDetails.frequenciesTab.nbHomozygotes',
+        renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
+          renderer: (data) => { try { return data.hom; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
         key: 'info',
@@ -1072,7 +1082,7 @@ class VariantDetailsScreen extends React.Component {
                 </span>
               )}
             >
-              <div className="page-static-content">
+              <div className="variant-frequencies">
                 <Row type="flex" className="frequenciesTab" gutter={24}>
                   <Col span={12}>
                     <Card title="RDMQ" className="staticCard" bordered={false}>
