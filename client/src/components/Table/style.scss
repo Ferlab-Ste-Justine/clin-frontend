@@ -265,27 +265,6 @@
   }
 }
 
-.tooltipHeader{
-  display: flex;
-  align-items: center;
-  &:hover::after{
-    content: "patate";
-    position: absolute;
-    background-color: red;
-    top:-10px;
-    left:0;
-    z-index:10000000000000;
-  }
-  i{
-    display: flex !important;
-    height: 16px;
-    svg{
-      color: $primary-dark;
-    }
-
-  }
-}
-
 .pubmedDropdown{
   >ul{
     border-radius:2px;
@@ -321,4 +300,32 @@
 
 .ant-pagination-item a , .ant-pagination-item-active a{
   color: $light-text;
+}
+
+.table__header__custom {
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+}
+
+
+.table__header__tooltip__wrapper {
+  flex-direction: row;
+  i{
+    display: flex !important;
+    height: 16px;
+    margin-left: 3px;
+    svg{
+      color: $primary-dark;
+    }
+
+  }
+}
+
+.bp3-table-column-header-cell {
+  min-width: unset!important;
+}
+
+div[class^='bp3-table-cell-col'] {
+  min-width: unset!important;
 }
