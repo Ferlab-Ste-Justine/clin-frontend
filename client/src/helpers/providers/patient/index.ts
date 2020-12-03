@@ -1,4 +1,4 @@
-import { has } from 'lodash';
+import { has, get } from 'lodash';
 import { FamilyGroup, Organization, Patient } from '../../fhir/types';
 import { ParsedPatientData } from '../types';
 // @ts-ignore
@@ -11,6 +11,33 @@ const BLOOD_RELATIONSHIP_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinit
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
 
 export class PatientProvider extends Provider<Patient, ParsedPatientData> {
+  private translateEthnicity(ethnicityCode: string): string {
+    switch (ethnicityCode) {
+      case 'CA-FR':
+        return 'Canadien-Français';
+      case 'EU':
+        return 'Caucasienne Européenne';
+      case 'AFR':
+        return 'Africain ou caribéen';
+      case 'LAT-AM':
+        return 'Hispanique';
+      case 'ES-AS':
+        return 'Asiatique de l\'est et du sud-est';
+      case 'SO-AS':
+        return 'Asiatique du sud';
+      case 'ABOR':
+        return 'Aborigène';
+      case 'MIX':
+        return 'Origine mixte';
+      case 'OTH':
+        return 'Autre';
+      case 'N/A':
+        return 'N/A';
+      default:
+        return '';
+    }
+  }
+
   public doProvide(dataExtractor: DataExtractor): Record<Patient, ParsedPatientData> {
     const patientBundle = dataExtractor.extractBundle('Patient');
     const groupBundle = dataExtractor.extractBundle('FamilyGroup');
@@ -36,8 +63,7 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
       organization: organization.name || organization.id,
       gender: patient.gender,
       birthDate: patient.birthDate,
-      ethnicity:
-        ethnicityExt != null && has(ethnicityExt, 'valueCoding.display') ? ethnicityExt.valueCoding.display : 'N/A',
+      ethnicity: this.translateEthnicity(get(ethnicityExt, 'valueCoding.code', 'N/A')),
       bloodRelationship:
         bloodRelationshipExt != null && has(bloodRelationshipExt, 'valueCoding.display')
           ? bloodRelationshipExt.valueCoding.display

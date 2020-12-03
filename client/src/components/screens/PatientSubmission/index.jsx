@@ -257,10 +257,10 @@ const PatientInformation = ({ patient, validate }) => {
             <Select.Option value="CA-FR">Canadien-Français</Select.Option>
             <Select.Option value="EU">Caucasienne Européenne</Select.Option>
             <Select.Option value="AFR">Africain ou caribéen</Select.Option>
-            <Select.Option value="LAT- AM">Hispanique</Select.Option>
+            <Select.Option value="LAT-AM">Hispanique</Select.Option>
             <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
             <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
-            <Select.Option value="ABOR">Aboriginal</Select.Option>
+            <Select.Option value="ABOR">Aborigène</Select.Option>
             <Select.Option value="MIX">Origine mixte</Select.Option>
             <Select.Option value="OTH">Autre</Select.Option>
           </Select>
@@ -401,7 +401,7 @@ function PatientSubmissionScreen(props) {
           return 'European Caucasia';
         case 'AFR':
           return 'African or Carabean';
-        case 'LAT- AM':
+        case 'LAT-AM':
           return 'Hispanic and Latino Americans';
         case 'ES-AS':
           return 'East and Southeast Asian';
