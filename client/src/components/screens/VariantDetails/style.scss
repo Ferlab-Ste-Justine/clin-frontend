@@ -72,3 +72,10 @@
     }
   }
 }
+
+
+.consequence{
+  &::first-letter{
+    text-transform: capitalize;
+  }
+}
