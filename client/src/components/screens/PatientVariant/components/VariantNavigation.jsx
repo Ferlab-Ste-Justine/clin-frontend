@@ -749,7 +749,7 @@ class VariantNavigation extends React.Component {
                           <div className="geneValues">
                             <div className="geneSymbol">{ this.getHighlightSearchGene(item.geneSymbol) }</div>
                             <div className="alias">{ this.getHighlightSearchGene(item.alias) }</div>
-                          </div>b
+                          </div>
 
                         </Menu.Item>
                       ))
