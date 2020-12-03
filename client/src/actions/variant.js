@@ -32,11 +32,12 @@ export const removeQuery = (keys) => ({
   },
 });
 
-export const duplicateQuery = (query, index) => ({
+export const duplicateQuery = (query, index, count) => ({
   type: actions.PATIENT_VARIANT_QUERY_DUPLICATION,
   payload: {
     query,
     index,
+    count,
   },
 });
 
