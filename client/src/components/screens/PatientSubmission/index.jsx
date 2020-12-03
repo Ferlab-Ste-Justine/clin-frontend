@@ -16,7 +16,7 @@ import {
 
 import IconKit from 'react-icons-kit';
 import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';
-import { navigateToPatientSearchScreen } from '../../../actions/router';
+import { navigateToPatientSearchScreen, navigateToPatientScreen } from '../../../actions/router';
 import {
   assignServiceRequestPractitioner,
   savePatientSubmission,
@@ -822,6 +822,16 @@ function PatientSubmissionScreen(props) {
     debounce(validate, 500)();
   };
 
+  const handleCancel = () => {
+    const { editMode, actions, patient } = props;
+
+    if (editMode) {
+      actions.navigateToPatientScreen(patient.id, 'clinical');
+    } else {
+      actions.navigateToPatientSearchScreen();
+    }
+  };
+
   const { actions } = props;
   const { patient, clinicalImpression, serviceRequest } = props;
   const { practitionerOptions, currentPageIndex } = state;
@@ -947,7 +957,7 @@ function PatientSubmissionScreen(props) {
                 { intl.get('screen.clinicalSubmission.saveButtonTitle') }
               </Button>
               <Button
-                onClick={() => ConfirmationModal({ onOk: () => { actions.navigateToPatientSearchScreen(); } })}
+                onClick={() => ConfirmationModal({ onOk: () => { handleCancel(); } })}
                 className="cancelButton"
               >
                 { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
@@ -968,6 +978,7 @@ PatientSubmissionScreen.propTypes = {
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     navigateToPatientSearchScreen,
+    navigateToPatientScreen,
     savePatientSubmission,
     savePatientLocal,
     assignServiceRequestPractitioner,
@@ -993,6 +1004,7 @@ const mapStateToProps = (state) => ({
   practitionerId: state.patientSubmission.practitionerId,
   search: state.search,
   localStore: state.patientSubmission.local,
+  editMode: state.patientSubmission.editMode,
 });
 
 export default connect(

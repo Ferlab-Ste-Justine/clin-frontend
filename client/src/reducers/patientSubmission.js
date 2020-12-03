@@ -47,6 +47,7 @@ export const initialPatientSubmissionState = {
     fmh: [],
     hpos: [],
   },
+  editMode: false,
 };
 
 export const patientSubmissionShape = {
@@ -211,6 +212,9 @@ const patientSubmissionReducer = (
         consents: [],
         practitioner: '',
       };
+      break;
+    case actions.PATIENT_SUBMISSION_SET_EDIT_MODE:
+      draft.editMode = action.payload.editMode;
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
       const patient = action.payload.patient.patient.original;
