@@ -133,7 +133,7 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
         if (indexToDuplicate) {
           draft.draftQueries.splice(indexToInsertAt, 0, action.payload.query);
           draft.activeQuery = action.payload.query.key;
-          draft.activeStatementTotals[keyToDuplicate] = action.payload.results;
+          draft.activeStatementTotals[keyToDuplicate] = action.payload.count;
         }
       }
       break;
