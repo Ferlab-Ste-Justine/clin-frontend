@@ -625,9 +625,7 @@ class ClinicalInformation extends React.Component {
                 message: 'Ne peut pas contenir que des espaces',
               }]}
             >
-              <div className="optional-info">
-                <TextArea className="input note" rows={4} />
-              </div>
+              <TextArea className="input note" rows={4} />
             </Form.Item>
             <span className="optional-item__label">Facultatif</span>
           </div>
