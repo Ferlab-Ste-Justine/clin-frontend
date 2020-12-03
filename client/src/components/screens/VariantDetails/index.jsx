@@ -44,6 +44,11 @@ const columnPresetToColumn = (c) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
+const areConsequencesSimilar = (first, second) => first.symbol === second.symbol
+    && first.strand === second.strand
+    && first.impact === second.impact
+    && first.ensembl_feature_id === second.ensembl_feature_id;
+
 const header = (title) => (
   <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{ title }</Typography.Title>
 );
@@ -562,12 +567,43 @@ class VariantDetailsScreen extends React.Component {
     return [];
   }
 
+  groupConsequences(consequences) {
+    const groupedConsequences = [];
+    const savedConsequences = [];
+    consequences.forEach((mainConsequence) => {
+      if (savedConsequences.indexOf(mainConsequence.id) === -1) {
+        const labels = [];
+        labels.push(mainConsequence.consequence);
+
+        consequences.forEach((consequence) => {
+          if (savedConsequences.indexOf(consequence.id) === -1 && mainConsequence.id !== consequence.id) {
+            if (areConsequencesSimilar(mainConsequence, consequence)) {
+              labels.push(consequence.consequence);
+              savedConsequences.push(consequence.id);
+            }
+          }
+        });
+
+        savedConsequences.push(mainConsequence.id);
+        groupedConsequences.push({
+          ...mainConsequence,
+          consequence: labels,
+        });
+      }
+    });
+    return groupedConsequences;
+  }
+
   getConsequencesData() {
     const {
       consequencesColumnPreset,
     } = this.state;
 
-    const consequences = this.getConsequences();
+    const consequences = this.getConsequences().map((consequence, index) => ({ ...consequence, id: index }));
+
+    const groupedConsequences = this.groupConsequences(consequences);
+    console.log(groupedConsequences);
+
     const consequencesData = consequences.map((c) => {
       const data = consequencesColumnPreset.reduce((acc, cur) => {
         acc[cur.key] = cur.renderer(c);

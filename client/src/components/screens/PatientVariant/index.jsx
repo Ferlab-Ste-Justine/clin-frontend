@@ -235,10 +235,7 @@ const showNotification = (message, description) => {
   });
 };
 
-const formatConsequences = (consequences) => consequences.map((consequence) => {
-  consequence.consequence = consequence.consequence.split('_').filter((item) => item !== 'variant').join(' ');
-  return consequence;
-});
+const formatConsequences = (consequences) => consequences.map((consequence) => consequence);
 
 class PatientVariantScreen extends React.Component {
   constructor(props) {
