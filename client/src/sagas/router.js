@@ -87,6 +87,7 @@ function* navigateToSubmissionScreen() {
   try {
     yield put(push(yield put(push('/submission'))));
     window.scrollTo(0, 0);
+    yield put({ type: actions.PATIENT_SUBMISSION_SET_EDIT_MODE, payload: { editMode: false } });
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
@@ -98,6 +99,7 @@ function* navigateToSubmissionScreenWithPatient() {
     const patient = yield select((state) => state.patient);
     yield put(push(yield put(push('/submission'))));
     window.scrollTo(0, 0);
+    yield put({ type: actions.PATIENT_SUBMISSION_SET_EDIT_MODE, payload: { editMode: true } });
     yield put({ type: actions.PATIENT_SUBMISSION_UPDATE_DATA, payload: { patient } });
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
