@@ -502,7 +502,7 @@ class PatientVariantScreen extends React.Component {
                         target="_blank"
                         className="link"
                       >
-                        { data.frequencies.gnomad_genomes_3_0.af.toExponential() }
+                        { data.frequencies.gnomad_genomes_3_0.af.toFixed(4) }
                       </a>
                     </Row>
                   </>
