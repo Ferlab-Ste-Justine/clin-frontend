@@ -785,11 +785,12 @@ class PatientVariantScreen extends React.Component {
     });
   }
 
-  handleQueryDuplication(query, index) {
-    const { actions } = this.props;
+  handleQueryDuplication(initial, query, index) {
+    const { actions, variant } = this.props;
+    const { activeStatementTotals } = variant;
     this.handleCommitHistory();
-    actions.duplicateQuery(query.data, index);
-
+    const resultForQuery = activeStatementTotals[initial.data.key];
+    actions.duplicateQuery(query.data, index, resultForQuery);
     setTimeout(() => {
       this.handleQuerySelection(query.data.key);
     }, 100);

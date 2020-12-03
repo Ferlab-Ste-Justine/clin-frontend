@@ -232,7 +232,7 @@ class Statement extends React.Component {
       this.setState({
         display: displayClone,
       }, () => {
-        onDuplicateCallback(clone, index);
+        onDuplicateCallback(query, clone, index);
       });
     }
   }
