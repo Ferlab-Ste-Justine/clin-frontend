@@ -180,12 +180,14 @@ class VariantDetailsScreen extends React.Component {
         key: 'consequence',
         label:
           'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn',
-        renderer: (c) => {
-          const valueArray = c.consequence.split('_');
-          const arrayFilter = valueArray.filter((item) => item !== 'variant');
-          const finalString = arrayFilter.join(' ');
-          return <span className="capitalize">{ finalString }</span>;
-        },
+        renderer: (c) => (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            { c.consequence.map((consequence) => (
+              <div className="consequence">{ consequence }</div>
+            )) }
+          </div>
+        )
+        ,
       },
       {
         key: 'cdnaChange',
@@ -602,9 +604,8 @@ class VariantDetailsScreen extends React.Component {
     const consequences = this.getConsequences().map((consequence, index) => ({ ...consequence, id: index }));
 
     const groupedConsequences = this.groupConsequences(consequences);
-    console.log(groupedConsequences);
 
-    const consequencesData = consequences.map((c) => {
+    const consequencesData = groupedConsequences.map((c) => {
       const data = consequencesColumnPreset.reduce((acc, cur) => {
         acc[cur.key] = cur.renderer(c);
         return acc;
