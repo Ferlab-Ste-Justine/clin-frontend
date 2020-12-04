@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import {
   Card, List, Row, Col, Typography, Empty,
 } from 'antd';
+import intl from 'react-intl-universal';
 
-const DataList = (props) => {
+function DataList(props) {
   const {
     title, dataSource, style, extraInfo,
   } = props;
@@ -13,7 +14,7 @@ const DataList = (props) => {
       <List
         dataSource={dataSource}
         locale={{
-          emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+          emptyText: (<Empty image={false} description={intl.get('components.dataList.emptyRow')} />),
         }}
         renderItem={(item) => (
           <List.Item className="listRow">
@@ -30,7 +31,7 @@ const DataList = (props) => {
       />
     </Card>
   );
-};
+}
 
 DataList.propTypes = {
   title: PropTypes.string.isRequired,

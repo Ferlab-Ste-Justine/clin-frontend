@@ -657,7 +657,7 @@ class VariantNavigation extends React.Component {
                 { activeFilterId === null && category.label === 'category_variant' && (
                   <div className="variantsHeader">
                     <Typography.Text>
-                      Identifiant
+                      { intl.get('screen.patientvariant.navigation.id') }
                       <Tooltip overlayClassName="tooltip" placement="right" title="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.">
                         <Button>
                           <IconKit size={16} className="iconInfo" icon={ic_info_outline} />
@@ -667,7 +667,7 @@ class VariantNavigation extends React.Component {
                     <Input placeholder="ex: chr7:g:399383 A>T, rs93939, etc" />
                     <Button>
                       <IconKit size={18} icon={ic_cloud_upload} />
-                      Importer une liste
+                      { intl.get('screen.patientvariant.navigation.importList') }
                     </Button>
 
                   </div>
@@ -675,7 +675,7 @@ class VariantNavigation extends React.Component {
                 { activeFilterId === null && category.label === 'category_genomic' && (
                   <div className="variantsHeader">
                     <Typography.Text>
-                      Identifiant de gêne
+                      { intl.get('screen.patientvariant.navigation.geneId') }
                       <Tooltip overlayClassName="tooltip" placement="right" title="Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.">
                         <Button>
                           <IconKit size={16} className="iconInfo" icon={ic_info_outline} />

@@ -115,23 +115,29 @@ const PatientInformation = ({ patient, validate }) => {
   const disabledDate = (current) => current && current > moment().startOf('day');
   const selectedGender = get(patient, 'gender', '');
   return (
-    <Card title="Patient" bordered={false} className="patientContent">
+    <Card title={intl.get('form.patientSubmission.form.section.patient')} bordered={false} className="patientContent">
       <Form.Item
         label={intl.get('form.patientSubmission.form.lastName')}
         name="family"
         initialValue={has(patient, 'name[0].family') ? patient.name[0].family : ''}
         rules={[{
           required: true,
-          message: 'Veuillez entrer un nom de famille',
+          message: intl.get('form.patientSubmission.form.validation.lastname'),
         },
         {
           pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
-          message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
+          message: (
+            <span className="errorMessage">
+              { intl.get('form.patientSubmission.form.validation.specialCharacter') }
+            </span>
+          ),
         },
         {
           whitespace: true,
           pattern: RegExp(/(.*[a-z]){2}/i),
-          message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
+          message: (
+            <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.min2Character') }</span>
+          ),
         },
         ]}
       >
@@ -144,16 +150,22 @@ const PatientInformation = ({ patient, validate }) => {
         initialValue={has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}
         rules={[{
           required: true,
-          message: 'Veuillez entrer un prénom',
+          message: intl.get('form.patientSubmission.form.validation.firsname'),
         },
         {
           pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
-          message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
+          message: (
+            <span className="errorMessage">
+              { intl.get('form.patientSubmission.form.validation.specialCharacter') }
+            </span>
+          ),
         },
         {
           whitespace: true,
           pattern: RegExp(/(.*[a-z]){2}/i),
-          message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
+          message: (
+            <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.min2Character') }</span>
+          ),
         },
         ]}
       >
@@ -197,13 +209,13 @@ const PatientInformation = ({ patient, validate }) => {
           initialValue={ramqValue(patient)}
           rules={[{
             pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
-            message: 'Doit comporter quatre lettres suivies de 8 ou 9 chiffres',
+            message: intl.get('form.patientSubmission.form.validation.ramq'),
           }]}
         >
           <Input placeholder="ABCD 0000 0000" className="input large" />
         </Form.Item>
 
-        <span className="optional-item__label">Facultatif</span>
+        <span className="optional-item__label">{ intl.get('form.patientSubmission.form.validation.optional') }</span>
       </div>
 
       <Form.Item
@@ -211,15 +223,19 @@ const PatientInformation = ({ patient, validate }) => {
         name="mrn"
         initialValue={mrnValue(patient)}
         rules={[
-          { required: true, message: 'Veuillez entrer le numéro de dossier médical' },
+          { required: true, message: intl.get('form.patientSubmission.form.validation.mrn') },
           {
             pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
-            message: <span className="errorMessage">Les caractères spéciaux sont interdits</span>,
+            message: (
+              <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.specialCharacter') }</span>
+            ),
           },
           {
             whitespace: true,
             pattern: RegExp(/(.*[a-z0-9]){2}/i),
-            message: <span className="errorMessage">Doit contenir au moins 2 caractères</span>,
+            message: (
+              <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.min2Character') }</span>
+            ),
           },
         ]}
       >
@@ -229,7 +245,7 @@ const PatientInformation = ({ patient, validate }) => {
         label={intl.get('form.patientSubmission.form.hospital')}
         name="organization"
         initialValue={defaultOrganizationValue(patient)}
-        rules={[{ required: true, message: 'Please select the hospital!' }]}
+        rules={[{ required: true, message: intl.get('form.patientSubmission.form.validation.hospital') }]}
       >
         <Select
           className="small"
@@ -254,18 +270,18 @@ const PatientInformation = ({ patient, validate }) => {
             placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
             dropdownClassName="selectDropdown"
           >
-            <Select.Option value="CA-FR">Canadien-Français</Select.Option>
-            <Select.Option value="EU">Caucasienne Européenne</Select.Option>
-            <Select.Option value="AFR">Africain ou caribéen</Select.Option>
-            <Select.Option value="LAT-AM">Hispanique</Select.Option>
-            <Select.Option value="ES-AS">Asiatique de l&apos;est et du sud-est</Select.Option>
-            <Select.Option value="SO-AS">Asiatique du sud</Select.Option>
-            <Select.Option value="ABOR">Aborigène</Select.Option>
-            <Select.Option value="MIX">Origine mixte</Select.Option>
-            <Select.Option value="OTH">Autre</Select.Option>
+            <Select.Option value="CA-FR">{ intl.get('form.patientSubmission.form.ethnicity.cafr') }</Select.Option>
+            <Select.Option value="EU">{ intl.get('form.patientSubmission.form.ethnicity.eu') }</Select.Option>
+            <Select.Option value="AFR">{ intl.get('form.patientSubmission.form.ethnicity.afr') }</Select.Option>
+            <Select.Option value="LAT-AM">{ intl.get('form.patientSubmission.form.ethnicity.latam') }</Select.Option>
+            <Select.Option value="ES-AS">{ intl.get('form.patientSubmission.form.ethnicity.esas') }</Select.Option>
+            <Select.Option value="SO-AS">{ intl.get('form.patientSubmission.form.ethnicity.soas') }</Select.Option>
+            <Select.Option value="ABOR">{ intl.get('form.patientSubmission.form.ethnicity.abor') }</Select.Option>
+            <Select.Option value="MIX">{ intl.get('form.patientSubmission.form.ethnicity.mix') }</Select.Option>
+            <Select.Option value="OTH">{ intl.get('form.patientSubmission.form.ethnicity.oth') }</Select.Option>
           </Select>
         </Form.Item>
-        <span className="optional-item__label">Facultatif</span>
+        <span className="optional-item__label">{ intl.get('form.patientSubmission.form.validation.optional') }</span>
       </div>
 
       <div className="optional-item">
@@ -287,7 +303,7 @@ const PatientInformation = ({ patient, validate }) => {
             </Radio.Button>
           </Radio.Group>
         </Form.Item>
-        <span className="optional-item__label">Facultatif</span>
+        <span className="optional-item__label">{ intl.get('form.patientSubmission.form.validation.optional') }</span>
       </div>
     </Card>
   );
@@ -304,16 +320,16 @@ const Approval = ({
   handleSubmit,
 }) => (
   <div>
-    <Card title="Consentements" bordered={false} className="patientContent">
+    <Card title={intl.get('form.patientSubmission.form.section.consent')} bordered={false} className="patientContent">
       <Form form={form}>
         { /* TODO initialValue */ }
 
         <Form.Item
-          label="Clauses signées"
+          label={intl.get('form.patientSubmission.form.consent.signed')}
           className="labelTop"
           name="consent"
           initialValue={initialConsentsValue}
-          rules={[{ required: true, message: 'Veuillez sélectionner au moins un consentement' }]}
+          rules={[{ required: true, message: intl.get('form.patientSubmission.form.validation.consent') }]}
         >
           <Checkbox.Group className="checkboxGroup" onChange={updateConsentmentsCallback}>
             <Row>
@@ -341,26 +357,25 @@ const Approval = ({
         { /* TODO initialValue */ }
 
         <Form.Item
-          label="Médecin résponsable"
+          label={intl.get('form.patientSubmission.form.practitioner')}
           className="searchInput searchInput340"
           name="practInput"
           initialValue={initialPractitionerValue}
           rules={[
             {
               required: true,
-              message: 'Veuillez spécifier le nom du médecin responsable',
+              message: intl.get('form.patientSubmission.form.validation.practioner'),
             },
             {
               whitespace: true,
-              message: 'Ne peut pas contenir que des espaces',
+              message: intl.get('form.patientSubmission.form.validation.noSpace'),
             },
           ]}
         >
-
           <AutoComplete
             optionLabelProp="text"
             classeName="searchInput"
-            placeholder="Recherche par nom ou licence…"
+            placeholder={intl.get('form.patientSubmission.form.searchNameOrLicense')}
             defaultValue={initialPractitionerValue}
             dataSource={dataSource}
             onSelect={practitionerOptionSelected}
@@ -396,23 +411,23 @@ function PatientSubmissionScreen(props) {
     const getEthnicityDisplay = (ethnicity) => {
       switch (ethnicity) {
         case 'CA-FR':
-          return 'French Canadian';
+          return intl.get('form.patientSubmission.form.ethnicity.cafr');
         case 'EU':
-          return 'European Caucasia';
+          return intl.get('form.patientSubmission.form.ethnicity.eu');
         case 'AFR':
-          return 'African or Carabean';
+          return intl.get('form.patientSubmission.form.ethnicity.afr');
         case 'LAT-AM':
-          return 'Hispanic and Latino Americans';
+          return intl.get('form.patientSubmission.form.ethnicity.latam');
         case 'ES-AS':
-          return 'East and Southeast Asian';
+          return intl.get('form.patientSubmission.form.ethnicity.esas');
         case 'SO-AS':
-          return 'South Asian';
+          return intl.get('form.patientSubmission.form.ethnicity.soas');
         case 'ABOR':
-          return 'Aboriginal';
+          return intl.get('form.patientSubmission.form.ethnicity.abor');
         case 'MIX':
-          return 'Mixted descent';
+          return intl.get('form.patientSubmission.form.ethnicity.mix');
         case 'OTH':
-          return 'Other ethnicity';
+          return intl.get('form.patientSubmission.form.ethnicity.oth');
         default:
           return '';
       }
@@ -901,7 +916,7 @@ function PatientSubmissionScreen(props) {
     <Layout>
       <>
         <div className="page_headerStaticMargin">
-          <Title className="headerStaticContent" level={3}>Nouveau patient et prescription de test génomique</Title>
+          <Title className="headerStaticContent" level={3}>{ intl.get('form.patientSubmission.form.title') }</Title>
         </div>
         <div className="page-static-content">
           <Card bordered={false} className="step">
@@ -925,7 +940,7 @@ function PatientSubmissionScreen(props) {
                     disabled={!state.valid}
                     onClick={submit}
                   >
-                    Soumettre
+                    { intl.get('form.patientSubmission.form.submit') }
                   </Button>
                 )
               }
