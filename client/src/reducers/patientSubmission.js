@@ -55,6 +55,8 @@ export const patientSubmissionShape = {
 };
 
 const NOT_AVAILABLE = 'N/A';
+const FAMILY_ID_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
+
 const patientSubmissionReducer = (
   state = ({ ...initialPatientSubmissionState }),
   action,
@@ -233,10 +235,16 @@ const patientSubmissionReducer = (
       const fmhs = action.payload.patient.fmhs.map((fmh) => fmh.original);
       const { observations } = action.payload.patient;
 
-      const groupId = getExtension(patient, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id');
+      const familyGroupExt = getExtension(patient, FAMILY_ID_EXT_URL);
+      const groupId = get(familyGroupExt, 'valueReference.reference', null);
+
+      if (groupId != null) {
+        const [, id] = groupId.split('/');
+        draft.groupId = id;
+      }
 
       draft.patient = action.payload.patient.patient.original;
-      draft.groupId = groupId;
+
       draft.serviceRequest = {
         ...draft.serviceRequest,
         id: serviceRequest.id,
