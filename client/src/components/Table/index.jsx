@@ -3,17 +3,13 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  Table, Cell, RenderMode, Column, Utils, SelectionModes,
+  Table, Cell, RenderMode, Column, Utils, SelectionModes, ColumnHeaderCell,
 } from '@blueprintjs/table';
 
 import {
   Badge, Button, Typography, Checkbox, Tooltip,
 } from 'antd';
 import { cloneDeep } from 'lodash';
-import IconKit from 'react-icons-kit';
-import {
-  ic_info_outline,
-} from 'react-icons-kit/md';
 import './style.scss';
 // import { relativeTimeThreshold } from 'moment';
 
@@ -232,9 +228,6 @@ class DataTable extends React.Component {
       const bufferArray = Array(rowsCount - rowHeights.length).fill(32);
       rowHeights = [...rowHeights, ...bufferArray];
     }
-    const renderColumnHeader = (name, index) => (
-      <div className="tooltipHeader">{ intl.get(columns[index].label) } <IconKit size={16} icon={ic_info_outline} /></div>
-    );
 
     const getColumnTitle = (label) => {
       if (label === 'Select') {
@@ -247,6 +240,8 @@ class DataTable extends React.Component {
       }
       return intl.get(label);
     };
+
+    const defaultHeaderRenderer = (name) => () => (<ColumnHeaderCell name={name} />);
 
     return (
       <Table
@@ -270,15 +265,17 @@ class DataTable extends React.Component {
         onCopy={this.copyCallback}
         onSelection={this.selectionCallback}
       >
-        { columns.map((definition) => (
-          <Column
-            key={shortid.generate()}
-            id={definition.key}
-            name={definition.description ? definition.description : getColumnTitle(definition.label)}
-            cellRenderer={definition.renderer}
-            nameRenderer={definition.description ? renderColumnHeader : null}
-          />
-        )) }
+        { columns.map((definition) => {
+          const colName = definition.description ? definition.description : getColumnTitle(definition.label);
+          return (
+            <Column
+              key={shortid.generate()}
+              id={definition.key}
+              cellRenderer={definition.renderer}
+              columnHeaderCellRenderer={definition.headerRenderer || defaultHeaderRenderer(colName)}
+            />
+          );
+        }) }
       </Table>
     );
   }

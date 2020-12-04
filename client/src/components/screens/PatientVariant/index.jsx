@@ -12,6 +12,8 @@ import {
 import {
   cloneDeep, curry, curryRight, filter, findIndex, get, has, isNil,
 } from 'lodash';
+import HeaderCellWithTooltip from '../../Table/HeaderCellWithTooltip';
+import HeaderCustomCell from '../../Table/HeaderCustomCell';
 
 import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
@@ -305,6 +307,35 @@ class PatientVariantScreen extends React.Component {
           }),
           excelRenderer: (data) => { try { return data.hgvsg; } catch (e) { return ''; } },
           columnWidth: COLUMN_WIDTHS.TINY,
+          headerRenderer: () => {
+            const fullData = this.getData();
+            const {
+              selectedVariants,
+            } = this.state;
+            const isChecked = fullData && fullData.length === Object.keys(selectedVariants).length;
+            return (
+              <HeaderCustomCell className="table__header__checkbox__wrapper">
+                <Checkbox
+                  aria-label="Select All Variants"
+                  checked={isChecked}
+                  onClick={() => {
+                    if (isChecked) {
+                      this.setState({
+                        selectedVariants: {},
+                      });
+                    } else {
+                      this.setState({
+                        selectedVariants: fullData.reduce((acc, currentData) => ({
+                          ...acc,
+                          [currentData.id]: currentData,
+                        }), {}),
+                      });
+                    }
+                  }}
+                />
+              </HeaderCustomCell>
+            );
+          },
         },
         {
           key: 'id',
@@ -486,6 +517,15 @@ class PatientVariantScreen extends React.Component {
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.FREQUENCIES,
+          headerRenderer: () => (
+            <div>
+              <HeaderCellWithTooltip
+                name={intl.get('screen.variantsearch.table.frequencies')}
+                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus."
+              />
+            </div>
+          )
+          ,
         },
         {
           key: 'gnomAD',
@@ -567,6 +607,14 @@ class PatientVariantScreen extends React.Component {
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.SEQ,
+          headerRenderer: () => (
+            <div>
+              <HeaderCellWithTooltip
+                name={intl.get('screen.variantsearch.table.seq')}
+                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus."
+              />
+            </div>
+          ),
         },
         {
           key: 'pubmed',
