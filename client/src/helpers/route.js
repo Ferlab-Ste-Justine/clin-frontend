@@ -7,11 +7,11 @@ export const ROUTE_NAME_VARIANT = 'variantDetails';
 
 const rootRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}`, 'gi');
 const patientSearchRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`, 'gi');
-const patientPageRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/PA[0-9]{1,}`, 'gi');
+const patientPageRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/[a-zA-Z0-9]{1,}`, 'gi');
 const patientVariantPageRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/PA[0-9]{1,}/${PATIENT_SUBROUTE_VARIANT}`, 'gi');
 const variantPageRoutePattern = RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_VARIANT}/[a-f0-9-]{40}`, 'gi');
 const submissionPageRoutePattern = new RegExp(`${ROUTE_NAME_ROOT}${ROUTE_NAME_SUBMISSION}`, 'gi');
-const patientIdMatch = new RegExp('PA[0-9]{1,}', 'gi');
+const patientIdMatch = new RegExp('[a-zA-Z0-9]{1,}', 'gi');
 const variantIdMatch = new RegExp('[a-f0-9]{40}', 'gi');
 const tabIdMatch = new RegExp('//.*[#]([\\w+]{1,})', 'gi');
 
@@ -27,7 +27,7 @@ export const isVariantPageRoute = (location) => variantPageRoutePattern.test(loc
 
 export const isSubmissionPageRoute = (location) => submissionPageRoutePattern.test(location);
 
-export const getPatientIdFromPatientPageRoute = (location) => location.match(patientIdMatch);
+export const getPatientIdFromPatientPageRoute = (location) => location.split('/')[2].split('#')[0];
 
 export const getTabIdFromPatientPageRoute = (location) => location.match(tabIdMatch);
 
