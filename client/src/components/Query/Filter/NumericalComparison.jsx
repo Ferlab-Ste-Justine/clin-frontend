@@ -226,6 +226,8 @@ class NumericalComparisonFilter extends React.Component {
       canApply,
     } = this.state;
 
+    const { onApply } = this.props;
+
     return (
       <Filter
         {...this.props}
@@ -238,6 +240,7 @@ class NumericalComparisonFilter extends React.Component {
         onReset={this.handleReset}
         getPillContent={this.getPillContent}
         getPillOuterIcon={this.getPillOuterIcon}
+        onApplied={onApply}
       />
     );
   }
@@ -247,6 +250,11 @@ NumericalComparisonFilter.propTypes = {
   onEditCallback: PropTypes.func.isRequired,
   data: PropTypes.shape({}).isRequired,
   facets: PropTypes.shape({}).isRequired,
+  onApply: PropTypes.func,
+};
+
+NumericalComparisonFilter.defaultProps = {
+  onApply: () => {},
 };
 
 export default NumericalComparisonFilter;

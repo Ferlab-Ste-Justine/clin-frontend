@@ -269,7 +269,7 @@ class GenericFilter extends React.Component {
 
   render() {
     const { allOptions, draft } = this.state;
-    const { config } = this.props;
+    const { config, onApply } = this.props;
 
     return (
       <Filter
@@ -282,6 +282,7 @@ class GenericFilter extends React.Component {
         onSearchCallback={this.handleSearchByQuery}
         onPageChangeCallBack={this.handlePageChange}
         onOperandChangeCallBack={this.handleOperandChange}
+        onApplied={onApply}
         sortData={allOptions}
       />
     );
@@ -293,6 +294,7 @@ GenericFilter.propTypes = {
   dataSet: PropTypes.array.isRequired,
   category: PropTypes.string,
   config: PropTypes.shape({}),
+  onApply: PropTypes.func,
 };
 
 GenericFilter.defaultProps = {
@@ -300,6 +302,7 @@ GenericFilter.defaultProps = {
   config: {
     operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE],
   },
+  onApply: () => {},
 };
 
 export default GenericFilter;

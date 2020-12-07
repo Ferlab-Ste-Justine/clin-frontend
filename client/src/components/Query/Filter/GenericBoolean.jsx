@@ -206,9 +206,8 @@ class GenericBooleanFilter extends React.Component {
   }
 
   render() {
-    const {
-      draft,
-    } = this.state;
+    const { draft } = this.state;
+    const { onApply } = this.props;
 
     return (
       <Filter
@@ -218,6 +217,7 @@ class GenericBooleanFilter extends React.Component {
         editor={this.getEditor()}
         searchable
         onSearchCallback={this.handleSearchByQuery}
+        onApplied={onApply}
       />
     );
   }
@@ -226,6 +226,11 @@ class GenericBooleanFilter extends React.Component {
 GenericBooleanFilter.propTypes = {
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
+  onApply: PropTypes.func,
+};
+
+GenericBooleanFilter.defaultProps = {
+  onApply: () => {},
 };
 
 export default GenericBooleanFilter;

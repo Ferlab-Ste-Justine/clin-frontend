@@ -410,6 +410,8 @@ class CompositeFilter extends React.Component {
       canApply,
     } = this.state;
 
+    const { onApply } = this.props;
+
     return (
       <Filter
         {...this.props}
@@ -422,6 +424,7 @@ class CompositeFilter extends React.Component {
         getPillContent={this.getPillContent}
         getPillOuterIcon={this.getPillOuterIcon}
         onReset={this.handleReset}
+        onApplied={onApply}
       />
     );
   }
@@ -432,6 +435,11 @@ CompositeFilter.propTypes = {
   facets: PropTypes.shape({}).isRequired,
   data: PropTypes.shape({}).isRequired,
   dataSet: PropTypes.array.isRequired,
+  onApply: PropTypes.func,
+};
+
+CompositeFilter.defaultProps = {
+  onApply: () => {},
 };
 
 export default CompositeFilter;

@@ -364,7 +364,7 @@ class SpecificFilter extends Filter {
 
   render() {
     const { allOptions, draft } = this.state;
-    const { config } = this.props;
+    const { config, onApply } = this.props;
 
     return (
       <Filter
@@ -378,6 +378,7 @@ class SpecificFilter extends Filter {
         onPageChangeCallBack={this.handlePageChange}
         onOperandChangeCallBack={this.handleOperandChange}
         sortData={allOptions}
+        onApplied={onApply}
       />
     );
   }
@@ -390,6 +391,7 @@ SpecificFilter.propTypes = {
   config: PropTypes.shape({}).isRequired,
   externalDataSet: PropTypes.shape({}).isRequired,
   renderCustomDataSelector: PropTypes.shape.func,
+  onApply: PropTypes.func,
 };
 
 SpecificFilter.defaultProps = {
@@ -408,6 +410,7 @@ SpecificFilter.defaultProps = {
   config: {
     operands: [FILTER_OPERAND_TYPE_ALL, FILTER_OPERAND_TYPE_ONE, FILTER_OPERAND_TYPE_NONE],
   },
+  onApply: () => {},
 };
 
 export default SpecificFilter;
