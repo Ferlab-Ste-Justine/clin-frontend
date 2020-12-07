@@ -198,13 +198,14 @@ class Filter extends React.Component {
   handleApply() {
     if (this.isEditable()) {
       const {
-        editor, onEditCallback, index,
+        editor, onEditCallback, index, onApply,
       } = this.props;
       const instruction = editor.getDraftInstruction();
       instruction.index = index;
       this.setState({
         opened: false,
       }, () => {
+        onApply();
         if (instruction.type !== 'autocomplete') {
           if (
             (!instruction.values && !instruction.value)
@@ -468,6 +469,7 @@ Filter.propTypes = {
   getPillContent: PropTypes.func,
   getPillOuterIcon: PropTypes.func,
   canApply: PropTypes.bool,
+  onApply: PropTypes.func,
 };
 
 Filter.defaultProps = {
@@ -488,6 +490,7 @@ Filter.defaultProps = {
   onSearchCallback: () => {},
   onPageChangeCallBack: () => {},
   onOperandChangeCallBack: () => {},
+  onApply: () => {},
   autoOpen: false,
   autoSelect: false,
   overlayOnly: false,

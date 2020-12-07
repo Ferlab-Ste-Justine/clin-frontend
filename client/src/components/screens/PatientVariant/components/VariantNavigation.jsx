@@ -106,6 +106,7 @@ class VariantNavigation extends React.Component {
     this.handleGeneSelection = this.handleGeneSelection.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this);
+    this.handleApply = this.handleApply.bind(this);
   }
 
   componentDidMount() {
@@ -435,6 +436,19 @@ class VariantNavigation extends React.Component {
     this.setState({ searchGeneValue: e });
   }
 
+  handleApply() {
+    this.setState({
+      activeFilterId: null,
+      searchSelection: {},
+      searchResults: [],
+      searchResultsTotalCount: 0,
+      searchValue: '',
+      searchGeneValue: '',
+      geneSearch: false,
+      activeMenu: [],
+    });
+  }
+
   renderFilterType(categoryData) {
     const {
       activeQuery, queries, data, patient,
@@ -458,6 +472,7 @@ class VariantNavigation extends React.Component {
       case FILTER_TYPE_GENERIC:
         return (
           <GenericFilter
+            onApply={this.handleApply}
             overlayOnly
             autoOpen
             options={filterOptions}
@@ -472,6 +487,7 @@ class VariantNavigation extends React.Component {
       case FILTER_TYPE_SPECIFIC:
         return (
           <SpecificFilter
+            onApply={this.handleApply}
             overlayOnly
             autoOpen
             options={filterOptions}
@@ -487,6 +503,7 @@ class VariantNavigation extends React.Component {
       case FILTER_TYPE_NUMERICAL_COMPARISON:
         return (
           <NumericalComparisonFilter
+            onApply={this.handleApply}
             overlayOnly
             autoOpen
             options={filterOptions}
@@ -502,6 +519,7 @@ class VariantNavigation extends React.Component {
       case FILTER_TYPE_GENERICBOOL:
         return (
           <GenericBooleanFilter
+            onApply={this.handleApply}
             overlayOnly
             autoOpen
             options={filterOptions}
@@ -522,6 +540,7 @@ class VariantNavigation extends React.Component {
       case FILTER_TYPE_COMPOSITE:
         return (
           <CompositeFilter
+            onApply={this.handleApply}
             overlayOnly
             autoOpen
             options={filterOptions}
