@@ -7,11 +7,12 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Badge, Button, Card, Checkbox, Col, notification, Row, Tabs,
-} from 'antd';
-import {
   cloneDeep, curry, curryRight, filter, findIndex, get, has, isNil,
 } from 'lodash';
+import {
+  Badge, Button, Card, Checkbox, Col, notification, Row, Tabs,
+} from 'antd';
+
 import HeaderCellWithTooltip from '../../Table/HeaderCellWithTooltip';
 import HeaderCustomCell from '../../Table/HeaderCustomCell';
 
@@ -470,24 +471,18 @@ class PatientVariantScreen extends React.Component {
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
-                return (
-                  data.consequences.map((consequence) => (
-                    consequence.pick === true ? (
-                      <Row key={shortid.generate()}>{ consequence.predictions.cadd_score }</Row>
-                    ) : null
-
-                  ))
-                );
+                return data.consequences
+                  .filter((consequence) => consequence.pick === true && has(consequence, 'predictions.cadd_score'))
+                  .map((consequence) => <Row id={shortid()}>{ consequence.predictions.cadd_score }</Row>);
               } catch (e) { return ''; }
             },
           }),
           excelRenderer: (data) => {
             try {
-              return data.consequences.map((consequence) => (
-                consequence.pick === true
-                  ? `${consequence.predictions.cadd_score}`
-                  : ''
-              )).join('\n');
+              return data.consequences
+                .filter((consequence) => consequence.pick === true && has(consequence, 'predictions.cadd_score'))
+                .map((consequence) => (`${consequence.predictions.cadd_score}`))
+                .join('\n');
             } catch (e) { return ''; }
           },
           columnWidth: COLUMN_WIDTHS.CADD,
