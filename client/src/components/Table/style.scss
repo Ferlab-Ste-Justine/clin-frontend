@@ -243,6 +243,15 @@
 
 }
 
+.ant-popover-inner-content{
+  padding: 0;
+
+  >div{
+
+    padding: 6px;
+  }
+}
+
 .labelInfo{
   padding:0;
   height:auto;

@@ -344,12 +344,14 @@ class InteractiveTable extends React.Component {
           </Row>
         ) }
         <Row>
-
           <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map((column) => column.key)} className={`${style.checkbox} `} value={cloneDeep(visibleColumns)}>
             { matchingColumns.map((key) => (
-              <Row key={key}>
+              <Row key={key} justify="space-between" style={{ paddingLeft: '8px' }}>
                 <Col>
-                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key}>{ intl.get(key) }</Checkbox>
+                  { intl.get(key) }
+                </Col>
+                <Col>
+                  <Checkbox className={visibleColumns.includes(key) ? `${style.check}` : null} value={key} />
                 </Col>
               </Row>
             )) }
