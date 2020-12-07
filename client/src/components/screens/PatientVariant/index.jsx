@@ -537,7 +537,7 @@ class PatientVariantScreen extends React.Component {
                   <>
                     <Row>
                       <a
-                        href={`https://gnomad.broadinstitute.org/variant/${data.chromosome}-${data.start}-${data.reference}-${data.alternate}`}
+                        href={`https://gnomad.broadinstitute.org/variant/${data.chromosome}-${data.start}-${data.reference}-${data.alternate}?dataset=gnomad_r3`}
                         rel="noopener noreferrer"
                         target="_blank"
                         className="link"
