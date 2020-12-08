@@ -5,7 +5,7 @@ import {
 import intl from 'react-intl-universal';
 import InfiniteScroll from 'react-infinite-scroller';
 import {
-  cloneDeep, orderBy, pullAllBy, filter, find,
+  get, cloneDeep, orderBy, pullAllBy, filter, find,
 } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -27,6 +27,7 @@ const SELECTOR_DEFAULT = SELECTOR_NONE;
 const SELECTORS = [SELECTOR_ALL, SELECTOR_NONE, SELECTOR_INTERSECTION, SELECTOR_DIFFERENCE];
 const HPO_POSITIVE_CODE = 'POS';
 const HPO_NEGATIVE_CODE = 'NEG';
+const HPO_REGEX = new RegExp(/HP:[0-9]{7}/g);
 
 const isObservedPos = (ontology) => {
   if (ontology.parsed.observed === HPO_POSITIVE_CODE) {
@@ -45,16 +46,14 @@ const isObservedNeg = (ontology) => {
 
 const optionObservedPos = (externalDataSet) => (option) => {
   const observedPos = externalDataSet.hpos.filter(isObservedPos);
-  const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
-  const code = option.value.match(hpoRegexp).toString();
+  const code = option.value.match(HPO_REGEX).toString();
   const obsPos = find(observedPos, { code });
   return obsPos;
 };
 
 const optionObservedNeg = (externalDataSet) => (option) => {
   const observedNeg = externalDataSet.hpos.filter(isObservedNeg);
-  const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
-  const code = option.value.match(hpoRegexp).toString();
+  const code = option.value.match(HPO_REGEX).toString();
   const obsNeg = find(observedNeg, { code });
   return obsNeg;
 };
@@ -170,10 +169,15 @@ class SpecificFilter extends Filter {
     });
   }
 
-  handleSelectionChange(values) {
+  handleSelectionChange(option) {
     const { draft } = this.state;
+    const { value } = option.target;
 
-    draft.values = values;
+    const removed = draft.values.includes(value);
+
+    draft.values = removed ? draft.values.filter((val) => val !== value) : [...draft.values, value];
+    draft.values = draft.values
+      .filter((val, index) => draft.values.indexOf(val) === index);
     this.setState({
       draft,
     });
@@ -183,8 +187,7 @@ class SpecificFilter extends Filter {
     if (SELECTORS.indexOf(selector) !== -1) {
       const { draft } = this.state;
       const { dataSet, externalDataSet } = this.props;
-      const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
-      let selectedValues = [];
+      let selectedValues = draft.values.map((value) => ({ value }));
       let selectorDataSet = [];
 
       switch (selector) {
@@ -192,24 +195,43 @@ class SpecificFilter extends Filter {
         case SELECTOR_NONE:
           break;
         case SELECTOR_ALL:
-          selectedValues = dataSet;
+          selectedValues = selectedValues.concat(dataSet);
           break;
-        case SELECTOR_INTERSECTION:
+        case SELECTOR_INTERSECTION: {
           selectorDataSet = externalDataSet.hpos.filter(isObservedPos)
-            .map((ontology) => ontology.code);
-          selectedValues = dataSet.filter((option) => {
-            const hpoValue = option.value.match(hpoRegexp).toString();
+            .map((ontology) => get(ontology, 'original.valueCodeableConcept.coding[0].code', undefined));
+          const interSelectedValues = dataSet.filter((option) => {
+            const hpoValue = option.value.match(HPO_REGEX).toString();
             return hpoValue ? (selectorDataSet.indexOf(hpoValue) !== -1) : false;
           });
+
+          const isChecked = interSelectedValues.every((option) => selectedValues.find((val) => val.value === option.value));
+          if (isChecked) {
+            selectedValues = selectedValues.filter((value) => interSelectedValues
+              .find((option) => option.value === value.value) == null);
+          } else {
+            selectedValues = selectedValues.concat(interSelectedValues);
+          }
           break;
+        }
         case SELECTOR_DIFFERENCE:
+        {
           selectorDataSet = externalDataSet.hpos.filter(isObservedNeg)
-            .map((ontology) => ontology.code);
-          selectedValues = dataSet.filter((option) => {
-            const hpoValue = option.value.match(hpoRegexp).toString();
+            .map((ontology) => get(ontology, 'original.valueCodeableConcept.coding[0].code', undefined));
+          const interSelectedValues = dataSet.filter((option) => {
+            const hpoValue = option.value.match(HPO_REGEX).toString();
             return hpoValue ? (selectorDataSet.indexOf(hpoValue) !== -1) : false;
           });
+
+          const isChecked = interSelectedValues.every((option) => selectedValues.find((val) => val.value === option.value));
+          if (isChecked) {
+            selectedValues = selectedValues.filter((value) => interSelectedValues
+              .find((option) => option.value === value.value) == null);
+          } else {
+            selectedValues = selectedValues.concat(interSelectedValues);
+          }
           break;
+        }
       }
 
       draft.values = selectedValues.map((option) => option.value);
@@ -281,14 +303,16 @@ class SpecificFilter extends Filter {
 
     const loadedOptionsClone = loadedOptions.length ? [...loadedOptions] : allOptions.slice(0, Math.min(10, allOptions.length));
 
-    const options = loadedOptionsClone.map((option) => {
+    const observedOptions = allOptions.filter((option) => {
+      const code = option.value.match(HPO_REGEX).toString();
+      return externalDataSet.hpos.find((hpo) => {
+        const hpoCode = get(hpo, 'original.valueCodeableConcept.coding[0].code', null);
+        return hpoCode === code;
+      });
+    });
+
+    const renderOption = (option, isObservePos, isObserveNeg) => {
       const value = option.value.length < 40 ? option.value : `${option.value.substring(0, 37)} ...`;
-      const observedPos = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_POSITIVE_CODE);
-      const observedNeg = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_NEGATIVE_CODE);
-      const hpoRegexp = new RegExp(/HP:[0-9]{7}/g);
-      const code = option.value.match(hpoRegexp).toString();
-      const isObservePos = find(observedPos, { code });
-      const isObserveNeg = find(observedNeg, { code });
       return {
         label: (
           <span className={styleFilter.checkboxValue}>
@@ -305,7 +329,42 @@ class SpecificFilter extends Filter {
         ),
         value: option.value,
       };
-    });
+    };
+
+    const selected = get(draft, 'values', []);
+    const options = [];
+    if (selected.length > 0) {
+      observedOptions.forEach((option) => {
+        if (selected.find((value) => value === option.value) != null) {
+          const code = option.value.match(HPO_REGEX).toString();
+          const marked = externalDataSet.hpos.find((hpo) => {
+            const hpoCode = get(hpo, 'original.valueCodeableConcept.coding[0].code', undefined);
+            return hpoCode === code;
+          });
+
+          const isObserved = marked.parsed.observed === HPO_POSITIVE_CODE;
+          const isNotObserved = marked.parsed.observed === HPO_NEGATIVE_CODE;
+
+          options.push(renderOption(option, isObserved, isNotObserved));
+        }
+      });
+    }
+
+    for (let i = 0; i < loadedOptionsClone.length; i += 1) {
+      const option = loadedOptionsClone[i];
+
+      if (options.find((opt) => opt.value === option.value) != null) {
+        continue;
+      }
+
+      // const observedPos = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_POSITIVE_CODE);
+      // const observedNeg = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_NEGATIVE_CODE);
+      // const code = option.value.match(HPO_REGEX).toString();
+      // const isObservePos = find(observedPos, { code });
+      // const isObserveNeg = find(observedNeg, { code });
+
+      options.push(renderOption(option, undefined, undefined));
+    }
 
     const dataSelector = renderCustomDataSelector(
       this.handleSelectorChange,
@@ -328,7 +387,6 @@ class SpecificFilter extends Filter {
           <Row>
             <Col span={24}>
               <Checkbox.Group
-                onChange={this.handleSelectionChange}
                 option={options}
                 className={`${styleFilter.checkboxGroup} `}
                 value={draft.values}
@@ -348,7 +406,12 @@ class SpecificFilter extends Filter {
                     { options.map((option) => (
                       <Row>
                         <Col className="checkboxLine">
-                          <Checkbox className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                          <Checkbox
+                            onChange={this.handleSelectionChange}
+                            className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
+                            value={option.value}
+                          >{ option.label }
+                          </Checkbox>
                         </Col>
                       </Row>
                     )) }
