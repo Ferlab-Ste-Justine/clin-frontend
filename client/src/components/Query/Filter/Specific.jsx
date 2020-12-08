@@ -357,13 +357,13 @@ class SpecificFilter extends Filter {
         continue;
       }
 
-      // const observedPos = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_POSITIVE_CODE);
-      // const observedNeg = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_NEGATIVE_CODE);
-      // const code = option.value.match(HPO_REGEX).toString();
-      // const isObservePos = find(observedPos, { code });
-      // const isObserveNeg = find(observedNeg, { code });
+      const observedPos = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_POSITIVE_CODE);
+      const observedNeg = externalDataSet.hpos.filter((ontology) => ontology.parsed.observed === HPO_NEGATIVE_CODE);
+      const code = option.value.match(HPO_REGEX).toString();
+      const isObservePos = find(observedPos, { code });
+      const isObserveNeg = find(observedNeg, { code });
 
-      options.push(renderOption(option, undefined, undefined));
+      options.push(renderOption(option, isObservePos, isObserveNeg));
     }
 
     const dataSelector = renderCustomDataSelector(
