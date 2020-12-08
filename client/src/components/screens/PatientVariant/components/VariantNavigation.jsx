@@ -7,17 +7,15 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Menu, Input, AutoComplete, Tag, Typography, Col, Tooltip, Button,
+  Menu, Input, AutoComplete, Typography, Tooltip, Button,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_widgets,
   ic_gps_fixed,
   ic_group,
-  ic_search,
   ic_call_split,
   ic_assessment,
-  ic_done,
   ic_keyboard_arrow_right,
   ic_info_outline,
   ic_cloud_upload,
@@ -42,6 +40,7 @@ import {
   fetchGenesByAutocomplete,
 } from '../../../../actions/variant';
 import { variantShape } from '../../../../reducers/variant';
+import SearchInput from './SearchInput';
 
 const AUTOCOMPLETE_FILTER_MAX_RESULT = 100;
 
@@ -560,9 +559,16 @@ class VariantNavigation extends React.Component {
     // eslint-disable-next-line react/prop-types
     const { schema, variant } = this.props;
     const {
-      activeFilterId, searchResults, searchResultsTotalCount, searchSelection, searchValue, geneSearch, searchGeneValue, activeMenu,
+      activeFilterId,
+      searchResults,
+      searchResultsTotalCount,
+      searchSelection,
+      searchValue,
+      geneSearch,
+      searchGeneValue,
+      activeMenu,
     } = this.state;
-    let autocompletesCount = 0;
+
     const geneItem = [];
     if (variant.geneResult.hits) {
       variant.geneResult.hits.map((item, index) => {
@@ -585,44 +591,6 @@ class VariantNavigation extends React.Component {
       });
     }
 
-    const autocompletes = searchValue !== '' ? searchResults.filter((group) => group.label !== '').map((group) => {
-      autocompletesCount += group.matches.length;
-      return (
-        <AutoComplete.OptGroup key={group.id} disabled label={(<Typography.Text strong className="label">{ group.label }</Typography.Text>)}>
-          { group.matches.map((match) => (
-            <AutoComplete.Option key={match.id} value={JSON.stringify(match)} className="value">
-              <Col>
-                <Typography.Text style={{ maxWidth: 280 }} ellipsis>
-                  <IconKit size={16} icon={ic_done} className="iconCheck" />
-                  { this.getHighlightSearch(match.value) }
-                </Typography.Text>
-              </Col>
-              <Col justify="end" align="end" className="valueCount">
-                { match.count && (<Tag color="#f0f2f5">{ intl.get('components.query.count', { count: match.count }) }</Tag>) }
-              </Col>
-            </AutoComplete.Option>
-          )) }
-        </AutoComplete.OptGroup>
-      );
-    }) : [];
-    if (searchResultsTotalCount > 0) {
-      autocompletes.unshift((
-        <AutoComplete.Option key="count" disabled>
-          <Typography.Text className="dropwDownAutoComplete__detail-item">
-            { searchResultsTotalCount }{ ' ' }result(s)
-          </Typography.Text>
-        </AutoComplete.Option>
-      ));
-    }
-    if (searchResultsTotalCount > autocompletesCount) {
-      autocompletes.push((
-        <AutoComplete.Option key="more-results" disabled>
-          <Typography.Text className="dropwDownAutoComplete__detail-item">
-            { intl.get('components.variantNavigation.moreResults') }
-          </Typography.Text>
-        </AutoComplete.Option>
-      ));
-    }
     const generateMenuComponent = (selection, children) => {
       if (!selection.category || !selection.filter) {
         return (
@@ -654,21 +622,15 @@ class VariantNavigation extends React.Component {
 
     return (
       <div className="navigationFilter">
-        <AutoComplete
-          key="autocompleter"
-          allowClear
-          autoFocus
-          dataSource={autocompletes}
-          onSearch={this.handleNavigationSearch}
-          onSelect={this.handleNavigationSelection}
-          value={this.searchQuery}
-          className="autocomplete large-input"
-          dropdownClassName="dropwDownAutoComplete"
-          onChange={this.handleAutoCompleteChange}
-          open
-        >
-          <Input prefix={<IconKit size={24} icon={ic_search} />} placeholder="Recherche de filtres" />
-        </AutoComplete>
+        <SearchInput
+          handleAutoCompleteChange={this.handleAutoCompleteChange}
+          handleNavigationSearch={this.handleNavigationSearch}
+          handleNavigationSelection={this.handleNavigationSelection}
+          searchQuery={this.searchQuery}
+          searchResults={searchResults}
+          searchValue={searchValue}
+          searchResultsTotalCount={searchResultsTotalCount}
+        />
         { generateMenuComponent(searchSelection, schema.categories ? schema.categories.map((category) => {
           if (category.filters && category.filters.length > 0) {
             const { id } = category;
