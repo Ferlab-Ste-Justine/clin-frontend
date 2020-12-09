@@ -202,6 +202,23 @@ const clinVar = (variant, _gene) => {
   return cvcs || 0;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const omimVar = (_variant, gene) => {
+  try {
+    const omims = gene.omim.map((omim) => {
+      let output = `- ${cleanOmimValue(omim.name)} MIM${omim.omim_id}`;
+      if (get(omim, 'inheritance', []).length > 0) {
+        output = `${output} (${omim.inheritance.join(', ')})`;
+      }
+      return output;
+    });
+
+    return omims.join('\n');
+  } catch (e) {
+    return '';
+  }
+};
+
 const reportSchema = () => [
   {
     header: intl.get('variant.report.header_value.Nucleotidic_variation_GRChv38'),
@@ -227,6 +244,11 @@ const reportSchema = () => [
     header: intl.get('variant.report.header_value.ClinVar'),
     type: 'string',
     cellGenerator: clinVar,
+  },
+  {
+    header: intl.get('variant.report.header_value.omim'),
+    type: 'string',
+    cellGenerator: omimVar,
   },
 ];
 
