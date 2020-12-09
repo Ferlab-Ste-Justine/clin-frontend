@@ -104,12 +104,7 @@ class VariantNavigation extends React.Component {
     this.handleGeneSearch = this.handleGeneSearch.bind(this);
     this.handleGeneSelection = this.handleGeneSelection.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
-    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handleApply = this.handleApply.bind(this);
-  }
-
-  componentDidMount() {
-    document.addEventListener('mousedown', this.handleClickOutside);
   }
 
   getHighlightSearch(value) {
@@ -169,44 +164,6 @@ class VariantNavigation extends React.Component {
       newActiveMenu = [activeMenu[0], e.key];
     }
     this.setState({ activeMenu: newActiveMenu });
-  }
-
-  handleClickOutside(event) {
-    const { activeMenu } = this.state;
-    let openMenu = document.querySelector('.submenuOpen');
-    let openOverflowMenu = null;
-    let clickOutside = false;
-    if (activeMenu.length > 0) {
-      if (activeMenu[0].includes('overflowed-indicator') && !openMenu) openMenu = document.getElementById(`${activeMenu[0]}$Menu`);
-      openOverflowMenu = activeMenu.length > 1 ? document.getElementById('ant-menu-submenu') : null;
-    }
-    const clickX = event.clientX;
-    const clickY = event.clientY;
-    if (openMenu && openMenu.offsetWidth != null) {
-      const rect = openMenu.getBoundingClientRect();
-      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-      const menuX = rect.left + scrollLeft;
-      const menuY = rect.top;
-      if ((clickX < menuX || clickX > (menuX + openMenu.offsetWidth) || clickY < menuY || clickY > menuY + openMenu.offsetHeight) && !openOverflowMenu) {
-        clickOutside = true;
-      }
-
-      if (openOverflowMenu) {
-        const rectOverflow = openOverflowMenu.getBoundingClientRect();
-        const menuYOverflow = rectOverflow.top;
-        if (clickX < menuX || clickX > (menuX + openMenu.offsetWidth + openOverflowMenu.offsetWidth + 2) || clickY < menuYOverflow) {
-          clickOutside = true;
-        }
-      }
-
-      if (clickOutside) {
-        this.setState({
-          activeFilterId: null,
-          searchSelection: {},
-          activeMenu: [],
-        });
-      }
-    }
   }
 
   handleNavigationSearch(query) {
@@ -418,10 +375,11 @@ class VariantNavigation extends React.Component {
     }
   }
 
-  handleCategoryOpenChange() {
+  handleCategoryOpenChange(openKeys) {
     this.setState({
       activeFilterId: null,
       searchSelection: {},
+      activeMenu: openKeys,
     });
   }
 
