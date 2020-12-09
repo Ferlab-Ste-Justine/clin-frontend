@@ -77,19 +77,19 @@ const HpoHiddenFields = ({
 );
 
 const INITIAL_TREE_ROOTS = [
-  { key: 'HP:0001197', title: 'Anomalie du développement prénatal ou de la naissance', is_leaf: false },
-  { key: 'HP:0001507', title: 'Anomalie de la croissance', is_Leaf: false },
-  { key: 'HP:0000478', title: 'Anomalie oculaire', is_leaf: false },
-  { key: 'HP:0001574', title: 'Anomalie de l\'oreille', is_leaf: false },
-  { key: 'HP:0012519', title: 'Anomalie des téguments', is_leaf: false },
-  { key: 'HP:0001626', title: 'Anomalie du système cardiovasculaire', is_leaf: false },
-  { key: 'HP:0002086', title: 'Anomalie du système respiratoire', is_leaf: false },
-  { key: 'HP:0000924', title: 'Anomalie du système musculo-squelettique', is_leaf: false },
-  { key: 'HP:0003011', title: 'Anomalie de la musculature', is_leaf: false },
-  { key: 'HP:0000119', title: 'Anomalie génito-urinaire', is_leaf: false },
-  { key: 'HP:0025031', title: 'Anomalie du système digestif', is_leaf: false },
-  { key: 'HP:0000152', title: 'Anomalie tête et cou', is_leaf: false },
-  { key: 'HP:0000707', title: 'Anomalie du système nerveux', is_leaf: false },
+  { key: 'HP:0001197', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001197'), is_leaf: false },
+  { key: 'HP:0001507', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001507'), is_Leaf: false },
+  { key: 'HP:0000478', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000478'), is_leaf: false },
+  { key: 'HP:0001574', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001574'), is_leaf: false },
+  { key: 'HP:0012519', title: intl.get('form.patientSubmission.clinicalInformation.HP:0012519'), is_leaf: false },
+  { key: 'HP:0001626', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001626'), is_leaf: false },
+  { key: 'HP:0002086', title: intl.get('form.patientSubmission.clinicalInformation.HP:0002086'), is_leaf: false },
+  { key: 'HP:0000924', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000924'), is_leaf: false },
+  { key: 'HP:0003011', title: intl.get('form.patientSubmission.clinicalInformation.HP:0003011'), is_leaf: false },
+  { key: 'HP:0000119', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000119'), is_leaf: false },
+  { key: 'HP:0025031', title: intl.get('form.patientSubmission.clinicalInformation.HP:0025031'), is_leaf: false },
+  { key: 'HP:0000152', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000152'), is_leaf: false },
+  { key: 'HP:0000707', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000707'), is_leaf: false },
 ];
 
 class ClinicalInformation extends React.Component {
@@ -181,7 +181,7 @@ class ClinicalInformation extends React.Component {
               okText={intl.get('form.patientSubmission.form.hpo.confirm.yes')}
               cancelText={intl.get('form.patientSubmission.form.hpo.confirm.no')}
             >
-              <Button type="link" className="bordelessButton deleteButton">Supprimer</Button>
+              <Button type="link" className="bordelessButton deleteButton">{ intl.get('form.patientSubmission.clinicalInformation.delete') }</Button>
             </Popconfirm>
           </div>
           <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} />
@@ -498,7 +498,7 @@ class ClinicalInformation extends React.Component {
           <Form.Item
             rules={[{
               whitespace: true,
-              message: 'Ne peut pas contenir que des espaces',
+              message: intl.get('form.patientSubmission.clinicalInformation.validation.noSpace'),
             }]}
             name={['familyRelationshipNotes', `${index}`]}
             initialValue={getFamilyRelationshipNote(resource)}
@@ -557,31 +557,31 @@ class ClinicalInformation extends React.Component {
 
     return (
       <div>
-        <Card title="Informations cliniques" bordered={false} className="staticCard patientContent">
+        <Card title={intl.get('form.patientSubmission.clinicalInformation.title')} bordered={false} className="staticCard patientContent">
 
           <Form.Item name="cghId" initialValue={cghId} className="hidden-form">
             <Input size="small" type="hidden" />
           </Form.Item>
 
           <Form.Item
-            label="Type d’analyse"
+            label={intl.get('form.patientSubmission.clinicalInformation.analysisType')}
             name="analyse"
             initialValue={has(localStore.serviceRequest, 'code') ? localStore.serviceRequest.code : null}
           >
             <Radio.Group buttonStyle="solid">
-              <Radio.Button value="WXS"><span className="radioText">Exome</span></Radio.Button>
-              <Radio.Button value="WGS"><span className="radioText">Génome</span></Radio.Button>
-              <Radio.Button value="GP"><span className="radioText">Séquençage ciblé</span></Radio.Button>
+              <Radio.Button value="WXS"><span className="radioText">{ intl.get('form.patientSubmission.clinicalInformation.exome') }</span></Radio.Button>
+              <Radio.Button value="WGS"><span className="radioText">{ intl.get('form.patientSubmission.clinicalInformation.genome') }</span></Radio.Button>
+              <Radio.Button value="GP"><span className="radioText">{ intl.get('form.patientSubmission.clinicalInformation.targetedSequencing') }</span></Radio.Button>
             </Radio.Group>
           </Form.Item>
         </Card>
         <Card
-          title="Résumé de l’investigation"
+          title={intl.get('form.patientSubmission.clinicalInformation.investigationSummary')}
           bordered={false}
           className="staticCard patientContent"
         >
           <Form.Item
-            label="CGH"
+            label={intl.get('form.patientSubmission.clinicalInformation.cgh')}
             name="cghInterpretationValue"
             initialValue={cghInterpretationValue}
           >
@@ -596,20 +596,20 @@ class ClinicalInformation extends React.Component {
             (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
             && (
               <Form.Item
-                label="Précision"
+                label={intl.get('form.patientSubmission.clinicalInformation.precision')}
                 name="cghPrecision"
                 initialValue={has(localStore, 'cgh.precision') ? localStore.cgh.precision : null}
                 rules={[{
                   required: true,
-                  message: 'Veuillez indiquer le résultat du CGH',
+                  message: intl.get('form.patientSubmission.clinicalInformation.validation.cghResults'),
                 },
                 {
                   whitespace: true,
-                  message: 'Ne peut pas contenir que des espaces',
+                  message: intl.get('form.patientSubmission.clinicalInformation.validation.noSpace'),
                 },
                 ]}
               >
-                <Input placeholder="Veuillez préciser…" className="input note" />
+                <Input placeholder={intl.get('form.patientSubmission.clinicalInformation.pleaseSpecify')} className="input note" />
               </Form.Item>
 
             )
@@ -617,17 +617,17 @@ class ClinicalInformation extends React.Component {
 
           <div className="optional-item">
             <Form.Item
-              label="Résumé"
+              label={intl.get('form.patientSubmission.clinicalInformation.summary')}
               name="summaryNote"
               initialValue={summaryNoteValue}
               rules={[{
                 whitespace: true,
-                message: 'Ne peut pas contenir que des espaces',
+                message: intl.get('form.patientSubmission.clinicalInformation.validation.noSpace'),
               }]}
             >
               <TextArea className="input note" rows={4} />
             </Form.Item>
-            <span className="optional-item__label">Facultatif</span>
+            <span className="optional-item__label">{ intl.get('form.patientSubmission.clinicalInformation.optional') }</span>
           </div>
 
         </Card>
@@ -649,7 +649,7 @@ class ClinicalInformation extends React.Component {
               <Form.Item className="searchInput searchInputFull">
                 <AutoComplete
                   className="searchInput"
-                  placeholder="Chercher un signe clinique ..."
+                  placeholder={intl.get('form.patientSubmission.clinicalInformation.searchClinicalSign')}
                   dataSource={hpoOptionsLabels}
                   onSelect={this.handleHpoOptionSelected}
                   onChange={this.handleHpoSearchTermChanged}
@@ -666,9 +666,9 @@ class ClinicalInformation extends React.Component {
                 { this.renderTreeNodes(treeData) }
               </Tree>
             </div>
-            <div className={hpoResources.length === 0 ? 'cardSeparator message' : 'cardSeparator'}>              {
+            <div className={hpoResources.length === 0 ? 'cardSeparator message' : 'cardSeparator'}>{
               hpoResources.length === 0
-                ? <p>Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.</p>
+                ? <p>{ intl.get('form.patientSubmission.clinicalInformation.validation.clinicalSign') }</p>
                 : hpoResources.map((hpoResource, hpoIndex) => this.phenotype({
                   hpoResource,
                   form,
@@ -680,19 +680,19 @@ class ClinicalInformation extends React.Component {
           </div>
 
         </Card>
-        <Card title="Indications" bordered={false} className="staticCard patientContent">
+        <Card title={intl.get('form.patientSubmission.clinicalInformation.indications')} bordered={false} className="staticCard patientContent">
           <Form.Item
-            label="Hypothèse(s) de diagnostic"
+            label={intl.get('form.patientSubmission.clinicalInformation.diagnosticHypothesis')}
             name="indication"
             initialValue={indicationNoteValue}
             rules={[
               {
                 required: true,
-                message: 'Vous devez entrer une hypothèse de diagnostique',
+                message: intl.get('form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis'),
               },
               {
                 whitespace: true,
-                message: 'Ne peut pas contenir que des espaces',
+                message: intl.get('form.patientSubmission.clinicalInformation.validation.noSpace'),
               },
             ]}
           >

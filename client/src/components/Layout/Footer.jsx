@@ -33,7 +33,7 @@ const Footer = () => (
           </nav>
         </Col>
         <Col>
-          <Text type="primary" className="navTitle">Nous joindre</Text>
+          <Text type="primary" className="navTitle">{ intl.get('footer.navigation.primary.contact') }</Text>
           <nav>
             <ul>
               <li>
