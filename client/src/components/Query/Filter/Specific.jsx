@@ -193,6 +193,7 @@ class SpecificFilter extends Filter {
       switch (selector) {
         default:
         case SELECTOR_NONE:
+          selectedValues = [];
           break;
         case SELECTOR_ALL:
           selectedValues = selectedValues.concat(dataSet);
