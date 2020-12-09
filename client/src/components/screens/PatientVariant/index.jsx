@@ -97,7 +97,7 @@ const nucleotidicVariation = (variant, _gene) => {
   builder.append(variant.name);
   const symbols = get(variant, 'genes_symbol', []);
   if (symbols.length > 0) {
-    builder.append('Gène: ', {
+    builder.append(`${intl.get('variant.report.gene')}: `, {
       bold: true,
       value: symbols.join(', '),
     },

@@ -71,6 +71,7 @@ const fr = {
   'variant.report.header_value.ClinVar': 'ClinVar',
   'variant.report.header_value.omim': 'OMIM (Mode de transmission)',
   'variant.report.header_value.interpretation': 'Interprétation',
+  'variant.report.gene': 'Gène',
   'variant.report.tolerated': 'Tolérée',
   'variant.report.deleterious': 'Délétère',
   'screen.accessdenied.title': 'Accès Refusé',
