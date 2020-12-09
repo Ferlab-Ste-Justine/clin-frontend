@@ -1,12 +1,11 @@
 import { Dropdown, Button, Menu } from 'antd';
-import React from 'react';
+import React, { ReactText, useState } from 'react';
 import IconKit from 'react-icons-kit';
 import Icon from '@ant-design/icons';
 import {
   ic_arrow_drop_down,
 } from 'react-icons-kit/md';
 import intl from 'react-intl-universal';
-import shortid from 'shortid';
 
 import styleFilter from '../styles/filter.module.scss';
 import {
@@ -29,9 +28,12 @@ const operatorFromOperand = (operand: any) => {
 
 function ApplyDropMenu(operands: any[], onOperandChangeCallBack: (key: React.ReactText) => void) {
   return (
-    <Menu onClick={(e) => onOperandChangeCallBack(e.key)} className={styleFilter.operandDropdown}>
+    <Menu
+      onClick={(e) => onOperandChangeCallBack(e.key)}
+      className={styleFilter.operandDropdown}
+    >
       { operands.map((configOperand: any) => (
-        <Menu.Item key={shortid.generate()}>
+        <Menu.Item key={configOperand}>
           <Icon className={styleFilter.graySvgIcon} component={OperatorIconComponent(operatorFromOperand(configOperand))} />
           { intl.get(`screen.patientvariant.filter.operand.${configOperand}`) }
         </Menu.Item>
@@ -45,14 +47,21 @@ interface Props {
       operands: string[]
     },
     disabled: boolean
-    onClick: () => void,
-    operand: string,
+    onClick: () => void
+    initialOperand: string
     onOperandChangeCallBack: (key: React.ReactText) => void
 }
 
 function ApplyButton({
-  config, disabled, onClick, operand, onOperandChangeCallBack,
+  config, disabled, onClick, initialOperand, onOperandChangeCallBack,
 }: Props) {
+  const [selectedOperand, setSelectedOperand] = useState<ReactText>(initialOperand);
+
+  function onOperandChange(key: ReactText) {
+    setSelectedOperand(key);
+    onOperandChangeCallBack(key);
+  }
+
   if (config.operands) {
     return (
       <Dropdown.Button
@@ -63,13 +72,13 @@ function ApplyButton({
           <>
             <Icon
               className="operator-icon"
-              component={OperatorIconComponent(operatorFromOperand(operand))}
+              component={OperatorIconComponent(operatorFromOperand(selectedOperand))}
             />
             <IconKit size={16} className={styleFilter.iconInfo} icon={ic_arrow_drop_down} />
           </>
         )}
         onClick={onClick}
-        overlay={ApplyDropMenu(config.operands, onOperandChangeCallBack)}
+        overlay={ApplyDropMenu(config.operands, onOperandChange)}
         placement="bottomLeft"
       >
         { intl.get('components.query.filter.button.apply') }

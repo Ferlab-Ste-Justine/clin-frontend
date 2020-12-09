@@ -102,7 +102,7 @@ function FilterContent({
             config={config}
             disabled={isApplyButtonDisabled}
             onClick={onApply}
-            operand={data.operand}
+            initialOperand={data.operand}
             onOperandChangeCallBack={onOperandChangeCallBack}
           />
         </Col>
