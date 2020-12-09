@@ -37,13 +37,13 @@ function* navigateToVariantDetailsScreen(action) {
 
 function* navigateToPatientScreen(action) {
   try {
-    const { uid, tab } = action.payload;
+    const { uid, tab, reload } = action.payload;
     let url = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${uid}`;
     if (tab) { url += `/#${tab}`; }
 
     // @NOTE Only fetch patient if it is not the currently active one
     const { patient } = yield select((state) => state.patient);
-    if (get(patient, 'parsed.id', '') !== uid) {
+    if (reload || get(patient, 'parsed.id', '') !== uid) {
       yield put({
         type: actions.PATIENT_FETCH_REQUESTED,
         payload: { uid },

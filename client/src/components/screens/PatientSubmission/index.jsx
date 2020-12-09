@@ -841,7 +841,7 @@ function PatientSubmissionScreen(props) {
     const { editMode, actions, patient } = props;
 
     if (editMode) {
-      actions.navigateToPatientScreen(patient.id, 'clinical');
+      actions.navigateToPatientScreen(patient.id, 'clinical', true);
     } else {
       actions.navigateToPatientSearchScreen();
     }
