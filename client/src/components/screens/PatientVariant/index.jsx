@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-no-target-blank */
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
@@ -12,6 +10,7 @@ import {
 import {
   Badge, Button, Card, Checkbox, Col, notification, Row, Tabs,
 } from 'antd';
+import { LinesBuilder } from '../../../helpers/excel/LinesBuilder';
 
 import HeaderCellWithTooltip from '../../Table/HeaderCellWithTooltip';
 import HeaderCustomCell from '../../Table/HeaderCustomCell';
@@ -73,47 +72,51 @@ const COLUMN_WIDTHS = {
 
 const getValue = curryRight(get)('');
 const valuePresent = (x) => (!isNil(x) && x !== '');
-const isCanonical = (t) => t.canonical;
 const insertCR = (lines) => lines.flatMap((l) => [...l, '\n']);
-const _has = curryRight(has);
+const getPredictionValue = (letter) => {
+  switch (letter.toUpperCase()) {
+    case 'D':
+      return intl.get('variant.report.deleterious');
+    case 'T':
+      return intl.get('variant.report.tolerated');
+    default:
+      return '';
+  }
+};
 
 /**
  * Cell generator for Nucleotidic variation column
  * @param {*} variant
  * @param {*} gene
  */
-const nucleotidicVariation = (variant, gene) => {
-  const lines = [variant.hgvsg, '\n'];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const nucleotidicVariation = (variant, _gene) => {
+  const builder = new LinesBuilder();
+  builder.append(variant.hgvsg);
 
-  const bdExts = has(variant, 'variant.bdExt.dbsnp') ? variant.bdExt.dbsnp : [];
-  lines.push(...insertCR(bdExts));
-
-  const geneLine = [
-    'Gène: ',
-    {
+  builder.append(variant.name);
+  const symbols = get(variant, 'genes_symbol', []);
+  if (symbols.length > 0) {
+    builder.append(`${intl.get('variant.report.gene')}: `, {
       bold: true,
-      value: `${getValue(gene, 'geneSymbol')}`,
+      value: symbols.join(', '),
     },
     {
       bold: false,
-    },
-    '\n',
-  ];
+    });
+  }
 
-  lines.push(...geneLine);
+  for (let i = 0; i < variant.consequences.length; i += 1) {
+    const consequence = variant.consequences[i];
+    if (consequence.coding_dna_change != null || consequence.aa_change != null) {
+      builder.newLine();
+      builder.append(`REF_SEQ_ID_${i}`);
 
-  const refTranscripts = variant.consequences.filter(isCanonical).map((t) => getValue(t, 'ensembl_feature_id')).filter(valuePresent);
-  lines.push(...insertCR(refTranscripts));
-
-  // For some reason, point form doesn't work in filter for the _ghas function ...
-  const cdnaChanges = variant.consequences.filter((c) => _has('cdnaChange')(c)).map((c) => `c.${getValue(c, 'cdnaChange')}`);
-  lines.push(...insertCR(cdnaChanges));
-
-  // Same as above ...
-  const aaChanges = variant.consequences.filter((c) => _has('aaChange')(c)).map((c) => `p.(${getValue(c, 'aaChange')}`);
-  lines.push(...insertCR(aaChanges));
-
-  return lines;
+      builder.append(consequence.coding_dna_change);
+      builder.append(consequence.aa_change);
+    }
+  }
+  return builder.build();
 };
 
 /**
@@ -127,7 +130,7 @@ const parentalOriginLines = (variant, _gene) => {
     const zygoCode = (d) => getValue(d, 'zygosity');
     return zygoCode(donor) === 'HOM'
       ? intl.get('screen.variantDetails.homozygote')
-      : intl.get('screen.variantDetails.homozygote');
+      : intl.get('screen.variantDetails.heterozygote');
   };
 
   const coverage = (donor) => [
@@ -179,11 +182,10 @@ const allelicFrequency = (variant, _gene) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const inSilicoPredictions = (variant, _gene) => {
   const preds = variant.consequences
-    .map((c) => (c.predictions ? c.predictions.sift_converted_rank_score : null))
-    .filter(valuePresent)
-    .join(', ');
+    .map((c) => (c.predictions ? c.predictions.sift_pred : null))
+    .filter(valuePresent);
 
-  return preds ? `${preds}` : '';
+  return preds.length > 0 ? `${getPredictionValue(preds[0])}` : '';
 };
 
 /**
@@ -200,6 +202,37 @@ const clinVar = (variant, _gene) => {
   const clinvarLabel = intl.get(`clinvar.value.${getValue(variant.clinvar, 'clinvar_clinsig')}`);
   const cvcs = `${clinvarLabel} (${intl.get('screen.patientvariant.clinVarVariationId')}: ${getValue(variant.clinvar, 'clinvar_id')})`;
   return cvcs || 0;
+};
+
+const cleanOmimValue = (value) => {
+  if (!value) {
+    return '';
+  }
+  let output = value.trim();
+  if (output[0] === '{') {
+    output = output.substr(1);
+  }
+  if (output[output.length - 1] === '}') {
+    output = output.substr(0, output.length - 1);
+  }
+  return output;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const omimVar = (_variant, gene) => {
+  try {
+    const omims = gene.omim.map((omim) => {
+      let output = `- ${cleanOmimValue(omim.name)} MIM${omim.omim_id}`;
+      if (get(omim, 'inheritance', []).length > 0) {
+        output = `${output} (${omim.inheritance.join(', ')})`;
+      }
+      return output;
+    });
+
+    return omims.join('\n');
+  } catch (e) {
+    return '';
+  }
 };
 
 const reportSchema = () => [
@@ -227,6 +260,11 @@ const reportSchema = () => [
     header: intl.get('variant.report.header_value.ClinVar'),
     type: 'string',
     cellGenerator: clinVar,
+  },
+  {
+    header: intl.get('variant.report.header_value.omim'),
+    type: 'string',
+    cellGenerator: omimVar,
   },
 ];
 
