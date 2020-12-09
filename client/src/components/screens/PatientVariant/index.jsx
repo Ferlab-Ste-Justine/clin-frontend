@@ -205,7 +205,7 @@ const clinVar = (variant, _gene) => {
 };
 
 const cleanOmimValue = (value) => {
-  if (value == null) {
+  if (!value) {
     return '';
   }
   let output = value.trim();

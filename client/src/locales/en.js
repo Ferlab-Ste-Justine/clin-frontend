@@ -640,7 +640,7 @@ const en = {
   'form.patientSubmission.clinicalInformation.optional': 'Optional',
   'form.patientSubmission.clinicalInformation.searchClinicalSign': 'Search for a clinical sign...',
   'form.patientSubmission.clinicalInformation.indications': 'Indications',
-  'form.patientSubmission.clinicalInformation.diagnosticHypothesis': 'Diagnostic hypothesis (s)',
+  'form.patientSubmission.clinicalInformation.diagnosticHypothesis': 'Diagnostic hypothesis',
   'form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis': 'You must fill a diagnostic hypothesis',
   'form.patientSubmission.clinicalInformation.validation.noSpace': 'Cannot contain only spaces',
   'form.patientSubmission.clinicalInformation.validation.cghResults': 'Please indicate the result of the CGH',
