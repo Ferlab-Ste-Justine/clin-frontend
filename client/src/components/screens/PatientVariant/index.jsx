@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-no-target-blank */
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
@@ -74,9 +72,7 @@ const COLUMN_WIDTHS = {
 
 const getValue = curryRight(get)('');
 const valuePresent = (x) => (!isNil(x) && x !== '');
-// const isCanonical = (t) => t.canonical;
 const insertCR = (lines) => lines.flatMap((l) => [...l, '\n']);
-// const _has = curryRight(has);
 const getPredictionValue = (letter) => {
   switch (letter.toUpperCase()) {
     case 'D':
