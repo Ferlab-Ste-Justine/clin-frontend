@@ -436,7 +436,7 @@ class PatientSearchScreen extends React.Component {
             </Col>
             <Col>
               <Typography.Text className="autocomplete-row__mrn">
-                MRN: { result.mrn }
+                { intl.get('screen.patientsearch.table.mrn') }: { result.mrn }
               </Typography.Text>
             </Col>
           </Row>
@@ -457,7 +457,7 @@ class PatientSearchScreen extends React.Component {
               <Button className={isFacetOpen ? 'facet openFacet' : 'facet'} onClick={this.handleOpenFacet}>
                 <div>
                   <IconKit className="btnIcon" size={16} icon={ic_tune} />
-                  Filtrer
+                  { intl.get('screen.patientsearch.filter') }
                 </div>
                 { isFacetOpen && (
                   <IconKit className="btnClose" size={16} icon={ic_close} />

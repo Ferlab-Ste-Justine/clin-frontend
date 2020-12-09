@@ -168,19 +168,19 @@ class PatientScreen extends React.Component {
           <Menu>
             <Menu.Item key="0">
               <Button type="link" className="dropDownButton" onClick={this.showModal}>
-                Changer le statut
+                { intl.get('screen.patient.details.changeStatus') }
               </Button>
 
             </Menu.Item>
             <Menu.Item key="1" disabled>
-              Voir détail
+              { intl.get('screen.patient.details.seeDetails') }
             </Menu.Item>
           </Menu>
         );
         const action = (
           <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
             <Button type="link" onClick={(e) => e.preventDefault()}>
-              Action
+              { intl.get('screen.patient.details.action') }
               <DownOutlined />
             </Button>
           </Dropdown>
@@ -301,7 +301,7 @@ class PatientScreen extends React.Component {
     const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
     const practitionerPopOverText = (info) => (
-      <Card title="Médecin résponsable" bordered={false}>
+      <Card title={intl.get('screen.patient.details.practitioner')} bordered={false}>
         <p><span className="popOverName">{ info.name }</span>  | { info.mrn }</p>
         <p>{ info.organization }</p>
         <p>{ info.phone } poste: { info.phoneExtension }</p>
@@ -436,7 +436,7 @@ class PatientScreen extends React.Component {
                       </Card>
                       <Row>
                         <Card bordered={false} className="prescription">
-                          <Card title="Prescriptions" bordered={false}>
+                          <Card title={intl.get('screen.patient.details.prescription')} bordered={false}>
                             <Table
                               pagination={false}
                               columns={requestColumnPreset.map(
@@ -447,41 +447,41 @@ class PatientScreen extends React.Component {
                             />
                           </Card>
                           <Modal
-                            title="Changer le status de la prescription"
+                            title={intl.get('screen.patient.details.changePrescriptionStatus')}
                             className="statusModal"
                             visible={modalVisibility}
                             onOk={this.handleOk}
                             onCancel={this.handleCancel}
                             footer={[
                               <Button size="small" key="back" onClick={this.handleCancel} className="cancel">
-                                Annuler
+                                { intl.get('screen.patient.details.cancel') }
                               </Button>,
                               <Button size="small" key="submit" type="primary" onClick={this.handleOk} disabled>
-                                Changer le statut
+                                { intl.get('screen.patient.details.changeStatus') }
                               </Button>,
                             ]}
                           >
                             <Radio.Group onChange={this.onChange} className="modalRadio">
                               <Radio value={1} className="submitted">
-                                Soumise
+                                { intl.get('screen.patient.details.status.on-hold') }
                                 <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
                               </Radio>
                               <Radio value={2} className="approuved">
-                                Approuvée
+                                { intl.get('screen.patient.details.status.active') }
                                 <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
                               </Radio>
                               <Radio value={3} className="incomplete">
-                                Incomplète
+                                { intl.get('screen.patient.details.status.incompleted') }
                                 <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
                                 <TextArea rows={1} />
                               </Radio>
                               <Radio value={4} className="refused">
-                                Refusée
+                                { intl.get('screen.patient.details.status.revoked') }
                                 <span className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
                                 <TextArea rows={1} />
                               </Radio>
                               <Radio value={5} className="completed">
-                                Compléter
+                                { intl.get('screen.patient.details.status.completed') }
                                 <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
                               </Radio>
                             </Radio.Group>
@@ -509,20 +509,20 @@ class PatientScreen extends React.Component {
                             <Card bordered={false} className="staticCard noInfo">
                               <Row align="middle" className="flex-row noInfo__contents">
                                 <Col className="noInfo__contents__icon"><IconKit size={72} icon={ic_info} /></Col>
-                                <Col className="noInfo__contents__title"><Title level={2}>Aucune information clinique disponible</Title></Col>
+                                <Col className="noInfo__contents__title"><Title level={2}>{ intl.get('screen.patient.details.noInfoAvailable') }</Title></Col>
                                 <Col className="noInfo__contents__text"><p>Maecenas sed diam eget risus varius blandit sit amet non magna. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam.Cras justo odio, dapibus ac facilisis in, egestas eget quam. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.</p></Col>
-                                <Col className="noInfo__contents__button"><Button type="primary" onClick={this.navigatoToSubmissionWithPatient}>Compléter le formulaire<IconKit size={20} icon={ic_arrow_forward} /></Button></Col>
+                                <Col className="noInfo__contents__button"><Button type="primary" onClick={this.navigatoToSubmissionWithPatient}>{ intl.get('screen.patient.details.completeForm') }<IconKit size={20} icon={ic_arrow_forward} /></Button></Col>
                               </Row>
                             </Card>
                           ) : (
                             <Card bordered={false} className="flex-row staticCard clinical">
-                              <Card title="Résumé de la consultation  |  2020-06-05" className="resume" bordered={false} staticCard>
+                              <Card title={`${intl.get('screen.patient.details.consultationSummary')}  |  2020-06-05`} className="resume" bordered={false} staticCard>
                                 <Row className="flex-row clinical__info">
-                                  <Col className="clinical__info__title">MRN</Col>
+                                  <Col className="clinical__info__title">{ intl.get('screen.patient.details.mrn') }</Col>
                                   <Col className="clinical__info__value">{ patient.mrn }  |  { patient.organization }</Col>
                                 </Row>
                                 <Row className="flex-row clinical__info">
-                                  <Col className="clinical__info__title">Médecin résponsable</Col>
+                                  <Col className="clinical__info__title">{ intl.get('screen.patient.details.practitioner') }</Col>
                                   <Col className="clinical__info__value">
                                     <span className="logoText">
                                       { consultation[0].practitioner.name }
@@ -536,19 +536,19 @@ class PatientScreen extends React.Component {
                                   </Col>
                                 </Row>
                                 <Row className="flex-row clinical__info">
-                                  <Col className="clinical__info__title">Age du patient</Col>
+                                  <Col className="clinical__info__title">{ intl.get('screen.patient.details.ageAtConsultation') }</Col>
                                   <Col className="clinical__info__value">3 ans</Col>
                                 </Row>
                                 <Row className="flex-row clinical__info">
-                                  <Col className="clinical__info__title">CGH</Col>
+                                  <Col className="clinical__info__title">{ intl.get('screen.patient.details.cgh') }</Col>
                                   <Col className="clinical__info__value">{ getCGHText(consultation[0].cgh) }</Col>
                                 </Row>
                                 <Row className="flex-row clinical__info">
-                                  <Col className="clinical__info__title">Résume de l'investigation</Col>
+                                  <Col className="clinical__info__title">{ intl.get('screen.patient.details.investigationSummary') }</Col>
                                   <Col className="clinical__info__value">{ consultation[0].summary }</Col>
                                 </Row>
                                 <Row className="flex-row clinical__info">
-                                  <Col className="clinical__info__title">Hypothèse de diagnostique</Col>
+                                  <Col className="clinical__info__title">{ intl.get('screen.patient.details.diagnosticHypothesis') }</Col>
                                   <Col className="clinical__info__value">{ consultation[0].hypothesis }</Col>
                                 </Row>
                               </Card>

@@ -930,17 +930,20 @@ class VariantDetailsScreen extends React.Component {
                     <DataList
                       title={intl.get(SUMMARY_TAB)}
                       dataSource={[
-                        { label: 'Variant', value: dna_change },
+                        { label: intl.get('screen.variantDetails.summaryTab.summaryTable.variant'), value: dna_change },
                         {
-                          label: 'Cytobande',
+                          label: intl.get('screen.variantDetails.summaryTab.cytoband'),
                           value: genes && genes[0] ? genes[0].location : '',
                         },
-                        { label: 'Type', value: variant_class },
-                        { label: 'Génome Réf.', value: assembly_version },
-                        { label: 'Allele Réf.', value: reference },
-                        { label: 'Allele Atl', value: alternate },
+                        { label: intl.get('screen.variantDetails.summaryTab.summaryTable.type'), value: variant_class },
                         {
-                          label: 'Gène(s)',
+                          label: intl.get('screen.variantDetails.summaryTab.summaryTable.genomeRef'),
+                          value: assembly_version,
+                        },
+                        { label: intl.get('screen.variantDetails.summaryTab.summaryTable.alleleRef'), value: reference },
+                        { label: intl.get('screen.variantDetails.summaryTab.summaryTable.alleleAlt'), value: alternate },
+                        {
+                          label: intl.get('screen.variantDetails.summaryTab.summaryTable.genes'),
                           value: (
                             <ul>
                               { genes.map((g) => (
@@ -954,13 +957,16 @@ class VariantDetailsScreen extends React.Component {
                             </ul>
                           ),
                         },
-                        { label: 'Impact VEP', value: <ul>{ impactsSummary }</ul> },
                         {
-                          label: 'Signification clinique (Clinvar)',
+                          label: intl.get('screen.variantDetails.summaryTab.summaryTable.vepImpact'),
+                          value: <ul>{ impactsSummary }</ul>,
+                        },
+                        {
+                          label: intl.get('screen.variantDetails.summaryTab.summaryTable.clinicSignification'),
                           value: clin_sig ? clin_sig.join(', ') : '--',
                         },
                         {
-                          label: 'Date des annotations',
+                          label: intl.get('screen.variantDetails.summaryTab.summaryTable.annotationsData'),
                           value: last_annotation_update,
                         },
                       ]}
@@ -969,10 +975,10 @@ class VariantDetailsScreen extends React.Component {
 
                   <Col className="refExt" span={8}>
                     <DataList
-                      title="Références externes"
+                      title={intl.get('screen.variantDetails.summaryTab.externalRefTable.title')}
                       dataSource={ext_db ? [
                         {
-                          label: 'Clin Var',
+                          label: intl.get('screen.variantDetails.summaryTab.externalRefTable.clinVar'),
                           value: ext_db && ext_db.is_clinvar ? (
                             <Link
                               url={`https://www.ncbi.nlm.nih.gov/snp/${clinvar.clinvar_id}`}
@@ -983,7 +989,7 @@ class VariantDetailsScreen extends React.Component {
                           ),
                         },
                         {
-                          label: 'OMIM',
+                          label: intl.get('screen.variantDetails.summaryTab.externalRefTable.omim'),
                           value:
                             ext_db && ext_db.is_omim ? (
                               <div className="variantPageContentRow">
@@ -994,7 +1000,7 @@ class VariantDetailsScreen extends React.Component {
                             ),
                         },
                         {
-                          label: 'dbSNP',
+                          label: intl.get('screen.variantDetails.summaryTab.externalRefTable.dbSnp'),
                           value:
                             ext_db && ext_db.is_dbsnp ? (
                               <Link
@@ -1006,7 +1012,7 @@ class VariantDetailsScreen extends React.Component {
                             ),
                         },
                         {
-                          label: 'Pubmed',
+                          label: intl.get('screen.variantDetails.summaryTab.externalRefTable.pubmed'),
                           value:
                             ext_db && ext_db.is_pubmed
                               ? (
@@ -1037,10 +1043,10 @@ class VariantDetailsScreen extends React.Component {
                   </Col>
                   <Col span={8}>
                     <DataList
-                      title="Patients"
+                      title={intl.get('screen.variantDetails.summaryTab.patientTable.title')}
                       dataSource={[
                         {
-                          label: 'Nb de patients (i)',
+                          label: intl.get('screen.variantDetails.summaryTab.patientTable.qtyOfPatients'),
                           value: (
                             <span>
                               <Button className="patientLink" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.ac }</Button>
@@ -1048,7 +1054,7 @@ class VariantDetailsScreen extends React.Component {
                             </span>),
                         },
                         {
-                          label: 'Fréquences',
+                          label: intl.get('screen.variantDetails.summaryTab.patientTable.frequencies'),
                           value: `${Number.parseFloat(frequencies.internal.af).toExponential(5)}`,
                         },
                       ]}
@@ -1057,12 +1063,21 @@ class VariantDetailsScreen extends React.Component {
                 </Row>
 
                 <Row>
-                  <Card title="Conséquences" className="staticCard" bordered={false}>
+                  <Card
+                    title={intl.get('screen.variantDetails.summaryTab.consequencesTable.title')}
+                    className="staticCard"
+                    bordered={false}
+                  >
                     <Table
                       rowKey={() => shortid.generate()}
                       pagination={false}
                       locale={{
-                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                        emptyText: (
+                          <Empty
+                            image={false}
+                            description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                          />
+                        ),
                       }}
                       dataSource={this.getConsequencesData()}
                       columns={consequencesColumnPreset.map(
@@ -1088,12 +1103,20 @@ class VariantDetailsScreen extends React.Component {
               <div className="variant-frequencies">
                 <Row type="flex" className="frequenciesTab" gutter={24}>
                   <Col span={12}>
-                    <Card title="RDMQ" className="staticCard" bordered={false}>
+                    <Card
+                      title={intl.get('screen.variantDetails.summaryTab.rdmqTable.title')}
+                      className="staticCard"
+                      bordered={false}
+                    >
                       <Table
                         rowKey={() => shortid.generate()}
                         pagination={false}
                         locale={{
-                          emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                          emptyText: (
+                            <Empty
+                              image={false}
+                              description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                            />),
                         }}
                         dataSource={this.getInternalCohortFrequencies()}
                         columns={internalCohortsFrequenciesColumnPreset.map(
@@ -1103,12 +1126,20 @@ class VariantDetailsScreen extends React.Component {
                     </Card>
                   </Col>
                   <Col span={12}>
-                    <Card title="Cohortes externes" className="staticCard" bordered={false}>
+                    <Card
+                      title={intl.get('screen.variantDetails.summaryTab.externalCohortsTable.title')}
+                      className="staticCard"
+                      bordered={false}
+                    >
                       <Table
                         rowKey={() => shortid.generate()}
                         pagination={false}
                         locale={{
-                          emptyText: (<Empty image={null} description="Aucune donnée disponible" />),
+                          emptyText: (
+                            <Empty
+                              image={null}
+                              description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                            />),
                         }}
                         dataSource={this.getExternalCohortFrequencies()}
                         columns={externalCohortsFrequenciesColumnPreset.map(
@@ -1159,12 +1190,19 @@ class VariantDetailsScreen extends React.Component {
                   </Col>
                 </Row>
                 <Row type="flex" className="AssCondTable">
-                  <Card title="Association/Condition" className="staticCard" bordered={false}>
+                  <Card
+                    title={intl.get('screen.variantDetails.summaryTab.assCondTable.title')}
+                    className="staticCard"
+                    bordered={false}
+                  >
                     <Table
                       rowKey={() => shortid.generate()}
                       pagination={false}
                       locale={{
-                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                        emptyText: (<Empty
+                          image={false}
+                          description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                        />),
                       }}
                       dataSource={this.getAssociationData()}
                       columns={associationColumnPreset.map(
@@ -1178,12 +1216,19 @@ class VariantDetailsScreen extends React.Component {
                   <Col>{ header('OMIM') }</Col>
                 </Row>
                 <Row type="flex" className="omimTable">
-                  <Card title="OMIM" className="staticCard" bordered={false}>
+                  <Card
+                    title={intl.get('screen.variantDetails.summaryTab.omimTable.title')}
+                    className="staticCard"
+                    bordered={false}
+                  >
                     <Table
                       rowKey={() => shortid.generate()}
                       pagination={false}
                       locale={{
-                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                        emptyText: (<Empty
+                          image={false}
+                          description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                        />),
                       }}
                       dataSource={this.getOmimData()}
                       columns={omimColumnPreset.map(
@@ -1193,12 +1238,19 @@ class VariantDetailsScreen extends React.Component {
                   </Card>
                 </Row>
                 <Row type="flex" className="hpoTable">
-                  <Card title="Human Phenotype Ontology (HPO)" className="staticCard" bordered={false}>
+                  <Card
+                    title={intl.get('screen.variantDetails.summaryTab.hpoTable.title')}
+                    className="staticCard"
+                    bordered={false}
+                  >
                     <Table
                       rowKey={() => shortid.generate()}
                       pagination={false}
                       locale={{
-                        emptyText: (<Empty image={false} description="Aucune donnée disponible" />),
+                        emptyText: (<Empty
+                          image={false}
+                          description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                        />),
                       }}
                       dataSource={this.getHPODataSource()}
                       columns={HPOColumnPreset.map(columnPresetToColumn)}
@@ -1220,12 +1272,11 @@ class VariantDetailsScreen extends React.Component {
             >
               <div className="page-static-content">
                 <Row type="flex" gutter={32}>
-                  <Card title="Patients" className="staticCard" bordered={false}>
+                  <Card title={intl.get('screen.variantDetails.patientsTab.title')} className="staticCard" bordered={false}>
                     <Row>
                       <Col>
                         <div>
-                          { `${this.getDonors().length
-                          } patient(s) sont porteur(s) de ce variant` }
+                          { intl.get('screen.variantDetails.patientsTab.count', { qty: this.getDonors().length }) }
                         </div>
                       </Col>
                     </Row>
