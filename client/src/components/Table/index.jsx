@@ -245,6 +245,7 @@ class DataTable extends React.Component {
 
     return (
       <Table
+        className="data-table"
         key={shortid.generate()}
         rowKey={() => shortid.generate()}
         numRows={rowsCount}

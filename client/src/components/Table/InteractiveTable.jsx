@@ -410,22 +410,20 @@ class InteractiveTable extends React.Component {
           </>
         ) }
         <Row>
-          <Col>
-            <DataTable
-              size={size}
-              total={total}
-              enableResizing={isResizable}
-              enableReordering={(isReorderable && columnReordererIsActive)}
-              reorderColumnsCallback={this.handleColumnsReordered}
-              resizeColumnsCallback={this.handleColumnResized}
-              onColumnWidthChanged={onColumnWidthChanged}
-              getData={getData}
-              numFrozenColumns={numFrozenColumns}
-              columns={filteredColumns}
-              enableGhostCells
-              rowHeights={rowHeights}
-            />
-          </Col>
+          <DataTable
+            size={size}
+            total={total}
+            enableResizing={isResizable}
+            enableReordering={(isReorderable && columnReordererIsActive)}
+            reorderColumnsCallback={this.handleColumnsReordered}
+            resizeColumnsCallback={this.handleColumnResized}
+            onColumnWidthChanged={onColumnWidthChanged}
+            getData={getData}
+            numFrozenColumns={numFrozenColumns}
+            columns={filteredColumns}
+            enableGhostCells
+            rowHeights={rowHeights}
+          />
         </Row>
         <br />
         <Row>
