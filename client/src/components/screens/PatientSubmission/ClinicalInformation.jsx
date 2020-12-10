@@ -77,19 +77,19 @@ const HpoHiddenFields = ({
 );
 
 const INITIAL_TREE_ROOTS = [
-  { key: 'HP:0001197', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001197'), is_leaf: false },
-  { key: 'HP:0001507', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001507'), is_Leaf: false },
-  { key: 'HP:0000478', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000478'), is_leaf: false },
-  { key: 'HP:0001574', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001574'), is_leaf: false },
-  { key: 'HP:0012519', title: intl.get('form.patientSubmission.clinicalInformation.HP:0012519'), is_leaf: false },
-  { key: 'HP:0001626', title: intl.get('form.patientSubmission.clinicalInformation.HP:0001626'), is_leaf: false },
-  { key: 'HP:0002086', title: intl.get('form.patientSubmission.clinicalInformation.HP:0002086'), is_leaf: false },
-  { key: 'HP:0000924', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000924'), is_leaf: false },
-  { key: 'HP:0003011', title: intl.get('form.patientSubmission.clinicalInformation.HP:0003011'), is_leaf: false },
-  { key: 'HP:0000119', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000119'), is_leaf: false },
-  { key: 'HP:0025031', title: intl.get('form.patientSubmission.clinicalInformation.HP:0025031'), is_leaf: false },
-  { key: 'HP:0000152', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000152'), is_leaf: false },
-  { key: 'HP:0000707', title: intl.get('form.patientSubmission.clinicalInformation.HP:0000707'), is_leaf: false },
+  { key: 'HP:0001197', title: 'Abnormality of prenatal development or birth', is_leaf: false },
+  { key: 'HP:0001507', title: 'Growth abnormality', is_Leaf: false },
+  { key: 'HP:0000478', title: 'Abnormality of the eye', is_leaf: false },
+  { key: 'HP:0001574', title: 'Abnormality of the ear', is_leaf: false },
+  { key: 'HP:0012519', title: 'Hypoplastic posterior communicating artery', is_leaf: false },
+  { key: 'HP:0001626', title: 'Abnormality of the cardiovascular system', is_leaf: false },
+  { key: 'HP:0002086', title: 'Abnormality of the respiratory system', is_leaf: false },
+  { key: 'HP:0000924', title: 'Abnormality of the skeletal system', is_leaf: false },
+  { key: 'HP:0003011', title: 'Abnormality of the musculature', is_leaf: false },
+  { key: 'HP:0000119', title: 'Abnormality of the genitourinary system', is_leaf: false },
+  { key: 'HP:0025031', title: 'Abnormal digestive system', is_leaf: false },
+  { key: 'HP:0000152', title: 'Abnormality of head or neck', is_leaf: false },
+  { key: 'HP:0000707', title: 'Abnormality of the nervous system', is_leaf: false },
 ];
 
 class ClinicalInformation extends React.Component {
