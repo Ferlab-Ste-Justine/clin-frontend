@@ -230,7 +230,7 @@ const fr = {
   'screen.patientvariant.filter_impact.description': 'Ceci est une description',
   'screen.patientvariant.filter_chromosome': 'Chromosome',
   'screen.patientvariant.filter_chromosome.description': 'Ceci est une description',
-  'screen.patientvariant.category_genomic': 'Génomique',
+  'screen.patientvariant.category_genomic': 'Gènes',
   'screen.patientvariant.filter_gene_symbol': 'Gene',
   'screen.patientvariant.filter_gene_type': 'Type de gène',
   'screen.patientvariant.filter_gene_type.description': 'Ceci est une description',
