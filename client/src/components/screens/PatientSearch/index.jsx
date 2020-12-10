@@ -291,9 +291,8 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
-  handlePageChange(page) {
+  handlePageChange(page, size) {
     const { actions, search } = this.props;
-    const { size } = this.state;
     this.setState({
       page,
     });

@@ -219,9 +219,9 @@ class InteractiveTable extends React.Component {
     }
   }
 
-  handlePageChange(next) {
+  handlePageChange(next, size) {
     const { pageChangeCallback } = this.props;
-    pageChangeCallback(next);
+    pageChangeCallback(next, size);
   }
 
   handlePageSizeChange(current, next) {
