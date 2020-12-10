@@ -314,6 +314,7 @@ class InteractiveTable extends React.Component {
       isReportAvailable,
       canCreateReport,
       onColumnWidthChanged,
+      sizeOptions,
     } = this.props;
     const {
       orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -430,6 +431,7 @@ class InteractiveTable extends React.Component {
         <Row>
           <Col align="end">
             <DataTablePagination
+              sizeOptions={sizeOptions}
               size={size}
               total={total}
               page={page}
@@ -469,6 +471,7 @@ InteractiveTable.propTypes = {
   rowHeights: PropTypes.array,
   defaultColumnsOrder: PropTypes.array,
   onColumnWidthChanged: PropTypes.func,
+  sizeOptions: PropTypes.array,
 };
 
 InteractiveTable.defaultProps = {
@@ -493,6 +496,7 @@ InteractiveTable.defaultProps = {
   columnsOrderUpdated: null,
   columnsReset: () => { },
   rowHeights: null,
+  sizeOptions: undefined,
 };
 
 export default InteractiveTable;

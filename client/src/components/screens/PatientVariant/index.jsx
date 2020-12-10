@@ -54,6 +54,8 @@ import { userShape } from '../../../reducers/user';
 const VARIANT_TAB = 'VARIANTS';
 const GENE_TAB = 'GENES';
 
+const PAGE_SIZE_OPTIONS = ['15', '25', '50', '100', '200'];
+
 const COLUMN_WIDTHS = {
   MUTATION_ID: 200,
   TYPE: 100,
@@ -781,12 +783,11 @@ class PatientVariantScreen extends React.Component {
     actions.navigateToVariantDetailsScreen(mutationId, 'patients');
   }
 
-  handlePageChange(page) {
+  handlePageChange(page, size) {
     const { patient, variant, actions } = this.props;
     const {
       draftQueries, activeQuery,
     } = variant;
-    const { size } = this.state;
     const { id } = patient.patient.parsed;
 
     this.setState({
@@ -808,7 +809,7 @@ class PatientVariantScreen extends React.Component {
       draftQueries, activeQuery,
     } = variant;
     const { page } = this.state;
-    const { id } = patient.details;
+    const { id } = patient.patient.parsed;
 
     this.setState({
       size,
@@ -827,7 +828,6 @@ class PatientVariantScreen extends React.Component {
     const { actions } = this.props;
     this.setState({
       page: 1,
-      size: 15,
     }, () => {
       actions.selectQuery(key);
     });
@@ -838,7 +838,6 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 15,
     }, () => {
       actions.replaceQuery(query.data || query);
     });
@@ -849,7 +848,6 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 15,
     }, () => {
       actions.replaceQueries(queries);
     });
@@ -860,7 +858,6 @@ class PatientVariantScreen extends React.Component {
     this.handleCommitHistory();
     this.setState({
       page: 1,
-      size: 15,
     }, () => {
       actions.removeQuery(keys);
     });
@@ -1181,6 +1178,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
+                  sizeOptions={PAGE_SIZE_OPTIONS}
                   onColumnWidthChanged={this.onVariantColumnWidthChanged}
                   schema={columnPreset[VARIANT_TAB]}
                   pageChangeCallback={this.handlePageChange}
@@ -1203,6 +1201,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
+                  sizeOptions={PAGE_SIZE_OPTIONS}
                   schema={columnPreset[GENE_TAB]}
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
