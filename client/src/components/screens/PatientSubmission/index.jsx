@@ -865,7 +865,8 @@ function PatientSubmissionScreen(props) {
       text={`${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`}
     >
       <div className="page3__autocomplete">
-        <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given } – { practitioner.license }
+        <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given }
+        { practitioner.license != null && practitioner.license.length > 0 && <> – { practitioner.license }</> }
       </div>
     </AutoComplete.Option>
   ));
