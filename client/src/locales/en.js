@@ -228,7 +228,7 @@ const en = {
   'screen.patientvariant.filter_impact.description': 'This is a description',
   'screen.patientvariant.filter_chromosome': 'Chromosome',
   'screen.patientvariant.filter_chromosome.description': 'This is a description',
-  'screen.patientvariant.category_genomic': 'Genomics',
+  'screen.patientvariant.category_genomic': 'Genes',
   'screen.patientvariant.filter_gene_symbol': 'Gene',
   'screen.patientvariant.filter_gene_type': 'Gene Type',
   'screen.patientvariant.filter_gene_type.description': 'This is a description',
