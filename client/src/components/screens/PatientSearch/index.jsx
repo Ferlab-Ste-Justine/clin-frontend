@@ -321,7 +321,6 @@ class PatientSearchScreen extends React.Component {
   handleColumnsReset() {
     const { actions } = this.props;
     actions.updateUserColumnsReset();
-    window.location.reload();
   }
 
   handlePageSizeChange(size) {
