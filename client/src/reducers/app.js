@@ -13,6 +13,14 @@ import * as actions from '../actions/type';
 export const initialAppState = {
   showLoadingAnimation: false,
   showSubloadingAnimation: false,
+  subLoading: {
+    main: false,
+    patientSearch: false,
+    patientFetch: false,
+    patientVariantSearch: false,
+    patientVariantCount: false,
+    variantSchema: false,
+  },
   locale: {
     lang: null,
     antd: null,
@@ -25,6 +33,14 @@ export const initialAppState = {
 export const appShape = {
   showLoadingAnimation: PropTypes.bool.isRequired,
   showSubloadingAnimation: PropTypes.bool.isRequired,
+  subLoading: {
+    main: PropTypes.bool.isRequired,
+    patientSearch: PropTypes.bool.isRequired,
+    patientFetch: PropTypes.bool.isRequired,
+    patientVariantSearch: PropTypes.bool.isRequired,
+    patientVariantCount: PropTypes.bool.isRequired,
+    variantSchema: PropTypes.bool.isRequired,
+  },
   locale: PropTypes.shape({
     lang: PropTypes.string,
     antd: PropTypes.shape({}),
@@ -71,26 +87,46 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
     case actions.NAVIGATION_SUBMISSION_SCREEN_FAILED:
       break;
     case actions.START_SUBLOADING_ANIMATION:
+      draft.subLoading.main = true;
+      break;
     case actions.PATIENT_SEARCH_REQUESTED:
+      draft.subLoading.patientSearch = true;
+      break;
     case actions.PATIENT_FETCH_REQUESTED:
+      draft.subLoading.patientFetch = true;
+      break;
     case actions.PATIENT_VARIANT_SEARCH_REQUESTED:
+      draft.subLoading.patientVariantSearch = true;
+      break;
     case actions.PATIENT_VARIANT_COUNT_REQUESTED:
+      draft.subLoading.patientVariantCount = true;
+      break;
     case actions.VARIANT_SCHEMA_REQUESTED:
-      draft.showSubloadingAnimation = true;
+      draft.subLoading.variantSchema = true;
       break;
 
     case actions.STOP_SUBLOADING_ANIMATION:
+      draft.subLoading.main = false;
+      break;
     case actions.PATIENT_SEARCH_SUCCEEDED:
     case actions.PATIENT_SEARCH_FAILED:
+      draft.subLoading.patientSearch = false;
+      break;
     case actions.PATIENT_FETCH_SUCCEEDED:
     case actions.PATIENT_FETCH_FAILED:
+      draft.subLoading.patientFetch = false;
+      break;
     case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
     case actions.PATIENT_VARIANT_SEARCH_FAILED:
+      draft.subLoading.patientVariantSearch = false;
+      break;
     case actions.PATIENT_VARIANT_COUNT_SUCCEEDED:
     case actions.PATIENT_VARIANT_COUNT_FAILED:
+      draft.subLoading.patientVariantCount = false;
+      break;
     case actions.VARIANT_SCHEMA_SUCCEEDED:
     case actions.VARIANT_SCHEMA_FAILED:
-      draft.showSubloadingAnimation = false;
+      draft.subLoading.variantSchema = false;
       break;
 
     case actions.APP_CHANGE_LANGUAGE_REQUESTED:

@@ -21,7 +21,6 @@ import VariantNavigation from './components/VariantNavigation';
 import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
 import exportToExcel from '../../../helpers/excel/export';
 
-import { appShape } from '../../../reducers/app';
 import { variantShape } from '../../../reducers/variant';
 import Statement from '../../Query/Statement';
 import {
@@ -51,6 +50,7 @@ import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../.
 import './style.scss';
 import style from './style.module.scss';
 import { userShape } from '../../../reducers/user';
+import { getIsSubLoading } from '../../../selectors/app';
 
 const VARIANT_TAB = 'VARIANTS';
 const GENE_TAB = 'GENES';
@@ -1028,9 +1028,8 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const {
-      app, variant, patient, user, actions,
+      variant, patient, user, actions, isSubLoading,
     } = this.props;
-    const { showSubloadingAnimation } = app;
     const {
       draftQueries, draftHistory, originalQueries, facets, schema, activeQuery,
       activeStatementId, activeStatementTotals, statements,
@@ -1176,7 +1175,7 @@ class PatientVariantScreen extends React.Component {
               { currentTab === VARIANT_TAB && (
                 <InteractiveTable
                   key="variant-interactive-table"
-                  isLoading={showSubloadingAnimation}
+                  isLoading={isSubLoading}
                   size={size}
                   page={page}
                   total={total}
@@ -1199,7 +1198,7 @@ class PatientVariantScreen extends React.Component {
               { currentTab === GENE_TAB && (
                 <InteractiveTable
                   key="gene-interactive-table"
-                  isLoading={showSubloadingAnimation}
+                  isLoading={isSubLoading}
                   size={size}
                   page={page}
                   total={total}
@@ -1219,7 +1218,6 @@ class PatientVariantScreen extends React.Component {
 }
 
 PatientVariantScreen.propTypes = {
-  app: PropTypes.shape(appShape).isRequired,
   user: PropTypes.shape(userShape).isRequired,
   patient: PropTypes.shape({}).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
@@ -1258,6 +1256,7 @@ const mapStateToProps = (state) => ({
   user: state.user,
   patient: state.patient,
   variant: state.variant,
+  isSubLoading: getIsSubLoading(state),
 });
 
 export default connect(

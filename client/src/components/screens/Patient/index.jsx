@@ -28,6 +28,7 @@ import {
 import '../../../style/themes/antd-clin-theme.css';
 import './style.scss';
 import Layout from '../../Layout';
+import { getIsSubLoading } from '../../../selectors/app';
 
 const columnPresetToColumn = (c) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
@@ -279,12 +280,12 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      app, router, patient, consultation, prescriptions,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      app, router, patient, consultation, prescriptions, isSubLoading,
     } = this.props;
     const {
       requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset, modalVisibility,
     } = this.state;
-    const { showSubloadingAnimation } = app;
     const { hash } = router.location;
     const { TextArea } = Input;
     const { Title } = Typography;
@@ -340,7 +341,7 @@ class PatientScreen extends React.Component {
     };
     return (
       <Layout>
-        <Spin spinning={showSubloadingAnimation}>
+        <Spin spinning={isSubLoading}>
           { patient != null && patient.id != null && patient.id.length > 0
             && (
               <div className="patientPage">
@@ -627,6 +628,7 @@ const mapStateToProps = (state) => ({
   consultation: state.patient.consultation.map((cons) => cons.parsed),
   fmhs: state.patient.fmhs.map((fmh) => fmh.parsed),
   hpos: state.patient.hpos.map((hpo) => hpo.parsed),
+  isSubLoading: getIsSubLoading(state),
 });
 
 export default connect(

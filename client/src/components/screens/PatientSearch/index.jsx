@@ -25,8 +25,8 @@ import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
 import { updateUserColumns, updateUserColumnsOrder, updateUserColumnsReset } from '../../../actions/user';
-import { appShape } from '../../../reducers/app';
 import Layout from '../../Layout';
+import { getIsSubLoading } from '../../../selectors/app';
 
 class PatientSearchScreen extends React.Component {
   constructor(props) {
@@ -406,11 +406,11 @@ class PatientSearchScreen extends React.Component {
 
   render() {
     const {
-      app, search, defaultColumns, defaultColumnsOrder,
+      search, defaultColumns, defaultColumnsOrder, isSubLoading,
     } = this.props;
     const { patient } = search;
     const { total } = patient;
-    const { showSubloadingAnimation } = app;
+
     const {
       size, page, isFacetOpen, facet,
     } = this.state;
@@ -562,7 +562,7 @@ class PatientSearchScreen extends React.Component {
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     exportCallback={this.exportToTsv}
                     numFrozenColumns={1}
-                    isLoading={showSubloadingAnimation}
+                    isLoading={isSubLoading}
                     rowHeights={rowHeights}
                     columnsUpdated={this.handleColumnsUpdated}
                     columnsOrderUpdated={this.handleColumnsOrderUpdated}
@@ -579,7 +579,6 @@ class PatientSearchScreen extends React.Component {
 }
 
 PatientSearchScreen.propTypes = {
-  app: PropTypes.shape(appShape).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
   defaultColumns: PropTypes.array,
@@ -604,6 +603,7 @@ const mapStateToProps = (state) => ({
   search: state.search,
   defaultColumns: state.user.columns,
   defaultColumnsOrder: state.user.columnsOrder,
+  isSubLoading: getIsSubLoading(state),
 });
 
 PatientSearchScreen.defaultProps = {
