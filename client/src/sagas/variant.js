@@ -1,7 +1,7 @@
 import {
   all, put, takeLatest, select,
 } from 'redux-saga/effects';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, last } from 'lodash';
 import intl from 'react-intl-universal';
 
 import * as actionTypes from '../actions/type';
@@ -230,6 +230,13 @@ function* fetchGenebyAutocomplete(action) {
   }
 }
 
+function* createNewQuery() {
+  yield put({ type: actionTypes.PATIENT_VARIANT_QUERY_CREATION_SUCCEEDED });
+
+  const { draftQueries } = yield select((state) => state.variant);
+  yield put({ type: actionTypes.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: last(draftQueries).key } });
+}
+
 function* watchVariantSchemaFetch() {
   yield takeLatest(actionTypes.VARIANT_SCHEMA_REQUESTED, fetchSchema);
 }
@@ -282,6 +289,10 @@ function* watchGeneByAutocomplete() {
   yield takeLatest(actionTypes.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_REQUESTED, fetchGenebyAutocomplete);
 }
 
+function* watchNewQueryCreation() {
+  yield takeLatest(actionTypes.PATIENT_VARIANT_QUERY_CREATION_REQUESTED, createNewQuery);
+}
+
 function* watchRefreshCount() {
   yield takeLatest([
     actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
@@ -292,6 +303,7 @@ function* watchRefreshCount() {
     actionTypes.PATIENT_VARIANT_QUERY_REMOVAL,
     actionTypes.PATIENT_VARIANT_QUERY_REPLACEMENT,
     actionTypes.PATIENT_VARIANT_QUERIES_REPLACEMENT,
+    actionTypes.PATIENT_VARIANT_QUERY_CREATION_SUCCEEDED,
   ], refreshCount);
 }
 
@@ -340,5 +352,6 @@ export default function* watchedVariantSagas() {
     watchRefreshResults(),
     watchRefreshFacets(),
     watchGeneByAutocomplete(),
+    watchNewQueryCreation(),
   ]);
 }
