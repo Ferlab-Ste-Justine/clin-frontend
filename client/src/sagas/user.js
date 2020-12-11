@@ -64,6 +64,15 @@ function* updateUserProfile(action) {
   }
 }
 
+function* columnsReset() {
+  try {
+    yield put({ type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET });
+    yield put({ type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET_FAILED });
+  }
+}
+
 function* watchUserLogout() {
   yield takeLatest(actions.USER_LOGOUT_REQUESTED, logout);
 }
@@ -80,11 +89,16 @@ function* watchUpdateUserProfile() {
   yield takeLatest(actions.USER_PROFILE_UPDATE_REQUESTED, updateUserProfile);
 }
 
+function* watchColumnsReset() {
+  yield takeLatest(actions.USER_PROFILE_UPDATE_COLUMNS_RESET_REQUESTED, columnsReset);
+}
+
 export default function* watchedUserSagas() {
   yield all([
     watchUserIdentity(),
     watchUserLogout(),
     watchGetUserProfile(),
     watchUpdateUserProfile(),
+    watchColumnsReset(),
   ]);
 }

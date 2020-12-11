@@ -6,7 +6,7 @@ import {
   Row, Col, Button, Checkbox, Popover, Card, Spin, Input,
 } from 'antd';
 import {
-  cloneDeep, isEqual, filter, pullAll, findIndex, find,
+  cloneDeep, isEqual, filter, pullAll, findIndex, find, debounce,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
@@ -126,11 +126,16 @@ class InteractiveTable extends React.Component {
     });
   }
 
+  getVisibleColumns() {
+    const { defaultVisibleColumns } = this.props;
+    const orderedColumns = this.getOrderedColumns();
+    return defaultVisibleColumns.length > 0 ? defaultVisibleColumns : orderedColumns.map((column) => column.label);
+  }
+
   handleResetColumnSelector() {
     if (this.isSelectable()) {
-      const { defaultVisibleColumns } = this.props;
       const orderedColumns = this.getOrderedColumns();
-      const visibleColumns = defaultVisibleColumns.length > 0 ? defaultVisibleColumns : orderedColumns.map((column) => column.label);
+      const visibleColumns = this.getVisibleColumns();
 
       this.setState({
         visibleColumns,
@@ -145,9 +150,8 @@ class InteractiveTable extends React.Component {
     const { columnsReset } = this.props;
     if (columnsReset != null) {
       columnsReset();
-    } else {
-      this.handleResetColumnSelector();
     }
+    debounce(this.handleResetColumnSelector, 1000)();
   }
 
   handleSearchColumnByQuery(e) {
@@ -317,8 +321,12 @@ class InteractiveTable extends React.Component {
       sizeOptions,
     } = this.props;
     const {
-      orderedColumns, visibleColumns, matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
+      matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
     } = this.state;
+
+    const orderedColumns = this.getOrderedColumns();
+    const visibleColumns = this.getVisibleColumns();
+
     const isResizable = this.isResizable();
     const isReorderable = this.isReorderable();
     const isSelectable = this.isSelectable();
