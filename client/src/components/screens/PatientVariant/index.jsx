@@ -30,6 +30,7 @@ import {
   createDraftStatement,
   createStatement,
   deleteStatement,
+  createQuery,
   duplicateQuery,
   duplicateStatement,
   fetchSchema,
@@ -1027,7 +1028,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const {
-      app, variant, patient, user,
+      app, variant, patient, user, actions,
     } = this.props;
     const { showSubloadingAnimation } = app;
     const {
@@ -1148,6 +1149,7 @@ class PatientVariantScreen extends React.Component {
             onSelectCallback={this.handleQuerySelection}
             onSortCallback={this.handleStatementSort}
             onEditCallback={this.handleQueryChange}
+            onNewQueryCallback={() => actions.createQuery()}
             onBatchEditCallback={this.handleQueriesChange}
             onRemoveCallback={this.handleQueriesRemoval}
             onDuplicateCallback={this.handleQueryDuplication}
@@ -1229,6 +1231,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchSchema,
     selectQuery,
     replaceQuery,
+    createQuery,
     replaceQueries,
     removeQuery,
     duplicateQuery,

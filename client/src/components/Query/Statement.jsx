@@ -84,7 +84,6 @@ class Statement extends React.Component {
     this.handleCheckAllQueries = this.handleCheckAllQueries.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleRemoveChecked = this.handleRemoveChecked.bind(this);
-    this.handleNewQuery = this.handleNewQuery.bind(this);
     this.handleCombine = this.handleCombine.bind(this);
     this.findQueryIndexForKey = this.findQueryIndexForKey.bind(this);
     this.findQueryTitle = this.findQueryTitle.bind(this);
@@ -536,24 +535,6 @@ class Statement extends React.Component {
       queriesAreAllChecked: false,
     }, () => {
       onRemoveCallback(keysToRemove);
-    });
-  }
-
-  handleNewQuery(event, query = null) {
-    const { onEditCallback, onSelectCallback } = this.props;
-    const { display } = this.state;
-
-    const newQuery = query || {
-      key: uuidv1(),
-      instructions: [],
-    };
-    const newDisplay = cloneDeep(this.props.display);
-    display.push(newDisplay);
-    this.setState({
-      display,
-    }, () => {
-      onEditCallback(newQuery);
-      onSelectCallback(newQuery.key);
     });
   }
 
@@ -1048,7 +1029,7 @@ class Statement extends React.Component {
             }
           </div>
           <div className={styleStatement.footer}>
-            <Button type="primary" disabled={containsEmptyQueries} onClick={this.handleNewQuery} className={styleStatement.newQueryButton}>
+            <Button type="primary" disabled={containsEmptyQueries} onClick={() => this.props.onNewQueryCallback()} className={styleStatement.newQueryButton}>
               <IconKit size={20} icon={ic_add} />
               {newQueryText}
             </Button>
@@ -1116,6 +1097,7 @@ Statement.propTypes = {
   target: PropTypes.shape({}),
   onSelectCallback: PropTypes.func,
   onEditCallback: PropTypes.func,
+  onNewQueryCallback: PropTypes.func,
   onSortCallback: PropTypes.func,
   onRemoveCallback: PropTypes.func,
   onDuplicateCallback: PropTypes.func,
@@ -1152,6 +1134,7 @@ Statement.defaultProps = {
   externalData: {},
   onSelectCallback: () => {},
   onEditCallback: () => {},
+  onNewQueryCallback: () => {},
   onSortCallback: () => {},
   onRemoveCallback: () => {},
   onDuplicateCallback: () => {},

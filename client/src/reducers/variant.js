@@ -48,11 +48,22 @@ export const variantShape = {
 };
 
 export const DRAFT_STATEMENT_UID = 'draft';
+
+const createNewQuery = (
+  title = intl.get('screen.patientvariant.query.title.increment', { count: 1 }),
+  key = uuidv1(),
+  instructions = [],
+) => ({
+  key,
+  title,
+  instructions,
+});
+
 const createDraftStatement = (title, description = '', queries = null) => ({
   uid: DRAFT_STATEMENT_UID,
   title,
   description,
-  queries: queries || [{ key: uuidv1(), title: intl.get('screen.patientvariant.query.title.increment', { count: 1 }), instructions: [] }],
+  queries: queries || [createNewQuery()],
 });
 
 const variantReducer = (state = ({ ...initialVariantState }), action) => produce(state, (draft) => {
@@ -136,6 +147,14 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
           draft.activeStatementTotals[keyToDuplicate] = action.payload.count;
         }
       }
+      break;
+
+    case actions.PATIENT_VARIANT_QUERY_CREATION_SUCCEEDED:
+      draft.draftQueries.push(
+        createNewQuery(
+          intl.get('screen.patientvariant.query.title.increment', { count: draft.draftQueries.length + 1 }),
+        ),
+      );
       break;
 
     case actions.PATIENT_VARIANT_QUERY_REPLACEMENT:

@@ -41,6 +41,10 @@ export const duplicateQuery = (query, index, count) => ({
   },
 });
 
+export const createQuery = () => ({
+  type: actions.PATIENT_VARIANT_QUERY_CREATION_REQUESTED,
+});
+
 export const sortStatement = (statement) => ({
   type: actions.PATIENT_VARIANT_STATEMENT_SORT,
   payload: {
