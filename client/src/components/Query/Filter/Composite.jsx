@@ -399,9 +399,8 @@ class CompositeFilter extends React.Component {
     if (!vals.length) return;
     if (vals.length === 2 && vals[0].value === vals[1].value) return;
 
-    this.setState({ draft: draftClone }, () => {
-      onEditCallback(filterArg);
-    });
+    this.setState({ draft: draftClone });
+    onEditCallback(filterArg);
   }
 
   render() {
