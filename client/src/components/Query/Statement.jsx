@@ -351,7 +351,7 @@ class Statement extends React.Component {
         statementTitle: null,
       });
     }
-    this.toggleMenu(dropDownIsOpen);
+    
     onDeleteStatementCallback(id);
     value.currentTarget ? value.stopPropagation() : null; /* eslint-disable-line */
   }
