@@ -433,6 +433,7 @@ const en = {
   'screen.patientvariant.navigation.id': 'ID',
   'screen.patientvariant.navigation.geneId': 'Gene ID',
   'screen.patientvariant.navigation.importList': 'Import list',
+  'screen.variantsearch.table.select': 'Select',
   'screen.variantsearch.table.variant': 'Variant',
   'screen.variantsearch.table.variantType': 'Type',
   'screen.variantsearch.table.geneSymbol': 'Gene',

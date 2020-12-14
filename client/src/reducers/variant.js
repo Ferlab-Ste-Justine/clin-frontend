@@ -12,6 +12,15 @@ import { normalizePatientDetails } from '../helpers/struct.ts';
 import { INSTRUCTION_TYPE_SUBQUERY } from '../components/Query/Subquery';
 import { sanitizeInstructions } from '../components/Query/helpers/query';
 
+import {
+  LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_KEY,
+  LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_ORDER_KEY,
+  PATIENT_VARIANT_STORAGE_KEY,
+  defaultUserVariantColumns,
+  defaultUserVariantColumnsOrder,
+} from '../helpers/search_table_helper.ts';
+import { ClinStorage } from '../helpers/clin_storage';
+
 const MAX_REVISIONS = 10;
 
 export const initialVariantState = {
@@ -28,6 +37,8 @@ export const initialVariantState = {
   defaultStatement: null,
   activeStatementTotals: {},
   geneResult: [],
+  columns: null,
+  columnsOrder: null,
 };
 
 // @TODO
@@ -45,6 +56,8 @@ export const variantShape = {
   defaultStatement: PropTypes.String,
   activeStatementTotals: PropTypes.shape({}),
   geneResult: PropTypes.array,
+  columns: PropTypes.array,
+  columnsOrder: PropTypes.array,
 };
 
 export const DRAFT_STATEMENT_UID = 'draft';
@@ -66,6 +79,19 @@ const createDraftStatement = (title, description = '', queries = null) => ({
   queries: queries || [createNewQuery()],
 });
 
+const retrieveColumns = () => ClinStorage.getArray(LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_KEY, defaultUserVariantColumns,
+  [
+    (columns) => columns.some((str) => !str.startsWith(PATIENT_VARIANT_STORAGE_KEY)),
+  ]);
+
+const retrieveColumnsOrder = () => {
+  const columnsOrder = window.localStorage.getItem(LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_ORDER_KEY);
+  if (columnsOrder != null) {
+    return JSON.parse(columnsOrder);
+  }
+  return defaultUserVariantColumnsOrder;
+};
+
 const variantReducer = (state = ({ ...initialVariantState }), action) => produce(state, (draft) => {
   const { draftQueries, draftHistory } = draft;
   const { payload } = action;
@@ -83,6 +109,11 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
 
     case actions.VARIANT_SCHEMA_SUCCEEDED:
       draft.schema = action.payload.data;
+      break;
+
+    case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED:
+      draft.columns = retrieveColumns();
+      draft.columnsOrder = retrieveColumnsOrder();
       break;
 
     case actions.PATIENT_FETCH_SUCCEEDED:
@@ -307,6 +338,24 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
     case 'PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_SUCCEEDED':
       draft.geneResult = action.payload.data;
       break;
+
+    case actions.PATIENT_VARIANT_UPDATE_COLUMNS:
+      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_KEY, action.payload.columns.join(','));
+      draft.columns = action.payload.columns;
+      break;
+
+    case actions.PATIENT_VARIANT_UPDATE_COLUMNS_ORDER:
+      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_ORDER_KEY, JSON.stringify(action.payload.columnsOrder));
+      draft.columnsOrder = action.payload.columnsOrder;
+      break;
+
+    case actions.PATIENT_VARIANT_RESET_COLUMNS:
+      window.localStorage.removeItem(LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_KEY);
+      window.localStorage.removeItem(LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_ORDER_KEY);
+      draft.columns = retrieveColumns();
+      draft.columnsOrder = retrieveColumnsOrder();
+      break;
+
     default:
       break;
   }

@@ -1053,7 +1053,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const {
-      app, variant, patient, user, defaultColumns, defaultColumnsOrder,
+      app, variant, patient, user, defaultColumns, defaultColumnsOrder, actions,
     } = this.props;
     const { showSubloadingAnimation } = app;
     const {

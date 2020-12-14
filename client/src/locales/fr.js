@@ -433,6 +433,7 @@ const fr = {
   'screen.patientvariant.navigation.id': 'Identifiant',
   'screen.patientvariant.navigation.geneId': 'Identifiant de gêne',
   'screen.patientvariant.navigation.importList': 'Importer une liste',
+  'screen.variantsearch.table.select': 'Selectionner',
   'screen.variantsearch.table.variant': 'Variant',
   'screen.variantsearch.table.variantType': 'Type',
   'screen.variantsearch.table.aaChanges': 'Changements AA',

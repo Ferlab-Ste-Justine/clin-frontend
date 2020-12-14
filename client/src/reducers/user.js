@@ -5,9 +5,12 @@ import * as actions from '../actions/type';
 import {
   LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY,
   LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY,
-  defaultColumns,
-  defaultColumnsOrder,
-} from '../helpers/search_table_helper';
+  PATIENT_SEARCH_STORAGE_KEY,
+  defaultUserSearchColumns,
+  defaultUserSearchColumnsOrder,
+} from '../helpers/search_table_helper.ts';
+
+import { ClinStorage } from '../helpers/clin_storage';
 
 export const initialUserState = {
   username: null,
@@ -36,27 +39,17 @@ export const userShape = {
   columns: PropTypes.array,
 };
 
-const retrieveColumns = () => {
-  const columnsItem = window.localStorage.getItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY);
-  if (columnsItem != null) {
-    const columns = columnsItem.split(',');
-    // Correct the item's content if invalid
-    if (columns.length > 0 && columns.filter((str) => !str.startsWith('screen.patientsearch.table.')).length > 0) {
-      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultColumns.join(','));
-      return defaultColumns;
-    }
-    return columns;
-  }
-  return defaultColumns;
-};
+const retrieveColumns = () => ClinStorage.getArray(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultUserSearchColumns,
+  [
+    (columns) => columns.some((str) => !str.startsWith(PATIENT_SEARCH_STORAGE_KEY)),
+  ]);
 
 const retrieveColumnsOrder = () => {
   const columnsOrder = window.localStorage.getItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY);
-  try {
+  if (columnsOrder != null) {
     return JSON.parse(columnsOrder);
-  } catch (e) {
-    return defaultColumnsOrder;
   }
+  return defaultUserSearchColumnsOrder;
 };
 
 const userReducer = (state = ({ ...initialUserState }), action) => produce(state, (draft) => {
