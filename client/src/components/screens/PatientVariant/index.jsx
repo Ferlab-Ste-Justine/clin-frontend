@@ -44,6 +44,9 @@ import {
   sortStatement,
   undo,
   updateStatement,
+  resetColumns,
+  updateVariantColumns,
+  updateVariantColumnsOrder,
 } from '../../../actions/variant';
 import { updateUserProfile } from '../../../actions/user';
 import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
@@ -317,6 +320,9 @@ class PatientVariantScreen extends React.Component {
     this.handleSelectVariant = this.handleSelectVariant.bind(this);
     this.handleCreateReport = this.handleCreateReport.bind(this);
     this.onVariantColumnWidthChanged = this.onVariantColumnWidthChanged.bind(this);
+    this.handleColumnsUpdated = this.handleColumnsUpdated.bind(this);
+    this.handleColumnsOrderUpdated = this.handleColumnsOrderUpdated.bind(this);
+    this.handleColumnsReset = this.handleColumnsReset.bind(this);
 
     this.state.selectedVariants = {};
 
@@ -325,7 +331,7 @@ class PatientVariantScreen extends React.Component {
       [VARIANT_TAB]: [
         {
           key: 'someKey',
-          label: 'Select',
+          label: 'screen.variantsearch.table.select',
           renderer: createCellRenderer('custom', this.getData, {
             // key: 'mutationId',
             handler: this.handleSelectVariant,
@@ -1026,9 +1032,28 @@ class PatientVariantScreen extends React.Component {
     this.setState({ columnPreset });
   }
 
+  handleColumnsUpdated(columns) {
+    if (columns != null) {
+      const { actions } = this.props;
+      actions.updateVariantColumns(columns);
+    }
+  }
+
+  handleColumnsOrderUpdated(columns) {
+    if (columns != null) {
+      const { actions } = this.props;
+      actions.updateVariantColumnsOrder(columns);
+    }
+  }
+
+  handleColumnsReset() {
+    const { actions } = this.props;
+    actions.resetColumns();
+  }
+
   render() {
     const {
-      app, variant, patient, user, actions,
+      app, variant, patient, user, defaultColumns, defaultColumnsOrder, actions,
     } = this.props;
     const { showSubloadingAnimation } = app;
     const {
@@ -1182,10 +1207,15 @@ class PatientVariantScreen extends React.Component {
                   total={total}
                   sizeOptions={PAGE_SIZE_OPTIONS}
                   onColumnWidthChanged={this.onVariantColumnWidthChanged}
+                  defaultVisibleColumns={defaultColumns}
+                  defaultColumnsOrder={defaultColumnsOrder}
                   schema={columnPreset[VARIANT_TAB]}
                   pageChangeCallback={this.handlePageChange}
                   pageSizeChangeCallback={this.handlePageSizeChange}
                   createReportCallback={this.handleCreateReport}
+                  columnsReset={this.handleColumnsReset}
+                  columnsUpdated={this.handleColumnsUpdated}
+                  columnsOrderUpdated={this.handleColumnsOrderUpdated}
                   isExportable={false}
                   canCreateReport
                   isReportAvailable={reportAvailable}
@@ -1224,6 +1254,8 @@ PatientVariantScreen.propTypes = {
   patient: PropTypes.shape({}).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
+  defaultColumns: PropTypes.array,
+  defaultColumnsOrder: PropTypes.array,
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -1250,6 +1282,9 @@ const mapDispatchToProps = (dispatch) => ({
     selectStatement,
     duplicateStatement,
     updateUserProfile,
+    resetColumns,
+    updateVariantColumns,
+    updateVariantColumnsOrder,
   }, dispatch),
 });
 
@@ -1258,7 +1293,14 @@ const mapStateToProps = (state) => ({
   user: state.user,
   patient: state.patient,
   variant: state.variant,
+  defaultColumns: state.variant.columns,
+  defaultColumnsOrder: state.variant.columnsOrder,
 });
+
+PatientVariantScreen.defaultProps = {
+  defaultColumns: null,
+  defaultColumnsOrder: null,
+};
 
 export default connect(
   mapStateToProps,

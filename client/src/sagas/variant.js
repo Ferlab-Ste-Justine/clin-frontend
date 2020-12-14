@@ -237,6 +237,15 @@ function* createNewQuery() {
   yield put({ type: actionTypes.PATIENT_VARIANT_QUERY_SELECTION, payload: { key: last(draftQueries).key } });
 }
 
+function* columnsReset() {
+  try {
+    yield put({ type: actionTypes.PATIENT_VARIANT_RESET_COLUMNS });
+    yield put({ type: actionTypes.PATIENT_VARIANT_RESET_COLUMNS_SUCCEEDED });
+  } catch (error) {
+    yield put({ type: actionTypes.PATIENT_VARIANT_RESET_COLUMNS_FAILED, payload: { error } });
+  }
+}
+
 function* watchVariantSchemaFetch() {
   yield takeLatest(actionTypes.VARIANT_SCHEMA_REQUESTED, fetchSchema);
 }
@@ -291,6 +300,10 @@ function* watchGeneByAutocomplete() {
 
 function* watchNewQueryCreation() {
   yield takeLatest(actionTypes.PATIENT_VARIANT_QUERY_CREATION_REQUESTED, createNewQuery);
+}
+
+function* watchColumnsReset() {
+  yield takeLatest(actionTypes.PATIENT_VARIANT_RESET_COLUMNS_REQUESTED, columnsReset);
 }
 
 function* watchRefreshCount() {
@@ -353,5 +366,6 @@ export default function* watchedVariantSagas() {
     watchRefreshFacets(),
     watchGeneByAutocomplete(),
     watchNewQueryCreation(),
+    watchColumnsReset(),
   ]);
 }

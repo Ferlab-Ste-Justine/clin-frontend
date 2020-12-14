@@ -152,3 +152,21 @@ export const fetchGenesByAutocomplete = (query, type = 'partial') => ({
     query,
   },
 });
+
+export const updateVariantColumns = (columns) => ({
+  type: actions.PATIENT_VARIANT_UPDATE_COLUMNS,
+  payload: {
+    columns,
+  },
+});
+
+export const updateVariantColumnsOrder = (columnsOrder) => ({
+  type: actions.PATIENT_VARIANT_UPDATE_COLUMNS_ORDER,
+  payload: {
+    columnsOrder,
+  },
+});
+
+export const resetColumns = () => ({
+  type: actions.PATIENT_VARIANT_RESET_COLUMNS_REQUESTED,
+});
