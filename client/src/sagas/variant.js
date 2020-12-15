@@ -1,5 +1,5 @@
 import {
-  all, put, takeLatest, select,
+  all, put, takeLatest, select, takeMaybe,
 } from 'redux-saga/effects';
 import { cloneDeep, last } from 'lodash';
 import intl from 'react-intl-universal';
@@ -348,6 +348,23 @@ function* watchRefreshFacets() {
   ], refreshFacets);
 }
 
+function* readyPage() {
+  yield all([
+    takeMaybe(actionTypes.PATIENT_VARIANT_COUNT_SUCCEEDED),
+    takeMaybe(actionTypes.PATIENT_VARIANT_SEARCH_SUCCEEDED),
+    takeMaybe(actionTypes.PATIENT_VARIANT_FACET_SUCCEEDED),
+  ]);
+  yield put({ type: actionTypes.PATIENT_VARIANT_PAGE_READY });
+}
+
+function* watchRefreshes() {
+  yield takeLatest([
+    actionTypes.PATIENT_VARIANT_COUNT_REQUESTED,
+    actionTypes.PATIENT_VARIANT_SEARCH_REQUESTED,
+    actionTypes.PATIENT_VARIANT_FACET_REQUESTED,
+  ], readyPage);
+}
+
 export default function* watchedVariantSagas() {
   yield all([
     watchVariantSchemaFetch(),
@@ -367,5 +384,6 @@ export default function* watchedVariantSagas() {
     watchGeneByAutocomplete(),
     watchNewQueryCreation(),
     watchColumnsReset(),
+    watchRefreshes(),
   ]);
 }

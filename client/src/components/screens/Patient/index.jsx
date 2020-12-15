@@ -20,7 +20,8 @@ import {
 import PatientVariantScreen from '../PatientVariant';
 import { appShape } from '../../../reducers/app';
 import {
-  navigateToPatientScreen, navigateToPatientVariantScreen,
+  navigateToPatientScreen,
+  navigateToPatientVariantScreen,
   navigateToPatientSearchScreen,
   navigatoToSubmissionWithPatient,
 } from '../../../actions/router';
