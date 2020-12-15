@@ -84,9 +84,8 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
     case actions.PATIENT_SEARCH_FAILED:
     case actions.PATIENT_FETCH_SUCCEEDED:
     case actions.PATIENT_FETCH_FAILED:
-    case actions.PATIENT_VARIANT_SEARCH_SUCCEEDED:
+    case actions.PATIENT_VARIANT_PAGE_READY:
     case actions.PATIENT_VARIANT_SEARCH_FAILED:
-    case actions.PATIENT_VARIANT_COUNT_SUCCEEDED:
     case actions.PATIENT_VARIANT_COUNT_FAILED:
     case actions.VARIANT_SCHEMA_SUCCEEDED:
     case actions.VARIANT_SCHEMA_FAILED:
