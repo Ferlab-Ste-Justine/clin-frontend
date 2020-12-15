@@ -631,7 +631,7 @@ class ClinicalInformation extends React.Component {
           </div>
 
         </Card>
-        <Card title="Histoire familiale" bordered={false} className="staticCard patientContent">
+        <Card title={intl.get('screen.patient.header.familyHistory')} bordered={false} className="staticCard patientContent">
           <div className="familyLines">
             { familyItems }
           </div>

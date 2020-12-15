@@ -301,6 +301,8 @@ class PatientScreen extends React.Component {
     const familyType = intl.get('screen.patient.details.familyType');
     const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
+    const familyHistoryData = this.getFamilyHistory();
+
     const practitionerPopOverText = (info) => (
       <Card title={intl.get('screen.patient.details.practitioner')} bordered={false}>
         <p><span className="popOverName">{ info.name }</span>  | { info.mrn }</p>
@@ -553,16 +555,19 @@ class PatientScreen extends React.Component {
                                   <Col className="clinical__info__value">{ consultation[0].hypothesis }</Col>
                                 </Row>
                               </Card>
-                              <Card title="Histoire familiale" bordered={false} className="staticCard familyHistory">
-                                <Table
-                                  pagination={false}
-                                  columns={familyHistoryColumnPreset.map(
-                                    columnPresetToColumn,
-                                  )}
-                                  dataSource={this.getFamilyHistory()}
-                                  size="small"
-                                />
-                              </Card>
+                              { familyHistoryData.length > 0
+                              && (
+                                <Card title={intl.get('screen.patient.header.familyHistory')} bordered={false} className="staticCard familyHistory">
+                                  <Table
+                                    pagination={false}
+                                    columns={familyHistoryColumnPreset.map(
+                                      columnPresetToColumn,
+                                    )}
+                                    dataSource={familyHistoryData}
+                                    size="small"
+                                  />
+                                </Card>
+                              ) }
                               <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
                                 <Table
                                   pagination={false}
