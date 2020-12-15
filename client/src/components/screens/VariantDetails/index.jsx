@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { v1 as uuidv1 } from 'uuid';
 import {
-  Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Tooltip, Card,
+  Tabs, Button, Row, Col, Typography, Table, Badge, Empty, Tooltip, Card, Tag,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import IconKit from 'react-icons-kit';
@@ -880,32 +880,17 @@ class VariantDetailsScreen extends React.Component {
     }
     return (
       <Layout>
-        <div className="variantPageContent">
+        <div className="variant-page-content">
           <div className="page_headerStaticNoMargin">
-            <div className="headerStaticContent">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0 16C0 7.16344 7.16344 0 16 0C24.8366 0 32 7.16344 32 16C32 24.8366 24.8366 32 16 32C7.16344 32 0 24.8366 0 16Z"
-                  fill="#1D8BC6"
-                />
-                <path
-                  d="M16.0587 20.0146L19.6728 8.88889H22.3883L17.2699 23.1111H14.8767L9.77783 8.88889H12.4836L16.0587 20.0146Z"
-                  fill="#EAF3FA"
-                />
-              </svg>
+            <div className="variant-page-content__header">
               <Tooltip title={data.mutationId} overlayClassName="tooltip">
                 <span>
-                  <Typography.Text className="mutationID">
+                  <Typography.Text className="variant-page-content__header__title">
                     { mutationIdTitle }
                   </Typography.Text>
                 </span>
               </Tooltip>
+              <Tag className="variant-page-content__header__tag" color="purple"> Variant </Tag>
             </div>
           </div>
           <Tabs

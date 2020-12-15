@@ -1,6 +1,26 @@
 @import "./variables.scss";
 
-.variantPageContent {
+.variant-page-content {
+  &__header{
+    display: flex;
+    height: 24px;
+    margin-left: 24px;
+    align-items: center;
+    
+    &__title{
+      font-style: normal;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 28px;
+      letter-spacing: 0.15px;
+      color: #125A90;
+    }
+
+    &__tag{
+      margin-left: 12px;
+    }
+  }
+
   .ant-typography ul{ 
     margin: 0;
     li{
