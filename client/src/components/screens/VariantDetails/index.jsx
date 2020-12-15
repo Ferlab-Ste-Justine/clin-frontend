@@ -880,17 +880,17 @@ class VariantDetailsScreen extends React.Component {
     }
     return (
       <Layout>
-        <div className="variantPageContent">
+        <div className="variant-page-content">
           <div className="page_headerStaticNoMargin">
-            <div className="variantPageContent__header">
+            <div className="variant-page-content__header">
               <Tooltip title={data.mutationId} overlayClassName="tooltip">
                 <span>
-                  <Typography.Text className="variantPageContent__header__title">
+                  <Typography.Text className="variant-page-content__header__title">
                     { mutationIdTitle }
                   </Typography.Text>
                 </span>
               </Tooltip>
-              <Tag className="variantPageContent__header__tag" color="purple"> Variant </Tag>
+              <Tag className="variant-page-content__header__tag" color="purple"> Variant </Tag>
             </div>
           </div>
           <Tabs
