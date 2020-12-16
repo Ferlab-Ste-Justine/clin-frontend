@@ -1,5 +1,5 @@
 import {
-  all, put, takeLatest, select, takeMaybe,
+  all, put, takeLatest, select,
 } from 'redux-saga/effects';
 import { cloneDeep, last } from 'lodash';
 import intl from 'react-intl-universal';
@@ -246,6 +246,10 @@ function* columnsReset() {
   }
 }
 
+function* readyPage() {
+  yield put({ type: actionTypes.PATIENT_VARIANT_PAGE_READY });
+}
+
 function* watchVariantSchemaFetch() {
   yield takeLatest(actionTypes.VARIANT_SCHEMA_REQUESTED, fetchSchema);
 }
@@ -306,6 +310,10 @@ function* watchColumnsReset() {
   yield takeLatest(actionTypes.PATIENT_VARIANT_RESET_COLUMNS_REQUESTED, columnsReset);
 }
 
+function* watchRefreshes() {
+  yield takeLatest(actionTypes.PATIENT_VARIANT_SEARCH_SUCCEEDED, readyPage);
+}
+
 function* watchRefreshCount() {
   yield takeLatest([
     actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED,
@@ -346,23 +354,6 @@ function* watchRefreshFacets() {
     actionTypes.PATIENT_VARIANT_QUERIES_REPLACEMENT,
     actionTypes.PATIENT_VARIANT_QUERY_SELECTION,
   ], refreshFacets);
-}
-
-function* readyPage() {
-  yield all([
-    takeMaybe(actionTypes.PATIENT_VARIANT_COUNT_SUCCEEDED),
-    takeMaybe(actionTypes.PATIENT_VARIANT_SEARCH_SUCCEEDED),
-    takeMaybe(actionTypes.PATIENT_VARIANT_FACET_SUCCEEDED),
-  ]);
-  yield put({ type: actionTypes.PATIENT_VARIANT_PAGE_READY });
-}
-
-function* watchRefreshes() {
-  yield takeLatest([
-    actionTypes.PATIENT_VARIANT_COUNT_REQUESTED,
-    actionTypes.PATIENT_VARIANT_SEARCH_REQUESTED,
-    actionTypes.PATIENT_VARIANT_FACET_REQUESTED,
-  ], readyPage);
 }
 
 export default function* watchedVariantSagas() {
