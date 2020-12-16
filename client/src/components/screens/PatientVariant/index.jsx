@@ -1197,7 +1197,7 @@ class PatientVariantScreen extends React.Component {
             activeKey={currentTab}
             onChange={this.handleTabChange}
           >
-            <Tabs.TabPane tab="Variants" key={VARIANT_TAB}>
+            <Tabs.TabPane tab={`Variants (${size})`} key={VARIANT_TAB}>
               { currentTab === VARIANT_TAB && (
                 <InteractiveTable
                   key="variant-interactive-table"
