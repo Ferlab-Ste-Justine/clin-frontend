@@ -1001,7 +1001,6 @@ class Statement extends React.Component {
                       <IconKit
                         size={20}
                         icon={ic_folder}
-                        onClick={this.duplicateStatement}
                       />
                       {myFilterText}
                     </Button>
