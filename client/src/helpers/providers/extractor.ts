@@ -22,7 +22,9 @@ type Data = {
 
 const PRACTITIONER_NOT_FOUND: PractitionerData = {
   email: 'N/A',
-  name: 'N/A',
+  firstName: 'N/A',
+  lastName: 'N/A',
+  formattedName: 'N/A',
   phone: 'N/A',
   mrn: 'N/A',
   organization: 'N/A',
@@ -124,7 +126,9 @@ export class DataExtractor {
     return {
       organization: get(practMetadata.organization, 'resource.name', 'N/A'),
       mrn: get(practitioner, 'identifier[0].value', 'N/A'),
-      name: `${prefix} ${firstName} ${lastName.toUpperCase()} ${suffix !== 'null' ? suffix : ''}`,
+      firstName,
+      lastName,
+      formattedName: `${prefix} ${firstName} ${lastName.toUpperCase()} ${suffix !== 'null' ? suffix : ''}`,
       email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : 'No email.',
       phone: practMetadata.role != null
         ? `${this.extractPhone(practMetadata.role.telecom)}`
