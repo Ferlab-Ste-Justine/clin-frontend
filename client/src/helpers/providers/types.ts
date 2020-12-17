@@ -27,6 +27,7 @@ export type PractitionerData = {
 };
 
 export type Prescription = {
+  id?: string;
   date: string;
   requester?: PractitionerData;
   performer?: PractitionerData;

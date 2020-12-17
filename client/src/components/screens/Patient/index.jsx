@@ -6,7 +6,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown, Modal, Radio, Input,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import {
@@ -26,9 +26,12 @@ import {
   navigatoToSubmissionWithPatient,
 } from '../../../actions/router';
 
+import { updateServiceRequestStatus } from '../../../actions/patient';
+
 import '../../../style/themes/antd-clin-theme.css';
 import './style.scss';
 import Layout from '../../Layout';
+import StatusChangeModal from './components/StatusChangeModal';
 
 const columnPresetToColumn = (c) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
@@ -38,7 +41,7 @@ class PatientScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalVisibility: false,
+      selectedPrescriptionId: '',
     };
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.getRequest = this.getRequest.bind(this);
@@ -49,6 +52,7 @@ class PatientScreen extends React.Component {
     this.showModal = this.showModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.navigatoToSubmissionWithPatient = this.navigatoToSubmissionWithPatient.bind(this);
+    this.handleOk = this.handleOk.bind(this);
 
     this.state.requestColumnPreset = [
       {
@@ -112,8 +116,16 @@ class PatientScreen extends React.Component {
     ];
   }
 
+  async handleOk(newStatus) {
+    const { actions } = this.props;
+    const { selectedPrescriptionId } = this.state;
+    await actions.updateServiceRequestStatus(selectedPrescriptionId, newStatus);
+    this.setState({ selectedPrescriptionId: '' });
+  }
+
   getRequest() {
     const { prescriptions } = this.props;
+    const { selectedPrescriptionId } = this.state;
 
     const requests = prescriptions.map((prescription) => ({
       status: prescription.status,
@@ -122,6 +134,7 @@ class PatientScreen extends React.Component {
       practitioner: prescription.performer,
       organization: 'LDx CHU Ste-Justine',
       test: prescription.test,
+      id: prescription.id,
     }));
     if (requests) {
       return requests.map((r) => {
@@ -168,10 +181,14 @@ class PatientScreen extends React.Component {
         const menu = (
           <Menu>
             <Menu.Item key="0">
-              <Button type="link" className="dropDownButton" onClick={this.showModal}>
+              <Button type="link" className="dropDownButton" onClick={() => this.showModal(r.id)}>
                 { intl.get('screen.patient.details.changeStatus') }
               </Button>
-
+              <StatusChangeModal
+                isVisible={selectedPrescriptionId === r.id}
+                onOk={this.handleOk}
+                onCancel={this.handleCancel}
+              />
             </Menu.Item>
             <Menu.Item key="1" disabled>
               { intl.get('screen.patient.details.seeDetails') }
@@ -266,15 +283,15 @@ class PatientScreen extends React.Component {
     actions.navigateToPatientScreen(patient.id, tab);
   }
 
-  showModal() {
+  showModal(id) {
     this.setState({
-      modalVisibility: true,
+      selectedPrescriptionId: id,
     });
   }
 
   handleCancel() {
     this.setState({
-      modalVisibility: false,
+      selectedPrescriptionId: '',
     });
   }
 
@@ -283,11 +300,10 @@ class PatientScreen extends React.Component {
       app, router, patient, consultation, prescriptions,
     } = this.props;
     const {
-      requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset, modalVisibility,
+      requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset,
     } = this.state;
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
-    const { TextArea } = Input;
     const { Title } = Typography;
     const mrn = intl.get('screen.patient.details.mrn');
     const ramq = intl.get('screen.patient.details.ramq');
@@ -449,47 +465,6 @@ class PatientScreen extends React.Component {
                               size="small"
                             />
                           </Card>
-                          <Modal
-                            title={intl.get('screen.patient.details.changePrescriptionStatus')}
-                            className="statusModal"
-                            visible={modalVisibility}
-                            onOk={this.handleOk}
-                            onCancel={this.handleCancel}
-                            footer={[
-                              <Button size="small" key="back" onClick={this.handleCancel} className="cancel">
-                                { intl.get('screen.patient.details.cancel') }
-                              </Button>,
-                              <Button size="small" key="submit" type="primary" onClick={this.handleOk} disabled>
-                                { intl.get('screen.patient.details.changeStatus') }
-                              </Button>,
-                            ]}
-                          >
-                            <Radio.Group onChange={this.onChange} className="modalRadio">
-                              <Radio value={1} className="submitted">
-                                { intl.get('screen.patient.details.status.on-hold') }
-                                <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                              </Radio>
-                              <Radio value={2} className="approuved">
-                                { intl.get('screen.patient.details.status.active') }
-                                <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                              </Radio>
-                              <Radio value={3} className="incomplete">
-                                { intl.get('screen.patient.details.status.incompleted') }
-                                <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                                <TextArea rows={1} />
-                              </Radio>
-                              <Radio value={4} className="refused">
-                                { intl.get('screen.patient.details.status.revoked') }
-                                <span className="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-                                <TextArea rows={1} />
-                              </Radio>
-                              <Radio value={5} className="completed">
-                                { intl.get('screen.patient.details.status.completed') }
-                                <span className="description">Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec sed odio dui.</span>
-                              </Radio>
-                            </Radio.Group>
-                          </Modal>
-
                         </Card>
                       </Row>
                     </div>
@@ -622,6 +597,7 @@ const mapDispatchToProps = (dispatch) => ({
     navigateToPatientVariantScreen,
     navigateToPatientSearchScreen,
     navigatoToSubmissionWithPatient,
+    updateServiceRequestStatus,
   }, dispatch),
 });
 

@@ -30,3 +30,11 @@ export const searchPatientsByQuery = (query, page, size) => ({
     size: size || 25,
   },
 });
+
+export const updateServiceRequestStatus = (serviceRequestId, newStatus) => ({
+  type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED,
+  payload: {
+    serviceRequestId,
+    status: newStatus,
+  },
+});

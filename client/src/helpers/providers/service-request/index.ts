@@ -8,10 +8,10 @@ import { Provider, Record } from '../providers.ts';
 export class ServiceRequestProvider extends Provider<ServiceRequest, Prescription> {
   public doProvide(dataExtractor: DataExtractor): Record<ServiceRequest, Prescription> {
     const serviceRequestBundle = dataExtractor.extractBundle('ServiceRequest');
-
     const serviceRequest = dataExtractor.extractResource<ServiceRequest>(serviceRequestBundle, 'ServiceRequest');
 
     const prescription: Prescription = {
+      id: serviceRequest.id,
       date: serviceRequest.authoredOn,
       requester: dataExtractor.getPractitionerDataByReference(serviceRequest, 'requester', serviceRequestBundle)!,
       performer: dataExtractor.getPractitionerDataByReference(serviceRequest, 'performer[0]', serviceRequestBundle)!,

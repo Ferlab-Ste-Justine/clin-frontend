@@ -1,5 +1,5 @@
 import {
-  all, put, debounce, takeLatest,
+  all, put, debounce, takeLatest, select,
 } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
@@ -85,6 +85,26 @@ function* search(action) {
   }
 }
 
+function* prescriptionChangeStatus(action) {
+  try {
+    const serviceRequestToUpdate = yield select((state) => state.patient.prescriptions.find(
+      (prescription) => prescription.original.id === action.payload.serviceRequestId,
+    ));
+
+    const result = yield Api.saveServiceRequest(serviceRequestToUpdate.original, action.payload.status);
+
+    yield put({
+      type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED,
+      payload: {
+        serviceRequestId: result.payload.data.id,
+        status: result.payload.data.status,
+      },
+    });
+  } catch (e) {
+    yield put({ type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_FAILED, payload: e });
+  }
+}
+
 function* watchPatientFetch() {
   yield takeLatest(actions.PATIENT_FETCH_REQUESTED, fetch);
 }
@@ -97,10 +117,15 @@ function* watchPatientSearch() {
   yield takeLatest(actions.PATIENT_SEARCH_REQUESTED, search);
 }
 
+function* watchPrescriptionChangeStatus() {
+  yield takeLatest(actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED, prescriptionChangeStatus);
+}
+
 export default function* watchedPatientSagas() {
   yield all([
     watchPatientFetch(),
     debouncePatientAutoComplete(),
     watchPatientSearch(),
+    watchPrescriptionChangeStatus(),
   ]);
 }

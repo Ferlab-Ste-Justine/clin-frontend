@@ -1,5 +1,8 @@
+import { message } from 'antd';
 import { produce } from 'immer';
 import { get } from 'lodash';
+
+import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
 import {
   ClinicalImpression, FamilyMemberHistory, Observation, Patient, ServiceRequest,
@@ -89,6 +92,20 @@ const reducer = (state: State = initialState, action: Action) => produce<State>(
       draft.observations = initialState.observations;
       draft.patient = initialState.patient;
       draft.prescriptions = initialState.prescriptions;
+      break;
+    case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED: {
+      const { serviceRequestId, status } = action.payload;
+      const serviceRequestIndex = state.prescriptions.findIndex(
+        (prescription: Record<ServiceRequest, Prescription>) => prescription.original.id === serviceRequestId,
+      );
+      draft.prescriptions[serviceRequestIndex].original.status = status;
+      draft.prescriptions[serviceRequestIndex].parsed.status = status;
+
+      message.success(intl.get('screen.variantDetails.patientsTab.changeStatus.notification.success'));
+      break;
+    }
+    case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_FAILED:
+      message.error(intl.get('screen.variantDetails.patientsTab.changeStatus.notification.failure'));
       break;
     default:
       break;
