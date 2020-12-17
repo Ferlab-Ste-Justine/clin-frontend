@@ -28,7 +28,8 @@ type ObservationCode = 'CGH' | 'INDIC' | 'INVES';
 
 const getObservation = (code: ObservationCode, resource: any) : Observation | undefined => {
   const clinicalImpressin = resource.entry[3];
-  const observation = clinicalImpressin.resource.entry.find((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
+  const observation = clinicalImpressin.resource.entry
+    ?.find((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
 
   return get(observation, 'resource', undefined);
 };

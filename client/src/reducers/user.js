@@ -2,15 +2,6 @@ import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
 import * as actions from '../actions/type';
-import {
-  LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY,
-  LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY,
-  PATIENT_SEARCH_STORAGE_KEY,
-  defaultUserSearchColumns,
-  defaultUserSearchColumnsOrder,
-} from '../helpers/search_table_helper.ts';
-
-import { ClinStorage } from '../helpers/clin_storage';
 
 export const initialUserState = {
   username: null,
@@ -22,8 +13,6 @@ export const initialUserState = {
     patientTableConfig: {},
     variantTableConfig: {},
   },
-  columns: null,
-  columnsOrder: null,
 };
 
 export const userShape = {
@@ -36,20 +25,6 @@ export const userShape = {
     patientTableConfig: PropTypes.shape({}),
     variantTableConfig: PropTypes.shape({}),
   }),
-  columns: PropTypes.array,
-};
-
-const retrieveColumns = () => ClinStorage.getArray(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultUserSearchColumns,
-  [
-    (columns) => columns.some((str) => !str.startsWith(PATIENT_SEARCH_STORAGE_KEY)),
-  ]);
-
-const retrieveColumnsOrder = () => {
-  const columnsOrder = window.localStorage.getItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY);
-  if (columnsOrder != null) {
-    return JSON.parse(columnsOrder);
-  }
-  return defaultUserSearchColumnsOrder;
 };
 
 const userReducer = (state = ({ ...initialUserState }), action) => produce(state, (draft) => {
@@ -59,10 +34,6 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.username = null;
       break;
 
-    case actions.USER_PROFILE_REQUESTED:
-      draft.columns = retrieveColumns();
-      draft.columnsOrder = retrieveColumnsOrder();
-      break;
     case actions.USER_IDENTITY_SUCCEEDED:
       draft.username = action.payload.username;
       draft.firstName = action.payload.firstName;
@@ -82,22 +53,6 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.profile.variantTableConfig = JSON.parse(action.payload.data.variantTableConfig);
       break;
 
-    case actions.USER_PROFILE_UPDATE_COLUMNS:
-      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, action.payload.columns.join(','));
-      draft.columns = action.payload.columns;
-      break;
-
-    case actions.USER_PROFILE_UPDATE_COLUMNS_ORDER:
-      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY, JSON.stringify(action.payload.columnsOrder));
-      draft.columnsOrder = action.payload.columnsOrder;
-      break;
-
-    case actions.USER_PROFILE_UPDATE_COLUMNS_RESET:
-      window.localStorage.removeItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY);
-      window.localStorage.removeItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY);
-      draft.columns = retrieveColumns();
-      draft.columnsOrder = retrieveColumnsOrder();
-      break;
     default:
       break;
   }

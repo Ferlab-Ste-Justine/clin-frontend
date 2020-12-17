@@ -37,8 +37,8 @@ export const initialVariantState = {
   defaultStatement: null,
   activeStatementTotals: {},
   geneResult: [],
-  columns: null,
-  columnsOrder: null,
+  columns: [],
+  columnsOrder: [],
 };
 
 // @TODO
@@ -111,13 +111,13 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
       draft.schema = action.payload.data;
       break;
 
-    case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED:
+    case actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED:
       draft.columns = retrieveColumns();
       draft.columnsOrder = retrieveColumnsOrder();
       break;
 
-    case actions.PATIENT_FETCH_SUCCEEDED:
-      const details = normalizePatientDetails(action.payload.patientData); // eslint-disable-line no-case-declarations
+    case actions.PATIENT_FETCH_SUCCEEDED: {
+      const details = normalizePatientDetails(action.payload.patientData);
       draft.activePatient = details.id;
       draft.originalQueries = [{
         key: uuidv1(),
@@ -126,6 +126,7 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
       draft.draftQueries = cloneDeep(draft.originalQueries);
       draft.activeQuery = draft.originalQueries[0].key;
       break;
+    }
 
     case actions.PATIENT_VARIANT_QUERY_SELECTION:
       if (action.payload.key) {

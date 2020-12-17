@@ -582,8 +582,8 @@ PatientSearchScreen.propTypes = {
   app: PropTypes.shape(appShape).isRequired,
   search: PropTypes.shape(searchShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
-  defaultColumns: PropTypes.array,
-  defaultColumnsOrder: PropTypes.array,
+  defaultColumns: PropTypes.array.isRequired,
+  defaultColumnsOrder: PropTypes.array.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -602,14 +602,9 @@ const mapDispatchToProps = (dispatch) => ({
 const mapStateToProps = (state) => ({
   app: state.app,
   search: state.search,
-  defaultColumns: state.user.columns,
-  defaultColumnsOrder: state.user.columnsOrder,
+  defaultColumns: state.search.columns,
+  defaultColumnsOrder: state.search.columnsOrder,
 });
-
-PatientSearchScreen.defaultProps = {
-  defaultColumns: null,
-  defaultColumnsOrder: null,
-};
 
 export default connect(
   mapStateToProps,
