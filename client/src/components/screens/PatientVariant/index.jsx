@@ -1053,6 +1053,7 @@ class PatientVariantScreen extends React.Component {
 
   render() {
     const {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       app, variant, patient, user, defaultColumns, defaultColumnsOrder, actions,
     } = this.props;
     const { showSubloadingAnimation } = app;
@@ -1254,8 +1255,8 @@ PatientVariantScreen.propTypes = {
   patient: PropTypes.shape({}).isRequired,
   variant: PropTypes.shape(variantShape).isRequired,
   actions: PropTypes.shape({}).isRequired,
-  defaultColumns: PropTypes.array,
-  defaultColumnsOrder: PropTypes.array,
+  defaultColumns: PropTypes.array.isRequired,
+  defaultColumnsOrder: PropTypes.array.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -1296,11 +1297,6 @@ const mapStateToProps = (state) => ({
   defaultColumns: state.variant.columns,
   defaultColumnsOrder: state.variant.columnsOrder,
 });
-
-PatientVariantScreen.defaultProps = {
-  defaultColumns: null,
-  defaultColumnsOrder: null,
-};
 
 export default connect(
   mapStateToProps,
