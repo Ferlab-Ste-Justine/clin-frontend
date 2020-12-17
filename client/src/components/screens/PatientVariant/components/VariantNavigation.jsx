@@ -375,11 +375,10 @@ class VariantNavigation extends React.Component {
     }
   }
 
-  handleCategoryOpenChange(openKeys) {
+  handleCategoryOpenChange() {
     this.setState({
       activeFilterId: null,
       searchSelection: {},
-      activeMenu: openKeys,
     });
   }
 
@@ -610,7 +609,7 @@ class VariantNavigation extends React.Component {
                     <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
                   </span>
                 )}
-                popupClassName={activeMenu.includes(id) ? 'submenuOpen menuDropdown' : 'menuDropdown'}
+                popupClassName={activeMenu != null && activeMenu.includes(id) ? 'submenuOpen menuDropdown' : 'menuDropdown'}
               >
                 { activeFilterId === null && category.label === 'category_variant' && (
                   <div className="variantsHeader">
