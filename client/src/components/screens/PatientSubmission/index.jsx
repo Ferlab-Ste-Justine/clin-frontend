@@ -37,6 +37,7 @@ import './style.scss';
 import {
   cghDisplay,
   createPractitionerResource,
+  genPractitionerKey,
 } from '../../../helpers/fhir/fhir';
 import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
@@ -737,13 +738,13 @@ function PatientSubmissionScreen(props) {
     return currentPageIndex === 0;
   };
 
-  const handlePractitionerOptionSelected = (license) => {
+  const handlePractitionerOptionSelected = (selected) => {
     const { actions } = props;
     const { practitionerOptions } = state;
-    const practitioner = practitionerOptions.find((o) => o.license === license);
+    const practitioner = practitionerOptions.find((o) => genPractitionerKey(o) === selected);
 
     if (practitioner != null) {
-      const practitionerText = `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`;
+      const practitionerText = genPractitionerKey(practitioner);
       actions.saveLocalPractitioner(practitionerText);
       const resource = createPractitionerResource(practitioner);
       actions.assignServiceRequestPractitioner(resource);
@@ -751,6 +752,9 @@ function PatientSubmissionScreen(props) {
   };
 
   const handlePractitionerSearchTermChanged = (term, callback = null) => {
+    if (term == null) {
+      return;
+    }
     const normalizedTerm = term.toLowerCase().trim();
 
     if (normalizedTerm.length > 0 && normalizedTerm.length < 10) {
@@ -860,15 +864,17 @@ function PatientSubmissionScreen(props) {
   const initialPractitionerValue = get(localStore, 'practitioner', '');
 
   const practitionerOptionsLabels = practitionerOptions.map((practitioner) => (
-    <AutoComplete.Option
-      key={practitioner.license}
-      text={`${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`}
-    >
-      <div className="page3__autocomplete">
-        <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given }
-        { practitioner.license != null && practitioner.license.length > 0 && <> – { practitioner.license }</> }
-      </div>
-    </AutoComplete.Option>
+    {
+      value: genPractitionerKey(practitioner),
+      text: (
+        <>
+          <div className="page3__autocomplete">
+            <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given }
+            { practitioner.license != null && practitioner.license.length > 0 && <> – { practitioner.license }</> }
+          </div>
+        </>
+      ),
+    }
   ));
 
   const pages = [

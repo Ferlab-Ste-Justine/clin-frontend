@@ -19,6 +19,8 @@ const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
 
 const HL7_CODE_SYSTEM_URL = '';
 
+export const genPractitionerKey = (practitioner) => `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`;
+
 export const getResourceCode = (r) => {
   try {
     return r.code.coding[0].code;

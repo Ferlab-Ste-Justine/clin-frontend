@@ -16,7 +16,9 @@ export type ParsedPatientData = {
 };
 
 export type PractitionerData = {
-  name: string;
+  lastName: string;
+  firstName: string;
+  formattedName: string;
   mrn: string;
   organization: string;
   phone: string;

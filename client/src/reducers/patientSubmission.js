@@ -7,6 +7,7 @@ import {
 } from 'lodash';
 import { message } from 'antd';
 import intl from 'react-intl-universal';
+import { genPractitionerKey } from '../helpers/fhir/fhir';
 import * as actions from '../actions/type';
 
 const getExtension = (resource, url) => get(resource, 'extension', []).find((ext) => ext.url === url);
@@ -277,7 +278,11 @@ const patientSubmissionReducer = (
       };
 
       if (get(generalPractitioner, 'length', 0) > 0) {
-        draft.local.practitioner = performer.mrn;
+        draft.local.practitioner = genPractitionerKey({
+          family: performer.lastName,
+          given: performer.firstName,
+          license: performer.mrn,
+        });
       }
       break;
     }
