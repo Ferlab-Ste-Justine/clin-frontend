@@ -111,12 +111,9 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
       draft.schema = action.payload.data;
       break;
 
-    case actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED:
+    case actions.PATIENT_FETCH_SUCCEEDED: {
       draft.columns = retrieveColumns();
       draft.columnsOrder = retrieveColumnsOrder();
-      break;
-
-    case actions.PATIENT_FETCH_SUCCEEDED: {
       const details = normalizePatientDetails(action.payload.patientData);
       draft.activePatient = details.id;
       draft.originalQueries = [{
