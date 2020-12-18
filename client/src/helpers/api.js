@@ -1,5 +1,7 @@
 import Http from './http-client';
-import { createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle } from './fhir/fhir';
+import {
+  createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle,
+} from './fhir/fhir';
 
 const successCallback = (payload) => ({ payload });
 const errorCallback = (error) => ({ error });
@@ -176,6 +178,15 @@ const searchPractitioners = async ({ term }) => {
     .catch(errorCallback);
 };
 
+const saveServiceRequest = async (serviceRequest, status) => {
+  serviceRequest.status = status;
+  const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${serviceRequest.id}`;
+
+  return Http.secureClinAxios.put(url, serviceRequest)
+    .then(successCallback)
+    .catch(errorCallback);
+};
+
 export default {
   searchHpos,
   searchHpoChildren,
@@ -200,4 +211,5 @@ export default {
   savePatientSubmission,
   getPatientDataById,
   getPractitionersData,
+  saveServiceRequest,
 };
