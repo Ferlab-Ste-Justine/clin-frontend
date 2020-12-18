@@ -26,7 +26,7 @@ function* searchVariantsForPatient(action) {
     const {
       patient, statement, query, index, limit,
     } = action.payload;
-    const variantResponse = yield Api.searchVariantsForPatient(patient, statement, query, index, limit);
+    const variantResponse = yield Api.searchVariantsForPatient(patient, statement, query, index ?? 1, limit ?? 15);
 
     if (variantResponse.error) {
       throw new ApiError(variantResponse.error);

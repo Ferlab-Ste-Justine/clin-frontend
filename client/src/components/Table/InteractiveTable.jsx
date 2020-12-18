@@ -433,8 +433,7 @@ class InteractiveTable extends React.Component {
             rowHeights={rowHeights}
           />
         </Row>
-        <br />
-        <Row>
+        <Row className={`${styleTable.pagination}`}>
           <Col align="end">
             <DataTablePagination
               sizeOptions={sizeOptions}
