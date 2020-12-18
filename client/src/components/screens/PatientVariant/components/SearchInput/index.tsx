@@ -130,7 +130,6 @@ function SearchInput({
       className="autocomplete large-input"
       dropdownClassName="dropwDownAutoComplete"
       onChange={handleAutoCompleteChange}
-      open
     >
       <Input prefix={<IconKit size={24} icon={ic_search} />} placeholder="Recherche de filtres" />
     </AutoComplete>
