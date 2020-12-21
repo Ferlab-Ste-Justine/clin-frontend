@@ -157,21 +157,22 @@ class PatientScreen extends React.Component {
           }
         };
         const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{ intl.get(`screen.patient.details.status.${r.status}`) }</span>;
-
+        const phonePart = r.requester.phone.split(' ');
+        const phone = `(${phonePart[0]}) ${phonePart[1]}- ${phonePart[2]} `;
         const requesterPopOverText = (info) => (
           <Card title="Médecin prescripteur" bordered={false}>
             <p><span className="popOverName">{ info.formattedName }</span>  |  4425615</p>
             <p>{ info.organization }</p>
-            <p>{ info.phone } poste: { info.phoneExtension }</p>
+            <p>{ phone } poste: { info.phoneExtension }</p>
             <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
           </Card>
         );
         const requester = (
           <span className="logoText">
-            { r.requester.formattedName }
+            { r.requester.formattedName }  |  4425615
             { r.requester.formattedName !== 'N/A' ? (
               <Popover overlayClassName="practitionerInfo" placement="topRight" content={requesterPopOverText(r.requester)} trigger="hover">
-                <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
+                <Button className="logoText__button" type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
               </Popover>
             ) : null }
 
@@ -503,7 +504,7 @@ class PatientScreen extends React.Component {
                                   <Col className="clinical__info__title">{ intl.get('screen.patient.details.practitioner') }</Col>
                                   <Col className="clinical__info__value">
                                     <span className="logoText">
-                                      { consultation[0].practitioner.formattedName }
+                                      { consultation[0].practitioner.formattedName }  | { consultation[0].practitioner.mrn }
                                       { consultation[0].practitioner.formattedName !== 'N/A' ? (
                                         <Popover overlayClassName="practitionerInfo" placement="topRight" content={practitionerPopOverText(consultation[0].practitioner)} trigger="hover">
                                           <Button type="link"><IconKit size={16} icon={ic_info_outline} /></Button>

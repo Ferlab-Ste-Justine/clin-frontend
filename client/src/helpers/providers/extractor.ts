@@ -128,7 +128,7 @@ export class DataExtractor {
       mrn: get(practitioner, 'identifier[0].value', 'N/A'),
       firstName,
       lastName,
-      formattedName: `${prefix} ${firstName} ${lastName.toUpperCase()} ${suffix !== 'null' ? suffix : ''}`,
+      formattedName: `${prefix} ${lastName.toUpperCase()}, ${firstName} ${suffix !== 'null' ? suffix : ''}`,
       email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : 'No email.',
       phone: practMetadata.role != null
         ? `${this.extractPhone(practMetadata.role.telecom)}`
