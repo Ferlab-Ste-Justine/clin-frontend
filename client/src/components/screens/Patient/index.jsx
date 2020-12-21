@@ -320,14 +320,18 @@ class PatientScreen extends React.Component {
 
     const familyHistoryData = this.getFamilyHistory();
 
-    const practitionerPopOverText = (info) => (
-      <Card title={intl.get('screen.patient.details.practitioner')} bordered={false}>
-        <p><span className="popOverName">{ info.formattedName }</span>  | { info.mrn }</p>
-        <p>{ info.organization }</p>
-        <p>{ info.phone } poste: { info.phoneExtension }</p>
-        <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
-      </Card>
-    );
+    const practitionerPopOverText = (info) => {
+      const phonePart = info.phone.split(' ');
+      const phone = `(${phonePart[0]}) ${phonePart[1]}- ${phonePart[2]} `;
+      return (
+        <Card title={intl.get('screen.patient.details.practitioner')} bordered={false}>
+          <p><span className="popOverName">{ info.formattedName }</span>  | { info.mrn }</p>
+          <p>{ info.organization }</p>
+          <p>{ phone } poste: { info.phoneExtension }</p>
+          <p><a href={`mailto:${info.email}`}>{ info.email }</a></p>
+        </Card>
+      );
+    };
 
     const getGenderIcon = (gender) => {
       if (gender === 'female') {
