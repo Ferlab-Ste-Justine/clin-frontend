@@ -178,11 +178,14 @@ const searchPractitioners = async ({ term }) => {
     .catch(errorCallback);
 };
 
-const saveServiceRequest = async (serviceRequest, status) => {
-  serviceRequest.status = status;
-  const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${serviceRequest.id}`;
+const updateServiceRequestStatus = async (serviceRequest, status) => {
+  const editedServiceRequest = {
+    ...serviceRequest,
+    status,
+  };
+  const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;
 
-  return Http.secureClinAxios.put(url, serviceRequest)
+  return Http.secureClinAxios.put(url, editedServiceRequest)
     .then(successCallback)
     .catch(errorCallback);
 };
@@ -211,5 +214,5 @@ export default {
   savePatientSubmission,
   getPatientDataById,
   getPractitionersData,
-  saveServiceRequest,
+  updateServiceRequestStatus,
 };
