@@ -450,7 +450,7 @@ class PatientVariantScreen extends React.Component {
                         consequence.pick === true ? (
                           <Row className="consequences" key={shortid.generate()}>
                             <Col>{ this.getImpactTag(consequence.impact) }</Col>
-                            <Col className="consequence">{ consequence.consequence }</Col>
+                            <Col className="consequence">{ consequence.consequence.join(' ') }</Col>
                             <Col>
                               <a
                                 href={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${consequence.symbol}`}
