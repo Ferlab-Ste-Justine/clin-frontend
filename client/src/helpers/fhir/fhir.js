@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
 
 import { isEmpty, get } from 'lodash';
-import { FhirDataManager } from './fhir_data_manager.ts';
+import { FhirDataManager } from './FhirDataManager.ts';
 import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
 
 const OBSERVATION_CGH_CODE = 'CGH';
@@ -375,7 +375,7 @@ export const createPatientSubmissionBundle = ({
   deleted,
   practitionerId,
   groupId,
-  status,
+  submitted,
 }) => {
   const patientResource = patient;
   if (practitionerId != null) {
@@ -395,8 +395,8 @@ export const createPatientSubmissionBundle = ({
   const serviceRequestResource = FhirDataManager.createServiceRequest(
     practitionerId,
     patientEntry.fullUrl,
-    status || 'draft',
     serviceRequest.code,
+    submitted,
   );
 
   serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
@@ -468,10 +468,10 @@ export const createPatientSubmissionBundle = ({
       });
     }
 
-    serviceRequestResource.extension[0] = {
+    serviceRequestResource.extension.push({
       url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression',
       valueReference: getReference(clinicalImpressionEntry),
-    };
+    });
   }
 
   const familyIdUrl = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';

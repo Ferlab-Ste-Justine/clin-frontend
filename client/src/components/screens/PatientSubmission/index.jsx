@@ -39,7 +39,7 @@ import {
   createPractitionerResource,
   genPractitionerKey,
 } from '../../../helpers/fhir/fhir';
-import { FhirDataManager } from '../../../helpers/fhir/fhir_data_manager.ts';
+import { FhirDataManager } from '../../../helpers/fhir/FhirDataManager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
 import ConfirmationModal from '../../ConfirmationModal';
@@ -703,9 +703,7 @@ function PatientSubmissionScreen(props) {
         actions.saveObservations(submission.observations);
         saveSecondPageLocalStore();
       } else {
-        if (submitted) {
-          submission.status = 'on-hold';
-        }
+        submission.submitted = submitted;
         submission.observations = {
           ...observations,
           cgh: {
