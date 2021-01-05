@@ -73,18 +73,18 @@ class PatientSearchScreen extends React.Component {
           renderer: (value) => {
             switch (value) {
               case intl.get('screen.patientsearch.status.draft'):
-              // Gray-5
                 return '#D2DBE4';
               case intl.get('screen.patientsearch.status.on-hold'):
-                return '#FA8C16';
+                return '#D46B08';
               case intl.get('screen.patientsearch.status.active'):
-              // blue-6
-                return '#2AABE8';
+                return '#1D8BC6';
               case intl.get('screen.patientsearch.status.revoked'):
-                return '#F5222D';
+                return '#CF1322';
               case intl.get('screen.patientsearch.status.completed'):
-                return '#52C41A';
-              // empty rows
+                return '#389E0D';
+              case intl.get('screen.patientsearch.status.incomplete'):
+                return '#EB2F96';
+                // empty rows
               case '':
                 return 'transparent';
               default:
@@ -191,6 +191,12 @@ class PatientSearchScreen extends React.Component {
       return null;
     }
 
+    const getStatusLabel = (request) => {
+      if (request.status === 'on-hold' && !request.submitted) {
+        return intl.get('screen.patientsearch.status.incomplete');
+      }
+      return intl.get(`screen.patientsearch.status.${request.status}`);
+    };
     if (searchType !== 'autocomplete') {
       const data = nextProps.search[searchType].results.map((result) => {
         const organizationValue = () => {
@@ -200,7 +206,7 @@ class PatientSearchScreen extends React.Component {
           return result.organization.name;
         };
         const value = {
-          status: intl.get(`screen.patientsearch.status.${result.status}`),
+          status: getStatusLabel(result),
           id: result.id,
           mrn: result.mrn,
           ramq: result.ramq,
