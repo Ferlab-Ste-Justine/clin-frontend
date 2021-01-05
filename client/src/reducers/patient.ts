@@ -94,10 +94,12 @@ const reducer = (state: State = initialState, action: Action) => produce<State>(
       draft.prescriptions = initialState.prescriptions;
       break;
     case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED: {
-      const { serviceRequestId, status } = action.payload;
       const serviceRequestIndex = state.prescriptions.findIndex(
-        (prescription: Record<ServiceRequest, Prescription>) => prescription.original.id === serviceRequestId,
+        (prescription: Record<ServiceRequest, Prescription>) => prescription.original.id === action.payload.serviceRequestId,
       );
+
+      const status = action.payload.status === 'on-hold' ? 'incomplete' : action.payload.status;
+
       draft.prescriptions[serviceRequestIndex].original.status = status;
       draft.prescriptions[serviceRequestIndex].parsed.status = status;
 

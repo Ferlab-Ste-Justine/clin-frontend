@@ -91,7 +91,7 @@ function* prescriptionChangeStatus(action) {
       (prescription) => prescription.original.id === action.payload.serviceRequestId,
     ));
 
-    const result = yield Api.saveServiceRequest(serviceRequestToUpdate.original, action.payload.status);
+    const result = yield Api.updateServiceRequestStatus(serviceRequestToUpdate.original, action.payload.status);
 
     yield put({
       type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED,

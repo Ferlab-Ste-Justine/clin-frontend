@@ -56,23 +56,23 @@ function StatusChangeModal({
   isVisible, onOk: onOkCallback, onCancel, initialStatus,
 }: Props) {
   const statuses = {
-    [StatusType.ACTIVE]: {
-      value: StatusType.ACTIVE,
-      className: 'active',
-      label: intl.get('screen.patient.details.status.active'),
-      description: intl.get('screen.patient.details.status.active.description'),
-    },
     [StatusType.ON_HOLD]: {
       value: StatusType.ON_HOLD,
       className: 'incomplete',
-      label: intl.get('screen.patient.details.status.incompleted'),
-      description: intl.get('screen.patient.details.status.incompleted.description'),
+      label: intl.get('screen.patient.details.status.incomplete'),
+      description: intl.get('screen.patient.details.status.incomplete.description'),
     },
     [StatusType.REVOKED]: {
       value: StatusType.REVOKED,
       className: 'revoked',
       label: intl.get('screen.patient.details.status.revoked'),
       description: intl.get('screen.patient.details.status.revoked.description'),
+    },
+    [StatusType.ACTIVE]: {
+      value: StatusType.ACTIVE,
+      className: 'active',
+      label: intl.get('screen.patient.details.status.active'),
+      description: intl.get('screen.patient.details.status.active.description'),
     },
     [StatusType.COMPLETED]: {
       value: StatusType.COMPLETED,
@@ -100,7 +100,7 @@ function StatusChangeModal({
     dispatch({ type: ActionType.SET_STATUS, payload: selectedStatus });
   }
 
-  const statusToDisplay = [statuses['on-hold'], statuses.revoked, statuses.active, statuses.completed];
+  const statusToDisplay = [statuses[StatusType.ON_HOLD], statuses.revoked, statuses.active, statuses.completed];
   const onOk = () => onOkCallback(state.selectedStatus);
 
   return (

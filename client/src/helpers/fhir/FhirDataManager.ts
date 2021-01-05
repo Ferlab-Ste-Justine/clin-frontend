@@ -21,6 +21,11 @@ type InitializePatientOptions = {
 
 type ServiceRequestCoding = 'WXS' | 'WGS' | 'GP' | undefined;
 
+enum Status{
+  DRAFT = 'draft',
+  SUBMITTED = 'on-hold',
+}
+
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
   let month = `${date.getMonth() + 1}`;
@@ -138,16 +143,21 @@ export class FhirDataManager {
   public static createServiceRequest(
     requesterId: string,
     subjectId: string,
-    status: string,
     coding: ServiceRequestCoding,
+    isSubmitted: boolean = false,
   ): ServiceRequest {
     const serviceRequest: ServiceRequest = {
       resourceType: 'ServiceRequest',
-      status,
+      status: isSubmitted ? Status.SUBMITTED : Status.DRAFT,
       meta: {
         profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-service-request'],
       },
-      extension: [],
+      extension: [
+        {
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted',
+          valueBoolean: isSubmitted,
+        },
+      ],
       intent: 'order',
       category: [
         {
