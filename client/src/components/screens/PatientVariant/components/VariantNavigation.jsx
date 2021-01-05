@@ -105,6 +105,7 @@ class VariantNavigation extends React.Component {
     this.handleGeneSelection = this.handleGeneSelection.bind(this);
     this.handleMenuSelection = this.handleMenuSelection.bind(this);
     this.handleApply = this.handleApply.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
   }
 
   getHighlightSearch(value) {
@@ -159,7 +160,8 @@ class VariantNavigation extends React.Component {
 
   handleMenuSelection(e) {
     const { activeMenu } = this.state;
-    let newActiveMenu = activeMenu === e.key ? [] : [e.key];
+    let newActiveMenu = activeMenu.includes(e.key) ? [] : [e.key];
+
     if (activeMenu.length && activeMenu[0].includes('overflowed-indicator')) {
       newActiveMenu = [activeMenu[0], e.key];
     }
@@ -375,11 +377,22 @@ class VariantNavigation extends React.Component {
     }
   }
 
-  handleCategoryOpenChange() {
+  handleCategoryOpenChange(openKeys) {
     this.setState({
-      activeFilterId: null,
-      searchSelection: {},
+      // Sets the open menus
+      activeMenu: openKeys ?? [],
+    }, () => {
+      // then clean the "submenu" state
+      this.setState({
+        activeFilterId: null,
+        searchSelection: {},
+      });
     });
+  }
+
+  handleCancel() {
+    const { activeMenu } = this.state;
+    this.handleCategoryOpenChange(activeMenu);
   }
 
   handleAutoCompleteChange(e) {
@@ -437,7 +450,7 @@ class VariantNavigation extends React.Component {
             config={config}
             onEditCallback={this.handleFilterChange}
             onRemoveCallback={this.handleFilterRemove}
-            onCancelCallback={this.handleCategoryOpenChange}
+            onCancelCallback={this.handleCancel}
           />
         );
       case FILTER_TYPE_SPECIFIC:
@@ -453,7 +466,7 @@ class VariantNavigation extends React.Component {
             config={config}
             onEditCallback={this.handleFilterChange}
             onRemoveCallback={this.handleFilterRemove}
-            onCancelCallback={this.handleCategoryOpenChange}
+            onCancelCallback={this.handleCancel}
           />
         );
       case FILTER_TYPE_NUMERICAL_COMPARISON:
@@ -469,7 +482,7 @@ class VariantNavigation extends React.Component {
             config={config}
             onEditCallback={this.handleFilterChange}
             onRemoveCallback={this.handleFilterRemove}
-            onCancelCallback={this.handleCategoryOpenChange}
+            onCancelCallback={this.handleCancel}
           />
         );
       case FILTER_TYPE_GENERICBOOL:
@@ -490,7 +503,7 @@ class VariantNavigation extends React.Component {
             config={config}
             onEditCallback={this.handleFilterChange}
             onRemoveCallback={this.handleFilterRemove}
-            onCancelCallback={this.handleCategoryOpenChange}
+            onCancelCallback={this.handleCancel}
           />
         );
       case FILTER_TYPE_COMPOSITE:
@@ -558,7 +571,6 @@ class VariantNavigation extends React.Component {
             openKeys={activeMenu}
             onClick={this.handleFilterSelection}
             triggerSubMenuAction="click"
-            selectable={false}
           >
             { children }
           </Menu>
@@ -609,7 +621,7 @@ class VariantNavigation extends React.Component {
                     <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
                   </span>
                 )}
-                popupClassName={activeMenu != null && activeMenu.includes(id) ? 'submenuOpen menuDropdown' : 'menuDropdown'}
+                popupClassName={activeMenu?.includes(id) ? 'submenuOpen menuDropdown' : 'menuDropdown'}
               >
                 { activeFilterId === null && category.label === 'category_variant' && (
                   <div className="variantsHeader">
