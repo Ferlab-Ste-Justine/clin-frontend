@@ -179,10 +179,23 @@ const searchPractitioners = async ({ term }) => {
 };
 
 const updateServiceRequestStatus = async (serviceRequest, status) => {
+  const extension = serviceRequest.extension.map((ext) => {
+    const isSubmittedExt = ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
+
+    if (isSubmittedExt) {
+      return {
+        ...ext,
+        valueBoolean: status !== 'on-hold',
+      };
+    }
+    return ext;
+  });
   const editedServiceRequest = {
     ...serviceRequest,
     status,
+    extension,
   };
+
   const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;
 
   return Http.secureClinAxios.put(url, editedServiceRequest)

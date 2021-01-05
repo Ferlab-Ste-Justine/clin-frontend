@@ -59,8 +59,8 @@ function StatusChangeModal({
     [StatusType.ON_HOLD]: {
       value: StatusType.ON_HOLD,
       className: 'incomplete',
-      label: intl.get('screen.patient.details.status.incompleted'),
-      description: intl.get('screen.patient.details.status.incompleted.description'),
+      label: intl.get('screen.patient.details.status.incomplete'),
+      description: intl.get('screen.patient.details.status.incomplete.description'),
     },
     [StatusType.REVOKED]: {
       value: StatusType.REVOKED,

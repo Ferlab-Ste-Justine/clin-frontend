@@ -22,7 +22,7 @@ type InitializePatientOptions = {
 type ServiceRequestCoding = 'WXS' | 'WGS' | 'GP' | undefined;
 
 enum Status{
-  DRAFT = 'on-hold',
+  DRAFT = 'draft',
   SUBMITTED = 'on-hold',
 }
 

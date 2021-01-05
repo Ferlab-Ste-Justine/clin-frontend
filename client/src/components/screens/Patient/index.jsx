@@ -141,21 +141,25 @@ class PatientScreen extends React.Component {
         const getStatusColor = (status) => {
           switch (status) {
             case 'draft':
-              // Gray-5
               return '#D2DBE4';
             case 'on-hold':
-              return '#FA8C16';
+              return '#D46B08';
             case 'active':
-              // blue-6
-              return '#2AABE8';
+              return '#1D8BC6';
             case 'revoked':
-              return '#F5222D';
+              return '#CF1322';
             case 'completed':
-              return '#52C41A';
+              return '#389E0D';
+            case 'incomplete':
+              return '#EB2F96';
+              // empty rows
+            case '':
+              return 'transparent';
             default:
               return '#EB2F96';
           }
         };
+
         const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{ intl.get(`screen.patient.details.status.${r.status}`) }</span>;
         const phonePart = r.requester.phone.split(' ');
         const phone = `(${phonePart[0]}) ${phonePart[1]}- ${phonePart[2]} `;
