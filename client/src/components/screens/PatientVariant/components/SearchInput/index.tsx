@@ -134,7 +134,6 @@ function SearchInput({
       key="autocompleter"
       allowClear
       autoFocus
-      open
       options={options}
       onSearch={handleNavigationSearch}
       onSelect={handleNavigationSelection}
