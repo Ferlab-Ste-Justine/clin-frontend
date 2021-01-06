@@ -279,40 +279,29 @@ class VariantNavigation extends React.Component {
         const category = find(schema.categories, ['id', selection.id]);
         const filterDefinition = find(category.filters, ['id', selection.subid]);
         const filterType = filterDefinition.type;
-        if (!filter) {
-          switch (filterType) {
-            case FILTER_TYPE_GENERIC:
-              filter = GenericFilter.structFromArgs(selection.subid, [selection.value]);
-              break;
-            case FILTER_TYPE_GENERICBOOL:
-              filter = GenericBooleanFilter.structFromArgs(selection.subid, [selection.value]);
-              break;
-            case FILTER_TYPE_SPECIFIC:
-              filter = SpecificFilter.structFromArgs(selection.subid, [selection.value]);
-              break;
-            case FILTER_TYPE_COMPOSITE:
-              filter = CompositeFilter.structFromArgs(selection.subid,
-                CompositeFilter.qualityCompositionStructFromArgs(selection.value));
-              break;
-            default: break;
-          }
-        } else {
-          switch (filterType) {
-            case FILTER_TYPE_GENERIC:
-            case FILTER_TYPE_GENERICBOOL:
-            case FILTER_TYPE_SPECIFIC:
-              if (filter.data.values.indexOf(selection.value) === -1) {
-                filter.data.values.push(selection.value);
-              }
-              break;
-            case FILTER_TYPE_COMPOSITE:
-              filter = CompositeFilter.structFromArgs(selection.subid,
-                CompositeFilter.qualityCompositionStructFromArgs(selection.value));
-              break;
-            default: break;
-          }
-          filter = filter.data;
+        const newFilterValue = filter?.data?.values != null ? [...filter.data.values] : [];
+        if (!newFilterValue.includes(selection.value)) {
+          newFilterValue.push(selection.value);
         }
+
+        switch (filterType) {
+          case FILTER_TYPE_GENERIC:
+            filter = GenericFilter.structFromArgs(selection.subid, newFilterValue);
+            break;
+          case FILTER_TYPE_GENERICBOOL:
+            filter = GenericBooleanFilter.structFromArgs(selection.subid, newFilterValue);
+            break;
+          case FILTER_TYPE_SPECIFIC:
+            filter = SpecificFilter.structFromArgs(selection.subid, newFilterValue);
+            break;
+          case FILTER_TYPE_COMPOSITE:
+            filter = CompositeFilter.structFromArgs(selection.subid,
+              CompositeFilter.qualityCompositionStructFromArgs(selection.value));
+            break;
+          default:
+            break;
+        }
+
         this.handleFilterChange(filter);
       });
     }
