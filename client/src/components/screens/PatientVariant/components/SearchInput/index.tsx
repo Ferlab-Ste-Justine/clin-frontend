@@ -9,6 +9,7 @@ import {
   ic_done,
 } from 'react-icons-kit/md';
 import './searchInput.scss';
+import '../../../../../style/themes/antd-clin-theme.css';
 
 function getHighlightSearch(value: string, searchValue: string) {
   const regex = new RegExp(searchValue, 'i');
@@ -49,6 +50,7 @@ interface Props {
     }[]
   }[]
   searchResultsTotalCount: number
+  selectedVariant: string[]
 }
 
 function SearchInput({
@@ -59,10 +61,10 @@ function SearchInput({
   searchValue,
   searchResults,
   searchResultsTotalCount,
+  selectedVariant,
 }: Props) {
   let autocompletesCount = 0;
   const options = [];
-
   if (searchValue) {
     options.push(...searchResults.filter((group) => !!group.label).map((group) => {
       autocompletesCount += group.matches.length;
@@ -72,15 +74,24 @@ function SearchInput({
         label: <Typography.Text strong className="label">{ group.label }</Typography.Text>,
         options: group.matches.map((match) => ({
           value: JSON.stringify(match),
+          disabled: selectedVariant.indexOf(match.value) > -1,
           label: (
-            <Row gutter={8}>
-              <Col span={20}>
-                <Typography.Text style={{ maxWidth: '100%' }} ellipsis>
-                  <IconKit size={16} icon={ic_done} className="iconCheck" />
-                  { getHighlightSearch(match.value, searchValue) }
-                </Typography.Text>
+            <Row className={selectedVariant.indexOf(match.value) > -1 ? 'selectedValue value' : 'value'}>
+              <Col>
+                { selectedVariant.indexOf(match.value) > -1 ? (
+                  <Typography.Text disabled ellipsis>
+                    <IconKit size={16} icon={ic_done} className="iconCheck" />
+                    { getHighlightSearch(match.value, searchValue) }
+                  </Typography.Text>
+                ) : (
+                  <Typography.Text ellipsis>
+                    <IconKit size={16} icon={ic_done} className="iconCheck" />
+                    { getHighlightSearch(match.value, searchValue) }
+                  </Typography.Text>
+                ) }
+
               </Col>
-              <Col span={4} className="valueCount">
+              <Col className="valueCount">
                 {
                   match.count
                   && (<Tag color="#f0f2f5">{ intl.get('components.query.count', { count: match.count }) }</Tag>)
@@ -123,6 +134,7 @@ function SearchInput({
       key="autocompleter"
       allowClear
       autoFocus
+      open
       options={options}
       onSearch={handleNavigationSearch}
       onSelect={handleNavigationSelection}

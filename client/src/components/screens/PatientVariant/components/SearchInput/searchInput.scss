@@ -1,4 +1,5 @@
 @import './variables.scss';
+@import '../../../../../style/themes/colors.scss';
 
 .dropwDownAutoComplete{
   line-height:0;
@@ -16,7 +17,7 @@
   
   }
   .value{
-    color: #233750;
+    color: $gray-8 !important;
     font-size: 12px;
     font-family: $font;
     letter-spacing: 0.4px;
@@ -24,11 +25,11 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:5px 16px;
+    padding:5px 0;
     .iconCheck{
-      padding-right:8px;
       color:rgba(35, 55, 80, 0.38);
       opacity:0;
+      margin-right: 2px;
     }
   
     &:hover{
@@ -44,7 +45,7 @@
     .valueCount{
       span{
         padding:3px 4px;
-        color: rgba(35, 55, 80, 0.78);
+        color: rgba(35, 55, 80, 0.78) !important;
         font-family: $font;
         font-size: 12px;
         letter-spacing: 0.4px;
@@ -56,14 +57,15 @@
     }
   
   }
+
+  .selectedValue{
+    color: $gray-6 !important;
+    .iconCheck{
+      color:rgba(35, 55, 80, 0.38);
+      opacity:1;
+      margin-right: 2px;
+    }
   
-  &__detail-item{
-    color: rgba(35, 55, 80, 0.38);
-    font-size: 12px;
-    font-family:$font;
-    letter-spacing: 0.4px;
-    margin-left:4px;
   }
-  
   
 }

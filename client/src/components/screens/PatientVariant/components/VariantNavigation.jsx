@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import {
-  find, cloneDeep, debounce,
+  find, cloneDeep, debounce, filter,
 } from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -271,31 +271,31 @@ class VariantNavigation extends React.Component {
         searchResults: [],
       }, () => {
         const query = find(queries, { key: activeQuery });
-        let filter = null;
+        let filterValue = null;
         if (query) {
-          filter = find(query.instructions, (instruction) => instruction.data.id === selection.subid);
+          filterValue = find(query.instructions, (instruction) => instruction.data.id === selection.subid);
         }
         const { schema } = this.props;
         const category = find(schema.categories, ['id', selection.id]);
         const filterDefinition = find(category.filters, ['id', selection.subid]);
         const filterType = filterDefinition.type;
-        const newFilterValue = filter?.data?.values != null ? [...filter.data.values] : [];
+        const newFilterValue = filterValue?.data?.values != null ? [...filterValue.data.values] : [];
         if (!newFilterValue.includes(selection.value)) {
           newFilterValue.push(selection.value);
         }
 
         switch (filterType) {
           case FILTER_TYPE_GENERIC:
-            filter = GenericFilter.structFromArgs(selection.subid, newFilterValue);
+            filterValue = GenericFilter.structFromArgs(selection.subid, newFilterValue);
             break;
           case FILTER_TYPE_GENERICBOOL:
-            filter = GenericBooleanFilter.structFromArgs(selection.subid, newFilterValue);
+            filterValue = GenericBooleanFilter.structFromArgs(selection.subid, newFilterValue);
             break;
           case FILTER_TYPE_SPECIFIC:
-            filter = SpecificFilter.structFromArgs(selection.subid, newFilterValue);
+            filterValue = SpecificFilter.structFromArgs(selection.subid, newFilterValue);
             break;
           case FILTER_TYPE_COMPOSITE:
-            filter = CompositeFilter.structFromArgs(selection.subid,
+            filterValue = CompositeFilter.structFromArgs(selection.subid,
               CompositeFilter.qualityCompositionStructFromArgs(selection.value));
             break;
           default:
@@ -313,27 +313,27 @@ class VariantNavigation extends React.Component {
     });
   }
 
-  handleFilterRemove(filter) {
-    filter.remove = true;
-    this.handleFilterChange(filter);
+  handleFilterRemove(filterToRemove) {
+    filterToRemove.remove = true;
+    this.handleFilterChange(filterToRemove);
   }
 
-  handleFilterChange(filter) {
+  handleFilterChange(filterChange) {
     const { onEditCallback } = this.props;
     if (onEditCallback) {
       const { activeQuery, queries } = this.props;
       const query = find(queries, { key: activeQuery });
-      if (filter && query) {
+      if (filterChange && query) {
         const updatedQuery = cloneDeep(query);
         let updatedInstructions = [];
-        if (!filter.remove) {
+        if (!filterChange.remove) {
           let updated = false;
           updatedInstructions = updatedQuery.instructions.map((instruction) => {
-            if (instruction.data.id === filter.id) {
+            if (instruction.data.id === filterChange.id) {
               updated = true;
               return {
                 type: 'filter',
-                data: filter,
+                data: filterChange,
               };
             }
             return instruction;
@@ -343,13 +343,13 @@ class VariantNavigation extends React.Component {
             if (!andNotOperator) {
               updatedInstructions.push({
                 type: 'filter',
-                data: filter,
+                data: filterChange,
               });
             }
           }
         } else {
           updatedInstructions = updatedQuery.instructions.filter((instruction) => {
-            if (instruction.data.id === filter.id) {
+            if (instruction.data.id === filterChange.id) {
               return false;
             }
             return true;
@@ -578,6 +578,16 @@ class VariantNavigation extends React.Component {
       );
     };
 
+    const getSelectedVariant = () => {
+      const activeQuery = find(variant.draftQueries, { key: variant.activeQuery });
+      const instructionFilter = filter(activeQuery.instructions, { type: 'filter' });
+      const values = [];
+      instructionFilter.forEach((element) => values.push(...element.data.values));
+      return values;
+    };
+
+    const selectedVariant = getSelectedVariant();
+
     return (
       <div className="navigationFilter">
         <SearchInput
@@ -588,6 +598,7 @@ class VariantNavigation extends React.Component {
           searchResults={searchResults}
           searchValue={searchValue}
           searchResultsTotalCount={searchResultsTotalCount}
+          selectedVariant={selectedVariant}
         />
         { generateMenuComponent(searchSelection, schema.categories ? schema.categories.map((category) => {
           if (category.filters && category.filters.length > 0) {
@@ -595,7 +606,7 @@ class VariantNavigation extends React.Component {
             const label = intl.get(`screen.patientvariant.${category.label}`);
             const categoryInfo = find(schema.categories, ['id', (searchSelection.category || id)]);
             const categoryData = find(categoryInfo.filters, ['id', (searchSelection.filter || activeFilterId)]);
-            const filter = categoryData ? this.renderFilterType(categoryData) : null;
+            const renderFilter = categoryData ? this.renderFilterType(categoryData) : null;
             return (
               // Main level
               <Menu.SubMenu
@@ -695,7 +706,7 @@ class VariantNavigation extends React.Component {
                     }
                   </Menu>
                 ) }
-                { filter }
+                { renderFilter }
               </Menu.SubMenu>
             );
           }
