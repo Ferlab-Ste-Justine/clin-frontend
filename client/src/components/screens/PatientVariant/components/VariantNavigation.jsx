@@ -508,7 +508,7 @@ class VariantNavigation extends React.Component {
             config={config}
             onEditCallback={this.handleFilterChange}
             onRemoveCallback={this.handleFilterRemove}
-            onCancelCallback={this.handleCategoryOpenChange}
+            onCancelCallback={this.handleCancel}
           />
         );
     }
