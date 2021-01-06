@@ -26,6 +26,11 @@
     justify-content:space-between;
     align-items:center;
     padding:5px 0;
+    
+
+    .ant-typography{
+      max-width: 230px;
+    }
     .iconCheck{
       color:rgba(35, 55, 80, 0.38);
       opacity:0;

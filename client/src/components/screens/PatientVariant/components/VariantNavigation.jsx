@@ -283,7 +283,6 @@ class VariantNavigation extends React.Component {
         if (!newFilterValue.includes(selection.value)) {
           newFilterValue.push(selection.value);
         }
-
         switch (filterType) {
           case FILTER_TYPE_GENERIC:
             filterValue = GenericFilter.structFromArgs(selection.subid, newFilterValue);
@@ -301,8 +300,7 @@ class VariantNavigation extends React.Component {
           default:
             break;
         }
-
-        this.handleFilterChange(filter);
+        this.handleFilterChange(filterValue);
       });
     }
   }
@@ -582,7 +580,11 @@ class VariantNavigation extends React.Component {
       const activeQuery = find(variant.draftQueries, { key: variant.activeQuery });
       const instructionFilter = filter(activeQuery.instructions, { type: 'filter' });
       const values = [];
-      instructionFilter.forEach((element) => values.push(...element.data.values));
+      instructionFilter.forEach((element) => {
+        if (element.data.values) {
+          values.push(...element.data.values);
+        }
+      });
       return values;
     };
 
