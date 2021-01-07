@@ -32,7 +32,7 @@ import {
   hpoInterpretationValues,
   getFamilyRelationshipValues,
   getFamilyRelationshipDisplayForCode,
-} from '../../../helpers/fhir/fhir';
+} from '../../../../helpers/fhir/fhir';
 
 import {
   addHpoResource,
@@ -44,11 +44,11 @@ import {
   updateHpoObservation,
   updateHpoAgeOnSet,
   updateFMHNote,
-} from '../../../actions/patientSubmission';
+} from '../../../../actions/patientSubmission';
 
-import Api from '../../../helpers/api';
-import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder.ts';
-import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
+import Api from '../../../../helpers/api';
+import { FamilyMemberHistoryBuilder } from '../../../../helpers/fhir/builder/FMHBuilder.ts';
+import { ObservationBuilder } from '../../../../helpers/fhir/builder/ObservationBuilder.ts';
 
 const interpretationIcon = {
   POS: ic_visibility,
