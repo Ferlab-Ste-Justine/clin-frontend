@@ -1,14 +1,12 @@
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
-/* eslint-disable import/named */
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import moment from 'moment';
 import {
-  AutoComplete, Button, Card, Checkbox, DatePicker, Form, Input, Radio, Row, Select, Steps, Typography,
+  Button, Card, Form, Steps, Typography,
 } from 'antd';
 import {
   find, has, debounce, mapValues, get, values as toArray,
@@ -29,7 +27,9 @@ import {
   updateConsentments,
   saveLocalPractitioner,
 } from '../../../actions/patientSubmission';
-import ClinicalInformation from './ClinicalInformation';
+import ClinicalInformation from './components/ClinicalInformation';
+import Approval from './components/Approval';
+import PatientInformation from './components/PatientInformation';
 import Api from '../../../helpers/api';
 
 import './style.scss';
@@ -46,347 +46,8 @@ import ConfirmationModal from '../../ConfirmationModal';
 
 const { Step } = Steps;
 
-const ramqValue = (patient) => {
-  const { identifier } = patient;
-  if (identifier && identifier.length > 1) {
-    return identifier[1].value;
-  }
-
-  return '';
-};
-
-const mrnValue = (patient) => {
-  const { identifier } = patient;
-  if (identifier && identifier.length) {
-    return identifier[0].value;
-  }
-
-  return '';
-};
-
-const getValueCoding = (patient, extensionName) => {
-  const { extension } = patient;
-  const extensionValue = find(extension, (o) => o.url.includes(extensionName) && o.valueCoding.code);
-  if (extensionValue) {
-    return extensionValue.valueCoding;
-  }
-  return undefined;
-};
-
 const hasObservations = (observations) => observations.cgh != null || observations.indic != null
   || observations.fmh.length > 0 || observations.hpos.length > 0;
-
-const getGenderValues = () => ({
-  male: {
-    value: 'male',
-    label: intl.get('form.patientSubmission.form.genderMale'),
-  },
-  female: {
-    value: 'female',
-    label: intl.get('form.patientSubmission.form.genderFemale'),
-  },
-  other: {
-    value: 'other',
-    label: intl.get('form.patientSubmission.form.genderOther'),
-  },
-  unknown: {
-    value: 'unknown',
-    label: intl.get('form.patientSubmission.form.genderUnknown'),
-  },
-});
-
-const defaultOrganizationValue = (patient) => {
-  if (has(patient, 'managingOrganization.reference') && patient.managingOrganization.reference.length > 0) {
-    return patient.managingOrganization.reference.split('/')[1];
-  }
-  return 'CHUSJ';
-};
-
-const defaultBirthDate = (patient) => {
-  if (has(patient, 'birthDate') && patient.birthDate.length > 0) {
-    return moment(patient.birthDate, 'YYYY-MM-DD');
-  }
-  return null;
-};
-
-const PatientInformation = ({ patient, validate }) => {
-  const genderValues = getGenderValues();
-  const ethnicityValueCoding = getValueCoding(patient, 'qc-ethnicity');
-  const consanguinityValueCoding = getValueCoding(patient, 'blood-relationship');
-  const disabledDate = (current) => current && current > moment().startOf('day');
-  const selectedGender = get(patient, 'gender', '');
-  return (
-    <Card title={intl.get('form.patientSubmission.form.section.patient')} bordered={false} className="patientContent">
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.lastName')}
-        name="family"
-        initialValue={has(patient, 'name[0].family') ? patient.name[0].family : ''}
-        rules={[{
-          required: true,
-          message: intl.get('form.patientSubmission.form.validation.lastname'),
-        },
-        {
-          pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
-          message: (
-            <span className="errorMessage">
-              { intl.get('form.patientSubmission.form.validation.specialCharacter') }
-            </span>
-          ),
-        },
-        {
-          whitespace: true,
-          pattern: RegExp(/(.*[a-z]){2}/i),
-          message: (
-            <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.min2Character') }</span>
-          ),
-        },
-        ]}
-      >
-        <Input placeholder={intl.get('form.patientSubmission.form.lastName')} className="input large" />
-      </Form.Item>
-
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.given')}
-        name="given"
-        initialValue={has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}
-        rules={[{
-          required: true,
-          message: intl.get('form.patientSubmission.form.validation.firsname'),
-        },
-        {
-          pattern: RegExp(/^[a-zA-Z- '\u00C0-\u00FF]*$/),
-          message: (
-            <span className="errorMessage">
-              { intl.get('form.patientSubmission.form.validation.specialCharacter') }
-            </span>
-          ),
-        },
-        {
-          whitespace: true,
-          pattern: RegExp(/(.*[a-z]){2}/i),
-          message: (
-            <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.min2Character') }</span>
-          ),
-        },
-        ]}
-      >
-        <Input placeholder={intl.get('form.patientSubmission.form.given')} className="input large" />
-      </Form.Item>
-
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.gender')}
-        name="gender"
-        rules={[{
-          required: true,
-          message: 'Veuillez indiquer le sexe',
-        }]}
-        initialValue={selectedGender}
-        valuePropName="gender"
-      >
-        <Radio.Group buttonStyle="solid" defaultValue={selectedGender}>
-          {
-            Object.values(genderValues).map((gv) => (
-              <Radio.Button value={gv.value} key={`gender_${gv.value}`}>
-                <span className="radioText">{ gv.label }</span>
-              </Radio.Button>
-            ))
-          }
-        </Radio.Group>
-      </Form.Item>
-
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.birthDate.label')}
-        name="birthDate"
-        initialValue={defaultBirthDate(patient)}
-        rules={[{ required: true, message: 'Veuillez indiquer la date de naissance' }]}
-      >
-        <DatePicker placeholder={intl.get('form.patientSubmission.form.birthDate.hint')} className="small" disabledDate={disabledDate} />
-      </Form.Item>
-
-      <div className="optional-item">
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.ramq')}
-          name="ramq"
-          initialValue={ramqValue(patient)}
-          rules={[{
-            pattern: RegExp(/^[a-zA-Z-]{4}\d{8,9}$/),
-            message: intl.get('form.patientSubmission.form.validation.ramq'),
-          }]}
-        >
-          <Input placeholder="ABCD 0000 0000" className="input large" />
-        </Form.Item>
-
-        <span className="optional-item__label">{ intl.get('form.patientSubmission.form.validation.optional') }</span>
-      </div>
-
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.mrn')}
-        name="mrn"
-        initialValue={mrnValue(patient)}
-        rules={[
-          { required: true, message: intl.get('form.patientSubmission.form.validation.mrn') },
-          {
-            pattern: RegExp(/^[a-zA-Z0-9- '\u00C0-\u00FF]*$/),
-            message: (
-              <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.specialCharacter') }</span>
-            ),
-          },
-          {
-            whitespace: true,
-            pattern: RegExp(/(.*[a-z0-9]){2}/i),
-            message: (
-              <span className="errorMessage">{ intl.get('form.patientSubmission.form.validation.min2Character') }</span>
-            ),
-          },
-        ]}
-      >
-        <Input placeholder="12345678" className="input small" />
-      </Form.Item>
-      <Form.Item
-        label={intl.get('form.patientSubmission.form.hospital')}
-        name="organization"
-        initialValue={defaultOrganizationValue(patient)}
-        rules={[{ required: true, message: intl.get('form.patientSubmission.form.validation.hospital') }]}
-      >
-        <Select
-          className="small"
-          dropdownClassName="selectDropdown"
-          onChange={validate}
-        >
-          <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-          <Select.Option value="CHUM">CHUM</Select.Option>
-          <Select.Option value="CUSM">CUSM</Select.Option>
-        </Select>
-      </Form.Item>
-
-      <div className="optional-item">
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.ethnicity')}
-          name="ethnicity"
-          initialValue={ethnicityValueCoding ? ethnicityValueCoding.code : ethnicityValueCoding}
-          rules={[{ required: false }]}
-        >
-          <Select
-            className="large"
-            placeholder={intl.get('form.patientSubmission.form.ethnicity.select')}
-            dropdownClassName="selectDropdown"
-          >
-            <Select.Option value="CA-FR">{ intl.get('form.patientSubmission.form.ethnicity.cafr') }</Select.Option>
-            <Select.Option value="EU">{ intl.get('form.patientSubmission.form.ethnicity.eu') }</Select.Option>
-            <Select.Option value="AFR">{ intl.get('form.patientSubmission.form.ethnicity.afr') }</Select.Option>
-            <Select.Option value="LAT-AM">{ intl.get('form.patientSubmission.form.ethnicity.latam') }</Select.Option>
-            <Select.Option value="ES-AS">{ intl.get('form.patientSubmission.form.ethnicity.esas') }</Select.Option>
-            <Select.Option value="SO-AS">{ intl.get('form.patientSubmission.form.ethnicity.soas') }</Select.Option>
-            <Select.Option value="ABOR">{ intl.get('form.patientSubmission.form.ethnicity.abor') }</Select.Option>
-            <Select.Option value="MIX">{ intl.get('form.patientSubmission.form.ethnicity.mix') }</Select.Option>
-            <Select.Option value="OTH">{ intl.get('form.patientSubmission.form.ethnicity.oth') }</Select.Option>
-          </Select>
-        </Form.Item>
-        <span className="optional-item__label">{ intl.get('form.patientSubmission.form.validation.optional') }</span>
-      </div>
-
-      <div className="optional-item">
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.consanguinity')}
-          name="consanguinity"
-          initialValue={get(consanguinityValueCoding, 'display', null)}
-          rules={[{ required: false }]}
-        >
-          <Radio.Group buttonStyle="solid" defaultValue={get(consanguinityValueCoding, 'display', '')}>
-            <Radio.Button value="Yes">
-              <span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.yes') }</span>
-            </Radio.Button>
-            <Radio.Button value="No">
-              <span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.no') }</span>
-            </Radio.Button>
-            <Radio.Button value="Unknown">
-              <span className="radioText">{ intl.get('form.patientSubmission.form.consanguinity.unknown') }</span>
-            </Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-        <span className="optional-item__label">{ intl.get('form.patientSubmission.form.validation.optional') }</span>
-      </div>
-    </Card>
-  );
-};
-
-const Approval = ({
-  dataSource,
-  practitionerOptionSelected,
-  practitionerSearchTermChanged,
-  initialConsentsValue,
-  initialPractitionerValue,
-  updateConsentmentsCallback,
-  form,
-  handleSubmit,
-}) => (
-  <div>
-    <Card title={intl.get('form.patientSubmission.form.section.consent')} bordered={false} className="patientContent">
-      <Form form={form}>
-        { /* TODO initialValue */ }
-
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.consent.signed')}
-          className="labelTop"
-          name="consent"
-          initialValue={initialConsentsValue}
-          rules={[{ required: true, message: intl.get('form.patientSubmission.form.validation.consent') }]}
-        >
-          <Checkbox.Group className="checkboxGroup" onChange={updateConsentmentsCallback}>
-            <Row>
-              <Checkbox className="checkbox" value="consent-1"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.patient') }</span></Checkbox>
-            </Row>
-            <Row>
-              <Checkbox className="checkbox" value="consent-2"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.father') }</span></Checkbox>
-            </Row>
-            <Row>
-              <Checkbox className="checkbox" value="consent-3"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.mother') }</span></Checkbox>
-            </Row>
-            <Row>
-              <Checkbox className="checkbox" value="consent-4"><span className="checkboxText">{ intl.get('form.patientSubmission.form.consent.research') }</span></Checkbox>
-            </Row>
-          </Checkbox.Group>
-        </Form.Item>
-      </Form>
-    </Card>
-    <Card title="Approbation" bordered={false} className="patientContent">
-      <Form
-        form={form}
-        onFinish={handleSubmit}
-      >
-        <p className="cardDescription">Nullam id dolor id nibh ultricies vehicula ut id elit. Vestibulum id ligula porta felis euismod semper.</p>
-        { /* TODO initialValue */ }
-
-        <Form.Item
-          label={intl.get('form.patientSubmission.form.practitioner')}
-          className="searchInput searchInput340"
-          name="practInput"
-          initialValue={initialPractitionerValue}
-          rules={[
-            {
-              required: true,
-              message: intl.get('form.patientSubmission.form.validation.practioner'),
-            },
-            {
-              whitespace: true,
-              message: intl.get('form.patientSubmission.form.validation.noSpace'),
-            },
-          ]}
-        >
-          <AutoComplete
-            optionLabelProp="text"
-            classeName="searchInput"
-            placeholder={intl.get('form.patientSubmission.form.searchNameOrLicense')}
-            defaultValue={initialPractitionerValue}
-            dataSource={dataSource}
-            onSelect={practitionerOptionSelected}
-            onChange={practitionerSearchTermChanged}
-          />
-        </Form.Item>
-      </Form>
-    </Card>
-  </div>
-);
 
 const stringifyPractionerOption = (po) => `${po.family}, ${po.given} License No: ${po.license}`;
 const practitionerOptionFromResource = (resource) => ({
@@ -650,7 +311,7 @@ function PatientSubmissionScreen(props) {
     actions.saveLocalSummary(values.summaryNote);
     actions.saveLocalIndic(values.indication);
   };
-  const handleSubmit = (e, submitted = false) => {
+  const saveSubmission = (submitted = false) => {
     form.validateFields().then(() => {
       const {
         actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId,
@@ -722,13 +383,9 @@ function PatientSubmissionScreen(props) {
       submission.practitionerId = practitionerId;
       submission.deleted = deleted;
       submission.groupId = groupId;
+
       actions.savePatientSubmission(submission);
     });
-  };
-  const submit = (e) => {
-    const { actions } = props;
-    handleSubmit(e, true);
-    actions.navigateToPatientSearchScreen();
   };
 
   const isFirstPage = () => {
@@ -849,6 +506,14 @@ function PatientSubmissionScreen(props) {
     }
   };
 
+  const onFormFinish = (isOnLastPage) => {
+    if (isOnLastPage) {
+      saveSubmission(true);
+    } else {
+      next();
+    }
+  };
+
   const { actions } = props;
   const { patient, clinicalImpression, serviceRequest } = props;
   const { practitionerOptions, currentPageIndex } = state;
@@ -906,8 +571,6 @@ function PatientSubmissionScreen(props) {
           initialConsentsValue={consents}
           initialPractitionerValue={initialPractitionerValue}
           updateConsentmentsCallback={actions.updateConsentments}
-          form={form}
-          handleSubmit={handleSubmit}
         />
       ),
       name: 'Approval',
@@ -917,6 +580,7 @@ function PatientSubmissionScreen(props) {
   const { Title } = Typography;
   const currentPage = pages[currentPageIndex];
   const pageContent = currentPage.content;
+  const isOnLastPage = currentPageIndex === pages.length - 1;
   return (
     <Layout>
       <>
@@ -932,35 +596,22 @@ function PatientSubmissionScreen(props) {
 
           <Form
             form={form}
-            onFinish={handleSubmit}
+            onFinish={() => onFormFinish(isOnLastPage)}
             onChange={validate}
           >
             { pageContent }
             <div className="submission-form-actions">
-              {
-                currentPageIndex === pages.length - 1 && (
-                  <Button
-                    htmlType="submit"
-                    type="primary"
-                    disabled={!state.valid}
-                    onClick={submit}
-                  >
-                    { intl.get('form.patientSubmission.form.submit') }
-                  </Button>
-                )
-              }
-              {
-                currentPageIndex !== pages.length - 1 && (
-                  <Button
-                    type="primary"
-                    onClick={() => next()}
-                    disabled={!state.valid}
-                  >
-                    { intl.get('screen.clinicalSubmission.nextButtonTitle') }
-                  </Button>
-                )
-              }
-
+              <Button
+                htmlType="submit"
+                type="primary"
+                disabled={!state.valid}
+              >
+                {
+                  isOnLastPage
+                    ? intl.get('form.patientSubmission.form.submit')
+                    : intl.get('screen.clinicalSubmission.nextButtonTitle')
+                }
+              </Button>
               {
                 currentPageIndex !== 0 && (
                   <Button onClick={() => previous()} disabled={isFirstPage()}>
@@ -971,7 +622,7 @@ function PatientSubmissionScreen(props) {
               }
 
               <Button
-                htmlType="submit"
+                onClick={() => saveSubmission()}
               >
                 <IconKit size={20} icon={ic_save} />
                 { intl.get('screen.clinicalSubmission.saveButtonTitle') }

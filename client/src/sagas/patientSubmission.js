@@ -42,6 +42,7 @@ function* savePatientSubmission(action) {
   const { payload } = action;
 
   let response = null;
+
   try {
     response = yield Api.savePatientSubmission(payload);
     if (response.error) {
@@ -96,6 +97,10 @@ function* savePatientSubmission(action) {
         result,
       },
     });
+
+    if (payload.submitted) {
+      yield put({ type: actionTypes.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
+    }
   } catch (e) {
     yield put({ type: actionTypes.PATIENT_SUBMISSION_SAVE_FAILED, payload: e });
   }
