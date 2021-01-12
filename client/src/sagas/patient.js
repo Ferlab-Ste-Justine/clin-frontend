@@ -2,6 +2,8 @@ import {
   all, put, debounce, takeLatest, select,
 } from 'redux-saga/effects';
 
+import { get } from 'lodash';
+
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 
@@ -105,6 +107,30 @@ function* prescriptionChangeStatus(action) {
   }
 }
 
+function* fetchInfosByRamq(action) {
+  try {
+    const response = yield Api.getPatientByRamq(action.payload.ramq);
+
+    if (response.error != null) {
+      throw new ApiError(response.error);
+    }
+
+    const identifiers = get(response, 'payload.data.entry[0].resource.identifier', []);
+    const identifier = identifiers.find((id) => get(id, 'type.coding[0].code', '') === 'JHN');
+
+    if (identifier == null || identifier.value !== action.payload.ramq) {
+      throw new ApiError(`Patient with RAMQ[${action.payload.ramq} not found.`);
+    }
+
+    yield put({
+      type: actions.PATIENT_FETCH_INFO_BY_RAMQ_SUCCEEDED,
+      payload: response.payload,
+    });
+  } catch (error) {
+    yield put({ type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
+  }
+}
+
 function* watchPatientFetch() {
   yield takeLatest(actions.PATIENT_FETCH_REQUESTED, fetch);
 }
@@ -121,11 +147,16 @@ function* watchPrescriptionChangeStatus() {
   yield takeLatest(actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED, prescriptionChangeStatus);
 }
 
+function* watchFetchInfosByRamq() {
+  yield takeLatest(actions.PATIENT_FETCH_INFO_BY_RAMQ, fetchInfosByRamq);
+}
+
 export default function* watchedPatientSagas() {
   yield all([
     watchPatientFetch(),
     debouncePatientAutoComplete(),
     watchPatientSearch(),
     watchPrescriptionChangeStatus(),
+    watchFetchInfosByRamq(),
   ]);
 }

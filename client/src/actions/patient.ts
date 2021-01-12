@@ -1,13 +1,15 @@
 import * as actions from './type';
 
-export const fetchPatient = (uid) => ({
+type Action = (...args:any) => {type: keyof typeof actions, payload?: any};
+
+export const fetchPatient = (uid: string) => ({
   type: actions.PATIENT_FETCH_REQUESTED,
   payload: {
     uid,
   },
 });
 
-export const autoCompletePatients = (type, query, page, size) => ({
+export const autoCompletePatients: Action = (type: string, query: any, page: number, size: number) => ({
   type: actions.PATIENT_AUTOCOMPLETE_REQUESTED,
   payload: {
     type: type || 'partial',
@@ -22,7 +24,7 @@ export const autoCompletePatientsSelected = () => ({
   payload: {},
 });
 
-export const searchPatientsByQuery = (query, page, size) => ({
+export const searchPatientsByQuery = (query: any, page: number, size: number) => ({
   type: actions.PATIENT_SEARCH_REQUESTED,
   payload: {
     query: query || null,
@@ -31,10 +33,15 @@ export const searchPatientsByQuery = (query, page, size) => ({
   },
 });
 
-export const updateServiceRequestStatus = (serviceRequestId, newStatus) => ({
+export const updateServiceRequestStatus = (serviceRequestId: string, newStatus: string) => ({
   type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED,
   payload: {
     serviceRequestId,
     status: newStatus,
   },
+});
+
+export const getPatientByRamq: Action = (ramq: string) => ({
+  type: actions.PATIENT_FETCH_INFO_BY_RAMQ,
+  payload: { ramq },
 });

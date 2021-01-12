@@ -2,6 +2,7 @@ import Http from './http-client';
 import {
   createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle,
 } from './fhir/fhir';
+import { getPatientByRamq } from './fhir/PatientChecker';
 
 const successCallback = (payload) => ({ payload });
 const errorCallback = (error) => ({ error });
@@ -228,4 +229,5 @@ export default {
   getPatientDataById,
   getPractitionersData,
   updateServiceRequestStatus,
+  getPatientByRamq,
 };
