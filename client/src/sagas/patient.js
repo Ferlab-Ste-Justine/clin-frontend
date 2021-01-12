@@ -124,9 +124,7 @@ function* fetchInfosByRamq(action) {
 
     yield put({
       type: actions.PATIENT_FETCH_INFO_BY_RAMQ_SUCCEEDED,
-      payload: {
-        response,
-      },
+      payload: response.payload,
     });
   } catch (error) {
     yield put({ type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
