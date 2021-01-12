@@ -558,6 +558,7 @@ class VariantNavigation extends React.Component {
             openKeys={activeMenu}
             onClick={this.handleFilterSelection}
             triggerSubMenuAction="click"
+            selectable={false}
           >
             { children }
           </Menu>
@@ -570,6 +571,7 @@ class VariantNavigation extends React.Component {
           openKeys={[searchSelection.category]}
           selectedKeys={[searchSelection.filter]}
           className="menu"
+          selectable={false}
         >
           { children }
         </Menu>
