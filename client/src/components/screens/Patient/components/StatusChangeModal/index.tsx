@@ -38,6 +38,7 @@ interface State {
 enum ActionType {
   SET_STATUS,
   SET_NOTE,
+  CLEAN_NOTES,
 }
 
 interface StatusAction {
@@ -50,7 +51,11 @@ interface NoteAction {
   payload: {key: StatusType, value: string},
 }
 
-type Action = StatusAction | NoteAction;
+interface ClearNotesAction {
+  type: ActionType.CLEAN_NOTES,
+}
+
+type Action = StatusAction | NoteAction | ClearNotesAction;
 
 const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   switch (action.type) {
@@ -70,6 +75,12 @@ const reducer: Reducer<State, Action> = (state: State, action: Action) => {
           ...state.notes,
           [key]: value,
         },
+      };
+    }
+    case ActionType.CLEAN_NOTES: {
+      return {
+        ...state,
+        notes: {},
       };
     }
     default:
@@ -116,6 +127,7 @@ function StatusChangeModal({
   useEffect(() => {
     function resetState() {
       dispatch({ type: ActionType.SET_STATUS, payload: initialStatus });
+      dispatch({ type: ActionType.CLEAN_NOTES });
     }
 
     resetState();
