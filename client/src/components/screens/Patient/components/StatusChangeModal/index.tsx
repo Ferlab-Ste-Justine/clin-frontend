@@ -8,8 +8,6 @@ import React, {
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import './style.scss';
 
-const { TextArea } = Input;
-
 enum StatusType {
   DRAFT = 'draft',
   SUBMITTED = 'submitted',
@@ -173,7 +171,7 @@ function StatusChangeModal({
               { label }
               <span className="description">{ description }</span>
               { isShowNote(value) && (
-                <TextArea
+                <Input.TextArea
                   value={state.notes[value]}
                   onChange={(event) => updateNote(event, value)}
                 />
