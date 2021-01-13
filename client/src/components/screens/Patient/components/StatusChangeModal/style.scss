@@ -1,8 +1,9 @@
 @import './variables.scss';
 @import '../../../../../style/themes/colors.scss';
 
-.statusModal{
-  .modalRadio{
+.status--modal{
+
+  &__group{
     display: flex;
     flex-direction: column;
   
@@ -50,4 +51,20 @@
       border-color: $gray-5;
     }
   }
+
+  // &__element{
+  //   // width: 100%;
+  //   display: flex;
+  //   flex-direction: column;
+
+  //   span:nth-child(2) > span:nth-child(1) {
+  //     white-space: pre-line;
+  //   }
+  //   &__input{
+  //     width: 90%;
+  //     padding: 5px;
+  //     margin-top: 10px;
+  //     margin-left: 25px;
+  //   }
+  // }
 }

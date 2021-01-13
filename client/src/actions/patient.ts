@@ -19,12 +19,12 @@ export const autoCompletePatients: Action = (type: string, query: any, page: num
   },
 });
 
-export const autoCompletePatientsSelected = () => ({
+export const autoCompletePatientsSelected: Action = () => ({
   type: actions.PATIENT_AUTOCOMPLETE_SELECTED,
   payload: {},
 });
 
-export const searchPatientsByQuery = (query: any, page: number, size: number) => ({
+export const searchPatientsByQuery: Action = (query: any, page: number, size: number) => ({
   type: actions.PATIENT_SEARCH_REQUESTED,
   payload: {
     query: query || null,
@@ -33,11 +33,12 @@ export const searchPatientsByQuery = (query: any, page: number, size: number) =>
   },
 });
 
-export const updateServiceRequestStatus = (serviceRequestId: string, newStatus: string) => ({
+export const updateServiceRequestStatus: Action = (serviceRequestId: string, newStatus: string, note: string) => ({
   type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED,
   payload: {
     serviceRequestId,
     status: newStatus,
+    note,
   },
 });
 
