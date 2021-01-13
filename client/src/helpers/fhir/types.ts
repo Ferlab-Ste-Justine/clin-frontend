@@ -65,6 +65,8 @@ export interface Investigation {
 
 export interface Note {
   text: string;
+  time?: string;
+  authorReference?: Reference;
 }
 
 export interface Category {

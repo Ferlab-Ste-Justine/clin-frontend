@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import Http from './http-client';
 import {
   createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle,
@@ -179,7 +180,7 @@ const searchPractitioners = async ({ term }) => {
     .catch(errorCallback);
 };
 
-const updateServiceRequestStatus = async (serviceRequest, status) => {
+const updateServiceRequestStatus = async (user, serviceRequest, status, note) => {
   const extension = serviceRequest.extension.map((ext) => {
     const isSubmittedExt = ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 
@@ -191,10 +192,24 @@ const updateServiceRequestStatus = async (serviceRequest, status) => {
     }
     return ext;
   });
+
+  const notes = get(serviceRequest, 'note', []);
+
+  if (note != null) {
+    notes.push({
+      text: note,
+      time: new Date(),
+      authorReference: {
+        reference: `Practitioner/${user.practitionerId}`,
+      },
+    });
+  }
+
   const editedServiceRequest = {
     ...serviceRequest,
     status,
     extension,
+    note: notes,
   };
 
   const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;
