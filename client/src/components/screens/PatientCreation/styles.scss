@@ -1,0 +1,25 @@
+.patient-creation {
+  &__button {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+  }
+
+  &__form {
+    &__fieldset {
+      margin-bottom: 3px;
+    }
+
+    &__select {
+      width: 100%;
+    }
+  }
+}
+
+div.patient-creation__form__ramq-confirm {
+  margin-bottom: 3px;
+}
+
+.ant-form-item {
+  margin-bottom: 13px;
+}
