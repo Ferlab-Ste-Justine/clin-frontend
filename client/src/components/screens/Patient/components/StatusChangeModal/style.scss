@@ -1,8 +1,9 @@
 @import './variables.scss';
 @import '../../../../../style/themes/colors.scss';
 
-.statusModal{
-  .modalRadio{
+.status--modal{
+
+  &__group{
     display: flex;
     flex-direction: column;
   

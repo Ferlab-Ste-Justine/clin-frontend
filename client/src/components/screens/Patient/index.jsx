@@ -116,10 +116,10 @@ class PatientScreen extends React.Component {
     ];
   }
 
-  async handleOk(newStatus) {
+  async handleOk(newStatus, note) {
     const { actions } = this.props;
     const { selectedPrescriptionId } = this.state;
-    await actions.updateServiceRequestStatus(selectedPrescriptionId, newStatus);
+    await actions.updateServiceRequestStatus(selectedPrescriptionId, newStatus, note);
     this.setState({ selectedPrescriptionId: '' });
   }
 

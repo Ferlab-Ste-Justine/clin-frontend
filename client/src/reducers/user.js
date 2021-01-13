@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
+import { get } from 'lodash';
 import * as actions from '../actions/type';
 
 export const initialUserState = {
   username: null,
   firstName: null,
   lastName: null,
+  practitionerId: null,
   profile: {
     uid: null,
     defaultStatement: null,
@@ -38,6 +40,7 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.username = action.payload.username;
       draft.firstName = action.payload.firstName;
       draft.lastName = action.payload.lastName;
+      draft.practitionerId = get(action.payload, 'attributes.fhir_practitioner_id[0]', '');
       break;
 
     case actions.USER_PROFILE_SUCCEEDED:
