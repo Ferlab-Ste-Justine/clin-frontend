@@ -4,7 +4,14 @@
 .dropwDownAutoComplete{
   line-height:0;
   min-width:380px;
-  
+
+  &__detail-item{
+    color: $gray-6;
+    font-size: 12px;
+  }
+  .ant-select-item-option-grouped{
+    padding-left: 12px;
+  }
   .label{
     strong{
       color: rgba(35, 55, 80, 0.38);
@@ -34,7 +41,7 @@
     .iconCheck{
       color:rgba(35, 55, 80, 0.38);
       opacity:0;
-      margin-right: 2px;
+      margin-right: 8px;
     }
   
     &:hover{
@@ -50,7 +57,7 @@
     .valueCount{
       span{
         padding:3px 4px;
-        color: rgba(35, 55, 80, 0.78) !important;
+        color: rgba(35, 55, 80, 0.78);
         font-family: $font;
         font-size: 12px;
         letter-spacing: 0.4px;
@@ -68,7 +75,14 @@
     .iconCheck{
       color:rgba(35, 55, 80, 0.38);
       opacity:1;
-      margin-right: 2px;
+      margin-right: 8px;
+    }
+    .valueCount{
+      span{
+        background-color:#ffffff !important;
+        color: $gray-6 !important;
+      }
+
     }
   
   }
