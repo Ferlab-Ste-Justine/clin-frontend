@@ -4,7 +4,7 @@ import { Route, Redirect, withRouter } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 
 const AuthRoute = ({ Component, roles, ...rest }) => {
-  const [keycloak] = useKeycloak();
+  const { keycloak } = useKeycloak();
 
   const isAuthorized = (requiredRoles) => {
     // We check if Keycloak is initialized in the AppRouter.jsx, thus no need to test it here.
