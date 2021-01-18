@@ -21,7 +21,7 @@ import {
 } from '../helpers/route';
 
 const AppRouter = ({ history }) => {
-  const [, initialized] = useKeycloak();
+  const { initialized } = useKeycloak();
 
   if (!initialized) {
     return <div />;
