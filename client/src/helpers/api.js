@@ -3,7 +3,8 @@ import Http from './http-client';
 import {
   createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle,
 } from './fhir/fhir';
-import { getPatientByRamq } from './fhir/PatientChecker';
+import { getPatientByRamq } from './fhir/api/PatientChecker';
+import { getUserPractitionerData } from './fhir/api/UserResources';
 
 const successCallback = (payload) => ({ payload });
 const errorCallback = (error) => ({ error });
@@ -115,6 +116,7 @@ const deleteStatement = (uid) => Http.secureClinAxios.delete(`${window.CLIN.meta
   .catch(errorCallback);
 
 const getUserProfile = () => Http.secureClinAxios.get(`${window.CLIN.metaServiceApiUrl}/profile`, {})
+  .then(getUserPractitionerData)
   .then(successCallback)
   .catch(errorCallback);
 
