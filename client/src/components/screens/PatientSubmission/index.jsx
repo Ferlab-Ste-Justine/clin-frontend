@@ -314,7 +314,7 @@ function PatientSubmissionScreen(props) {
   const saveSubmission = (submitted = false) => {
     form.validateFields().then(() => {
       const {
-        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId,
+        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId, userRole,
       } = props;
 
       const patientData = getPatientData();
@@ -383,6 +383,7 @@ function PatientSubmissionScreen(props) {
       submission.practitionerId = practitionerId;
       submission.deleted = deleted;
       submission.groupId = groupId;
+      submission.userRole = userRole;
 
       actions.savePatientSubmission(submission);
     });
@@ -676,6 +677,7 @@ const mapStateToProps = (state) => ({
   search: state.search,
   localStore: state.patientSubmission.local,
   editMode: state.patientSubmission.editMode,
+  userRole: state.user.practitionerData.practitionerRole,
 });
 
 export default connect(

@@ -140,11 +140,21 @@ export class FhirDataManager {
     };
   }
 
+  private static getPractitionerRoleReference(id: string) : Reference | undefined {
+    if (id == null) {
+      return undefined;
+    }
+    return {
+      reference: `PractitionerRole/${id}`,
+    };
+  }
+
   public static createServiceRequest(
     requesterId: string,
     subjectId: string,
     coding: ServiceRequestCoding,
     isSubmitted: boolean = false,
+    performerId: string | undefined = undefined,
   ): ServiceRequest {
     const serviceRequest: ServiceRequest = {
       resourceType: 'ServiceRequest',
@@ -211,9 +221,9 @@ export class FhirDataManager {
       }
     }
 
-    serviceRequest.requester = this.getPractitionerReference('PR00106');
-    if (requesterId != null) {
-      serviceRequest.performer = [this.getPractitionerReference(requesterId)!];
+    serviceRequest.requester = this.getPractitionerRoleReference(requesterId);
+    if (performerId != null) {
+      serviceRequest.performer = [this.getPractitionerReference(performerId)!];
     }
 
     return serviceRequest;
@@ -238,7 +248,7 @@ export class FhirDataManager {
         },
       ],
       status: 'in-progress',
-      assessor: this.getPractitionerReference(assessorId),
+      assessor: this.getPractitionerRoleReference(assessorId),
       date: formatDate(new Date()),
       subject: {
         reference: subjectId.startsWith('urn:') ? subjectId : `Patient/${subjectId}`,
