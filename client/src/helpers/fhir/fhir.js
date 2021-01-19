@@ -4,6 +4,7 @@ import intl from 'react-intl-universal';
 import { isEmpty, get } from 'lodash';
 import { FhirDataManager } from './FhirDataManager.ts';
 import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
+import { ServiceRequestBuilder } from './builder/ServiceRequestBuilder';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
@@ -372,6 +373,7 @@ export const createPatientSubmissionBundle = ({
   serviceRequest,
   clinicalImpression,
   observations,
+  practitionerId,
   deleted,
   groupId,
   submitted,
@@ -379,9 +381,15 @@ export const createPatientSubmissionBundle = ({
 }) => {
   const patientResource = patient;
   if (userRole != null) {
-    patientResource.generalPractitioner = [{
-      reference: `PractitionerRole/${userRole.id}`,
-    }];
+    const generalPractitioner = get(patientResource, 'generalPractitioner', []);
+    if (generalPractitioner.find((practitioner) => practitioner.id === userRole.id) == null) {
+      patientResource.generalPractitioner = [
+        ...generalPractitioner,
+        {
+          reference: `PractitionerRole/${userRole.id}`,
+        },
+      ];
+    }
   }
 
   const patientEntry = createEntry(patientResource);
@@ -392,15 +400,15 @@ export const createPatientSubmissionBundle = ({
   const bundle = createBundle();
   bundle.entry.push(patientEntry);
 
-  const serviceRequestResource = FhirDataManager.createServiceRequest(
-    userRole.id,
-    patientEntry.fullUrl,
-    serviceRequest.code,
-    submitted,
-  );
+  const serviceRequestBuilder = new ServiceRequestBuilder(serviceRequest);
+  const serviceRequestResource = serviceRequestBuilder
+    .addSubject(patientEntry.fullUrl)
+    .addCoding(serviceRequest.code)
+    .addRequester(practitionerId)
+    .setSubmitted(submitted, userRole.id)
+    .build();
 
   serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
-  serviceRequestResource.subject = patientReference;
 
   const serviceRequestEntry = createEntry(serviceRequestResource);
   bundle.entry.push(serviceRequestEntry);
@@ -409,6 +417,7 @@ export const createPatientSubmissionBundle = ({
     const clinicalImpressionResource = FhirDataManager.createClinicalImpression(
       userRole.id,
       patientEntry.fullUrl,
+      submitted,
     );
     clinicalImpressionResource.id = clinicalImpression.id != null ? clinicalImpression.id : undefined;
     clinicalImpressionResource.subject = patientReference;

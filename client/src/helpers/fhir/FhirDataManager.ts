@@ -1,5 +1,5 @@
 import {
-  ClinicalImpression, Patient, Reference, ServiceRequest,
+  ClinicalImpression, Patient, Reference,
 } from './types';
 
 type InitializePatientOptions = {
@@ -17,14 +17,8 @@ type InitializePatientOptions = {
   isProband: boolean;
   bloodRelationship: string;
   organization: string;
+  generalPractitioner?: Reference[];
 };
-
-type ServiceRequestCoding = 'WXS' | 'WGS' | 'GP' | undefined;
-
-enum Status{
-  DRAFT = 'draft',
-  SUBMITTED = 'on-hold',
-}
 
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
@@ -55,7 +49,7 @@ export class FhirDataManager {
         },
       ],
       gender: options.gender,
-      generalPractitioner: [],
+      generalPractitioner: options.generalPractitioner!,
       identifier: [
         {
           type: {
@@ -149,87 +143,7 @@ export class FhirDataManager {
     };
   }
 
-  public static createServiceRequest(
-    requesterId: string,
-    subjectId: string,
-    coding: ServiceRequestCoding,
-    isSubmitted: boolean = false,
-    performerId: string | undefined = undefined,
-  ): ServiceRequest {
-    const serviceRequest: ServiceRequest = {
-      resourceType: 'ServiceRequest',
-      status: isSubmitted ? Status.SUBMITTED : Status.DRAFT,
-      meta: {
-        profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-service-request'],
-      },
-      extension: [
-        {
-          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted',
-          valueBoolean: isSubmitted,
-        },
-      ],
-      intent: 'order',
-      category: [
-        {
-          text: 'MedicalRequest',
-        },
-      ],
-      priority: 'routine',
-      subject: {
-        reference: subjectId.startsWith('urn:') ? subjectId : `Patient/${subjectId}`,
-      },
-      authoredOn: formatDate(new Date()),
-    };
-
-    if (coding !== undefined) {
-      switch (coding) {
-        case 'WXS':
-          serviceRequest.code = {
-            coding: [
-              {
-                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
-                code: 'WXS',
-                display: 'Whole Exome Sequencing',
-              },
-            ],
-          };
-          break;
-        case 'WGS':
-          serviceRequest.code = {
-            coding: [
-              {
-                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
-                code: 'WGS',
-                display: 'Whole Genome Sequencing',
-              },
-            ],
-          };
-          break;
-        case 'GP':
-          serviceRequest.code = {
-            coding: [
-              {
-                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
-                code: 'GP',
-                display: 'Gene Panel',
-              },
-            ],
-          };
-          break;
-        default:
-          break;
-      }
-    }
-
-    serviceRequest.requester = this.getPractitionerRoleReference(requesterId);
-    if (performerId != null) {
-      serviceRequest.performer = [this.getPractitionerReference(performerId)!];
-    }
-
-    return serviceRequest;
-  }
-
-  public static createClinicalImpression(assessorId: string, subjectId: string, age: number = 1): ClinicalImpression {
+  public static createClinicalImpression(assessorId: string, subjectId: string, submitted: boolean, age: number = 1): ClinicalImpression {
     const clinicalImpression: ClinicalImpression = {
       resourceType: 'ClinicalImpression',
       meta: {
@@ -247,7 +161,7 @@ export class FhirDataManager {
           },
         },
       ],
-      status: 'in-progress',
+      status: submitted ? 'completed' : 'in-progress',
       assessor: this.getPractitionerRoleReference(assessorId),
       date: formatDate(new Date()),
       subject: {

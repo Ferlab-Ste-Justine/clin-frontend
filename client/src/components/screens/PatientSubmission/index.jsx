@@ -114,6 +114,7 @@ function PatientSubmissionScreen(props) {
         ethnicityDisplay: getEthnicityDisplay(values.ethnicity),
         active: false,
         birthDate: new Date(values.birthDate.toDate()),
+        generalPractitioner: patient.generalPractitioner,
       });
       return value;
     }
