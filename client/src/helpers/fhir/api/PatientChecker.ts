@@ -1,4 +1,4 @@
-import Http from '../http-client';
+import Http from '../../http-client';
 
 const RAMQ_PATTERN = RegExp(/^[a-zA-Z-]{4}\d{8,9}$/);
 

@@ -32,6 +32,16 @@ const VALUE_DECIMALS = 2;
 
 const hasNoComparator = (v) => !v.comparator;
 
+const defaultNumericalComposition = [
+  { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
+  { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
+];
+
+const defaultStructValues = [
+  { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
+  { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
+];
+
 class CompositeFilter extends React.Component {
   /* @NOTE SQON Struct Sample
   {
@@ -57,20 +67,15 @@ class CompositeFilter extends React.Component {
       }
   }
   */
-  static numericalCompositionStructFromArgs(comparator, values = [
-    { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
-    { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
-  ]) {
+
+  static numericalCompositionStructFromArgs(comparator, values = defaultNumericalComposition) {
     return {
       comparator,
       values: values.filter((term) => !term.markedForDeletion),
     };
   }
 
-  static structFromArgs(id, composition = {}, values = [
-    { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
-    { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
-  ]) {
+  static structFromArgs(id, composition = {}, values = defaultStructValues) {
     return {
       id,
       values,

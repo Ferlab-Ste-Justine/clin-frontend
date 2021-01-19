@@ -15,6 +15,10 @@ export const initialUserState = {
     patientTableConfig: {},
     variantTableConfig: {},
   },
+  practitionerData: {
+    practitioner: null,
+    practitionerRole: null,
+  },
 };
 
 export const userShape = {
@@ -48,6 +52,8 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.profile.defaultStatement = action.payload.data.hits[0]._source.defaultStatement;
       draft.profile.patientTableConfig = JSON.parse(action.payload.data.hits[0]._source.patientTableConfig);
       draft.profile.variantTableConfig = JSON.parse(action.payload.data.hits[0]._source.variantTableConfig);
+      draft.practitionerData.practitionerRole = action.payload.practitionerData.practitionerRole;
+      draft.practitionerData.practitioner = action.payload.practitionerData.practitioner;
       break;
 
     case actions.USER_PROFILE_UPDATE_SUCCEEDED:

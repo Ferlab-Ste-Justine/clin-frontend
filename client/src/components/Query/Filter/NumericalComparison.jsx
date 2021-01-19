@@ -18,6 +18,11 @@ import { roundDown, roundUp } from '../helpers/rounding';
 
 const VALUE_DECIMALS = 2;
 
+const defaultStructValues = [
+  { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
+  { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
+];
+
 class NumericalComparisonFilter extends React.Component {
   /* @NOTE SQON Struct Sample
   {
@@ -37,10 +42,7 @@ class NumericalComparisonFilter extends React.Component {
     }
   }
   */
-  static structFromArgs(id, values = [
-    { comparator: FILTER_COMPARATOR_TYPE_GREATER_THAN_OR_EQUAL, value: 0 },
-    { comparator: FILTER_COMPARATOR_TYPE_LOWER_THAN_OR_EQUAL, value: 0 },
-  ]) {
+  static structFromArgs(id, values = defaultStructValues) {
     return {
       id,
       type: FILTER_TYPE_NUMERICAL_COMPARISON,
