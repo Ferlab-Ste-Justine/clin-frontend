@@ -1,7 +1,7 @@
 FROM node:14.15.1 as builder
 ADD . /code
 WORKDIR /code
-RUN yarn --no-lockfile
+RUN yarn
 RUN yarn run build
 
 FROM nginx:1 as server
