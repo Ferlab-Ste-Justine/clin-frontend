@@ -105,17 +105,7 @@ function PatientSubmissionScreen(props) {
         }
         return o;
       });
-      // const value = FhirDataManager.createPatient({
-      //   ...values,
-      //   gender,
-      //   id: patient.id,
-      //   bloodRelationship: values.consanguinity,
-      //   ethnicityCode: values.ethnicity ? values.ethnicity : '',
-      //   ethnicityDisplay: getEthnicityDisplay(values.ethnicity),
-      //   active: false,
-      //   birthDate: new Date(values.birthDate.toDate()),
-      //   generalPractitioner: patient.generalPractitioner,
-      // });
+
       const value = new PatientBuilder()
         .withId(patient.id)
         .withFamily(values.family)

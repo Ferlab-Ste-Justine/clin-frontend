@@ -1,9 +1,8 @@
-import { v4 as uuid } from 'uuid';
 import { Patient, Reference } from '../types';
 import { formatDate } from './Utils';
 
 export class PatientBuilder {
-  private id: string = `urn:uuid:${uuid()}`;
+  private id?: string;
 
   private family!: string;
 

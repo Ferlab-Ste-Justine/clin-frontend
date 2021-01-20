@@ -10,6 +10,16 @@ export const getPractitionerRoleReference = (id: string) : Reference | undefined
     reference: `PractitionerRole/${id}`,
   };
 };
+
+export const getPractitionerReference = (id: string) : Reference | undefined => {
+  if (id == null) {
+    return undefined;
+  }
+  return {
+    reference: `Practitioner/${id}`,
+  };
+};
+
 export const formatDate = (date: Date): string => {
   const year = date.getFullYear();
   let month = `${date.getMonth() + 1}`;

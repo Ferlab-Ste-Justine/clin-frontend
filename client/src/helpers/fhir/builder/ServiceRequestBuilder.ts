@@ -1,5 +1,7 @@
 import { ServiceRequest } from '../types';
-import { formatDate, getExtension, getPractitionerRoleReference } from './Utils';
+import {
+  formatDate, getExtension, getPractitionerReference, getPractitionerRoleReference,
+} from './Utils';
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
@@ -120,7 +122,7 @@ export class ServiceRequestBuilder {
 
     public withRequester(id: string | null) {
       if (id != null) {
-        this.serviceRequest.requester = getPractitionerRoleReference(id);
+        this.serviceRequest.requester = getPractitionerReference(id);
       }
       return this;
     }

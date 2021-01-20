@@ -2,9 +2,9 @@ import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
 
 import { isEmpty, get } from 'lodash';
-import { FhirDataManager } from './FhirDataManager.ts';
 import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
 import { ServiceRequestBuilder } from './builder/ServiceRequestBuilder';
+import { ClinicalImpressionBuilder } from './builder/ClinicalImpressionBuilder';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
@@ -414,11 +414,13 @@ export const createPatientSubmissionBundle = ({
   bundle.entry.push(serviceRequestEntry);
 
   if (clinicalImpression != null) {
-    const clinicalImpressionResource = FhirDataManager.createClinicalImpression(
-      userRole.id,
-      patientEntry.fullUrl,
-      submitted,
-    );
+    const clinicalImpressionResource = new ClinicalImpressionBuilder()
+      .withId(clinicalImpression.id)
+      .withAssessorId(userRole.id)
+      .withSubjectReference(patientReference)
+      .withSubmitted(submitted)
+      .build();
+
     clinicalImpressionResource.id = clinicalImpression.id != null ? clinicalImpression.id : undefined;
     clinicalImpressionResource.subject = patientReference;
 
