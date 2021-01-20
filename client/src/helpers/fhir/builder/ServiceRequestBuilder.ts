@@ -44,7 +44,7 @@ export class ServiceRequestBuilder {
       }
     }
 
-    public setSubmitted(value: boolean | undefined, roleId: string) {
+    public withSubmitted(value: boolean | undefined, roleId: string) {
       const isSubmitted = value != null && value;
 
       const ext = getExtension(this.serviceRequest, EXTENSION_SUBMITTED);
@@ -68,14 +68,14 @@ export class ServiceRequestBuilder {
       return this;
     }
 
-    public addSubject(id: string) {
+    public withSubject(id: string) {
       this.serviceRequest.subject = {
         reference: id,
       };
       return this;
     }
 
-    public addCoding(coding: ServiceRequestCoding) {
+    public withCoding(coding: ServiceRequestCoding) {
       if (coding !== undefined) {
         switch (coding) {
           case 'WXS':
@@ -118,7 +118,7 @@ export class ServiceRequestBuilder {
       return this;
     }
 
-    public addRequester(id: string | null) {
+    public withRequester(id: string | null) {
       if (id != null) {
         this.serviceRequest.requester = getPractitionerRoleReference(id);
       }

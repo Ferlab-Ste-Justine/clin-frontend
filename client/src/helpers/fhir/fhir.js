@@ -402,10 +402,10 @@ export const createPatientSubmissionBundle = ({
 
   const serviceRequestBuilder = new ServiceRequestBuilder(serviceRequest);
   const serviceRequestResource = serviceRequestBuilder
-    .addSubject(patientEntry.fullUrl)
-    .addCoding(serviceRequest.code)
-    .addRequester(practitionerId)
-    .setSubmitted(submitted, userRole.id)
+    .withSubject(patientEntry.fullUrl)
+    .withCoding(serviceRequest.code)
+    .withRequester(practitionerId)
+    .withSubmitted(submitted, userRole.id)
     .build();
 
   serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
