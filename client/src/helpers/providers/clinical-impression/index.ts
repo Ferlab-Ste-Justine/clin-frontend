@@ -1,16 +1,18 @@
 import { get } from 'lodash';
 import { ClinicalImpression, Observation } from '../../fhir/types';
 import { ConsultationSummary } from '../types';
-// @ts-ignore
 import { DataExtractor } from '../extractor';
-// @ts-ignore
-import { Provider, Record } from '../providers.ts';
+import { Provider, Record } from '../providers';
 
 const CGH_CODE = 'CGH';
 const CGH_INVES = 'INVES';
 const CGH_INDIC = 'INDIC';
 
 export class ClinicalImpressionProvider extends Provider<ClinicalImpression, ConsultationSummary> {
+  constructor(name: string) {
+    super(name);
+  }
+
   public doProvide(dataExtractor: DataExtractor): Record<ClinicalImpression, ConsultationSummary>[] {
     const clinicalImpressionBundle = dataExtractor.extractBundle('ClinicalImpression');
 
@@ -23,7 +25,7 @@ export class ClinicalImpressionProvider extends Provider<ClinicalImpression, Con
     const inves = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_INVES);
     const indic = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_INDIC);
 
-    const assessor = dataExtractor.getPractitionerDataByReference(
+    const assessor = dataExtractor.getPractitionerDataFromPractitionerRole(
       clinicalImpression,
       'assessor',
       clinicalImpressionBundle,

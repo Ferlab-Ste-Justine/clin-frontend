@@ -1,15 +1,17 @@
 import { get } from 'lodash';
 import { Observation } from '../../fhir/types';
 import { ClinicalObservation } from '../types';
-// @ts-ignore
-import { DataExtractor } from '../extractor.ts';
-// @ts-ignore
-import { Provider, Record } from '../providers.ts';
+import { DataExtractor } from '../extractor';
+import { Provider, Record } from '../providers';
 
 const AGE_AT_ONSET_EXTENSION = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset';
 
 const HPO_CODE = 'PHENO';
 export class HPOProvider extends Provider<Observation, ClinicalObservation> {
+  constructor(name: string) {
+    super(name);
+  }
+
   public doProvide(dataExtractor: DataExtractor): Record<Observation, ClinicalObservation>[] {
     const clinicalImpressionBundle = dataExtractor.extractBundle('ClinicalImpression');
 

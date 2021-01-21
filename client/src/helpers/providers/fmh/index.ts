@@ -1,12 +1,14 @@
 import { get } from 'lodash';
 import { FamilyMemberHistory } from '../../fhir/types';
 import { FamilyObservation } from '../types';
-// @ts-ignore
-import { DataExtractor } from '../extractor.ts';
-// @ts-ignore
-import { Provider, Record } from '../providers.ts';
+import { DataExtractor } from '../extractor';
+import { Provider, Record } from '../providers';
 
 export class FMHProvider extends Provider<FamilyMemberHistory, FamilyObservation> {
+  constructor(name: string) {
+    super(name);
+  }
+
   public doProvide(dataExtractor: DataExtractor): Record<FamilyMemberHistory, FamilyObservation>[] {
     const clinicalImpressionBundle = dataExtractor.extractBundle('ClinicalImpression');
 

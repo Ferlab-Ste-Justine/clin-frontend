@@ -338,7 +338,7 @@ export const createGetPractitionersDataBundle = (data) => {
   data.entry.forEach((bundle) => {
     if (bundle.resource.entry != null) {
       bundle.resource.entry.forEach((entry) => {
-        if (get(entry, 'resource.resourceType', '') === 'Practitioner' && ids.find((id) => id === entry.resource.id) == null) {
+        if (get(entry, 'resource.resourceType', '') === 'PractitionerRole' && ids.find((id) => id === entry.resource.id) == null) {
           ids.push(entry.resource.id);
         }
       });
@@ -356,11 +356,27 @@ export const createGetPractitionersDataBundle = (data) => {
       {
         request: {
           method: 'GET',
-          url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
+          url: `/PractitionerRole?_id=${id}&_include=PractitionerRole:organization&_include=PractitionerRole:practitioner`,
         },
       },
     );
   });
+
+  const serviceRequestEntries = get(data, 'entry[2].resource.entry', []);
+  if (serviceRequestEntries.length > 1) {
+    const id = get(serviceRequestEntries, '[1].resource.id', null);
+    if (id != null) {
+      output.entry.push(
+        {
+          request: {
+            method: 'GET',
+            url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
+          },
+        },
+      );
+    }
+  }
+
   return output;
 };
 
@@ -382,7 +398,7 @@ export const createPatientSubmissionBundle = ({
   const patientResource = patient;
   if (userRole != null) {
     const generalPractitioner = get(patientResource, 'generalPractitioner', []);
-    if (generalPractitioner.find((practitioner) => practitioner.id === userRole.id) == null) {
+    if (generalPractitioner.find((practitioner) => practitioner.reference.indexOf(userRole.id) !== -1) == null) {
       patientResource.generalPractitioner = [
         ...generalPractitioner,
         {

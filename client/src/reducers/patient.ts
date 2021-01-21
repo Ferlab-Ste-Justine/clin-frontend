@@ -7,18 +7,12 @@ import * as actions from '../actions/type';
 import {
   ClinicalImpression, FamilyMemberHistory, Observation, Patient, ServiceRequest,
 } from '../helpers/fhir/types';
-// @ts-ignore
-import { ClinicalImpressionProvider } from '../helpers/providers/clinical-impression/index.ts';
-// @ts-ignore
-import { FMHProvider } from '../helpers/providers/fmh/index.ts';
-// @ts-ignore
-import { HPOProvider } from '../helpers/providers/hpos/index.ts';
-// @ts-ignore
-import { PatientProvider } from '../helpers/providers/patient/index.ts';
-// @ts-ignore
-import { ProviderChain, Record } from '../helpers/providers/providers.ts';
-// @ts-ignore
-import { ServiceRequestProvider } from '../helpers/providers/service-request/index.ts';
+import { ClinicalImpressionProvider } from '../helpers/providers/clinical-impression/index';
+import { FMHProvider } from '../helpers/providers/fmh/index';
+import { HPOProvider } from '../helpers/providers/hpos/index';
+import { PatientProvider } from '../helpers/providers/patient/index';
+import { ProviderChain, Record } from '../helpers/providers/providers';
+import { ServiceRequestProvider } from '../helpers/providers/service-request/index';
 import {
   ClinicalObservation,
   ConsultationSummary,
@@ -44,7 +38,7 @@ type Observations = {
 }
 
 type State = {
-  patient: Record<Patient, ParsedPatientData>;
+  patient: Record<Partial<Patient>, Partial<ParsedPatientData>>;
   prescriptions: Record<ServiceRequest, Prescription>[];
   consultation: Record<ClinicalImpression, ConsultationSummary>[];
   hpos: Record<Observation, ClinicalObservation>[];
@@ -57,8 +51,8 @@ type Action = {
   payload: any;
 };
 
-const initialState = {
-  patient: { parsed: { id: '' } }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observations: {},
+const initialState: State = {
+  patient: { parsed: { id: '' }, original: {} }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observations: {},
 };
 
 const reducer = (state: State = initialState, action: Action) => produce<State>(state, (draft) => {

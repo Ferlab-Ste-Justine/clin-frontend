@@ -1,6 +1,5 @@
 import { Dictionary, keyBy } from 'lodash';
-// @ts-ignore
-import { DataExtractor } from './extractor.ts';
+import { DataExtractor } from './extractor';
 
 export type Record<T, V> = {
   original: T;
