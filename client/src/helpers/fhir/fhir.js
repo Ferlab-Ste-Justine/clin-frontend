@@ -380,10 +380,6 @@ export const createGetPractitionersDataBundle = (data) => {
   return output;
 };
 
-// TODO: Observations, Family relationships and Practitioner have been converted to resources already in the PatientSubmission form.
-// patient, serviceRequest and clinicalImpression are not converted to FHIR resources yet at this point.
-// They're converted in this method for now but this should be done in the patientSubmission form so that this method only has to create
-// the FHIR bundle and set references right.
 export const createPatientSubmissionBundle = ({
   patient,
   serviceRequest,

@@ -1,0 +1,92 @@
+{
+    "resourceType": "Bundle",
+    "id": "3531cb44-6eeb-4e3f-9eb6-710bff83dfc0",
+    "type": "transaction",
+    "entry": [
+        {
+            "fullUrl": "urn:uuid:b3fad0a8-b924-4650-9369-3fab13334836",
+            "resource": {
+                "resourceType": "Patient",
+                "meta": {
+                    "profile": [
+                        "http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient"
+                    ]
+                },
+                "active": true,
+                "birthDate": "2020-12-28",
+                "extension": [
+                    {
+                        "url": "http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband",
+                        "valueBoolean": true
+                    },
+                    {
+                        "url": "http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id",
+                        "valueReference": {
+                            "reference": "urn:uuid:65113115-8c06-4422-a010-f37c0c356a4e"
+                        }
+                    }
+                ],
+                "gender": "male",
+                "generalPractitioner": [
+                    {
+                        "reference": "PractitionerRole/PROLE-78a60801-cbab-4064-93c6-d85aeadc1edb"
+                    }
+                ],
+                "identifier": [
+                    {
+                        "type": {
+                            "coding": [
+                                {
+                                    "code": "MR",
+                                    "display": "Medical record number",
+                                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                                }
+                            ],
+                            "text": "Numéro du dossier médical"
+                        },
+                        "value": "1324"
+                    }
+                ],
+                "managingOrganization": {
+                    "reference": "Organization/CHUSJ"
+                },
+                "name": [
+                    {
+                        "family": "Harvey",
+                        "given": [
+                            "Specter"
+                        ]
+                    }
+                ]
+            },
+            "request": {
+                "method": "POST",
+                "url": "Patient"
+            }
+        },
+        {
+            "fullUrl": "urn:uuid:65113115-8c06-4422-a010-f37c0c356a4e",
+            "resource": {
+                "resourceType": "Group",
+                "meta": {
+                    "profile": [
+                        "http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-family-group"
+                    ]
+                },
+                "type": "person",
+                "actual": true,
+                "member": [
+                    {
+                        "entity": {
+                            "reference": "urn:uuid:0c26e7e2-def4-4cfe-8ba8-c7965b2c2678"
+                        }
+                    }
+                ]
+            },
+            "request": {
+                "method": "POST",
+                "url": "Group"
+            }
+        }
+    ]
+}
