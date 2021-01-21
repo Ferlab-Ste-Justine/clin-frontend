@@ -134,6 +134,7 @@ export interface ServiceRequest {
   requester?: Reference;
   performer?: Reference[];
   subject: Reference;
+  note?: Note[];
 }
 
 export interface Observation {

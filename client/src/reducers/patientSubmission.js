@@ -228,9 +228,7 @@ const patientSubmissionReducer = (
         cgh, summary, hypothesis,
       } = action.payload.patient.consultation[0].parsed;
 
-      const { performer } = action.payload.patient.prescriptions[0].parsed;
-
-      const { generalPractitioner } = patient;
+      const { requester } = action.payload.patient.prescriptions[0].parsed;
 
       const hpos = action.payload.patient.hpos.map((hpo) => hpo.original);
       const fmhs = action.payload.patient.fmhs.map((fmh) => fmh.original);
@@ -277,11 +275,11 @@ const patientSubmissionReducer = (
         practitioner: '',
       };
 
-      if (get(generalPractitioner, 'length', 0) > 0) {
+      if (requester != null) {
         draft.local.practitioner = genPractitionerKey({
-          family: performer.lastName,
-          given: performer.firstName,
-          license: performer.mrn,
+          family: requester.lastName,
+          given: requester.firstName,
+          license: requester.mrn,
         });
       }
       break;

@@ -1,16 +1,18 @@
 import { has, get } from 'lodash';
 import { FamilyGroup, Organization, Patient } from '../../fhir/types';
 import { ParsedPatientData } from '../types';
-// @ts-ignore
-import { DataExtractor } from '../extractor.ts';
-// @ts-ignore
-import { Provider, Record } from '../providers.ts';
+import { DataExtractor } from '../extractor';
+import { Provider, Record } from '../providers';
 
 const ETHNICITY_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity';
 const BLOOD_RELATIONSHIP_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship';
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
 
 export class PatientProvider extends Provider<Patient, ParsedPatientData> {
+  constructor(name: string) {
+    super(name);
+  }
+
   private translateEthnicity(ethnicityCode: string): string {
     switch (ethnicityCode) {
       case 'CA-FR':
@@ -38,7 +40,7 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
     }
   }
 
-  public doProvide(dataExtractor: DataExtractor): Record<Patient, ParsedPatientData> {
+  public doProvide(dataExtractor: DataExtractor): Record<Patient, ParsedPatientData>[] {
     const patientBundle = dataExtractor.extractBundle('Patient');
     const groupBundle = dataExtractor.extractBundle('FamilyGroup');
 
@@ -54,7 +56,7 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
     const ramq = has(patient, 'identifier[1].value') ? patient.identifier[1].value : 'N/A';
 
     const patientData: ParsedPatientData = {
-      id: patient.id,
+      id: patient.id!,
       status: patient.active ? 'active' : 'inactive',
       lastName: patient.name[0].family,
       firstName: patient.name[0].given[0],
@@ -68,7 +70,7 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
         bloodRelationshipExt != null && has(bloodRelationshipExt, 'valueCoding.display')
           ? bloodRelationshipExt.valueCoding.display
           : 'N/A',
-      familyId: group.id,
+      familyId: group.id!,
       familyType: group.type,
       proband: probandExt != null && probandExt.valueBoolean ? 'Proband' : 'Parent',
     };

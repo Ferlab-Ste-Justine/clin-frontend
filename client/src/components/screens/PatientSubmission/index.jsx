@@ -39,10 +39,10 @@ import {
   createPractitionerResource,
   genPractitionerKey,
 } from '../../../helpers/fhir/fhir';
-import { FhirDataManager } from '../../../helpers/fhir/FhirDataManager.ts';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
 import ConfirmationModal from '../../ConfirmationModal';
+import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
 
 const { Step } = Steps;
 
@@ -105,16 +105,22 @@ function PatientSubmissionScreen(props) {
         }
         return o;
       });
-      const value = FhirDataManager.createPatient({
-        ...values,
-        gender,
-        id: patient.id,
-        bloodRelationship: values.consanguinity,
-        ethnicityCode: values.ethnicity ? values.ethnicity : '',
-        ethnicityDisplay: getEthnicityDisplay(values.ethnicity),
-        active: false,
-        birthDate: new Date(values.birthDate.toDate()),
-      });
+
+      const value = new PatientBuilder()
+        .withId(patient.id)
+        .withFamily(values.family)
+        .withGiven(values.given)
+        .withMrn(values.mrn)
+        .withOrganization(values.organization)
+        .withBloodRelationship(values.consanguinity)
+        .withEthnicityCode(values.ethnicity ? values.ethnicity : '')
+        .withEthnicityDisplay(getEthnicityDisplay(values.ethnicity))
+        .withActive(true)
+        .withBirthDate(new Date(values.birthDate.toDate()))
+        .withGeneralPractitioners(patient.generalPractitioner)
+        .withGender(gender)
+        .build();
+
       return value;
     }
 

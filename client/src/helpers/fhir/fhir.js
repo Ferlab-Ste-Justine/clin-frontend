@@ -2,8 +2,9 @@ import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
 
 import { isEmpty, get } from 'lodash';
-import { FhirDataManager } from './FhirDataManager.ts';
 import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
+import { ServiceRequestBuilder } from './builder/ServiceRequestBuilder';
+import { ClinicalImpressionBuilder } from './builder/ClinicalImpressionBuilder';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
@@ -337,7 +338,7 @@ export const createGetPractitionersDataBundle = (data) => {
   data.entry.forEach((bundle) => {
     if (bundle.resource.entry != null) {
       bundle.resource.entry.forEach((entry) => {
-        if (get(entry, 'resource.resourceType', '') === 'Practitioner' && ids.find((id) => id === entry.resource.id) == null) {
+        if (get(entry, 'resource.resourceType', '') === 'PractitionerRole' && ids.find((id) => id === entry.resource.id) == null) {
           ids.push(entry.resource.id);
         }
       });
@@ -355,11 +356,27 @@ export const createGetPractitionersDataBundle = (data) => {
       {
         request: {
           method: 'GET',
-          url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
+          url: `/PractitionerRole?_id=${id}&_include=PractitionerRole:organization&_include=PractitionerRole:practitioner`,
         },
       },
     );
   });
+
+  const serviceRequestEntries = get(data, 'entry[2].resource.entry', []);
+  if (serviceRequestEntries.length > 1) {
+    const id = get(serviceRequestEntries, '[1].resource.id', null);
+    if (id != null) {
+      output.entry.push(
+        {
+          request: {
+            method: 'GET',
+            url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
+          },
+        },
+      );
+    }
+  }
+
   return output;
 };
 
@@ -372,6 +389,7 @@ export const createPatientSubmissionBundle = ({
   serviceRequest,
   clinicalImpression,
   observations,
+  practitionerId,
   deleted,
   groupId,
   submitted,
@@ -379,9 +397,15 @@ export const createPatientSubmissionBundle = ({
 }) => {
   const patientResource = patient;
   if (userRole != null) {
-    patientResource.generalPractitioner = [{
-      reference: `PractitionerRole/${userRole.id}`,
-    }];
+    const generalPractitioner = get(patientResource, 'generalPractitioner', []);
+    if (generalPractitioner.find((practitioner) => practitioner.reference.indexOf(userRole.id) !== -1) == null) {
+      patientResource.generalPractitioner = [
+        ...generalPractitioner,
+        {
+          reference: `PractitionerRole/${userRole.id}`,
+        },
+      ];
+    }
   }
 
   const patientEntry = createEntry(patientResource);
@@ -392,24 +416,27 @@ export const createPatientSubmissionBundle = ({
   const bundle = createBundle();
   bundle.entry.push(patientEntry);
 
-  const serviceRequestResource = FhirDataManager.createServiceRequest(
-    userRole.id,
-    patientEntry.fullUrl,
-    serviceRequest.code,
-    submitted,
-  );
+  const serviceRequestBuilder = new ServiceRequestBuilder(serviceRequest);
+  const serviceRequestResource = serviceRequestBuilder
+    .withSubject(patientEntry.fullUrl)
+    .withCoding(serviceRequest.code)
+    .withRequester(practitionerId)
+    .withSubmitted(submitted, userRole.id)
+    .build();
 
   serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
-  serviceRequestResource.subject = patientReference;
 
   const serviceRequestEntry = createEntry(serviceRequestResource);
   bundle.entry.push(serviceRequestEntry);
 
   if (clinicalImpression != null) {
-    const clinicalImpressionResource = FhirDataManager.createClinicalImpression(
-      userRole.id,
-      patientEntry.fullUrl,
-    );
+    const clinicalImpressionResource = new ClinicalImpressionBuilder()
+      .withId(clinicalImpression.id)
+      .withAssessorId(userRole.id)
+      .withSubjectReference(patientReference)
+      .withSubmitted(submitted)
+      .build();
+
     clinicalImpressionResource.id = clinicalImpression.id != null ? clinicalImpression.id : undefined;
     clinicalImpressionResource.subject = patientReference;
 
