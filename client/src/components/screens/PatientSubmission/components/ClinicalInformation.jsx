@@ -470,7 +470,7 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore,
+      form, observations, localStore, patient,
     } = this.props;
     const { getFieldValue } = form;
 
@@ -556,7 +556,35 @@ class ClinicalInformation extends React.Component {
     const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);
 
     return (
-      <div>
+      <div className="clinical-information">
+        <Card
+          title={intl.get('form.patientSubmission.clinicalInformation.medicalFile')}
+          className="staticCard patientContent"
+        >
+          <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.file')}>
+            <Select
+              className="clinical-information__mrn"
+              onChange={(value) => {
+                const [mrn, organizaation] = value.split('|');
+                form.setFields([
+                  { name: 'mrn', value: mrn },
+                  { name: 'organizaation', value: organizaation },
+                ]);
+              }}
+            >
+              {
+                patient.identifier
+                  .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
+                  .map((id) => (
+                    <Select.Option value={`${id.value} | ${id.assigner.reference.split('/')[1]}`}>
+                      { `${id.value} | ${id.assigner.reference.split('/')[1]}` }
+                    </Select.Option>
+                  ))
+              }
+            </Select>
+          </Form.Item>
+        </Card>
+
         <Card title={intl.get('form.patientSubmission.clinicalInformation.title')} bordered={false} className="staticCard patientContent">
 
           <Form.Item name="cghId" initialValue={cghId} className="hidden-form">

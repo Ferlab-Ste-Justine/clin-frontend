@@ -9,7 +9,7 @@ import {
   Button, Card, Form, Steps, Typography,
 } from 'antd';
 import {
-  find, has, debounce, mapValues, get, values as toArray,
+  find, has, debounce, get, values as toArray, mapValues,
 } from 'lodash';
 
 import IconKit from 'react-icons-kit';
@@ -29,7 +29,6 @@ import {
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './components/ClinicalInformation';
 import Approval from './components/Approval';
-import PatientInformation from './components/PatientInformation';
 import Api from '../../../helpers/api';
 
 import './style.scss';
@@ -66,7 +65,6 @@ function PatientSubmissionScreen(props) {
   });
 
   const getPatientData = () => {
-    const { currentPageIndex } = state;
     const { patient } = props;
     let values = form.getFieldsValue();
 
@@ -308,7 +306,7 @@ function PatientSubmissionScreen(props) {
     return builder.build();
   };
 
-  const saveSecondPageLocalStore = () => {
+  const saveClinicalInfoPageLocalStore = () => {
     const { actions } = props;
     const values = form.getFieldsValue();
 
@@ -317,6 +315,7 @@ function PatientSubmissionScreen(props) {
     actions.saveLocalSummary(values.summaryNote);
     actions.saveLocalIndic(values.indication);
   };
+
   const saveSubmission = (submitted = false) => {
     form.validateFields().then(() => {
       const {
@@ -343,19 +342,6 @@ function PatientSubmissionScreen(props) {
           ...observations,
           cgh: {
             ...observations.cgh,
-          },
-          indic: {
-            ...observations.indic,
-          },
-          summary: {
-            ...observations.summary,
-          },
-        };
-      } else if (currentPageIndex === 1) {
-        submission.observations = {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
             ...createCGHResourceList(),
           },
           indic: {
@@ -368,7 +354,7 @@ function PatientSubmissionScreen(props) {
           },
         };
         actions.saveObservations(submission.observations);
-        saveSecondPageLocalStore();
+        saveClinicalInfoPageLocalStore();
       } else {
         submission.submitted = submitted;
         submission.observations = {
@@ -462,8 +448,6 @@ function PatientSubmissionScreen(props) {
     const { actions, observations } = props;
     const pageIndex = currentPageIndex + 1;
     if (currentPageIndex === 0) {
-      actions.savePatientLocal(getPatientData());
-    } else if (currentPageIndex === 1) {
       actions.saveObservations(
         {
           ...observations,
@@ -478,7 +462,7 @@ function PatientSubmissionScreen(props) {
         },
       );
 
-      saveSecondPageLocalStore();
+      saveClinicalInfoPageLocalStore();
 
       const { practitioner } = localStore;
 
@@ -497,7 +481,7 @@ function PatientSubmissionScreen(props) {
     setState({ ...state, currentPageIndex: pageIndex });
 
     if (currentPageIndex === 1) {
-      saveSecondPageLocalStore();
+      saveClinicalInfoPageLocalStore();
     }
 
     debounce(validate, 500)();
@@ -549,18 +533,15 @@ function PatientSubmissionScreen(props) {
 
   const pages = [
     {
-      title: intl.get('screen.clinicalSubmission.patientInformation'),
-      content: (
-        <PatientInformation parentForm={this} patient={patient} validate={validate} />
-      ),
-      name: 'PatientInformation',
-      values: {},
-      isComplete: () => true,
-    },
-    {
       title: intl.get('screen.clinicalSubmission.clinicalInformation'),
       content: (
-        <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} validate={validate} />
+        <ClinicalInformation
+          parentForm={this}
+          form={form}
+          patient={patient}
+          clinicalImpression={clinicalImpression}
+          validate={validate}
+        />
       ),
       name: 'ClinicalInformation',
       values: {},
@@ -592,7 +573,15 @@ function PatientSubmissionScreen(props) {
     <Layout>
       <>
         <div className="page_headerStaticMargin">
-          <Title className="headerStaticContent" level={3}>{ intl.get('form.patientSubmission.form.title') }</Title>
+          <Title className="headerStaticContent" level={3}>
+            { `${has(patient, 'name[0].family') ? patient.name[0].family : ''}, ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}` }
+            <Typography.Text
+              type="secondary"
+              className="headerStaticContent__secondary"
+            >
+              { intl.get('form.patientSubmission.form.title') }
+            </Typography.Text>
+          </Title>
         </div>
         <div className="page-static-content">
           <Card bordered={false} className="step">

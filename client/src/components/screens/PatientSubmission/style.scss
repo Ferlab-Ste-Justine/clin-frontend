@@ -492,3 +492,9 @@
   display: flex;
   align-items: flex-start;    
 }
+
+.clinical-information {
+  &__mrn {
+    max-width: 183px;
+  }
+}

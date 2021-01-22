@@ -58,6 +58,7 @@ export interface CodeableConcept {
 export interface Identifier {
   use?: string;
   type: CodeableConcept;
+  assigner?: Reference;
   value: string;
   assigner?: Reference;
 }

@@ -432,7 +432,7 @@ class PatientScreen extends React.Component {
                                 </div>
                                 <div className="row">
                                   <span className="title">{ mrn }</span>
-                                  <span className="info mrn">{ patient.mrn } | { patient.organization }</span>
+                                  <span className="info mrn">{ patient.mrn[0].number } | { patient.mrn[0].hospital }</span>
                                 </div>
                                 <div className="row">
                                   <span className="title">{ dateOfBirth }</span>

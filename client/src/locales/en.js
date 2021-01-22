@@ -616,7 +616,7 @@ const en = {
   'form.patientSubmission.form.niece': 'Niece',
   'form.patientSubmission.form.maternalMember': 'Maternal Member',
   'form.patientSubmission.form.paternalMember': 'Paternal Member',
-  'form.patientSubmission.form.title': 'New patient and genomic test prescription',
+  'form.patientSubmission.form.title': 'Sequencing Request',
   'form.patientSubmission.form.submit': 'Submit',
   'form.patientSubmission.form.hpo.interpretation': 'Interpretation',
   'form.patientSubmission.form.hpo.ageAtOnset': 'Age at onset',

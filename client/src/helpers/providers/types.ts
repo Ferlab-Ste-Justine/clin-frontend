@@ -4,7 +4,7 @@ export type ParsedPatientData = {
   lastName: string;
   firstName: string;
   ramq: string;
-  mrn: string;
+  mrn: Mrn[];
   organization: string;
   gender: string;
   birthDate: string;
@@ -53,5 +53,10 @@ export type ConsultationSummary = {
   summary: string;
   hypothesis: string;
 };
+
+export type Mrn = {
+  number: string;
+  hospital: string;
+}
 
 export type PositionType = 'proband' | 'parent';

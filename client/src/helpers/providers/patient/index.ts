@@ -8,6 +8,22 @@ const ETHNICITY_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-et
 const BLOOD_RELATIONSHIP_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship';
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
 
+function getHospitalFromReference(reference: Reference) {
+  return reference.reference.split('/')[1];
+}
+
+function buildIdentifier(identifier: Identifier, patient: Patient) {
+  if (!identifier.type.coding || identifier.type.coding[0].code !== 'MR' || identifier.assigner != null) {
+    // Update only identifier for Medical Record that doesn't have an assigner
+    return identifier;
+  }
+
+  return {
+    ...identifier,
+    assigner: patient.managingOrganization,
+  };
+}
+
 export class PatientProvider extends Provider<Patient, ParsedPatientData> {
   constructor(name: string) {
     super(name);
@@ -45,6 +61,8 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
     const groupBundle = dataExtractor.extractBundle('FamilyGroup');
 
     const patient = dataExtractor.extractResource<Patient>(patientBundle, 'Patient');
+    patient.identifier = patient.identifier.map((id) => buildIdentifier(id, patient));
+
     const organization = dataExtractor.extractResource<Organization>(patientBundle, 'Organization');
     const group = dataExtractor.extractResource<FamilyGroup>(groupBundle, 'Group');
 
@@ -52,7 +70,13 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
     const bloodRelationshipExt = dataExtractor.getExtension(patient, BLOOD_RELATIONSHIP_EXT_URL);
     const probandExt = dataExtractor.getExtension(patient, PROBAND_EXT_URL);
 
-    const mrn = patient.identifier[0].value;
+    const mrn: Mrn[] = patient.identifier
+      .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
+      .map((id) => ({
+        number: id.value,
+        hospital: (id.assigner && getHospitalFromReference(id.assigner)) || '',
+      }));
+
     const ramq = has(patient, 'identifier[1].value') ? patient.identifier[1].value : 'N/A';
 
     const patientData: ParsedPatientData = {

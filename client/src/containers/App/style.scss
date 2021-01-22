@@ -287,6 +287,11 @@ div.ant-card {
   .headerStaticContent{
     width: $maxWidth;
     margin: 0 24px;
+
+    &__secondary {
+      font-weight: normal;
+      margin-left: 8px;
+    }
   }
 }
 
