@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import { Bundle, BundleEntry, BundleMethod } from '../types';
+import { Bundle, BundleEntry } from '../types';
 
 type BundleType = 'Transaction' | 'Batch';
 
@@ -20,12 +20,12 @@ export class BundleBuilder {
       return this;
     }
 
-    public withResource(method: BundleMethod, resource: any) {
+    public withResource(resource: any) {
       const id = get(resource, 'id', undefined);
       const idExists = id != null && !id.startsWith('urn:');
       this.entry.push({
         request: {
-          method,
+          method: idExists ? 'PUT' : 'POST',
           url: `${resource.resourceType}${idExists ? `/${id}` : ''}`,
         },
         fullUrl: idExists ? `${resource.resourceType}/${id}` : id,

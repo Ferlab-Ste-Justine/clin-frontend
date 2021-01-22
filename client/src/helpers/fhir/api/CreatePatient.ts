@@ -12,8 +12,8 @@ export const createPatient = async (patient: Patient, familyGroup: FamilyGroup) 
   const bundle: Bundle = new BundleBuilder()
     .withId(window.CLIN.fhirEsBundleId)
     .withType('Transaction')
-    .withResource('POST', patient)
-    .withResource('POST', familyGroup)
+    .withResource(patient)
+    .withResource(familyGroup)
     .build();
 
   const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`, bundle);
