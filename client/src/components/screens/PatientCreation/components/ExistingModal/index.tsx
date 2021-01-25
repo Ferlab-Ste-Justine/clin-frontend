@@ -17,7 +17,7 @@ const I18N_PREFIX = 'screen.patient.creation.existing.';
 
 const ExistingModal: React.FC<Props> = ({ open, onClose }) => {
   const dispatch = useDispatch();
-  const patient = useSelector((state: any) => state.patient.patient.parsed);
+  const patient = useSelector((state: any) => state.patientCreation.patient);
 
   if (!patient) {
     return <span />;

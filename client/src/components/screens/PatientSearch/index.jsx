@@ -9,7 +9,7 @@ import {
 import { ExportToCsv } from 'export-to-csv';
 import IconKit from 'react-icons-kit';
 import {
-  ic_add, ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
+  ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
 import { SearchOutlined } from '@ant-design/icons';
 import {
@@ -17,7 +17,6 @@ import {
 } from 'lodash';
 
 import './style.scss';
-import style from '../../../containers/App/style.module.scss';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import PatientCreation from '../PatientCreation';
@@ -492,13 +491,13 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
             <Col>
-              <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
+              { /* <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
                 <IconKit size={16} icon={ic_add} />
                 { intl.get('screen.patientsearch.button.new') }
-              </Button>
+              </Button> */ }
 
               { /* TODO Button for new patient creation form */ }
-              { /* <PatientCreation /> */ }
+              <PatientCreation />
             </Col>
           </Row>
           <Row className="flex-row">

@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import httpClient from '../../http-client';
 import { BundleBuilder } from '../builder/BundleBuilder';
 import { BundleIdExtractor } from '../BundleIdExtractor';
@@ -16,10 +17,27 @@ export const createPatient = async (patient: Patient, familyGroup: FamilyGroup) 
     .withResource(familyGroup)
     .build();
 
+  const memebers = get(bundle, 'entry[1].resource.member', []);
+  memebers.push({
+    entity: {
+      reference: get(bundle, 'entry[0].fullUrl'),
+    },
+  });
+
   const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`, bundle);
   const data = BundleIdExtractor.extractIds(response, patient, familyGroup);
+
+  const p = data[0] as Patient;
+  const fg = data[1] as FamilyGroup;
+
+  fg.member = [{
+    entity: {
+      reference: `Patient/${p.id}`,
+    },
+  }];
+
   return {
-    patient: data[0] as Patient,
-    familyGroup: data[1] as FamilyGroup,
+    patient: p,
+    familyGroup: fg,
   };
 };

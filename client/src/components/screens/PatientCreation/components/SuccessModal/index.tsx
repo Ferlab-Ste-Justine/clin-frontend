@@ -7,6 +7,7 @@ import { CheckCircleFilled, MedicineBoxOutlined, UserAddOutlined } from '@ant-de
 import { useDispatch, useSelector } from 'react-redux';
 import ResultModal from '../ResultModal';
 import { navigatoToSubmissionWithPatient } from '../../../../../actions/router';
+import { Patient } from '../../../../../helpers/fhir/types';
 
 interface Props {
   open: boolean
@@ -18,7 +19,7 @@ const I18N_PREFIX = 'screen.patient.creation.success.';
 
 const SuccessModal: React.FC<Props> = ({ open, onClose, onNewPatient }) => {
   const dispatch = useDispatch();
-  const patient = useSelector((state: any) => state.patient.patient.parsed);
+  const patient = useSelector((state: any) => state.patientCreation.patient) as Patient;
 
   if (!patient?.id) {
     return <span />;

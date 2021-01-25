@@ -6,10 +6,11 @@ import {
 } from 'antd';
 import './styles.scss';
 import { useDispatch } from 'react-redux';
-import FormModal from './components/FormaModal';
+import FormModal from './components/FormModal';
 import SuccessModal from './components/SuccessModal';
 import ExistingModal from './components/ExistingModal';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
+import { closeCreatePatient } from '../../../actions/patientCreation';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 enum SCREENS {
@@ -22,6 +23,7 @@ const PatientCreation: React.FC = () => {
 
   function onClose() {
     setOpenModal(null);
+    dispatch(closeCreatePatient());
     dispatch(navigateToPatientSearchScreen());
   }
 

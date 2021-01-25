@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import './styles.scss';
 import { useSelector } from 'react-redux';
+import { Patient } from '../../../../../helpers/fhir/types';
 
 interface Props {
   open: boolean
@@ -19,7 +20,7 @@ const I18N_PREFIX = 'screen.patient.creation.modal.';
 const ResultModal: React.FC<Props> = ({
   open, onClose, icon, description, actions,
 }) => {
-  const patient = useSelector((state: any) => state.patient.patient.parsed);
+  const patient = useSelector((state: any) => state.patientCreation.patient) as Patient;
 
   if (!patient?.id) {
     return <span />;
@@ -28,11 +29,10 @@ const ResultModal: React.FC<Props> = ({
   return (
     <Modal visible={open} footer={null} width={815} onCancel={onClose}>
       <div className="patient-creation__modal__content">
-
         { icon }
 
         <Typography.Text className="patient-creation__modal__content__name">
-          { `${patient.lastName.toUpperCase()}, ${patient.firstName}` }
+          { `${patient.name[0].family}, ${patient.name[0].given[0]}` }
         </Typography.Text>
 
         <Typography.Text className="patient-creation__modal__content__description">

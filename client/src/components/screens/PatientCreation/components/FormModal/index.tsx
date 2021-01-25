@@ -1,4 +1,6 @@
-import React, { useReducer, Reducer, useState } from 'react';
+import React, {
+  useReducer, Reducer, useState,
+} from 'react';
 import intl from 'react-intl-universal';
 import {
   Checkbox, Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Spin,
@@ -9,12 +11,16 @@ import { useForm } from 'antd/lib/form/Form';
 import moment from 'moment';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import { set } from 'lodash';
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Api from '../../../../../helpers/api';
 import { DataExtractor } from '../../../../../helpers/providers/extractor';
-import { Patient } from '../../../../../helpers/fhir/types';
+import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 import { fetchPatient } from '../../../../../actions/patient';
 import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
+import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
+import { createPatient } from '../../../../../actions/patientCreation';
+import { FamilyGroupBuilder } from '../../../../../helpers/fhir/builder/FamilyGroupBuilder';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 
@@ -23,6 +29,8 @@ interface Props {
   onClose: () => void
   onCreated: () => void
   onExistingPatient: () => void
+  userRole: PractitionerRole
+  actions: any
 }
 
 enum PatientType {
@@ -30,11 +38,11 @@ enum PatientType {
   PERSON = 'person'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function createPatient(values: any) {
-  // TODO  Temp function for patientCreation
-  return Promise.resolve('PA0049');
-}
+// // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// async function createPatient(values: any) {
+//   // TODO  Temp function for patientCreation
+//   return Promise.resolve('PA0049');
+// }
 
 async function fetchInfoFromRamq(value: string) {
   const response = await Api.getPatientByRamq(value) as any;
@@ -112,9 +120,8 @@ function validateForm(formValues: any) {
 }
 
 const FormModal : React.FC<Props> = ({
-  open, onClose, onCreated, onExistingPatient,
+  open, onClose, onCreated, onExistingPatient, userRole, actions,
 }) => {
-  const reduxDispatch = useDispatch();
   const [isFormValid, setIsFormValid] = useState(false);
   const [showBirthday, setShowBirthday] = useState(true);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(
@@ -170,7 +177,7 @@ const FormModal : React.FC<Props> = ({
                   const patientId = await fetchInfoFromRamq(ramqValue);
                   if (patientId) {
                     // Existing patient
-                    reduxDispatch(fetchPatient(patientId));
+                    actions.fetchPatient(patientId);
                     onExistingPatient();
                     resetForm();
                     return;
@@ -189,8 +196,23 @@ const FormModal : React.FC<Props> = ({
           }}
           onFinish={async (values) => {
             try {
-              const newPatientId = await createPatient(values);
-              reduxDispatch(fetchPatient(newPatientId));
+              const patient = new PatientBuilder()
+                .withFamily(values.lastname)
+                .withGiven(values.firstname)
+                .withMrnIdentifier(values.mrn.file, values.mrn.hospital)
+                .withOrganization(values.mrn.hospital)
+                .withRamq(values.ramq)
+                .withGender(values.sex)
+                .withBirthDate(new Date(values.birthday.toDate()))
+                .withActive(true)
+                .withGeneralPractitioner(userRole.id)
+                .build();
+
+              const group = new FamilyGroupBuilder()
+                .withActual(true)
+                .withType('person')
+                .build();
+              actions.createPatient(patient, group);
               resetForm();
               onCreated();
             } catch (e) {
@@ -355,4 +377,18 @@ const FormModal : React.FC<Props> = ({
   );
 };
 
-export default FormModal;
+const mapStateToProps = (state: any) => ({
+  userRole: state.user.practitionerData.practitionerRole,
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: bindActionCreators({
+    createPatient,
+    fetchPatient,
+  }, dispatch),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(FormModal);
