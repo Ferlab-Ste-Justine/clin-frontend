@@ -20,6 +20,14 @@ export class FamilyGroupBuilder {
         type: this.type!,
         actual: this.actual,
         member: this.member,
+        extension: [{
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/fm-structure',
+          valueCoding: {
+            code: 'TRI',
+            display: 'Trio',
+            system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/fm-structure',
+          },
+        }],
       };
     }
 

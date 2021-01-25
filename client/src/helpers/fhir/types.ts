@@ -59,6 +59,7 @@ export interface Identifier {
   use?: string;
   type: CodeableConcept;
   value: string;
+  assigner?: Reference;
 }
 
 export interface Name {
@@ -193,6 +194,7 @@ export interface FamilyGroup {
   meta: Meta;
   type: FamilyGroupType;
   actual: boolean;
+  extension: Extension[];
   member: BackboneElement[];
 }
 

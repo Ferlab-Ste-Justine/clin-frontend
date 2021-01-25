@@ -5,8 +5,6 @@ import { isEmpty } from 'lodash';
 
 import * as actionTypes from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
-import { createPatient } from '../helpers/fhir/api/CreatePatient';
-import { createRequest } from '../helpers/fhir/api/CreateRequest';
 
 const extractResponses = (e) => e.response;
 const getLocation = (response) => response.location;
@@ -39,26 +37,6 @@ const processBundleResponse = (r) => {
 
   return {};
 };
-
-function* handleCreatePatient(action) {
-  try {
-    const response = yield createPatient(action.patient, action.familyGroup);
-
-    yield put({ type: actionTypes.CREATE_PATIENT_SUCCEEDED, payload: { ...response } });
-  } catch (error) {
-    yield put({ type: actionTypes.CREATE_PATIENT_REQUEST_FAILED });
-  }
-}
-
-function* handleCreateRequest(action) {
-  try {
-    const response = yield createRequest(action.clinicalImpression, action.serviceRequest, action.observations);
-
-    yield put({ type: actionTypes.CREATE_PATIENT_SUCCEEDED, payload: { ...response } });
-  } catch (error) {
-    yield put({ type: actionTypes.CREATE_PATIENT_REQUEST_FAILED });
-  }
-}
 
 function* savePatientSubmission(action) {
   const { payload } = action;
@@ -132,18 +110,8 @@ function* watchSavePatientSubmission() {
   yield takeLatest(actionTypes.PATIENT_SUBMISSION_SAVE_REQUESTED, savePatientSubmission);
 }
 
-function* watchCreatePatient() {
-  yield takeLatest(actionTypes.CREATE_PATIENT_REQUESTED, handleCreatePatient);
-}
-
-function* watchCreateRequest() {
-  yield takeLatest(actionTypes.CREATE_PATIENT_REQUEST_REQUESTED, handleCreateRequest);
-}
-
 export default function* watchedPatientSubmissionSagas() {
   yield all([
     watchSavePatientSubmission(),
-    watchCreatePatient(),
-    watchCreateRequest(),
   ]);
 }

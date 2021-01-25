@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import { Bundle, BundleEntry } from '../types';
 
 type BundleType = 'Transaction' | 'Batch';
@@ -28,7 +29,7 @@ export class BundleBuilder {
           method: idExists ? 'PUT' : 'POST',
           url: `${resource.resourceType}${idExists ? `/${id}` : ''}`,
         },
-        fullUrl: idExists ? `${resource.resourceType}/${id}` : id,
+        fullUrl: idExists ? `${resource.resourceType}/${id}` : `urn:uuid:${uuid()}`,
         resource: {
           ...resource,
           id: idExists ? id : undefined,
