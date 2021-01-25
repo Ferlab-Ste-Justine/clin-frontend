@@ -64,6 +64,8 @@ const Footer = () => (
             <li><a href="#">{ intl.get('footer.navigation.secondary.access') }</a></li>
             <li><a href="#">{ intl.get('footer.navigation.secondary.confidentiality') }</a></li>
             <li><a href="#">{ intl.get('footer.navigation.secondary.about') }</a></li>
+            <li><a href="https://notebook.qa.cqdg.ferlab.bio"> Zeppelin </a></li>
+            <li><a href="https://fhir-console.qa.clin.ferlab.bio/home"> Fhir </a></li>
           </ul>
         </nav>
         <img className="logo" alt="Saint-Justine" src="/assets/logos/msssq.svg" />
