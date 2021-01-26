@@ -37,21 +37,31 @@ const PatientCreation: React.FC = () => {
         <UserAddOutlined />
         { intl.get(`${I18N_PREFIX}createPatient`) }
       </Button>
-      <FormModal
-        open={openModal === SCREENS.FORM}
-        onClose={onClose}
-        onCreated={() => setOpenModal(SCREENS.SUCCESS)}
-        onExistingPatient={() => setOpenModal(SCREENS.EXISTING)}
-      />
-      <SuccessModal
-        open={openModal === SCREENS.SUCCESS}
-        onClose={onClose}
-        onNewPatient={() => setOpenModal(SCREENS.FORM)}
-      />
-      <ExistingModal
-        open={openModal === SCREENS.EXISTING}
-        onClose={onClose}
-      />
+      { openModal === SCREENS.FORM && (
+        <FormModal
+          open
+          onClose={onClose}
+          onCreated={() => setOpenModal(SCREENS.SUCCESS)}
+          onExistingPatient={() => setOpenModal(SCREENS.EXISTING)}
+        />
+      ) }
+
+      { openModal === SCREENS.SUCCESS
+      && (
+        <SuccessModal
+          open
+          onClose={onClose}
+          onNewPatient={() => setOpenModal(SCREENS.FORM)}
+        />
+      ) }
+
+      { openModal === SCREENS.EXISTING
+      && (
+        <ExistingModal
+          open
+          onClose={onClose}
+        />
+      ) }
     </>
   );
 };

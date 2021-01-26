@@ -2,13 +2,6 @@ import * as actions from './type';
 
 type Action = (...args:any) => {type: keyof typeof actions, payload?: any};
 
-export const fetchPatient = (uid: string) => ({
-  type: actions.PATIENT_FETCH_REQUESTED,
-  payload: {
-    uid,
-  },
-});
-
 export const autoCompletePatients: Action = (type: string, query: any, page: number, size: number) => ({
   type: actions.PATIENT_AUTOCOMPLETE_REQUESTED,
   payload: {

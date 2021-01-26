@@ -1,4 +1,5 @@
 import { produce } from 'immer';
+import { get } from 'lodash';
 import * as actions from '../actions/type';
 import { FamilyGroup, Patient } from '../helpers/fhir/types';
 
@@ -10,6 +11,7 @@ export enum PatientCreationStatus {
 
 export type PatientCreationState = {
     patient?: Patient,
+    ramqChecked: boolean;
     familyGroup?: FamilyGroup,
 };
 
@@ -18,7 +20,9 @@ type Action = {
   payload: any;
 };
 
-const initialState: PatientCreationState = {};
+const initialState: PatientCreationState = {
+  ramqChecked: false,
+};
 
 const reducer = (
   state: PatientCreationState = initialState,
@@ -33,6 +37,15 @@ const reducer = (
     case actions.CLOSE_CREATE_PATIENT_REQUESTED:
       draft.patient = undefined;
       draft.familyGroup = undefined;
+      draft.ramqChecked = false;
+      break;
+    case actions.PATIENT_FETCH_INFO_BY_RAMQ_SUCCEEDED:
+      draft.patient = get(action, 'payload.data.entry[0].resource');
+      draft.ramqChecked = true;
+      break;
+    case actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED:
+      draft.patient = undefined;
+      draft.ramqChecked = true;
       break;
     default:
       break;

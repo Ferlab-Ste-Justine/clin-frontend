@@ -13,14 +13,11 @@ import { RadioChangeEvent } from 'antd/lib/radio';
 import { set } from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Api from '../../../../../helpers/api';
-import { DataExtractor } from '../../../../../helpers/providers/extractor';
-import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
-import { fetchPatient } from '../../../../../actions/patient';
 import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
 import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
-import { createPatient } from '../../../../../actions/patientCreation';
+import { createPatient, fetchPatientByRamq } from '../../../../../actions/patientCreation';
 import { FamilyGroupBuilder } from '../../../../../helpers/fhir/builder/FamilyGroupBuilder';
+import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 
@@ -31,6 +28,8 @@ interface Props {
   onExistingPatient: () => void
   userRole: PractitionerRole
   actions: any
+  patient: Patient
+  ramqChecked: boolean
 }
 
 enum PatientType {
@@ -38,23 +37,6 @@ enum PatientType {
   PERSON = 'person'
 }
 
-// // eslint-disable-next-line @typescript-eslint/no-unused-vars
-// async function createPatient(values: any) {
-//   // TODO  Temp function for patientCreation
-//   return Promise.resolve('PA0049');
-// }
-
-async function fetchInfoFromRamq(value: string) {
-  const response = await Api.getPatientByRamq(value) as any;
-  const dataExtractor = new DataExtractor({ patientData: response.payload.data, practitionersData: {} });
-  const patient = dataExtractor.extractBundle('Patient') as Patient;
-
-  if (!patient) {
-    return null;
-  }
-
-  return patient.id;
-}
 enum RamqStatus {
  INVALID, PROCESSING, VALID
 }
@@ -120,7 +102,7 @@ function validateForm(formValues: any) {
 }
 
 const FormModal : React.FC<Props> = ({
-  open, onClose, onCreated, onExistingPatient, userRole, actions,
+  open, onClose, onCreated, onExistingPatient, userRole, actions, patient, ramqChecked,
 }) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [showBirthday, setShowBirthday] = useState(true);
@@ -139,6 +121,14 @@ const FormModal : React.FC<Props> = ({
     className: 'patient-creation__formItem',
     wrapperCol: { span: 12 },
   };
+
+  if (ramqChecked) {
+    if (patient != null) {
+      onExistingPatient();
+    } else if (state.ramqStatus === RamqStatus.PROCESSING) {
+      dispatch({ type: ActionType.RAMQ_VALID });
+    }
+  }
 
   return (
     <>
@@ -174,17 +164,8 @@ const FormModal : React.FC<Props> = ({
               if (ramqValue && ramqValue === ramqConfirmValue) {
                 try {
                   dispatch({ type: ActionType.RAMQ_PROCESSING });
-                  const patientId = await fetchInfoFromRamq(ramqValue);
-                  if (patientId) {
-                    // Existing patient
-                    actions.fetchPatient(patientId);
-                    onExistingPatient();
-                    resetForm();
-                    return;
-                  }
-                  dispatch({ type: ActionType.RAMQ_VALID });
+                  actions.fetchPatientByRamq(ramqValue);
                 } catch (e) {
-                  console.error(e);
                   form.setFields([{ name: 'ramq', errors: [intl.get(`${I18N_PREFIX}errors.invalidRamq`)] }]);
                 }
               }
@@ -196,7 +177,7 @@ const FormModal : React.FC<Props> = ({
           }}
           onFinish={async (values) => {
             try {
-              const patient = new PatientBuilder()
+              const newPatient = new PatientBuilder()
                 .withFamily(values.lastname)
                 .withGiven(values.firstname)
                 .withMrnIdentifier(values.mrn.file, values.mrn.hospital)
@@ -212,7 +193,7 @@ const FormModal : React.FC<Props> = ({
                 .withActual(true)
                 .withType('person')
                 .build();
-              actions.createPatient(patient, group);
+              actions.createPatient(newPatient, group);
               resetForm();
               onCreated();
             } catch (e) {
@@ -379,12 +360,14 @@ const FormModal : React.FC<Props> = ({
 
 const mapStateToProps = (state: any) => ({
   userRole: state.user.practitionerData.practitionerRole,
+  patient: state.patientCreation.patient,
+  ramqChecked: state.patientCreation.ramqChecked,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: bindActionCreators({
     createPatient,
-    fetchPatient,
+    fetchPatientByRamq,
   }, dispatch),
 });
 

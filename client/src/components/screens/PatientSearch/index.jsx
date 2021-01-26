@@ -207,7 +207,6 @@ class PatientSearchScreen extends React.Component {
           return result.organization.name;
         };
         const status = getStatusLabel(result);
-        console.log(status);
         const value = {
           status: status.length > 0 ? status : '--',
           id: result.id,
