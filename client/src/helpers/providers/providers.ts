@@ -8,7 +8,7 @@ export type Record<T, V> = {
 
 export type RecordResult<T, V> = {
   name: string;
-  records: Record<T, V>[];
+  records?: Record<T, V>[];
 };
 
 export abstract class Provider<T, V> {
@@ -17,10 +17,17 @@ export abstract class Provider<T, V> {
   public abstract doProvide(dataExtractor: DataExtractor): Record<T, V>[];
 
   public provide(dataExtractor: DataExtractor): RecordResult<T, V> {
-    return {
-      name: this.name,
-      records: this.doProvide(dataExtractor),
-    };
+    try {
+      const result = this.doProvide(dataExtractor);
+      return {
+        name: this.name,
+        records: result,
+      };
+    } catch (error) {
+      return {
+        name: this.name,
+      };
+    }
   }
 }
 

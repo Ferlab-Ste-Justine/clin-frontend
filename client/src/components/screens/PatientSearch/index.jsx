@@ -89,7 +89,7 @@ class PatientSearchScreen extends React.Component {
               case '':
                 return 'transparent';
               default:
-                return '#EB2F96';
+                return 'transparent';
             }
           },
         }),
@@ -206,8 +206,10 @@ class PatientSearchScreen extends React.Component {
           }
           return result.organization.name;
         };
+        const status = getStatusLabel(result);
+        console.log(status);
         const value = {
-          status: getStatusLabel(result),
+          status: status.length > 0 ? status : '--',
           id: result.id,
           mrn: result.mrn,
           ramq: result.ramq,

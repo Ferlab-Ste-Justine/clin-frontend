@@ -10,8 +10,9 @@ type Response = {
 }
 
 export const createPatient = async (patient: Patient, familyGroup: FamilyGroup) : Promise<Response> => {
+  const bundleId = window.CLIN.fhirEsPatientBundleId;
   const bundle: Bundle = new BundleBuilder()
-    .withId(window.CLIN.fhirEsBundleId)
+    .withId(bundleId)
     .withType('Transaction')
     .withResource(patient)
     .withResource(familyGroup)
@@ -24,7 +25,7 @@ export const createPatient = async (patient: Patient, familyGroup: FamilyGroup) 
     },
   });
 
-  const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`, bundle);
+  const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?id=${bundleId}`, bundle);
   const data = BundleIdExtractor.extractIds(response, patient, familyGroup);
 
   const p = data[0] as Patient;

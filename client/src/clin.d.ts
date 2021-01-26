@@ -9,7 +9,8 @@ interface ClinData {
     translate?: boolean,
     defaultUsername: string,
     defaultPassword: string,
-    fhirEsBundleId: string,
+    fhirEsPatientBundleId: string,
+    fhirEsRequestBundleId: string,
 }
 
 export declare global { interface Window { CLIN: ClinData } }

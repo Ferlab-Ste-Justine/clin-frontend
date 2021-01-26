@@ -23,8 +23,9 @@ export const createRequest = async (clinicalImpression: ClinicalImpression, serv
     throw new ApiError('Cannot create Patient Request: ServiceRequest not referencing ClinicalImpression');
   }
 
+  const bundleId = window.CLIN.fhirEsRequestBundleId;
   const builder = new BundleBuilder()
-    .withId(window.CLIN.fhirEsBundleId)
+    .withId(bundleId)
     .withType('Transaction')
     .withResource(clinicalImpression)
     .withResource(serviceRequest);
@@ -33,7 +34,7 @@ export const createRequest = async (clinicalImpression: ClinicalImpression, serv
 
   const bundle: Bundle = builder.build();
 
-  const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`, bundle);
+  const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?id=${bundleId}`, bundle);
   const data = BundleIdExtractor.extractIds(response, clinicalImpression, serviceRequest, ...observations);
 
   const ci = data[0] as ClinicalImpression;
