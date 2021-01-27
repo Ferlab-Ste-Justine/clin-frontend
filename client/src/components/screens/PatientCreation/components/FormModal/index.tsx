@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import intl from 'react-intl-universal';
 import {
-  Checkbox, Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Spin,
+  Checkbox, Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Spin, Typography,
 } from 'antd';
 import './styles.scss';
 import { FormItemProps } from 'antd/lib/form';
@@ -105,7 +105,7 @@ const FormModal : React.FC<Props> = ({
   open, onClose, onCreated, onExistingPatient, userRole, actions, patient, ramqChecked,
 }) => {
   const [isFormValid, setIsFormValid] = useState(false);
-  const [showBirthday, setShowBirthday] = useState(true);
+  const [isFetusType, setIsFetusType] = useState(false);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(
     reducer, { ramqStatus: RamqStatus.INVALID, ramqRequired: true },
   );
@@ -114,7 +114,7 @@ const FormModal : React.FC<Props> = ({
   const resetForm = () => {
     form.resetFields();
     setIsFormValid(false);
-    setShowBirthday(true);
+    setIsFetusType(false);
     dispatch({ type: ActionType.NO_RAMQ_REQUIRED, payload: false });
   };
   const formInputItemProps: FormItemProps = {
@@ -170,7 +170,7 @@ const FormModal : React.FC<Props> = ({
                 }
               }
             } else if (currentElement.id === 'patientType') {
-              setShowBirthday(currentElement.value === PatientType.PERSON);
+              setIsFetusType(currentElement.value === PatientType.FETUS);
             }
 
             setIsFormValid(validateForm(form.getFieldsValue()));
@@ -215,9 +215,14 @@ const FormModal : React.FC<Props> = ({
                 ]}
                 optionType="button"
                 onChange={(e: RadioChangeEvent) => {
-                  setShowBirthday(e.target.value === PatientType.PERSON);
+                  setIsFetusType(e.target.value === PatientType.FETUS);
                 }}
               />
+              { isFetusType && (
+                <Typography.Text className="patient-creation__form__fetus-note">
+                  { intl.get(`${I18N_PREFIX}fetus.note`) }
+                </Typography.Text>
+              ) }
             </Form.Item>
           </fieldset>
           <fieldset className="patient-creation__form__fieldset">
@@ -306,7 +311,7 @@ const FormModal : React.FC<Props> = ({
                     optionType="button"
                   />
                 </Form.Item>
-                { showBirthday && (
+                { !isFetusType && (
                   <Form.Item
                     label={intl.get(`${I18N_PREFIX}birthday`)}
                     name="birthday"

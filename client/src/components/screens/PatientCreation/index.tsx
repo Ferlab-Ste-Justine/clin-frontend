@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import intl from 'react-intl-universal';
-import { UserAddOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
 } from 'antd';
@@ -34,8 +34,8 @@ const PatientCreation: React.FC = () => {
         className="patient-creation__button"
         onClick={() => setOpenModal(SCREENS.FORM)}
       >
-        <UserAddOutlined />
-        { intl.get(`${I18N_PREFIX}createPatient`) }
+        <PlusOutlined />
+        { intl.get(`${I18N_PREFIX}createPrescription`) }
       </Button>
       { openModal === SCREENS.FORM && (
         <FormModal
