@@ -11,20 +11,22 @@ import IconKit from 'react-icons-kit';
 import {
   ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, FileTextOutlined } from '@ant-design/icons';
 import {
   debounce,
 } from 'lodash';
-
+import style from '../../../containers/App/style.module.scss';
 import './style.scss';
 
 import PatientCreation from '../PatientCreation';
 import { createCellRenderer } from '../../Table/index';
+import HeaderCustomCell from '../../Table/HeaderCustomCell';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
 import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
 import { updateUserColumns, updateUserColumnsOrder, updateUserColumnsReset } from '../../../actions/user';
+import { generateNanuqReport } from '../../../actions/nanuq';
 import { appShape } from '../../../reducers/app';
 import Layout from '../../Layout';
 
@@ -38,6 +40,7 @@ class PatientSearchScreen extends React.Component {
       isFacetOpen: false,
       facetFilterOpen: [],
       facet: [],
+      selectedPatients: [],
     };
     this.handleAutoCompleteChange = debounce(this.handleAutoCompleteChange.bind(this), 250, { leading: true });
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -65,6 +68,63 @@ class PatientSearchScreen extends React.Component {
       'organization',
     ];
     this.columnPreset = [
+      {
+        key: 'selectKey',
+        label: 'screen.patientsearch.table.select',
+        columnWidth: 52,
+        renderer: createCellRenderer('custom', this.getData, {
+          handler: () => {},
+          renderer: (data) => {
+            const { selectedPatients } = this.state;
+            const isSelected = selectedPatients.includes(data.id);
+            return (
+              <Checkbox
+                className="checkbox"
+                id={data.id}
+                onChange={() => {
+                  if (isSelected) {
+                    this.setState(({ selectedPatients: oldSelectedPatients }) => {
+                      const valueIndex = oldSelectedPatients.indexOf(data.id);
+                      oldSelectedPatients.splice(valueIndex, 1);
+                      return {
+                        selectedPatients: oldSelectedPatients,
+                      };
+                    });
+                  } else {
+                    this.setState(({ selectedPatients: oldSelectedPatients }) => ({
+                      selectedPatients: [...oldSelectedPatients, data.id],
+                    }));
+                  }
+                }}
+                checked={isSelected}
+              />
+            );
+          },
+        }),
+        headerRenderer: () => {
+          const { selectedPatients } = this.state;
+          const isAllSelected = this.getData().length === selectedPatients.length;
+          return (
+            <HeaderCustomCell className="table__header__checkbox__wrapper">
+              <Checkbox
+                aria-label="Select All Variants"
+                checked={isAllSelected}
+                indeterminate={!isAllSelected && selectedPatients.length > 0}
+                onChange={(e) => {
+                  const { checked } = e.target;
+
+                  if (checked) {
+                    const newSelectedPatients = this.getData().map((data) => data.id);
+                    this.setState({ selectedPatients: newSelectedPatients });
+                  } else {
+                    this.setState({ selectedPatients: [] });
+                  }
+                }}
+              />
+            </HeaderCustomCell>
+          );
+        },
+      },
       {
         key: 'status',
         label: 'screen.patientsearch.table.status',
@@ -413,13 +473,13 @@ class PatientSearchScreen extends React.Component {
 
   render() {
     const {
-      app, search, defaultColumns, defaultColumnsOrder,
+      app, search, defaultColumns, defaultColumnsOrder, actions,
     } = this.props;
     const { patient } = search;
     const { total } = patient;
     const { showSubloadingAnimation } = app;
     const {
-      size, page, isFacetOpen, facet,
+      size, page, isFacetOpen, facet, selectedPatients,
     } = this.state;
 
     const { Title } = Typography;
@@ -565,12 +625,38 @@ class PatientSearchScreen extends React.Component {
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     exportCallback={this.exportToTsv}
-                    numFrozenColumns={1}
+                    numFrozenColumns={2}
                     isLoading={showSubloadingAnimation}
                     rowHeights={rowHeights}
                     columnsUpdated={this.handleColumnsUpdated}
                     columnsOrderUpdated={this.handleColumnsOrderUpdated}
                     columnsReset={this.handleColumnsReset}
+                    customHeader={(
+                      <Row align="middle" gutter={32}>
+                        { selectedPatients.length > 0 && (
+                          <>
+                            <Col>
+                              <Typography.Text> {
+                                intl.get('screen.patientsearch.table.selectedPatients',
+                                  { count: selectedPatients.length })
+                              }
+                              </Typography.Text>
+                            </Col>
+                          </>
+                        ) }
+                        <Col flex={1} className="patientSearch__table__header__nanuq">
+                          <Button
+                            className={[style.btn, style.btnSec].join(' ')}
+                            disabled={selectedPatients.length === 0}
+                            onClick={() => actions.generateNanuqReport(selectedPatients)}
+                          >
+                            <FileTextOutlined />
+                            { intl.get('screen.patientsearch.table.nanuq') }
+                          </Button>
+                          <Divider type="vertical" />
+                        </Col>
+                      </Row>
+                    )}
                   />
                 ) }
               </Card>
@@ -600,6 +686,7 @@ const mapDispatchToProps = (dispatch) => ({
     updateUserColumns,
     updateUserColumnsOrder,
     updateUserColumnsReset,
+    generateNanuqReport,
   }, dispatch),
 });
 

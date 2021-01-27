@@ -293,6 +293,13 @@ div.ant-tag {
     width:calc(100% - 280px - 24px);
     margin-left: 24px;
   }
+
+  &__table__header__nanuq {
+    text-align: end;
+    button {
+      display: inline-flex;
+    }
+  }
 }
 
 .autocomplete-row{

@@ -225,3 +225,33 @@ export interface PractitionerRole {
   telecom: Telecom[];
   code: CodeableConcept[];
 }
+
+export interface PatientSearchHits {
+  id: string;
+  status: string;
+  organization: {
+    id: string
+    name: string
+  }
+  lastName: string
+  firstName: string
+  gender: string
+  birthDate: string,
+  practitioner: {
+    id: string,
+    lastName: string,
+    firstName: string
+  },
+  test: string,
+  prescription: string,
+  mrn: string,
+  ramq: string,
+  position: string,
+  familyId: string,
+  familyType: string,
+  ethnicity: string,
+  bloodRelationship: string,
+  request: string,
+  timestamp: string,
+  submitted: boolean,
+}

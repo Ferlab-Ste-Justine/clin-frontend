@@ -319,6 +319,7 @@ class InteractiveTable extends React.Component {
       canCreateReport,
       onColumnWidthChanged,
       sizeOptions,
+      customHeader,
     } = this.props;
     const {
       matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -370,9 +371,12 @@ class InteractiveTable extends React.Component {
     );
     return (
       <Spin spinning={isLoading}>
-        { (isReorderable || isSelectable || isExportable) && (
+        { (isReorderable || isSelectable || isExportable || customHeader) && (
           <>
-            <Row className="flex-row" justify="end">
+            <Row className="flex-row">
+              <Col flex={1}>
+                { customHeader }
+              </Col>
               { isReorderable && (
                 <Col>
                   <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
@@ -477,6 +481,7 @@ InteractiveTable.propTypes = {
   defaultColumnsOrder: PropTypes.array,
   onColumnWidthChanged: PropTypes.func,
   sizeOptions: PropTypes.array,
+  customHeader: PropTypes.element,
 };
 
 InteractiveTable.defaultProps = {
@@ -502,6 +507,7 @@ InteractiveTable.defaultProps = {
   columnsReset: () => { },
   rowHeights: null,
   sizeOptions: undefined,
+  customHeader: null,
 };
 
 export default InteractiveTable;
