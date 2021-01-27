@@ -154,7 +154,7 @@ const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
 
 const savePatientSubmission = async (patientSubmission) => {
   const data = createPatientSubmissionBundle(patientSubmission);
-  const bundleId = window.CLIN.fhirEsBundleId;
+  const bundleId = window.CLIN.fhirEsPatientBundleId;
   return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true&id=${bundleId}`, data)
     .then(successCallback)
     .catch(errorCallback);

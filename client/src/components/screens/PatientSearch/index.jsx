@@ -9,7 +9,7 @@ import {
 import { ExportToCsv } from 'export-to-csv';
 import IconKit from 'react-icons-kit';
 import {
-  ic_add, ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
+  ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
 import { SearchOutlined } from '@ant-design/icons';
 import {
@@ -17,8 +17,8 @@ import {
 } from 'lodash';
 
 import './style.scss';
-import style from '../../../containers/App/style.module.scss';
 
+import PatientCreation from '../PatientCreation';
 import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
@@ -88,7 +88,7 @@ class PatientSearchScreen extends React.Component {
               case '':
                 return 'transparent';
               default:
-                return '#EB2F96';
+                return 'transparent';
             }
           },
         }),
@@ -205,8 +205,9 @@ class PatientSearchScreen extends React.Component {
           }
           return result.organization.name;
         };
+        const status = getStatusLabel(result);
         const value = {
-          status: getStatusLabel(result),
+          status: status.length > 0 ? status : '--',
           id: result.id,
           mrn: result.mrn,
           ramq: result.ramq,
@@ -490,10 +491,7 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
             <Col>
-              <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
-                <IconKit size={16} icon={ic_add} />
-                { intl.get('screen.patientsearch.button.new') }
-              </Button>
+              <PatientCreation />
             </Col>
           </Row>
           <Row className="flex-row">

@@ -39,11 +39,11 @@ type Observations = {
 
 type State = {
   patient: Record<Partial<Patient>, Partial<ParsedPatientData>>;
-  prescriptions: Record<ServiceRequest, Prescription>[];
-  consultation: Record<ClinicalImpression, ConsultationSummary>[];
-  hpos: Record<Observation, ClinicalObservation>[];
-  fmhs: Record<FamilyMemberHistory, FamilyObservation>[];
-  observations: Observations;
+  prescriptions?: Record<ServiceRequest, Prescription>[];
+  consultation?: Record<ClinicalImpression, ConsultationSummary>[];
+  hpos?: Record<Observation, ClinicalObservation>[];
+  fmhs?: Record<FamilyMemberHistory, FamilyObservation>[];
+  observations?: Observations;
 };
 
 type Action = {
@@ -72,7 +72,7 @@ const reducer = (state: State = initialState, action: Action) => produce<State>(
         .add(new FMHProvider('fmhs'));
       const result = providerChain.execute();
       // eslint-disable-next-line prefer-destructuring
-      draft.patient = result.patient.records[0];
+      draft.patient = result.patient.records![0];
       draft.prescriptions = result.prescriptions.records;
       draft.consultation = result.consultation.records;
       draft.hpos = result.hpos.records;
@@ -88,14 +88,16 @@ const reducer = (state: State = initialState, action: Action) => produce<State>(
       draft.prescriptions = initialState.prescriptions;
       break;
     case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED: {
-      const serviceRequestIndex = state.prescriptions.findIndex(
+      const serviceRequestIndex = state.prescriptions?.findIndex(
         (prescription: Record<ServiceRequest, Prescription>) => prescription.original.id === action.payload.serviceRequestId,
       );
 
       const status = action.payload.status === 'on-hold' ? 'incomplete' : action.payload.status;
 
-      draft.prescriptions[serviceRequestIndex].original.status = status;
-      draft.prescriptions[serviceRequestIndex].parsed.status = status;
+      if (draft.prescriptions != null) {
+        draft.prescriptions[serviceRequestIndex!].original.status = status;
+        draft.prescriptions[serviceRequestIndex!].parsed.status = status;
+      }
 
       message.success(intl.get('screen.variantDetails.patientsTab.changeStatus.notification.success'));
       break;

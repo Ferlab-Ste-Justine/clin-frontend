@@ -1,4 +1,4 @@
-import { Patient, Reference } from '../types';
+import { Identifier, Patient, Reference } from '../types';
 import { formatDate } from './Utils';
 
 export class PatientBuilder {
@@ -16,7 +16,7 @@ export class PatientBuilder {
 
   private ramq?: string;
 
-  private mrn!: string;
+  private identifiers: Identifier[] = [];
 
   private ethnicityCode?: string;
 
@@ -77,15 +77,41 @@ export class PatientBuilder {
     return this;
   }
 
-  public withMrn(mrn: string) {
+  public withMrnIdentifier(mrn: string, organization: string) {
     if (mrn != null) {
-      this.mrn = mrn;
+      this.identifiers.push(
+        {
+          type: {
+            coding: [
+              {
+                code: 'MR',
+                display: 'Medical record number',
+                system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+              },
+            ],
+            text: 'Numéro du dossier médical',
+          },
+          value: mrn,
+          assigner: {
+            reference: `Organization/${organization}`,
+          },
+        },
+      );
     }
     return this;
   }
 
   public withPractitionerId(practitionerId: string) {
     if (practitionerId != null) {
+      this.practitioners.push(practitionerId);
+    }
+    return this;
+  }
+
+  public withGeneralPractitioner(practitionerId: string) {
+    this.practitioners = this.practitioners || [];
+
+    if (this.practitioners.find((practitioner) => practitioner === practitionerId) == null) {
       this.practitioners.push(practitionerId);
     }
     return this;
@@ -144,21 +170,7 @@ export class PatientBuilder {
       ],
       gender: this.gender,
       generalPractitioner: [],
-      identifier: [
-        {
-          type: {
-            coding: [
-              {
-                code: 'MR',
-                display: 'Medical record number',
-                system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-              },
-            ],
-            text: 'Numéro du dossier médical',
-          },
-          value: this.mrn,
-        },
-      ],
+      identifier: this.identifiers,
       managingOrganization: {
         reference: `Organization/${this.organization}`,
       },

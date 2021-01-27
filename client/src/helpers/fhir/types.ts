@@ -7,7 +7,37 @@ export type ResourceType =
   | 'ServiceRequest'
   | 'Organization'
   | 'PractitionerRole'
-  | 'Group';
+  | 'Group'
+  | 'Bundle';
+
+export type FhirResource =
+| Practitioner
+| Patient
+| Observation
+| ClinicalImpression
+| FamilyMemberHistory
+| ServiceRequest
+| Organization
+| PractitionerRole
+| FamilyGroup
+| Bundle;
+
+export type BundleMethod = 'PUT' | 'GET' | 'POST';
+
+export interface BundleEntry{
+  request:{
+    method: BundleMethod,
+    url: string,
+  }
+  fullUrl?: string;
+  resource: FhirResource;
+}
+export interface Bundle{
+  resourceType: ResourceType;
+  id?: string;
+  type: string;
+  entry: BundleEntry[];
+}
 
 export interface Meta {
   profile: string[];
@@ -29,6 +59,7 @@ export interface Identifier {
   use?: string;
   type: CodeableConcept;
   value: string;
+  assigner?: Reference;
 }
 
 export interface Name {
@@ -163,6 +194,7 @@ export interface FamilyGroup {
   meta: Meta;
   type: FamilyGroupType;
   actual: boolean;
+  extension: Extension[];
   member: BackboneElement[];
 }
 

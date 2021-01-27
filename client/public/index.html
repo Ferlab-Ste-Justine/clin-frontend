@@ -1,35 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="release" content="%REACT_APP_RELEASE_ID%" />
-    <meta name="release-name" content="%REACT_APP_RELEASE_NAME%" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>%REACT_APP_TITLE%</title>
-    <style>
-      #root { display: none }
-    </style>
-  </head>
-  <body bgcolor="#F0F2F5">
-    <script>
-      var CLIN = {
-        namespace: "%REACT_APP_NAMESPACE%",
-        patientServiceApiUrl: "%REACT_APP_PATIENT_SERVICE_URL%",
-        variantServiceApiUrl: "%REACT_APP_VARIANT_SERVICE_URL%",
-        geneServiceApiUrl: "%REACT_APP_GENE_SERVICE_URL%",
-        metaServiceApiUrl: "%REACT_APP_META_SERVICE_URL%",
-        fhirBaseUrl: "%REACT_APP_FHIR_SERVICE_URL%",
-        hpoBaseUrl: "%REACT_APP_HPO_SERVICE_URL%",
-        translate: null,
-        defaultUsername: "%REACT_APP_DEFAULT_USERNAME%",
-        defaultPassword: "%REACT_APP_DEFAULT_PASSWORD%",
-        fhirEsBundleId: "%REACT_APP_FHIR_ES_BUNDLE_ID%",
-      };
-    </script>
-    <div id="root" />
-    <noscript>%REACT_APP_NOSCRIPT_CONTENT%</noscript>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="release" content="%REACT_APP_RELEASE_ID%" />
+  <meta name="release-name" content="%REACT_APP_RELEASE_NAME%" />
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <title>%REACT_APP_TITLE%</title>
+  <style>
+    #root {
+      display: none
+    }
+  </style>
+</head>
+
+<body bgcolor="#F0F2F5">
+  <script>
+    var CLIN = {
+      namespace: "%REACT_APP_NAMESPACE%",
+      patientServiceApiUrl: "%REACT_APP_PATIENT_SERVICE_URL%",
+      variantServiceApiUrl: "%REACT_APP_VARIANT_SERVICE_URL%",
+      geneServiceApiUrl: "%REACT_APP_GENE_SERVICE_URL%",
+      metaServiceApiUrl: "%REACT_APP_META_SERVICE_URL%",
+      fhirBaseUrl: "%REACT_APP_FHIR_SERVICE_URL%",
+      hpoBaseUrl: "%REACT_APP_HPO_SERVICE_URL%",
+      translate: null,
+      defaultUsername: "%REACT_APP_DEFAULT_USERNAME%",
+      defaultPassword: "%REACT_APP_DEFAULT_PASSWORD%",
+      fhirEsPatientBundleId: "%REACT_APP_FHIR_ES_PATIENT_BUNDLE_ID%",
+      fhirEsRequestBundleId: "%REACT_APP_FHIR_ES_REQUEST_BUNDLE_ID%",
+    };
+  </script>
+  <div id="root" />
+  <noscript>%REACT_APP_NOSCRIPT_CONTENT%</noscript>
+</body>
+
 </html>
