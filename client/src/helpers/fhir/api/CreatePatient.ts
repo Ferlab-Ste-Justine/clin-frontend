@@ -18,8 +18,8 @@ export const createPatient = async (patient: Patient, familyGroup: FamilyGroup) 
     .withResource(familyGroup)
     .build();
 
-  const memebers = get(bundle, 'entry[1].resource.member', []);
-  memebers.push({
+  const members = get(bundle, 'entry[1].resource.member', []);
+  members.push({
     entity: {
       reference: get(bundle, 'entry[0].fullUrl'),
     },

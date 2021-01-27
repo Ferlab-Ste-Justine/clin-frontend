@@ -18,7 +18,6 @@ import {
 
 import './style.scss';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import PatientCreation from '../PatientCreation';
 import { createCellRenderer } from '../../Table/index';
 import InteractiveTable from '../../Table/InteractiveTable';
@@ -492,12 +491,6 @@ class PatientSearchScreen extends React.Component {
               </AutoComplete>
             </Col>
             <Col>
-              { /* <Button className={`${style.btnPrimary} ${style.btn}`} onClick={this.handleGotoSubmissionPage}>
-                <IconKit size={16} icon={ic_add} />
-                { intl.get('screen.patientsearch.button.new') }
-              </Button> */ }
-
-              { /* TODO Button for new patient creation form */ }
               <PatientCreation />
             </Col>
           </Row>
