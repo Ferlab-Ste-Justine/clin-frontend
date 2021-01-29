@@ -37,10 +37,10 @@ const PatientDetails: React.FC<Props> = ({ patient }) => (
               <span className="title">{ intl.get('screen.patient.details.gender') }</span>
               <span className="info">{ intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`) }</span>
             </div>
-            <div className="row">
+            { /* <div className="row">
               <span className="title">{ intl.get('screen.patient.details.mrn') }</span>
               <span className="info mrn">{ patient.mrn } | { patient.organization }</span>
-            </div>
+            </div> */ }
             <div className="row">
               <span className="title">{ intl.get('screen.patient.details.dob') }</span>
               <span className="info">{ patient.birthDate }</span>

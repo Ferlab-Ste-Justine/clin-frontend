@@ -140,15 +140,14 @@
       width: 180px;
       text-align: left;
       line-height: 15px;
-      display: flex;
-      align-items: center;
       white-space: normal;
       margin-right: 8px;
       label{
         font-family: $font;
         font-size: 14px;
         letter-spacing: 0.25px;
-        color: #233750;
+        color: $gray-9;
+        height: unset;
         &::after{
           display: none !important;
         }
@@ -392,7 +391,7 @@
     font-size: 12px;
     line-height: 20px;
     letter-spacing: 0.4px;
-    color: #858E99;
+    color: $gray-7;
     margin: 6px 0 0 8px;
   }
 }
@@ -491,4 +490,82 @@
 .optional-info{
   display: flex;
   align-items: flex-start;    
+}
+
+.clinical-information {
+  &__mrn {
+    max-width: 183px;
+
+    &-options {
+      &__button {
+        background-color: transparent;
+        opacity: 0;
+        transition: opacity ease .5s;
+      }
+
+      &:hover {
+        button {
+          opacity: 1;
+        }
+      }
+    }
+
+    &__create-button{
+      width: 100%;
+      border: none;
+      text-align: start;
+    }
+  }
+
+  &__analysis {
+    .ant-form-item-control {
+      max-width: 950px;
+    }
+
+    &__checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      row-gap: 7px;
+
+      .ant-checkbox-wrapper {
+        margin-left: 0;
+      }
+    }
+  }
+
+  &__investigation {
+    .ant-form-item-control {
+      max-width: 950px;
+    }
+  }
+
+  &__family-story {
+    &__details {
+      display: block;
+      font-size: 12px;
+      line-height: 20px;
+      letter-spacing: 0.4px;
+      color: $gray-7;
+      margin: 14px 0 8px;
+    }
+    &__conditions {
+      list-style: none;
+      padding: 0;
+      li {
+        margin-bottom: 8px;
+      }
+
+      button {
+        border: none;
+      }
+    }
+  }
+}
+
+.patientSubmission {
+  &__form {
+    &__footer {
+      margin-bottom: 24px;
+    }
+  }
 }

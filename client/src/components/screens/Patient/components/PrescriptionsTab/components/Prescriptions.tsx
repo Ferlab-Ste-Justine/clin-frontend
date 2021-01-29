@@ -70,7 +70,7 @@ interface Props {
 
 const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
   const consultation = useSelector((state: State) => state.patient.consultation!.map((cons) => cons.parsed));
-  const patient = useSelector((state: State) => state.patient.patient.parsed);
+  // const patient = useSelector((state: State) => state.patient.patient.parsed);
   const fmhs = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
   const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
   const dispatch = useDispatch();
@@ -175,10 +175,10 @@ const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
               key={prescription.id}
             >
               <Card title={`${intl.get('screen.patient.details.consultationSummary')}  |  2020-06-05`} className="resume" bordered={false}>
-                <Row className="flex-row clinical__info">
+                { /* <Row className="flex-row clinical__info">
                   <Col className="clinical__info__title">{ intl.get('screen.patient.details.mrn') }</Col>
                   <Col className="clinical__info__value">{ patient.mrn }  |  { patient.organization }</Col>
-                </Row>
+                </Row> */ }
                 <Row className="flex-row clinical__info">
                   <Col className="clinical__info__title">{ intl.get('screen.patient.details.practitioner') }</Col>
                   <Col className="clinical__info__value">

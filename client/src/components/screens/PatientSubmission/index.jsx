@@ -6,7 +6,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Button, Card, Form, Steps, Typography,
+  Button, Card, Form, Steps, Typography, Col, Row, Tooltip,
 } from 'antd';
 import find from 'lodash/find';
 import has from 'lodash/has';
@@ -15,8 +15,8 @@ import mapValues from 'lodash/mapValues';
 import get from 'lodash/get';
 import toArray from 'lodash/values';
 
-import IconKit from 'react-icons-kit';
-import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';
+import { SaveOutlined, LeftOutlined } from '@ant-design/icons';
+
 import { navigateToPatientSearchScreen, navigateToPatientScreen } from '../../../actions/router';
 import {
   assignServiceRequestPractitioner,
@@ -32,8 +32,8 @@ import {
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './components/ClinicalInformation';
 import Approval from './components/Approval';
-import PatientInformation from './components/PatientInformation';
 import Api from '../../../helpers/api';
+import ConfirmCancelModal from './components/ConfirmCancelModal';
 
 import './style.scss';
 
@@ -44,7 +44,6 @@ import {
 } from '../../../helpers/fhir/fhir';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
-import ConfirmationModal from '../../ConfirmationModal';
 import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
 
 const { Step } = Steps;
@@ -66,6 +65,7 @@ function PatientSubmissionScreen(props) {
     currentPageIndex: 0,
     practitionerOptions: [],
     valid: false,
+    isCancelConfirmVisible: false,
   });
 
   const getPatientData = () => {
@@ -311,7 +311,7 @@ function PatientSubmissionScreen(props) {
     return builder.build();
   };
 
-  const saveSecondPageLocalStore = () => {
+  const saveClinicalInfoPageLocalStore = () => {
     const { actions } = props;
     const values = form.getFieldsValue();
 
@@ -346,19 +346,6 @@ function PatientSubmissionScreen(props) {
           ...observations,
           cgh: {
             ...observations.cgh,
-          },
-          indic: {
-            ...observations.indic,
-          },
-          summary: {
-            ...observations.summary,
-          },
-        };
-      } else if (currentPageIndex === 1) {
-        submission.observations = {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
             ...createCGHResourceList(),
           },
           indic: {
@@ -371,7 +358,7 @@ function PatientSubmissionScreen(props) {
           },
         };
         actions.saveObservations(submission.observations);
-        saveSecondPageLocalStore();
+        saveClinicalInfoPageLocalStore();
       } else {
         submission.submitted = submitted;
         submission.observations = {
@@ -465,8 +452,6 @@ function PatientSubmissionScreen(props) {
     const { actions, observations } = props;
     const pageIndex = currentPageIndex + 1;
     if (currentPageIndex === 0) {
-      actions.savePatientLocal(getPatientData());
-    } else if (currentPageIndex === 1) {
       actions.saveObservations(
         {
           ...observations,
@@ -481,7 +466,7 @@ function PatientSubmissionScreen(props) {
         },
       );
 
-      saveSecondPageLocalStore();
+      saveClinicalInfoPageLocalStore();
 
       const { practitioner } = localStore;
 
@@ -499,8 +484,8 @@ function PatientSubmissionScreen(props) {
     const pageIndex = currentPageIndex - 1;
     setState({ ...state, currentPageIndex: pageIndex });
 
-    if (currentPageIndex === 1) {
-      saveSecondPageLocalStore();
+    if (currentPageIndex === 0) {
+      saveClinicalInfoPageLocalStore();
     }
 
     debounce(validate, 500)();
@@ -552,18 +537,15 @@ function PatientSubmissionScreen(props) {
 
   const pages = [
     {
-      title: intl.get('screen.clinicalSubmission.patientInformation'),
-      content: (
-        <PatientInformation parentForm={this} patient={patient} validate={validate} />
-      ),
-      name: 'PatientInformation',
-      values: {},
-      isComplete: () => true,
-    },
-    {
       title: intl.get('screen.clinicalSubmission.clinicalInformation'),
       content: (
-        <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} validate={validate} />
+        <ClinicalInformation
+          parentForm={this}
+          form={form}
+          patient={patient}
+          clinicalImpression={clinicalImpression}
+          validate={validate}
+        />
       ),
       name: 'ClinicalInformation',
       values: {},
@@ -594,9 +576,32 @@ function PatientSubmissionScreen(props) {
   return (
     <Layout>
       <>
-        <div className="page_headerStaticMargin">
-          <Title className="headerStaticContent" level={3}>{ intl.get('form.patientSubmission.form.title') }</Title>
-        </div>
+        <Row className="page_headerStaticMargin">
+          <Col>
+            <Title className="headerStaticContent" level={3}>
+              <Typography.Text
+                className="headerStaticContent__primary"
+              >
+                { `${intl.get('form.patientSubmission.form.title')} |`
+              + ` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}`
+              + ` ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}` }
+              </Typography.Text>
+            </Title>
+
+          </Col>
+          <Col flex={1}>&nbsp;</Col>
+          <Col>
+
+            <Button
+              onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
+              danger
+              type="text"
+            >
+              { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
+            </Button>
+          </Col>
+        </Row>
+
         <div className="page-static-content">
           <Card bordered={false} className="step">
             <Steps current={currentPageIndex}>
@@ -610,43 +615,63 @@ function PatientSubmissionScreen(props) {
             onChange={validate}
           >
             { pageContent }
-            <div className="submission-form-actions">
-              <Button
-                htmlType="submit"
-                type="primary"
-                disabled={!state.valid}
-              >
-                {
-                  isOnLastPage
-                    ? intl.get('form.patientSubmission.form.submit')
-                    : intl.get('screen.clinicalSubmission.nextButtonTitle')
-                }
-              </Button>
-              {
-                currentPageIndex !== 0 && (
-                  <Button onClick={() => previous()} disabled={isFirstPage()}>
-                    <IconKit size={20} icon={ic_keyboard_arrow_left} />
-                    { intl.get('screen.clinicalSubmission.previousButtonTitle') }
+            <Card className="patientSubmission__form__footer">
+              <Row gutter={8}>
+                { !isFirstPage && (
+                  <Col>
+                    <Button icon={<LeftOutlined />} onClick={previous}>
+                      { intl.get('screen.clinicalSubmission.previousButtonTitle') }
+                    </Button>
+                  </Col>
+                ) }
+                <Col>
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    disabled={!state.valid}
+                  >
+                    {
+                      isOnLastPage
+                        ? intl.get('form.patientSubmission.form.submit')
+                        : intl.get('screen.clinicalSubmission.nextButtonTitle')
+                    }
                   </Button>
-                )
-              }
+                </Col>
+                <Col flex={1}>&nbsp;</Col>
+                <Col>
+                  <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
+                    <Button
+                      onClick={() => saveSubmission()}
+                    >
+                      <SaveOutlined />
+                      { intl.get('screen.clinicalSubmission.saveButtonTitle') }
+                    </Button>
+                  </Tooltip>
 
-              <Button
-                onClick={() => saveSubmission()}
-              >
-                <IconKit size={20} icon={ic_save} />
-                { intl.get('screen.clinicalSubmission.saveButtonTitle') }
-              </Button>
-              <Button
-                onClick={() => ConfirmationModal({ onOk: () => { handleCancel(); } })}
-                className="cancelButton"
-              >
-                { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
-              </Button>
-            </div>
+                </Col>
+                <Col>
+                  <Button
+                    onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
+                    danger
+                    type="text"
+                  >
+                    { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
           </Form>
         </div>
       </>
+      <ConfirmCancelModal
+        open={state.isCancelConfirmVisible}
+        onClose={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: false }))}
+        onQuit={() => handleCancel()}
+        onSaveAndQuit={() => {
+          saveSubmission();
+          handleCancel();
+        }}
+      />
     </Layout>
   );
 }
