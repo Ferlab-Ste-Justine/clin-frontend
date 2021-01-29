@@ -1,6 +1,6 @@
 {
   "name": "clin-frontend",
-  "version": "3.1.63",
+  "version": "3.1.64",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@babel/core": "7.12.3",
@@ -167,7 +167,7 @@
   },
   "jest": {
     "roots": [
-      "<rootDir>/src"
+      "<rootDir>/client/src"
     ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
@@ -177,18 +177,18 @@
       "react-app-polyfill/jsdom"
     ],
     "setupFilesAfterEnv": [
-      "<rootDir>/src/setupTests.ts"
+      "<rootDir>/client/src/setupTests.ts"
     ],
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
-      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+      "<rootDir>/client/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/client/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
     ],
     "testEnvironment": "jsdom",
-    "testRunner": "/home/work/Documents/work/clin/new-frontend/node_modules/jest-circus/runner.js",
+    "testRunner": "<rootDir>/node_modules/jest-circus/runner.js",
     "transform": {
       "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+      "^.+\\.css$": "<rootDir>/client/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/client/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",

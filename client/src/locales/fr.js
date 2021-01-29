@@ -202,6 +202,12 @@ const fr = {
   'screen.patientsearch.title': 'Liste des patients',
   'screen.patientsearch.button.new': 'Patient',
   'screen.patientsearch.placeholder': 'MRN, ID Patient, RAMQ, Nom, Prénom, ID Famille, ID Specimen et Étude',
+  'screen.patientsearch.nanuqexport.process': 'Création de fichier en cours',
+  'screen.patientsearch.nanuqexport.success': 'Votre fichier a été téléchargé',
+  'screen.patientsearch.nanuqexport.error': 'Une erreur est survenue',
+  'screen.patientsearch.table.nanuq': 'Nanuq',
+  'screen.patientsearch.table.select': 'Sélectionner',
+  'screen.patientsearch.table.selectedPatients': '{count} items sélectionnés',
   'screen.patientsearch.table.patientId': 'Identifiant',
   'screen.patientsearch.table.mrn': 'MRN',
   'screen.patientsearch.table.organization': 'Hôpital',
@@ -695,6 +701,11 @@ const fr = {
   'components.variantNavigation.searchInput.moreResults': "Préciser votre recherche pour voir d'autres résultats",
   'components.variantNavigation.searchInput.resultsCount': '{count} résultats',
   'components.dataList.emptyRow': 'Aucune donnée disponible',
+  'components.nanuqModal.title': 'La requête nanuq ne peut être créée',
+  'components.nanuqModal.criteria.description': 'Votre sélection doit répondre aux critères suivants:',
+  'components.nanuqModal.criteria.status': 'Status: <span class="bold">approuvée</span>',
+  'components.nanuqModal.criteria.test': 'Test: <span class="bold">WXS</span>',
+  'components.nanuqModal.criteria.number': 'Nombre: <span class="bold">maximum de 96 items</span> à la fois',
 };
 
 export default fr;

@@ -201,6 +201,11 @@ const en = {
   'screen.patientsearch.title': 'Patient List',
   'screen.patientsearch.button.new': 'Patient',
   'screen.patientsearch.placeholder': 'MRN, patient ID, RAMQ, last name, first name, family ID, specimen ID and study',
+  'screen.patientsearch.table.nanuq': 'Nanuq',
+  'screen.patientsearch.table.myPatients': 'My Patients',
+  'screen.patientsearch.table.all': 'All',
+  'screen.patientsearch.table.select': 'Select',
+  'screen.patientsearch.table.selectedPatients': '{count} selected items',
   'screen.patientsearch.table.patientId': 'Patient ID',
   'screen.patientsearch.table.mrn': 'MRN',
   'screen.patientsearch.table.organization': 'Hospital',
@@ -694,6 +699,11 @@ const en = {
   'components.variantNavigation.moreResults': 'Refine your search to see other results',
   'components.variantNavigation.searchInput.resultsCount': '{count} results',
   'components.dataList.emptyRow': 'No data available',
+  'components.nanuqModal.title': "The Nanuq request can't been created",
+  'components.nanuqModal.criteria.description': 'Your selection has to follow the following criteria:',
+  'components.nanuqModal.criteria.status': 'Status: <span class="bold">approved</span>',
+  'components.nanuqModal.criteria.test': 'Test: <span class="bold">WXS</span>',
+  'components.nanuqModal.criteria.number': 'Number: <span class="bold">maximum of 96 items</span> at a time',
 };
 
 export default en;

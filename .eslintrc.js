@@ -3,6 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
     node: true,
+    'jest/globals': true,
   },
   extends: [
     'airbnb',
@@ -18,6 +19,7 @@ module.exports = {
   plugins: [
     'react',
     '@typescript-eslint',
+    'jest',
   ],
   rules: {
     indent: ['error', 2, {

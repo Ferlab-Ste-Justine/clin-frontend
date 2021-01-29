@@ -1,6 +1,9 @@
 /* eslint-disable no-param-reassign, no-underscore-dangle */
+import { message, Modal } from 'antd';
+import intl from 'react-intl-universal';
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
+import { getNanuqModalConfigs } from '../components/NanuqModal';
 import * as actions from '../actions/type';
 
 import {
@@ -131,6 +134,18 @@ const searchReducer = (state = ({ ...initialSearchState }), action) => produce(s
       window.localStorage.removeItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY);
       draft.columns = retrieveColumns();
       draft.columnsOrder = retrieveColumnsOrder();
+      break;
+
+    case actions.NANUQ_EXPORT_SUCCEEDED:
+      message.success(intl.get('screen.patientsearch.nanuqexport.success'));
+      break;
+
+    case actions.NANUQ_EXPORT_INVALID:
+      Modal.error(getNanuqModalConfigs());
+      break;
+
+    case actions.NANUQ_EXPORT_FAILED:
+      message.error(intl.get('screen.patientsearch.nanuqexport.error'));
       break;
     default:
       break;
