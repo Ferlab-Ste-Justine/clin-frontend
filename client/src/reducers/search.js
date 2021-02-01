@@ -82,7 +82,7 @@ const searchReducer = (state = ({ ...initialSearchState }), action) => produce(s
       break;
 
     case actions.PATIENT_SEARCH_REQUESTED:
-      draft.columns = retrieveColumns();
+      draft.columns = [...retrieveColumns(), 'screen.patientsearch.table.select'];
       draft.columnsOrder = retrieveColumnsOrder();
       draft.lastSearchType = 'patient';
       draft.patient.page = action.payload.page || initialSearchState.patient.page;
