@@ -1,3 +1,6 @@
+@import '../../../../../style/themes/colors.scss';
+
+
 .patient-creation {
   &__button {
     display: flex;
@@ -12,6 +15,12 @@
 
     &__select {
       width: 100%;
+    }
+
+    &__fetus-note {
+      color: $gray-7;
+      font-size: 12px;
+      display: block;
     }
   }
 }
