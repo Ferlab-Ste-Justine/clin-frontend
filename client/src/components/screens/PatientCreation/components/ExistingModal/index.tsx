@@ -26,7 +26,13 @@ const ExistingModal: React.FC<Props> = ({ open, onClose }) => {
   return (
     <ResultModal
       actions={(
-        <Button type="primary" onClick={() => dispatch(navigateToPatientScreen(patient.id))}>
+        <Button
+          type="primary"
+          onClick={() => {
+            dispatch(navigateToPatientScreen(patient.id));
+            onClose();
+          }}
+        >
           { intl.get(`${I18N_PREFIX}patientCard`) }
           <ArrowRightOutlined />
         </Button>

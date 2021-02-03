@@ -285,7 +285,11 @@ const FormModal : React.FC<Props> = ({
             <Spin spinning={state.ramqStatus === RamqStatus.PROCESSING}>
               <fieldset>
                 <Form.Item
-                  label={intl.get(`${I18N_PREFIX}lastname`)}
+                  label={
+                    isFetusType
+                      ? `${intl.get(`${I18N_PREFIX}lastname`)} (${intl.get(`${I18N_PREFIX}mother`)})`
+                      : intl.get(`${I18N_PREFIX}lastname`)
+                  }
                   {...formInputItemProps}
                   name="lastname"
 
@@ -293,14 +297,26 @@ const FormModal : React.FC<Props> = ({
                   <Input placeholder={intl.get(`${I18N_PREFIX}lastname`)} />
                 </Form.Item>
                 <Form.Item
-                  label={intl.get(`${I18N_PREFIX}firstname`)}
+                  label={
+                    isFetusType
+                      ? `${intl.get(`${I18N_PREFIX}firstname`)} (${intl.get(`${I18N_PREFIX}mother`)})`
+                      : intl.get(`${I18N_PREFIX}firstname`)
+                  }
                   {...formInputItemProps}
                   name="firstname"
 
                 >
                   <Input placeholder={intl.get(`${I18N_PREFIX}firstname`)} />
                 </Form.Item>
-                <Form.Item label={intl.get(`${I18N_PREFIX}sex`)} wrapperCol={{ span: 14 }} name="sex">
+                <Form.Item
+                  label={
+                    isFetusType
+                      ? `${intl.get(`${I18N_PREFIX}sex`)} (${intl.get(`${I18N_PREFIX}fetus`).toLowerCase()})`
+                      : intl.get(`${I18N_PREFIX}sex`)
+                  }
+                  wrapperCol={{ span: 14 }}
+                  name="sex"
+                >
                   <Radio.Group
                     options={[
                       { label: intl.get(`${I18N_PREFIX}sex.male`), value: 'male' },
@@ -322,7 +338,15 @@ const FormModal : React.FC<Props> = ({
                     />
                   </Form.Item>
                 ) }
-                <Form.Item label={intl.get(`${I18N_PREFIX}file`)} wrapperCol={{ span: 14 }} name="mrn">
+                <Form.Item
+                  label={
+                    isFetusType
+                      ? `${intl.get(`${I18N_PREFIX}file`)} (${intl.get(`${I18N_PREFIX}mother`)})`
+                      : intl.get(`${I18N_PREFIX}file`)
+                  }
+                  wrapperCol={{ span: 14 }}
+                  name="mrn"
+                >
                   <Input.Group>
                     <Row gutter={8}>
                       <Col span={14}>

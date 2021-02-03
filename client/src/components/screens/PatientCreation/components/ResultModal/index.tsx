@@ -32,7 +32,7 @@ const ResultModal: React.FC<Props> = ({
         { icon }
 
         <Typography.Text className="patient-creation__modal__content__name">
-          { `${patient.name[0].family}, ${patient.name[0].given[0]}` }
+          { `${patient.name[0].family.toUpperCase()}, ${patient.name[0].given[0]}` }
         </Typography.Text>
 
         <Typography.Text className="patient-creation__modal__content__description">
@@ -43,7 +43,9 @@ const ResultModal: React.FC<Props> = ({
           { actions }
         </div>
         <span>
-          <Button type="link" onClick={onClose}>{ intl.get(`${I18N_PREFIX}close`) }</Button>
+          <Button type="link" onClick={onClose} className="patient-creation__modal__content__close-button">
+            { intl.get(`${I18N_PREFIX}close`) }
+          </Button>
         </span>
       </div>
     </Modal>
