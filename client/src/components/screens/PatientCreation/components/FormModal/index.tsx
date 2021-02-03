@@ -10,12 +10,12 @@ import { FormItemProps } from 'antd/lib/form';
 import { useForm } from 'antd/lib/form/Form';
 import moment from 'moment';
 import { RadioChangeEvent } from 'antd/lib/radio';
-import { set } from 'lodash';
+import { get, set } from 'lodash';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
 import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
-import { createPatient, fetchPatientByRamq } from '../../../../../actions/patientCreation';
+import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
 import { FamilyGroupBuilder } from '../../../../../helpers/fhir/builder/FamilyGroupBuilder';
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 
@@ -101,6 +101,22 @@ function validateForm(formValues: any) {
   });
 }
 
+type MrnData ={
+  mrn: string;
+  hospital: string;
+}
+
+const extractMrnData = (patient: Patient) : MrnData | undefined => {
+  const identifier = patient.identifier.find((id) => get(id, 'type.coding[0].code') === 'MR');
+  if (identifier == null) {
+    return undefined;
+  }
+  return {
+    mrn: identifier.value,
+    hospital: identifier.assigner!.reference.split('/')[1],
+  };
+};
+
 const FormModal : React.FC<Props> = ({
   open, onClose, onCreated, onExistingPatient, userRole, actions, patient, ramqChecked,
 }) => {
@@ -124,7 +140,23 @@ const FormModal : React.FC<Props> = ({
 
   if (ramqChecked) {
     if (patient != null) {
-      onExistingPatient();
+      if (!isFetusType) {
+        onExistingPatient();
+      } else if (state.ramqStatus === RamqStatus.PROCESSING) {
+        const mrnData = extractMrnData(patient);
+        form.setFieldsValue({
+          lastname: get(patient, 'name[0].family'),
+          firstname: get(patient, 'name[0].given[0]'),
+          sex: patient.gender,
+          mrn: {
+            file: mrnData?.mrn,
+            hospital: mrnData?.hospital,
+          },
+          birthday: new Date(patient.birthDate),
+        });
+        setIsFormValid(true);
+        dispatch({ type: ActionType.RAMQ_VALID });
+      }
     } else if (state.ramqStatus === RamqStatus.PROCESSING) {
       dispatch({ type: ActionType.RAMQ_VALID });
     }
@@ -177,8 +209,10 @@ const FormModal : React.FC<Props> = ({
           }}
           onFinish={async (values) => {
             try {
-              const newPatient = new PatientBuilder()
+              const newPatient = patient || new PatientBuilder()
                 .withFamily(values.lastname)
+                .withIsProband(true)
+                .withIsFetus(false)
                 .withGiven(values.firstname)
                 .withMrnIdentifier(values.mrn.file, values.mrn.hospital)
                 .withOrganization(values.mrn.hospital)
@@ -193,7 +227,16 @@ const FormModal : React.FC<Props> = ({
                 .withActual(true)
                 .withType('person')
                 .build();
-              actions.createPatient(newPatient, group);
+
+              if (isFetusType) {
+                if (patient != null) {
+                  actions.createPatientFetus(patient);
+                } else {
+                  actions.createPatientFetus(newPatient, group);
+                }
+              } else {
+                actions.createPatient(newPatient, group);
+              }
               resetForm();
               onCreated();
             } catch (e) {
@@ -372,6 +415,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) => ({
   actions: bindActionCreators({
     createPatient,
+    createPatientFetus,
     fetchPatientByRamq,
   }, dispatch),
 });

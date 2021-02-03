@@ -4,7 +4,7 @@ import {
 
 import { get } from 'lodash';
 import * as actions from '../actions/type';
-import { createPatient } from '../helpers/fhir/api/CreatePatient';
+import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import { createRequest } from '../helpers/fhir/api/CreateRequest';
 import Api, { ApiError } from '../helpers/api';
 
@@ -14,7 +14,17 @@ function* handleCreatePatient(action: any) {
 
     yield put({ type: actions.CREATE_PATIENT_SUCCEEDED, payload: { ...response } });
   } catch (error) {
-    yield put({ type: actions.CREATE_PATIENT_REQUEST_FAILED });
+    yield put({ type: actions.CREATE_PATIENT_FAILED });
+  }
+}
+
+function* handleCreatePatientFetus(action: any) {
+  try {
+    const response = yield createPatientFetus(action.payload.patient, action.payload.group);
+
+    yield put({ type: actions.CREATE_PATIENT_FETUS_SUCCEEDED, payload: { ...response } });
+  } catch (error) {
+    yield put({ type: actions.CREATE_PATIENT_FETUS_FAILED });
   }
 }
 
@@ -22,7 +32,7 @@ function* handleCreateRequest(action: any) {
   try {
     const response = yield createRequest(action.payload.clinicalImpression, action.payload.serviceRequest, action.payload.observations);
 
-    yield put({ type: actions.CREATE_PATIENT_SUCCEEDED, payload: { ...response } });
+    yield put({ type: actions.CREATE_PATIENT_REQUEST_SUCCEEDED, payload: { ...response } });
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_REQUEST_FAILED });
   }
@@ -48,13 +58,16 @@ function* fetchInfosByRamq(action: any) {
       payload: response.payload,
     });
   } catch (error) {
-    console.log(error);
     yield put({ type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
   }
 }
 
 function* watchCreatePatient() {
   yield takeLatest(actions.CREATE_PATIENT_REQUESTED, handleCreatePatient);
+}
+
+function* watchCreatePatientFetus() {
+  yield takeLatest(actions.CREATE_PATIENT_FETUS_REQUESTED, handleCreatePatientFetus);
 }
 
 function* watchCreateRequest() {
@@ -68,6 +81,7 @@ function* watchFetchInfosByRamq() {
 export default function* watchedPatientSubmissionSagas() {
   yield all([
     watchCreatePatient(),
+    watchCreatePatientFetus(),
     watchCreateRequest(),
     watchFetchInfosByRamq(),
   ]);

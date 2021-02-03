@@ -87,6 +87,7 @@ export interface Extension {
   valueReference?: Reference;
   valueBoolean?: boolean;
   valueAge?: Age;
+  [key: string]: any;
 }
 
 export interface Investigation {

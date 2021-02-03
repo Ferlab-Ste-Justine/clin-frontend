@@ -28,6 +28,10 @@ export class PatientBuilder {
 
   private organization?: string;
 
+  private isProband: boolean = true;
+
+  private isFetus: boolean = false;
+
   public withId(id: string) {
     if (id != null) {
       this.id = id;
@@ -152,6 +156,16 @@ export class PatientBuilder {
     return this;
   }
 
+  public withIsProband(value: boolean) {
+    this.isProband = value;
+    return this;
+  }
+
+  public withIsFetus(value: boolean) {
+    this.isFetus = value;
+    return this;
+  }
+
   public build() {
     const formattedBirthDate = formatDate(this.birthDate);
 
@@ -165,7 +179,11 @@ export class PatientBuilder {
       extension: [
         {
           url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
-          valueBoolean: true,
+          valueBoolean: this.isProband,
+        },
+        {
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+          valueBoolean: this.isFetus,
         },
       ],
       gender: this.gender,

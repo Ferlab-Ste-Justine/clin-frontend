@@ -109,8 +109,7 @@ export class ObservationBuilder {
             {
               coding: [
                 {
-                  system:
-                                    'http://terminology.hl7.org/CodeSystem/observation-category',
+                  system: 'http://terminology.hl7.org/CodeSystem/observation-category',
                   code: 'laboratory',
                   display: 'Laboratory',
                 },
@@ -123,8 +122,7 @@ export class ObservationBuilder {
             {
               coding: [
                 {
-                  system:
-                                    'http://terminology.hl7.org/CodeSystem/observation-category',
+                  system: 'http://terminology.hl7.org/CodeSystem/observation-category',
                   code: 'exam',
                   display: 'Exam',
                 },
