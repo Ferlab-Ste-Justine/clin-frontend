@@ -30,6 +30,12 @@
           margin-right: 8px;
         }
       }
+
+      &__close-button {
+        span {
+          text-decoration: underline;
+        }
+      }
     }
   }
 }
