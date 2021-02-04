@@ -125,7 +125,7 @@ export interface Patient {
   identifier: Identifier[];
   active: boolean;
   name: Name[];
-  birthDate: string;
+  birthDate?: string;
   gender: string;
   generalPractitioner: Reference[];
   managingOrganization: Reference;

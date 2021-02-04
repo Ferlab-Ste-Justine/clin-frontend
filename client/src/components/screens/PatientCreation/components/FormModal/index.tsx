@@ -16,7 +16,7 @@ import { bindActionCreators } from 'redux';
 import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
 import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
 import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
-import { FamilyGroupBuilder } from '../../../../../helpers/fhir/builder/FamilyGroupBuilder';
+import { FamilyGroupBuilder, FamilyStructure } from '../../../../../helpers/fhir/builder/FamilyGroupBuilder';
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 
 const I18N_PREFIX = 'screen.patient.creation.';
@@ -152,7 +152,7 @@ const FormModal : React.FC<Props> = ({
             file: mrnData?.mrn,
             hospital: mrnData?.hospital,
           },
-          birthday: new Date(patient.birthDate),
+          birthday: new Date(patient.birthDate!),
         });
         setIsFormValid(true);
         dispatch({ type: ActionType.RAMQ_VALID });
@@ -209,33 +209,29 @@ const FormModal : React.FC<Props> = ({
           }}
           onFinish={async (values) => {
             try {
-              const newPatient = patient || new PatientBuilder()
+              const patientBuilder = new PatientBuilder()
                 .withFamily(values.lastname)
-                .withIsProband(true)
                 .withIsFetus(false)
                 .withGiven(values.firstname)
                 .withMrnIdentifier(values.mrn.file, values.mrn.hospital)
                 .withOrganization(values.mrn.hospital)
                 .withRamq(values.ramq)
                 .withGender(values.sex)
-                .withBirthDate(new Date(values.birthday.toDate()))
                 .withActive(true)
-                .withGeneralPractitioner(userRole.id)
-                .build();
-
-              const group = new FamilyGroupBuilder()
-                .withActual(true)
-                .withType('person')
-                .build();
+                .withGeneralPractitioner(userRole.id);
 
               if (isFetusType) {
                 if (patient != null) {
                   actions.createPatientFetus(patient);
                 } else {
-                  actions.createPatientFetus(newPatient, group);
+                  patientBuilder.withIsProband(false);
+                  actions.createPatientFetus(patientBuilder.build());
                 }
               } else {
-                actions.createPatient(newPatient, group);
+                patientBuilder
+                  .withBirthDate(new Date(values.birthday?.toDate()))
+                  .withIsProband(true);
+                actions.createPatient(patientBuilder.build());
               }
               resetForm();
               onCreated();
