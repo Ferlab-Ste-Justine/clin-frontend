@@ -10,7 +10,7 @@ export class PatientBuilder {
 
   private active: boolean = false;
 
-  private birthDate!: Date;
+  private birthDate?: Date;
 
   private gender!: string;
 
@@ -167,15 +167,13 @@ export class PatientBuilder {
   }
 
   public build() {
-    const formattedBirthDate = formatDate(this.birthDate);
-
     const patient: Patient = {
       resourceType: 'Patient',
       meta: {
         profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
       },
       active: this.active,
-      birthDate: formattedBirthDate,
+      birthDate: (this.birthDate != null) ? formatDate(this.birthDate) : undefined,
       extension: [
         {
           url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',

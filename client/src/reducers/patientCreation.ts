@@ -29,7 +29,8 @@ const reducer = (
   action: Action,
 ) => produce<PatientCreationState>(state, (draft) => {
   switch (action.type) {
-    case actions.CREATE_PATIENT_SUCCEEDED: {
+    case actions.CREATE_PATIENT_SUCCEEDED:
+    case actions.CREATE_PATIENT_FETUS_SUCCEEDED: {
       draft.patient = action.payload.patient;
       draft.familyGroup = action.payload.familyGroup;
       break;

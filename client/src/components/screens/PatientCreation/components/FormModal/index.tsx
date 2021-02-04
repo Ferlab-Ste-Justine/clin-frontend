@@ -16,7 +16,6 @@ import { bindActionCreators } from 'redux';
 import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
 import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
 import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
-import { FamilyGroupBuilder, FamilyStructure } from '../../../../../helpers/fhir/builder/FamilyGroupBuilder';
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 
 const I18N_PREFIX = 'screen.patient.creation.';

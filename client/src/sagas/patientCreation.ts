@@ -10,7 +10,7 @@ import Api, { ApiError } from '../helpers/api';
 
 function* handleCreatePatient(action: any) {
   try {
-    const response = yield createPatient(action.payload.patient, action.payload.group);
+    const response = yield createPatient(action.payload.patient);
 
     yield put({ type: actions.CREATE_PATIENT_SUCCEEDED, payload: { ...response } });
   } catch (error) {
@@ -20,7 +20,7 @@ function* handleCreatePatient(action: any) {
 
 function* handleCreatePatientFetus(action: any) {
   try {
-    const response = yield createPatientFetus(action.payload.patient, action.payload.group);
+    const response = yield createPatientFetus(action.payload.patient);
 
     yield put({ type: actions.CREATE_PATIENT_FETUS_SUCCEEDED, payload: { ...response } });
   } catch (error) {
