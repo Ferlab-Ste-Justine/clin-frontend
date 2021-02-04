@@ -6,14 +6,14 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown,
+  Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Menu, Dropdown,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import find from 'lodash/find';
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_perm_contact_calendar, ic_info_outline, ic_widgets, ic_info, ic_arrow_forward,
+  ic_person, ic_assignment, ic_visibility, ic_visibility_off, ic_help, ic_info_outline, ic_widgets, ic_info, ic_arrow_forward,
 } from 'react-icons-kit/md';
 import PatientVariantScreen from '../PatientVariant';
 import { appShape } from '../../../reducers/app';
@@ -30,6 +30,7 @@ import '../../../style/themes/antd-clin-theme.css';
 import './style.scss';
 import Layout from '../../Layout';
 import StatusChangeModal from './components/StatusChangeModal';
+import PatientTab from './components/PatientTab';
 
 const columnPresetToColumn = (c) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
@@ -303,22 +304,13 @@ class PatientScreen extends React.Component {
       app, router, patient, consultation, prescriptions,
     } = this.props;
     const {
-      requestColumnPreset, familyHistoryColumnPreset, clinicalColumnPreset,
+      familyHistoryColumnPreset, clinicalColumnPreset,
     } = this.state;
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
     const { Title } = Typography;
-    const mrn = intl.get('screen.patient.details.mrn');
-    const ramq = intl.get('screen.patient.details.ramq');
-    const dateOfBirth = intl.get('screen.patient.details.dob');
-    const genderTitle = intl.get('screen.patient.details.gender');
-    const ethnicity = intl.get('screen.patient.details.ethnicity');
-    const consanguinity = intl.get('screen.patient.details.consanguinity');
-    const family = intl.get('screen.patient.header.family');
     const patientTab = intl.get('screen.patient.tab.patient');
     const clinicalTab = intl.get('screen.patient.tab.clinical');
-    const familyType = intl.get('screen.patient.details.familyType');
-    const familyTypeTag = <Tag color="cyan" className="familyTypeTag">Trio</Tag>;
 
     const familyHistoryData = this.getFamilyHistory();
 
@@ -404,7 +396,9 @@ class PatientScreen extends React.Component {
                       </span>
                     )}
                   >
-                    <div className="page-static-content">
+                    <PatientTab />
+
+                    { /* <div className="page-static-content">
                       <Card bordered={false} className="generalInfo">
                         <Row className="flex-row">
                           <Col>
@@ -474,7 +468,7 @@ class PatientScreen extends React.Component {
                           </Card>
                         </Card>
                       </Row>
-                    </div>
+                    </div> */ }
                   </Tabs.TabPane>
 
                   <Tabs.TabPane
