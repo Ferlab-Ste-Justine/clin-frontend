@@ -3,7 +3,7 @@ import intl from 'react-intl-universal';
 import {
   Button,
 } from 'antd';
-import { CheckCircleFilled, MedicineBoxOutlined, UserAddOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined, CheckCircleFilled, PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import ResultModal from '../ResultModal';
 import { navigatoToSubmissionWithPatient } from '../../../../../actions/router';
@@ -32,11 +32,11 @@ const SuccessModal: React.FC<Props> = ({ open, onClose, onNewPatient }) => {
       actions={(
         <>
           <Button onClick={onNewPatient}>
-            <UserAddOutlined />{ intl.get(`${I18N_PREFIX}newPatient`) }
+            <PlusOutlined />{ intl.get(`${I18N_PREFIX}newPrescription`) }
           </Button>
           <Button type="primary" onClick={() => dispatch(navigatoToSubmissionWithPatient())}>
-            <MedicineBoxOutlined />
-            { intl.get(`${I18N_PREFIX}newPrescription`) }
+            { intl.get(`${I18N_PREFIX}completePrescription`) }
+            <ArrowRightOutlined />
           </Button>
         </>
       )}
