@@ -87,6 +87,7 @@ export interface Extension {
   valueReference?: Reference;
   valueBoolean?: boolean;
   valueAge?: Age;
+  [key: string]: any;
 }
 
 export interface Investigation {
@@ -124,7 +125,7 @@ export interface Patient {
   identifier: Identifier[];
   active: boolean;
   name: Name[];
-  birthDate: string;
+  birthDate?: string;
   gender: string;
   generalPractitioner: Reference[];
   managingOrganization: Reference;

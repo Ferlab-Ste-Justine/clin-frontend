@@ -2,6 +2,17 @@ import {
   BackboneElement, FamilyGroup, FamilyGroupType, Meta, Reference,
 } from '../types';
 
+export enum FamilyStructure{
+  Solo = 'Solo',
+  Duo = 'Duo',
+  Trio = 'Trio',
+}
+
+const StructureCodes: {[key in FamilyStructure]: string} = {
+  [FamilyStructure.Solo]: 'SOL',
+  [FamilyStructure.Duo]: 'DUO',
+  [FamilyStructure.Trio]: 'TRI',
+};
 export class FamilyGroupBuilder {
     private meta: Meta = {
       profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-family-group'],
@@ -13,6 +24,8 @@ export class FamilyGroupBuilder {
 
     private member: BackboneElement[] = [];
 
+    private structure: FamilyStructure = FamilyStructure.Solo;
+
     public build(): FamilyGroup {
       return {
         resourceType: 'Group',
@@ -23,12 +36,17 @@ export class FamilyGroupBuilder {
         extension: [{
           url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/fm-structure',
           valueCoding: {
-            code: 'TRI',
-            display: 'Trio',
+            code: StructureCodes[this.structure],
+            display: this.structure.toString(),
             system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/fm-structure',
           },
         }],
       };
+    }
+
+    public withStructure(value: FamilyStructure) {
+      this.structure = value;
+      return this;
     }
 
     public withType(value: FamilyGroupType) {

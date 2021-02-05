@@ -10,7 +10,7 @@ export class PatientBuilder {
 
   private active: boolean = false;
 
-  private birthDate!: Date;
+  private birthDate?: Date;
 
   private gender!: string;
 
@@ -27,6 +27,10 @@ export class PatientBuilder {
   private bloodRelationship?: string;
 
   private organization?: string;
+
+  private isProband: boolean = true;
+
+  private isFetus: boolean = false;
 
   public withId(id: string) {
     if (id != null) {
@@ -152,20 +156,32 @@ export class PatientBuilder {
     return this;
   }
 
-  public build() {
-    const formattedBirthDate = formatDate(this.birthDate);
+  public withIsProband(value: boolean) {
+    this.isProband = value;
+    return this;
+  }
 
+  public withIsFetus(value: boolean) {
+    this.isFetus = value;
+    return this;
+  }
+
+  public build() {
     const patient: Patient = {
       resourceType: 'Patient',
       meta: {
         profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
       },
       active: this.active,
-      birthDate: formattedBirthDate,
+      birthDate: (this.birthDate != null) ? formatDate(this.birthDate) : undefined,
       extension: [
         {
           url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
-          valueBoolean: true,
+          valueBoolean: this.isProband,
+        },
+        {
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+          valueBoolean: this.isFetus,
         },
       ],
       gender: this.gender,

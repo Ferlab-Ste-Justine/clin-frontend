@@ -7,7 +7,7 @@ export type ParsedPatientData = {
   mrn: string;
   organization: string;
   gender: string;
-  birthDate: string;
+  birthDate?: string;
   ethnicity: string;
   bloodRelationship: string;
   familyId: string;

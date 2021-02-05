@@ -64,10 +64,10 @@ const defaultOrganizationValue = (patient: Patient) => {
 };
 
 const defaultBirthDate = (patient: Patient) => {
-  if (has(patient, 'birthDate') && patient.birthDate.length > 0) {
+  if (has(patient, 'birthDate') && patient.birthDate!.length > 0) {
     return moment(patient.birthDate, 'YYYY-MM-DD');
   }
-  return null;
+  return 'N/A';
 };
 
 interface Props {
