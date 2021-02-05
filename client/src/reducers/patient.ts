@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { produce } from 'immer';
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 import intl from 'react-intl-universal';
 import * as actions from '../actions/type';

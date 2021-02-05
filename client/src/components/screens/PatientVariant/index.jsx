@@ -4,9 +4,14 @@ import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {
-  cloneDeep, curry, curryRight, filter, findIndex, get, has, isNil,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import curry from 'lodash/curry';
+import curryRight from 'lodash/curryRight';
+import filter from 'lodash/filter';
+import findIndex from 'lodash/findIndex';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import isNil from 'lodash/isNil';
 import {
   Badge, Button, Card, Checkbox, Col, notification, Row, Tabs,
 } from 'antd';

@@ -1,6 +1,4 @@
-import {
-  find,
-} from 'lodash';
+import find from 'lodash/find';
 import {
   createOperatorInstruction,
   INSTRUCTION_TYPE_OPERATOR,

@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { ClinicalImpression, Observation } from '../../fhir/types';
 import { ConsultationSummary } from '../types';
 import { DataExtractor } from '../extractor';

@@ -12,12 +12,13 @@ import {
 } from 'react-icons-kit/md';
 
 import intl from 'react-intl-universal';
-import {
-  map,
-  isEmpty,
-  get,
-  has, values as toArray,
-} from 'lodash';
+
+import has from 'lodash/has';
+import isEmpty from 'lodash/isEmpty';
+import map from 'lodash/map';
+import get from 'lodash/get';
+import toArray from 'lodash/values';
+
 import {
   CGH_CODES,
   CGH_VALUES,

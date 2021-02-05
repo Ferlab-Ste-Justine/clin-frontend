@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  cloneDeep, isEqual, find, isNull,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
+import find from 'lodash/find';
+import isNull from 'lodash/isNull';
 import intl from 'react-intl-universal';
 import {
   Input, Tooltip, Popconfirm,

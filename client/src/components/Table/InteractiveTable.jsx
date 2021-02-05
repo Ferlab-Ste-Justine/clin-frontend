@@ -5,9 +5,13 @@ import intl from 'react-intl-universal';
 import {
   Row, Col, Button, Checkbox, Popover, Card, Spin, Input,
 } from 'antd';
-import {
-  cloneDeep, isEqual, filter, pullAll, findIndex, find, debounce,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
+import filter from 'lodash/filter';
+import pullAll from 'lodash/pullAll';
+import findIndex from 'lodash/findIndex';
+import find from 'lodash/find';
+import debounce from 'lodash/debounce';
 
 import IconKit from 'react-icons-kit';
 import {

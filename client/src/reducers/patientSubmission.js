@@ -2,9 +2,9 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
-import {
-  isEmpty, get, range,
-} from 'lodash';
+import get from 'lodash/get';
+import range from 'lodash/range';
+import isEmpty from 'lodash/isEmpty';
 import { message } from 'antd';
 import intl from 'react-intl-universal';
 import { genPractitionerKey } from '../helpers/fhir/fhir';

@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import * as actions from '../actions/type';
 import { FamilyGroup, Patient } from '../helpers/fhir/types';
 

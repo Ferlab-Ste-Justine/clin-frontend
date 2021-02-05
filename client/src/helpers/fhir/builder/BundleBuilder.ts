@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { v4 as uuid } from 'uuid';
 import { Bundle, BundleEntry } from '../types';
 

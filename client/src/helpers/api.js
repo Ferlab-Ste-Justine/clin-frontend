@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 import Http from './http-client';
 import {
   createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle,

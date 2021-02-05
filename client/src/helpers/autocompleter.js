@@ -1,4 +1,4 @@
-import { flatten } from 'lodash';
+import flatten from 'lodash/flatten';
 
 const Bloodhound = require('bloodhound-js');
 

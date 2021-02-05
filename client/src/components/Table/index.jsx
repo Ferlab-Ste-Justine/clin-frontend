@@ -9,7 +9,7 @@ import {
 import {
   Badge, Button, Typography, Checkbox, Tooltip,
 } from 'antd';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import './style.scss';
 // import { relativeTimeThreshold } from 'moment';
 

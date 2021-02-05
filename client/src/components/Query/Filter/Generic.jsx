@@ -4,9 +4,11 @@ import InfiniteScroll from 'react-infinite-scroller';
 import {
   Row, Col, Checkbox, Tag, Tooltip, Button, Divider,
 } from 'antd';
-import {
-  cloneDeep, pull, orderBy, pullAllBy, filter,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import pull from 'lodash/pull';
+import orderBy from 'lodash/orderBy';
+import pullAllBy from 'lodash/pullAllBy';
+import filter from 'lodash/filter';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import Filter, {

@@ -1,11 +1,6 @@
 /* eslint-disable no-param-reassign, no-underscore-dangle */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
-// import {
-//   cloneDeep, findIndex, isEqual, last, head,
-// } from 'lodash';
-// import intl from 'react-intl-universal';
-// import uuidv1 from 'uuid/v1';
 
 import * as actions from '../actions/type';
 

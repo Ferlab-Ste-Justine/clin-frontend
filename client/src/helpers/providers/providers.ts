@@ -1,4 +1,5 @@
-import { Dictionary, keyBy } from 'lodash';
+import { Dictionary } from 'lodash';
+import keyBy from 'lodash/keyBy';
 import { DataExtractor } from './extractor';
 
 export type Record<T, V> = {

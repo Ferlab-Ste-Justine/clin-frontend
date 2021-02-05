@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
 
-import { get } from 'lodash';
+import get from 'lodash/get';
 import * as actions from '../actions/type';
 
 export const initialUserState = {

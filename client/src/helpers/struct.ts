@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { has } from 'lodash';
+import has from 'lodash/has';
 import { Patient, ResourceType } from './fhir/types';
 
 // THIS REDUCER NEEDS TO BE REMOVED WHEN THE NEW PATIENT PAGE IS IMPLEMENTED.

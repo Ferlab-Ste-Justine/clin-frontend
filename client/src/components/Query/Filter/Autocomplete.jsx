@@ -2,9 +2,12 @@ import React from 'react';
 import {
   Row, Col, Checkbox, Tooltip,
 } from 'antd';
-import {
-  cloneDeep, pull, pullAllBy, filter, pullAll, orderBy,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import pull from 'lodash/pull';
+import pullAllBy from 'lodash/pullAllBy';
+import filter from 'lodash/filter';
+import pullAll from 'lodash/pullAll';
+import orderBy from 'lodash/orderBy';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import Filter, {

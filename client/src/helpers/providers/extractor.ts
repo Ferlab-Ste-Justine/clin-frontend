@@ -1,4 +1,5 @@
-import { get, has } from 'lodash';
+import get from 'lodash/get';
+import has from 'lodash/has';
 import {
   Organization, Practitioner, PractitionerRole, ResourceType, Telecom,
 } from '../fhir/types';

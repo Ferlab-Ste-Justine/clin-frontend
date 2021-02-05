@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { FamilyMemberHistory } from '../../fhir/types';
 import { FamilyObservation } from '../types';
 import { DataExtractor } from '../extractor';

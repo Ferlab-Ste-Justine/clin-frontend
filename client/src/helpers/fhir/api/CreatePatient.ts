@@ -1,4 +1,5 @@
-import { get, set } from 'lodash';
+import get from 'lodash/get';
+import set from 'lodash/set';
 import httpClient from '../../http-client';
 import { BundleBuilder } from '../builder/BundleBuilder';
 import { FamilyGroupBuilder, FamilyStructure } from '../builder/FamilyGroupBuilder';

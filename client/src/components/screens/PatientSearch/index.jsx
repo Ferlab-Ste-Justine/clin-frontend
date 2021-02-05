@@ -12,9 +12,7 @@ import {
   ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
 import { SearchOutlined, FileTextOutlined } from '@ant-design/icons';
-import {
-  debounce,
-} from 'lodash';
+import debounce from 'lodash/get';
 import style from '../../../containers/App/style.module.scss';
 import './style.scss';
 

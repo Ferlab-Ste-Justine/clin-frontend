@@ -6,9 +6,7 @@ import {
   Tag, Dropdown,
 } from 'antd';
 import Icon from '@ant-design/icons';
-import {
-  cloneDeep,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import IconKit from 'react-icons-kit';
 import {
   ic_cancel,
