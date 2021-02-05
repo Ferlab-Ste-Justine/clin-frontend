@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
-import {
-  find, cloneDeep, debounce, filter,
-} from 'lodash';
+import find from 'lodash/find';
+import cloneDeep from 'lodash/cloneDeep';
+import debounce from 'lodash/debounce';
+import filter from 'lodash/filter';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {

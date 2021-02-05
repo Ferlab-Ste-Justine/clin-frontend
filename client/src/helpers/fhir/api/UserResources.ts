@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { get } from 'lodash';
+import get from 'lodash/get';
 import httpClient from '../../http-client';
 
 export const getUserPractitionerData = async (response: AxiosResponse) : Promise<AxiosResponse> => {

@@ -8,9 +8,12 @@ import { bindActionCreators } from 'redux';
 import {
   Button, Card, Form, Steps, Typography,
 } from 'antd';
-import {
-  find, has, debounce, mapValues, get, values as toArray,
-} from 'lodash';
+import find from 'lodash/find';
+import has from 'lodash/has';
+import debounce from 'lodash/debounce';
+import mapValues from 'lodash/mapValues';
+import get from 'lodash/get';
+import toArray from 'lodash/values';
 
 import IconKit from 'react-icons-kit';
 import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';

@@ -1,7 +1,8 @@
 import {
   all, put, takeLatest, select,
 } from 'redux-saga/effects';
-import { cloneDeep, last } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import last from 'lodash/last';
 import intl from 'react-intl-universal';
 
 import * as actionTypes from '../actions/type';

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Card, Row, Typography, Tooltip, Button, Input, Col,
 } from 'antd';
-import { size } from 'lodash';
+import size from 'lodash/size';
 import intl from 'react-intl-universal';
 import IconKit from 'react-icons-kit';
 import {

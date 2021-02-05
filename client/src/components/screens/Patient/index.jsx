@@ -9,9 +9,7 @@ import {
   Col, Row, Tabs, Typography, Button, Spin, Table, Tag, Badge, Card, Popover, Divider, Menu, Dropdown,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import {
-  find,
-} from 'lodash';
+import find from 'lodash/find';
 
 import IconKit from 'react-icons-kit';
 import {

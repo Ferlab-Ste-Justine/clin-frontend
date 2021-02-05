@@ -4,9 +4,9 @@ import {
 } from 'antd';
 import moment from 'moment';
 import intl from 'react-intl-universal';
-import {
-  find, has, get,
-} from 'lodash';
+import get from 'lodash/get';
+import find from 'lodash/find';
+import has from 'lodash/has';
 import { Extension, Patient } from '../../../../helpers/fhir/types';
 
 const ramqValue = (patient: Patient) => {

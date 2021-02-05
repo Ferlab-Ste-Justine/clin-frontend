@@ -1,7 +1,7 @@
 import {
   all, put, takeLatest,
 } from 'redux-saga/effects';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import * as actionTypes from '../actions/type';
 import Api, { ApiError } from '../helpers/api';

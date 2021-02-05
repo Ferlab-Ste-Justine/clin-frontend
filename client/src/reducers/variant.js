@@ -1,9 +1,11 @@
 /* eslint-disable no-param-reassign, no-underscore-dangle */
 import PropTypes from 'prop-types';
 import { produce } from 'immer';
-import {
-  cloneDeep, findIndex, isEqual, last, head,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import findIndex from 'lodash/findIndex';
+import isEqual from 'lodash/isEqual';
+import last from 'lodash/last';
+import head from 'lodash/head';
 import intl from 'react-intl-universal';
 import { v1 as uuidv1 } from 'uuid';
 

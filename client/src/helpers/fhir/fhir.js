@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
-
-import { isEmpty, get } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
 import { ServiceRequestBuilder } from './builder/ServiceRequestBuilder';
 import { ClinicalImpressionBuilder } from './builder/ClinicalImpressionBuilder';

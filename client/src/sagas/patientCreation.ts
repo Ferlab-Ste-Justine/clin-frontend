@@ -2,7 +2,7 @@ import {
   all, put, takeLatest,
 } from 'redux-saga/effects';
 
-import { get } from 'lodash';
+import get from 'lodash/get';
 import * as actions from '../actions/type';
 import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import { createRequest } from '../helpers/fhir/api/CreateRequest';

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
 
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import PropTypes from 'prop-types';
 import NumericalComparisonWidget from './widgets/NumericalComparisonWidget';
 import Filter, { FILTER_TYPE_NUMERICAL_COMPARISON } from './index';

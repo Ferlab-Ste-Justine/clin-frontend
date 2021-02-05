@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { find } from 'lodash';
+import find from 'lodash/find';
 
 const initialPatientState = {
   details: {

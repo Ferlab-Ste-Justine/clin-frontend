@@ -4,9 +4,12 @@ import {
 } from 'antd';
 import intl from 'react-intl-universal';
 import InfiniteScroll from 'react-infinite-scroller';
-import {
-  get, cloneDeep, orderBy, pullAllBy, filter, find,
-} from 'lodash';
+import get from 'lodash/get';
+import cloneDeep from 'lodash/cloneDeep';
+import orderBy from 'lodash/orderBy';
+import pullAllBy from 'lodash/pullAllBy';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
 import PropTypes from 'prop-types';
 
 import Filter, {

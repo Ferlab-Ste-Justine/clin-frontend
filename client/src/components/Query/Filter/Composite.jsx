@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import {
   Row, Col, Checkbox, Tooltip, Tag,
 } from 'antd';
-import {
-  cloneDeep, orderBy, filter, pullAllBy, pull,
-} from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import orderBy from 'lodash/orderBy';
+import filter from 'lodash/filter';
+import pullAllBy from 'lodash/pullAllBy';
+import pull from 'lodash/pull';
 
 import Filter, { FILTER_TYPE_COMPOSITE, FILTER_TYPE_GENERIC, FILTER_TYPE_NUMERICAL_COMPARISON } from './index';
 import {

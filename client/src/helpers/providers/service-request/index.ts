@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { ServiceRequest } from '../../fhir/types';
 import { Prescription } from '../types';
 import { DataExtractor } from '../extractor';

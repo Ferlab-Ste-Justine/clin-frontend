@@ -3,7 +3,7 @@ import {
   all, select, put, takeLatest, delay, takeEvery,
 } from 'redux-saga/effects';
 
-import { get } from 'lodash';
+import get from 'lodash/get';
 
 import * as actions from '../actions/type';
 import {

@@ -1,4 +1,5 @@
-import { has, get } from 'lodash';
+import get from 'lodash/get';
+import has from 'lodash/has';
 import { FamilyGroup, Organization, Patient } from '../../fhir/types';
 import { ParsedPatientData } from '../types';
 import { DataExtractor } from '../extractor';
