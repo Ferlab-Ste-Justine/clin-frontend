@@ -306,12 +306,6 @@ div.ant-card {
   width: $maxWidth;
 }
 
-.variant-frequencies{
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-}
-
 //Card
 .staticCard{
   margin-bottom: 24px !important;
@@ -755,4 +749,16 @@ table{
 
 .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item:hover{
   border: none;
+}
+
+//other
+.bold{
+  font-weight: 500;
+}
+
+.linkUnderline{
+  text-decoration: underline;
+  span{
+    text-decoration: underline;
+  }
 }
