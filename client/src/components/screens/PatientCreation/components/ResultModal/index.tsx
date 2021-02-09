@@ -13,16 +13,17 @@ interface Props {
   icon: React.ReactNode
   description: React.ReactNode
   actions: React.ReactNode
+  title?: string
 }
 
 const I18N_PREFIX = 'screen.patient.creation.modal.';
 
 const ResultModal: React.FC<Props> = ({
-  open, onClose, icon, description, actions,
+  open, onClose, icon, description, actions, title,
 }) => {
   const patient = useSelector((state: any) => state.patientCreation.patient) as Patient;
 
-  if (!patient?.id) {
+  if (!patient?.id && !title) {
     return <span />;
   }
 
@@ -32,7 +33,7 @@ const ResultModal: React.FC<Props> = ({
         { icon }
 
         <Typography.Text className="patient-creation__modal__content__name">
-          { `${patient.name[0].family.toUpperCase()}, ${patient.name[0].given[0]}` }
+          { title || `${patient.name[0].family.toUpperCase()}, ${patient.name[0].given[0]}` }
         </Typography.Text>
 
         <Typography.Text className="patient-creation__modal__content__description">

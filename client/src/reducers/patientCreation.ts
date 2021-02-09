@@ -13,6 +13,7 @@ export type PatientCreationState = {
     patient?: Patient,
     ramqChecked: boolean;
     familyGroup?: FamilyGroup,
+    status?: 'created' | 'error'
 };
 
 type Action = {
@@ -33,6 +34,7 @@ const reducer = (
     case actions.CREATE_PATIENT_FETUS_SUCCEEDED: {
       draft.patient = action.payload.patient;
       draft.familyGroup = action.payload.familyGroup;
+      draft.status = 'created';
       break;
     }
     case actions.CLOSE_CREATE_PATIENT_REQUESTED:
@@ -48,6 +50,11 @@ const reducer = (
       draft.patient = undefined;
       draft.ramqChecked = true;
       break;
+    case actions.CREATE_PATIENT_FAILED:
+    case actions.CREATE_PATIENT_FETUS_FAILED: {
+      draft.status = 'error';
+      break;
+    }
     default:
       break;
   }

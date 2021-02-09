@@ -1,5 +1,5 @@
 import React, {
-  useReducer, Reducer, useState,
+  useReducer, Reducer, useState, useEffect,
 } from 'react';
 import intl from 'react-intl-universal';
 import {
@@ -14,6 +14,7 @@ import get from 'lodash/get';
 import set from 'lodash/set';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { LoadingOutlined } from '@ant-design/icons';
 import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
 import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
 import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
@@ -25,11 +26,13 @@ interface Props {
   open: boolean
   onClose: () => void
   onCreated: () => void
+  onError: () => void
   onExistingPatient: () => void
   userRole: PractitionerRole
   actions: any
   patient: Patient
   ramqChecked: boolean
+  patientCreationStatus?: 'error' | 'success'
 }
 
 enum PatientType {
@@ -113,13 +116,14 @@ const extractMrnData = (patient: Patient) : MrnData | undefined => {
   }
   return {
     mrn: identifier.value,
-    hospital: identifier.assigner!.reference.split('/')[1],
+    hospital: identifier.assigner?.reference.split('/')[1] || '',
   };
 };
 
 const FormModal : React.FC<Props> = ({
-  open, onClose, onCreated, onExistingPatient, userRole, actions, patient, ramqChecked,
+  open, onClose, onCreated, onError, onExistingPatient, userRole, actions, patient, ramqChecked, patientCreationStatus,
 }) => {
+  const [isCreating, setIsCreating] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFetusType, setIsFetusType] = useState(false);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(
@@ -147,7 +151,6 @@ const FormModal : React.FC<Props> = ({
         form.setFieldsValue({
           lastname: get(patient, 'name[0].family'),
           firstname: get(patient, 'name[0].given[0]'),
-          sex: patient.gender,
           mrn: {
             file: mrnData?.mrn,
             hospital: mrnData?.hospital,
@@ -157,15 +160,36 @@ const FormModal : React.FC<Props> = ({
         setIsFormValid(true);
         dispatch({ type: ActionType.RAMQ_VALID });
       }
-    } else if (state.ramqStatus === RamqStatus.PROCESSING) {
-      dispatch({ type: ActionType.RAMQ_VALID });
     }
   }
 
+  useEffect(() => {
+    if (patientCreationStatus) {
+      resetForm();
+      if (patientCreationStatus === 'success') {
+        onCreated();
+      } else {
+        onError();
+      }
+      setIsCreating(false);
+    }
+  }, [patientCreationStatus]);
+
   return (
     <>
+      <Modal visible={open && isCreating} title={null} footer={null} closable={false}>
+        <Row gutter={8}>
+          <Col>
+            <LoadingOutlined spin size={16} />
+          </Col>
+          <Col>
+            { intl.get(`${I18N_PREFIX}creating`) }
+          </Col>
+        </Row>
+      </Modal>
+
       <Modal
-        visible={open}
+        visible={open && !isCreating}
         onCancel={() => {
           resetForm();
           onClose();
@@ -179,6 +203,7 @@ const FormModal : React.FC<Props> = ({
         width={600}
         okButtonProps={{ disabled: !isFormValid }}
       >
+
         <Form
           form={form}
           labelCol={{ span: 8 }}
@@ -186,6 +211,7 @@ const FormModal : React.FC<Props> = ({
           colon={false}
           labelAlign="left"
           requiredMark={false}
+          initialValues={{ patientType: PatientType.PERSON }}
           onChange={async ({ target }) => {
             const currentElement = target as HTMLInputElement;
             if (['ramq', 'ramqConfirm'].includes(currentElement.id)) {
@@ -208,6 +234,7 @@ const FormModal : React.FC<Props> = ({
             setIsFormValid(validateForm(form.getFieldsValue()));
           }}
           onFinish={async (values) => {
+            setIsCreating(true);
             try {
               const patientBuilder = new PatientBuilder()
                 .withFamily(values.lastname)
@@ -233,8 +260,6 @@ const FormModal : React.FC<Props> = ({
                   .withIsProband(true);
                 actions.createPatient(patientBuilder.build());
               }
-              resetForm();
-              onCreated();
             } catch (e) {
               // ignore
             }
@@ -331,9 +356,8 @@ const FormModal : React.FC<Props> = ({
                   }
                   {...formInputItemProps}
                   name="lastname"
-
                 >
-                  <Input placeholder={intl.get(`${I18N_PREFIX}lastname`)} />
+                  <Input placeholder={intl.get(`${I18N_PREFIX}lastname`)} disabled={isFetusType} />
                 </Form.Item>
                 <Form.Item
                   label={
@@ -345,7 +369,7 @@ const FormModal : React.FC<Props> = ({
                   name="firstname"
 
                 >
-                  <Input placeholder={intl.get(`${I18N_PREFIX}firstname`)} />
+                  <Input placeholder={intl.get(`${I18N_PREFIX}firstname`)} disabled={isFetusType} />
                 </Form.Item>
                 <Form.Item
                   label={
@@ -430,6 +454,7 @@ const mapStateToProps = (state: any) => ({
   userRole: state.user.practitionerData.practitionerRole,
   patient: state.patientCreation.patient,
   ramqChecked: state.patientCreation.ramqChecked,
+  patientCreationStatus: state.patientCreation.status,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
