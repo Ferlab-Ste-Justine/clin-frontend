@@ -4,15 +4,6 @@ import { PatientSearchHits } from '../fhir/types';
 
 const MAX_SIZE = 96;
 
-function getSexe(patient:PatientSearchHits) {
-  if (patient.gender.toLocaleLowerCase() === 'male') {
-    return 'masculin';
-  } if (patient.gender.toLocaleLowerCase() === 'female') {
-    return 'feminin';
-  }
-  return 'inconnu';
-}
-
 function validateData(patients: PatientSearchHits[]) {
   return patients.length <= MAX_SIZE && patients.every((p) => p.status === 'active' && p.test === 'WXS');
 }
@@ -38,7 +29,7 @@ export function generateExport(patients: PatientSearchHits[]) {
       dossier_medical: p.mrn,
       institution: p.organization.name || p.organization.id.split('/')[1],
       DDN: moment(p.birthDate).format('DD/MM/yyyy'),
-      sexe: getSexe(p),
+      sexe: p.gender.toLocaleLowerCase(),
       famille_id: p.familyId,
       position: p.position,
     })),
