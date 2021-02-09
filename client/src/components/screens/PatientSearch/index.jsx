@@ -12,7 +12,7 @@ import {
   ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
 import { SearchOutlined, FileTextOutlined } from '@ant-design/icons';
-import debounce from 'lodash/get';
+import debounce from 'lodash/debounce';
 import style from '../../../containers/App/style.module.scss';
 import './style.scss';
 
@@ -412,6 +412,7 @@ class PatientSearchScreen extends React.Component {
   }
 
   handleAutoCompleteChange(query) {
+    console.log('coucou');
     const { actions } = this.props;
     const { size } = this.state;
     if (query && query.length > 0) {
