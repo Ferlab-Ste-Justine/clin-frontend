@@ -1,7 +1,9 @@
 @import "./variables.scss";
+@import '../../../style/themes/colors.scss';
 
 .variant-page-content {
   &__header{
+    
     display: flex;
     height: 24px;
     margin-left: 24px;
@@ -18,6 +20,165 @@
 
     &__tag{
       margin-left: 12px;
+      margin-right: 0;
+    }
+  }
+
+  .variant__generalInfo{
+    margin-bottom: 24px;
+    
+    .ant-card-body{
+      padding: 16px;
+    }
+    .nameBlock{
+      width: 464px;
+      background-color: $gray-2;
+      color: $blue-10;
+  
+      &__info{
+        margin-bottom: 8px;
+        &__label{
+          width: 104px;
+          color: $blue-10;
+        }
+
+        &__info{
+          font-weight: 500;
+          width: 324px;
+          word-break: break-all;
+          color: $blue-10; 
+        }
+      }
+      i{
+        color: $gray-5;
+        margin-bottom: 8px;
+      }
+  
+      .ant-tag{
+        margin: 0;
+        margin-top: 8px;
+      }
+    }
+  
+    .content{
+      flex: 1;
+      margin-left: 40px;
+      display: flex;
+      align-items: center;
+      .ant-row {
+        width: 100%;
+        >.ant-col{
+          flex:1;
+        }
+      }
+      .ant-divider{
+        height: auto;
+        margin: 0 48px;
+      }
+      .row{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+        &:last-child{
+          margin-bottom: 0;
+        }
+        
+        >.col{
+          flex:1;
+        }
+        .title{
+          color: $gray-7;
+          font-size: 12px;
+          line-height: 20px;
+          font-weight: 500;
+        }
+        .info{
+          height: 22px;
+          .ant-btn{
+            line-height: 22px;
+            height: auto;
+          }
+        }
+      }
+  
+    }
+  }
+
+  &__table{
+    &__title{
+      font-weight: 400 !important;
+      margin-left: 16px;
+      
+      &:last-child{
+        line-height: 30px;
+      }
+
+      .link{
+        font-weight: 500;
+      }
+      .value{
+        margin-top: 2px;
+      }
+    }
+
+
+  }
+
+  .consequenceTable{
+    th, td{
+      &:nth-child(1){
+        width: 104px;
+      }
+      &:nth-child(2){
+        width: 256px;
+      }
+      &:nth-child(3){
+        width: 136px;
+      }
+      &:nth-child(4){
+        width: 72px;
+      }
+      &:nth-child(5){
+        width: 128px;
+      }
+      &:nth-child(7){
+        width: 224px;
+      }
+      &:nth-child(8){
+        width: 200px;
+      }
+    }
+
+    &__tag{
+      margin-right: 0;
+    }
+
+    &__predictionList{
+      ul{
+        margin-bottom: 0!important;
+      }
+      .close{
+        display: none;
+      }
+    }
+
+    &__transcriptValue{
+      display: flex;
+      align-items: center;
+
+      .canonicalIcon{
+        margin-left: 8px;
+      }
+    }
+  }
+
+  .largeDivider{
+    height: 8px;
+    background-color: $layoutBG;
+    margin: 8px 0;
+
+    &:last-child{
+      display: none;
     }
   }
 
