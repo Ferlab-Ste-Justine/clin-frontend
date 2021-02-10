@@ -519,7 +519,7 @@ const en = {
   'screen.variantDetails.summaryTab.patientTable.title': 'Patients',
   'screen.variantDetails.summaryTab.patientTable.qtyOfPatients': 'Nb of patients (i)',
   'screen.variantDetails.summaryTab.patientTable.frequencies': 'Frequencies',
-  'screen.variantDetails.summaryTab.consequencesTable.title': 'Consequences Geniques',
+  'screen.variantDetails.summaryTab.consequencesTable.title': 'Genetic Consequences',
   'screen.variantDetails.summaryTab.consequencesTable.GeneColumn': 'Gene',
   'screen.variantDetails.summaryTab.consequencesTable.AAColumn': 'AA',
   'screen.variantDetails.summaryTab.consequencesTable.ConsequenceColumn': 'Consequence',
