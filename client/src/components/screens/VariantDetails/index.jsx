@@ -16,7 +16,7 @@ import {
   ic_assessment, ic_show_chart, ic_local_library, ic_people,
 } from 'react-icons-kit/md';
 import {
-  filter,
+  filter, isEqual,
 } from 'lodash';
 import DataList from '../../DataList';
 import DataTable, { createCellRenderer } from '../../Table/index';
@@ -74,6 +74,7 @@ class VariantDetailsScreen extends React.Component {
     super(props);
     this.state = {
       openGeneTable: [],
+      isVepOpen: [],
     };
     this.getConsequences = this.getConsequences.bind(this);
     this.getInternalCohortFrequencies = this.getInternalCohortFrequencies.bind(this);
@@ -482,6 +483,7 @@ class VariantDetailsScreen extends React.Component {
 
     const {
       openGeneTable,
+      isVepOpen,
     } = this.state;
 
     if (variantDetails) {
@@ -489,9 +491,10 @@ class VariantDetailsScreen extends React.Component {
       if (data) {
         let geneToShow = gene;
         if (!openGeneTable.includes(gene[0].symbol)) {
-          const canonical = filter(gene, { canonical: true });
-          geneToShow = canonical.length === 0 ? [gene[0]] : canonical;
+          const canonicalLine = filter(gene, { canonical: true });
+          geneToShow = canonicalLine.length === 0 ? [gene[0]] : canonicalLine;
         }
+
         return geneToShow.map((g, index) => {
           const getVepTag = () => {
             switch (g.impact) {
@@ -531,7 +534,10 @@ class VariantDetailsScreen extends React.Component {
                 switch (type) {
                   case 'sift':
                     return (
-                      <li className={`${isOpen} sift`}><span className="consequenceTerm">SIFT: </span>{ g.predictions.sift_pred } - { g.predictions.sift_converted_rank_score }</li>
+                      <li className={`${isOpen} sift`}>
+                        <span className="consequenceTerm">SIFT: </span>
+                        { g.predictions.sift_pred } - { g.predictions.sift_converted_rank_score }
+                      </li>
                     );
                   case 'polyphen2':
                     return (
@@ -541,22 +547,62 @@ class VariantDetailsScreen extends React.Component {
                       </li>
                     );
                   case 'cadd':
-                    return (<li className={`${isOpen} cadd`}><span className="consequenceTerm">CADD score: </span>{ g.predictions.cadd_score }</li>);
+                    return (
+                      <li className={`${isOpen} cadd`}>
+                        <span className="consequenceTerm">CADD score: </span>
+                        { g.predictions.cadd_score }
+                      </li>
+                    );
                   case 'dann':
-                    return (<li className={`${isOpen} dann`}><span className="consequenceTerm">DANN score: </span>{ g.predictions.dann_score }</li>);
+                    return (
+                      <li className={`${isOpen} dann`}>
+                        <span className="consequenceTerm">DANN score: </span>
+                        { g.predictions.dann_score }
+                      </li>
+                    );
                   case 'fathmm':
-                    return (<li className={`${isOpen} fathmm`}><span className="consequenceTerm">FATHMM: </span>{ g.predictions.fathmm_pred } - { g.predictions.fathmm_converted_rank_score }</li>);
+                    return (
+                      <li className={`${isOpen} fathmm`}>
+                        <span className="consequenceTerm">FATHMM: </span>
+                        { g.predictions.fathmm_pred } - { g.predictions.fathmm_converted_rank_score }
+                      </li>
+                    );
                   case 'lrt':
-                    return (<li className={`${isOpen} lrt`}><span className="consequenceTerm">LRT: </span>{ g.predictions.lrt_pred } - { g.predictions.lrt_converted_rankscore }</li>);
+                    return (
+                      <li className={`${isOpen} lrt`}>
+                        <span className="consequenceTerm">LRT: </span>
+                        { g.predictions.lrt_pred } - { g.predictions.lrt_converted_rankscore }
+                      </li>
+                    );
                   case 'revel':
-                    return (<li className={`${isOpen} revel`}><span className="consequenceTerm">REVEL score: </span>{ g.predictions.revel_rankscore }</li>);
+                    return (
+                      <li className={`${isOpen} revel`}>
+                        <span className="consequenceTerm">REVEL score: </span>
+                        { g.predictions.revel_rankscore }
+                      </li>
+                    );
                   default:
                     return null;
                 }
               };
 
+              let isSameGene = false;
+              isVepOpen.forEach((element) => {
+                if (isEqual(g, element)) {
+                  isSameGene = true;
+                }
+              });
+
               predictionType.forEach((type, i) => {
-                const isOpen = i <= 1 ? 'open' : 'close';
+                let isOpen = i <= 1 ? 'open' : 'close';
+                if (isSameGene) {
+                  isOpen = 'open';
+                }
+
+                if (type.includes('sift') || type.includes('polyphen2')) {
+                  predictionType.splice(i, 1);
+                  predictionType.unshift(type);
+                }
                 const line = getImpactLine(type, isOpen);
                 items.push(line);
               });
@@ -569,7 +615,7 @@ class VariantDetailsScreen extends React.Component {
                   { items }
                 </ul>
                 {
-                  items.length >= 2 ? (<Button className="linkUnderline" type="link" onClick={() => this.handleSeeMoreImpact(g.symbol, index)}>Voir plus</Button>) : null
+                  items.length > 2 ? (<Button className="linkUnderline" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>Voir plus</Button>) : null
                 }
 
               </div>
@@ -875,19 +921,21 @@ class VariantDetailsScreen extends React.Component {
     actions.navigateToPatientScreen(value);
   }
 
-  handleSeeMoreImpact(gene, index) {
-    const predictionCell = document.querySelector(`.prediction_${gene}_${index}`);
-    const predictionList = predictionCell.childNodes[0].childNodes;
-    const predictionButton = predictionCell.childNodes[1];
-    const isOpen = predictionList[predictionList.length - 2].className;
-    predictionList.forEach((element, i) => {
-      if (isOpen === 'close') {
-        element.className = 'open';
-        predictionButton.innerHTML = 'Voir mois';
-      } else if (i > 1) {
-        element.className = 'close';
-        predictionButton.innerHTML = 'Voir plus';
+  handleSeeMoreImpact(gene) {
+    const { isVepOpen } = this.state;
+    let isOpen = false;
+    isVepOpen.forEach((element, i) => {
+      if (isEqual(element, gene)) {
+        isOpen = true;
+        isVepOpen.splice(i, 1);
       }
+    });
+    if (!isOpen) {
+      isVepOpen.push(gene);
+    }
+
+    this.setState({
+      isVepOpen,
     });
   }
 
@@ -1025,7 +1073,6 @@ class VariantDetailsScreen extends React.Component {
     );
 
     const divideGenes = getDivideGenes();
-
     return (
       <Layout>
         <div className="variant-page-content">
