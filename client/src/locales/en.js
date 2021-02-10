@@ -185,6 +185,7 @@ const en = {
   'screen.patient.details.consultationSummary': 'Consultation summary',
   'screen.patient.details.diagnosticHypothesis': 'Diagnostic hypothesis',
   'screen.patient.details.cgh': 'CGH',
+
   'screen.patient.header.identification': 'Identification',
   'screen.patient.header.additionalInformation': 'Additional Information',
   'screen.patient.header.referringPractitioner': 'Referring Practitioner',
@@ -199,7 +200,7 @@ const en = {
   'screen.patient.header.familyHistory': 'Family History',
   'screen.patient.header.generalInformation': 'General Information',
   'screen.patient.header.familyMembers': 'Family Members',
-  'screen.patient.tab.patient': 'Patient',
+  'screen.patient.tab.prescriptions': 'Prescriptions',
   'screen.patient.tab.clinical': 'Clinical',
   'screen.patientsearch.yes': 'Yes',
   'screen.patientsearch.no': 'No',

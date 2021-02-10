@@ -1,0 +1,136 @@
+@import './variables.scss';
+
+.generalInfo{
+  margin-bottom: 24px;
+  .ant-card-body{
+    padding: 16px 32px;
+  }
+  .nameBlock{
+    width: 240px;
+    text-align: center;
+    background-color: $gray-2;
+
+    &__info{
+      flex-direction: column;
+    }
+    i{
+      color: $gray-5;
+      margin-bottom: 8px;
+    }
+
+    .ant-tag{
+      margin: 0;
+      margin-top: 8px;
+    }
+  }
+
+  .content{
+    flex: 1;
+    margin-left: 40px;
+    display: flex;
+    align-items: center;
+    .ant-divider{
+      height: auto;
+      margin: 0 48px;
+    }
+
+    .grid{
+      flex:2;
+      display: grid;
+      grid-template-columns: 200px 200px;
+      grid-template-rows: 44px auto;
+      gap: 16px 40px;
+      grid-template-areas:
+      ". ."
+      ". .";
+    }
+    .row{
+      display: flex;
+      flex-direction: column;
+      .title{
+        color: $gray-7;
+        font-size: 12px;
+        line-height: 20px;
+        font-weight: 500;
+      }
+
+      .view{
+        color: $blue-8;
+        font-size: 12px;
+        line-height: 20px;
+        text-decoration-line: underline;
+      }
+
+      .mrn{
+        margin-bottom: 8px;
+      }
+
+      .info{
+        .ant-btn{
+          height: auto;
+        }
+        .familyTypeTag{
+          display: flex;
+          align-items: center;
+          width: fit-content;
+          color: $cyan-7;
+        }
+      }
+    }
+
+  }
+}
+
+.prescriptions-tab {
+  &__prescriptions-section {
+    .ant-tabs {
+      &-nav {
+        margin: 0;
+        &::before {
+          border-bottom-color: transparent;
+        }
+        &-list {
+          margin: 0!important;
+        }
+        &-wrap {
+          background-color: transparent;
+        }
+      }
+      &-tab {
+        border-bottom-color: transparent!important;
+        padding: 9px 16px!important;
+      }
+      &-tab-active {
+        border-color: #ffffff!important;
+      }
+
+      &-content-holder {
+        background-color: #ffffff;
+        padding: 16px;
+      }
+    }
+
+    &__tab-label {
+      display: grid;
+      gap: 10px;
+      align-items: center;
+      grid-template-columns: auto auto;
+    }
+
+    &__empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 80px 0;
+
+      &__icon {
+        margin-bottom: 20px;
+      }
+
+      &__button {
+        margin-top: 24px;
+      }
+    }
+  }
+}

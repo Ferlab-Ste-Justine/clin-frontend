@@ -37,7 +37,7 @@ type Observations = {
   inves?: Observation;
 }
 
-type State = {
+export type PatientState = {
   patient: Record<Partial<Patient>, Partial<ParsedPatientData>>;
   prescriptions?: Record<ServiceRequest, Prescription>[];
   consultation?: Record<ClinicalImpression, ConsultationSummary>[];
@@ -51,11 +51,11 @@ type Action = {
   payload: any;
 };
 
-const initialState: State = {
+const initialState: PatientState = {
   patient: { parsed: { id: '' }, original: {} }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observations: {},
 };
 
-const reducer = (state: State = initialState, action: Action) => produce<State>(state, (draft) => {
+const reducer = (state: PatientState = initialState, action: Action) => produce<PatientState>(state, (draft) => {
   switch (action.type) {
     case actions.PATIENT_FETCH_SUCCEEDED: {
       draft.observations = {

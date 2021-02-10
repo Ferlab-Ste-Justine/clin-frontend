@@ -32,7 +32,7 @@ export type Prescription = {
   requester?: PractitionerData;
   performer?: PractitionerData;
   test: string;
-  status: string;
+  status: PrescriptionStatus;
 };
 
 export type ClinicalObservation = {
@@ -55,3 +55,4 @@ export type ConsultationSummary = {
 };
 
 export type PositionType = 'proband' | 'parent';
+export type PrescriptionStatus = 'draft' | 'on-hold' | 'revoked' | 'completed' | 'incompleted' | 'active'
