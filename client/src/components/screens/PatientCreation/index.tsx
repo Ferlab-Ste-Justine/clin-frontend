@@ -11,10 +11,11 @@ import SuccessModal from './components/SuccessModal';
 import ExistingModal from './components/ExistingModal';
 import { navigateToPatientSearchScreen } from '../../../actions/router';
 import { closeCreatePatient } from '../../../actions/patientCreation';
+import ErrorModal from './components/ErrorModal';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 enum SCREENS {
-  FORM, SUCCESS, EXISTING
+  FORM, SUCCESS, EXISTING, ERROR
 }
 
 const PatientCreation: React.FC = () => {
@@ -42,6 +43,7 @@ const PatientCreation: React.FC = () => {
           open
           onClose={onClose}
           onCreated={() => setOpenModal(SCREENS.SUCCESS)}
+          onError={() => setOpenModal(SCREENS.ERROR)}
           onExistingPatient={() => setOpenModal(SCREENS.EXISTING)}
         />
       ) }
@@ -60,6 +62,14 @@ const PatientCreation: React.FC = () => {
         <ExistingModal
           open
           onClose={onClose}
+        />
+      ) }
+
+      { openModal === SCREENS.ERROR && (
+        <ErrorModal
+          open
+          onClose={onClose}
+          onRetry={() => setOpenModal(SCREENS.FORM)}
         />
       ) }
     </>
