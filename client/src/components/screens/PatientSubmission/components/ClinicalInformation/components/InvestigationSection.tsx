@@ -34,26 +34,30 @@ const InvestigationSection: React.FC = () => {
         <>
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.investigationResult')}
+            name="cgh.result"
           >
             <Radio.Group
               buttonStyle="solid"
               onChange={(event) => {
-                setIsAbnormalResult(event.target.value === 'abnormal');
+                setIsAbnormalResult(event.target.value === 'A');
               }}
             >
-              <Radio.Button value="negative">
+              <Radio.Button value="N">
                 { intl.get('form.patientSubmission.clinicalInformation.investigationResult.negative') }
               </Radio.Button>
-              <Radio.Button value="abnormal">
+              <Radio.Button value="A">
                 { intl.get('form.patientSubmission.clinicalInformation.investigationResult.abnormal') }
               </Radio.Button>
-              <Radio.Button value="indeterminate">
+              <Radio.Button value="IND">
                 { intl.get('form.patientSubmission.clinicalInformation.investigationResult.indeterminate') }
               </Radio.Button>
             </Radio.Group>
           </Form.Item>
           { isAbnormalResult && (
-            <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.precision')}>
+            <Form.Item
+              label={intl.get('form.patientSubmission.clinicalInformation.precision')}
+              name="cgh.precision"
+            >
               <Col span={17}>
                 <Input />
               </Col>
@@ -62,6 +66,7 @@ const InvestigationSection: React.FC = () => {
 
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.investigationSummary')}
+            name="summaryNote"
           >
             <Row gutter={8}>
               <Col span={17}>

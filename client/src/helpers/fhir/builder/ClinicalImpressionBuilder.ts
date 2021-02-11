@@ -50,6 +50,13 @@ export class ClinicalImpressionBuilder {
       return this;
     }
 
+    public withSubject(id: string) {
+      this.subjectReference = {
+        reference: `Patient/${id}`,
+      };
+      return this;
+    }
+
     public build() {
       const clinicalImpression: ClinicalImpression = {
         id: this.id,

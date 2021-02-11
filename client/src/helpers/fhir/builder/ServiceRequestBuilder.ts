@@ -72,7 +72,7 @@ export class ServiceRequestBuilder {
 
     public withSubject(id: string) {
       this.serviceRequest.subject = {
-        reference: id,
+        reference: `Patient/${id}`,
       };
       return this;
     }

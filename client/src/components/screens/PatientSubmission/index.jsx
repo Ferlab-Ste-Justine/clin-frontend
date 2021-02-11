@@ -45,6 +45,10 @@ import {
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
 import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
+import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
+import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
+import { createRequest } from '../../../actions/patientCreation';
+import { isEmpty } from 'lodash';
 
 const { Step } = Steps;
 
@@ -253,18 +257,19 @@ function PatientSubmissionScreen(props) {
 
     const {
       cghInterpretationValue,
-      cghPrecision,
     } = values;
 
-    values.cghPrecision = cghPrecision ? cghPrecision.trim() : cghPrecision;
+    const cghResult = values['cgh.result'];
+
+    const cghPrecision = values['cgh.precision'] ? values['cgh.precision'].trim() : undefined;
     const builder = new ObservationBuilder('CGH')
       .withStatus('final');
 
-    if (cghInterpretationValue != null) {
+    if (cghInterpretationValue === 'realized') {
       builder.withInterpretation({
         coding: [{
-          display: cghDisplay(cghInterpretationValue),
-          code: cghInterpretationValue,
+          display: cghDisplay(cghResult),
+          code: cghResult,
         }],
       });
     }
@@ -299,14 +304,14 @@ function PatientSubmissionScreen(props) {
 
   const { localStore } = props;
 
-  const createSummary = () => {
-    const values = form.getFieldsValue();
+  const createSummary = (note) => {
+    // const values = form.getFieldsValue();
     const builder = new ObservationBuilder('INVES');
 
-    if (values.summaryNote == null && localStore.summary.note != null) {
+    if (note == null && localStore.summary.note != null) {
       builder.withNote(localStore.summary.note);
     } else {
-      builder.withNote(values.summaryNote);
+      builder.withNote(note);
     }
     return builder.build();
   };
@@ -321,67 +326,112 @@ function PatientSubmissionScreen(props) {
     actions.saveLocalIndic(values.indication);
   };
   const saveSubmission = (submitted = false) => {
-    form.validateFields().then(() => {
+    form.validateFields().then((data) => {
       const {
-        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId, userRole,
+        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId, userRole, currentPatient,
       } = props;
+      console.log(data);
 
-      const patientData = getPatientData();
-
-      const submission = {
-        patient: patientData,
-        serviceRequest,
+      const batch = {
+        serviceRequests: [],
+        clinicalImpressions: [],
+        observations: [],
+        hpos: [],
+        fmhs: [],
+        length: 0,
       };
 
-      submission.serviceRequest = { ...submission.serviceRequest };
-      submission.serviceRequest.code = getServiceRequestCode();
+      const allAnalysis = data['analysis.tests'];
+      batch.length = get(allAnalysis, 'length', 0);
 
-      if (hasObservations(observations)) {
-        submission.clinicalImpression = clinicalImpression;
-      }
-      const { currentPageIndex } = state;
-
-      if (currentPageIndex === 0) {
-        submission.observations = {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-            ...createCGHResourceList(),
-          },
-          indic: {
-            ...observations.indic,
-            ...createIndicationResourceList(),
-          },
-          summary: {
-            ...observations.summary,
-            ...createSummary(),
-          },
-        };
-        actions.saveObservations(submission.observations);
-        saveClinicalInfoPageLocalStore();
-      } else {
-        submission.submitted = submitted;
-        submission.observations = {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-          },
-          indic: {
-            ...observations.indic,
-          },
-          summary: {
-            ...observations.summary,
-            ...createSummary(),
-          },
-        };
+      if (batch.length === 0) {
+        return;
       }
 
-      submission.practitionerId = practitionerId;
-      submission.deleted = deleted;
-      submission.groupId = groupId;
-      submission.userRole = userRole;
+      allAnalysis.forEach((analysis) => {
+        batch.serviceRequests.push(new ServiceRequestBuilder()
+          .withRequester(userRole.id)
+          .withSubject(currentPatient.id)
+          .withCoding('WGS')
+          .withSubmitted(false)
+          .build());
+        batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
+          .withSubmitted(false)
+          .withSubject(currentPatient.id)
+          .withAge(1)
+          .withAssessorId(userRole.id)
+          .build());
+      });
 
-      actions.savePatientSubmission(submission);
+      batch.hpos = observations.hpos;
+      batch.fmhs = observations.fmh.filter((fmh) => !isEmpty(fmh));
+      batch.observations = [
+        createCGHResourceList(),
+        createIndicationResourceList(),
+      ];
+
+      if (data.summaryNote != null) {
+        batch.observations.push(createSummary(data.summaryNote));
+      }
+
+      actions.createRequest(batch);
+
+      // const patientData = getPatientData();
+
+      // const submission = {
+      //   patient: patientData,
+      //   serviceRequest,
+      // };
+
+      // submission.serviceRequest = { ...submission.serviceRequest };
+      // submission.serviceRequest.code = getServiceRequestCode();
+
+      // if (hasObservations(observations)) {
+      //   submission.clinicalImpression = clinicalImpression;
+      // }
+      // const { currentPageIndex } = state;
+
+      // if (currentPageIndex === 0) {
+      //   submission.observations = {
+      //     ...observations,
+      //     cgh: {
+      //       ...observations.cgh,
+      //       ...createCGHResourceList(),
+      //     },
+      //     indic: {
+      //       ...observations.indic,
+      //       ...createIndicationResourceList(),
+      //     },
+      //     summary: {
+      //       ...observations.summary,
+      //       ...createSummary(),
+      //     },
+      //   };
+      //   actions.saveObservations(submission.observations);
+      //   saveClinicalInfoPageLocalStore();
+      // } else {
+      //   submission.submitted = submitted;
+      //   submission.observations = {
+      //     ...observations,
+      //     cgh: {
+      //       ...observations.cgh,
+      //     },
+      //     indic: {
+      //       ...observations.indic,
+      //     },
+      //     summary: {
+      //       ...observations.summary,
+      //       ...createSummary(),
+      //     },
+      //   };
+      // }
+
+      // submission.practitionerId = practitionerId;
+      // submission.deleted = deleted;
+      // submission.groupId = groupId;
+      // submission.userRole = userRole;
+
+      // actions.savePatientSubmission(submission);
     });
   };
 
@@ -695,6 +745,7 @@ const mapDispatchToProps = (dispatch) => ({
     saveLocalIndic,
     updateConsentments,
     saveLocalPractitioner,
+    createRequest,
   }, dispatch),
 });
 
@@ -711,6 +762,7 @@ const mapStateToProps = (state) => ({
   search: state.search,
   localStore: state.patientSubmission.local,
   editMode: state.patientSubmission.editMode,
+  currentPatient: state.patient.patient.original,
   userRole: state.user.practitionerData.practitionerRole,
 });
 
