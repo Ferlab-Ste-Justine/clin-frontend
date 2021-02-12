@@ -249,57 +249,95 @@ class PatientSearchScreen extends React.Component {
       return null;
     }
 
-    const getStatusLabel = (request) => {
-      if (request.status === 'on-hold' && !request.submitted) {
+    const getStatusLabel = (req) => {
+      if (req.status === 'on-hold' && !req.submitted) {
         return intl.get('screen.patientsearch.status.incomplete');
       }
-      return intl.get(`screen.patientsearch.status.${request.status}`);
+      return intl.get(`screen.patientsearch.status.${req.status}`);
     };
+
     if (searchType !== 'autocomplete') {
-      const data = nextProps.search[searchType].results.map((result) => {
+      const data = [];
+      nextProps.search[searchType].results.forEach((result) => {
         const organizationValue = () => {
           if (result.organization.name === '') {
             return result.organization.id.split('/')[1];
           }
           return result.organization.name;
         };
-        const status = getStatusLabel(result);
-        const value = {
-          status: status.length > 0 ? status : '--',
-          id: result.id,
-          mrn: result.mrn,
-          ramq: result.ramq,
-          organization: organizationValue(),
-          firstName: result.firstName,
-          lastName: result.lastName.toUpperCase(),
-          gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
-          birthDate: result.birthDate,
-          familyId: result.familyId,
-          familyComposition: '',
-          familyType: result.familyType,
-          ethnicity: result.ethnicity,
-          bloodRelationship: result.bloodRelationship,
-          proband: result.proband,
-          position: result.position,
-          practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
-          request: result.request,
-          test: result.test,
-          prescription: result.prescription,
-        };
+        if (result.requests == null || result.requests.length === 0) {
+          const value = {
+            status: '--',
+            id: result.id,
+            mrn: result.mrn,
+            ramq: result.ramq,
+            organization: organizationValue(),
+            firstName: result.firstName,
+            lastName: result.lastName.toUpperCase(),
+            gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
+            birthDate: result.birthDate,
+            familyId: result.familyId,
+            familyComposition: '',
+            familyType: result.familyType,
+            ethnicity: result.ethnicity,
+            bloodRelationship: result.bloodRelationship,
+            proband: result.proband,
+            position: result.position,
+            practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
+            request: result.request,
+            test: result.test,
+            prescription: result.prescription,
+          };
 
-        Object.keys(value).forEach((key) => {
-          if (value[key] == null || value[key].length === 0) {
-            value[key] = 'N/A';
-          }
-        });
+          Object.keys(value).forEach((key) => {
+            if (value[key] == null || value[key].length === 0) {
+              value[key] = 'N/A';
+            }
+          });
+          data.push(value);
+        } else {
+          const value = {
+            id: result.id,
+            mrn: result.mrn,
+            ramq: result.ramq,
+            organization: organizationValue(),
+            firstName: result.firstName,
+            lastName: result.lastName.toUpperCase(),
+            gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
+            birthDate: result.birthDate,
+            familyId: result.familyId,
+            familyComposition: '',
+            familyType: result.familyType,
+            ethnicity: result.ethnicity,
+            bloodRelationship: result.bloodRelationship,
+            proband: result.proband,
+            position: result.position,
+            practitioner: `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}`,
+          };
 
-        return value;
+          result.requests.forEach((res) => {
+            const requestValue = {
+              ...value,
+              status: getStatusLabel(res),
+              request: res.request,
+              test: res.test,
+              prescription: res.prescription,
+            };
+            Object.keys(requestValue).forEach((key) => {
+              if (requestValue[key] == null || requestValue[key].length === 0) {
+                requestValue[key] = 'N/A';
+              }
+            });
+            data.push(requestValue);
+          });
+        }
       });
 
       return {
         data,
         page: nextProps.search[searchType].page,
         size: nextProps.search[searchType].pageSize,
+        totalLength: data.length,
       };
     }
 
@@ -473,11 +511,9 @@ class PatientSearchScreen extends React.Component {
     const {
       app, search, defaultColumns, defaultColumnsOrder, actions,
     } = this.props;
-    const { patient } = search;
-    const { total } = patient;
     const { showSubloadingAnimation } = app;
     const {
-      size, page, isFacetOpen, facet, selectedPatients,
+      size, page, isFacetOpen, facet, selectedPatients, totalLength,
     } = this.state;
 
     const { Title } = Typography;
@@ -615,7 +651,7 @@ class PatientSearchScreen extends React.Component {
                     key="patient-interactive-table"
                     size={size}
                     page={page}
-                    total={total}
+                    total={totalLength}
                     defaultVisibleColumns={defaultColumns}
                     defaultColumnsOrder={defaultColumnsOrder}
                     schema={this.columnPreset}

@@ -1,10 +1,5 @@
-import { v4 as uuid } from 'uuid';
 import intl from 'react-intl-universal';
 import get from 'lodash/get';
-import isEmpty from 'lodash/isEmpty';
-import { FamilyGroupBuilder } from './builder/FamilyGroupBuilder.ts';
-import { ServiceRequestBuilder } from './builder/ServiceRequestBuilder';
-import { ClinicalImpressionBuilder } from './builder/ClinicalImpressionBuilder';
 
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
@@ -122,15 +117,6 @@ export const createRequest = (resource) => {
     url: id ? `${resourceType}/${id}` : resourceType,
   };
 };
-
-const createFullUrl = (resource) => (resource.id ? `${resource.resourceType}/${resource.id}` : `urn:uuid:${uuid()}`);
-const createEntry = (resource) => ({
-  fullUrl: createFullUrl(resource),
-  resource,
-  request: createRequest(resource),
-});
-
-const getReference = (entry) => ({ reference: entry.fullUrl });
 
 export const createClinicalImpressionResource = ({
   id, status, age, date, assessor,
@@ -378,172 +364,6 @@ export const createGetPractitionersDataBundle = (data) => {
   }
 
   return output;
-};
-
-export const createPatientSubmissionBundle = ({
-  patient,
-  serviceRequest,
-  clinicalImpression,
-  observations,
-  practitionerId,
-  deleted,
-  groupId,
-  submitted,
-  userRole,
-}) => {
-  const patientResource = patient;
-  if (userRole != null) {
-    const generalPractitioner = get(patientResource, 'generalPractitioner', []);
-    if (generalPractitioner.find((practitioner) => practitioner.reference.indexOf(userRole.id) !== -1) == null) {
-      patientResource.generalPractitioner = [
-        ...generalPractitioner,
-        {
-          reference: `PractitionerRole/${userRole.id}`,
-        },
-      ];
-    }
-  }
-
-  const patientEntry = createEntry(patientResource);
-  const patientReference = {
-    reference: (patient.id == null) ? patientEntry.fullUrl : `Patient/${patient.id}`,
-  };
-
-  const bundle = createBundle();
-  bundle.entry.push(patientEntry);
-
-  const serviceRequestBuilder = new ServiceRequestBuilder(serviceRequest);
-  const serviceRequestResource = serviceRequestBuilder
-    .withSubject(patientEntry.fullUrl)
-    .withCoding(serviceRequest.code)
-    .withRequester(practitionerId)
-    .withSubmitted(submitted, userRole.id)
-    .build();
-
-  serviceRequestResource.id = serviceRequest != null ? serviceRequest.id : undefined;
-
-  const serviceRequestEntry = createEntry(serviceRequestResource);
-  bundle.entry.push(serviceRequestEntry);
-
-  if (clinicalImpression != null) {
-    const clinicalImpressionResource = new ClinicalImpressionBuilder()
-      .withId(clinicalImpression.id)
-      .withAssessorId(userRole.id)
-      .withSubjectReference(patientReference)
-      .withSubmitted(submitted)
-      .build();
-
-    clinicalImpressionResource.id = clinicalImpression.id != null ? clinicalImpression.id : undefined;
-    clinicalImpressionResource.subject = patientReference;
-
-    const clinicalImpressionEntry = createEntry(clinicalImpressionResource);
-    bundle.entry.push(clinicalImpressionEntry);
-
-    // CGH
-    if (observations.cgh != null && !isEmpty(observations.cgh)) {
-      observations.cgh = {
-        ...observations.cgh,
-        subject: patientReference,
-      };
-      const cghEntry = createEntry(observations.cgh);
-      bundle.entry.push(cghEntry);
-      clinicalImpressionResource.investigation[0].item.push(getReference(cghEntry));
-    }
-
-    // Summary
-    if (observations.summary != null && !isEmpty(observations.summary)) {
-      observations.summary = {
-        ...observations.summary,
-        subject: patientReference,
-      };
-      const summaryEntry = createEntry(observations.summary);
-      bundle.entry.push(summaryEntry);
-      clinicalImpressionResource.investigation[0].item.push(getReference(summaryEntry));
-    }
-
-    // Indication
-    if (observations.indic != null && !isEmpty(observations.indic)) {
-      observations.indic = {
-        ...observations.indic,
-        subject: patientReference,
-      };
-      const indicEntry = createEntry(observations.indic);
-      bundle.entry.push(indicEntry);
-      clinicalImpressionResource.investigation[0].item.push(getReference(indicEntry));
-    }
-
-    if (observations.fmh != null) {
-      observations.fmh.filter((fmh) => !isEmpty(fmh)).forEach((fmh) => {
-        const entry = createEntry({ ...fmh, patient: patientReference });
-        bundle.entry.push(entry);
-        clinicalImpressionResource.investigation[0].item.push(getReference(entry));
-      });
-    }
-
-    if (observations.hpos != null) {
-      observations.hpos.forEach((hpo) => {
-        if (hpo.note != null && hpo.note.length !== 0) {
-          hpo.note[0].text.trim();
-        }
-        const entry = createEntry({ ...hpo, subject: patientReference });
-        bundle.entry.push(entry);
-        clinicalImpressionResource.investigation[0].item.push(getReference(entry));
-      });
-    }
-
-    serviceRequestResource.extension.push({
-      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression',
-      valueReference: getReference(clinicalImpressionEntry),
-    });
-  }
-
-  const familyIdUrl = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
-  if (patient.id == null || groupId == null) {
-    const familyGroupBuilder = new FamilyGroupBuilder();
-    familyGroupBuilder.withActual(true).withType('person').withMember(
-      patientReference,
-    );
-    const familyGroup = familyGroupBuilder.build();
-    const entry = createEntry(familyGroup);
-    const familyGroupReference = getReference(entry);
-    patient.extension = patient.extension.filter((extension) => extension.url !== familyIdUrl);
-    patient.extension.push(
-      {
-        url: familyIdUrl,
-        valueReference: { ...familyGroupReference },
-      },
-    );
-    bundle.entry.push(entry);
-  }
-  if (groupId != null) {
-    patient.extension = patient.extension.filter((extension) => extension.url !== familyIdUrl);
-    patient.extension.push(
-      {
-        url: familyIdUrl,
-        valueReference: { reference: `Group/${groupId}` },
-      },
-    );
-  }
-
-  deleted.fmh.forEach((deletedResource) => {
-    bundle.entry.push({
-      request: {
-        method: 'DELETE',
-        url: `${deletedResource.resourceType}/${deletedResource.id}`,
-      },
-    });
-  });
-
-  deleted.hpos.forEach((deletedResource) => {
-    bundle.entry.push({
-      request: {
-        method: 'DELETE',
-        url: `${deletedResource.resourceType}/${deletedResource.id}`,
-      },
-    });
-  });
-
-  return bundle;
 };
 
 export const createFamilyHistoryMemberResource = ({

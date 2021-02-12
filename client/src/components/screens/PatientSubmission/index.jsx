@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
 import React from 'react';
@@ -13,6 +14,7 @@ import has from 'lodash/has';
 import debounce from 'lodash/debounce';
 import mapValues from 'lodash/mapValues';
 import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import toArray from 'lodash/values';
 
 import { SaveOutlined, LeftOutlined } from '@ant-design/icons';
@@ -48,12 +50,8 @@ import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
 import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
 import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
 import { createRequest } from '../../../actions/patientCreation';
-import { isEmpty } from 'lodash';
 
 const { Step } = Steps;
-
-const hasObservations = (observations) => observations.cgh != null || observations.indic != null
-  || observations.fmh.length > 0 || observations.hpos.length > 0;
 
 const stringifyPractionerOption = (po) => `${po.family}, ${po.given} License No: ${po.license}`;
 const practitionerOptionFromResource = (resource) => ({
@@ -61,6 +59,90 @@ const practitionerOptionFromResource = (resource) => ({
   family: resource.name[0].family,
   license: resource.identifier[0].value,
 });
+
+const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
+
+const getTestCoding = (name) => {
+  switch (name) {
+    case 'adultCancerPredisposition': return {
+      code: 'PCA',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.adultCancerPredisposition'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'kidTumorPredisposition': return {
+      code: 'PTSE',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidTumorPredisposition'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'kidHematopathiesPredisposition': return {
+      code: 'PHME',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidHematopathiesPredisposition'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'ehlersDanlos': return {
+      code: 'SED',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.ehlersDanlos'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'polymalformatifs': return {
+      code: 'SP',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.polymalformatifs'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'muscle': return {
+      code: 'MM',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.muscle'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'amyotrophicLateralSclerosis': return {
+      code: 'SLA',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.amyotrophicLateralSclerosis'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'retinopathies': return {
+      code: 'RET',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.retinopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'deafness': return {
+      code: 'SUR',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.deafness'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'intellecualDisability': return {
+      code: 'DI',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.intellecualDisability'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'nuclearMitochondrialGenes': return {
+      code: 'GMN',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.nuclearMitochondrialGenes'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'rasopathies': return {
+      code: 'RAS',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.rasopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'cardiomyopathies': return {
+      code: 'CAR',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.cardiomyopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'hereditaryArrhythmias': return {
+      code: 'AH',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.hereditaryArrhythmias'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'aortopathies': return {
+      code: 'AOR',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.aortopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    default:
+      throw new Error(`Invalid test name [${name}]`);
+  }
+};
 
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
@@ -151,18 +233,8 @@ function PatientSubmissionScreen(props) {
 
     const values = form.getFieldsValue();
     let hasError = null;
-    const gender = typeof values.gender === 'string' ? get(values, 'gender', '') : get(values, 'gender.target.value', '');
     switch (currentPage) {
-      case 0:
-        if (values.given && values.family && gender && values.birthDate && values.mrn) {
-          hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-          if (hasError) {
-            return true;
-          }
-          return false;
-        }
-        return true;
-      case 1: {
+      case 0: {
         const checkIfEmptyValue = (array) => array != null && array.findIndex((element) => !element) === -1;
         const checkCghInterpretationValue = () => {
           if (values.cghInterpretationValue) {
@@ -204,7 +276,7 @@ function PatientSubmissionScreen(props) {
 
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
 
-        if (values.analyse
+        if (values['analysis.tests']
             && checkHpo()
             && checkCghInterpretationValue()
             && checkFamilyHistory()
@@ -215,7 +287,7 @@ function PatientSubmissionScreen(props) {
         }
         return true;
       }
-      case 2:
+      case 1:
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
         if (hasError) {
           return true;
@@ -328,7 +400,7 @@ function PatientSubmissionScreen(props) {
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
-        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId, userRole, currentPatient,
+        actions, observations, userRole, currentPatient,
       } = props;
       console.log(data);
 
@@ -352,11 +424,11 @@ function PatientSubmissionScreen(props) {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withRequester(userRole.id)
           .withSubject(currentPatient.id)
-          .withCoding('WGS')
-          .withSubmitted(false)
+          .withCoding(getTestCoding(analysis))
+          .withSubmitted(submitted)
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
-          .withSubmitted(false)
+          .withSubmitted(submitted)
           .withSubject(currentPatient.id)
           .withAge(1)
           .withAssessorId(userRole.id)
@@ -375,63 +447,6 @@ function PatientSubmissionScreen(props) {
       }
 
       actions.createRequest(batch);
-
-      // const patientData = getPatientData();
-
-      // const submission = {
-      //   patient: patientData,
-      //   serviceRequest,
-      // };
-
-      // submission.serviceRequest = { ...submission.serviceRequest };
-      // submission.serviceRequest.code = getServiceRequestCode();
-
-      // if (hasObservations(observations)) {
-      //   submission.clinicalImpression = clinicalImpression;
-      // }
-      // const { currentPageIndex } = state;
-
-      // if (currentPageIndex === 0) {
-      //   submission.observations = {
-      //     ...observations,
-      //     cgh: {
-      //       ...observations.cgh,
-      //       ...createCGHResourceList(),
-      //     },
-      //     indic: {
-      //       ...observations.indic,
-      //       ...createIndicationResourceList(),
-      //     },
-      //     summary: {
-      //       ...observations.summary,
-      //       ...createSummary(),
-      //     },
-      //   };
-      //   actions.saveObservations(submission.observations);
-      //   saveClinicalInfoPageLocalStore();
-      // } else {
-      //   submission.submitted = submitted;
-      //   submission.observations = {
-      //     ...observations,
-      //     cgh: {
-      //       ...observations.cgh,
-      //     },
-      //     indic: {
-      //       ...observations.indic,
-      //     },
-      //     summary: {
-      //       ...observations.summary,
-      //       ...createSummary(),
-      //     },
-      //   };
-      // }
-
-      // submission.practitionerId = practitionerId;
-      // submission.deleted = deleted;
-      // submission.groupId = groupId;
-      // submission.userRole = userRole;
-
-      // actions.savePatientSubmission(submission);
     });
   };
 
@@ -499,32 +514,7 @@ function PatientSubmissionScreen(props) {
 
   const next = () => {
     const { currentPageIndex } = state;
-    const { actions, observations } = props;
     const pageIndex = currentPageIndex + 1;
-    if (currentPageIndex === 0) {
-      actions.saveObservations(
-        {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-            ...createCGHResourceList(),
-          },
-          indic: {
-            ...observations.indic,
-            ...createIndicationResourceList(),
-          },
-        },
-      );
-
-      saveClinicalInfoPageLocalStore();
-
-      const { practitioner } = localStore;
-
-      handlePractitionerSearchTermChanged(practitioner, () => {
-        handlePractitionerOptionSelected(practitioner);
-      });
-    }
-
     setState({ ...state, currentPageIndex: pageIndex });
     debounce(validate, 500)();
   };

@@ -1,10 +1,9 @@
-import { ServiceRequest } from '../types';
+import { Coding, ServiceRequest } from '../types';
 import {
   formatDate, getExtension, getPractitionerReference, getPractitionerRoleReference,
 } from './Utils';
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
-const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
 
 const defaultSR = () : Partial<ServiceRequest> => ({
   resourceType: 'ServiceRequest',
@@ -28,8 +27,6 @@ const defaultSR = () : Partial<ServiceRequest> => ({
   authoredOn: formatDate(new Date()),
   note: [],
 });
-
-type ServiceRequestCoding = 'WXS' | 'WGS' | 'GP' | undefined;
 
 export class ServiceRequestBuilder {
     private serviceRequest: Partial<ServiceRequest> = defaultSR()
@@ -77,48 +74,59 @@ export class ServiceRequestBuilder {
       return this;
     }
 
-    public withCoding(coding: ServiceRequestCoding) {
-      if (coding !== undefined) {
-        switch (coding) {
-          case 'WXS':
-            this.serviceRequest.code = {
-              coding: [
-                {
-                  system: SERVICE_REQUEST_CODE_SYSTEM,
-                  code: 'WXS',
-                  display: 'Whole Exome Sequencing',
-                },
-              ],
-            };
-            break;
-          case 'WGS':
-            this.serviceRequest.code = {
-              coding: [
-                {
-                  system: SERVICE_REQUEST_CODE_SYSTEM,
-                  code: 'WGS',
-                  display: 'Whole Genome Sequencing',
-                },
-              ],
-            };
-            break;
-          case 'GP':
-            this.serviceRequest.code = {
-              coding: [
-                {
-                  system: SERVICE_REQUEST_CODE_SYSTEM,
-                  code: 'GP',
-                  display: 'Gene Panel',
-                },
-              ],
-            };
-            break;
-          default:
-            break;
-        }
+    public withCoding(coding: Coding) {
+      if (coding != null) {
+        this.serviceRequest.code = {
+          coding: [
+            coding,
+          ],
+        };
       }
       return this;
     }
+
+    // public withCoding(coding: ServiceRequestCoding) {
+    //   if (coding !== undefined) {
+    //     switch (coding) {
+    //       case 'WXS':
+    //         this.serviceRequest.code = {
+    //           coding: [
+    //             {
+    //               system: SERVICE_REQUEST_CODE_SYSTEM,
+    //               code: 'WXS',
+    //               display: 'Whole Exome Sequencing',
+    //             },
+    //           ],
+    //         };
+    //         break;
+    //       case 'WGS':
+    //         this.serviceRequest.code = {
+    //           coding: [
+    //             {
+    //               system: SERVICE_REQUEST_CODE_SYSTEM,
+    //               code: 'WGS',
+    //               display: 'Whole Genome Sequencing',
+    //             },
+    //           ],
+    //         };
+    //         break;
+    //       case 'GP':
+    //         this.serviceRequest.code = {
+    //           coding: [
+    //             {
+    //               system: SERVICE_REQUEST_CODE_SYSTEM,
+    //               code: 'GP',
+    //               display: 'Gene Panel',
+    //             },
+    //           ],
+    //         };
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   }
+    //   return this;
+    // }
 
     public withRequester(id: string | null) {
       if (id != null) {
