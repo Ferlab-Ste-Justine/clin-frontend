@@ -1,0 +1,12 @@
+@import '../../../../../../../style/themes/colors.scss';
+
+.clin__family-type-tag {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  color: $cyan-7;
+  margin-top: 8px;
+  svg {
+    margin: 4px 4px 4px 0;
+  }
+}

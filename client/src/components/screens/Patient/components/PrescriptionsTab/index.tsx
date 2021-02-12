@@ -21,7 +21,7 @@ const PrescriptionsTab : React.FC = () => {
   ) || []);
 
   return (
-    <div className="page-static-content">
+    <div className="page-static-content prescriptions-tab">
       <PatientDetails patient={patient} />
       {
         prescriptions.length <= 0 ? (
