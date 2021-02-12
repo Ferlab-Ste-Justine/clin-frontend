@@ -101,6 +101,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
   // const patient = useSelector((state: State) => state.patient.patient.parsed);
   const fmhs = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
   const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
+  const patient = useSelector((state: State) => state.patient.patient.parsed);
   const dispatch = useDispatch();
 
   const getClinical = (clinicalImpression: ClinicalImpression) => {
@@ -262,7 +263,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   />
                 </DetailsRow>
                 <DetailsRow label={intl.get('screen.patient.details.prescription.mrn')}>
-                  Test | Test{ /* { patient.mrn }  |  { patient.organization } */ }
+                  { patient.mrn![0].number }  |  { patient.mrn![0].hospital }
                 </DetailsRow>
                 <DetailsRow label={intl.get('screen.patient.details.prescription.prescription')}>
                   { prescription.id || DEFAULT_VALUE }

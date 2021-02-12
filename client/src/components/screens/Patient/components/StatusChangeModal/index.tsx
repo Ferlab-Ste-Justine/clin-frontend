@@ -8,7 +8,7 @@ import React, {
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import './style.scss';
 
-enum StatusType {
+export enum StatusType {
   draft = 'draft',
   submitted = 'submitted',
   active = 'active',

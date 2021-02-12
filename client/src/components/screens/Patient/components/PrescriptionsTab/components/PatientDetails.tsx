@@ -86,7 +86,7 @@ const PatientDetails: React.FC<Props> = ({ patient }) => {
           { hasMultipleMrn ? (
             <DetailsRow title={intl.get('screen.patient.details.mrn')} value={<MultipleMrn />} />
           ) : (
-            <DetailsRow title={intl.get('screen.patient.details.mrn')} value={`${patient.mrn} | ${patient.organization}`} />
+            <DetailsRow title={intl.get('screen.patient.details.mrn')} value={`${patient.mrn[0].number} | ${patient.mrn[0].hospital}`} />
           ) }
         </DetailsCol>
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
