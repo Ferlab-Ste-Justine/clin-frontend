@@ -47,10 +47,10 @@ export const navigateToSubmissionScreen = () => ({
   type: actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED,
 });
 
-export const navigatoToSubmissionWithPatient = () => ({
+export const navigateToSubmissionWithPatient = () => ({
   type: actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_REQUESTED,
 });
 
-export const navigatoToSubmissionFromPatientCreation = () => ({
+export const navigateToSubmissionFromPatientCreation = () => ({
   type: actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_CREATION,
 });

@@ -193,7 +193,8 @@ const en = {
   'screen.patient.details.consultationSummary': 'Consultation summary',
   'screen.patient.details.diagnosticHypothesis': 'Diagnostic hypothesis',
   'screen.patient.details.cgh': 'CGH',
-
+  'screen.patient.details.prescription.alert.message': 'This prescription is incomplete. To submit it, please ',
+  'screen.patient.details.prescription.alert.action': 'complete the missing informations.',
   'screen.patient.header.identification': 'Identification',
   'screen.patient.header.additionalInformation': 'Additional Information',
   'screen.patient.header.referringPractitioner': 'Referring Practitioner',

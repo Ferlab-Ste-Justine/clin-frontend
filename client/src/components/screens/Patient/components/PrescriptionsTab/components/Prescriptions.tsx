@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -21,7 +22,7 @@ import {
 } from '@ant-design/icons';
 import { Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
 import Badge from '../../../../../Badge';
-import { navigatoToSubmissionWithPatient } from '../../../../../../actions/router';
+import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
 import { ClinicalImpression } from '../../../../../../helpers/fhir/types';
 import { updateServiceRequestStatus } from '../../../../../../actions/patient';
@@ -176,7 +177,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
           right: (
             <Button
               type="primary"
-              onClick={() => dispatch(navigatoToSubmissionWithPatient())}
+              onClick={() => dispatch(navigateToSubmissionWithPatient())}
               icon={<MedicineBoxOutlined />}
             >
               { intl.get('screen.patient.details.prescriptions.none.create') }
@@ -197,6 +198,23 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
               }
               key={prescription.id}
             >
+              { prescription.status === 'draft' && (
+                <Alert
+                  banner
+                  message={(
+                    <span>
+                      { intl.get('screen.patient.details.prescription.alert.message') }
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={() => dispatch(navigateToSubmissionWithPatient())}
+                      >
+                        { intl.get('screen.patient.details.prescription.alert.action') }
+                      </Button>
+                    </span>
+                  )}
+                />
+              ) }
               <Card
                 title={(
                   <>
@@ -213,6 +231,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                       <Button
                         icon={<DeleteOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
+                        disabled={prescription.status !== 'draft'}
                       >
                         { intl.get('screen.patient.details.prescription.delete') }
                       </Button>
@@ -229,6 +248,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                       <Button
                         icon={<FormOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
+                        disabled={!['draft', 'incomplete'].includes(prescription.status)}
                       >
                         { intl.get('screen.patient.details.prescription.edit') }
                       </Button>
@@ -244,13 +264,26 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     </span>
                   )}
                 >
-                  <StatusTag status={prescription.status} />
-                  <Button
-                    icon={<EditFilled />}
-                    onClick={() => setSelectedPrescriptionId(prescription.id)}
-                  >
-                    { intl.get('screen.patient.details.prescription.change') }
-                  </Button>
+                  <div className="prescriptions-tab__prescriptions-section__details__status-value">
+                    <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
+                      <StatusTag status={prescription.status} />
+                      <Button
+                        icon={<EditFilled />}
+                        onClick={() => setSelectedPrescriptionId(prescription.id)}
+                      >
+                        { intl.get('screen.patient.details.prescription.change') }
+                      </Button>
+                    </div>
+                    { ['revoked', 'incomplete'].includes(prescription.status) && prescription.note && (
+                      <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
+                        <span
+                          className={`prescriptions-tab__prescriptions-section__details__status-value__row__note ${prescription.status}`}
+                        >
+                          { prescription.note }
+                        </span>
+                      </div>
+                    ) }
+                  </div>
 
                   <StatusChangeModal
                     isVisible={selectedPrescriptionId === prescription.id}
