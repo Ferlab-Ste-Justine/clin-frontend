@@ -16,32 +16,40 @@ export class ClinicalImpressionProvider extends Provider<ClinicalImpression, Con
   public doProvide(dataExtractor: DataExtractor): Record<ClinicalImpression, ConsultationSummary>[] {
     const clinicalImpressionBundle = dataExtractor.extractBundle('ClinicalImpression');
 
-    const clinicalImpression = dataExtractor.extractResource<ClinicalImpression>(
+    const clinicalImpressions = dataExtractor.extractResources<ClinicalImpression>(
       clinicalImpressionBundle,
       'ClinicalImpression',
     );
-    const observations = dataExtractor.extractResources<Observation>(clinicalImpressionBundle, 'Observation');
-    const cgh = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_CODE);
-    const inves = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_INVES);
-    const indic = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_INDIC);
 
-    const assessor = dataExtractor.getPractitionerDataFromPractitionerRole(
-      clinicalImpression,
-      'assessor',
-      clinicalImpressionBundle,
-    );
-    const consultationSummary: ConsultationSummary = {
-      cgh: get(cgh, 'interpretation[0].coding[0].code', 'IND'),
-      hypothesis: get(indic, 'note[0].text', 'N/A'),
-      practitioner: assessor!,
-      summary: get(inves, 'note[0].text', 'N/A'),
-    };
+    const consultationsSummary: ConsultationSummary[] = clinicalImpressions.map(
+      (clinicalImpression: ClinicalImpression) => {
+        const observations = dataExtractor.extractResources<Observation>(clinicalImpressionBundle, 'Observation');
+        const cgh = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_CODE);
+        const inves = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_INVES);
+        const indic = observations.find((observation) => get(observation, 'code.coding[0].code', '') === CGH_INDIC);
 
-    return [
-      {
-        original: clinicalImpression,
-        parsed: consultationSummary,
+        const assessor = dataExtractor.getPractitionerDataFromPractitionerRole(
+          clinicalImpression,
+          'assessor',
+          clinicalImpressionBundle,
+        );
+        return {
+          cgh: get(cgh, 'interpretation[0].coding[0].code', 'IND'),
+          hypothesis: get(indic, 'note[0].text', 'N/A'),
+          practitioner: assessor!,
+          summary: get(inves, 'note[0].text', 'N/A'),
+        };
       },
-    ];
+    );
+
+    const output: Record<ClinicalImpression, ConsultationSummary>[] = [];
+
+    for (let i = 0; i < consultationsSummary.length; i++) {
+      output.push({
+        original: clinicalImpressions[i],
+        parsed: consultationsSummary[i],
+      });
+    }
+    return output;
   }
 }

@@ -40,6 +40,7 @@ export type ClinicalObservation = {
   term: string;
   ageAtOnset: string;
   note: string;
+  id: string;
 };
 
 export type FamilyObservation = {
