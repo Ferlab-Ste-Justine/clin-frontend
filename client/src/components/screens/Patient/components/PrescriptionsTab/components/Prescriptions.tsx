@@ -20,6 +20,7 @@ import { Prescription } from '../../../../../../helpers/providers/types';
 import Badge from '../../../../../Badge';
 import { navigatoToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
+import { ClinicalImpression } from '../../../../../../helpers/fhir/types';
 
 const badgeColor = {
   draft: '#7E8DA0',
@@ -66,17 +67,21 @@ const clinicalColumnPreset = [
 
 interface Props {
   prescriptions: Prescription[]
+  clinicalImpressions: ClinicalImpression[]
 }
 
-const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
+const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
   const consultation = useSelector((state: State) => state.patient.consultation!.map((cons) => cons.parsed));
   // const patient = useSelector((state: State) => state.patient.patient.parsed);
   const fmhs = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
   const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
   const dispatch = useDispatch();
 
-  const getClinical = () => {
-    const ontology = hpos.map((hpo) => (
+  const getClinical = (clinicalImpression: ClinicalImpression) => {
+    const currentHpos = hpos.filter(
+      (hpo) => clinicalImpression.investigation[0].item.find((obs) => obs.reference.indexOf(hpo.id) !== -1) != null,
+    );
+    const ontology = currentHpos.map((hpo) => (
       {
         observed: hpo.observed,
         term: hpo.term,
@@ -162,7 +167,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
         }}
       >
         {
-          prescriptions.map((prescription) => (
+          prescriptions.map((prescription, index) => (
             <Tabs.TabPane
               tab={
                 (
@@ -211,25 +216,25 @@ const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
                 </Row>
               </Card>
               { familyHistoryData.length > 0
-                              && (
-                                <Card title={intl.get('screen.patient.header.familyHistory')} bordered={false} className="staticCard familyHistory">
-                                  <Table
-                                    pagination={false}
-                                    columns={familyHistoryColumnPreset.map(
-                                      columnPresetToColumn,
-                                    )}
-                                    dataSource={familyHistoryData}
-                                    size="small"
-                                  />
-                                </Card>
-                              ) }
+                  && (
+                    <Card title={intl.get('screen.patient.header.familyHistory')} bordered={false} className="staticCard familyHistory">
+                      <Table
+                        pagination={false}
+                        columns={familyHistoryColumnPreset.map(
+                          columnPresetToColumn,
+                        )}
+                        dataSource={familyHistoryData}
+                        size="small"
+                      />
+                    </Card>
+                  ) }
               <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
                 <Table
                   pagination={false}
                   columns={clinicalColumnPreset.map(
                     columnPresetToColumn,
                   )}
-                  dataSource={getClinical()}
+                  dataSource={getClinical(clinicalImpressions[index])}
                   size="small"
                 />
               </Card>
