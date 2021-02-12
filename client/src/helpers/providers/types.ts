@@ -61,4 +61,4 @@ export type Mrn = {
 }
 
 export type PositionType = 'proband' | 'parent';
-export type PrescriptionStatus = 'draft' | 'on-hold' | 'revoked' | 'completed' | 'incompleted' | 'active'
+export type PrescriptionStatus = 'draft' | 'on-hold' | 'revoked' | 'completed' | 'incomplete' | 'active'
