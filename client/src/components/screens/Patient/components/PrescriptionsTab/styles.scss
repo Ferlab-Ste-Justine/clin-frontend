@@ -232,6 +232,29 @@
           margin-left: 5px;
         }
       }
+      &__status-value { 
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        &__row {
+          &__note {
+            display: inline-block;
+            padding: 8px;
+            border-radius: 2px;
+  
+            &.incomplete {
+              color: $magenta-6;
+              background-color: $magenta-1;
+            }
+  
+            &.revoked {
+              color: $red-6;
+              background-color: $red-0;
+            }
+          }
+        }
+      }
 
       &__row {
         flex-wrap: nowrap;

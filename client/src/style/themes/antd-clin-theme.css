@@ -1341,7 +1341,7 @@ html {
   color: #2AABE8;
 }
 .ant-alert-warning {
-  background-color: #fffbe6;
+  background-color: #FFF1B8;
   border: 1px solid #ffe58f;
 }
 .ant-alert-warning .ant-alert-icon {
@@ -2330,7 +2330,7 @@ html {
 .ant-btn[disabled]:focus,
 .ant-btn[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -2423,7 +2423,7 @@ html {
 .ant-btn-primary[disabled]:focus,
 .ant-btn-primary[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -2526,7 +2526,7 @@ html {
 .ant-btn-ghost[disabled]:focus,
 .ant-btn-ghost[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -2609,7 +2609,7 @@ html {
 .ant-btn-dashed[disabled]:focus,
 .ant-btn-dashed[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -2693,7 +2693,7 @@ html {
 .ant-btn-danger[disabled]:focus,
 .ant-btn-danger[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -2776,7 +2776,7 @@ html {
 .ant-btn-link[disabled]:focus,
 .ant-btn-link[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -2895,7 +2895,7 @@ html {
 .ant-btn-text[disabled]:focus,
 .ant-btn-text[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -3016,7 +3016,7 @@ html {
 .ant-btn-dangerous[disabled]:focus,
 .ant-btn-dangerous[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -3100,7 +3100,7 @@ html {
 .ant-btn-dangerous.ant-btn-primary[disabled]:focus,
 .ant-btn-dangerous.ant-btn-primary[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -3183,7 +3183,7 @@ html {
 .ant-btn-dangerous.ant-btn-link[disabled]:focus,
 .ant-btn-dangerous.ant-btn-link[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -3331,7 +3331,7 @@ html {
 .ant-btn-dangerous.ant-btn-text[disabled]:focus,
 .ant-btn-dangerous.ant-btn-text[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -3771,7 +3771,7 @@ html {
 .ant-btn-background-ghost.ant-btn-primary[disabled]:focus,
 .ant-btn-background-ghost.ant-btn-primary[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -3854,7 +3854,7 @@ html {
 .ant-btn-background-ghost.ant-btn-danger[disabled]:focus,
 .ant-btn-background-ghost.ant-btn-danger[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -3937,7 +3937,7 @@ html {
 .ant-btn-background-ghost.ant-btn-dangerous[disabled]:focus,
 .ant-btn-background-ghost.ant-btn-dangerous[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;
@@ -4020,7 +4020,7 @@ html {
 .ant-btn-background-ghost.ant-btn-dangerous.ant-btn-link[disabled]:focus,
 .ant-btn-background-ghost.ant-btn-dangerous.ant-btn-link[disabled]:active {
   color: #A7B4C3;
-  background: #f5f5f5;
+  background: transparent;
   border-color: #ABBED3;
   text-shadow: none;
   box-shadow: none;

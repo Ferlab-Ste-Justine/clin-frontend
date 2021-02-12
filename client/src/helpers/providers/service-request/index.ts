@@ -32,6 +32,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       requester: dataExtractor.getPractitionerDataFromPractitioner(serviceRequest, 'requester', serviceRequestBundle)!,
       status: this.getStatus(dataExtractor, serviceRequest) as PrescriptionStatus,
       test: get(serviceRequest, 'code.coding[0].code', 'N/A'),
+      note: get(serviceRequest, 'note[0].text', ''),
     };
 
     return [

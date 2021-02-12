@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -191,6 +192,23 @@ const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
               }
               key={prescription.id}
             >
+              { prescription.status === 'draft' && (
+                <Alert
+                  banner
+                  message={(
+                    <span>
+                      { intl.get('screen.patient.details.prescription.alert.message') }
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={() => dispatch(navigatoToSubmissionWithPatient())}
+                      >
+                        { intl.get('screen.patient.details.prescription.alert.action') }
+                      </Button>
+                    </span>
+                  )}
+                />
+              ) }
               <Card
                 title={(
                   <>
@@ -207,6 +225,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
                       <Button
                         icon={<DeleteOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
+                        disabled={prescription.status !== 'draft'}
                       >
                         { intl.get('screen.patient.details.prescription.delete') }
                       </Button>
@@ -223,6 +242,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
                       <Button
                         icon={<FormOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
+                        disabled={!['draft', 'incomplete'].includes(prescription.status)}
                       >
                         { intl.get('screen.patient.details.prescription.edit') }
                       </Button>
@@ -238,13 +258,26 @@ const Prescriptions : React.FC<Props> = ({ prescriptions }) => {
                     </span>
                   )}
                 >
-                  <StatusTag status={prescription.status} />
-                  <Button
-                    icon={<EditFilled />}
-                    onClick={() => setSelectedPrescriptionId(prescription.id)}
-                  >
-                    { intl.get('screen.patient.details.prescription.change') }
-                  </Button>
+                  <div className="prescriptions-tab__prescriptions-section__details__status-value">
+                    <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
+                      <StatusTag status={prescription.status} />
+                      <Button
+                        icon={<EditFilled />}
+                        onClick={() => setSelectedPrescriptionId(prescription.id)}
+                      >
+                        { intl.get('screen.patient.details.prescription.change') }
+                      </Button>
+                    </div>
+                    { ['revoked', 'incomplete'].includes(prescription.status) && prescription.note && (
+                      <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
+                        <span
+                          className={`prescriptions-tab__prescriptions-section__details__status-value__row__note ${prescription.status}`}
+                        >
+                          { prescription.note }
+                        </span>
+                      </div>
+                    ) }
+                  </div>
 
                   <StatusChangeModal
                     isVisible={selectedPrescriptionId === prescription.id}
