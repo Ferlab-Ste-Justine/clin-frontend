@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
 import React from 'react';
@@ -6,17 +7,18 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Button, Card, Form, Steps, Typography,
+  Button, Card, Form, Steps, Typography, Col, Row, Tooltip,
 } from 'antd';
 import find from 'lodash/find';
 import has from 'lodash/has';
 import debounce from 'lodash/debounce';
 import mapValues from 'lodash/mapValues';
 import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import toArray from 'lodash/values';
 
-import IconKit from 'react-icons-kit';
-import { ic_save, ic_keyboard_arrow_left } from 'react-icons-kit/md';
+import { SaveOutlined, LeftOutlined } from '@ant-design/icons';
+
 import { navigateToPatientSearchScreen, navigateToPatientScreen } from '../../../actions/router';
 import {
   assignServiceRequestPractitioner,
@@ -32,8 +34,8 @@ import {
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './components/ClinicalInformation';
 import Approval from './components/Approval';
-import PatientInformation from './components/PatientInformation';
 import Api from '../../../helpers/api';
+import ConfirmCancelModal from './components/ConfirmCancelModal';
 
 import './style.scss';
 
@@ -44,13 +46,12 @@ import {
 } from '../../../helpers/fhir/fhir';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
-import ConfirmationModal from '../../ConfirmationModal';
 import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
+import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
+import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
+import { createRequest } from '../../../actions/patientCreation';
 
 const { Step } = Steps;
-
-const hasObservations = (observations) => observations.cgh != null || observations.indic != null
-  || observations.fmh.length > 0 || observations.hpos.length > 0;
 
 const stringifyPractionerOption = (po) => `${po.family}, ${po.given} License No: ${po.license}`;
 const practitionerOptionFromResource = (resource) => ({
@@ -59,6 +60,90 @@ const practitionerOptionFromResource = (resource) => ({
   license: resource.identifier[0].value,
 });
 
+const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
+
+const getTestCoding = (name) => {
+  switch (name) {
+    case 'adultCancerPredisposition': return {
+      code: 'PCA',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.adultCancerPredisposition'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'kidTumorPredisposition': return {
+      code: 'PTSE',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidTumorPredisposition'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'kidHematopathiesPredisposition': return {
+      code: 'PHME',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidHematopathiesPredisposition'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'ehlersDanlos': return {
+      code: 'SED',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.ehlersDanlos'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'polymalformatifs': return {
+      code: 'SP',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.polymalformatifs'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'muscle': return {
+      code: 'MM',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.muscle'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'amyotrophicLateralSclerosis': return {
+      code: 'SLA',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.amyotrophicLateralSclerosis'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'retinopathies': return {
+      code: 'RET',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.retinopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'deafness': return {
+      code: 'SUR',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.deafness'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'intellecualDisability': return {
+      code: 'DI',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.intellecualDisability'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'nuclearMitochondrialGenes': return {
+      code: 'GMN',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.nuclearMitochondrialGenes'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'rasopathies': return {
+      code: 'RAS',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.rasopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'cardiomyopathies': return {
+      code: 'CAR',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.cardiomyopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'hereditaryArrhythmias': return {
+      code: 'AH',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.hereditaryArrhythmias'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    case 'aortopathies': return {
+      code: 'AOR',
+      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.aortopathies'),
+      system: SERVICE_REQUEST_CODE_SYSTEM,
+    };
+    default:
+      throw new Error(`Invalid test name [${name}]`);
+  }
+};
+
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
 
@@ -66,6 +151,7 @@ function PatientSubmissionScreen(props) {
     currentPageIndex: 0,
     practitionerOptions: [],
     valid: false,
+    isCancelConfirmVisible: false,
   });
 
   const getPatientData = () => {
@@ -147,18 +233,8 @@ function PatientSubmissionScreen(props) {
 
     const values = form.getFieldsValue();
     let hasError = null;
-    const gender = typeof values.gender === 'string' ? get(values, 'gender', '') : get(values, 'gender.target.value', '');
     switch (currentPage) {
-      case 0:
-        if (values.given && values.family && gender && values.birthDate && values.mrn) {
-          hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-          if (hasError) {
-            return true;
-          }
-          return false;
-        }
-        return true;
-      case 1: {
+      case 0: {
         const checkIfEmptyValue = (array) => array != null && array.findIndex((element) => !element) === -1;
         const checkCghInterpretationValue = () => {
           if (values.cghInterpretationValue) {
@@ -200,7 +276,7 @@ function PatientSubmissionScreen(props) {
 
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
 
-        if (values.analyse
+        if (values['analysis.tests']
             && checkHpo()
             && checkCghInterpretationValue()
             && checkFamilyHistory()
@@ -211,7 +287,7 @@ function PatientSubmissionScreen(props) {
         }
         return true;
       }
-      case 2:
+      case 1:
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
         if (hasError) {
           return true;
@@ -253,18 +329,19 @@ function PatientSubmissionScreen(props) {
 
     const {
       cghInterpretationValue,
-      cghPrecision,
     } = values;
 
-    values.cghPrecision = cghPrecision ? cghPrecision.trim() : cghPrecision;
+    const cghResult = values['cgh.result'];
+
+    const cghPrecision = values['cgh.precision'] ? values['cgh.precision'].trim() : undefined;
     const builder = new ObservationBuilder('CGH')
       .withStatus('final');
 
-    if (cghInterpretationValue != null) {
+    if (cghInterpretationValue === 'realized') {
       builder.withInterpretation({
         coding: [{
-          display: cghDisplay(cghInterpretationValue),
-          code: cghInterpretationValue,
+          display: cghDisplay(cghResult),
+          code: cghResult,
         }],
       });
     }
@@ -299,19 +376,19 @@ function PatientSubmissionScreen(props) {
 
   const { localStore } = props;
 
-  const createSummary = () => {
-    const values = form.getFieldsValue();
+  const createSummary = (note) => {
+    // const values = form.getFieldsValue();
     const builder = new ObservationBuilder('INVES');
 
-    if (values.summaryNote == null && localStore.summary.note != null) {
+    if (note == null && localStore.summary.note != null) {
       builder.withNote(localStore.summary.note);
     } else {
-      builder.withNote(values.summaryNote);
+      builder.withNote(note);
     }
     return builder.build();
   };
 
-  const saveSecondPageLocalStore = () => {
+  const saveClinicalInfoPageLocalStore = () => {
     const { actions } = props;
     const values = form.getFieldsValue();
 
@@ -321,80 +398,55 @@ function PatientSubmissionScreen(props) {
     actions.saveLocalIndic(values.indication);
   };
   const saveSubmission = (submitted = false) => {
-    form.validateFields().then(() => {
+    form.validateFields().then((data) => {
       const {
-        actions, serviceRequest, clinicalImpression, observations, deleted, practitionerId, groupId, userRole,
+        actions, observations, userRole, currentPatient,
       } = props;
+      console.log(data);
 
-      const patientData = getPatientData();
-
-      const submission = {
-        patient: patientData,
-        serviceRequest,
+      const batch = {
+        serviceRequests: [],
+        clinicalImpressions: [],
+        observations: [],
+        hpos: [],
+        fmhs: [],
+        length: 0,
       };
 
-      submission.serviceRequest = { ...submission.serviceRequest };
-      submission.serviceRequest.code = getServiceRequestCode();
+      const allAnalysis = data['analysis.tests'];
+      batch.length = get(allAnalysis, 'length', 0);
 
-      if (hasObservations(observations)) {
-        submission.clinicalImpression = clinicalImpression;
-      }
-      const { currentPageIndex } = state;
-
-      if (currentPageIndex === 0) {
-        submission.observations = {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-          },
-          indic: {
-            ...observations.indic,
-          },
-          summary: {
-            ...observations.summary,
-          },
-        };
-      } else if (currentPageIndex === 1) {
-        submission.observations = {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-            ...createCGHResourceList(),
-          },
-          indic: {
-            ...observations.indic,
-            ...createIndicationResourceList(),
-          },
-          summary: {
-            ...observations.summary,
-            ...createSummary(),
-          },
-        };
-        actions.saveObservations(submission.observations);
-        saveSecondPageLocalStore();
-      } else {
-        submission.submitted = submitted;
-        submission.observations = {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-          },
-          indic: {
-            ...observations.indic,
-          },
-          summary: {
-            ...observations.summary,
-            ...createSummary(),
-          },
-        };
+      if (batch.length === 0) {
+        return;
       }
 
-      submission.practitionerId = practitionerId;
-      submission.deleted = deleted;
-      submission.groupId = groupId;
-      submission.userRole = userRole;
+      allAnalysis.forEach((analysis) => {
+        batch.serviceRequests.push(new ServiceRequestBuilder()
+          .withRequester(userRole.id)
+          .withSubject(currentPatient.id)
+          .withCoding(getTestCoding(analysis))
+          .withSubmitted(submitted)
+          .build());
+        batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
+          .withSubmitted(submitted)
+          .withSubject(currentPatient.id)
+          .withAge(1)
+          .withAssessorId(userRole.id)
+          .build());
+      });
 
-      actions.savePatientSubmission(submission);
+      batch.hpos = observations.hpos;
+      batch.fmhs = observations.fmh.filter((fmh) => !isEmpty(fmh));
+      batch.observations = [
+        createCGHResourceList(),
+        createIndicationResourceList(),
+      ];
+
+      if (data.summaryNote != null) {
+        batch.observations.push(createSummary(data.summaryNote));
+      }
+
+      actions.createRequest(batch);
     });
   };
 
@@ -462,34 +514,7 @@ function PatientSubmissionScreen(props) {
 
   const next = () => {
     const { currentPageIndex } = state;
-    const { actions, observations } = props;
     const pageIndex = currentPageIndex + 1;
-    if (currentPageIndex === 0) {
-      actions.savePatientLocal(getPatientData());
-    } else if (currentPageIndex === 1) {
-      actions.saveObservations(
-        {
-          ...observations,
-          cgh: {
-            ...observations.cgh,
-            ...createCGHResourceList(),
-          },
-          indic: {
-            ...observations.indic,
-            ...createIndicationResourceList(),
-          },
-        },
-      );
-
-      saveSecondPageLocalStore();
-
-      const { practitioner } = localStore;
-
-      handlePractitionerSearchTermChanged(practitioner, () => {
-        handlePractitionerOptionSelected(practitioner);
-      });
-    }
-
     setState({ ...state, currentPageIndex: pageIndex });
     debounce(validate, 500)();
   };
@@ -499,8 +524,8 @@ function PatientSubmissionScreen(props) {
     const pageIndex = currentPageIndex - 1;
     setState({ ...state, currentPageIndex: pageIndex });
 
-    if (currentPageIndex === 1) {
-      saveSecondPageLocalStore();
+    if (currentPageIndex === 0) {
+      saveClinicalInfoPageLocalStore();
     }
 
     debounce(validate, 500)();
@@ -552,18 +577,15 @@ function PatientSubmissionScreen(props) {
 
   const pages = [
     {
-      title: intl.get('screen.clinicalSubmission.patientInformation'),
-      content: (
-        <PatientInformation parentForm={this} patient={patient} validate={validate} />
-      ),
-      name: 'PatientInformation',
-      values: {},
-      isComplete: () => true,
-    },
-    {
       title: intl.get('screen.clinicalSubmission.clinicalInformation'),
       content: (
-        <ClinicalInformation parentForm={this} form={form} clinicalImpression={clinicalImpression} validate={validate} />
+        <ClinicalInformation
+          parentForm={this}
+          form={form}
+          patient={patient}
+          clinicalImpression={clinicalImpression}
+          validate={validate}
+        />
       ),
       name: 'ClinicalInformation',
       values: {},
@@ -594,9 +616,32 @@ function PatientSubmissionScreen(props) {
   return (
     <Layout>
       <>
-        <div className="page_headerStaticMargin">
-          <Title className="headerStaticContent" level={3}>{ intl.get('form.patientSubmission.form.title') }</Title>
-        </div>
+        <Row className="page_headerStaticMargin">
+          <Col>
+            <Title className="headerStaticContent" level={3}>
+              <Typography.Text
+                className="headerStaticContent__primary"
+              >
+                { `${intl.get('form.patientSubmission.form.title')} |`
+              + ` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}`
+              + ` ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}` }
+              </Typography.Text>
+            </Title>
+
+          </Col>
+          <Col flex={1}>&nbsp;</Col>
+          <Col>
+
+            <Button
+              onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
+              danger
+              type="text"
+            >
+              { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
+            </Button>
+          </Col>
+        </Row>
+
         <div className="page-static-content">
           <Card bordered={false} className="step">
             <Steps current={currentPageIndex}>
@@ -610,43 +655,63 @@ function PatientSubmissionScreen(props) {
             onChange={validate}
           >
             { pageContent }
-            <div className="submission-form-actions">
-              <Button
-                htmlType="submit"
-                type="primary"
-                disabled={!state.valid}
-              >
-                {
-                  isOnLastPage
-                    ? intl.get('form.patientSubmission.form.submit')
-                    : intl.get('screen.clinicalSubmission.nextButtonTitle')
-                }
-              </Button>
-              {
-                currentPageIndex !== 0 && (
-                  <Button onClick={() => previous()} disabled={isFirstPage()}>
-                    <IconKit size={20} icon={ic_keyboard_arrow_left} />
-                    { intl.get('screen.clinicalSubmission.previousButtonTitle') }
+            <Card className="patientSubmission__form__footer">
+              <Row gutter={8}>
+                { !isFirstPage && (
+                  <Col>
+                    <Button icon={<LeftOutlined />} onClick={previous}>
+                      { intl.get('screen.clinicalSubmission.previousButtonTitle') }
+                    </Button>
+                  </Col>
+                ) }
+                <Col>
+                  <Button
+                    htmlType="submit"
+                    type="primary"
+                    disabled={!state.valid}
+                  >
+                    {
+                      isOnLastPage
+                        ? intl.get('form.patientSubmission.form.submit')
+                        : intl.get('screen.clinicalSubmission.nextButtonTitle')
+                    }
                   </Button>
-                )
-              }
+                </Col>
+                <Col flex={1}>&nbsp;</Col>
+                <Col>
+                  <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
+                    <Button
+                      onClick={() => saveSubmission()}
+                    >
+                      <SaveOutlined />
+                      { intl.get('screen.clinicalSubmission.saveButtonTitle') }
+                    </Button>
+                  </Tooltip>
 
-              <Button
-                onClick={() => saveSubmission()}
-              >
-                <IconKit size={20} icon={ic_save} />
-                { intl.get('screen.clinicalSubmission.saveButtonTitle') }
-              </Button>
-              <Button
-                onClick={() => ConfirmationModal({ onOk: () => { handleCancel(); } })}
-                className="cancelButton"
-              >
-                { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
-              </Button>
-            </div>
+                </Col>
+                <Col>
+                  <Button
+                    onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
+                    danger
+                    type="text"
+                  >
+                    { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
           </Form>
         </div>
       </>
+      <ConfirmCancelModal
+        open={state.isCancelConfirmVisible}
+        onClose={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: false }))}
+        onQuit={() => handleCancel()}
+        onSaveAndQuit={() => {
+          saveSubmission();
+          handleCancel();
+        }}
+      />
     </Layout>
   );
 }
@@ -670,6 +735,7 @@ const mapDispatchToProps = (dispatch) => ({
     saveLocalIndic,
     updateConsentments,
     saveLocalPractitioner,
+    createRequest,
   }, dispatch),
 });
 
@@ -686,6 +752,7 @@ const mapStateToProps = (state) => ({
   search: state.search,
   localStore: state.patientSubmission.local,
   editMode: state.patientSubmission.editMode,
+  currentPatient: state.patient.patient.original,
   userRole: state.user.practitionerData.practitionerRole,
 });
 

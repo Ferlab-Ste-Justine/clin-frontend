@@ -220,67 +220,70 @@ const patientSubmissionReducer = (
       draft.editMode = action.payload.editMode;
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
-      const patient = action.payload.patient.patient.original;
-      const serviceRequest = action.payload.patient.prescriptions[0].original;
-      const clinicalImpression = action.payload.patient.consultation[0].original;
+      const patientState = action.payload.patient;
+      const patient = patientState.patient.original;
+      draft.patient = patientState.patient.original;
 
-      const {
-        cgh, summary, hypothesis,
-      } = action.payload.patient.consultation[0].parsed;
+      if (patientState.prescriptions != null && patientState.prescriptions.length > 0) {
+        const serviceRequest = patientState.prescriptions[0].original;
+        const clinicalImpression = patientState.consultation[0].original;
 
-      const { requester } = action.payload.patient.prescriptions[0].parsed;
+        const {
+          cgh, summary, hypothesis,
+        } = patientState.consultation[0].parsed;
 
-      const hpos = action.payload.patient.hpos.map((hpo) => hpo.original);
-      const fmhs = action.payload.patient.fmhs.map((fmh) => fmh.original);
-      const { observations } = action.payload.patient;
+        const { requester } = patientState.prescriptions[0].parsed;
 
-      const familyGroupExt = getExtension(patient, FAMILY_ID_EXT_URL);
-      const groupId = get(familyGroupExt, 'valueReference.reference', null);
+        const hpos = patientState.hpos.map((hpo) => hpo.original);
+        const fmhs = patientState.fmhs.map((fmh) => fmh.original);
+        const { observations } = action.payload.patient;
 
-      if (groupId != null) {
-        const [, id] = groupId.split('/');
-        draft.groupId = id;
-      }
+        const familyGroupExt = getExtension(patient, FAMILY_ID_EXT_URL);
+        const groupId = get(familyGroupExt, 'valueReference.reference', null);
 
-      draft.patient = action.payload.patient.patient.original;
+        if (groupId != null) {
+          const [, id] = groupId.split('/');
+          draft.groupId = id;
+        }
 
-      draft.serviceRequest = {
-        ...draft.serviceRequest,
-        id: serviceRequest.id,
-        code: get(serviceRequest, 'code.coding[0].code', null),
-      };
-      draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
-
-      draft.observations.hpos = hpos;
-      draft.observations.fmh = fmhs;
-      draft.observations.cgh = { ...observations.cgh };
-      draft.observations.indic = { ...observations.indic };
-      draft.observations.summary = { ...observations.inves };
-      draft.observations.fmh.push({});
-
-      draft.local = {
-        serviceRequest: {
+        draft.serviceRequest = {
+          ...draft.serviceRequest,
+          id: serviceRequest.id,
           code: get(serviceRequest, 'code.coding[0].code', null),
-        },
-        cgh: {
-          interpretation: cgh,
-        },
-        summary: {
-          note: summary !== NOT_AVAILABLE ? summary : '',
-        },
-        indic: {
-          note: hypothesis !== NOT_AVAILABLE ? hypothesis : '',
-        },
-        consents: range(1, 5).map((value) => `consent-${value}`),
-        practitioner: '',
-      };
+        };
+        draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
-      if (requester != null) {
-        draft.local.practitioner = genPractitionerKey({
-          family: requester.lastName,
-          given: requester.firstName,
-          license: requester.mrn,
-        });
+        draft.observations.hpos = hpos;
+        draft.observations.fmh = fmhs;
+        draft.observations.cgh = { ...observations.cgh };
+        draft.observations.indic = { ...observations.indic };
+        draft.observations.summary = { ...observations.inves };
+        draft.observations.fmh.push({});
+
+        draft.local = {
+          serviceRequest: {
+            code: get(serviceRequest, 'code.coding[0].code', null),
+          },
+          cgh: {
+            interpretation: cgh,
+          },
+          summary: {
+            note: summary !== NOT_AVAILABLE ? summary : '',
+          },
+          indic: {
+            note: hypothesis !== NOT_AVAILABLE ? hypothesis : '',
+          },
+          consents: range(1, 5).map((value) => `consent-${value}`),
+          practitioner: '',
+        };
+
+        if (requester != null) {
+          draft.local.practitioner = genPractitionerKey({
+            family: requester.lastName,
+            given: requester.firstName,
+            license: requester.mrn,
+          });
+        }
       }
       break;
     }

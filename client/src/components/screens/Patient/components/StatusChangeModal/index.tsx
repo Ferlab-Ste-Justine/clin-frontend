@@ -8,22 +8,22 @@ import React, {
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import './style.scss';
 
-enum StatusType {
-  DRAFT = 'draft',
-  SUBMITTED = 'submitted',
-  ACTIVE = 'active',
-  ON_HOLD = 'on-hold',
-  REVOKED = 'revoked',
-  COMPLETED = 'completed'
+export enum StatusType {
+  draft = 'draft',
+  submitted = 'submitted',
+  active = 'active',
+  'on-hold' = 'on-hold',
+  revoked = 'revoked',
+  completed = 'completed'
 }
 
-const statusWithNotes = [StatusType.ON_HOLD, StatusType.REVOKED];
+const statusWithNotes = [StatusType['on-hold'], StatusType.revoked];
 
 interface Props {
   isVisible: boolean
   onOk: (newStatus: StatusType, note?: string) => void
   onCancel: () => void
-  initialStatus: StatusType
+  initialStatus?: StatusType
 }
 
 interface State {
@@ -87,29 +87,29 @@ const reducer: Reducer<State, Action> = (state: State, action: Action) => {
 };
 
 function StatusChangeModal({
-  isVisible, onOk: onOkCallback, onCancel, initialStatus,
+  isVisible, onOk: onOkCallback, onCancel, initialStatus = StatusType.draft,
 }: Props) {
   const statuses = {
-    [StatusType.ON_HOLD]: {
-      value: StatusType.ON_HOLD,
+    [StatusType['on-hold']]: {
+      value: StatusType['on-hold'],
       className: 'incomplete',
       label: intl.get('screen.patient.details.status.incomplete'),
       description: intl.get('screen.patient.details.status.incomplete.description'),
     },
-    [StatusType.REVOKED]: {
-      value: StatusType.REVOKED,
+    [StatusType.revoked]: {
+      value: StatusType.revoked,
       className: 'revoked',
       label: intl.get('screen.patient.details.status.revoked'),
       description: intl.get('screen.patient.details.status.revoked.description'),
     },
-    [StatusType.ACTIVE]: {
-      value: StatusType.ACTIVE,
+    [StatusType.active]: {
+      value: StatusType.active,
       className: 'active',
       label: intl.get('screen.patient.details.status.active'),
       description: intl.get('screen.patient.details.status.active.description'),
     },
-    [StatusType.COMPLETED]: {
-      value: StatusType.COMPLETED,
+    [StatusType.completed]: {
+      value: StatusType.completed,
       className: 'completed',
       label: intl.get('screen.patient.details.status.completed'),
       description: intl.get('screen.patient.details.status.completed.description'),
@@ -141,7 +141,7 @@ function StatusChangeModal({
     dispatch({ type: ActionType.SET_NOTE, payload: { key, value: e.target.value } });
   };
 
-  const statusToDisplay = [statuses[StatusType.ON_HOLD], statuses.revoked, statuses.active, statuses.completed];
+  const statusToDisplay = [statuses[StatusType['on-hold']], statuses.revoked, statuses.active, statuses.completed];
   const onOk = () => onOkCallback(state.selectedStatus, state.notes[state.selectedStatus]);
 
   const isShowNote = (status: StatusType) => status === state.selectedStatus && statusWithNotes.includes(status);
@@ -184,5 +184,9 @@ function StatusChangeModal({
     </Modal>
   );
 }
+
+StatusChangeModal.defaultProps = {
+  initialStatus: StatusType.draft,
+};
 
 export default StatusChangeModal;

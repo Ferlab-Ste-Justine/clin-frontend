@@ -4,7 +4,7 @@ export type ParsedPatientData = {
   lastName: string;
   firstName: string;
   ramq: string;
-  mrn: string;
+  mrn: Mrn[];
   organization: string;
   gender: string;
   birthDate?: string;
@@ -40,6 +40,7 @@ export type ClinicalObservation = {
   term: string;
   ageAtOnset: string;
   note: string;
+  id: string;
 };
 
 export type FamilyObservation = {
@@ -54,5 +55,10 @@ export type ConsultationSummary = {
   hypothesis: string;
 };
 
+export type Mrn = {
+  number: string;
+  hospital: string;
+}
+
 export type PositionType = 'proband' | 'parent';
-export type PrescriptionStatus = 'draft' | 'on-hold' | 'revoked' | 'completed' | 'incompleted' | 'active'
+export type PrescriptionStatus = 'draft' | 'on-hold' | 'revoked' | 'completed' | 'incomplete' | 'active'

@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import Http from './http-client';
 import {
-  createPatientSubmissionBundle, createGetPatientDataBundle, createGetPractitionersDataBundle,
+  createGetPatientDataBundle, createGetPractitionersDataBundle,
 } from './fhir/fhir';
 import { getPatientByRamq } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
@@ -152,14 +152,6 @@ const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
   .then(successCallback)
   .catch(errorCallback);
 
-const savePatientSubmission = async (patientSubmission) => {
-  const data = createPatientSubmissionBundle(patientSubmission);
-  const bundleId = window.CLIN.fhirEsPatientBundleId;
-  return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?_format=json&_pretty=true&id=${bundleId}`, data)
-    .then(successCallback)
-    .catch(errorCallback);
-};
-
 const searchHpos = async (term) => {
   const url = `${window.CLIN.hpoBaseUrl}/autocomplete?prefix=${term}`;
   return Http.secureClinAxios.get(url)
@@ -242,7 +234,6 @@ export default {
   updateUserProfile,
   convertToExcelData,
   getGeneAutocomplete,
-  savePatientSubmission,
   getPatientDataById,
   getPractitionersData,
   updateServiceRequestStatus,

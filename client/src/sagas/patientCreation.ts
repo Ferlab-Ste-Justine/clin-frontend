@@ -30,7 +30,7 @@ function* handleCreatePatientFetus(action: any) {
 
 function* handleCreateRequest(action: any) {
   try {
-    const response = yield createRequest(action.payload.clinicalImpression, action.payload.serviceRequest, action.payload.observations);
+    const response = yield createRequest(action.payload.batch);
 
     yield put({ type: actions.CREATE_PATIENT_REQUEST_SUCCEEDED, payload: { ...response } });
   } catch (error) {

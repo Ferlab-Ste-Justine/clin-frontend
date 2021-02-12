@@ -4,11 +4,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Form, Input, Button, Radio, Tree, Select, AutoComplete, Typography, Popconfirm,
+  Card, Form, Input, Button, Tree, Select, AutoComplete, Typography, Popconfirm, Checkbox, Row, Col,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
-  ic_add, ic_remove, ic_help, ic_person, ic_visibility, ic_visibility_off,
+  ic_help, ic_visibility, ic_visibility_off,
 } from 'react-icons-kit/md';
 
 import intl from 'react-intl-universal';
@@ -16,14 +16,9 @@ import intl from 'react-intl-universal';
 import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
-import get from 'lodash/get';
 import toArray from 'lodash/values';
 
 import {
-  CGH_CODES,
-  CGH_VALUES,
-  getFamilyRelationshipCode,
-  getFamilyRelationshipNote,
   hpoOnsetValues,
   getResourceId,
   getHPOCode,
@@ -31,9 +26,8 @@ import {
   getHPOOnsetCode,
   getHPOInterpretationCode,
   hpoInterpretationValues,
-  getFamilyRelationshipValues,
   getFamilyRelationshipDisplayForCode,
-} from '../../../../helpers/fhir/fhir';
+} from '../../../../../helpers/fhir/fhir';
 
 import {
   addHpoResource,
@@ -45,11 +39,14 @@ import {
   updateHpoObservation,
   updateHpoAgeOnSet,
   updateFMHNote,
-} from '../../../../actions/patientSubmission';
+} from '../../../../../actions/patientSubmission';
 
-import Api from '../../../../helpers/api';
-import { FamilyMemberHistoryBuilder } from '../../../../helpers/fhir/builder/FMHBuilder.ts';
-import { ObservationBuilder } from '../../../../helpers/fhir/builder/ObservationBuilder.ts';
+import Api from '../../../../../helpers/api';
+import { FamilyMemberHistoryBuilder } from '../../../../../helpers/fhir/builder/FMHBuilder.ts';
+import { ObservationBuilder } from '../../../../../helpers/fhir/builder/ObservationBuilder.ts';
+import MrnItem from './components/MrnItem';
+import InvestigationSection from './components/InvestigationSection';
+import FamilyStorySection from './components/FamilyStorySection';
 
 const interpretationIcon = {
   POS: ic_visibility,
@@ -471,178 +468,113 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore,
+      form, observations, localStore, patient,
     } = this.props;
-    const { getFieldValue } = form;
 
     const { TextArea } = Input;
-    const { Text } = Typography;
-
-    const relationshipPossibleValues = getFamilyRelationshipValues();
     const familyHistoryResources = observations.fmh || [];
-    const familyItems = familyHistoryResources.map((resource, index) => ((
-      <div className="familyLine">
-        <div className="familyTop">
-          <Form.Item
-            name={['familyRelationshipIds', `${index}`]}
-            initialValue={getResourceId(resource) || ''}
-          >
-            <Input size="small" type="hidden" />
-          </Form.Item>
-          <Form.Item
-            name={['familyRelationshipIds', `${index}`]}
-            initialValue={resource.toDelete}
-          >
-            <Input size="small" type="hidden" />
-          </Form.Item>
 
-          <Form.Item
-            rules={[{
-              whitespace: true,
-              message: intl.get('form.patientSubmission.clinicalInformation.validation.noSpace'),
-            }]}
-            name={['familyRelationshipNotes', `${index}`]}
-            initialValue={getFamilyRelationshipNote(resource)}
-            validateTrigger={['onChange', 'onBlur']}
-          >
-            <Input onChange={(event) => this.fmhNoteUpdate(event.target.value, index)} placeholder="Ajouter une note…" className="input noteInput note" />
-          </Form.Item>
-
-          <Form.Item
-            name={['familyRelationshipCodes', `${index}`]}
-            initialValue={getFamilyRelationshipCode(resource)}
-            validateTrigger={['onChange', 'onBlur']}
-          >
-            <Select suffixIcon={<IconKit className="selectIcon" size={16} icon={ic_person} />} className="selectRelation" placeholder="Relation parentale" dropdownClassName="selectDropdown" onChange={(event) => { this.fmhSelected(event, index); }}>
-              { Object.values(relationshipPossibleValues).map((rv) => (
-                <Select.Option value={rv.value} key={`relationship_${rv.value}`}>{ rv.label }</Select.Option>
-              )) }
-            </Select>
-          </Form.Item>
-
-          <Button
-            className="delButton"
-            disabled={!(get(getFieldValue('familyRelationshipNotes'), index, ''))
-            || !(get(getFieldValue('familyRelationshipCodes'), index, ''))
-            || familyHistoryResources.length === 1}
-            shape="round"
-            onClick={() => this.deleteFamilyHistory({ code: getFieldValue(`familyRelationshipCodes[${index}]`) })}
-          >
-            <IconKit size={20} icon={ic_remove} />
-          </Button>
-          <div className="break" />
-
-        </div>
-        {
-          (!form.getFieldValue(`familyRelationshipNotes[${index}]`) && form.getFieldValue(`familyRelationshipCodes[${index}]`))
-            || (form.getFieldValue(`familyRelationshipNotes[${index}]`) && !form.getFieldValue(`familyRelationshipCodes[${index}]`))
-            ? <div className="familyBottom"> <Text className="customErrorMessage" type="danger">Les 2 champs doivent être rentrés</Text></div>
-            : null
-        }
-      </div>
-
-    )));
-
-    const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
+    // const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
     let cghId = null;
     if (observations.cgh != null) {
       cghId = observations.cgh.id;
     }
-
-    const summaryNoteValue = localStore.summary.note;
-
     const indicationNoteValue = has(localStore, 'indic.note') ? localStore.indic.note : null;
 
     const hpoResources = observations.hpos;
     const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);
 
+    const analysisTestNames = [
+      'adultCancerPredisposition',
+      'muscle',
+      'nuclearMitochondrialGenes',
+
+      'kidTumorPredisposition',
+      'amyotrophicLateralSclerosis',
+      'rasopathies',
+
+      'kidHematopathiesPredisposition',
+      'retinopathies',
+      'cardiomyopathies',
+
+      'ehlersDanlos',
+      'deafness',
+      'hereditaryArrhythmias',
+
+      'polymalformatifs',
+      'intellecualDisability',
+      'aortopathies',
+    ];
+    const analysisTestOptions = analysisTestNames.map((testName) => ({
+      value: testName,
+      label: intl.get(`form.patientSubmission.clinicalInformation.analysis.options.${testName}`),
+    }));
+
     return (
-      <div>
-        <Card title={intl.get('form.patientSubmission.clinicalInformation.title')} bordered={false} className="staticCard patientContent">
+      <div className="clinical-information">
+        <Card
+          title={intl.get('form.patientSubmission.clinicalInformation.medicalFile')}
+          className="staticCard patientContent"
+          bordered={false}
+        >
+          <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.file')}>
+            <MrnItem form={form} patient={patient} />
+          </Form.Item>
+        </Card>
+        <Card
+          title={intl.get('form.patientSubmission.clinicalInformation.analysis')}
+          className="staticCard patientContent clinical-information__analysis"
+          bordered={false}
+        >
 
           <Form.Item name="cghId" initialValue={cghId} className="hidden-form">
             <Input size="small" type="hidden" />
           </Form.Item>
 
           <Form.Item
-            label={intl.get('form.patientSubmission.clinicalInformation.analysisType')}
-            name="analyse"
-            initialValue={has(localStore.serviceRequest, 'code') ? localStore.serviceRequest.code : null}
+            label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
+            name="analysis.tests"
           >
-            <Radio.Group buttonStyle="solid">
-              <Radio.Button value="WXS"><span className="radioText">{ intl.get('form.patientSubmission.clinicalInformation.exome') }</span></Radio.Button>
-              <Radio.Button value="WGS"><span className="radioText">{ intl.get('form.patientSubmission.clinicalInformation.genome') }</span></Radio.Button>
-              <Radio.Button value="GP"><span className="radioText">{ intl.get('form.patientSubmission.clinicalInformation.targetedSequencing') }</span></Radio.Button>
-            </Radio.Group>
+            <Checkbox.Group className="clinical-information__analysis__checkbox-group">
+              { analysisTestOptions.map((option) => (
+                <Checkbox value={option.value}>{ option.label }</Checkbox>
+              )) }
+            </Checkbox.Group>
+          </Form.Item>
+
+          <Form.Item
+            label={intl.get('form.patientSubmission.clinicalInformation.analysis.comments')}
+            name="analysis.comments"
+          >
+            <Row gutter={8}>
+              <Col span={17}>
+                <TextArea
+                  placeholder={intl.get('form.patientSubmission.clinicalInformation.analysis.comments.placeholder')}
+                  rows={4}
+                />
+              </Col>
+              <Col>
+                <Typography.Text className="optional-item__label">
+                  { intl.get('form.patientSubmission.form.validation.optional') }
+                </Typography.Text>
+              </Col>
+            </Row>
           </Form.Item>
         </Card>
+
         <Card
-          title={intl.get('form.patientSubmission.clinicalInformation.investigationSummary')}
+          title={intl.get('form.patientSubmission.clinicalInformation.investigation')}
+          bordered={false}
+          className="staticCard patientContent clinical-information__investigation"
+        >
+          <InvestigationSection />
+        </Card>
+        <Card
+          title={intl.get('screen.patient.header.familyHistory')}
           bordered={false}
           className="staticCard patientContent"
         >
-          <Form.Item
-            label={intl.get('form.patientSubmission.clinicalInformation.cgh')}
-            name="cghInterpretationValue"
-            initialValue={cghInterpretationValue}
-          >
-            <Radio.Group buttonStyle="solid">
-              { CGH_VALUES().map((v, index) => (
-                <Radio.Button key={`cghValue_${index}`} value={v.value}><span className="radioText">{ v.display }</span></Radio.Button>
-              )) }
-            </Radio.Group>
-          </Form.Item>
-          {
-            /* TODO initalValue */
-            (form.getFieldsValue().cghInterpretationValue === CGH_CODES.A)
-            && (
-              <Form.Item
-                label={intl.get('form.patientSubmission.clinicalInformation.precision')}
-                name="cghPrecision"
-                initialValue={has(localStore, 'cgh.precision') ? localStore.cgh.precision : null}
-                rules={[{
-                  required: true,
-                  message: intl.get('form.patientSubmission.clinicalInformation.validation.cghResults'),
-                },
-                {
-                  whitespace: true,
-                  message: intl.get('form.patientSubmission.clinicalInformation.validation.noSpace'),
-                },
-                ]}
-              >
-                <Input placeholder={intl.get('form.patientSubmission.clinicalInformation.pleaseSpecify')} className="input note" />
-              </Form.Item>
-
-            )
-          }
-
-          <div className="optional-item">
-            <Form.Item
-              label={intl.get('form.patientSubmission.clinicalInformation.summary')}
-              name="summaryNote"
-              initialValue={summaryNoteValue}
-              rules={[{
-                whitespace: true,
-                message: intl.get('form.patientSubmission.clinicalInformation.validation.noSpace'),
-              }]}
-            >
-              <TextArea className="input note" rows={4} />
-            </Form.Item>
-            <span className="optional-item__label">{ intl.get('form.patientSubmission.clinicalInformation.optional') }</span>
-          </div>
-
-        </Card>
-        <Card title={intl.get('screen.patient.header.familyHistory')} bordered={false} className="staticCard patientContent">
-          <div className="familyLines">
-            { familyItems }
-          </div>
-          <Form.Item>
-            { /* <Button className="addFamilyButton" disabled={(!(getFieldValue('note')[getFieldValue('note').length - 1]) && !(getFieldValue('relation')[getFieldValue('relation').length - 1]))} onClick={this.addFamilyHistory}> */ }
-            <Button className="addFamilyButton" disabled={this.isAddDisabled()} onClick={this.addFamilyHistory}>
-              <IconKit size={14} icon={ic_add} />
-              Ajouter
-            </Button>
-          </Form.Item>
+          <FamilyStorySection familyHistoryResources={familyHistoryResources} />
         </Card>
         <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
           <div className="separator">

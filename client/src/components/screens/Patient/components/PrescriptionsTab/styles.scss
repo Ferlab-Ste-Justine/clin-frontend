@@ -69,12 +69,6 @@
         .ant-btn{
           height: auto;
         }
-        .familyTypeTag{
-          display: flex;
-          align-items: center;
-          width: fit-content;
-          color: $cyan-7;
-        }
       }
     }
 
@@ -82,7 +76,95 @@
 }
 
 .prescriptions-tab {
+  .ant-card {
+    margin-bottom: 24px;
+  }
+
+  &__patient-section {
+    display: flex;
+    padding: 16px;
+
+    &__card {
+      position: relative;
+    }
+
+    &__name-block {
+      width: 240px;
+      text-align: center;
+      background-color: $gray-2;
+      padding: 16px 0;
+      border: 1px solid $gray-5;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
+    &__col {
+      flex: 1;
+      display: flex;
+      .ant-divider {
+        height: 100%;
+        margin-left: auto;
+      }
+
+      &__details {
+        --details-col-justify: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: var(--details-col-justify);
+        margin-left: 24px;
+        gap: 16px;
+  
+        &__row {
+          display: flex;
+          flex-direction: column;
+          
+          &__title {
+            color: $gray-7;
+            font-weight: 500;
+          }
+    
+          &__info {
+            &__multiple-mrn {
+              ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                li {
+                  margin-bottom: 8px;
+                }
+              }
+              button {
+                span {
+                  text-decoration: underline;
+                }
+              }
+            }
+          }
+        }
+  
+      }
+    }
+
+    &__edit-button {
+      position: absolute;
+      top: 17px;
+      right: 20px;
+      border: none;
+    }
+
+  }
+
   &__prescriptions-section {
+    &__more-info {
+      .anticon {
+        color: $blue-8;
+        margin-left: 5px;
+      }
+    }
+    .ant-card-extra {
+      padding: 0;
+    }
+
     .ant-tabs {
       &-nav {
         margin: 0;
@@ -132,5 +214,55 @@
         margin-top: 24px;
       }
     }
+
+    &__details {
+      &__status-tag {
+        --tag-color: #000;
+        color: #ffffff;
+        background-color: var(--tag-color);
+        line-height: 22px;
+        padding: 1px 0;
+        width: 100px;
+        text-align: center;
+        display: inline-block;
+        border-radius: 2px;
+      }
+      &__status-label {
+        svg {
+          margin-left: 5px;
+        }
+      }
+
+      &__row {
+        flex-wrap: nowrap;
+        &:not(:last-of-type){
+          margin-bottom: 12px;
+        }
+        &__title{
+          color: $gray-7;
+          min-width: 200px;
+          margin-right: 16px;
+        }
+        &__value{
+          max-width: 800px;
+          button{
+            height: 22px;
+            i{
+              height: 16px;
+                        
+              svg{
+                vertical-align: sub !important;
+              }
+            }
+          }
+          &--abnormal{
+            color: $red-6;
+          }
+          &--normal{
+            color: $green-7;
+          }
+        
+        }
+      }}
   }
 }
