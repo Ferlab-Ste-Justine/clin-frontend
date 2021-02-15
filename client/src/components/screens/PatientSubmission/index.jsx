@@ -411,6 +411,7 @@ function PatientSubmissionScreen(props) {
         hpos: [],
         fmhs: [],
         length: 0,
+        submitted,
       };
 
       const allAnalysis = data['analysis.tests'];
@@ -552,7 +553,6 @@ function PatientSubmissionScreen(props) {
     const { actions } = props;
     if (isOnLastPage) {
       saveSubmission(true);
-      actions.navigateToPatientSearchScreen();
     } else {
       next();
     }
