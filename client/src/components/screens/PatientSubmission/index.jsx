@@ -153,12 +153,15 @@ function PatientSubmissionScreen(props) {
     valid: false,
     isCancelConfirmVisible: false,
     selectedPractitioner: null,
+    firstPageFields: {},
   });
+
+  const getFields = () => (state.currentPageIndex === 0 ? form.getFieldsValue() : state.firstPageFields);
 
   const getPatientData = () => {
     const { currentPageIndex } = state;
     const { patient } = props;
-    let values = form.getFieldsValue();
+    let values = getFields();
 
     const getEthnicityDisplay = (ethnicity) => {
       switch (ethnicity) {
@@ -323,7 +326,7 @@ function PatientSubmissionScreen(props) {
   });
 
   const createCGHResourceList = () => {
-    const values = form.getFieldsValue();
+    const values = getFields();
     if (values.cghInterpretationValue === undefined || values.cghInterpretationValue === 'non-realized') {
       return undefined;
     }
@@ -355,7 +358,7 @@ function PatientSubmissionScreen(props) {
   };
 
   const createIndicationResourceList = () => {
-    const values = form.getFieldsValue();
+    const values = getFields();
 
     if (values.indication === undefined) {
       return [];
@@ -378,7 +381,7 @@ function PatientSubmissionScreen(props) {
   const { localStore } = props;
 
   const createSummary = (note) => {
-    // const values = form.getFieldsValue();
+    // const values = getFields();
     const builder = new ObservationBuilder('INVES');
 
     if (note == null && localStore.summary.note != null) {
@@ -391,7 +394,7 @@ function PatientSubmissionScreen(props) {
 
   const saveClinicalInfoPageLocalStore = () => {
     const { actions } = props;
-    const values = form.getFieldsValue();
+    const values = getFields();
 
     actions.saveServiceRequest(values.analyse);
     actions.saveLocalCgh(values.cghInterpretationValue, values.cghPrecision);
@@ -404,6 +407,8 @@ function PatientSubmissionScreen(props) {
         actions, observations, userRole, currentPatient,
       } = props;
 
+      const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
+
       const batch = {
         serviceRequests: [],
         clinicalImpressions: [],
@@ -414,7 +419,7 @@ function PatientSubmissionScreen(props) {
         submitted,
       };
 
-      const allAnalysis = data['analysis.tests'];
+      const allAnalysis = content['analysis.tests'];
       batch.length = get(allAnalysis, 'length', 0);
 
       if (batch.length === 0) {
@@ -445,8 +450,8 @@ function PatientSubmissionScreen(props) {
       }
       batch.observations.push(createIndicationResourceList());
 
-      if (data.summaryNote != null) {
-        batch.observations.push(createSummary(data.summaryNote));
+      if (content.summaryNote != null) {
+        batch.observations.push(createSummary(content.summaryNote));
       }
 
       actions.createRequest(batch);
@@ -523,7 +528,7 @@ function PatientSubmissionScreen(props) {
   const next = () => {
     const { currentPageIndex } = state;
     const pageIndex = currentPageIndex + 1;
-    setState({ ...state, currentPageIndex: pageIndex });
+    setState({ ...state, currentPageIndex: pageIndex, firstPageFields: form.getFieldsValue() });
     debounce(validate, 500)();
   };
 
