@@ -9,6 +9,7 @@ import variantReducer from './variant';
 import variantDetailsReducer from './variantDetails';
 import patientSubmissionReducer from './patientSubmission';
 import patientCreation, { PatientCreationState } from './patientCreation';
+import prescriptions from './prescriptions';
 
 const rootReducer = (history: any) => combineReducers({
   router: connectRouter(history),
@@ -20,6 +21,7 @@ const rootReducer = (history: any) => combineReducers({
   variantDetails: variantDetailsReducer,
   patientSubmission: patientSubmissionReducer,
   patientCreation,
+  prescriptions,
 });
 
 export default rootReducer;

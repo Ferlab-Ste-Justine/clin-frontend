@@ -49,7 +49,7 @@ import Layout from '../../Layout';
 import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
 import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
 import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
-import { createRequest } from '../../../actions/patientCreation';
+import { createRequest } from '../../../actions/prescriptions';
 
 const { Step } = Steps;
 

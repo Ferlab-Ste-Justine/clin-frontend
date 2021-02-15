@@ -11,6 +11,7 @@ import watchedRouterSagas from './router';
 import watchSavePatientSubmission from './patientSubmission';
 import watchPatientCreation from './patientCreation';
 import watchNanuqReportSagas from './nanuq';
+import watchPrescriptions from './prescriptions';
 
 const makeRestartable = (saga) => function* restableSaga() {
   yield spawn(function* spawnedRestableSaga() {
@@ -36,6 +37,7 @@ const rootSagas = [
   watchSavePatientSubmission,
   watchPatientCreation,
   watchNanuqReportSagas,
+  watchPrescriptions,
 ].map(makeRestartable);
 
 export default function* rootSaga() {
