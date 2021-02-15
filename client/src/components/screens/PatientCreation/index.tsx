@@ -28,6 +28,11 @@ const PatientCreation: React.FC = () => {
     dispatch(navigateToPatientSearchScreen());
   };
 
+  const onCreateNew = () => {
+    dispatch(closeCreatePatient());
+    setOpenModal(SCREENS.FORM);
+  };
+
   return (
     <>
       <Button
@@ -49,7 +54,7 @@ const PatientCreation: React.FC = () => {
       <SuccessModal
         open={openModal === SCREENS.SUCCESS}
         onClose={onClose}
-        onNewPatient={() => setOpenModal(SCREENS.FORM)}
+        onNewPatient={onCreateNew}
       />
 
       <ExistingModal
@@ -60,7 +65,7 @@ const PatientCreation: React.FC = () => {
       <ErrorModal
         open={openModal === SCREENS.ERROR}
         onClose={onClose}
-        onRetry={() => setOpenModal(SCREENS.FORM)}
+        onRetry={onCreateNew}
       />
 
     </>
