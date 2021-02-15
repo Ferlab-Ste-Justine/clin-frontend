@@ -43,6 +43,7 @@ export const initialPatientSubmissionState = {
     indic: {},
     consents: [],
     practitioner: '',
+    requesterId: null,
   },
   deleted: {
     fmh: [],
@@ -219,6 +220,21 @@ const patientSubmissionReducer = (
     case actions.PATIENT_SUBMISSION_SET_EDIT_MODE:
       draft.editMode = action.payload.editMode;
       break;
+    case actions.PATIENT_SUBMISSION_FROM_PATIENT:
+      draft.patient = action.payload.patient.patient.original;
+      draft.clinicalImpression = initialPatientSubmissionState.clinicalImpression;
+      draft.serviceRequest = initialPatientSubmissionState.serviceRequest;
+      draft.observations = initialPatientSubmissionState.observations;
+      draft.deleted = initialPatientSubmissionState.deleted;
+      draft.local = {
+        serviceRequest: {},
+        cgh: {},
+        summary: {},
+        indic: {},
+        consents: [],
+        practitioner: '',
+      };
+      break;
     case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
       const patientState = action.payload.patient;
       const patient = patientState.patient.original;
@@ -278,6 +294,7 @@ const patientSubmissionReducer = (
         };
 
         if (requester != null) {
+          draft.local.requesterId = patientState.prescriptions[0].id;
           draft.local.practitioner = genPractitionerKey({
             family: requester.lastName,
             given: requester.firstName,
