@@ -1,4 +1,5 @@
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
+import get from 'lodash/get';
 import {
   Select, Row, Col, Button, Input, Form,
 } from 'antd';
@@ -21,7 +22,9 @@ interface Props {
 const MrnItem: React.FC<Props> = ({ form, patient }) => {
   const [mrnForm] = useForm();
   const [mode, setMode] = useState<Mode>(Mode.SELECT);
-  const [selectedMrn, setSelctedMrn] = useState<Identifier | null>(null);
+  const [selectedMrn, setSelctedMrn] = useState<Identifier | undefined>(
+    patient.identifier.find((id) => get(id, 'type.coding[0].code') === 'MR'),
+  );
 
   if (mode === Mode.EDIT) {
     return (
@@ -84,7 +87,7 @@ const MrnItem: React.FC<Props> = ({ form, patient }) => {
               className={[style.btn, style.btnSecondary].join(' ')}
               onClick={() => {
                 setMode(Mode.SELECT);
-                setSelctedMrn(null);
+                setSelctedMrn(undefined);
               }}
             />
           </Col>
@@ -93,6 +96,13 @@ const MrnItem: React.FC<Props> = ({ form, patient }) => {
       </Form>
     );
   }
+
+  const getMrnValue = (identifier: Identifier | undefined) : string | undefined => {
+    if (identifier == null) {
+      return undefined;
+    }
+    return `${identifier.value}|${identifier.assigner!.reference.split('/')[1]}`;
+  };
 
   return (
     <Select
@@ -115,13 +125,14 @@ const MrnItem: React.FC<Props> = ({ form, patient }) => {
           </Button>
         </div>
       )}
+      defaultValue={getMrnValue(selectedMrn)}
     >
       {
         patient.identifier
           .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
           .map((id) => (
             <Select.Option
-              value={`${id.value}|${id.assigner!.reference.split('/')[1]}`}
+              value={getMrnValue(id)!}
               className="clinical-information__mrn-options"
             >
               <Row align="middle">
