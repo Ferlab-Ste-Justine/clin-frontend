@@ -142,26 +142,28 @@ const FormModal : React.FC<Props> = ({
     wrapperCol: { span: 12 },
   };
 
-  if (ramqChecked) {
-    if (patient != null) {
-      if (!isFetusType) {
-        onExistingPatient();
-      } else if (state.ramqStatus === RamqStatus.PROCESSING) {
-        const mrnData = extractMrnData(patient);
-        form.setFieldsValue({
-          lastname: get(patient, 'name[0].family'),
-          firstname: get(patient, 'name[0].given[0]'),
-          mrn: {
-            file: mrnData?.mrn,
-            hospital: mrnData?.hospital,
-          },
-          birthday: new Date(patient.birthDate!),
-        });
-        setIsFormValid(true);
-        dispatch({ type: ActionType.RAMQ_VALID });
+  useEffect(() => {
+    if (ramqChecked && state.ramqStatus === RamqStatus.PROCESSING) {
+      if (patient != null) {
+        if (!isFetusType) {
+          onExistingPatient();
+        } else if (state.ramqStatus === RamqStatus.PROCESSING) {
+          const mrnData = extractMrnData(patient);
+          form.setFieldsValue({
+            lastname: get(patient, 'name[0].family'),
+            firstname: get(patient, 'name[0].given[0]'),
+            mrn: {
+              file: mrnData?.mrn,
+              hospital: mrnData?.hospital,
+            },
+            birthday: new Date(patient.birthDate!),
+          });
+          setIsFormValid(true);
+        }
       }
+      dispatch({ type: ActionType.RAMQ_VALID });
     }
-  }
+  }, [ramqChecked]);
 
   useEffect(() => {
     if (patientCreationStatus) {

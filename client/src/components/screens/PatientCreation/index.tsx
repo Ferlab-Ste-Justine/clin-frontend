@@ -22,11 +22,11 @@ const PatientCreation: React.FC = () => {
   const [openModal, setOpenModal] = useState<SCREENS | null>(null);
   const dispatch = useDispatch();
 
-  function onClose() {
+  const onClose = () => {
     setOpenModal(null);
     dispatch(closeCreatePatient());
     dispatch(navigateToPatientSearchScreen());
-  }
+  };
 
   return (
     <>
