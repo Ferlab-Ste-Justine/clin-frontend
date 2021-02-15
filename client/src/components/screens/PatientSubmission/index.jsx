@@ -682,6 +682,7 @@ function PatientSubmissionScreen(props) {
                   <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
                     <Button
                       onClick={() => saveSubmission()}
+                      disabled={!state.valid}
                     >
                       <SaveOutlined />
                       { intl.get('screen.clinicalSubmission.saveButtonTitle') }
