@@ -358,6 +358,9 @@ const FormModal : React.FC<Props> = ({
                   }
                   {...formInputItemProps}
                   name="lastname"
+                  rules={[
+                    { min: 2, message: intl.get(`${I18N_PREFIX}errors.invalidLastName`) },
+                  ]}
                 >
                   <Input placeholder={intl.get(`${I18N_PREFIX}lastname`)} disabled={isFetusType && patient != null} />
                 </Form.Item>
@@ -369,6 +372,9 @@ const FormModal : React.FC<Props> = ({
                   }
                   {...formInputItemProps}
                   name="firstname"
+                  rules={[
+                    { min: 2, message: intl.get(`${I18N_PREFIX}errors.invalidFirstName`) },
+                  ]}
 
                 >
                   <Input placeholder={intl.get(`${I18N_PREFIX}firstname`)} disabled={isFetusType && patient != null} />

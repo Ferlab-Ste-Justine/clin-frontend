@@ -104,6 +104,8 @@ const en = {
   'screen.patient.creation.hospital.placeholder': 'Hospital',
   'screen.patient.creation.errors.invalidRamq': 'The RAMQ number is invalid',
   'screen.patient.creation.errors.invalidRamqConfirm': 'The RAMQ numbers are different',
+  'screen.patient.creation.errors.invalidFirstName': 'The first name should have more than 2 characters',
+  'screen.patient.creation.errors.invalidLastName': 'The last name should have more than 2 characters',
   'screen.patient.creation.success.description': 'The patient has been created with success.',
   'screen.patient.creation.success.patientCard': 'See the patient card.',
   'screen.patient.creation.success.newPatient': 'Create a new patient',
