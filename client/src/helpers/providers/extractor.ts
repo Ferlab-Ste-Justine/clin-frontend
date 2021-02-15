@@ -22,7 +22,7 @@ type Data = {
   practitionersData: PractitionersData;
 };
 
-export const PRACTITIONER_NOT_FOUND: PractitionerData = {
+const PRACTITIONER_NOT_FOUND: PractitionerData = {
   email: 'N/A',
   firstName: 'N/A',
   lastName: 'N/A',

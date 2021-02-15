@@ -1,7 +1,7 @@
 import get from 'lodash/get';
 import { ServiceRequest } from '../../fhir/types';
 import { Prescription, PrescriptionStatus } from '../types';
-import { DataExtractor, PRACTITIONER_NOT_FOUND } from '../extractor';
+import { DataExtractor } from '../extractor';
 import { Provider, Record } from '../providers';
 
 const IS_SUBMITTED_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
@@ -29,7 +29,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     const prescriptions: Prescription[] = serviceRequests.map((serviceRequest: ServiceRequest) => ({
       id: serviceRequest.id,
       date: serviceRequest.authoredOn,
-      requester: (serviceRequest.requester != null) ? dataExtractor.getPractitionerDataFromPractitioner(serviceRequest, 'requester', serviceRequestBundle)! : PRACTITIONER_NOT_FOUND,
+      requester: dataExtractor.getPractitionerDataFromPractitioner(serviceRequest, 'requester', serviceRequestBundle)!,
       status: this.getStatus(dataExtractor, serviceRequest) as PrescriptionStatus,
       test: get(serviceRequest, 'code.coding[0].code', 'N/A'),
     }));

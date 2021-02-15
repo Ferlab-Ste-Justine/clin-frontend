@@ -362,21 +362,6 @@ export const createGetPractitionersDataBundle = (data) => {
     );
   });
 
-  // const serviceRequestEntries = get(data, 'entry[2].resource.entry', []);
-  // if (serviceRequestEntries.length > 1) {
-  //   const id = get(serviceRequestEntries, '[1].resource.id', null);
-  //   if (id != null) {
-  //     output.entry.push(
-  //       {
-  //         request: {
-  //           method: 'GET',
-  //           url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
-  //         },
-  //       },
-  //     );
-  //   }
-  // }
-
   return output;
 };
 
