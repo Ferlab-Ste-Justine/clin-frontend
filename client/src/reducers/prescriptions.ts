@@ -27,7 +27,7 @@ const reducer = (
     case actions.CREATE_PATIENT_REQUEST_REQUESTED:
       break;
     case actions.CREATE_PATIENT_REQUEST_FAILED:
-      message.success(intl.get('screen.clinicalSubmission.notification.save.error'));
+      message.error(intl.get('screen.clinicalSubmission.notification.save.error'));
       break;
     default:
       break;

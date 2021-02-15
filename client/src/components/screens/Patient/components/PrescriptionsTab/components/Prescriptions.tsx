@@ -272,20 +272,28 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   { prescription.date ? moment(prescription.date).format('YYYY-MM-DD') : DEFAULT_VALUE }
                 </DetailsRow>
                 <DetailsRow label={intl.get('screen.patient.details.prescription.submittedBy')}>
-                  {
-                    prescription.requester != null
-                      ? formatName(prescription.requester.lastName, prescription.requester.firstName)
-                      : DEFAULT_VALUE
-                  }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
                   { consultation[index] != null ? (
                     <span className="prescriptions-tab__prescriptions-section__more-info">
                       { formatName(consultation[index].practitioner.lastName, consultation[index].practitioner.firstName) }
                       <Popover
                         overlayClassName="practitionerInfo"
                         placement="topRight"
-                        content={practitionerPopOverText(consultation[0].practitioner)}
+                        content={practitionerPopOverText(consultation[index].practitioner)}
+                        trigger="hover"
+                      >
+                        <InfoCircleOutlined />
+                      </Popover>
+                    </span>
+                  ) : DEFAULT_VALUE }
+                </DetailsRow>
+                <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
+                  { prescription.requester != null ? (
+                    <span className="prescriptions-tab__prescriptions-section__more-info">
+                      { formatName(prescription.requester.lastName, prescription.requester.firstName) }
+                      <Popover
+                        overlayClassName="practitionerInfo"
+                        placement="topRight"
+                        content={practitionerPopOverText(prescription.requester)}
                         trigger="hover"
                       >
                         <InfoCircleOutlined />
