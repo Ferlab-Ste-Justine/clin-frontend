@@ -359,7 +359,7 @@ const FormModal : React.FC<Props> = ({
                   {...formInputItemProps}
                   name="lastname"
                 >
-                  <Input placeholder={intl.get(`${I18N_PREFIX}lastname`)} disabled={isFetusType} />
+                  <Input placeholder={intl.get(`${I18N_PREFIX}lastname`)} disabled={isFetusType && patient != null} />
                 </Form.Item>
                 <Form.Item
                   label={
@@ -371,7 +371,7 @@ const FormModal : React.FC<Props> = ({
                   name="firstname"
 
                 >
-                  <Input placeholder={intl.get(`${I18N_PREFIX}firstname`)} disabled={isFetusType} />
+                  <Input placeholder={intl.get(`${I18N_PREFIX}firstname`)} disabled={isFetusType && patient != null} />
                 </Form.Item>
                 <Form.Item
                   label={
