@@ -94,17 +94,26 @@ function* navigateToSubmissionScreen() {
   }
 }
 
-function* navigateToSubmissionScreenWithPatient() {
+function* navigateToSubmissionScreenWithPatientProcess(patient) {
   try {
-    const patient = yield select((state) => state.patient);
-    yield put(push(yield put(push('/submission'))));
-    window.scrollTo(0, 0);
     yield put({ type: actions.PATIENT_SUBMISSION_SET_EDIT_MODE, payload: { editMode: true } });
     yield put({ type: actions.PATIENT_SUBMISSION_FROM_PATIENT, payload: { patient } });
+    yield put(push(yield put(push('/submission'))));
+    window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
   }
+}
+
+function* navigateToSubmissionScreenFromPatientCreation() {
+  const patient = yield select((state) => state.patientCreation.patient);
+  yield navigateToSubmissionScreenWithPatientProcess({ patient: { original: patient } });
+}
+
+function* navigateToSubmissionScreenWithPatient() {
+  const patient = yield select((state) => state.patient);
+  yield navigateToSubmissionScreenWithPatientProcess(patient);
 }
 
 function* navigateToPatientSearchScreen() {
@@ -199,6 +208,12 @@ function* watchNavigateToPatientScreenWithPatient() {
   yield takeLatest(actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_REQUESTED, navigateToSubmissionScreenWithPatient);
 }
 
+function* watchNavigateToPatientScreenFromPatientCreationt() {
+  yield takeLatest(
+    actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_CREATION, navigateToSubmissionScreenFromPatientCreation,
+  );
+}
+
 function* watchNavigationToAccessDeniedScreen() {
   yield takeLatest(actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED, navigateToAccessDeniedScreen);
 }
@@ -213,5 +228,6 @@ export default function* watchedRouterSagas() {
     watchManualUserNavigation(),
     watchNavigateToSubmissionScreen(),
     watchNavigateToPatientScreenWithPatient(),
+    watchNavigateToPatientScreenFromPatientCreationt(),
   ]);
 }

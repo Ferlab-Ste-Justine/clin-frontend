@@ -273,7 +273,6 @@ const FormModal : React.FC<Props> = ({
             <Form.Item
               label={intl.get(`${I18N_PREFIX}type`)}
               name="patientType"
-              initialValue={PatientType.PERSON}
             >
               <Radio.Group
                 options={[
@@ -283,7 +282,9 @@ const FormModal : React.FC<Props> = ({
                 optionType="button"
                 onChange={(e: RadioChangeEvent) => {
                   setIsFetusType(e.target.value === PatientType.FETUS);
+                  form.setFieldsValue({ patientType: e.target.value });
                 }}
+                defaultValue={PatientType.PERSON}
               />
               { isFetusType && (
                 <Typography.Text className="patient-creation__form__fetus-note">

@@ -6,7 +6,7 @@ import {
 import { ArrowRightOutlined, CheckCircleFilled, PlusOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import ResultModal from '../ResultModal';
-import { navigatoToSubmissionWithPatient } from '../../../../../actions/router';
+import { navigatoToSubmissionFromPatientCreation } from '../../../../../actions/router';
 import { Patient } from '../../../../../helpers/fhir/types';
 
 interface Props {
@@ -34,7 +34,7 @@ const SuccessModal: React.FC<Props> = ({ open, onClose, onNewPatient }) => {
           <Button onClick={onNewPatient}>
             <PlusOutlined />{ intl.get(`${I18N_PREFIX}newPrescription`) }
           </Button>
-          <Button type="primary" onClick={() => dispatch(navigatoToSubmissionWithPatient())}>
+          <Button type="primary" onClick={() => dispatch(navigatoToSubmissionFromPatientCreation())}>
             { intl.get(`${I18N_PREFIX}completePrescription`) }
             <ArrowRightOutlined />
           </Button>
