@@ -104,6 +104,8 @@ const fr = {
   'screen.patient.creation.hospital.placeholder': 'Hôpital',
   'screen.patient.creation.errors.invalidRamq': 'Le numéro de RAMQ est invalid',
   'screen.patient.creation.errors.invalidRamqConfirm': 'Les numéro de RAMQ sont différents',
+  'screen.patient.creation.errors.invalidFirstName': 'Le prénom doit avoir plus de 2 lettres',
+  'screen.patient.creation.errors.invalidLastName': 'Le nom de famille doit avoir plus de 2 lettres',
   'screen.patient.creation.success.description': 'La fiche a été créée avec succès.',
   'screen.patient.creation.success.patientCard': 'Voir la fiche.',
   'screen.patient.creation.success.newPrescription': 'Créer une nouvelle prescription',
