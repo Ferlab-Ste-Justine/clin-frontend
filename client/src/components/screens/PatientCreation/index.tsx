@@ -38,40 +38,31 @@ const PatientCreation: React.FC = () => {
         <PlusOutlined />
         { intl.get(`${I18N_PREFIX}createPrescription`) }
       </Button>
-      { openModal === SCREENS.FORM && (
-        <FormModal
-          open
-          onClose={onClose}
-          onCreated={() => setOpenModal(SCREENS.SUCCESS)}
-          onError={() => setOpenModal(SCREENS.ERROR)}
-          onExistingPatient={() => setOpenModal(SCREENS.EXISTING)}
-        />
-      ) }
+      <FormModal
+        open={openModal === SCREENS.FORM}
+        onClose={onClose}
+        onCreated={() => setOpenModal(SCREENS.SUCCESS)}
+        onError={() => setOpenModal(SCREENS.ERROR)}
+        onExistingPatient={() => setOpenModal(SCREENS.EXISTING)}
+      />
 
-      { openModal === SCREENS.SUCCESS
-      && (
-        <SuccessModal
-          open
-          onClose={onClose}
-          onNewPatient={() => setOpenModal(SCREENS.FORM)}
-        />
-      ) }
+      <SuccessModal
+        open={openModal === SCREENS.SUCCESS}
+        onClose={onClose}
+        onNewPatient={() => setOpenModal(SCREENS.FORM)}
+      />
 
-      { openModal === SCREENS.EXISTING
-      && (
-        <ExistingModal
-          open
-          onClose={onClose}
-        />
-      ) }
+      <ExistingModal
+        open={openModal === SCREENS.EXISTING}
+        onClose={onClose}
+      />
 
-      { openModal === SCREENS.ERROR && (
-        <ErrorModal
-          open
-          onClose={onClose}
-          onRetry={() => setOpenModal(SCREENS.FORM)}
-        />
-      ) }
+      <ErrorModal
+        open={openModal === SCREENS.ERROR}
+        onClose={onClose}
+        onRetry={() => setOpenModal(SCREENS.FORM)}
+      />
+
     </>
   );
 };
