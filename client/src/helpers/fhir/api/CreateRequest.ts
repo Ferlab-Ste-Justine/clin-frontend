@@ -14,16 +14,17 @@ const CLINICAL_IMPRESSION_REF = 'http://fhir.cqgc.ferlab.bio/StructureDefinition
 //   observations: Observation[];
 // }
 // .clinicalImpression, action.payload.serviceRequest, action.payload.observations
-type Batch = {
+export type CreateRequestBatch = {
   length: number;
   serviceRequests: ServiceRequest[];
   clinicalImpressions: ClinicalImpression[];
   observations: Observation[];
   hpos: Observation[];
   fmhs: FamilyMemberHistory[];
+  submitted: boolean;
 }
 
-export const createRequest = async (batch: Batch) : Promise<Batch> => {
+export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateRequestBatch> => {
   if (batch.length === 0) {
     throw new ApiError('Cannot create a ClinicalImpression without observations');
   }
@@ -87,13 +88,14 @@ export const createRequest = async (batch: Batch) : Promise<Batch> => {
     ...batch.fmhs,
   );
 
-  const output: Batch = {
+  const output: CreateRequestBatch = {
     serviceRequests: [],
     clinicalImpressions: [],
     observations: [],
     hpos: [],
     fmhs: [],
     length: batch.length,
+    submitted: batch.submitted,
   };
 
   for (let i = 0; i < batch.length; i++) {

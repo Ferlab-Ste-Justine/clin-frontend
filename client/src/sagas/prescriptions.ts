@@ -1,15 +1,18 @@
 import {
   all, put, takeLatest,
 } from 'redux-saga/effects';
-
 import * as actions from '../actions/type';
-import { createRequest } from '../helpers/fhir/api/CreateRequest';
+import { createRequest, CreateRequestBatch } from '../helpers/fhir/api/CreateRequest';
 
 function* handleCreateRequest(action: any) {
   try {
-    const response = yield createRequest(action.payload.batch);
+    const batch = action.payload.batch as CreateRequestBatch;
+    const response = yield createRequest(batch);
 
     yield put({ type: actions.CREATE_PATIENT_REQUEST_SUCCEEDED, payload: { ...response } });
+    if (batch.submitted) {
+      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED, payload: { reload: false } });
+    }
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_REQUEST_FAILED });
   }

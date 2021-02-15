@@ -411,6 +411,7 @@ function PatientSubmissionScreen(props) {
         hpos: [],
         fmhs: [],
         length: 0,
+        submitted,
       };
 
       const allAnalysis = data['analysis.tests'];
@@ -449,11 +450,6 @@ function PatientSubmissionScreen(props) {
       }
 
       actions.createRequest(batch);
-      if (submitted) {
-        setTimeout(() => {
-          actions.navigateToPatientSearchScreen();
-        }, 600);
-      }
     });
   };
 
