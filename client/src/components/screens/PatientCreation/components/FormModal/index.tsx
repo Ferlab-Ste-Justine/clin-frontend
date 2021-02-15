@@ -19,6 +19,7 @@ import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
 import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
 import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
+import { PatientCreationStatus } from '../../../../../reducers/patientCreation';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 
@@ -32,7 +33,7 @@ interface Props {
   actions: any
   patient: Patient
   ramqChecked: boolean
-  patientCreationStatus?: 'error' | 'success'
+  patientCreationStatus?: PatientCreationStatus
 }
 
 enum PatientType {
@@ -168,7 +169,7 @@ const FormModal : React.FC<Props> = ({
   useEffect(() => {
     if (patientCreationStatus) {
       resetForm();
-      if (patientCreationStatus === 'success') {
+      if (patientCreationStatus === PatientCreationStatus.CREATED) {
         onCreated();
       } else {
         onError();
