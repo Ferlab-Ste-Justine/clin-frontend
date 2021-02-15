@@ -4,16 +4,15 @@ import * as actions from '../actions/type';
 import { FamilyGroup, Patient } from '../helpers/fhir/types';
 
 export enum PatientCreationStatus {
-    IDLE,
-    PROCESSING,
-    CREATED
+    ERROR = 'error',
+    CREATED = 'created'
 }
 
 export type PatientCreationState = {
     patient?: Patient,
     ramqChecked: boolean;
     familyGroup?: FamilyGroup,
-    status?: 'created' | 'error'
+    status?: PatientCreationStatus
 };
 
 type Action = {
@@ -34,7 +33,7 @@ const reducer = (
     case actions.CREATE_PATIENT_FETUS_SUCCEEDED: {
       draft.patient = action.payload.patient;
       draft.familyGroup = action.payload.familyGroup;
-      draft.status = 'created';
+      draft.status = PatientCreationStatus.CREATED;
       break;
     }
     case actions.CLOSE_CREATE_PATIENT_REQUESTED:
@@ -53,7 +52,7 @@ const reducer = (
       break;
     case actions.CREATE_PATIENT_FAILED:
     case actions.CREATE_PATIENT_FETUS_FAILED: {
-      draft.status = 'error';
+      draft.status = PatientCreationStatus.ERROR;
       break;
     }
     default:
