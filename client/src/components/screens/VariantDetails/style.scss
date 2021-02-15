@@ -107,7 +107,10 @@
   &__table{
     &__title{
       font-weight: 400 !important;
-      margin-left: 16px;
+      &:not(:first-of-type){
+        margin-left: 16px;
+      }
+      
       
       &:last-child{
         line-height: 30px;

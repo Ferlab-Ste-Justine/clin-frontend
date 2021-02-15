@@ -16,7 +16,7 @@ import {
   ic_assessment, ic_show_chart, ic_local_library, ic_people,
 } from 'react-icons-kit/md';
 import {
-  filter, isEqual,
+  filter, isEqual, find,
 } from 'lodash';
 import DataList from '../../DataList';
 import DataTable, { createCellRenderer } from '../../Table/index';
@@ -491,8 +491,8 @@ class VariantDetailsScreen extends React.Component {
       if (data) {
         let geneToShow = gene;
         if (!openGeneTable.includes(gene[0].symbol)) {
-          const canonicalLine = filter(gene, { canonical: true });
-          geneToShow = canonicalLine.length === 0 ? [gene[0]] : canonicalLine;
+          const pickLine = filter(gene, { pick: true });
+          geneToShow = pickLine.length === 0 ? [gene[0]] : pickLine;
         }
 
         return geneToShow.map((g, index) => {
@@ -594,15 +594,18 @@ class VariantDetailsScreen extends React.Component {
               });
 
               predictionType.forEach((type, i) => {
+                if (type.includes('sift') || type.includes('polyphen2')) {
+                  predictionType.splice(i, 1);
+                  predictionType.unshift(type);
+                }
+              });
+
+              predictionType.forEach((type, i) => {
                 let isOpen = i <= 1 ? 'open' : 'close';
                 if (isSameGene) {
                   isOpen = 'open';
                 }
 
-                if (type.includes('sift') || type.includes('polyphen2')) {
-                  predictionType.splice(i, 1);
-                  predictionType.unshift(type);
-                }
                 const line = getImpactLine(type, isOpen);
                 items.push(line);
               });
@@ -653,26 +656,6 @@ class VariantDetailsScreen extends React.Component {
     }
 
     return [];
-  }
-
-  getConsequencesData(gene) {
-    const {
-      consequencesColumnPreset,
-      openGeneTable,
-    } = this.state;
-
-    let consequencesData = gene.map((c) => {
-      if (c.canonical || openGeneTable.includes(c.symbol)) {
-        const data = consequencesColumnPreset.reduce((acc, cur) => {
-          acc[cur.key] = cur.renderer(c);
-          return acc;
-        }, {});
-        return data;
-      }
-      return null;
-    });
-    consequencesData = consequencesData.filter((data) => data);
-    return consequencesData;
   }
 
   getInternalCohortFrequencies() {
@@ -1056,21 +1039,27 @@ class VariantDetailsScreen extends React.Component {
       return divideGenes;
     };
 
-    const getConsequenceTitle = (gene) => (
-      <Row className="flex-row">
-        <Typography.Title level={5} className="variant-page-content__table__title">
-          Gène <span className="linkUnderline"><Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${gene.symbol}`} text={gene.symbol} /></span>
-        </Typography.Title>
-        <Typography.Title level={5} className="variant-page-content__table__title">
-          OMIM <span className="linkUnderline"><Link url="#" text="OMIM_ID" /></span>
-        </Typography.Title>
-        <Typography.Title level={5} className="variant-page-content__table__title">
-          <span className="bold value">{ gene.biotype }</span>
-        </Typography.Title>
+    const getConsequenceTitle = (gene) => {
+      const omimId = find(data.genes, { symbol: gene.symbol });
+      return (
+        <Row className="flex-row">
+          <Typography.Title level={5} className="variant-page-content__table__title">
+            Gène <span className="linkUnderline"><Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${gene.symbol}`} text={gene.symbol} /></span>
+          </Typography.Title>
+          { omimId
+            ? (
+              <Typography.Title level={5} className="variant-page-content__table__title">
+                OMIM <span className="linkUnderline"><Link url={`https://omim.org/entry/${omimId.omim_gene_id}`} text={omimId.omim_gene_id} /></span>
+              </Typography.Title>
+            ) : null }
 
-      </Row>
+          <Typography.Title level={5} className="variant-page-content__table__title">
+            <span className="bold value">{ gene.biotype }</span>
+          </Typography.Title>
 
-    );
+        </Row>
+      );
+    };
 
     const divideGenes = getDivideGenes();
     return (
