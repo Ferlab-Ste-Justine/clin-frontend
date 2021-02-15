@@ -549,8 +549,10 @@ function PatientSubmissionScreen(props) {
   };
 
   const onFormFinish = (isOnLastPage) => {
+    const { actions } = props;
     if (isOnLastPage) {
       saveSubmission(true);
+      actions.navigateToPatientSearchScreen();
     } else {
       next();
     }
