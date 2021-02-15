@@ -320,12 +320,15 @@ export const createGetPatientDataBundle = (id) => (
 );
 
 export const createGetPractitionersDataBundle = (data) => {
-  const ids = [];
+  const practitionerRoleIds = [];
+  const practitionerIds = [];
   data.entry.forEach((bundle) => {
     if (bundle.resource.entry != null) {
       bundle.resource.entry.forEach((entry) => {
-        if (get(entry, 'resource.resourceType', '') === 'PractitionerRole' && ids.find((id) => id === entry.resource.id) == null) {
-          ids.push(entry.resource.id);
+        if (get(entry, 'resource.resourceType', '') === 'PractitionerRole' && practitionerRoleIds.find((id) => id === entry.resource.id) == null) {
+          practitionerRoleIds.push(entry.resource.id);
+        } else if (get(entry, 'resource.resourceType', '') === 'Practitioner' && practitionerIds.find((id) => id === entry.resource.id) == null) {
+          practitionerIds.push(entry.resource.id);
         }
       });
     }
@@ -337,7 +340,7 @@ export const createGetPractitionersDataBundle = (data) => {
     entry: [],
   };
 
-  ids.forEach((id) => {
+  practitionerRoleIds.forEach((id) => {
     output.entry.push(
       {
         request: {
@@ -348,20 +351,16 @@ export const createGetPractitionersDataBundle = (data) => {
     );
   });
 
-  const serviceRequestEntries = get(data, 'entry[2].resource.entry', []);
-  if (serviceRequestEntries.length > 1) {
-    const id = get(serviceRequestEntries, '[1].resource.id', null);
-    if (id != null) {
-      output.entry.push(
-        {
-          request: {
-            method: 'GET',
-            url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
-          },
+  practitionerIds.forEach((id) => {
+    output.entry.push(
+      {
+        request: {
+          method: 'GET',
+          url: `/PractitionerRole?practitioner=${id}&_include=PractitionerRole:organization`,
         },
-      );
-    }
-  }
+      },
+    );
+  });
 
   return output;
 };

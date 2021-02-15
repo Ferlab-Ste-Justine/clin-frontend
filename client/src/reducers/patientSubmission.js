@@ -284,6 +284,19 @@ const patientSubmissionReducer = (
             license: requester.mrn,
           });
         }
+      } else {
+        draft.clinicalImpression = initialPatientSubmissionState.clinicalImpression;
+        draft.serviceRequest = initialPatientSubmissionState.serviceRequest;
+        draft.observations = initialPatientSubmissionState.observations;
+        draft.deleted = initialPatientSubmissionState.deleted;
+        draft.local = {
+          serviceRequest: {},
+          cgh: {},
+          summary: {},
+          indic: {},
+          consents: [],
+          practitioner: '',
+        };
       }
       break;
     }

@@ -49,7 +49,7 @@ import Layout from '../../Layout';
 import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
 import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
 import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
-import { createRequest } from '../../../actions/patientCreation';
+import { createRequest } from '../../../actions/prescriptions';
 
 const { Step } = Steps;
 
@@ -152,6 +152,7 @@ function PatientSubmissionScreen(props) {
     practitionerOptions: [],
     valid: false,
     isCancelConfirmVisible: false,
+    selectedPractitioner: null,
   });
 
   const getPatientData = () => {
@@ -323,7 +324,7 @@ function PatientSubmissionScreen(props) {
 
   const createCGHResourceList = () => {
     const values = form.getFieldsValue();
-    if (values.cghInterpretationValue === undefined) {
+    if (values.cghInterpretationValue === undefined || values.cghInterpretationValue === 'non-realized') {
       return undefined;
     }
 
@@ -402,7 +403,6 @@ function PatientSubmissionScreen(props) {
       const {
         actions, observations, userRole, currentPatient,
       } = props;
-      console.log(data);
 
       const batch = {
         serviceRequests: [],
@@ -422,10 +422,10 @@ function PatientSubmissionScreen(props) {
 
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
-          .withRequester(userRole.id)
+          .withRequester(get(state.selectedPractitioner, 'id'))
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
-          .withSubmitted(submitted)
+          .withSubmitted(submitted, userRole.id)
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
           .withSubmitted(submitted)
@@ -437,10 +437,12 @@ function PatientSubmissionScreen(props) {
 
       batch.hpos = observations.hpos;
       batch.fmhs = observations.fmh.filter((fmh) => !isEmpty(fmh));
-      batch.observations = [
-        createCGHResourceList(),
-        createIndicationResourceList(),
-      ];
+
+      const cghObservation = createCGHResourceList();
+      if (cghObservation != null) {
+        batch.observations.push(cghObservation);
+      }
+      batch.observations.push(createIndicationResourceList());
 
       if (data.summaryNote != null) {
         batch.observations.push(createSummary(data.summaryNote));
@@ -465,6 +467,11 @@ function PatientSubmissionScreen(props) {
       actions.saveLocalPractitioner(practitionerText);
       const resource = createPractitionerResource(practitioner);
       actions.assignServiceRequestPractitioner(resource);
+
+      setState((currentState) => ({
+        ...currentState,
+        selectedPractitioner: practitioner,
+      }));
     }
   };
 
@@ -564,7 +571,7 @@ function PatientSubmissionScreen(props) {
   const practitionerOptionsLabels = practitionerOptions.map((practitioner) => (
     {
       value: genPractitionerKey(practitioner),
-      text: (
+      label: (
         <>
           <div className="page3__autocomplete">
             <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given }
@@ -682,6 +689,7 @@ function PatientSubmissionScreen(props) {
                   <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
                     <Button
                       onClick={() => saveSubmission()}
+                      disabled={!state.valid}
                     >
                       <SaveOutlined />
                       { intl.get('screen.clinicalSubmission.saveButtonTitle') }

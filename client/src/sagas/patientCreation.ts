@@ -5,7 +5,6 @@ import {
 import get from 'lodash/get';
 import * as actions from '../actions/type';
 import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
-import { createRequest } from '../helpers/fhir/api/CreateRequest';
 import Api, { ApiError } from '../helpers/api';
 
 function* handleCreatePatient(action: any) {
@@ -25,16 +24,6 @@ function* handleCreatePatientFetus(action: any) {
     yield put({ type: actions.CREATE_PATIENT_FETUS_SUCCEEDED, payload: { ...response } });
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_FETUS_FAILED });
-  }
-}
-
-function* handleCreateRequest(action: any) {
-  try {
-    const response = yield createRequest(action.payload.batch);
-
-    yield put({ type: actions.CREATE_PATIENT_REQUEST_SUCCEEDED, payload: { ...response } });
-  } catch (error) {
-    yield put({ type: actions.CREATE_PATIENT_REQUEST_FAILED });
   }
 }
 
@@ -70,10 +59,6 @@ function* watchCreatePatientFetus() {
   yield takeLatest(actions.CREATE_PATIENT_FETUS_REQUESTED, handleCreatePatientFetus);
 }
 
-function* watchCreateRequest() {
-  yield takeLatest(actions.CREATE_PATIENT_REQUEST_REQUESTED, handleCreateRequest);
-}
-
 function* watchFetchInfosByRamq() {
   yield takeLatest(actions.PATIENT_FETCH_INFO_BY_RAMQ, fetchInfosByRamq);
 }
@@ -82,7 +67,6 @@ export default function* watchedPatientSubmissionSagas() {
   yield all([
     watchCreatePatient(),
     watchCreatePatientFetus(),
-    watchCreateRequest(),
     watchFetchInfosByRamq(),
   ]);
 }

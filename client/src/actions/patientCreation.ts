@@ -33,10 +33,3 @@ export const fetchPatientByRamq: Action = (ramq: string) => ({
     ramq,
   },
 });
-
-export const createRequest: Action = (batch: any) => ({
-  type: actions.CREATE_PATIENT_REQUEST_REQUESTED,
-  payload: {
-    batch,
-  },
-});

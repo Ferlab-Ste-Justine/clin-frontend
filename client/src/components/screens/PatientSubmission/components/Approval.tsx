@@ -70,7 +70,7 @@ const Approval: React.FC<Props> = ({
           className="searchInput"
           placeholder={intl.get('form.patientSubmission.form.searchNameOrLicense')}
           defaultValue={initialPractitionerValue}
-          dataSource={dataSource}
+          options={dataSource}
           onSelect={practitionerOptionSelected}
           onChange={practitionerSearchTermChanged}
         />

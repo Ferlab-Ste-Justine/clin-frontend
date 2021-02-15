@@ -191,7 +191,7 @@ export class DataExtractor {
     const suffix = get(practitioner, ['name', '0', 'suffix', '0'], '');
 
     return {
-      organization: get(practMetadata.organization, 'resource.name', 'N/A'),
+      organization: get(practMetadata, 'organization.resource.name', 'N/A'),
       mrn: get(practitioner, 'identifier[0].value', 'N/A'),
       firstName,
       lastName,
