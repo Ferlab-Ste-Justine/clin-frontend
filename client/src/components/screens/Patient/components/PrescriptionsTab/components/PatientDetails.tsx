@@ -101,7 +101,7 @@ const PatientDetails: React.FC<Props> = ({ patient }) => {
           <DetailsRow
             title={intl.get('screen.patient.details.familyType')}
             value={
-              <FamilyTag type="trio" />
+              <FamilyTag type="solo" />
             }
           />
         </DetailsCol>
