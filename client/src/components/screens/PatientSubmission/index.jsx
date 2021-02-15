@@ -449,6 +449,11 @@ function PatientSubmissionScreen(props) {
       }
 
       actions.createRequest(batch);
+      if (submitted) {
+        setTimeout(() => {
+          actions.navigateToPatientSearchScreen();
+        }, 600);
+      }
     });
   };
 
@@ -552,7 +557,6 @@ function PatientSubmissionScreen(props) {
     const { actions } = props;
     if (isOnLastPage) {
       saveSubmission(true);
-      actions.navigateToPatientSearchScreen();
     } else {
       next();
     }
