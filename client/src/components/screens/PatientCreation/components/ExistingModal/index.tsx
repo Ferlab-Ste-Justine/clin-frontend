@@ -4,19 +4,18 @@ import {
   Button,
 } from 'antd';
 import { ArrowRightOutlined, InfoCircleFilled } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { navigateToPatientScreen } from '../../../../../actions/router';
+import { useSelector } from 'react-redux';
 import ResultModal from '../ResultModal';
 
 interface Props {
   open: boolean
   onClose: () => void
+  onNavigateToPatientCard: (id: string) => void
 }
 
 const I18N_PREFIX = 'screen.patient.creation.existing.';
 
-const ExistingModal: React.FC<Props> = ({ open, onClose }) => {
-  const dispatch = useDispatch();
+const ExistingModal: React.FC<Props> = ({ open, onClose, onNavigateToPatientCard }) => {
   const patient = useSelector((state: any) => state.patientCreation.patient);
 
   if (!patient) {
@@ -28,10 +27,7 @@ const ExistingModal: React.FC<Props> = ({ open, onClose }) => {
       actions={(
         <Button
           type="primary"
-          onClick={() => {
-            dispatch(navigateToPatientScreen(patient.id));
-            onClose();
-          }}
+          onClick={() => onNavigateToPatientCard(patient.id)}
         >
           { intl.get(`${I18N_PREFIX}patientCard`) }
           <ArrowRightOutlined />
