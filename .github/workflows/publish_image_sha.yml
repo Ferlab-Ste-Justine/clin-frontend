@@ -14,9 +14,9 @@ jobs:
     - name: Push the frontend image on the docker registry
       uses: Ferlab-Ste-Justine/action-push-image@master
       with:
-        username: chusj
-        password: ${{ secrets.DOCKER_HUB_TOKEN }}
-        image: chusj/clin-frontend
+        username: ${{ secrets.FERLAB_DOCKER_HUB_USER }}
+        password: ${{ secrets.FERLAB_DOCKER_HUB_TOKEN }}
+        image: ferlabcrsj/clin-frontend
         tag_source: sha
         location: .
         dockerfile: Dockerfile
