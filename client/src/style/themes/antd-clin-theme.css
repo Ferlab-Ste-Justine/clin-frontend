@@ -24665,9 +24665,6 @@ div.ant-typography-edit-content.ant-typography-rtl {
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmEU9fBBc9.ttf) format('truetype');
 }
-.ant-btn {
-  border: none;
-}
 .ant-btn-link {
   color: #1D8BC6;
   padding: 0;

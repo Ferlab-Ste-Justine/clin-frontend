@@ -229,6 +229,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   <Row>
                     <Col>
                       <Button
+                        className="bordelessButton"
                         icon={<DeleteOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
                         disabled={prescription.status !== 'draft'}
@@ -238,6 +239,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     </Col>
                     <Col>
                       <Button
+                        className="bordelessButton"
                         icon={<PrinterOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
                       >
@@ -246,6 +248,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     </Col>
                     <Col>
                       <Button
+                        className="bordelessButton"
                         icon={<FormOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
                         disabled={!['draft', 'incomplete'].includes(prescription.status)}
@@ -268,6 +271,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
                       <StatusTag status={prescription.status} />
                       <Button
+                        className="bordelessButton"
                         icon={<EditFilled />}
                         onClick={() => setSelectedPrescriptionId(prescription.id)}
                       >
