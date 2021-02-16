@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Button, Card, Form, Steps, Typography, Col, Row, Tooltip,
+  Button, Card, Form, Steps, Typography, Col, Row, Tooltip, Divider,
 } from 'antd';
 import find from 'lodash/find';
 import has from 'lodash/has';
@@ -636,8 +636,9 @@ function PatientSubmissionScreen(props) {
               <Typography.Text
                 className="headerStaticContent__primary"
               >
-                { `${intl.get('form.patientSubmission.form.title')} |`
-              + ` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}`
+                { `${intl.get('form.patientSubmission.form.title')}` }
+                <Divider type="vertical" className="patientSubmission__header__divider" />
+                { ` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}`
               + ` ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}` }
               </Typography.Text>
             </Title>
