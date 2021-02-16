@@ -767,7 +767,7 @@ const mapStateToProps = (state) => ({
   search: state.search,
   localStore: state.patientSubmission.local,
   editMode: state.patientSubmission.editMode,
-  currentPatient: state.patient.patient.original,
+  currentPatient: state.patientSubmission.patient,
   userRole: state.user.practitionerData.practitionerRole,
 });
 
