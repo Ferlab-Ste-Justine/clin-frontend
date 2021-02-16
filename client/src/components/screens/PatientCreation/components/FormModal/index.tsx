@@ -264,7 +264,7 @@ const FormModal : React.FC<Props> = ({
                 actions.createPatient(patientBuilder.build());
               }
             } catch (e) {
-              // ignore
+              console.error(e);
             }
           }}
 
