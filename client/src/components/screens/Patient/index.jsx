@@ -319,7 +319,7 @@ class PatientScreen extends React.Component {
                     tab={(
                       <span className="tabName">
                         <IconKit size={18} icon={ic_widgets} />
-                        Variant
+                        Variants
                       </span>
                     )}
                   >
