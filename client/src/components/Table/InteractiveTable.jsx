@@ -315,6 +315,7 @@ class InteractiveTable extends React.Component {
       size,
       page,
       total,
+      totalLength,
       isLoading,
       numFrozenColumns,
       rowHeights,
@@ -428,7 +429,7 @@ class InteractiveTable extends React.Component {
         <Row>
           <DataTable
             size={size}
-            total={total}
+            total={totalLength}
             enableResizing={isResizable}
             enableReordering={(isReorderable && columnReordererIsActive)}
             reorderColumnsCallback={this.handleColumnsReordered}
@@ -463,6 +464,7 @@ InteractiveTable.propTypes = {
   size: PropTypes.number.isRequired,
   page: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
+  totalLength: PropTypes.number.isRequired,
   defaultVisibleColumns: PropTypes.array,
   numFrozenColumns: PropTypes.number,
   isLoading: PropTypes.bool,
