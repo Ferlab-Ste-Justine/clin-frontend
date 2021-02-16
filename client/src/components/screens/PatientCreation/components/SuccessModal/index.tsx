@@ -4,21 +4,22 @@ import {
   Button,
 } from 'antd';
 import { ArrowRightOutlined, CheckCircleFilled, PlusOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import ResultModal from '../ResultModal';
-import { navigatoToSubmissionFromPatientCreation } from '../../../../../actions/router';
 import { Patient } from '../../../../../helpers/fhir/types';
 
 interface Props {
   open: boolean
   onClose: () => void
   onNewPatient: () => void
+  onCompletePrescription: () => void
 }
 
 const I18N_PREFIX = 'screen.patient.creation.success.';
 
-const SuccessModal: React.FC<Props> = ({ open, onClose, onNewPatient }) => {
-  const dispatch = useDispatch();
+const SuccessModal: React.FC<Props> = ({
+  open, onClose, onNewPatient, onCompletePrescription,
+}) => {
   const patient = useSelector((state: any) => state.patientCreation.patient) as Patient;
 
   if (!patient?.id) {
@@ -34,7 +35,7 @@ const SuccessModal: React.FC<Props> = ({ open, onClose, onNewPatient }) => {
           <Button onClick={onNewPatient}>
             <PlusOutlined />{ intl.get(`${I18N_PREFIX}newPrescription`) }
           </Button>
-          <Button type="primary" onClick={() => dispatch(navigatoToSubmissionFromPatientCreation())}>
+          <Button type="primary" onClick={onCompletePrescription}>
             { intl.get(`${I18N_PREFIX}completePrescription`) }
             <ArrowRightOutlined />
           </Button>
