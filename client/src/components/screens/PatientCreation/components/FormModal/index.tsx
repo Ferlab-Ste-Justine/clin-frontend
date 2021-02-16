@@ -347,6 +347,10 @@ const FormModal : React.FC<Props> = ({
             <Form.Item label="&nbsp;" name="noRamq">
               <Checkbox.Group onChange={(values) => {
                 dispatch({ type: ActionType.NO_RAMQ_REQUIRED, payload: values.includes('noRamq') });
+                form.setFieldsValue({
+                  ramq: '',
+                  ramqConfirm: '',
+                });
               }}
               >
                 <Checkbox value="noRamq">{ intl.get(`${I18N_PREFIX}noRamq`) }</Checkbox>
