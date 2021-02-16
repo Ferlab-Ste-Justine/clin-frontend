@@ -27,13 +27,18 @@ const ResultModal: React.FC<Props> = ({
     return <span />;
   }
 
+  const isFetus = patient?.extension.find((ext) => ext.url.includes('is-fetus'))?.valueBoolean || false;
+  let displayedTitle = title || `${patient.name[0].family.toUpperCase()}, ${patient.name[0].given[0]}`;
+  if (isFetus) {
+    displayedTitle += ` (${intl.get('screen.patient.creation.fetus').toLowerCase()})`;
+  }
   return (
     <Modal visible={open} footer={null} width={815} onCancel={onClose}>
       <div className="patient-creation__modal__content">
         { icon }
 
         <Typography.Text className="patient-creation__modal__content__name">
-          { title || `${patient.name[0].family.toUpperCase()}, ${patient.name[0].given[0]}` }
+          { displayedTitle }
         </Typography.Text>
 
         <Typography.Text className="patient-creation__modal__content__description">

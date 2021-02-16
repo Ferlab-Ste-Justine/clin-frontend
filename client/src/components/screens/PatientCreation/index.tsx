@@ -27,10 +27,14 @@ const PatientCreation: React.FC = () => {
 
   const goToPatientSearch = () => dispatch(navigateToPatientSearchScreen());
 
-  const onClose = (goToScreen: () => void = goToPatientSearch) => {
+  const onClose = (goToScreen?: () => void) => {
     setOpenModal(null);
     dispatch(closeCreatePatient());
-    goToScreen();
+    if (goToScreen != null) {
+      goToScreen();
+    } else {
+      goToPatientSearch();
+    }
   };
 
   const onCreateNew = () => {

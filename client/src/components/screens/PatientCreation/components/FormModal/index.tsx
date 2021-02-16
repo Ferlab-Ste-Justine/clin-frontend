@@ -98,7 +98,11 @@ function validateForm(formValues: any) {
 
     // if ramq and ramqConfirm doesn't have a value, it's valid if noRamq is checked
     if (key === 'ramq' || key === 'ramqConfirm') {
-      return formValues.noRamq.includes('noRamq');
+      return formValues.noRamq != null && formValues.noRamq.includes('noRamq');
+    }
+
+    if (key === 'birthday') {
+      return value || formValues.patientType === PatientType.FETUS;
     }
 
     return false;
@@ -241,7 +245,7 @@ const FormModal : React.FC<Props> = ({
             try {
               const patientBuilder = new PatientBuilder()
                 .withFamily(values.lastname)
-                .withIsFetus(false)
+                .withIsFetus(isFetusType)
                 .withGiven(values.firstname)
                 .withMrnIdentifier(values.mrn.file, values.mrn.hospital)
                 .withOrganization(values.mrn.hospital)
