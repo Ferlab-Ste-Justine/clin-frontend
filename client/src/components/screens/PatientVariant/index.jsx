@@ -1211,6 +1211,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
+                  totalLength={total}
                   sizeOptions={PAGE_SIZE_OPTIONS}
                   onColumnWidthChanged={this.onVariantColumnWidthChanged}
                   defaultVisibleColumns={defaultColumns}
@@ -1239,6 +1240,7 @@ class PatientVariantScreen extends React.Component {
                   size={size}
                   page={page}
                   total={total}
+                  totalLength={total}
                   sizeOptions={PAGE_SIZE_OPTIONS}
                   schema={columnPreset[GENE_TAB]}
                   pageChangeCallback={this.handlePageChange}

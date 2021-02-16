@@ -512,6 +512,8 @@ class PatientSearchScreen extends React.Component {
       app, search, defaultColumns, defaultColumnsOrder, actions,
     } = this.props;
     const { showSubloadingAnimation } = app;
+    const { patient } = search;
+    const { total } = patient;
     const {
       size, page, isFacetOpen, facet, selectedPatients, totalLength,
     } = this.state;
@@ -651,7 +653,8 @@ class PatientSearchScreen extends React.Component {
                     key="patient-interactive-table"
                     size={size}
                     page={page}
-                    total={totalLength}
+                    total={total}
+                    totalLength={totalLength}
                     defaultVisibleColumns={defaultColumns}
                     defaultColumnsOrder={defaultColumnsOrder}
                     schema={this.columnPreset}
