@@ -9,7 +9,10 @@ import { useDispatch } from 'react-redux';
 import FormModal from './components/FormModal';
 import SuccessModal from './components/SuccessModal';
 import ExistingModal from './components/ExistingModal';
-import { navigateToPatientSearchScreen } from '../../../actions/router';
+import {
+  navigateToPatientScreen,
+  navigateToPatientSearchScreen, navigatoToSubmissionFromPatientCreation,
+} from '../../../actions/router';
 import { closeCreatePatient } from '../../../actions/patientCreation';
 import ErrorModal from './components/ErrorModal';
 
@@ -22,10 +25,12 @@ const PatientCreation: React.FC = () => {
   const [openModal, setOpenModal] = useState<SCREENS | null>(null);
   const dispatch = useDispatch();
 
-  const onClose = () => {
+  const goToPatientSearch = () => dispatch(navigateToPatientSearchScreen());
+
+  const onClose = (goToScreen: () => void = goToPatientSearch) => {
     setOpenModal(null);
     dispatch(closeCreatePatient());
-    dispatch(navigateToPatientSearchScreen());
+    goToScreen();
   };
 
   const onCreateNew = () => {
@@ -55,11 +60,19 @@ const PatientCreation: React.FC = () => {
         open={openModal === SCREENS.SUCCESS}
         onClose={onClose}
         onNewPatient={onCreateNew}
+        onCompletePrescription={() => {
+          setOpenModal(null);
+          dispatch(navigatoToSubmissionFromPatientCreation());
+          dispatch(closeCreatePatient());
+        }}
       />
 
       <ExistingModal
         open={openModal === SCREENS.EXISTING}
         onClose={onClose}
+        onNavigateToPatientCard={(patientId) => {
+          onClose(() => dispatch(navigateToPatientScreen(patientId)));
+        }}
       />
 
       <ErrorModal
