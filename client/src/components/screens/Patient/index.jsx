@@ -279,7 +279,7 @@ class PatientScreen extends React.Component {
             && (
               <div className="patientPage">
                 <div className="page_headerStaticNoMargin">
-                  <div className="headerStaticContent">
+                  <div className="header__content--static">
                     <Row align="middle" className="flex-row patientHeader">
                       <Col>
                         <Typography.Title level={3} className="patientName">

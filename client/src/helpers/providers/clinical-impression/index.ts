@@ -34,7 +34,8 @@ export class ClinicalImpressionProvider extends Provider<ClinicalImpression, Con
           clinicalImpressionBundle,
         );
         return {
-          cgh: get(cgh, 'interpretation[0].coding[0].code', 'IND'),
+          cgh: get(cgh, 'interpretation[0].coding[0].code', undefined),
+          precision: get(cgh, 'interpretation[0].coding[0].note[0].text', undefined),
           hypothesis: get(indic, 'note[0].text', 'N/A'),
           practitioner: assessor!,
           summary: get(inves, 'note[0].text', 'N/A'),

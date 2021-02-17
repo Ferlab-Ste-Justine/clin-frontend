@@ -8,12 +8,6 @@ import {
 
 const CLINICAL_IMPRESSION_REF = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression';
 
-// type Response = {
-//   clinicalImpression: ClinicalImpression;
-//   serviceRequest: ServiceRequest;
-//   observations: Observation[];
-// }
-// .clinicalImpression, action.payload.serviceRequest, action.payload.observations
 export type CreateRequestBatch = {
   length: number;
   serviceRequests: ServiceRequest[];
@@ -29,11 +23,6 @@ export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateR
     throw new ApiError('Cannot create a ClinicalImpression without observations');
   }
 
-  // if (serviceRequest.extension.find((ext) => ext.url === CLINICAL_IMPRESSION_REF) == null) {
-  //   throw new ApiError('Cannot create Patient Request: ServiceRequest not referencing ClinicalImpression');
-  // }
-
-  // const bundleId = window.CLIN.fhirEsRequestBundleId;
   const builder = new BundleBuilder()
     .withType('Transaction');
 
@@ -75,8 +64,6 @@ export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateR
       clinicalImpression.investigation[0].item.push({ reference: bundle.entry[j].fullUrl! });
     }
   }
-
-  // observations.forEach((observation) => builder.withResource(observation));
 
   const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/`, bundle);
   const data = BundleIdExtractor.extractIds(
@@ -127,12 +114,6 @@ export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateR
   for (let i = fmhStartIndex; i < fmhStartIndex + batch.fmhs.length; i++) {
     output.fmhs.push(data[i] as FamilyMemberHistory);
   }
-
-  // sr.extension.find((ext) => ext.url === CLINICAL_IMPRESSION_REF)!.valueReference = {
-  //   reference: `${ci.resourceType}/${ci.id}`,
-  // };
-
-  // ci.investigation[0].item = obs.map((observation) => ({ reference: `${observation.resourceType}/${observation.id}` }));
 
   return output;
 };
