@@ -632,9 +632,9 @@ function PatientSubmissionScreen(props) {
       <>
         <Row className="page_headerStaticMargin">
           <Col>
-            <Title className="headerStaticContent" level={3}>
+            <Title className="header__content--static" level={3}>
               <Typography.Text
-                className="headerStaticContent__primary"
+                className="header__content--static__primary"
               >
                 { `${intl.get('form.patientSubmission.form.title')}` }
                 <Divider type="vertical" className="patientSubmission__header__divider" />
