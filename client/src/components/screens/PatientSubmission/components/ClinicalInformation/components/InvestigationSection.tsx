@@ -6,25 +6,37 @@ import intl from 'react-intl-universal';
 
 const { TextArea } = Input;
 
-const InvestigationSection: React.FC = () => {
-  const [isRealizedSelected, setIsRealizedSelected] = useState(false);
-  const [isAbnormalResult, setIsAbnormalResult] = useState(false);
+enum InterpretationValue {
+  REALIZED = 'realized',
+  NON_REALIZED = 'non-realized',
+}
+
+type Props = {
+  interpretation?: string;
+  precision?: string;
+}
+
+const InvestigationSection: React.FC<Props> = ({ interpretation, precision }) => {
+  const [isRealizedSelected, setIsRealizedSelected] = useState(interpretation != null);
+  const [isAbnormalResult, setIsAbnormalResult] = useState(interpretation === 'A');
+
   return (
     <>
       <Form.Item
         label={intl.get('form.patientSubmission.clinicalInformation.cgh')}
         name="cghInterpretationValue"
+        initialValue={interpretation == null ? InterpretationValue.NON_REALIZED : InterpretationValue.REALIZED}
       >
         <Radio.Group
           buttonStyle="solid"
           onChange={(event) => {
-            setIsRealizedSelected(event.target.value === 'realized');
+            setIsRealizedSelected(event.target.value === InterpretationValue.REALIZED);
           }}
         >
-          <Radio.Button value="realized">
+          <Radio.Button value={InterpretationValue.REALIZED}>
             { intl.get('form.patientSubmission.clinicalInformation.cgh.realized') }
           </Radio.Button>
-          <Radio.Button value="non-realized">
+          <Radio.Button value={InterpretationValue.NON_REALIZED}>
             { intl.get('form.patientSubmission.clinicalInformation.cgh.nonRealized') }
           </Radio.Button>
         </Radio.Group>
@@ -35,6 +47,7 @@ const InvestigationSection: React.FC = () => {
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.investigationResult')}
             name="cgh.result"
+            initialValue={interpretation}
           >
             <Radio.Group
               buttonStyle="solid"
@@ -57,6 +70,7 @@ const InvestigationSection: React.FC = () => {
             <Form.Item
               label={intl.get('form.patientSubmission.clinicalInformation.precision')}
               name="cgh.precision"
+              initialValue={precision}
             >
               <Col span={17}>
                 <Input />

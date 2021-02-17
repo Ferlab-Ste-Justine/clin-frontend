@@ -1,5 +1,5 @@
 import {
-  all, put, takeLatest,
+  all, put, select, takeLatest,
 } from 'redux-saga/effects';
 import isEmpty from 'lodash/isEmpty';
 
@@ -106,12 +106,28 @@ function* savePatientSubmission(action) {
   }
 }
 
+function* editPrescription(action) {
+  try {
+    const patient = yield select((state) => state.patient);
+    yield put({ type: actionTypes.PATIENT_SUBMISSION_UPDATE_DATA, payload: { patient, index: action.payload.index } });
+    yield put({ type: actionTypes.NAVIGATION_EDIT_SUBMISSION_REQUESTED });
+    yield put({ type: actionTypes.EDIT_PRESCRIPTION_SUCCEEDED });
+  } catch (error) {
+    yield put({ type: actionTypes.EDIT_PRESCRIPTION_FAILED, payload: error });
+  }
+}
+
 function* watchSavePatientSubmission() {
   yield takeLatest(actionTypes.PATIENT_SUBMISSION_SAVE_REQUESTED, savePatientSubmission);
+}
+
+function* watchEditPrescription() {
+  yield takeLatest(actionTypes.EDIT_PRESCRIPTION_REQUESTED, editPrescription);
 }
 
 export default function* watchedPatientSubmissionSagas() {
   yield all([
     watchSavePatientSubmission(),
+    watchEditPrescription(),
   ]);
 }

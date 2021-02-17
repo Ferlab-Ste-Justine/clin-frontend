@@ -15,6 +15,119 @@ const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
 
 const HL7_CODE_SYSTEM_URL = '';
 
+const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
+export const getTestCoding = (name) => {
+  switch (name) {
+    case 'adultCancerPredisposition':
+    case 'PCA':
+      return {
+        code: 'PCA',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.adultCancerPredisposition'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'kidTumorPredisposition':
+    case 'PTSE':
+      return {
+        code: 'PTSE',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidTumorPredisposition'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'kidHematopathiesPredisposition':
+    case 'PHME':
+      return {
+        code: 'PHME',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidHematopathiesPredisposition'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'ehlersDanlos':
+    case 'SED':
+      return {
+        code: 'SED',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.ehlersDanlos'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'polymalformatifs':
+    case 'SP':
+      return {
+        code: 'SP',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.polymalformatifs'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'muscle':
+    case 'MM':
+      return {
+        code: 'MM',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.muscle'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'amyotrophicLateralSclerosis':
+    case 'SLA':
+      return {
+        code: 'SLA',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.amyotrophicLateralSclerosis'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'retinopathies':
+    case 'RET':
+      return {
+        code: 'RET',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.retinopathies'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'deafness':
+    case 'SUR':
+      return {
+        code: 'SUR',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.deafness'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'intellecualDisability':
+    case 'DI':
+      return {
+        code: 'DI',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.intellecualDisability'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'nuclearMitochondrialGenes':
+    case 'GMN':
+      return {
+        code: 'GMN',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.nuclearMitochondrialGenes'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'rasopathies':
+    case 'RAS':
+      return {
+        code: 'RAS',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.rasopathies'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'cardiomyopathies':
+    case 'CAR':
+      return {
+        code: 'CAR',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.cardiomyopathies'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'hereditaryArrhythmias':
+    case 'AH':
+      return {
+        code: 'AH',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.hereditaryArrhythmias'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    case 'aortopathies':
+    case 'AOR':
+      return {
+        code: 'AOR',
+        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.aortopathies'),
+        system: SERVICE_REQUEST_CODE_SYSTEM,
+      };
+    default:
+      throw new Error(`Invalid test name [${name}]`);
+  }
+};
+
 export const genPractitionerKey = (practitioner) => `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`;
 
 export const getResourceCode = (r) => {
