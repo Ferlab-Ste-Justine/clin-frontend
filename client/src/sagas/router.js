@@ -87,7 +87,6 @@ function* navigateToSubmissionScreen() {
   try {
     yield put(push(yield put(push('/submission'))));
     window.scrollTo(0, 0);
-    yield put({ type: actions.PATIENT_SUBMISSION_SET_EDIT_MODE, payload: { editMode: false } });
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
@@ -96,13 +95,22 @@ function* navigateToSubmissionScreen() {
 
 function* navigateToSubmissionScreenWithPatientProcess(patient) {
   try {
-    yield put({ type: actions.PATIENT_SUBMISSION_SET_EDIT_MODE, payload: { editMode: true } });
     yield put({ type: actions.PATIENT_SUBMISSION_FROM_PATIENT, payload: { patient } });
     yield put(push(yield put(push('/submission'))));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
+  }
+}
+
+function* navigateToEditSubmission() {
+  try {
+    yield put(push(yield put(push('/submission'))));
+    window.scrollTo(0, 0);
+    yield put({ type: actions.NAVIGATION_EDIT_SUBMISSION_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.NAVIGATION_EDIT_SUBMISSION_FAILED, message: e.message });
   }
 }
 
@@ -218,6 +226,10 @@ function* watchNavigationToAccessDeniedScreen() {
   yield takeLatest(actions.NAVIGATION_ACCESS_DENIED_SCREEN_REQUESTED, navigateToAccessDeniedScreen);
 }
 
+function* watchNavigationToEditSubmission() {
+  yield takeLatest(actions.NAVIGATION_EDIT_SUBMISSION_REQUESTED, navigateToEditSubmission);
+}
+
 export default function* watchedRouterSagas() {
   yield all([
     watchNavigateToPatientScreen(),
@@ -229,5 +241,6 @@ export default function* watchedRouterSagas() {
     watchNavigateToSubmissionScreen(),
     watchNavigateToPatientScreenWithPatient(),
     watchNavigateToPatientScreenFromPatientCreationt(),
+    watchNavigationToEditSubmission(),
   ]);
 }

@@ -43,6 +43,13 @@ export class ServiceRequestBuilder {
       }
     }
 
+    public withId(id: string) {
+      if (id != null) {
+        this.serviceRequest.id = id;
+      }
+      return this;
+    }
+
     public withSubmitted(value: boolean | undefined, roleId: string) {
       const isSubmitted = value != null && value;
 
@@ -84,49 +91,6 @@ export class ServiceRequestBuilder {
       }
       return this;
     }
-
-    // public withCoding(coding: ServiceRequestCoding) {
-    //   if (coding !== undefined) {
-    //     switch (coding) {
-    //       case 'WXS':
-    //         this.serviceRequest.code = {
-    //           coding: [
-    //             {
-    //               system: SERVICE_REQUEST_CODE_SYSTEM,
-    //               code: 'WXS',
-    //               display: 'Whole Exome Sequencing',
-    //             },
-    //           ],
-    //         };
-    //         break;
-    //       case 'WGS':
-    //         this.serviceRequest.code = {
-    //           coding: [
-    //             {
-    //               system: SERVICE_REQUEST_CODE_SYSTEM,
-    //               code: 'WGS',
-    //               display: 'Whole Genome Sequencing',
-    //             },
-    //           ],
-    //         };
-    //         break;
-    //       case 'GP':
-    //         this.serviceRequest.code = {
-    //           coding: [
-    //             {
-    //               system: SERVICE_REQUEST_CODE_SYSTEM,
-    //               code: 'GP',
-    //               display: 'Gene Panel',
-    //             },
-    //           ],
-    //         };
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   }
-    //   return this;
-    // }
 
     public withRequester(id: string | null) {
       if (id != null) {

@@ -43,6 +43,7 @@ import {
   cghDisplay,
   createPractitionerResource,
   genPractitionerKey,
+  getTestCoding,
 } from '../../../helpers/fhir/fhir';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
@@ -60,99 +61,16 @@ const practitionerOptionFromResource = (resource) => ({
   license: resource.identifier[0].value,
 });
 
-const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
-
-const getTestCoding = (name) => {
-  switch (name) {
-    case 'adultCancerPredisposition': return {
-      code: 'PCA',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.adultCancerPredisposition'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'kidTumorPredisposition': return {
-      code: 'PTSE',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidTumorPredisposition'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'kidHematopathiesPredisposition': return {
-      code: 'PHME',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidHematopathiesPredisposition'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'ehlersDanlos': return {
-      code: 'SED',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.ehlersDanlos'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'polymalformatifs': return {
-      code: 'SP',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.polymalformatifs'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'muscle': return {
-      code: 'MM',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.muscle'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'amyotrophicLateralSclerosis': return {
-      code: 'SLA',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.amyotrophicLateralSclerosis'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'retinopathies': return {
-      code: 'RET',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.retinopathies'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'deafness': return {
-      code: 'SUR',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.deafness'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'intellecualDisability': return {
-      code: 'DI',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.intellecualDisability'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'nuclearMitochondrialGenes': return {
-      code: 'GMN',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.nuclearMitochondrialGenes'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'rasopathies': return {
-      code: 'RAS',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.rasopathies'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'cardiomyopathies': return {
-      code: 'CAR',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.cardiomyopathies'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'hereditaryArrhythmias': return {
-      code: 'AH',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.hereditaryArrhythmias'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    case 'aortopathies': return {
-      code: 'AOR',
-      display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.aortopathies'),
-      system: SERVICE_REQUEST_CODE_SYSTEM,
-    };
-    default:
-      throw new Error(`Invalid test name [${name}]`);
-  }
-};
-
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
+  const isEditPrescription = get(props, 'localStore.serviceRequest.id', '').length > 0;
 
   const [state, setState] = React.useState({
     currentPageIndex: 0,
     practitionerOptions: [],
     valid: false,
     isCancelConfirmVisible: false,
-    selectedPractitioner: null,
+    selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     firstPageFields: {},
   });
 
@@ -428,12 +346,14 @@ function PatientSubmissionScreen(props) {
 
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
-          .withRequester(get(state.selectedPractitioner, 'id'))
+          .withId(get(localStore, 'serviceRequest.id'))
+          .withRequester(state.selectedPractitioner)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
           .withSubmitted(submitted, userRole.id)
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
+          .withId(get(localStore, 'clinicalImpression.id'))
           .withSubmitted(submitted)
           .withSubject(currentPatient.id)
           .withAge(1)
@@ -476,7 +396,7 @@ function PatientSubmissionScreen(props) {
 
       setState((currentState) => ({
         ...currentState,
-        selectedPractitioner: practitioner,
+        selectedPractitioner: practitioner.id,
       }));
     }
   };
@@ -545,13 +465,8 @@ function PatientSubmissionScreen(props) {
   };
 
   const handleCancel = () => {
-    const { editMode, actions, patient } = props;
-
-    if (editMode) {
-      actions.navigateToPatientScreen(patient.id, 'clinical', true);
-    } else {
-      actions.navigateToPatientSearchScreen();
-    }
+    const { actions, patient } = props;
+    actions.navigateToPatientScreen(patient.id, 'clinical', true);
   };
 
   const onFormFinish = (isOnLastPage) => {
@@ -697,7 +612,7 @@ function PatientSubmissionScreen(props) {
                   <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
                     <Button
                       onClick={() => saveSubmission()}
-                      disabled={!state.valid}
+                      disabled={!state.valid || isEditPrescription}
                     >
                       <SaveOutlined />
                       { intl.get('screen.clinicalSubmission.saveButtonTitle') }
@@ -767,7 +682,6 @@ const mapStateToProps = (state) => ({
   practitionerId: state.patientSubmission.practitionerId,
   search: state.search,
   localStore: state.patientSubmission.local,
-  editMode: state.patientSubmission.editMode,
   currentPatient: state.patientSubmission.patient,
   userRole: state.user.practitionerData.practitionerRole,
 });

@@ -13,8 +13,8 @@ import {
 
 import intl from 'react-intl-universal';
 
-import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
+import get from 'lodash/get';
 import map from 'lodash/map';
 import toArray from 'lodash/values';
 
@@ -27,6 +27,7 @@ import {
   getHPOInterpretationCode,
   hpoInterpretationValues,
   getFamilyRelationshipDisplayForCode,
+  getTestCoding,
 } from '../../../../../helpers/fhir/fhir';
 
 import {
@@ -479,7 +480,6 @@ class ClinicalInformation extends React.Component {
     if (observations.cgh != null) {
       cghId = observations.cgh.id;
     }
-    const indicationNoteValue = has(localStore, 'indic.note') ? localStore.indic.note : null;
 
     const hpoResources = observations.hpos;
     const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);
@@ -505,10 +505,12 @@ class ClinicalInformation extends React.Component {
       'intellecualDisability',
       'aortopathies',
     ];
-    const analysisTestOptions = analysisTestNames.map((testName) => ({
-      value: testName,
-      label: intl.get(`form.patientSubmission.clinicalInformation.analysis.options.${testName}`),
-    }));
+    const analysisTestOptions = analysisTestNames.map((testName) => getTestCoding(testName));
+
+    const initialAnalysisValue = get(localStore, 'serviceRequest.code', undefined);
+    const initialInterpretation = get(localStore, 'cgh.interpretation', undefined);
+    const initialPrecision = get(localStore, 'cgh.precision', undefined);
+    const initialIndicNote = get(localStore, 'indic.note', undefined);
 
     return (
       <div className="clinical-information">
@@ -534,10 +536,17 @@ class ClinicalInformation extends React.Component {
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
             name="analysis.tests"
+            initialValue={[initialAnalysisValue]}
           >
-            <Checkbox.Group className="clinical-information__analysis__checkbox-group">
+            <Checkbox.Group
+              disabled={initialAnalysisValue != null}
+              className="clinical-information__analysis__checkbox-group"
+            >
               { analysisTestOptions.map((option) => (
-                <Checkbox value={option.value}>{ option.label }</Checkbox>
+                <Checkbox
+                  value={option.code}
+                >{ option.display }
+                </Checkbox>
               )) }
             </Checkbox.Group>
           </Form.Item>
@@ -567,7 +576,7 @@ class ClinicalInformation extends React.Component {
           bordered={false}
           className="staticCard patientContent clinical-information__investigation"
         >
-          <InvestigationSection />
+          <InvestigationSection interpretation={initialInterpretation} precision={initialPrecision} />
         </Card>
         <Card
           title={intl.get('screen.patient.header.familyHistory')}
@@ -617,7 +626,7 @@ class ClinicalInformation extends React.Component {
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.diagnosticHypothesis')}
             name="indication"
-            initialValue={indicationNoteValue}
+            initialValue={initialIndicNote}
             rules={[
               {
                 required: true,
