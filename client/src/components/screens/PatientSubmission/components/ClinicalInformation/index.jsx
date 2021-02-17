@@ -536,7 +536,7 @@ class ClinicalInformation extends React.Component {
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
             name="analysis.tests"
-            initialValue={initialAnalysisValue}
+            initialValue={[initialAnalysisValue]}
           >
             <Checkbox.Group
               disabled={initialAnalysisValue != null}

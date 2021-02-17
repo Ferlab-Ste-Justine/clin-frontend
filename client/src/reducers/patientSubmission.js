@@ -38,6 +38,7 @@ export const initialPatientSubmissionState = {
   },
   local: {
     serviceRequest: {},
+    clinicalImpression: {},
     cgh: {},
     summary: {},
     indic: {},
@@ -276,6 +277,10 @@ const patientSubmissionReducer = (
         draft.local = {
           serviceRequest: {
             code: get(serviceRequest, 'code.coding[0].code', null),
+            id: serviceRequest.id,
+          },
+          clinicalImpression: {
+            id: clinicalImpression.id,
           },
           cgh: {
             interpretation: cgh,

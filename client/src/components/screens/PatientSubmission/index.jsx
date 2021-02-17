@@ -63,6 +63,7 @@ const practitionerOptionFromResource = (resource) => ({
 
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
+  const isEditPrescription = get(props, 'localStore.serviceRequest.id', '').length > 0;
 
   const [state, setState] = React.useState({
     currentPageIndex: 0,
@@ -345,12 +346,14 @@ function PatientSubmissionScreen(props) {
 
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
-          .withRequester(get(state.selectedPractitioner, 'id'))
+          .withId(get(localStore, 'serviceRequest.id'))
+          .withRequester(state.selectedPractitioner)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
           .withSubmitted(submitted, userRole.id)
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
+          .withId(get(localStore, 'clinicalImpression.id'))
           .withSubmitted(submitted)
           .withSubject(currentPatient.id)
           .withAge(1)
@@ -393,7 +396,7 @@ function PatientSubmissionScreen(props) {
 
       setState((currentState) => ({
         ...currentState,
-        selectedPractitioner: practitioner,
+        selectedPractitioner: practitioner.id,
       }));
     }
   };
@@ -609,7 +612,7 @@ function PatientSubmissionScreen(props) {
                   <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
                     <Button
                       onClick={() => saveSubmission()}
-                      disabled={!state.valid}
+                      disabled={!state.valid || isEditPrescription}
                     >
                       <SaveOutlined />
                       { intl.get('screen.clinicalSubmission.saveButtonTitle') }
