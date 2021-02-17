@@ -20,7 +20,7 @@ import {
   navigateToPatientScreen,
   navigateToPatientVariantScreen,
   navigateToPatientSearchScreen,
-  navigatoToSubmissionWithPatient,
+  navigateToSubmissionWithPatient,
 } from '../../../actions/router';
 
 import { updateServiceRequestStatus } from '../../../actions/patient';
@@ -44,7 +44,7 @@ class PatientScreen extends React.Component {
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
     this.showModal = this.showModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
-    this.navigatoToSubmissionWithPatient = this.navigatoToSubmissionWithPatient.bind(this);
+    this.navigateToSubmissionWithPatient = this.navigateToSubmissionWithPatient.bind(this);
     this.handleOk = this.handleOk.bind(this);
 
     this.state.requestColumnPreset = [
@@ -209,9 +209,9 @@ class PatientScreen extends React.Component {
     return [];
   }
 
-  navigatoToSubmissionWithPatient() {
+  navigateToSubmissionWithPatient() {
     const { actions } = this.props;
-    actions.navigatoToSubmissionWithPatient();
+    actions.navigateToSubmissionWithPatient();
   }
 
   handleNavigationToPatientScreen(e) {
@@ -347,7 +347,7 @@ const mapDispatchToProps = (dispatch) => ({
     navigateToPatientScreen,
     navigateToPatientVariantScreen,
     navigateToPatientSearchScreen,
-    navigatoToSubmissionWithPatient,
+    navigateToSubmissionWithPatient,
     updateServiceRequestStatus,
   }, dispatch),
 });

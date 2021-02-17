@@ -11,7 +11,7 @@ import SuccessModal from './components/SuccessModal';
 import ExistingModal from './components/ExistingModal';
 import {
   navigateToPatientScreen,
-  navigateToPatientSearchScreen, navigatoToSubmissionFromPatientCreation,
+  navigateToPatientSearchScreen, navigateToSubmissionFromPatientCreation,
 } from '../../../actions/router';
 import { closeCreatePatient } from '../../../actions/patientCreation';
 import ErrorModal from './components/ErrorModal';
@@ -66,7 +66,7 @@ const PatientCreation: React.FC = () => {
         onNewPatient={onCreateNew}
         onCompletePrescription={() => {
           setOpenModal(null);
-          dispatch(navigatoToSubmissionFromPatientCreation());
+          dispatch(navigateToSubmissionFromPatientCreation());
           dispatch(closeCreatePatient());
         }}
       />

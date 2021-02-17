@@ -5,7 +5,7 @@ import PatientDetails from './components/PatientDetails';
 import './styles.scss';
 import Prescriptions from './components/Prescriptions';
 import { State } from '../../../../../reducers';
-import { navigatoToSubmissionWithPatient } from '../../../../../actions/router';
+import { navigateToSubmissionWithPatient } from '../../../../../actions/router';
 import NoPrescription from './components/NoPrescription';
 import { ClinicalImpression, ServiceRequest } from '../../../../../helpers/fhir/types';
 
@@ -26,7 +26,7 @@ const PrescriptionsTab : React.FC = () => {
       <PatientDetails patient={patient} />
       {
         prescriptions.length <= 0 ? (
-          <NoPrescription onCreatePrescription={() => dispatch(navigatoToSubmissionWithPatient())} />
+          <NoPrescription onCreatePrescription={() => dispatch(navigateToSubmissionWithPatient())} />
         ) : (
           <Prescriptions prescriptions={prescriptions} clinicalImpressions={clinicalImpressions} />
         )
