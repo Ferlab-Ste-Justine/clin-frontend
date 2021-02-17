@@ -33,7 +33,7 @@ const ResultModal: React.FC<Props> = ({
     displayedTitle += ` (${intl.get('screen.patient.creation.fetus').toLowerCase()})`;
   }
   return (
-    <Modal visible={open} footer={null} width={815} onCancel={onClose}>
+    <Modal visible={open} footer={null} width={815} onCancel={() => onClose()}>
       <div className="patient-creation__modal__content">
         { icon }
 
@@ -49,7 +49,7 @@ const ResultModal: React.FC<Props> = ({
           { actions }
         </div>
         <span>
-          <Button type="link" onClick={onClose} className="patient-creation__modal__content__close-button">
+          <Button type="link" onClick={() => onClose()} className="patient-creation__modal__content__close-button">
             { intl.get(`${I18N_PREFIX}close`) }
           </Button>
         </span>
