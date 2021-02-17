@@ -194,6 +194,8 @@ const fr = {
   'screen.patient.details.consultationSummary': 'Résumé de la consultation',
   'screen.patient.details.diagnosticHypothesis': 'Hypothèse de diagnostique',
   'screen.patient.details.cgh': 'CGH',
+  'screen.patient.details.prescription.alert.message': 'Cette prescription est incomplète. Afin de la soumettre, veuillez ',
+  'screen.patient.details.prescription.alert.action': 'compléter les informations manquantes.',
   'screen.patient.details.prescription.title': 'Prescription',
   'screen.patient.details.prescription.delete': 'Supprimer',
   'screen.patient.details.prescription.print': 'Imprimer',

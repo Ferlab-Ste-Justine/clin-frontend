@@ -33,6 +33,7 @@ export type Prescription = {
   performer?: PractitionerData;
   test: string;
   status: PrescriptionStatus;
+  note?: string;
 };
 
 export type ClinicalObservation = {
