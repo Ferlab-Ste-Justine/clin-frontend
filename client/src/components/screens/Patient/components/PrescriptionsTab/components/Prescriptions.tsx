@@ -73,6 +73,8 @@ const clinicalColumnPreset = [
   },
 ];
 
+const canEdit = (prescription: Prescription) => prescription.status === 'draft' || prescription.status === 'incomplete';
+
 const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
   <span
     className="prescriptions-tab__prescriptions-section__details__status-tag"
@@ -232,6 +234,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                       <Button
                         icon={<FormOutlined />}
                         onClick={() => openEditPrescription(index)}
+                        disabled={!canEdit(prescription)}
                       >
                         { intl.get('screen.patient.details.prescription.edit') }
                       </Button>
