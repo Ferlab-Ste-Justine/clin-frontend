@@ -25,9 +25,9 @@ const SuccessModal: React.FC<Props> = ({
   if (!patient?.id) {
     return <span />;
   }
+  const isFetus = patient?.extension.find((ext) => ext.url.includes('is-fetus'))?.valueBoolean || false;
 
   return (
-
     <ResultModal
       icon={<CheckCircleFilled style={{ color: '#52C41A', fontSize: 63 }} />}
       actions={(
@@ -43,7 +43,7 @@ const SuccessModal: React.FC<Props> = ({
       )}
       description={(
         <>
-          { intl.get(`${I18N_PREFIX}description`) }
+          { intl.get(`${I18N_PREFIX}description.${isFetus ? 'fetus' : 'patient'}`) }
           <Button type="link">{ intl.get(`${I18N_PREFIX}patientCard`) }</Button>
         </>
       )}

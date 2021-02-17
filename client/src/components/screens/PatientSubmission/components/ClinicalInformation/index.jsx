@@ -180,7 +180,7 @@ class ClinicalInformation extends React.Component {
               okText={intl.get('form.patientSubmission.form.hpo.confirm.yes')}
               cancelText={intl.get('form.patientSubmission.form.hpo.confirm.no')}
             >
-              <Button type="link" className="bordelessButton deleteButton">{ intl.get('form.patientSubmission.clinicalInformation.delete') }</Button>
+              <Button type="link" className="button--borderless deleteButton">{ intl.get('form.patientSubmission.clinicalInformation.delete') }</Button>
             </Popconfirm>
           </div>
           <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} />
