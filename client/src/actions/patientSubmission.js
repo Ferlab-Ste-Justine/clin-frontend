@@ -126,3 +126,10 @@ export const assignServiceRequestPractitioner = (resource) => (
     payload: resource,
   }
 );
+
+export const editPrescription = (index) => ({
+  type: actions.EDIT_PRESCRIPTION_REQUESTED,
+  payload: {
+    index,
+  },
+});
