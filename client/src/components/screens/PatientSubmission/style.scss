@@ -563,6 +563,13 @@
 }
 
 .patientSubmission {
+  &__header {
+    &__divider {
+      height: 1.4em;
+      border-left-width: 2px;
+    }
+  }
+  
   &__form {
     &__footer {
       margin-bottom: 24px;
