@@ -49,7 +49,6 @@ export const initialPatientSubmissionState = {
     fmh: [],
     hpos: [],
   },
-  editMode: false,
 };
 
 export const patientSubmissionShape = {
@@ -217,9 +216,6 @@ const patientSubmissionReducer = (
         practitioner: '',
       };
       break;
-    case actions.PATIENT_SUBMISSION_SET_EDIT_MODE:
-      draft.editMode = action.payload.editMode;
-      break;
     case actions.PATIENT_SUBMISSION_FROM_PATIENT:
       draft.patient = action.payload.patient.patient.original;
       draft.clinicalImpression = initialPatientSubmissionState.clinicalImpression;
@@ -236,19 +232,20 @@ const patientSubmissionReducer = (
       };
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
+      const { index } = action.payload;
       const patientState = action.payload.patient;
       const patient = patientState.patient.original;
-      draft.patient = patientState.patient.original;
+      draft.patient = patient;
 
       if (patientState.prescriptions != null && patientState.prescriptions.length > 0) {
-        const serviceRequest = patientState.prescriptions[0].original;
-        const clinicalImpression = patientState.consultation[0].original;
+        const serviceRequest = patientState.prescriptions[index].original;
+        const clinicalImpression = patientState.consultation[index].original;
 
         const {
-          cgh, summary, hypothesis,
-        } = patientState.consultation[0].parsed;
+          cgh, precision, summary, hypothesis,
+        } = patientState.consultation[index].parsed;
 
-        const { requester } = patientState.prescriptions[0].parsed;
+        const { requester } = patientState.prescriptions[index].parsed;
 
         const hpos = patientState.hpos.map((hpo) => hpo.original);
         const fmhs = patientState.fmhs.map((fmh) => fmh.original);
@@ -282,6 +279,7 @@ const patientSubmissionReducer = (
           },
           cgh: {
             interpretation: cgh,
+            precision,
           },
           summary: {
             note: summary !== NOT_AVAILABLE ? summary : '',
@@ -294,7 +292,8 @@ const patientSubmissionReducer = (
         };
 
         if (requester != null) {
-          draft.local.requesterId = patientState.prescriptions[0].id;
+          const [, requesterId] = patientState.prescriptions[index].original.requester.reference.split('/');
+          draft.local.requesterId = requesterId;
           draft.local.practitioner = genPractitionerKey({
             family: requester.lastName,
             given: requester.firstName,
