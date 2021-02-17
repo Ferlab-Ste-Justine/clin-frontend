@@ -27,6 +27,7 @@ import { State } from '../../../../../../reducers';
 import { ClinicalImpression } from '../../../../../../helpers/fhir/types';
 import { updateServiceRequestStatus } from '../../../../../../actions/patient';
 import StatusChangeModal, { StatusType } from '../../StatusChangeModal';
+import { editPrescription } from '../../../../../../actions/patientSubmission';
 
 const DEFAULT_VALUE = '--';
 
@@ -73,6 +74,8 @@ const clinicalColumnPreset = [
   },
 ];
 
+const canEdit = (prescription: Prescription) => prescription.status === 'draft' || prescription.status === 'incomplete';
+
 const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
   <span
     className="prescriptions-tab__prescriptions-section__details__status-tag"
@@ -99,7 +102,6 @@ interface Props {
 const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
   const consultation = useSelector((state: State) => state.patient.consultation!.map((cons) => cons.parsed));
-  // const patient = useSelector((state: State) => state.patient.patient.parsed);
   const fmhs = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
   const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
   const patient = useSelector((state: State) => state.patient.patient.parsed);
@@ -168,6 +170,9 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
 
   const familyHistoryData = getFamilyHistory();
   const formatName = (lastName: string, firstName: string) => `${lastName.toUpperCase()} ${firstName}`;
+  const openEditPrescription = (index: number) => {
+    dispatch(editPrescription(index));
+  };
 
   return (
     <div className="prescriptions-tab__prescriptions-section">
@@ -229,6 +234,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   <Row>
                     <Col>
                       <Button
+                        className="button--borderless"
                         icon={<DeleteOutlined />}
                         onClick={() => alert('Feature not yey implemented')}
                         disabled={prescription.status !== 'draft'}
@@ -238,17 +244,19 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     </Col>
                     <Col>
                       <Button
+                        className="button--borderless"
                         icon={<PrinterOutlined />}
-                        onClick={() => alert('Feature not yey implemented')}
+                        onClick={() => alert('Feature not yet implemented')}
                       >
                         { intl.get('screen.patient.details.prescription.print') }
                       </Button>
                     </Col>
                     <Col>
                       <Button
+                        className="button--borderless"
                         icon={<FormOutlined />}
-                        onClick={() => alert('Feature not yey implemented')}
-                        disabled={!['draft', 'incomplete'].includes(prescription.status)}
+                        onClick={() => openEditPrescription(index)}
+                        disabled={!canEdit(prescription)}
                       >
                         { intl.get('screen.patient.details.prescription.edit') }
                       </Button>
@@ -268,6 +276,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
                       <StatusTag status={prescription.status} />
                       <Button
+                        className="button--borderless"
                         icon={<EditFilled />}
                         onClick={() => setSelectedPrescriptionId(prescription.id)}
                       >
