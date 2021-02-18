@@ -127,9 +127,9 @@ export const assignServiceRequestPractitioner = (resource) => (
   }
 );
 
-export const editPrescription = (index) => ({
+export const editPrescription = (id) => ({
   type: actions.EDIT_PRESCRIPTION_REQUESTED,
   payload: {
-    index,
+    id,
   },
 });

@@ -167,8 +167,8 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
 
   const familyHistoryData = getFamilyHistory();
   const formatName = (lastName: string, firstName: string) => `${lastName.toUpperCase()} ${firstName}`;
-  const openEditPrescription = (index: number) => {
-    dispatch(editPrescription(index));
+  const openEditPrescription = (id: string) => {
+    dispatch(editPrescription(id));
   };
 
   return (
@@ -252,7 +252,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                       <Button
                         className="button--borderless"
                         icon={<FormOutlined />}
-                        onClick={() => openEditPrescription(index)}
+                        onClick={() => openEditPrescription(prescription.id!)}
                         disabled={!canEdit(prescription)}
                       >
                         { intl.get('screen.patient.details.prescription.edit') }
@@ -378,7 +378,9 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   columns={clinicalColumnPreset.map(
                     columnPresetToColumn,
                   )}
-                  dataSource={getClinical(clinicalImpressions[index])}
+                  dataSource={getClinical(
+                    clinicalImpressions.find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!,
+                  )}
                   size="small"
                 />
               </Card>
