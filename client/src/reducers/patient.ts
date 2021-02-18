@@ -23,18 +23,18 @@ import {
 
 type ObservationCode = 'CGH' | 'INDIC' | 'INVES';
 
-const getObservation = (code: ObservationCode, resource: any) : Observation | undefined => {
+const getObservations = (code: ObservationCode, resource: any) : Observation[] => {
   const clinicalImpressin = resource.entry[3];
   const observation = clinicalImpressin.resource.entry
-    ?.find((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
+    ?.filter((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
 
-  return get(observation, 'resource', undefined);
+  return observation.map((obs: {resource: Observation}) => obs.resource);
 };
 
 type Observations = {
-  cgh?: Observation;
-  indic?: Observation;
-  inves?: Observation;
+  cgh?: Observation[];
+  indic?: Observation[];
+  inves?: Observation[];
 }
 
 export type PatientState = {
@@ -59,9 +59,9 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
   switch (action.type) {
     case actions.PATIENT_FETCH_SUCCEEDED: {
       draft.observations = {
-        cgh: getObservation('CGH', action.payload.patientData),
-        indic: getObservation('INDIC', action.payload.patientData),
-        inves: getObservation('INVES', action.payload.patientData),
+        cgh: getObservations('CGH', action.payload.patientData),
+        indic: getObservations('INDIC', action.payload.patientData),
+        inves: getObservations('INVES', action.payload.patientData),
       };
       const providerChain = new ProviderChain(action.payload);
       providerChain

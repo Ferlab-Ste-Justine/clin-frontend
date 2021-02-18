@@ -26,6 +26,8 @@ type SupportedExtensions = HpoCategoryExtension | AgeAtOnset;
 type SupportedCodes = 'CGH' | 'INDIC' | 'HPO' | 'INVES';
 
 export class ObservationBuilder {
+    private id?: string;
+
     private resourceType: ResourceType = 'Observation';
 
     private meta: Meta = {
@@ -137,6 +139,7 @@ export class ObservationBuilder {
 
     public build(): Observation {
       return {
+        id: this.id,
         resourceType: this.resourceType,
         meta: this.meta,
         status: this.status,
@@ -148,6 +151,13 @@ export class ObservationBuilder {
         extension: this.extension,
         valueCodeableConcept: this.valueCodeableConcept,
       };
+    }
+
+    public withId(id: string) {
+      if (id != null) {
+        this.id = id;
+      }
+      return this;
     }
 
     public withResourceType(value: ResourceType) {
@@ -201,5 +211,6 @@ export class ObservationBuilder {
 
     public withValue(value: CodeableConcept) {
       this.valueCodeableConcept = value;
+      return this;
     }
 }
