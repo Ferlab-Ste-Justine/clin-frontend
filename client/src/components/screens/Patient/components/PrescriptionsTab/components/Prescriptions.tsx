@@ -31,6 +31,7 @@ import StatusChangeModal, { StatusType } from '../../StatusChangeModal';
 import { editPrescription } from '../../../../../../actions/patientSubmission';
 import Summary from './Prescription/Summary';
 import DetailsRow from './Prescription/DetailsRow';
+import FamilyHistory from './Prescription/FamilyHistory';
 
 const DEFAULT_VALUE = '--';
 
@@ -46,17 +47,6 @@ const badgeColor = {
 const columnPresetToColumn = (c: {key: string, label: string}) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
-
-const familyHistoryColumnPreset = [
-  {
-    key: 'link',
-    label: 'screen.patient.details.link',
-  },
-  {
-    key: 'notes',
-    label: 'screen.patient.details.notes',
-  },
-];
 
 const clinicalColumnPreset = [
   {
@@ -98,7 +88,7 @@ interface Props {
 const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
   const consultation = useSelector((state: State) => state.patient.consultation!.map((cons) => cons.parsed));
-  const fmhs = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
+  const familyHistories = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
   const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
   const patient = useSelector((state: State) => state.patient.patient.parsed);
   const observations = useSelector((state: State) => state.patient.observations);
@@ -151,21 +141,6 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
     );
   };
 
-  const getFamilyHistory = () => {
-    const familyHistory = fmhs.map((fmh) => (
-      {
-        note: fmh.note,
-        link: fmh.link,
-      }));
-    if (familyHistory) {
-      return familyHistory.map((f) => ({
-        link: f.link, notes: f.note,
-      }));
-    }
-    return [];
-  };
-
-  const familyHistoryData = getFamilyHistory();
   const formatName = (lastName: string, firstName: string) => `${lastName.toUpperCase()} ${firstName}`;
   const openEditPrescription = (id: string) => {
     dispatch(editPrescription(id));
@@ -359,19 +334,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                 patient={patient}
                 prescription={prescription}
               />
-              { familyHistoryData.length > 0
-                  && (
-                    <Card title={intl.get('screen.patient.header.familyHistory')} bordered={false} className="staticCard familyHistory">
-                      <Table
-                        pagination={false}
-                        columns={familyHistoryColumnPreset.map(
-                          columnPresetToColumn,
-                        )}
-                        dataSource={familyHistoryData}
-                        size="small"
-                      />
-                    </Card>
-                  ) }
+              <FamilyHistory patient={patient} familyHistories={familyHistories} />
               <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
                 <Table
                   pagination={false}
