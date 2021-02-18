@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Radio, Col, Input, Row, Form, Typography,
+  Radio, Input, Form,
 } from 'antd';
 import intl from 'react-intl-universal';
 
