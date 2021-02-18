@@ -107,7 +107,7 @@ const fr = {
   'screen.patient.creation.errors.invalidFirstName': 'Le prénom doit avoir plus de 2 lettres',
   'screen.patient.creation.errors.invalidLastName': 'Le nom de famille doit avoir plus de 2 lettres',
   'screen.patient.creation.success.description.patient': 'La fiche du patient a été créée avec succès.',
-  'screen.patient.creation.success.description.fetus': 'La fiche du fetus a été créée avec succès.',
+  'screen.patient.creation.success.description.fetus': 'La fiche du foetus a été créée avec succès.',
   'screen.patient.creation.success.patientCard': 'Voir la fiche.',
   'screen.patient.creation.success.newPrescription': 'Créer une nouvelle prescription',
   'screen.patient.creation.success.completePrescription': 'Compléter cette prescription',
