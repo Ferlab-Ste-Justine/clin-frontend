@@ -272,11 +272,15 @@ const patientSubmissionReducer = (
         };
         draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
+        const clinicalCgh = get(observations, `cgh[${index}]`, undefined);
+        const clinicalIndic = get(observations, `indic[${index}]`, undefined);
+        const clinicalInves = get(observations, `inves[${index}]`, undefined);
+
         draft.observations.hpos = hpos;
         draft.observations.fmh = fmhs;
-        draft.observations.cgh = { ...observations.cgh };
-        draft.observations.indic = { ...observations.indic };
-        draft.observations.summary = { ...observations.inves };
+        draft.observations.cgh = { ...clinicalCgh };
+        draft.observations.indic = { ...clinicalIndic };
+        draft.observations.summary = { ...clinicalInves };
         draft.observations.fmh.push({});
 
         draft.local = {
@@ -288,14 +292,17 @@ const patientSubmissionReducer = (
             id: clinicalImpression.id,
           },
           cgh: {
+            id: get(clinicalCgh, 'id'),
             interpretation: cgh,
             precision,
           },
-          summary: {
-            note: summary !== NOT_AVAILABLE ? summary : '',
-          },
           indic: {
+            id: get(clinicalIndic, 'id'),
             note: hypothesis !== NOT_AVAILABLE ? hypothesis : '',
+          },
+          summary: {
+            id: get(clinicalInves, 'id'),
+            note: summary !== NOT_AVAILABLE ? summary : '',
           },
           consents: range(1, 5).map((value) => `consent-${value}`),
           practitioner: '',

@@ -242,6 +242,7 @@ function PatientSubmissionScreen(props) {
   React.useEffect(() => {
     validate();
   });
+  const { localStore } = props;
 
   const createCGHResourceList = () => {
     const values = getFields();
@@ -257,6 +258,7 @@ function PatientSubmissionScreen(props) {
 
     const cghPrecision = values['cgh.precision'] ? values['cgh.precision'].trim() : undefined;
     const builder = new ObservationBuilder('CGH')
+      .withId(get(localStore, 'cgh.id'))
       .withStatus('final');
 
     if (cghInterpretationValue === 'realized') {
@@ -289,6 +291,7 @@ function PatientSubmissionScreen(props) {
     indication = indication ? indication.trim() : indication;
 
     const builder = new ObservationBuilder('INDIC');
+    builder.withId(get(localStore, 'indic.id'));
     if (indication != null) {
       builder.withNote(indication);
     }
@@ -296,11 +299,10 @@ function PatientSubmissionScreen(props) {
     return builder.build();
   };
 
-  const { localStore } = props;
-
   const createSummary = (note) => {
     // const values = getFields();
     const builder = new ObservationBuilder('INVES');
+    builder.withId(get(localStore, 'inves.id'));
 
     if (note == null && localStore.summary.note != null) {
       builder.withNote(localStore.summary.note);
