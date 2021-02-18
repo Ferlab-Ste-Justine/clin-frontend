@@ -248,8 +248,13 @@ const patientSubmissionReducer = (
 
         const { requester } = patientState.prescriptions[index].parsed;
 
-        const hpos = patientState.hpos.map((hpo) => hpo.original);
-        const fmhs = patientState.fmhs.map((fmh) => fmh.original);
+        const investigationItems = get(clinicalImpression, 'investigation[0].item', []);
+        const hpos = patientState.hpos.map((hpo) => hpo.original).filter(
+          (hpo) => investigationItems.find((item) => item.reference.indexOf(hpo.id) !== -1) != null,
+        );
+        const fmhs = patientState.fmhs.map((fmh) => fmh.original).filter(
+          (fmh) => investigationItems.find((item) => item.reference.indexOf(fmh.id) !== -1) != null,
+        );
         const { observations } = action.payload.patient;
 
         const familyGroupExt = getExtension(patient, FAMILY_ID_EXT_URL);
