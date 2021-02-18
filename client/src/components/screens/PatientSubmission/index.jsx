@@ -44,6 +44,8 @@ import {
   createPractitionerResource,
   genPractitionerKey,
   getTestCoding,
+  hpoOnsetValues,
+  hpoInterpretationValues,
 } from '../../../helpers/fhir/fhir';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
@@ -150,6 +152,8 @@ function PatientSubmissionScreen(props) {
     return localStore.serviceRequest.code;
   };
 
+  const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
+
   const canGoNextPage = (currentPage) => {
     const { observations } = props;
     const { localStore } = props;
@@ -158,7 +162,6 @@ function PatientSubmissionScreen(props) {
     let hasError = null;
     switch (currentPage) {
       case 0: {
-        const checkIfEmptyValue = (array) => array != null && array.findIndex((element) => !element) === -1;
         const checkCghInterpretationValue = () => {
           if (values.cghInterpretationValue) {
             if (values.cghInterpretationValue !== 'A') {
@@ -173,23 +176,29 @@ function PatientSubmissionScreen(props) {
         };
 
         const checkFamilyHistory = () => {
-          const frm = toArray(values.familyRelationshipNotes);
-          const frc = toArray(values.familyRelationshipCodes);
-          if ((checkIfEmptyValue(frm) && !checkIfEmptyValue(frc)) || (!checkIfEmptyValue(frm) && checkIfEmptyValue(frc))) {
-            return false;
+          const fmh = get(values, 'fmh', []);
+          if (fmh.length > 0) {
+            const checkValue = [];
+            fmh.forEach((element) => {
+              if (get(element, 'relation.length', '') === 0 || get(element, 'note.length', '') === 0) {
+                checkValue.push(false);
+              }
+            });
+            if (checkValue.includes(false)) {
+              return false;
+            }
+            return true;
           }
           return true;
         };
 
         const checkHpo = () => {
-          if (observations.hpos.length > 0) {
-            const checkValue = [];
-            observations.hpos.forEach((element) => {
-              if (element.interpretation.length === 0 || element.extension.length === 0) {
-                checkValue.push(false);
-              }
-            });
-            if (checkValue.includes(false)) {
+          const hpos = getValidValues(get(values, 'hpos', []));
+          if (hpos.length > 0) {
+            const checkValue = hpos.map(
+              (element) => get(element, 'interpretation') === null || get(element, 'onset') == null,
+            );
+            if (checkValue.includes(true)) {
               return false;
             }
             return true;
@@ -322,6 +331,46 @@ function PatientSubmissionScreen(props) {
     actions.saveLocalSummary(values.summaryNote);
     actions.saveLocalIndic(values.indication);
   };
+
+  const buildHpoObservation = (hpo) => {
+    const observation = new ObservationBuilder('HPO')
+      .withId(hpo.id)
+      .withInterpretation({
+        coding: [{
+          display: hpoInterpretationValues().find((interpretation) => interpretation.value === hpo.interpretation).display,
+          code: hpo.interpretation,
+        }],
+      })
+      .withValue({
+        coding: [{
+          code: hpo.code,
+          display: hpo.display,
+        }],
+      })
+      .withNote(hpo.note)
+      .build();
+
+    let value = null;
+    const keys = Object.keys(hpoOnsetValues);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of keys) {
+      const group = hpoOnsetValues[key];
+      value = group.options.find((onSet) => onSet.code === hpo.onset);
+      if (value != null) {
+        break;
+      }
+    }
+
+    observation.extension.push({
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
+      valueCoding: {
+        code: value.code,
+        display: value.display,
+      },
+    });
+    return observation;
+  };
+
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
@@ -364,8 +413,8 @@ function PatientSubmissionScreen(props) {
           .build());
       });
 
-      batch.hpos = observations.hpos;
-      batch.fmhs = content.fmh.filter(
+      batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
+      batch.fmhs = get(content, 'fmh', []).filter(
         (fmh) => fmh.note != null && fmh.relation != null,
       ).map((fmh) => new FamilyMemberHistoryBuilder(fmh.relation, fmh.note).withPatient(currentPatient.id).build());
 
