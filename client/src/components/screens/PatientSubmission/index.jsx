@@ -46,6 +46,7 @@ import {
   getTestCoding,
   hpoOnsetValues,
   hpoInterpretationValues,
+  getFamilyRelationshipDisplayForCode,
 } from '../../../helpers/fhir/fhir';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
@@ -416,7 +417,7 @@ function PatientSubmissionScreen(props) {
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
       batch.fmhs = get(content, 'fmh', []).filter(
         (fmh) => fmh.note != null && fmh.relation != null,
-      ).map((fmh) => new FamilyMemberHistoryBuilder(fmh.relation, fmh.note).withPatient(currentPatient.id).build());
+      ).map((fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation)).withNote(fmh.note).withPatient(currentPatient.id).build());
 
       const cghObservation = createCGHResourceList();
       if (cghObservation != null) {
