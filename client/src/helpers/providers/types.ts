@@ -34,6 +34,7 @@ export type Prescription = {
   test: string;
   status: PrescriptionStatus;
   note?: string;
+  clinicalImpressionRef: string;
 };
 
 export type ClinicalObservation = {

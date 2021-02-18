@@ -5,6 +5,8 @@ import { DataExtractor } from '../extractor';
 import { Provider, Record } from '../providers';
 
 const IS_SUBMITTED_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
+const CLIN_REF_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression';
+
 const ON_HOLD = 'on-hold';
 const INCOMPLETE = 'incomplete';
 
@@ -22,6 +24,10 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     return isSubmittedExtension.valueBoolean ? ON_HOLD : INCOMPLETE;
   }
 
+  private getClincalImpressionRef(dataExtractor: DataExtractor, serviceRequest: ServiceRequest) : string {
+    return get(dataExtractor.getExtension(serviceRequest, CLIN_REF_EXT), 'valueReference.reference');
+  }
+
   public doProvide(dataExtractor: DataExtractor): Record<ServiceRequest, Prescription>[] {
     const serviceRequestBundle = dataExtractor.extractBundle('ServiceRequest');
     const serviceRequests = dataExtractor.extractResources<ServiceRequest>(serviceRequestBundle, 'ServiceRequest');
@@ -33,6 +39,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       status: this.getStatus(dataExtractor, serviceRequest) as PrescriptionStatus,
       test: get(serviceRequest, 'code.coding[0].code', 'N/A'),
       note: get(serviceRequest, 'note[0].text', ''),
+      clinicalImpressionRef: this.getClincalImpressionRef(dataExtractor, serviceRequest),
     }));
 
     const output: Record<ServiceRequest, Prescription>[] = [];

@@ -26,7 +26,6 @@ import {
   getHPOOnsetCode,
   getHPOInterpretationCode,
   hpoInterpretationValues,
-  getFamilyRelationshipDisplayForCode,
   getTestCoding,
 } from '../../../../../helpers/fhir/fhir';
 
@@ -43,7 +42,6 @@ import {
 } from '../../../../../actions/patientSubmission';
 
 import Api from '../../../../../helpers/api';
-import { FamilyMemberHistoryBuilder } from '../../../../../helpers/fhir/builder/FMHBuilder.ts';
 import { ObservationBuilder } from '../../../../../helpers/fhir/builder/ObservationBuilder.ts';
 import MrnItem from './components/MrnItem';
 import InvestigationSection from './components/InvestigationSection';
@@ -60,16 +58,13 @@ const HpoHiddenFields = ({
   hpoIndex,
 }) => (
   <div>
-    <Form.Item name={`hpoIds[${hpoIndex}]`} initialValue={getResourceId(hpoResource) || ''} className="hidden-form">
+    <Form.Item name={['hpos', hpoIndex, 'id']} initialValue={getResourceId(hpoResource)} className="hidden-form">
       <Input size="small" type="hidden" />
     </Form.Item>
-    <Form.Item name={`hposToDelete[${hpoIndex}]`} initialValue={hpoResource.toDelete} className="hidden-form">
+    <Form.Item name={['hpos', hpoIndex, 'code']} initialValue={getHPOCode(hpoResource)} className="hidden-form">
       <Input size="small" type="hidden" />
     </Form.Item>
-    <Form.Item name={`hpoCodes[${hpoIndex}]`} initialValue={getHPOCode(hpoResource) || ''} className="hidden-form">
-      <Input size="small" type="hidden" />
-    </Form.Item>
-    <Form.Item name={`hpoDisplays[${hpoIndex}]`} initialValue={getHPODisplay(hpoResource) || ''} className="hidden-form">
+    <Form.Item name={['hpos', hpoIndex, 'display']} initialValue={getHPODisplay(hpoResource)} className="hidden-form">
       <Input size="small" type="hidden" />
     </Form.Item>
   </div>
@@ -97,12 +92,12 @@ class ClinicalInformation extends React.Component {
     this.state = {
       hpoOptions: [],
       treeData: INITIAL_TREE_ROOTS,
+      hpoResources: get(props, 'observations.hpos') || [],
     };
 
     const { treeData } = this.state;
     this.loadedHpoTreeNodes = treeData.reduce((acc, value) => { acc[value.key] = true; return acc; }, {});
     this.onLoadHpoChildren = this.onLoadHpoChildren.bind(this);
-    this.addFamilyHistory = this.addFamilyHistory.bind(this);
     this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
     this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
     this.handleHpoOptionSelected = this.handleHpoOptionSelected.bind(this);
@@ -110,11 +105,6 @@ class ClinicalInformation extends React.Component {
     this.handleHpoNodesChecked = this.handleHpoNodesChecked.bind(this);
     this.hpoSelected = this.hpoSelected.bind(this);
     this.isAddDisabled = this.isAddDisabled.bind(this);
-    this.fmhNoteUpdate = this.fmhNoteUpdate.bind(this);
-    this.fmhSelected = this.fmhSelected.bind(this);
-    this.handleHpoNoteChanged = this.handleHpoNoteChanged.bind(this);
-    this.handleObservationChanged = this.handleObservationChanged.bind(this);
-    this.handleHpoAgeChanged = this.handleHpoAgeChanged.bind(this);
   }
 
   componentDidUpdate() {
@@ -168,6 +158,7 @@ class ClinicalInformation extends React.Component {
       }
       return '';
     };
+    const { validate } = this.props;
     return (
       <div key={hpoResource.valueCodeableConcept.coding[0].code} className="phenotypeBlock">
         <div className="phenotypeFirstLine">
@@ -185,14 +176,17 @@ class ClinicalInformation extends React.Component {
           </div>
           <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} />
           <div className="rightBlock">
-            <Form.Item name={`interpretation-${hpoIndex}`}>
+            <Form.Item
+              name={['hpos', hpoIndex, 'interpretation']}
+              initialValue={getHPOInterpretationCode(hpoResource)}
+            >
               <Select
                 className="select selectObserved"
                 placeholder={intl.get('form.patientSubmission.form.hpo.interpretation')}
                 size="small"
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOInterpretationCode(hpoResource)}
-                onChange={(event) => this.handleObservationChanged(event, hpoIndex)}
+                onChange={validate}
               >
                 { hpoInterpretationValues().map((interpretation, index) => (
                   <Select.Option
@@ -205,14 +199,17 @@ class ClinicalInformation extends React.Component {
                 )) }
               </Select>
             </Form.Item>
-            <Form.Item name={`onset-${hpoIndex}`}>
+            <Form.Item
+              name={['hpos', hpoIndex, 'onset']}
+              initialValue={getHPOOnsetCode(hpoResource)}
+            >
               <Select
                 className="select selectAge"
                 size="small"
                 placeholder={intl.get('form.patientSubmission.form.hpo.ageAtOnset')}
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOOnsetCode(hpoResource)}
-                onChange={(event) => this.handleHpoAgeChanged(event, hpoIndex)}
+                onChange={validate}
               >
                 {
                   hpoOnsetValues.map((group, gIndex) => (
@@ -228,52 +225,12 @@ class ClinicalInformation extends React.Component {
           </div>
         </div>
         <div className="phenotypeSecondLine" key={`input-${hpoIndex}`}>
-          <Form.Item>
-            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" onChange={(event) => this.handleHpoNoteChanged(event.target.value, hpoIndex)} className="input hpoNote" />
+          <Form.Item name={['hpos', hpoIndex, 'note']} initialValue={defaultValue()}>
+            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" className="input hpoNote" />
           </Form.Item>
         </div>
       </div>
     );
-  }
-
-  handleHpoNoteChanged(note, index) {
-    const { actions } = this.props;
-    actions.updateHpoNote(note, index);
-  }
-
-  handleObservationChanged(observationCode, index) {
-    const { actions, validate } = this.props;
-
-    validate();
-    actions.updateHpoObservation(
-      {
-        interpretation: {
-          code: observationCode,
-          display: hpoInterpretationValues().find((interpretation) => interpretation.value === observationCode).display,
-        },
-      }, index,
-    );
-  }
-
-  handleHpoAgeChanged(code, index) {
-    const { actions, validate } = this.props;
-    validate();
-
-    let value = null;
-    const keys = Object.keys(hpoOnsetValues);
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key of keys) {
-      const group = hpoOnsetValues[key];
-      value = group.options.find((onSet) => onSet.code === code);
-      if (value != null) {
-        break;
-      }
-    }
-
-    if (value == null) {
-      throw new Error(`OnSet code [${code}] not found in [hpoOnsetValues]`);
-    }
-    actions.updateHpoAgeOnSet(value, index);
   }
 
   isAddDisabled() {
@@ -289,48 +246,6 @@ class ClinicalInformation extends React.Component {
 
     const index = frc.length - 1;
     return frc[index] == null || frc[index].length === 0;
-  }
-
-  addFamilyHistory() {
-    const { actions } = this.props;
-    actions.addEmptyFamilyHistory();
-  }
-
-  fmhNoteUpdate(note, index) {
-    const { actions } = this.props;
-    actions.updateFMHNote(note, index);
-  }
-
-  fmhSelected(fhmCode, index) {
-    const { form, validate } = this.props;
-    validate();
-    const values = form.getFieldsValue();
-    const {
-      familyRelationshipCodes,
-    } = values;
-
-    let { familyRelationshipNotes } = values;
-
-    familyRelationshipNotes = toArray(familyRelationshipNotes).map((n) => n.trim());
-    const fmh = [];
-    const { observations } = this.props;
-    toArray(familyRelationshipCodes).forEach((c, i) => {
-      const code = i === index ? fhmCode : c;
-      if (code != null && code.length > 0) {
-        const builder = new FamilyMemberHistoryBuilder(code, getFamilyRelationshipDisplayForCode(code));
-        if (familyRelationshipNotes[i] != null) {
-          builder.withNote(familyRelationshipNotes[i]);
-        }
-        const familyHistory = builder.build();
-
-        if (observations.fmh[i].id != null && observations.fmh[i].id.length > 0) {
-          familyHistory.id = observations.fmh[i].id;
-        }
-        fmh.push(familyHistory);
-      }
-    });
-    const { actions } = this.props;
-    actions.addFamilyHistoryResource(fmh);
   }
 
   deleteFamilyHistory({ code }) {
@@ -393,7 +308,7 @@ class ClinicalInformation extends React.Component {
   }
 
   hpoSelected({ code, display }) {
-    const { actions } = this.props;
+    const { hpoResources } = this.state;
 
     const builder = new ObservationBuilder('HPO');
     builder.withValue({
@@ -402,15 +317,18 @@ class ClinicalInformation extends React.Component {
       }],
     });
 
-    actions.addHpoResource(builder.build());
+    this.setState({
+      hpoResources: [
+        ...hpoResources,
+        builder.build(),
+      ],
+    });
   }
 
   handleHpoNodesChecked(_e, info) {
-    const { actions, observations } = this.props;
-    const { treeData } = this.state;
+    const { treeData, hpoResources } = this.state;
 
     const checkedNodes = info.checkedNodes.map((n) => ({ code: n.key, display: n.title }));
-    const hpoResources = observations.hpos;
 
     const toDelete = [];
     const toAdd = [];
@@ -434,7 +352,6 @@ class ClinicalInformation extends React.Component {
       }
     });
 
-    toDelete.map((r) => ({ code: r.valueCodeableConcept.coding[0].code })).forEach(actions.setHpoResourceDeletionFlag);
     toAdd.forEach(this.hpoSelected);
   }
 
@@ -446,8 +363,18 @@ class ClinicalInformation extends React.Component {
   }
 
   handleHpoDeleted(hpoId) {
-    const { actions } = this.props;
-    actions.setHpoResourceDeletionFlag({ code: hpoId, toDelete: true });
+    const { hpoResources } = this.state;
+    const { form, validate } = this.props;
+    const values = form.getFieldsValue();
+    const result = hpoResources.filter((hpo) => get(hpo, 'valueCodeableConcept.coding[0].code') !== hpoId);
+    this.setState({
+      hpoResources: result,
+    });
+    form.setFieldsValue({
+      ...values,
+      hpos: values.hpos.filter((hpo) => hpo.code !== hpoId),
+    });
+    validate();
   }
 
   renderTreeNodes(data) {
@@ -465,7 +392,7 @@ class ClinicalInformation extends React.Component {
   }
 
   render() {
-    const { hpoOptions, treeData } = this.state;
+    const { hpoOptions, treeData, hpoResources } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
@@ -481,7 +408,6 @@ class ClinicalInformation extends React.Component {
       cghId = observations.cgh.id;
     }
 
-    const hpoResources = observations.hpos;
     const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);
 
     const analysisTestNames = [

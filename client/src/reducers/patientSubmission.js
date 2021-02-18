@@ -233,8 +233,8 @@ const patientSubmissionReducer = (
       };
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
-      const { index } = action.payload;
       const patientState = action.payload.patient;
+      const index = patientState.prescriptions.findIndex((prescription) => prescription.original.id === action.payload.id);
       const patient = patientState.patient.original;
       draft.patient = patient;
 
@@ -308,8 +308,9 @@ const patientSubmissionReducer = (
           practitioner: '',
         };
 
-        if (requester != null) {
-          const [, requesterId] = patientState.prescriptions[index].original.requester.reference.split('/');
+        const requesterReference = get(patientState, `prescriptions[${index}].original.requester.reference`);
+        if (requesterReference != null) {
+          const [, requesterId] = requesterReference.split('/');
           draft.local.requesterId = requesterId;
           draft.local.practitioner = genPractitionerKey({
             family: requester.lastName,
