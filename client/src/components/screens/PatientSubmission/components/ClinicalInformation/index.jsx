@@ -511,6 +511,7 @@ class ClinicalInformation extends React.Component {
     const initialInterpretation = get(localStore, 'cgh.interpretation', undefined);
     const initialPrecision = get(localStore, 'cgh.precision', undefined);
     const initialIndicNote = get(localStore, 'indic.note', undefined);
+    const initialSummaryNote = get(localStore, 'summary.note', undefined);
 
     return (
       <div className="clinical-information">
@@ -576,7 +577,7 @@ class ClinicalInformation extends React.Component {
           bordered={false}
           className="staticCard patientContent clinical-information__investigation"
         >
-          <InvestigationSection interpretation={initialInterpretation} precision={initialPrecision} />
+          <InvestigationSection interpretation={initialInterpretation} precision={initialPrecision} summary={initialSummaryNote} />
         </Card>
         <Card
           title={intl.get('screen.patient.header.familyHistory')}

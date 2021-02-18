@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Radio, Col, Input, Row, Form, Typography,
+  Radio, Input, Form,
 } from 'antd';
 import intl from 'react-intl-universal';
 
@@ -14,9 +14,10 @@ enum InterpretationValue {
 type Props = {
   interpretation?: string;
   precision?: string;
+  summary?: string;
 }
 
-const InvestigationSection: React.FC<Props> = ({ interpretation, precision }) => {
+const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summary }) => {
   const [isRealizedSelected, setIsRealizedSelected] = useState(interpretation != null);
   const [isAbnormalResult, setIsAbnormalResult] = useState(interpretation === 'A');
 
@@ -72,29 +73,20 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision }) =>
               name="cgh.precision"
               initialValue={precision}
             >
-              <Col span={17}>
-                <Input />
-              </Col>
+              <Input />
             </Form.Item>
           ) }
 
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.investigationSummary')}
             name="summaryNote"
+            initialValue={summary}
           >
-            <Row gutter={8}>
-              <Col span={17}>
-                <TextArea
-                  placeholder={intl.get('form.patientSubmission.clinicalInformation.analysis.comments.placeholder')}
-                  rows={4}
-                />
-              </Col>
-              <Col>
-                <Typography.Text className="optional-item__label">
-                  { intl.get('form.patientSubmission.form.validation.optional') }
-                </Typography.Text>
-              </Col>
-            </Row>
+
+            <TextArea
+              placeholder={intl.get('form.patientSubmission.clinicalInformation.analysis.comments.placeholder')}
+              rows={4}
+            />
           </Form.Item>
         </>
       ) }
