@@ -60,15 +60,12 @@ export class FamilyMemberHistoryBuilder {
   }
 
   public withPatient(patientId: string) {
-    if (patientId.indexOf('urn:') !== -1) {
-      this.patient = {
-        reference: patientId,
-      };
-    } else {
+    if (patientId != null) {
       this.patient = {
         reference: `Patient/${patientId}`,
       };
     }
+    return this;
   }
 
   public withNote(value: string) {

@@ -114,7 +114,10 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                     <li>
                       <Row gutter={8}>
                         <Col span={14}>
-                          <Form.Item noStyle>
+                          <Form.Item
+                            name={['fmh', index, 'note']}
+                            noStyle
+                          >
                             <Input
                               placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
                               aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
@@ -123,6 +126,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                         </Col>
                         <Col span={6}>
                           <Form.Item
+                            name={['fmh', index, 'relation']}
                             noStyle
                           >
                             <Select

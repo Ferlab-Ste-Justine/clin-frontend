@@ -51,6 +51,7 @@ import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
 import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
 import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
 import { createRequest } from '../../../actions/prescriptions';
+import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder';
 
 const { Step } = Steps;
 
@@ -364,7 +365,9 @@ function PatientSubmissionScreen(props) {
       });
 
       batch.hpos = observations.hpos;
-      batch.fmhs = observations.fmh.filter((fmh) => !isEmpty(fmh));
+      batch.fmhs = content.fmh.filter(
+        (fmh) => fmh.note != null && fmh.relation != null,
+      ).map((fmh) => new FamilyMemberHistoryBuilder(fmh.relation, fmh.note).withPatient(currentPatient.id).build());
 
       const cghObservation = createCGHResourceList();
       if (cghObservation != null) {
