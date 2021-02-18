@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Radio, Input, Form,
+  Radio, Input, Form, Row, Col, Typography,
 } from 'antd';
 import intl from 'react-intl-universal';
 
@@ -68,26 +68,38 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summ
             </Radio.Group>
           </Form.Item>
           { isAbnormalResult && (
-            <Form.Item
-              label={intl.get('form.patientSubmission.clinicalInformation.precision')}
-              name="cgh.precision"
-              initialValue={precision}
-            >
-              <Input />
-            </Form.Item>
+            <Row className="ant-form-item">
+              <Col span={17}>
+                <Form.Item
+                  label={intl.get('form.patientSubmission.clinicalInformation.precision')}
+                  name="cgh.precision"
+                  initialValue={precision}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
           ) }
 
-          <Form.Item
-            label={intl.get('form.patientSubmission.clinicalInformation.investigationSummary')}
-            name="summaryNote"
-            initialValue={summary}
-          >
-
-            <TextArea
-              placeholder={intl.get('form.patientSubmission.clinicalInformation.analysis.comments.placeholder')}
-              rows={4}
-            />
-          </Form.Item>
+          <Row gutter={8}>
+            <Col span={17}>
+              <Form.Item
+                label={intl.get('form.patientSubmission.clinicalInformation.investigationSummary')}
+                name="summaryNote"
+                initialValue={summary}
+              >
+                <TextArea
+                  placeholder={intl.get('form.patientSubmission.clinicalInformation.analysis.comments.placeholder')}
+                  rows={4}
+                />
+              </Form.Item>
+            </Col>
+            <Col>
+              <Typography.Text className="optional-item__label">
+                { intl.get('form.patientSubmission.form.validation.optional') }
+              </Typography.Text>
+            </Col>
+          </Row>
         </>
       ) }
     </>
