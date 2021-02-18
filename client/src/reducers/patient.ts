@@ -31,7 +31,7 @@ const getObservations = (code: ObservationCode, resource: any) : Observation[] =
   return observation.map((obs: {resource: Observation}) => obs.resource);
 };
 
-type Observations = {
+export type Observations = {
   cgh?: Observation[];
   indic?: Observation[];
   inves?: Observation[];
