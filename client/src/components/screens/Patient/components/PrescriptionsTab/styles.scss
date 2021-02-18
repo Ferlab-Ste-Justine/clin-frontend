@@ -287,5 +287,18 @@
         
         }
       }}
+
+    &__summary {
+      &__cgh__content {
+        &__code { 
+          &--abnormal{
+            color: $red-6;
+          }
+          &--normal{
+            color: $green-7;
+          } 
+        }
+      }
+    }
   }
 }

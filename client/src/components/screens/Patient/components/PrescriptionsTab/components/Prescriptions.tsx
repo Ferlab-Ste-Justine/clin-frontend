@@ -10,7 +10,7 @@ import {
   Tabs,
 } from 'antd';
 import moment from 'moment';
-import React, { CSSProperties, ReactNode, useState } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import intl from 'react-intl-universal';
 import IconKit from 'react-icons-kit';
@@ -20,6 +20,7 @@ import {
 import {
   DeleteOutlined, EditFilled, FormOutlined, InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined,
 } from '@ant-design/icons';
+import get from 'lodash/get';
 import { Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
 import Badge from '../../../../../Badge';
 import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
@@ -28,6 +29,8 @@ import { ClinicalImpression } from '../../../../../../helpers/fhir/types';
 import { updateServiceRequestStatus } from '../../../../../../actions/patient';
 import StatusChangeModal, { StatusType } from '../../StatusChangeModal';
 import { editPrescription } from '../../../../../../actions/patientSubmission';
+import Summary from './Prescription/Summary';
+import DetailsRow from './Prescription/DetailsRow';
 
 const DEFAULT_VALUE = '--';
 
@@ -87,13 +90,6 @@ const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
   </span>
 );
 
-const DetailsRow: React.FC<{label: string | ReactNode}> = ({ label, children }) => (
-  <Row className="flex-row prescriptions-tab__prescriptions-section__details__row">
-    <Col className="prescriptions-tab__prescriptions-section__details__row__title">{ label }</Col>
-    <Col className="prescriptions-tab__prescriptions-section__details__row__value">{ children }</Col>
-  </Row>
-);
-
 interface Props {
   prescriptions: Prescription[]
   clinicalImpressions: ClinicalImpression[]
@@ -105,6 +101,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
   const fmhs = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
   const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
   const patient = useSelector((state: State) => state.patient.patient.parsed);
+  const observations = useSelector((state: State) => state.patient.observations);
   const dispatch = useDispatch();
 
   const getClinical = (clinicalImpression: ClinicalImpression) => {
@@ -353,6 +350,15 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   { consultation[index] != null ? consultation[index].hypothesis : DEFAULT_VALUE }
                 </DetailsRow>
               </Card>
+              <Summary
+                observations={{
+                  cgh: get(observations, `cgh[${index}]`),
+                  indic: get(observations, `indic[${index}]`),
+                  inves: get(observations, `invest[${index}]`),
+                }}
+                patient={patient}
+                prescription={prescription}
+              />
               { familyHistoryData.length > 0
                   && (
                     <Card title={intl.get('screen.patient.header.familyHistory')} bordered={false} className="staticCard familyHistory">
