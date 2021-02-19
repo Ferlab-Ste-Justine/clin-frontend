@@ -27,6 +27,7 @@ export class HPOProvider extends Provider<Observation, ClinicalObservation> {
         term: get(hpo, 'valueCodeableConcept.coding[0].display', 'N/A'),
         ageAtOnset: get(ageAtOnset, 'valueCoding.display', 'N/A'),
         note: get(hpo, 'note[0].text', ''),
+        category: get(hpo, 'category[0].coding[0].display', ''),
         id: hpo.id,
       };
 

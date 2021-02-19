@@ -6,17 +6,12 @@ import {
   Divider,
   Popover,
   Row,
-  Table,
   Tabs,
 } from 'antd';
 import moment from 'moment';
 import React, { CSSProperties, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import intl from 'react-intl-universal';
-import IconKit from 'react-icons-kit';
-import {
-  ic_visibility, ic_visibility_off, ic_help,
-} from 'react-icons-kit/md';
 import {
   DeleteOutlined, EditFilled, FormOutlined, InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined,
 } from '@ant-design/icons';
@@ -32,6 +27,7 @@ import { editPrescription } from '../../../../../../actions/patientSubmission';
 import Summary from './Prescription/Summary';
 import DetailsRow from './Prescription/DetailsRow';
 import FamilyHistory from './Prescription/FamilyHistory';
+import ClinicalSigns from './Prescription/ClinicalSigns';
 
 const DEFAULT_VALUE = '--';
 
@@ -43,29 +39,6 @@ const badgeColor = {
   incomplete: '#EB2F96',
   active: '#249ED9',
 };
-
-const columnPresetToColumn = (c: {key: string, label: string}) => ({
-  key: c.key, title: intl.get(c.label), dataIndex: c.key,
-});
-
-const clinicalColumnPreset = [
-  {
-    key: 'observed',
-    label: 'screen.patient.details.observed',
-  },
-  {
-    key: 'term',
-    label: 'screen.patient.details.term',
-  },
-  {
-    key: 'apparition',
-    label: 'screen.patient.details.apparition',
-  },
-  {
-    key: 'notes',
-    label: 'screen.patient.details.notes',
-  },
-];
 
 const canEdit = (prescription: Prescription) => prescription.status === 'draft' || prescription.status === 'incomplete';
 
@@ -93,40 +66,6 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
   const patient = useSelector((state: State) => state.patient.patient.parsed);
   const observations = useSelector((state: State) => state.patient.observations);
   const dispatch = useDispatch();
-
-  const getClinical = (clinicalImpression: ClinicalImpression) => {
-    const currentHpos = hpos.filter(
-      (hpo) => clinicalImpression.investigation[0].item.find((obs) => obs.reference.indexOf(hpo.id) !== -1) != null,
-    );
-    const ontology = currentHpos.map((hpo) => (
-      {
-        observed: hpo.observed,
-        term: hpo.term,
-        apparition: hpo.ageAtOnset,
-        notes: hpo.note,
-      }));
-    if (ontology) {
-      return ontology.map((o) => {
-        const getObservedIcon = (status: string) => {
-          if (status === 'POS') {
-            return (<IconKit className="observedIcon icon" size={16} icon={ic_visibility} />);
-          }
-          if (status === 'NEG') {
-            return (<IconKit className="notObservedIcon icon" size={16} icon={ic_visibility_off} />);
-          }
-
-          return (<IconKit className="unknownIcon icon" size={16} icon={ic_help} />);
-        };
-        const observed = getObservedIcon(o.observed);
-        const note = o.notes ? o.notes : '--';
-        return {
-          observed, term: o.term, apparition: o.apparition, notes: note,
-        };
-      });
-    }
-
-    return [];
-  };
 
   const practitionerPopOverText = (info: any) => {
     const phonePart = info.phone.split(' ');
@@ -335,19 +274,11 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                 prescription={prescription}
               />
               <FamilyHistory patient={patient} familyHistories={familyHistories} />
-              <Card title="Signes cliniques" bordered={false} className="staticCard clinicalSign">
-                <Table
-                  pagination={false}
-                  columns={clinicalColumnPreset.map(
-                    columnPresetToColumn,
-                  )}
-                  dataSource={getClinical(
-                    clinicalImpressions.find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!,
-                  )}
-                  size="small"
-                />
-              </Card>
-
+              <ClinicalSigns
+                prescription={prescription}
+                clinicalImpressions={clinicalImpressions}
+                hpos={hpos}
+              />
             </Tabs.TabPane>
           ))
         }
