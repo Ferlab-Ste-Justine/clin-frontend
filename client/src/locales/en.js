@@ -576,7 +576,7 @@ const en = {
   'screen.variantDetails.clinicalAssociationsTab.condition': 'Condition',
   'screen.variantDetails.clinicalAssociationsTab.ClinVarID': 'Clin Var ID',
   'screen.variantDetails.clinicalAssociationsTab.signification': 'Clinical signification',
-  'screen.variantDetails.clinicalAssociationsTab.sign': 'Trait/Condition',
+  'screen.variantDetails.clinicalAssociationsTab.sign': 'Sign/Condition',
   'screen.variantDetails.clinicalAssociationsTab.gene': 'Gene',
   'screen.variantDetails.clinicalAssociationsTab.term': 'Term',
   'screen.variantDetails.clinicalAssociationsTab.orphanet': 'Orphanet',
