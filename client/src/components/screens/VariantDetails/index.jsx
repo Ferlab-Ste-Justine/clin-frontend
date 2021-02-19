@@ -661,9 +661,6 @@ class VariantDetailsScreen extends React.Component {
         donors,
       } = data;
 
-      /*       const internalCohortsKeys = Object.keys(frequencies).filter((k) => k === 'internal' || k.indexOf('LDx') !== -1);
-      const totalKey = 'Total';
-      const totalValue = null; */
       const rows = [];
 
       const frequenciesByldm = chain(donors)
@@ -674,13 +671,13 @@ class VariantDetailsScreen extends React.Component {
       frequenciesByldm.forEach((element) => {
         const ac = sumBy(element.info, (e) => e.ad_alt);
         const an = sumBy(element.info, (e) => e.ad_total);
-        const info = {
+        const line = {
           ldm: element.ldm,
           pn: element.info.length,
           ac,
           an,
         };
-        rows.push(info);
+        rows.push(line);
       });
       const total = {
         ldm: (<span className="bold">Total</span>),
@@ -692,23 +689,6 @@ class VariantDetailsScreen extends React.Component {
           </span>),
       };
       rows.push(total);
-      /*       internalCohortsKeys.forEach((key) => {
-        const frequency = {
-          ...frequencies[key],
-        };
-        const isInterne = key === 'internal';
-        frequency.key = isInterne ? totalKey : key;
-        frequency.af = Number.parseFloat(frequency.af).toExponential(5);
-        if (isInterne) {
-          totalValue = frequency;
-        } else {
-          rows.push(frequency);
-        }
-      });
-
-      if (totalValue != null) {
-        rows.push(totalValue);
-      } */
       return rows;
     }
 
@@ -1060,19 +1040,6 @@ class VariantDetailsScreen extends React.Component {
       donorsColumnPreset,
       openGeneTable,
     } = this.state;
-    // const impactsSummary = consequences.map((c) => impactSummary(c)).filter((i) => !!i).map((i) => (<li key={uuidv1()}>{ i }</li>));
-
-    // const omimLinks = (omims) => omims.map((o) => (
-    //   <div className="variantPageContentRow">
-    //     <Link
-    //       className="link"
-    //       url={`https://omim.org/entry/${o}`}
-    //       text={o}
-    //     />
-    //     { /* Ignore the comma if it's the last entry */ }
-    //     { o.length > 1 && o !== omims[omims.length - 1] ? (<div>,&nbsp;</div>) : (<></>) }
-    //   </div>
-    // ));
 
     let mutationIdTitle = null;
     if (data.hgvsg.length > 31) {
