@@ -527,6 +527,8 @@ const en = {
   'screen.variantdetails.tab.summary': 'Summary',
   'screen.variantDetails.homozygote': 'Homozygote',
   'screen.variantDetails.heterozygote': 'Heterozygote',
+  'screen.variantdetails.seeMore': 'See More',
+  'screen.variantdetails.seeLess': 'See Less',
   'screen.variantDetails.summaryTab.emptyTable': 'No data Available',
   'screen.variantDetails.summaryTab.summaryTable.variant': 'Variant',
   'screen.variantDetails.summaryTab.summaryTable.cytoband': 'Cytoband',
