@@ -554,6 +554,8 @@ const fr = {
   'screen.variantDetails.homozygote': 'Homozygote',
   'screen.variantDetails.heterozygote': 'Hétérozygote',
   'screen.variantdetails.tab.summary': 'Résumé',
+  'screen.variantdetails.seeMore': 'Voir plus',
+  'screen.variantdetails.seeLess': 'Voir moins',
   'screen.variantDetails.summaryTab.emptyTable': 'Aucune donnée disponible',
   'screen.variantDetails.summaryTab.summaryTable.variant': 'Variant',
   'screen.variantDetails.summaryTab.summaryTable.cytoband': 'Cytobande',
