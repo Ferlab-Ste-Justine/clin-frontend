@@ -10,15 +10,13 @@ import { v1 as uuidv1 } from 'uuid';
 import {
   Tabs, Button, Row, Col, Typography, Table, Empty, Tooltip, Card, Tag, Popover, Divider,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import IconKit from 'react-icons-kit';
 import {
   ic_assessment, ic_show_chart, ic_local_library, ic_people,
 } from 'react-icons-kit/md';
 import {
-  filter, isEqual, find,
+  filter, isEqual, find, chain, sumBy,
 } from 'lodash';
-import DataList from '../../DataList';
 import DataTable, { createCellRenderer } from '../../Table/index';
 
 import './style.scss';
@@ -47,10 +45,6 @@ const columnPresetToColumn = (c) => ({
   key: c.key, title: intl.get(c.label), dataIndex: c.key,
 });
 
-const header = (title) => (
-  <Typography.Title className="tableHeader" level={4} style={{ marginBottom: 0 }}>{ title }</Typography.Title>
-);
-
 const Link = ({ url, text }) => (
   <Button
     key={uuidv1()}
@@ -58,7 +52,7 @@ const Link = ({ url, text }) => (
     size="default"
     href={url}
     target="_blank"
-    className="link"
+    className="linkUnderline"
   >
     { text }
   </Button>
@@ -80,13 +74,13 @@ class VariantDetailsScreen extends React.Component {
     this.getInternalCohortFrequencies = this.getInternalCohortFrequencies.bind(this);
     this.getExternalCohortFrequencies = this.getExternalCohortFrequencies.bind(this);
     this.getGenes = this.getGenes.bind(this);
+    this.getClinVar = this.getClinVar.bind(this);
     this.getDonors = this.getDonors.bind(this);
-    this.getOmimData = this.getOmimData.bind(this);
-    this.getHPODataSource = this.getHPODataSource.bind(this);
     this.handleOpenGeneTable = this.handleOpenGeneTable.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
     this.handleSeeMoreImpact = this.handleSeeMoreImpact.bind(this);
+    this.handleSeeMoreGene = this.handleSeeMoreGene.bind(this);
     this.goToPatientTab = this.goToPatientTab.bind(this);
     this.state.consequencesColumnPreset = [
       {
@@ -159,6 +153,14 @@ class VariantDetailsScreen extends React.Component {
 
     this.state.internalCohortsFrequenciesColumnPreset = [
       {
+        key: 'ldm',
+        label: 'screen.variantDetails.frequenciesTab.LDM',
+        renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
+          renderer: (data) => { try { return data.ldm; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.MEDIUM,
+      },
+      {
         key: 'pn',
         label: 'screen.variantDetails.frequenciesTab.nbPatientsColumn',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
@@ -223,10 +225,46 @@ class VariantDetailsScreen extends React.Component {
         columnWidth: COLUMN_WIDTH.WIDE,
       },
       {
+        key: 'an',
+        label: 'screen.variantDetails.frequenciesTab.nbAllelesAltRef',
+        renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
+          renderer: (data) => { try { return data.an; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.MEDIUM,
+      },
+      {
+        key: 'hom',
+        label: 'screen.variantDetails.frequenciesTab.nbHomozygotes',
+        renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
+          renderer: (data) => { try { return data.hom; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.MEDIUM,
+      },
+      {
         key: 'af',
         label: 'screen.variantDetails.frequenciesTab.frequencies',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
           renderer: (data) => { try { return data.af; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+
+    ];
+
+    this.state.externalCohortsFrequenciesColumnPreset = [
+      {
+        key: 'key',
+        label: 'screen.variantDetails.frequenciesTab.LDMColumn',
+        renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
+          renderer: (data) => { try { return data.key; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'ac',
+        label: 'screen.variantDetails.frequenciesTab.nbAllelesAlt',
+        renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
+          renderer: (data) => { try { return data.ac; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -247,45 +285,64 @@ class VariantDetailsScreen extends React.Component {
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
-        key: 'info',
-        label: 'screen.variantDetails.frequenciesTab.additionalInfo',
+        key: 'af',
+        label: 'screen.variantDetails.frequenciesTab.frequencies',
         renderer: createCellRenderer('custom', this.getExternalCohortFrequencies, {
-          renderer: (data) => {
-            try {
-              return (
-                <Link
-                  url={data.info}
-                  text="Voir plus"
-                />
-              );
-            } catch (e) { return ''; }
-          },
+          renderer: (data) => { try { return data.af; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
     ];
 
-    this.state.omimColumnPreset = [
+    this.state.clinVarColumnPreset = [
       {
-        key: 'geneLocus',
-        label: 'screen.variantDetails.clinicalAssociationsTab.geneLocus',
-        renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => { try { return data.symbol; } catch (e) { return ''; } },
+        key: 'interpretation',
+        label: 'screen.variantDetails.clinicalAssociationsTab.interpretation',
+        renderer: createCellRenderer('custom', this.getClinVar, {
+          renderer: (data) => { try { return data.clinvar; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
       {
-        key: 'phenotype',
-        label: 'screen.variantDetails.clinicalAssociationsTab.phenotype',
+        key: 'condition',
+        label: 'screen.variantDetails.clinicalAssociationsTab.condition',
+        renderer: createCellRenderer('custom', this.getClinVar, {
+          renderer: (data) => { try { return data.clinvar; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'transmission',
+        label: 'screen.variantDetails.clinicalAssociationsTab.transmission',
+        renderer: createCellRenderer('custom', this.getClinVar, {
+          renderer: (data) => { try { return data.clinvar; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+    ];
+
+    this.state.genesColumnPreset = [
+      {
+        key: 'source',
+        label: 'screen.variantDetails.clinicalAssociationsTab.interpretation',
         renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => {
-            try {
-              const lis = data.orphanet.map((o) => (<li key={shortid.generate()}>{ o }</li>));
-              return (<ul>{ lis }</ul>);
-            } catch (e) {
-              return '';
-            }
-          },
+          renderer: (data) => { try { return data; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'gene',
+        label: 'screen.variantDetails.clinicalAssociationsTab.gene',
+        renderer: createCellRenderer('custom', this.getGenes, {
+          renderer: (data) => { try { return data; } catch (e) { return ''; } },
+        }),
+        columnWidth: COLUMN_WIDTH.WIDE,
+      },
+      {
+        key: 'sign',
+        label: 'screen.variantDetails.clinicalAssociationsTab.sign',
+        renderer: createCellRenderer('custom', this.getGenes, {
+          renderer: (data) => { try { return data; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -293,76 +350,9 @@ class VariantDetailsScreen extends React.Component {
         key: 'transmission',
         label: 'screen.variantDetails.clinicalAssociationsTab.transmission',
         renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => {
-            try {
-              const lis = data.radboudumc.map((r) => (<li key={shortid.generate()}>{ r }</li>));
-              return (<ul>{ lis }</ul>);
-            } catch (e) {
-              return '';
-            }
-          },
+          renderer: (data) => { try { return data; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
-      },
-    ];
-
-    this.state.associationColumnPreset = [
-      {
-        key: 'symbol',
-        label: 'screen.variantDetails.clinicalAssociationsTab.gene',
-        renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => { try { return data.symbol; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
-      },
-      {
-        key: 'orphanet',
-        label: 'screen.variantDetails.clinicalAssociationsTab.orphanet',
-        renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => {
-            try {
-              const lis = data.orphanet.map((o) => (<li key={shortid.generate()}>{ o }</li>));
-              return (<ul>{ lis }</ul>);
-            } catch (e) {
-              return '';
-            }
-          },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
-      },
-      {
-        key: 'radboudumc',
-        label: 'screen.variantDetails.clinicalAssociationsTab.radboudumc',
-        renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => {
-            try {
-              const lis = data.radboudumc.map((r) => (<li key={shortid.generate()}>{ r }</li>));
-              return (<ul>{ lis }</ul>);
-            } catch (e) {
-              return '';
-            }
-          },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
-      },
-    ];
-
-    this.state.HPOColumnPreset = [
-      {
-        key: 'symbol',
-        label: 'screen.variantDetails.clinicalAssociationsTab.gene',
-        renderer: createCellRenderer('custom', this.getGenes, {
-          renderer: (data) => { try { return data.symbol; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.WIDE,
-      },
-      {
-        key: 'trait',
-        label: 'screen.variantDetails.clinicalAssociationsTab.sign',
-      },
-      {
-        key: 'donors',
-        label: 'screen.variantDetails.clinicalAssociationsTab.donors',
       },
     ];
 
@@ -518,7 +508,7 @@ class VariantDetailsScreen extends React.Component {
                 return null;
             }
           };
-
+          let isSameGene = false;
           const getImpact = () => {
             let items = [];
             if (g.predictions) {
@@ -586,7 +576,6 @@ class VariantDetailsScreen extends React.Component {
                 }
               };
 
-              let isSameGene = false;
               isVepOpen.forEach((element) => {
                 if (isEqual(g, element)) {
                   isSameGene = true;
@@ -618,7 +607,11 @@ class VariantDetailsScreen extends React.Component {
                   { items }
                 </ul>
                 {
-                  items.length > 2 ? (<Button className="linkUnderline" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>Voir plus</Button>) : null
+                  items.length > 2 ? (
+                    <Button className="linkUnderline voirPlus" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>
+                      { isSameGene ? 'Voir moins' : 'Voir plus' }
+                    </Button>
+                  ) : null
                 }
 
               </div>
@@ -665,13 +658,41 @@ class VariantDetailsScreen extends React.Component {
     if (data) {
       const {
         frequencies,
+        donors,
       } = data;
 
-      const internalCohortsKeys = Object.keys(frequencies).filter((k) => k === 'internal' || k.indexOf('LDx') !== -1);
+      /*       const internalCohortsKeys = Object.keys(frequencies).filter((k) => k === 'internal' || k.indexOf('LDx') !== -1);
       const totalKey = 'Total';
-      let totalValue = null;
+      const totalValue = null; */
       const rows = [];
-      internalCohortsKeys.forEach((key) => {
+
+      const frequenciesByldm = chain(donors)
+        .groupBy('organization_id')
+        .map((value, key) => ({ ldm: key, info: value }))
+        .value();
+
+      frequenciesByldm.forEach((element) => {
+        const ac = sumBy(element.info, (e) => e.ad_alt);
+        const an = sumBy(element.info, (e) => e.ad_total);
+        const info = {
+          ldm: element.ldm,
+          pn: element.info.length,
+          ac,
+          an,
+        };
+        rows.push(info);
+      });
+      const total = {
+        ldm: (<span className="bold">Total</span>),
+        pn: (<Button className="linkUnderline bold variantLink" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.pn }</Button>),
+        ac: (<span className="bold">{ sumBy(rows, (e) => e.ac) }</span>),
+        an: (
+          <span className="bold">
+            { sumBy(rows, (e) => e.an) }
+          </span>),
+      };
+      rows.push(total);
+      /*       internalCohortsKeys.forEach((key) => {
         const frequency = {
           ...frequencies[key],
         };
@@ -687,8 +708,7 @@ class VariantDetailsScreen extends React.Component {
 
       if (totalValue != null) {
         rows.push(totalValue);
-      }
-
+      } */
       return rows;
     }
 
@@ -714,14 +734,9 @@ class VariantDetailsScreen extends React.Component {
         const frequency = {
           ...frequencies[key],
         };
-        frequency.key = key;
+
+        frequency.key = <Button type="link" target="_blank" href={url} className="linkUnderline variantLink">{ key }</Button>;
         frequency.af = Number.parseFloat(frequency.af).toExponential(5);
-        frequency.info = (
-          <Link
-            url={url}
-            text="Voir plus"
-          />
-        );
         return frequency;
       });
 
@@ -739,119 +754,185 @@ class VariantDetailsScreen extends React.Component {
       const {
         genes,
       } = data;
+      const row = [];
+      const omim = [];
+      const hpo = [];
+      const orphanet = [];
 
-      if (genes) {
-        return genes;
-      }
+      genes.forEach((gene, index) => {
+        const geneSymbol = gene.symbol;
+
+        // Omim
+
+        const geneSymbolOmim = (
+          <span>{ geneSymbol } ( MIM:
+            <Button type="link" target="_blank" href={`https://omim.org/entry/${gene.omim_gene_id}`} className="linkUnderline variantLink geneLink">
+              { gene.omim_gene_id }
+            </Button>)
+          </span>
+        );
+        const omimSign = [];
+        const omimTransmission = [];
+        if (gene.omim) {
+          gene.omim.forEach((element, i) => {
+            const name = element.name.replace(/[{()}]/g, '');
+            const isOpen = i < 3 ? 'open' : 'close';
+            const lineSign = (
+              <li className={isOpen}>{ name } ( MIM:
+                <Button type="link" target="_blank" href={`https://omim.org/entry/${element.omim_id}`} className="linkUnderline variantLink geneLink">
+                  { element.omim_id }
+                </Button>)
+              </li>
+            );
+            omimSign.push(lineSign);
+
+            const lineTransmission = (
+              <li>
+                { element.inheritance ? element.inheritance.join(', ') : '--' }
+              </li>
+            );
+            omimTransmission.push(lineTransmission);
+          });
+        }
+
+        const omimSignList = omimSign.length > 0 ? (
+          <div className={`gene omim_${index}`}>
+            <ul className="gene">{ omimSign }
+            </ul>
+            {
+              omimSign.length > 3 ? (
+                <Button className="linkUnderline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('omim', index); }}>Voir plus</Button>) : null
+            }
+          </div>
+        ) : '--';
+
+        const omimTransmissionList = omimTransmission.length > 0 ? (
+          <div className={`gene omim_${index}`}>
+            <ul className="gene">{ omimTransmission }
+            </ul>
+            {
+              omimSign.length > 3 ? (
+                <Button className="linkUnderline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('omim', index); }}>Voir plus</Button>) : null
+            }
+          </div>
+        ) : '--';
+
+        const omimItem = {
+          source: '', gene: geneSymbolOmim, sign: omimSignList, transmission: omimTransmissionList,
+        };
+        if (gene.omim_gene_id) {
+          omim.push(omimItem);
+        }
+
+        // Orphanet
+        const orphanetSign = [];
+        if (gene.orphanet) {
+          gene.orphanet.forEach((element, i) => {
+            const isOpen = i < 3 ? 'open' : 'close';
+            const line = (
+              <li className={isOpen}>
+                <Button type="link" target="_blank" href={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${element.disorder_id}`} className="linkUnderline variantLink">
+                  { element.panel }
+                </Button>
+              </li>
+            );
+            orphanetSign.push(line);
+          });
+        }
+
+        const orphanetList = orphanetSign.length > 0 ? (
+          <div className={`gene orphanet_${index}`}>
+            <ul className="gene">{ orphanetSign }
+            </ul>
+            {
+              orphanetSign.length > 3 ? (
+                <Button className="linkUnderline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('orphanet', index); }}>Voir plus</Button>) : null
+            }
+          </div>
+        ) : '--';
+        const orphanetItem = {
+          source: '', gene: geneSymbol, sign: orphanetList, transmission: '--',
+        };
+        if (gene.orphanet) {
+          orphanet.push(orphanetItem);
+        }
+
+        // HPO
+        const hpoSign = [];
+        if (gene.hpo) {
+          gene.hpo.forEach((element, i) => {
+            const name = element.hpo_term_name;
+            const isOpen = i < 3 ? 'open' : 'close';
+            const linkText = element.hpo_term_id.slice(3);
+            const line = (
+              <li className={isOpen}>{ name } ( HP:
+                <Button type="link" target="_blank" href={`https://hpo.jax.org/app/browse/term/${element.hpo_term_id}`} className="linkUnderline variantLink geneLink">
+                  { linkText }
+                </Button>)
+              </li>
+            );
+            hpoSign.push(line);
+          });
+        }
+
+        const hpoList = hpoSign.length > 0 ? (
+          <div className={`gene hpo_${index}`}>
+            <ul className="gene">{ hpoSign }
+            </ul>
+            {
+              hpoSign.length > 3 ? (
+                <Button className="linkUnderline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('hpo', index); }}>Voir plus</Button>) : null
+            }
+          </div>
+        ) : '--';
+        const hpoItem = {
+          source: '', gene: geneSymbol, sign: hpoList, transmission: '--',
+        };
+        if (gene.hpo) {
+          hpo.push(hpoItem);
+        }
+      });
+
+      omim.forEach((element, i) => {
+        if (i === 0) {
+          element.source = 'OMIM';
+        } else if (i === omim.length - 1) {
+          element.source = '';
+        }
+      });
+      orphanet.forEach((element, i) => {
+        if (i === 0) {
+          element.source = 'Orphanet';
+        } else if (i === orphanet.length - 1) {
+          element.source = '';
+        }
+      });
+      hpo.forEach((element, i) => {
+        if (i === 0) {
+          element.source = 'HPO';
+        } else if (i === hpo.length - 1) {
+          element.source = '';
+        }
+      });
+      row.push(...orphanet);
+      row.push(...omim);
+      row.push(...hpo);
+
+      return row;
     }
 
     return [];
   }
 
-  getAssociationData() {
-    const orphanetLink = (on) => {
-      const {
-        disorder_id, panel,
-      } = on;
-
-      // const re = RegExp(/([Orph:])\d+(\.\d*)?/, 'i');
-      // const orphaId = panel ? re.exec(panel)[0] : '';
-
-      return (
-        <span className="orphanetLink">
-          <Link
-            key={shortid.generate()}
-            url={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${disorder_id}`}
-            text={panel}
-          />
-        </span>
-
-      );
-    };
-
-    return this.getGenes()
-      .filter((gene) => gene.radboudumc != null || gene.orphanet != null)
-      .map((g) => {
-        // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-        const test = g.orphanet ? g.orphanet.map((on) => (orphanetLink(on))) : null;
-        const orphanetLine = test || '--';
-        return { symbol: g.symbol, orphanet: (<span className="orphanetValue">{ orphanetLine }</span>) };
-      });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  getOmimData() {
-    return this.getGenes().map((g) => {
-      // const lis = g.hpo ? g.hpo.map(h => (<li>{h}</li>)) : [];
-      const geneLine = (
-        <span>{ g.symbol } { g.omim_gene_id
-          ? (
-            <Fragment key={shortid.generate()}>
-              (MIM:
-              <Link
-                url={`https://omim.org/entry/${g.omim_gene_id}`}
-                text={g.omim_gene_id}
-              />
-              )
-            </Fragment>
-          ) : '' }
-        </span>
-      );
-      let phenotype = '--';
-      let transmission = '--';
-      if (g.omim && g.omim.length > 0) {
-        phenotype = g.omim.map((o) => (
-          <li key={shortid.generate()}>
-            { o.name } (MIM:
-            <Link
-              url={`https://omim.org/entry/${o.omim_id}`}
-              text={o.omim_id}
-            />)
-          </li>
-        ));
-
-        transmission = g.omim.map((o) => {
-          if (o.inheritance) {
-            return (
-              <li>
-                { o.inheritance.join(',') }
-              </li>
-            );
-          }
-          return '--';
-        });
-      }
-      return { geneLocus: (<span className="orphanetValue">{ geneLine }</span>), phenotype: (<ul className="omimValue">{ phenotype }</ul>), transmission: <ul className="omimValue">{ transmission }</ul> };
-    });
-  }
-
-  getHPODataSource() {
+  getClinVar() {
     const { variantDetails } = this.props;
     const { data } = variantDetails;
-    const { genes } = data;
-
-    if (genes.filter((g) => !!g.hpo).length > 0) {
-      return genes.map((g) => {
-        const lis = g.hpo ? g.hpo.map((h) => {
-          const url = `https://hpo.jax.org/app/browse/term/${h.hpo_term_id}`;
-          return (<a href={url}>{ h.hpo_term_label }</a>);
-        }) : '--';
-        const value = (
-          <span className="hpoRow">
-            <span className="hpoValue">{ lis }</span>
-            {
-              lis !== '--' ? (
-                <span className="iconPlus">
-                  <PlusOutlined />
-                </span>
-              ) : null
-            }
-          </span>
-        );
-        return { symbol: g.symbol, trait: value, donors: '' };
-      });
+    if (data.clinvar) {
+      const clinvarLine = data.clinvar.clin_sig.join(', ');
+      const interpretation = <span>{ clinvarLine }</span>;
+      const condition = <span>condition</span>;
+      return [{ interpretation, condition, transmission: 'transmission' }];
     }
-
     return [];
   }
 
@@ -922,6 +1003,23 @@ class VariantDetailsScreen extends React.Component {
     });
   }
 
+  handleSeeMoreGene(type, index) {
+    const signCell = document.querySelector(`.${type}_${index}`);
+    const list = signCell.childNodes[0];
+    const isOpen = !!list.childNodes[list.childNodes.length - 1].className.includes('open');
+    signCell.childNodes[0].childNodes.forEach((child, i) => {
+      if (i >= 3) {
+        if (isOpen) {
+          child.className = 'close';
+          signCell.childNodes[1].innerHTML = 'Voir plus';
+        } else {
+          child.className = 'open';
+          signCell.childNodes[1].innerHTML = 'Voir moins';
+        }
+      }
+    });
+  }
+
   handleTabNavigation(tab) {
     const { actions, variantDetails } = this.props;
     actions.navigateToVariantDetailsScreen(variantDetails.variantID, tab);
@@ -957,9 +1055,8 @@ class VariantDetailsScreen extends React.Component {
       consequencesColumnPreset,
       internalCohortsFrequenciesColumnPreset,
       externalCohortsFrequenciesColumnPreset,
-      omimColumnPreset,
-      associationColumnPreset,
-      HPOColumnPreset,
+      genesColumnPreset,
+      clinVarColumnPreset,
       donorsColumnPreset,
       openGeneTable,
     } = this.state;
@@ -1040,16 +1137,16 @@ class VariantDetailsScreen extends React.Component {
     };
 
     const getConsequenceTitle = (gene) => {
-      const omimId = find(data.genes, { symbol: gene.symbol });
+      const omimGene = find(data.genes, { symbol: gene.symbol });
       return (
         <Row className="flex-row">
           <Typography.Title level={5} className="variant-page-content__table__title">
             Gène <span className="linkUnderline"><Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${gene.symbol}`} text={gene.symbol} /></span>
           </Typography.Title>
-          { omimId
+          { omimGene && omimGene.omim_gene_id
             ? (
               <Typography.Title level={5} className="variant-page-content__table__title">
-                OMIM <span className="linkUnderline"><Link url={`https://omim.org/entry/${omimId.omim_gene_id}`} text={omimId.omim_gene_id} /></span>
+                OMIM <span className="linkUnderline"><Link url={`https://omim.org/entry/${omimGene.omim_gene_id}`} text={omimGene.omim_gene_id} /></span>
               </Typography.Title>
             ) : null }
 
@@ -1060,6 +1157,20 @@ class VariantDetailsScreen extends React.Component {
         </Row>
       );
     };
+
+    const getClinVarTitle = () => (
+      <span className="bold">{ intl.get('screen.variantDetails.clinicalAssociationsTab.clinVar') } (
+        <Button
+          className="linkUnderline bold clinVarId"
+          target="_blank"
+          type="link"
+          href={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
+        >
+          { clinvar.clinvar_id }
+        </Button>
+        )
+      </span>
+    );
 
     const divideGenes = getDivideGenes();
     return (
@@ -1297,6 +1408,7 @@ class VariantDetailsScreen extends React.Component {
                     <Table
                       rowKey={() => shortid.generate()}
                       pagination={false}
+                      size="small"
                       locale={{
                         emptyText: (
                           <Empty
@@ -1321,6 +1433,7 @@ class VariantDetailsScreen extends React.Component {
                     <Table
                       rowKey={() => shortid.generate()}
                       pagination={false}
+                      size="small"
                       locale={{
                         emptyText: (
                           <Empty
@@ -1348,99 +1461,59 @@ class VariantDetailsScreen extends React.Component {
               )}
             >
               <div className="page-static-content">
-                <Row type="flex" className="clinVarTable">
-                  <Col>
-                    <DataList
-                      title="Clin Var"
-                      extraInfo={clinvar ? (
-                        <Link
-                          url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
-                          text={clinvar.clinvar_id}
-                        />
-                      ) : null}
-                      dataSource={
-                        clinvar
-                          ? [
-                            {
-                              label: intl.get(
-                                'screen.variantDetails.clinicalAssociationsTab.signification',
-                              ),
-                              value: clinvar.clin_sig ? clinvar.clin_sig.join(', ') : null,
-                            },
-                          ]
-                          : []
-                      }
-                    />
-                  </Col>
-                </Row>
-                <Row type="flex" className="AssCondTable">
+                { clinvar ? (
+                  <Row className="flex-row">
+                    <Card
+                      title={getClinVarTitle()}
+                      className="staticCard"
+                      bordered={false}
+                    >
+                      <Table
+                        rowKey={() => shortid.generate()}
+                        pagination={false}
+                        size="small"
+                        locale={{
+                          emptyText: (
+                            <Empty
+                              image={null}
+                              description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                            />),
+                        }}
+                        dataSource={this.getClinVar()}
+                        columns={clinVarColumnPreset.map(
+                          columnPresetToColumn,
+                        )}
+                      />
+                    </Card>
+                  </Row>
+                ) : null }
+
+                <Row className="flex-row">
                   <Card
-                    title={intl.get('screen.variantDetails.summaryTab.assCondTable.title')}
+                    title={intl.get('screen.variantDetails.clinicalAssociationsTab.genePhenotype')}
                     className="staticCard"
                     bordered={false}
                   >
                     <Table
                       rowKey={() => shortid.generate()}
+                      className="geneTable"
                       pagination={false}
+                      size="small"
                       locale={{
-                        emptyText: (<Empty
-                          image={false}
-                          description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
-                        />),
+                        emptyText: (
+                          <Empty
+                            image={null}
+                            description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                          />),
                       }}
-                      dataSource={this.getAssociationData()}
-                      columns={associationColumnPreset.map(
+                      dataSource={this.getGenes()}
+                      columns={genesColumnPreset.map(
                         columnPresetToColumn,
                       )}
                     />
                   </Card>
                 </Row>
 
-                <Row>
-                  <Col>{ header('OMIM') }</Col>
-                </Row>
-                <Row type="flex" className="omimTable">
-                  <Card
-                    title={intl.get('screen.variantDetails.summaryTab.omimTable.title')}
-                    className="staticCard"
-                    bordered={false}
-                  >
-                    <Table
-                      rowKey={() => shortid.generate()}
-                      pagination={false}
-                      locale={{
-                        emptyText: (<Empty
-                          image={false}
-                          description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
-                        />),
-                      }}
-                      dataSource={this.getOmimData()}
-                      columns={omimColumnPreset.map(
-                        columnPresetToColumn,
-                      )}
-                    />
-                  </Card>
-                </Row>
-                <Row type="flex" className="hpoTable">
-                  <Card
-                    title={intl.get('screen.variantDetails.summaryTab.hpoTable.title')}
-                    className="staticCard"
-                    bordered={false}
-                  >
-                    <Table
-                      rowKey={() => shortid.generate()}
-                      pagination={false}
-                      locale={{
-                        emptyText: (<Empty
-                          image={false}
-                          description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
-                        />),
-                      }}
-                      dataSource={this.getHPODataSource()}
-                      columns={HPOColumnPreset.map(columnPresetToColumn)}
-                    />
-                  </Card>
-                </Row>
               </div>
 
             </Tabs.TabPane>
