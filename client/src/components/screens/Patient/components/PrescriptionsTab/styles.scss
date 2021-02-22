@@ -5,24 +5,6 @@
   .ant-card-body{
     padding: 16px 32px;
   }
-  .nameBlock{
-    width: 240px;
-    text-align: center;
-    background-color: $gray-2;
-
-    &__info{
-      flex-direction: column;
-    }
-    i{
-      color: $gray-5;
-      margin-bottom: 8px;
-    }
-
-    .ant-tag{
-      margin: 0;
-      margin-top: 8px;
-    }
-  }
 
   .content{
     flex: 1;
@@ -96,6 +78,10 @@
       border: 1px solid $gray-5;
       margin-top: auto;
       margin-bottom: auto;
+
+      &__tags {
+        margin-top: 8px;
+      }
     }
 
     &__col {

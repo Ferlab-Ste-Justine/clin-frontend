@@ -10,6 +10,8 @@ import { Provider, Record } from '../providers';
 const ETHNICITY_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity';
 const BLOOD_RELATIONSHIP_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship';
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
+const FETUS_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus';
+const FAMILY_REL_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
 
 function getHospitalFromReference(reference: Reference) {
   return reference.reference.split('/')[1];
@@ -71,6 +73,8 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
     const ethnicityExt = dataExtractor.getExtension(patient, ETHNICITY_EXT_URL);
     const bloodRelationshipExt = dataExtractor.getExtension(patient, BLOOD_RELATIONSHIP_EXT_URL);
     const probandExt = dataExtractor.getExtension(patient, PROBAND_EXT_URL);
+    const fetusExt = dataExtractor.getExtension(patient, FETUS_EXT_URL);
+    const familyRelationExt = dataExtractor.getExtension(patient, FAMILY_REL_EXT_URL);
 
     const mrn: Mrn[] = patient.identifier
       .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
@@ -99,6 +103,8 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
       familyId: group.id!,
       familyType: group.type,
       proband: probandExt != null && probandExt.valueBoolean ? 'Proband' : 'Parent',
+      isFetus: fetusExt.valueBoolean,
+      familyRelation: familyRelationExt?.extension[0].valueReference.reference.split('/')[1],
     };
 
     return [

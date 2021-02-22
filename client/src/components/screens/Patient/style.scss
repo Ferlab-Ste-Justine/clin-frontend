@@ -1,9 +1,9 @@
 @import './variables.scss';
 @import '../../../style/themes/colors.scss';
 
-.patientHeader{
-  .ant-col{
-    padding-right: 12px;
+.patient-header{
+  &__name__mother-name {
+    font-size: 14px;
   }
 }
 
