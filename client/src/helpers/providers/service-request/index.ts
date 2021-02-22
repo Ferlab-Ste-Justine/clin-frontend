@@ -28,6 +28,10 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     return get(dataExtractor.getExtension(serviceRequest, CLIN_REF_EXT), 'valueReference.reference');
   }
 
+  private getLastNote(serviceRequest: ServiceRequest) : string {
+    return get(serviceRequest, `note[${get(serviceRequest, 'note', []).length - 1}].text`, '');
+  }
+
   public doProvide(dataExtractor: DataExtractor): Record<ServiceRequest, Prescription>[] {
     const serviceRequestBundle = dataExtractor.extractBundle('ServiceRequest');
     const serviceRequests = dataExtractor.extractResources<ServiceRequest>(serviceRequestBundle, 'ServiceRequest');
@@ -38,7 +42,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       requester: dataExtractor.getPractitionerDataFromPractitioner(serviceRequest, 'requester', serviceRequestBundle)!,
       status: this.getStatus(dataExtractor, serviceRequest) as PrescriptionStatus,
       test: get(serviceRequest, 'code.coding[0].code', 'N/A'),
-      note: get(serviceRequest, 'note[0].text', ''),
+      note: this.getLastNote(serviceRequest),
       clinicalImpressionRef: this.getClincalImpressionRef(dataExtractor, serviceRequest),
     }));
 
