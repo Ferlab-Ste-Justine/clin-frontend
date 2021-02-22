@@ -313,5 +313,21 @@
         }
       }
     }
+
+    &__clinical-sign {
+      &__observed {
+        &--positive {
+          color: $green-6;
+        }
+
+        &--negative {
+          color: $red-5;
+        }
+
+        &--unknown {
+          color: $gray-8;
+        }
+      }
+    }
   }
 }

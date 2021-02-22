@@ -124,37 +124,11 @@
       }
     }
   }
-
-  .clinicalSign{
-    width: 100%;
-    th{
-      &:first-child{
-        width: 70px !important;
-        text-align: center;
-      }
-    }
-
-    td{
-      &:first-child{
-        text-align: center;
-      }
-    }
-  }
 }
 
 
 .ant-tabs-nav-scroll{
   background-color: #fff;
-}
-
-.observedIcon{
-  color: $green-6;
-}
-.notObservedIcon{
-  color: $red-5;
-}
-.unknownIcon{
-  color: $gray-8;
 }
 
 //temporaire
