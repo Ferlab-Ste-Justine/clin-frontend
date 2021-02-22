@@ -187,16 +187,19 @@ const updateServiceRequestStatus = async (user, serviceRequest, status, note) =>
     return ext;
   });
 
-  const notes = get(serviceRequest, 'note', []);
+  let notes = get(serviceRequest, 'note', []);
 
   if (note != null) {
-    notes.push({
-      text: note,
-      time: new Date(),
-      authorReference: {
-        reference: `Practitioner/${user.practitionerId}`,
+    notes = [
+      ...notes,
+      {
+        text: note,
+        time: new Date(),
+        authorReference: {
+          reference: `Practitioner/${user.practitionerId}`,
+        },
       },
-    });
+    ];
   }
 
   const editedServiceRequest = {

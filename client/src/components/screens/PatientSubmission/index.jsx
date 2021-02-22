@@ -417,7 +417,10 @@ function PatientSubmissionScreen(props) {
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
       batch.fmhs = get(content, 'fmh', []).filter(
         (fmh) => fmh.note != null && fmh.relation != null,
-      ).map((fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation)).withNote(fmh.note).withPatient(currentPatient.id).build());
+      ).map((fmh) => new FamilyMemberHistoryBuilder(
+        fmh.relation,
+        getFamilyRelationshipDisplayForCode(fmh.relation),
+      ).withNote(fmh.note).withPatient(currentPatient.id).build());
 
       const cghObservation = createCGHResourceList();
       if (cghObservation != null) {
