@@ -252,7 +252,7 @@ const patientSubmissionReducer = (
         const hpos = patientState.hpos.map((hpo) => hpo.original).filter(
           (hpo) => investigationItems.find((item) => item.reference.indexOf(hpo.id) !== -1) != null,
         );
-        const fmhs = patientState.fmhs.map((fmh) => fmh.original).filter(
+        const fmhs = patientState.fmhs.map((fmh) => fmh.parsed).filter(
           (fmh) => investigationItems.find((item) => item.reference.indexOf(fmh.id) !== -1) != null,
         );
         const { observations } = action.payload.patient;

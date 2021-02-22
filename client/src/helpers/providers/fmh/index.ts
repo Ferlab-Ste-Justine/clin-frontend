@@ -14,8 +14,9 @@ export class FMHProvider extends Provider<FamilyMemberHistory, FamilyObservation
 
     const fmhs = dataExtractor.extractResources<FamilyMemberHistory>(clinicalImpressionBundle, 'FamilyMemberHistory');
 
-    return fmhs.map<Record<FamilyMemberHistory, FamilyObservation>>((fmh: any) => {
+    return fmhs.map<Record<FamilyMemberHistory, FamilyObservation>>((fmh) => {
       const fmhObservation: FamilyObservation = {
+        id: fmh.id!,
         link: get(fmh, 'relationship.coding[0].display', 'N/A'),
         note: get(fmh, 'note[0].text', ''),
       };

@@ -80,79 +80,6 @@ function PatientSubmissionScreen(props) {
 
   const getFields = () => (state.currentPageIndex === 0 ? form.getFieldsValue() : state.firstPageFields);
 
-  const getPatientData = () => {
-    const { currentPageIndex } = state;
-    const { patient } = props;
-    let values = getFields();
-
-    const getEthnicityDisplay = (ethnicity) => {
-      switch (ethnicity) {
-        case 'CA-FR':
-          return intl.get('form.patientSubmission.form.ethnicity.cafr');
-        case 'EU':
-          return intl.get('form.patientSubmission.form.ethnicity.eu');
-        case 'AFR':
-          return intl.get('form.patientSubmission.form.ethnicity.afr');
-        case 'LAT-AM':
-          return intl.get('form.patientSubmission.form.ethnicity.latam');
-        case 'ES-AS':
-          return intl.get('form.patientSubmission.form.ethnicity.esas');
-        case 'SO-AS':
-          return intl.get('form.patientSubmission.form.ethnicity.soas');
-        case 'ABOR':
-          return intl.get('form.patientSubmission.form.ethnicity.abor');
-        case 'MIX':
-          return intl.get('form.patientSubmission.form.ethnicity.mix');
-        case 'OTH':
-          return intl.get('form.patientSubmission.form.ethnicity.oth');
-        default:
-          return '';
-      }
-    };
-
-    if (currentPageIndex === 0) {
-      values.ramq = values.ramq.toUpperCase();
-      const gender = typeof values.gender === 'string' ? get(values, 'gender', '') : get(values, 'gender.target.value', '');
-
-      values = mapValues(values, (o) => {
-        if (typeof o === 'string') {
-          return o.trim();
-        }
-        return o;
-      });
-
-      const value = new PatientBuilder()
-        .withId(patient.id)
-        .withFamily(values.family)
-        .withGiven(values.given)
-        .withMrn(values.mrn)
-        .withOrganization(values.organization)
-        .withBloodRelationship(values.consanguinity)
-        .withEthnicityCode(values.ethnicity ? values.ethnicity : '')
-        .withEthnicityDisplay(getEthnicityDisplay(values.ethnicity))
-        .withActive(true)
-        .withBirthDate(new Date(values.birthDate.toDate()))
-        .withGeneralPractitioners(patient.generalPractitioner)
-        .withGender(gender)
-        .build();
-
-      return value;
-    }
-
-    return { ...patient };
-  };
-
-  const getServiceRequestCode = () => {
-    const values = form.getFieldsValue();
-
-    if (values.analyse != null) {
-      return values.analyse;
-    }
-
-    const { localStore } = props;
-    return localStore.serviceRequest.code;
-  };
-
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
 
   const canGoNextPage = (currentPage) => {
@@ -417,10 +344,13 @@ function PatientSubmissionScreen(props) {
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
       batch.fmhs = get(content, 'fmh', []).filter(
         (fmh) => fmh.note != null && fmh.relation != null,
-      ).map((fmh) => new FamilyMemberHistoryBuilder(
-        fmh.relation,
-        getFamilyRelationshipDisplayForCode(fmh.relation),
-      ).withNote(fmh.note).withPatient(currentPatient.id).build());
+      ).map(
+        (fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation))
+          .withId(fmh.id)
+          .withNote(fmh.note)
+          .withPatient(currentPatient.id)
+          .build(),
+      );
 
       const cghObservation = createCGHResourceList();
       if (cghObservation != null) {
