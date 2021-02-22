@@ -92,8 +92,11 @@ function* prescriptionChangeStatus(action) {
     ));
 
     const user = yield select((state) => state.user);
+    const patient = yield select((state) => state.patient.patient.original);
 
-    const result = yield Api.updateServiceRequestStatus(user, serviceRequestToUpdate.original, action.payload.status, action.payload.note);
+    const result = yield Api.updateServiceRequestStatus(
+      user, serviceRequestToUpdate.original, action.payload.status, action.payload.note,
+    );
 
     yield put({
       type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED,
@@ -102,6 +105,7 @@ function* prescriptionChangeStatus(action) {
         status: result.payload.data.status,
       },
     });
+    yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED, payload: { uid: patient.id, reload: true } });
   } catch (e) {
     yield put({ type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_FAILED, payload: e });
   }
