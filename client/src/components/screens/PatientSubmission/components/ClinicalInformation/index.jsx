@@ -399,7 +399,7 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, patient,
+      form, observations, localStore, patient, validate,
     } = this.props;
 
     const { TextArea } = Input;
@@ -449,7 +449,7 @@ class ClinicalInformation extends React.Component {
           bordered={false}
         >
           <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.file')}>
-            <MrnItem form={form} patient={patient} />
+            <MrnItem form={form} patient={patient} onChange={() => validate()} />
           </Form.Item>
         </Card>
         <Card

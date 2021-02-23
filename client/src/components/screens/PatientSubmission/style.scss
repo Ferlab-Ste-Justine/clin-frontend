@@ -496,20 +496,6 @@
   &__mrn {
     max-width: 183px;
 
-    &-options {
-      &__button {
-        background-color: transparent;
-        opacity: 0;
-        transition: opacity ease .5s;
-      }
-
-      &:hover {
-        button {
-          opacity: 1;
-        }
-      }
-    }
-
     &__create-button{
       width: 100%;
       border: none;
