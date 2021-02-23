@@ -75,7 +75,7 @@ export const createCellRenderer = (type, getData, options = {}) => {
               icon={options.icon}
               onClick={options.handler}
               data-id={value}
-              className="button"
+              className="button link--underline"
             >
               { options.label || value }
             </Button>
