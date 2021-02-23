@@ -7,16 +7,16 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { v1 as uuidv1 } from 'uuid';
 import {
-  Tabs, Button, Row, Col, Typography, Tooltip, Card, Tag, Popover,
+  Tabs, Button, Typography, Tooltip, Tag, Popover,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import {
   ic_assessment, ic_show_chart, ic_local_library, ic_people,
 } from 'react-icons-kit/md';
-import DataTable, { createCellRenderer } from '../../Table/index';
 import FrequenciesTab from './components/frequencies';
 import ResumeTabs from './components/resume';
 import AssociationsTab from './components/associations';
+import PatientsTabs from './components/patients';
 import './style.scss';
 
 import fetchVariantDetails from '../../../actions/variantDetails';
@@ -27,17 +27,6 @@ const SUMMARY_TAB = 'screen.variantdetails.tab.summary';
 const FREQUENCIES_TAB = 'screen.variantdetails.tab.frequencies';
 const CLINICAL_ASSOCIATIONS_TAB = 'screen.variantdetails.tab.clinicalAssociations';
 const PATIENTS_TAB = 'screen.variantdetails.tab.patients';
-
-const COLUMN_WIDTH = {
-  TINY: 65,
-  NARROW: 80,
-  SMALL: 90,
-  NORMAL: 100,
-  SMALLMEDIUM: 120,
-  MEDIUM: 150,
-  WIDE: 200,
-
-};
 
 const Link = ({ url, text }) => (
   <Button
@@ -62,109 +51,7 @@ class VariantDetailsScreen extends React.Component {
     super(props);
     this.state = {
     };
-    this.getDonors = this.getDonors.bind(this);
-    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
-    this.goToPatientTab = this.goToPatientTab.bind(this);
-    this.state.donorsColumnPreset = [
-      {
-        key: 'patient_id',
-        label: 'screen.variantDetails.patientsTab.donor',
-        renderer: createCellRenderer('button', this.getDonors, {
-          key: 'patient_id',
-          handler: this.handleGoToPatientScreen,
-        }),
-        columnWidth: COLUMN_WIDTH.NORMAL,
-      },
-      {
-        key: 'organization_id',
-        label: 'screen.variantDetails.patientsTab.LDM',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.organization_id; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.NORMAL,
-      },
-      {
-        key: 'study_id',
-        label: 'screen.variantDetails.patientsTab.studyId',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.study_id; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.NARROW,
-      },
-      {
-        key: 'family_id',
-        label: 'screen.variantDetails.patientsTab.familyId',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.family_id; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.NORMAL,
-      },
-      {
-        key: 'sequencing_strategy',
-        label: 'screen.variantDetails.patientsTab.type',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.sequencing_strategy; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.NARROW,
-      },
-      {
-        key: 'zygosity',
-        label: 'screen.variantDetails.patientsTab.zygosity',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.zygosity; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.SMALL,
-      },
-      {
-        key: 'ad_alt',
-        label: 'screen.variantDetails.patientsTab.adAlt',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.ad_alt; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.TINY,
-      },
-      {
-        key: 'ad_total',
-        label: 'screen.variantDetails.patientsTab.adTotal',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.ad_total; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.NARROW,
-      },
-      {
-        key: 'ad_ratio',
-        label: 'screen.variantDetails.patientsTab.adFreq',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.ad_ratio; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
-      },
-      {
-        key: 'gq',
-        label: 'screen.variantDetails.patientsTab.genotypeQuality',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.gq; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.TINY,
-      },
-      {
-        key: 'qd',
-        label: 'screen.variantDetails.patientsTab.qd',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.qd; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.TINY,
-      },
-      {
-        key: 'last_update',
-        label: 'screen.variantDetails.patientsTab.lastUpdate',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.last_update; } catch (e) { return ''; } },
-        }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
-      },
-    ];
   }
 
   componentDidMount() {
@@ -174,31 +61,6 @@ class VariantDetailsScreen extends React.Component {
     this.variantId = uid;
 
     actions.fetchVariantDetails(uid);
-  }
-
-  getDonors() {
-    const { variantDetails } = this.props;
-    const { data } = variantDetails;
-
-    if (data) {
-      const {
-        donors,
-      } = data;
-      return donors;
-    }
-
-    return [];
-  }
-
-  goToPatientTab() {
-    const { actions, variantDetails } = this.props;
-    actions.navigateToVariantDetailsScreen(variantDetails.id, 'patients');
-  }
-
-  handleGoToPatientScreen(e) {
-    const { actions } = this.props;
-    const value = e.target.getAttribute('data-id');
-    actions.navigateToPatientScreen(value);
   }
 
   handleTabNavigation(tab) {
@@ -212,10 +74,6 @@ class VariantDetailsScreen extends React.Component {
     const { hash } = router.location;
 
     if (!data) return null;
-
-    const {
-      donorsColumnPreset,
-    } = this.state;
 
     let mutationIdTitle = null;
     if (data.hgvsg.length > 31) {
@@ -333,32 +191,7 @@ class VariantDetailsScreen extends React.Component {
                 </span>
               )}
             >
-              <div className="page-static-content">
-                <Row type="flex" gutter={32}>
-                  <Card title={intl.get('screen.variantDetails.patientsTab.title')} className="staticCard" bordered={false}>
-                    <Row>
-                      <Col>
-                        <div>
-                          { intl.get('screen.variantDetails.patientsTab.count', { qty: this.getDonors().length }) }
-                        </div>
-                      </Col>
-                    </Row>
-                    <Col className="patientTable">
-                      <DataTable
-                        size={this.getDonors().length}
-                        total={this.getDonors().length}
-                        reorderColumnsCallback={this.handleColumnsReordered}
-                        resizeColumnsCallback={this.handleColumnResized}
-                        columns={donorsColumnPreset}
-                        copyCallback={this.handleCopy}
-                        enableGhostCells
-                        enableResizing
-                      />
-                    </Col>
-                  </Card>
-
-                </Row>
-              </div>
+              <PatientsTabs variantDetails />
 
             </Tabs.TabPane>
           </Tabs>
