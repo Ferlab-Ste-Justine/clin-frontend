@@ -30,7 +30,7 @@ export interface BundleEntry{
     url: string,
   }
   fullUrl?: string;
-  resource: FhirResource;
+  resource?: FhirResource;
 }
 export interface Bundle{
   resourceType: ResourceType;

@@ -1,11 +1,12 @@
 import {
-  all, put, takeLatest,
+  all, put, select, takeLatest,
 } from 'redux-saga/effects';
 
 import get from 'lodash/get';
 import * as actions from '../actions/type';
 import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import Api, { ApiError } from '../helpers/api';
+import { updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
 
 function* handleCreatePatient(action: any) {
   try {
@@ -24,6 +25,20 @@ function* handleCreatePatientFetus(action: any) {
     yield put({ type: actions.CREATE_PATIENT_FETUS_SUCCEEDED, payload: { ...response } });
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_FETUS_FAILED });
+  }
+}
+
+function* handleUpdatePatientPractitioners(action: any) {
+  try {
+    const patient = yield select((state) => state.patient.patient.original);
+
+    const response = yield updatePatientPractitioners(
+      patient, action.payload.serviceRequest, action.payload.clinicalImpression,
+    );
+
+    yield put({ type: actions.UPDATE_PATIENT_PRACTITIONMERS_SUCCEEDED, payload: { ...response } });
+  } catch (error) {
+    yield put({ type: actions.UPDATE_PATIENT_PRACTITIONMERS_FAILED });
   }
 }
 
@@ -58,6 +73,9 @@ function* watchCreatePatient() {
 function* watchCreatePatientFetus() {
   yield takeLatest(actions.CREATE_PATIENT_FETUS_REQUESTED, handleCreatePatientFetus);
 }
+function* watchUpdatePatientPractitioners() {
+  yield takeLatest(actions.UPDATE_PATIENT_PRACTITIONMERS_REQUESTED, handleUpdatePatientPractitioners);
+}
 
 function* watchFetchInfosByRamq() {
   yield takeLatest(actions.PATIENT_FETCH_INFO_BY_RAMQ, fetchInfosByRamq);
@@ -67,6 +85,7 @@ export default function* watchedPatientSubmissionSagas() {
   yield all([
     watchCreatePatient(),
     watchCreatePatientFetus(),
+    watchUpdatePatientPractitioners(),
     watchFetchInfosByRamq(),
   ]);
 }
