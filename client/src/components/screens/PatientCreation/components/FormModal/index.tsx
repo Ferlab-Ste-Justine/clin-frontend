@@ -245,7 +245,6 @@ const FormModal : React.FC<Props> = ({
             try {
               const patientBuilder = new PatientBuilder()
                 .withFamily(values.lastname)
-                .withIsFetus(isFetusType)
                 .withGiven(values.firstname)
                 .withMrnIdentifier(values.mrn.file, values.mrn.hospital)
                 .withOrganization(values.mrn.hospital)

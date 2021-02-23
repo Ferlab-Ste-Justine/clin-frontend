@@ -18,6 +18,7 @@ export class FMHProvider extends Provider<FamilyMemberHistory, FamilyObservation
       const fmhObservation: FamilyObservation = {
         id: fmh.id!,
         link: get(fmh, 'relationship.coding[0].display', 'N/A'),
+        code: get(fmh, 'relationship.coding[0].code'),
         note: get(fmh, 'note[0].text', ''),
       };
 
