@@ -93,6 +93,7 @@ class ClinicalInformation extends React.Component {
       hpoOptions: [],
       treeData: INITIAL_TREE_ROOTS,
       hpoResources: get(props, 'observations.hpos') || [],
+      fmhResources: get(props, 'observations.fmh') || [],
     };
 
     const { treeData } = this.state;
@@ -392,7 +393,9 @@ class ClinicalInformation extends React.Component {
   }
 
   render() {
-    const { hpoOptions, treeData, hpoResources } = this.state;
+    const {
+      hpoOptions, treeData, hpoResources, fmhResources,
+    } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
@@ -400,7 +403,6 @@ class ClinicalInformation extends React.Component {
     } = this.props;
 
     const { TextArea } = Input;
-    const familyHistoryResources = observations.fmh || [];
 
     // const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
     let cghId = null;
@@ -510,7 +512,7 @@ class ClinicalInformation extends React.Component {
           bordered={false}
           className="staticCard patientContent"
         >
-          <FamilyStorySection familyHistoryResources={familyHistoryResources} />
+          <FamilyStorySection familyHistoryResources={fmhResources} />
         </Card>
         <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
           <div className="separator">

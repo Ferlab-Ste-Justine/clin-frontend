@@ -9,16 +9,21 @@ import {
 } from 'antd';
 
 import intl from 'react-intl-universal';
+import isEmpty from 'lodash/isEmpty';
 import { getFamilyRelationshipValues } from '../../../../../../helpers/fhir/fhir';
+import { FamilyObservation } from '../../../../../../helpers/providers/types';
 
 interface Props {
-  familyHistoryResources: any[]
+  familyHistoryResources: Partial<FamilyObservation>[]
 }
 
 const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
   const [isEthnicitySelected, setIsEthnicitySelected] = useState(false);
-  const [hasFamilyHealthCondition, setHasFamilyHealthCondition] = useState(false);
+  const [hasFamilyHealthCondition, setHasFamilyHealthCondition] = useState(
+    familyHistoryResources.filter((fmh) => !isEmpty(fmh) && fmh.id != null).length > 0,
+  );
   const [familyHistoryResourcesClone, setFamilyHistoryResourcesClone] = useState([...familyHistoryResources]);
+
   return (
     <>
       <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity')}>
@@ -81,12 +86,17 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
         </Row>
       </Form.Item>
 
-      <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth')}>
-        <Row>
-          <Col>
-            <Radio.Group onChange={(event) => {
-              setHasFamilyHealthCondition(event.target.value === 'yes');
-            }}
+      <Row>
+        <Col>
+          <Form.Item
+            label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth')}
+            initialValue={hasFamilyHealthCondition ? 'yes' : 'no'}
+          >
+            <Radio.Group
+              onChange={(event) => {
+                setHasFamilyHealthCondition(event.target.value === 'yes');
+              }}
+              defaultValue={hasFamilyHealthCondition ? 'yes' : 'no'}
             >
               <Radio.Button value="yes">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.yes') }
@@ -95,89 +105,95 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.no') }
               </Radio.Button>
             </Radio.Group>
-          </Col>
-        </Row>
-        { hasFamilyHealthCondition && (
-          <>
-            <Row>
-              <Col>
-                <Typography.Text className="clinical-information__family-story__details">
-                  { intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.details') }
-                </Typography.Text>
-              </Col>
+          </Form.Item>
+        </Col>
+      </Row>
+      { hasFamilyHealthCondition && (
+        <>
+          <Row>
+            <Col>
+              <Typography.Text className="clinical-information__family-story__details">
+                { intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.details') }
+              </Typography.Text>
+            </Col>
 
-            </Row>
-            <Row>
-              <Col span={20}>
-                <ul className="clinical-information__family-story__conditions">
-                  { familyHistoryResourcesClone.map((fhr, index) => (
-                    <li>
-                      <Row gutter={8}>
-                        <Col span={14}>
-                          <Form.Item
-                            name={['fmh', index, 'note']}
-                            noStyle
-                          >
-                            <Input
-                              placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
-                              aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                          <Form.Item
-                            name={['fmh', index, 'relation']}
-                            noStyle
-                          >
-                            <Select
-                              suffixIcon={<IconKit className="selectIcon" size={12} icon={ic_person} />}
-                              className="selectRelation"
-                              placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
-                              aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
-                              dropdownClassName="selectDropdown"
-                            >
-                              { Object.values(getFamilyRelationshipValues()).map((rv) => (
-                                <Select.Option value={rv.value} key={`relationship_${rv.value}`}>
-                                  { rv.label }
-                                </Select.Option>
-                              )) }
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                        <Col>
-                          <Form.Item noStyle>
-                            <Button
-                              icon={<CloseOutlined size={10} />}
-                              onClick={() => {
-                                setFamilyHistoryResourcesClone((oldState) => {
-                                  const fhrClone = [...oldState];
-                                  fhrClone.splice(index, 1);
-                                  return fhrClone;
-                                });
-                              }}
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </li>
-                  )) }
+          </Row>
+          <Row>
+            <Col span={20}>
+              <ul className="clinical-information__family-story__conditions">
+                { familyHistoryResourcesClone.map((fhr, index) => (
                   <li>
-                    <Button
-                      icon={<PlusOutlined />}
-                      size="small"
-                      onClick={() => {
-                        setFamilyHistoryResourcesClone((oldState) => ([...oldState, {}]));
-                      }}
-                    >
-                      { intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.add') }
-                    </Button>
+
+                    <Form.Item name={['fmh', index, 'id']} initialValue={fhr.id} className="hidden-form">
+                      <Input size="small" type="hidden" />
+                    </Form.Item>
+                    <Row gutter={8}>
+                      <Col span={14}>
+                        <Form.Item
+                          name={['fmh', index, 'note']}
+                          initialValue={fhr.note}
+                          noStyle
+                        >
+                          <Input
+                            placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
+                            aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={6}>
+                        <Form.Item
+                          name={['fmh', index, 'relation']}
+                          initialValue={fhr.code}
+                          noStyle
+                        >
+                          <Select
+                            suffixIcon={<IconKit className="selectIcon" size={12} icon={ic_person} />}
+                            className="selectRelation"
+                            placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
+                            aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
+                            dropdownClassName="selectDropdown"
+                          >
+                            { Object.values(getFamilyRelationshipValues()).map((rv) => (
+                              <Select.Option value={rv.value} key={`relationship_${rv.value}`}>
+                                { rv.label }
+                              </Select.Option>
+                            )) }
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col>
+                        <Form.Item noStyle>
+                          <Button
+                            icon={<CloseOutlined size={10} />}
+                            onClick={() => {
+                              setFamilyHistoryResourcesClone((oldState) => {
+                                const fhrClone = [...oldState];
+                                fhrClone.splice(index, 1);
+                                return fhrClone;
+                              });
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
                   </li>
-                </ul>
-              </Col>
-            </Row>
-          </>
-        ) }
-      </Form.Item>
+                )) }
+                <li>
+                  <Button
+                    icon={<PlusOutlined />}
+                    size="small"
+                    onClick={() => {
+                      setFamilyHistoryResourcesClone((oldState) => ([...oldState, {}]));
+                    }}
+                  >
+                    { intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.add') }
+                  </Button>
+                </li>
+              </ul>
+            </Col>
+          </Row>
+        </>
+      ) }
 
     </>
   );

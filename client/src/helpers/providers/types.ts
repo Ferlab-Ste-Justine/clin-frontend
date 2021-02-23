@@ -47,7 +47,9 @@ export type ClinicalObservation = {
 };
 
 export type FamilyObservation = {
+  id: string;
   link: string;
+  code: string;
   note: string;
 };
 

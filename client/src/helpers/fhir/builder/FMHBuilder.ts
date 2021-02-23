@@ -5,6 +5,8 @@ import {
 type Status = 'partial' | 'completed' | 'entered-in-error' | 'health-unknown';
 
 export class FamilyMemberHistoryBuilder {
+  private id?: string;
+
   private resourceType: ResourceType = 'FamilyMemberHistory';
 
   private meta: Meta = {
@@ -35,6 +37,7 @@ export class FamilyMemberHistoryBuilder {
 
   public build(): FamilyMemberHistory {
     return {
+      id: this.id,
       resourceType: this.resourceType,
       meta: this.meta,
       status: this.status,
@@ -42,6 +45,13 @@ export class FamilyMemberHistoryBuilder {
       relationship: this.relationship,
       note: this.note,
     };
+  }
+
+  public withId(id: string) {
+    if (id != null) {
+      this.id = id;
+    }
+    return this;
   }
 
   public withResourceType(value: ResourceType) {

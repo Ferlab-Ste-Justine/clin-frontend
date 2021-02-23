@@ -3,7 +3,7 @@ import { Card, Table } from 'antd';
 import intl from 'react-intl-universal';
 import { EyeFilled, EyeInvisibleFilled, QuestionCircleFilled } from '@ant-design/icons';
 import { ClinicalImpression } from '../../../../../../../helpers/fhir/types';
-import { ClinicalObservation, Prescription } from '../../../../../../../helpers/providers/types';
+import { ClinicalObservation } from '../../../../../../../helpers/providers/types';
 
 const getObservedIcon = (status: string) => {
   if (status === 'POS') {
@@ -32,16 +32,13 @@ const getObservedIcon = (status: string) => {
 };
 
 interface Props {
-  prescription: Prescription
-  clinicalImpressions: ClinicalImpression[]
+  clinicalImpression: ClinicalImpression
   hpos: ClinicalObservation[]
 }
 
-const ClinicalSigns : React.FC<Props> = ({ prescription, clinicalImpressions, hpos }) => {
-  const clinicalImpressionsFromPrescription = clinicalImpressions
-    .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
+const ClinicalSigns : React.FC<Props> = ({ clinicalImpression, hpos }) => {
   const dataSource = hpos.filter(
-    (hpo) => clinicalImpressionsFromPrescription
+    (hpo) => clinicalImpression
       .investigation[0].item.find((obs) => obs.reference.indexOf(hpo.id) !== -1) != null,
   ).map((obs) => ({
     observed: getObservedIcon(obs.observed),

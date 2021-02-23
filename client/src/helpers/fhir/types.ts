@@ -144,6 +144,7 @@ export interface ClinicalImpression {
 }
 
 export interface FamilyMemberHistory {
+  id?: string;
   resourceType: ResourceType;
   meta: Meta;
   status: string;

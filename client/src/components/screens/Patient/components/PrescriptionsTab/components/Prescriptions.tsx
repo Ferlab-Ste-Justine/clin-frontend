@@ -16,7 +16,7 @@ import {
   DeleteOutlined, EditFilled, FormOutlined, InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined,
 } from '@ant-design/icons';
 import get from 'lodash/get';
-import { Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
+import { FamilyObservation, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
 import Badge from '../../../../../Badge';
 import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
@@ -57,6 +57,16 @@ interface Props {
   prescriptions: Prescription[]
   clinicalImpressions: ClinicalImpression[]
 }
+
+const findClinicalImpression = (prescription: Prescription, clinicalImpressions: ClinicalImpression[]) => clinicalImpressions
+  .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
+
+const findFamilyHistories = (
+  prescription: Prescription, clinicalImpressions: ClinicalImpression[], familyHistories: FamilyObservation[],
+) => {
+  const clincalImpression = findClinicalImpression(prescription, clinicalImpressions);
+  return familyHistories.filter((fmh) => clincalImpression.investigation[0].item.find((obs) => obs.reference.indexOf(fmh.id) !== -1) != null);
+};
 
 const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
@@ -273,10 +283,9 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                 patient={patient}
                 prescription={prescription}
               />
-              <FamilyHistory patient={patient} familyHistories={familyHistories} />
+              <FamilyHistory patient={patient} familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)} />
               <ClinicalSigns
-                prescription={prescription}
-                clinicalImpressions={clinicalImpressions}
+                clinicalImpression={findClinicalImpression(prescription, clinicalImpressions)}
                 hpos={hpos}
               />
             </Tabs.TabPane>
