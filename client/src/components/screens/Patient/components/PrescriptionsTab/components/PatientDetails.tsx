@@ -8,9 +8,47 @@ import {
   ic_perm_contact_calendar,
 } from 'react-icons-kit/md';
 import { FormOutlined } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
 import { ParsedPatientData } from '../../../../../../helpers/providers/types';
 import FamilyTag from './FamilyTag';
+import { navigateToPatientScreen } from '../../../../../../actions/router';
 
+const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
+  const dispatch = useDispatch();
+  return (
+    <div className="prescriptions-tab__patient-section__name-block">
+      <IconKit size={56} icon={ic_perm_contact_calendar} style={{ color: '#DADADA' }} />
+      { patient.isFetus ? (
+        <>
+          <Typography.Title level={3} className="patientName">
+            { intl.get('screen.patient.details.fetus') }
+          </Typography.Title>
+          <Button
+            type="link"
+            className="link--underline"
+            onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
+          >
+            { `${patient.lastName.toUpperCase()}, ${patient.firstName} (${intl.get('screen.patient.details.mother').toLowerCase()})` }
+          </Button>
+        </>
+      ) : (
+        <Button>
+          <Typography.Title level={3} className="patientName">{ patient.lastName }</Typography.Title>
+          <Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title>
+        </Button>
+      ) }
+      <div className="prescriptions-tab__patient-section__name-block__tags">
+        <Tag color={patient.proband === 'Proband' ? 'red' : 'geekblue'}>{ patient.proband }</Tag>
+        {
+          patient.isFetus && (
+            <Tag color="purple">{ intl.get('screen.patient.details.fetus') }</Tag>
+          )
+        }
+      </div>
+    </div>
+
+  );
+};
 const MultipleMrn: React.FC = () => {
   const [isShowingAll, setIsShowingAll] = useState(false);
   const mrns = [ // TODO #multiMRN replace with real values
@@ -74,12 +112,7 @@ const PatientDetails: React.FC<Props> = ({ patient }) => {
   return (
     <Card bordered={false} className="prescriptions-tab__patient-section__card">
       <div className="prescriptions-tab__patient-section">
-        <div className="prescriptions-tab__patient-section__name-block">
-          <IconKit size={56} icon={ic_perm_contact_calendar} />
-          <Typography.Title level={3} className="patientName">{ patient.lastName }</Typography.Title>
-          <Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title>
-          <Tag color="red">{ patient.proband }</Tag>
-        </div>
+        <ProfileCard patient={patient} />
 
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
           <DetailsRow title={intl.get('screen.patient.details.ramq')} value={patient.ramq} />
@@ -92,7 +125,7 @@ const PatientDetails: React.FC<Props> = ({ patient }) => {
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
           <DetailsRow
             title={intl.get('screen.patient.details.gender')}
-            value={intl.get(`screen.patient.details.${patient.gender.toLowerCase()}`)}
+            value={intl.get(`screen.patient.details.${patient.isFetus ? 'unknown' : patient.gender.toLowerCase()}`)}
           />
           <DetailsRow title={intl.get('screen.patient.details.dob')} value={patient.birthDate} />
         </DetailsCol>

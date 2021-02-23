@@ -28,7 +28,7 @@ const getObservations = (code: ObservationCode, resource: any) : Observation[] =
   const observation = clinicalImpressin.resource.entry
     ?.filter((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
 
-  return observation.map((obs: {resource: Observation}) => obs.resource);
+  return observation?.map((obs: {resource: Observation}) => obs.resource);
 };
 
 export type Observations = {

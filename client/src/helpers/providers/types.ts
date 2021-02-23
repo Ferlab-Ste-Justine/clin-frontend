@@ -13,6 +13,8 @@ export type ParsedPatientData = {
   familyId: string;
   familyType: string;
   proband: string;
+  isFetus: boolean;
+  familyRelation?: string;
 };
 
 export type PractitionerData = {

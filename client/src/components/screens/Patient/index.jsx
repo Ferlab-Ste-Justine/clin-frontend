@@ -6,7 +6,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Col, Row, Tabs, Typography, Button, Spin, Tag, Badge, Card, Popover, Menu, Dropdown,
+  Tabs, Button, Spin, Badge, Card, Popover, Menu, Dropdown,
 } from 'antd';
 import { DownOutlined, MedicineBoxFilled } from '@ant-design/icons';
 
@@ -30,6 +30,7 @@ import './style.scss';
 import Layout from '../../Layout';
 import StatusChangeModal from './components/StatusChangeModal';
 import PrescriptionsTab from './components/PrescriptionsTab';
+import PatientHeader from './components/PatientHeader';
 
 class PatientScreen extends React.Component {
   constructor(props) {
@@ -253,25 +254,6 @@ class PatientScreen extends React.Component {
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
 
-    const getGenderIcon = (gender) => {
-      if (gender === 'female') {
-        return (
-          <i className="customIcon">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 2.25C11.4853 2.25 13.5 4.26472 13.5 6.75C13.5 8.9775 11.88 10.83 9.75 11.19V12.75H11.25V14.25H9.75V15.75H8.25V14.25H6.75V12.75H8.25V11.19C6.12 10.83 4.5 8.9775 4.5 6.75C4.5 4.26472 6.51472 2.25 9 2.25ZM9 3.75C7.34315 3.75 6 5.09315 6 6.75C6 8.40685 7.34315 9.75 9 9.75C10.6569 9.75 12 8.40685 12 6.75C12 5.09315 10.6569 3.75 9 3.75Z" fill="#A7B4C3" />
-            </svg>
-          </i>
-        );
-      }
-      return (
-        <i className="customIcon">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6.75 6.75C7.7175 6.75 8.625 7.0575 9.3525 7.5825L13.185 3.75H9.75V2.25H15.75V8.25H14.25V4.8075L10.4175 8.625C10.9425 9.375 11.25 10.275 11.25 11.25C11.25 13.7353 9.23528 15.75 6.75 15.75C4.26472 15.75 2.25 13.7353 2.25 11.25C2.25 8.76472 4.26472 6.75 6.75 6.75ZM6.75 8.25C5.09315 8.25 3.75 9.59315 3.75 11.25C3.75 12.9069 5.09315 14.25 6.75 14.25C8.40685 14.25 9.75 12.9069 9.75 11.25C9.75 9.59315 8.40685 8.25 6.75 8.25Z" fill="#A7B4C3" />
-          </svg>
-        </i>
-      );
-    };
-
     return (
       <Layout>
         <Spin spinning={showSubloadingAnimation}>
@@ -279,27 +261,7 @@ class PatientScreen extends React.Component {
             && (
               <div className="patientPage">
                 <div className="page_headerStaticNoMargin">
-                  <div className="header__content--static">
-                    <Row align="middle" className="flex-row patientHeader">
-                      <Col>
-                        <Typography.Title level={3} className="patientName">
-                          { patient.lastName.toUpperCase() } { patient.firstName }
-                        </Typography.Title>
-                      </Col>
-                      <Col>
-                        { getGenderIcon(patient.gender) }
-                      </Col>
-                      <Col>
-                        <Tag>
-                          2012-10-18
-                        </Tag>
-                      </Col>
-                      <Col>
-                        <Tag color="red">{ patient.proband }</Tag>
-                      </Col>
-                    </Row>
-
-                  </div>
+                  <PatientHeader patient={patient} />
                 </div>
                 <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
                   <Tabs.TabPane
