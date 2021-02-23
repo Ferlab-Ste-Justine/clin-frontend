@@ -21,6 +21,16 @@ export class BundleBuilder {
       return this;
     }
 
+    public withGet(query: string) {
+      this.entry.push({
+        request: {
+          method: 'GET',
+          url: query,
+        },
+      });
+      return this;
+    }
+
     public withResource(resource: any) {
       const id = get(resource, 'id', undefined);
       const idExists = id != null && !id.startsWith('urn:');

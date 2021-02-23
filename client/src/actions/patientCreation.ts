@@ -1,4 +1,4 @@
-import { Patient } from '../helpers/fhir/types';
+import { ClinicalImpression, Patient, ServiceRequest } from '../helpers/fhir/types';
 import * as actions from './type';
 
 type Action = (...args:any) => {type: keyof typeof actions, payload?: any};
@@ -17,6 +17,18 @@ export const createPatientFetus: Action = (patient: Patient) => (
     type: actions.CREATE_PATIENT_FETUS_REQUESTED,
     payload: {
       patient,
+    },
+  }
+);
+
+export const updatePatientPractitioners: Action = (
+  serviceRequest: ServiceRequest, clinicalImpression: ClinicalImpression,
+) => (
+  {
+    type: actions.UPDATE_PATIENT_PRACTITIONMERS_REQUESTED,
+    payload: {
+      serviceRequest,
+      clinicalImpression,
     },
   }
 );
