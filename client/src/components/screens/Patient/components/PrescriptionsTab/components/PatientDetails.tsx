@@ -9,7 +9,7 @@ import {
 } from 'react-icons-kit/md';
 import { FormOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { ParsedPatientData } from '../../../../../../helpers/providers/types';
+import { Mrn, ParsedPatientData } from '../../../../../../helpers/providers/types';
 import FamilyTag from './FamilyTag';
 import { navigateToPatientScreen } from '../../../../../../actions/router';
 
@@ -49,24 +49,19 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
 
   );
 };
-const MultipleMrn: React.FC = () => {
+
+const MultipleMrn: React.FC<{mrns: Mrn[]}> = ({ mrns }) => {
   const [isShowingAll, setIsShowingAll] = useState(false);
-  const mrns = [ // TODO #multiMRN replace with real values
-    { value: '12345', hospital: 'CHUSJ' },
-    { value: '12345', hospital: 'CHUSJ' },
-    { value: '12345', hospital: 'CHUSJ' },
-    { value: '12345', hospital: 'CHUSJ' },
-  ];
 
   return (
     <div className="prescriptions-tab__patient-section__col__details__row__info__multiple-mrn">
       <ul>
-        { mrns.map((value, index) => {
+        { mrns.map((mrn, index) => {
           if (index >= 2 && !isShowingAll) {
             return null;
           }
           return (
-            <li>{ `${value.value} - ${value.hospital}` }</li>
+            <li>{ `${mrn.number} - ${mrn.hospital}` }</li>
           );
         }) }
       </ul>
@@ -108,7 +103,7 @@ interface Props {
 }
 
 const PatientDetails: React.FC<Props> = ({ patient }) => {
-  const hasMultipleMrn = false; // TODO #multiMRN Replace this when migrating to new multi mrn setup
+  const hasMultipleMrn = patient.mrn.length > 1;
   return (
     <Card bordered={false} className="prescriptions-tab__patient-section__card">
       <div className="prescriptions-tab__patient-section">
@@ -117,9 +112,12 @@ const PatientDetails: React.FC<Props> = ({ patient }) => {
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
           <DetailsRow title={intl.get('screen.patient.details.ramq')} value={patient.ramq} />
           { hasMultipleMrn ? (
-            <DetailsRow title={intl.get('screen.patient.details.mrn')} value={<MultipleMrn />} />
+            <DetailsRow title={intl.get('screen.patient.details.mrn')} value={<MultipleMrn mrns={patient.mrn} />} />
           ) : (
-            <DetailsRow title={intl.get('screen.patient.details.mrn')} value={`${patient.mrn[0].number} | ${patient.mrn[0].hospital}`} />
+            <DetailsRow
+              title={intl.get('screen.patient.details.mrn')}
+              value={`${patient.mrn[0].number} | ${patient.mrn[0].hospital}`}
+            />
           ) }
         </DetailsCol>
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
