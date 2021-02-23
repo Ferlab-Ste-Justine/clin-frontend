@@ -50,10 +50,10 @@ import {
 } from '../../../helpers/fhir/fhir';
 import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
 import Layout from '../../Layout';
-import { PatientBuilder } from '../../../helpers/fhir/builder/PatientBuilder';
 import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
 import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
 import { createRequest } from '../../../actions/prescriptions';
+import { updatePatientPractitioners } from '../../../actions/patientCreation';
 import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder';
 
 const { Step } = Steps;
@@ -363,6 +363,7 @@ function PatientSubmissionScreen(props) {
       }
 
       actions.createRequest(batch);
+      actions.updatePatientPractitioners(batch.serviceRequests[0], batch.clinicalImpressions[0]);
     });
   };
 
@@ -458,7 +459,6 @@ function PatientSubmissionScreen(props) {
   };
 
   const onFormFinish = (isOnLastPage) => {
-    const { actions } = props;
     if (isOnLastPage) {
       saveSubmission(true);
     } else {
@@ -655,6 +655,7 @@ const mapDispatchToProps = (dispatch) => ({
     updateConsentments,
     saveLocalPractitioner,
     createRequest,
+    updatePatientPractitioners,
   }, dispatch),
 });
 
