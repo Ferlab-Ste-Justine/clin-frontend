@@ -20,7 +20,7 @@ import { FamilyObservation, Prescription, PrescriptionStatus } from '../../../..
 import Badge from '../../../../../Badge';
 import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
-import { ClinicalImpression } from '../../../../../../helpers/fhir/types';
+import { ClinicalImpression, Observation } from '../../../../../../helpers/fhir/types';
 import { updateServiceRequestStatus } from '../../../../../../actions/patient';
 import StatusChangeModal, { StatusType } from '../../StatusChangeModal';
 import { editPrescription } from '../../../../../../actions/patientSubmission';
@@ -28,6 +28,7 @@ import Summary from './Prescription/Summary';
 import DetailsRow from './Prescription/DetailsRow';
 import FamilyHistory from './Prescription/FamilyHistory';
 import ClinicalSigns from './Prescription/ClinicalSigns';
+import { Observations } from '../../../../../../reducers/patient';
 
 const DEFAULT_VALUE = '--';
 
@@ -64,9 +65,19 @@ const findClinicalImpression = (prescription: Prescription, clinicalImpressions:
 const findFamilyHistories = (
   prescription: Prescription, clinicalImpressions: ClinicalImpression[], familyHistories: FamilyObservation[],
 ) => {
-  const clincalImpression = findClinicalImpression(prescription, clinicalImpressions);
-  return familyHistories.filter((fmh) => clincalImpression.investigation[0].item.find((obs) => obs.reference.indexOf(fmh.id) !== -1) != null);
+  const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
+  return familyHistories.filter(
+    (fmh) => clinicalImpression.investigation[0].item.find((obs) => obs.reference.indexOf(fmh.id) !== -1) != null,
+  );
 };
+
+const getClinicalObservations = (
+  observations: Observations,
+  clinicalImpression: ClinicalImpression,
+  key: string,
+) => get(observations, key)?.find(
+  (obs: Observation) => clinicalImpression.investigation[0].item.find((i) => i.reference.indexOf(obs.id!) !== -1) != null,
+);
 
 const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
@@ -112,184 +123,187 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
         }}
       >
         {
-          prescriptions.map((prescription, index) => (
-            <Tabs.TabPane
-              tab={
-                (
-                  <span className="prescriptions-tab__prescriptions-section__tab-label">
-                    <Badge color={(badgeColor[prescription.status])} />
-                    { moment(prescription.date).format('yyyy-MM-DD') }
-                  </span>
-                )
-              }
-              key={prescription.id}
-            >
-              { prescription.status === 'draft' && (
-                <Alert
-                  banner
-                  message={(
-                    <span>
-                      { intl.get('screen.patient.details.prescription.alert.message') }
-                      <Button
-                        type="link"
-                        size="small"
-                        onClick={() => dispatch(navigateToSubmissionWithPatient())}
-                      >
-                        { intl.get('screen.patient.details.prescription.alert.action') }
-                      </Button>
+          prescriptions.map((prescription, index) => {
+            const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
+            return (
+              <Tabs.TabPane
+                tab={
+                  (
+                    <span className="prescriptions-tab__prescriptions-section__tab-label">
+                      <Badge color={(badgeColor[prescription.status])} />
+                      { moment(prescription.date).format('yyyy-MM-DD') }
                     </span>
-                  )}
-                />
-              ) }
-              <Card
-                title={(
-                  <>
-                    <span>{ intl.get('screen.patient.details.prescription.title') }</span>
-                    <Divider type="vertical" />
-                    <span>{ prescription.id }</span>
-                  </>
-                )}
-                className="resume"
-                bordered={false}
-                extra={(
-                  <Row>
-                    <Col>
-                      <Button
-                        className="button--borderless"
-                        icon={<DeleteOutlined />}
-                        onClick={() => alert('Feature not yey implemented')}
-                        disabled={prescription.status !== 'draft'}
-                      >
-                        { intl.get('screen.patient.details.prescription.delete') }
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button
-                        className="button--borderless"
-                        icon={<PrinterOutlined />}
-                        onClick={() => alert('Feature not yet implemented')}
-                      >
-                        { intl.get('screen.patient.details.prescription.print') }
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button
-                        className="button--borderless"
-                        icon={<FormOutlined />}
-                        onClick={() => openEditPrescription(prescription.id!)}
-                        disabled={!canEdit(prescription)}
-                      >
-                        { intl.get('screen.patient.details.prescription.edit') }
-                      </Button>
-                    </Col>
-                  </Row>
-                )}
+                  )
+                }
+                key={prescription.id}
               >
-                <DetailsRow
-                  label={(
-                    <span className="prescriptions-tab__prescriptions-section__details__status-label">
-                      { intl.get('screen.patient.details.prescription.status') }
-                      <InfoCircleOutlined />
-                    </span>
+                { prescription.status === 'draft' && (
+                  <Alert
+                    banner
+                    message={(
+                      <span>
+                        { intl.get('screen.patient.details.prescription.alert.message') }
+                        <Button
+                          type="link"
+                          size="small"
+                          onClick={() => dispatch(navigateToSubmissionWithPatient())}
+                        >
+                          { intl.get('screen.patient.details.prescription.alert.action') }
+                        </Button>
+                      </span>
+                    )}
+                  />
+                ) }
+                <Card
+                  title={(
+                    <>
+                      <span>{ intl.get('screen.patient.details.prescription.title') }</span>
+                      <Divider type="vertical" />
+                      <span>{ prescription.id }</span>
+                    </>
+                  )}
+                  className="resume"
+                  bordered={false}
+                  extra={(
+                    <Row>
+                      <Col>
+                        <Button
+                          className="button--borderless"
+                          icon={<DeleteOutlined />}
+                          onClick={() => alert('Feature not yey implemented')}
+                          disabled={prescription.status !== 'draft'}
+                        >
+                          { intl.get('screen.patient.details.prescription.delete') }
+                        </Button>
+                      </Col>
+                      <Col>
+                        <Button
+                          className="button--borderless"
+                          icon={<PrinterOutlined />}
+                          onClick={() => alert('Feature not yet implemented')}
+                        >
+                          { intl.get('screen.patient.details.prescription.print') }
+                        </Button>
+                      </Col>
+                      <Col>
+                        <Button
+                          className="button--borderless"
+                          icon={<FormOutlined />}
+                          onClick={() => openEditPrescription(prescription.id!)}
+                          disabled={!canEdit(prescription)}
+                        >
+                          { intl.get('screen.patient.details.prescription.edit') }
+                        </Button>
+                      </Col>
+                    </Row>
                   )}
                 >
-                  <div className="prescriptions-tab__prescriptions-section__details__status-value">
-                    <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
-                      <StatusTag status={prescription.status} />
-                      <Button
-                        className="button--borderless"
-                        icon={<EditFilled />}
-                        onClick={() => setSelectedPrescriptionId(prescription.id)}
-                      >
-                        { intl.get('screen.patient.details.prescription.change') }
-                      </Button>
-                    </div>
-                    { ['revoked', 'incomplete'].includes(prescription.status) && prescription.note && (
+                  <DetailsRow
+                    label={(
+                      <span className="prescriptions-tab__prescriptions-section__details__status-label">
+                        { intl.get('screen.patient.details.prescription.status') }
+                        <InfoCircleOutlined />
+                      </span>
+                    )}
+                  >
+                    <div className="prescriptions-tab__prescriptions-section__details__status-value">
                       <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
-                        <span
-                          className={`prescriptions-tab__prescriptions-section__details__status-value__row__note ${prescription.status}`}
+                        <StatusTag status={prescription.status} />
+                        <Button
+                          className="button--borderless"
+                          icon={<EditFilled />}
+                          onClick={() => setSelectedPrescriptionId(prescription.id)}
                         >
-                          { prescription.note }
-                        </span>
+                          { intl.get('screen.patient.details.prescription.change') }
+                        </Button>
                       </div>
-                    ) }
-                  </div>
+                      { ['revoked', 'incomplete'].includes(prescription.status) && prescription.note && (
+                        <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
+                          <span
+                            className={`prescriptions-tab__prescriptions-section__details__status-value__row__note ${prescription.status}`}
+                          >
+                            { prescription.note }
+                          </span>
+                        </div>
+                      ) }
+                    </div>
 
-                  <StatusChangeModal
-                    isVisible={selectedPrescriptionId === prescription.id}
-                    onOk={(newStatus, note) => {
-                      dispatch(updateServiceRequestStatus(selectedPrescriptionId, newStatus, note));
-                      setSelectedPrescriptionId(undefined);
-                    }}
-                    onCancel={() => setSelectedPrescriptionId(undefined)}
-                    initialStatus={StatusType.draft}
-                  />
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.mrn')}>
-                  { patient.mrn![0].number }  |  { patient.mrn![0].hospital }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.prescription')}>
-                  { prescription.id || DEFAULT_VALUE }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.submissionDate')}>
-                  { prescription.date ? moment(prescription.date).format('YYYY-MM-DD') : DEFAULT_VALUE }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.submittedBy')}>
-                  { consultation[index] != null ? (
-                    <span className="prescriptions-tab__prescriptions-section__more-info">
-                      { formatName(consultation[index].practitioner.lastName, consultation[index].practitioner.firstName) }
-                      <Popover
-                        overlayClassName="practitionerInfo"
-                        placement="topRight"
-                        content={practitionerPopOverText(consultation[index].practitioner)}
-                        trigger="hover"
-                      >
-                        <InfoCircleOutlined />
-                      </Popover>
-                    </span>
-                  ) : DEFAULT_VALUE }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
-                  { prescription.requester != null ? (
-                    <span className="prescriptions-tab__prescriptions-section__more-info">
-                      { formatName(prescription.requester.lastName, prescription.requester.firstName) }
-                      <Popover
-                        overlayClassName="practitionerInfo"
-                        placement="topRight"
-                        content={practitionerPopOverText(prescription.requester)}
-                        trigger="hover"
-                      >
-                        <InfoCircleOutlined />
-                      </Popover>
-                    </span>
-                  ) : DEFAULT_VALUE }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.hospital')}>
-                  { consultation[index] != null ? consultation[index].practitioner.organization : DEFAULT_VALUE }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
-                  { prescription.test || DEFAULT_VALUE }
-                </DetailsRow>
-                <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
-                  { consultation[index] != null ? consultation[index].hypothesis : DEFAULT_VALUE }
-                </DetailsRow>
-              </Card>
-              <Summary
-                observations={{
-                  cgh: get(observations, `cgh[${index}]`),
-                  indic: get(observations, `indic[${index}]`),
-                  inves: get(observations, `invest[${index}]`),
-                }}
-                patient={patient}
-                prescription={prescription}
-              />
-              <FamilyHistory patient={patient} familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)} />
-              <ClinicalSigns
-                clinicalImpression={findClinicalImpression(prescription, clinicalImpressions)}
-                hpos={hpos}
-              />
-            </Tabs.TabPane>
-          ))
+                    <StatusChangeModal
+                      isVisible={selectedPrescriptionId === prescription.id}
+                      onOk={(newStatus, note) => {
+                        dispatch(updateServiceRequestStatus(selectedPrescriptionId, newStatus, note));
+                        setSelectedPrescriptionId(undefined);
+                      }}
+                      onCancel={() => setSelectedPrescriptionId(undefined)}
+                      initialStatus={StatusType.draft}
+                    />
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.mrn')}>
+                    { patient.mrn![0].number }  |  { patient.mrn![0].hospital }
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.prescription')}>
+                    { prescription.id || DEFAULT_VALUE }
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.submissionDate')}>
+                    { prescription.date ? moment(prescription.date).format('YYYY-MM-DD') : DEFAULT_VALUE }
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.submittedBy')}>
+                    { consultation[index] != null ? (
+                      <span className="prescriptions-tab__prescriptions-section__more-info">
+                        { formatName(consultation[index].practitioner.lastName, consultation[index].practitioner.firstName) }
+                        <Popover
+                          overlayClassName="practitionerInfo"
+                          placement="topRight"
+                          content={practitionerPopOverText(consultation[index].practitioner)}
+                          trigger="hover"
+                        >
+                          <InfoCircleOutlined />
+                        </Popover>
+                      </span>
+                    ) : DEFAULT_VALUE }
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
+                    { prescription.requester != null ? (
+                      <span className="prescriptions-tab__prescriptions-section__more-info">
+                        { formatName(prescription.requester.lastName, prescription.requester.firstName) }
+                        <Popover
+                          overlayClassName="practitionerInfo"
+                          placement="topRight"
+                          content={practitionerPopOverText(prescription.requester)}
+                          trigger="hover"
+                        >
+                          <InfoCircleOutlined />
+                        </Popover>
+                      </span>
+                    ) : DEFAULT_VALUE }
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.hospital')}>
+                    { consultation[index] != null ? consultation[index].practitioner.organization : DEFAULT_VALUE }
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
+                    { prescription.test || DEFAULT_VALUE }
+                  </DetailsRow>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
+                    { consultation[index] != null ? consultation[index].hypothesis : DEFAULT_VALUE }
+                  </DetailsRow>
+                </Card>
+                <Summary
+                  observations={{
+                    cgh: getClinicalObservations(observations!, clinicalImpression, 'cgh'),
+                    indic: getClinicalObservations(observations!, clinicalImpression, 'indic'),
+                    inves: getClinicalObservations(observations!, clinicalImpression, 'inves'),
+                  }}
+                  patient={patient}
+                  prescription={prescription}
+                />
+                <FamilyHistory patient={patient} familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)} />
+                <ClinicalSigns
+                  clinicalImpression={clinicalImpression}
+                  hpos={hpos}
+                />
+              </Tabs.TabPane>
+            );
+          })
         }
       </Tabs>
     </div>
