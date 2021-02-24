@@ -44,6 +44,8 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       test: get(serviceRequest, 'code.coding[0].code', 'N/A'),
       note: this.getLastNote(serviceRequest),
       clinicalImpressionRef: this.getClincalImpressionRef(dataExtractor, serviceRequest),
+      mrn: get(serviceRequest, 'identifier[0].value', '--'),
+      organization: get(serviceRequest, 'identifier[0].assigner.reference', ['/--']).split('/')[1],
     }));
 
     const output: Record<ServiceRequest, Prescription>[] = [];
