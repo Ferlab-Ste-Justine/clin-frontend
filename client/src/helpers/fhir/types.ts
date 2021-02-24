@@ -161,6 +161,7 @@ export interface ServiceRequest {
   status: string;
   intent: string;
   authoredOn: string;
+  identifier: Identifier[];
   category: Category[];
   priority: string;
   code?: CodeableConcept;

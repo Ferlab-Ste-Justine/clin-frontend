@@ -324,9 +324,12 @@ function PatientSubmissionScreen(props) {
         return;
       }
 
+      const [mrn, hospital] = content.mrn.split('|');
+
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withId(get(localStore, 'serviceRequest.id'))
+          .withMrn(mrn, hospital)
           .withRequester(state.selectedPractitioner)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
