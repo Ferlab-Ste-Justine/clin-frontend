@@ -88,8 +88,9 @@ function validateForm(formValues: any) {
 
   return Object.keys(formValues).every((key: string) => {
     const value = formValues[key];
+
     if (key === 'mrn') {
-      return Object.values(value).every((currentValue) => !!currentValue);
+      return value.file && value.hospital;
     }
     // if the field has a value or its noRamq (it's optional)
     if (value || key === 'noRamq') {
