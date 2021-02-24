@@ -50,6 +50,29 @@ export class ServiceRequestBuilder {
       return this;
     }
 
+    public withMrn(mrn: string, organization: string) {
+      if (mrn != null) {
+        this.serviceRequest.identifier = [
+          {
+            type: {
+              coding: [
+                {
+                  code: 'MR',
+                  display: 'Medical record number',
+                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                },
+              ],
+              text: 'Numéro du dossier médical',
+            },
+            value: mrn,
+            assigner: {
+              reference: `Organization/${organization}`,
+            },
+          }];
+      }
+      return this;
+    }
+
     public withSubmitted(value: boolean | undefined, roleId: string) {
       const isSubmitted = value != null && value;
 

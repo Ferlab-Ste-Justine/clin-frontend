@@ -105,55 +105,60 @@ const MrnItem: React.FC<Props> = ({ form, patient }) => {
   };
 
   return (
-    <Select
-      className="clinical-information__mrn"
-      onChange={(value: string) => {
-        const [mrn, organizaation] = value.split('|');
-        form.setFields([
-          { name: 'mrn', value: mrn },
-          { name: 'organizaation', value: organizaation },
-        ]);
-      }}
-      dropdownRender={(menu) => (
-        <div>
-          { menu }
-          <Button
-            className="clinical-information__mrn__create-button"
-            onClick={() => setMode(Mode.EDIT)}
-          >
-            { intl.get('form.patientSubmission.clinicalInformation.file.addFile') }
-          </Button>
-        </div>
-      )}
-      defaultValue={getMrnValue(selectedMrn)}
+    <Form.Item
+      name="mrn"
+      initialValue={getMrnValue(selectedMrn)}
     >
-      {
-        patient.identifier
-          .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
-          .map((id) => (
-            <Select.Option
-              value={getMrnValue(id)!}
-              className="clinical-information__mrn-options"
+      <Select
+        className="clinical-information__mrn"
+        onChange={(value: string) => {
+          const [mrn, organizaation] = value.split('|');
+          form.setFields([
+            { name: 'mrn', value: mrn },
+            { name: 'organizaation', value: organizaation },
+          ]);
+        }}
+        dropdownRender={(menu) => (
+          <div>
+            { menu }
+            <Button
+              className="clinical-information__mrn__create-button"
+              onClick={() => setMode(Mode.EDIT)}
             >
-              <Row align="middle">
-                <Col flex={1}>
-                  { `${id.value} | ${id.assigner!.reference.split('/')[1]}` }
-                </Col>
-                <Col>
-                  <Button
-                    onClick={() => {
-                      setMode(Mode.EDIT);
-                      setSelctedMrn(id);
-                    }}
-                    icon={<EditOutlined size={14} />}
-                    className={['clinical-information__mrn-options__button', style.btn, style.btnSecondary].join(' ')}
-                  />
-                </Col>
-              </Row>
-            </Select.Option>
-          ))
-      }
-    </Select>
+              { intl.get('form.patientSubmission.clinicalInformation.file.addFile') }
+            </Button>
+          </div>
+        )}
+        defaultValue={getMrnValue(selectedMrn)}
+      >
+        {
+          patient.identifier
+            .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
+            .map((id) => (
+              <Select.Option
+                value={getMrnValue(id)!}
+                className="clinical-information__mrn-options"
+              >
+                <Row align="middle">
+                  <Col flex={1}>
+                    { `${id.value} | ${id.assigner!.reference.split('/')[1]}` }
+                  </Col>
+                  <Col>
+                    <Button
+                      onClick={() => {
+                        setMode(Mode.EDIT);
+                        setSelctedMrn(id);
+                      }}
+                      icon={<EditOutlined size={14} />}
+                      className={['clinical-information__mrn-options__button', style.btn, style.btnSecondary].join(' ')}
+                    />
+                  </Col>
+                </Row>
+              </Select.Option>
+            ))
+        }
+      </Select>
+    </Form.Item>
   );
 };
 
