@@ -24,7 +24,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     return isSubmittedExtension.valueBoolean ? ON_HOLD : INCOMPLETE;
   }
 
-  private getClincalImpressionRef(dataExtractor: DataExtractor, serviceRequest: ServiceRequest) : string {
+  private getClinicalImpressionRef(dataExtractor: DataExtractor, serviceRequest: ServiceRequest) : string {
     return get(dataExtractor.getExtension(serviceRequest, CLIN_REF_EXT), 'valueReference.reference');
   }
 
@@ -43,7 +43,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       status: this.getStatus(dataExtractor, serviceRequest) as PrescriptionStatus,
       test: get(serviceRequest, 'code.coding[0].code', 'N/A'),
       note: this.getLastNote(serviceRequest),
-      clinicalImpressionRef: this.getClincalImpressionRef(dataExtractor, serviceRequest),
+      clinicalImpressionRef: this.getClinicalImpressionRef(dataExtractor, serviceRequest),
       mrn: get(serviceRequest, 'identifier[0].value', '--'),
       organization: get(serviceRequest, 'identifier[0].assigner.reference', ['/--']).split('/')[1],
     }));
