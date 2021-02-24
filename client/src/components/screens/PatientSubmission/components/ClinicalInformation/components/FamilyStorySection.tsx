@@ -23,6 +23,8 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
     familyHistoryResources.filter((fmh) => !isEmpty(fmh) && fmh.id != null).length > 0,
   );
 
+  const initialFmh: Partial<FamilyObservation> | undefined = familyHistoryResources && familyHistoryResources[0];
+
   return (
     <>
       <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity')}>
@@ -129,7 +131,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                             <Form.Item
                               name={[index, 'id']}
                               className="hidden-form"
-                              initialValue={familyHistoryResources[index].id}
+                              initialValue={initialFmh?.id}
                             >
                               <Input size="small" type="hidden" />
                             </Form.Item>
@@ -138,7 +140,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                                 <Form.Item
                                   name={[index, 'note']}
                                   noStyle
-                                  initialValue={familyHistoryResources[index].note}
+                                  initialValue={initialFmh?.note}
                                 >
                                   <Input
                                     placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
@@ -150,7 +152,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                                 <Form.Item
                                   name={[index, 'relation']}
                                   noStyle
-                                  initialValue={familyHistoryResources[index].code}
+                                  initialValue={initialFmh?.code}
                                 >
                                   <Select
                                     suffixIcon={<IconKit className="selectIcon" size={12} icon={ic_person} />}
