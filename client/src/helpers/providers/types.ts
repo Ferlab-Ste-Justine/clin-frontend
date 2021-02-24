@@ -37,6 +37,8 @@ export type Prescription = {
   status: PrescriptionStatus;
   note?: string;
   clinicalImpressionRef: string;
+  mrn?: string;
+  organization?: string;
 };
 
 export type ClinicalObservation = {
