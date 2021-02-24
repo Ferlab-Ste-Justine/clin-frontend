@@ -103,7 +103,7 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
       familyId: group.id!,
       familyType: group.type,
       proband: probandExt != null && probandExt.valueBoolean ? 'Proband' : 'Parent',
-      isFetus: fetusExt.valueBoolean,
+      isFetus: fetusExt != null && fetusExt.valueBoolean,
       familyRelation: familyRelationExt?.extension[0].valueReference.reference.split('/')[1],
     };
 
