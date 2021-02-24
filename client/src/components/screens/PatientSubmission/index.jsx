@@ -141,6 +141,8 @@ function PatientSubmissionScreen(props) {
             && checkCghInterpretationValue()
             && checkFamilyHistory()
             && values.indication
+            && values.mrn
+            && values.organization
             && !hasError
         ) {
           return false;
