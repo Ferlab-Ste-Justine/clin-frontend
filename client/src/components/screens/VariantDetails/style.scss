@@ -1,7 +1,13 @@
 @import "./variables.scss";
 @import '../../../style/themes/colors.scss';
-
 .variant-page-content {
+  .page-static-content{
+    min-width: 1392px;
+    width: auto;
+    max-width: 1600px;
+    padding: 0 24px;
+  }
+
   &__header{
     
     display: flex;
@@ -24,43 +30,45 @@
     }
   }
 
-  .variant__generalInfo{
-    margin-bottom: 24px;
+  
+  &__resume{
+    &__generalInfo{
+      margin-bottom: 24px;
+      .ant-card-body{
+        padding: 16px;
+      }
+      .nameBlock{
+        width: 464px;
+        background-color: $gray-2;
+        color: $blue-10;
     
-    .ant-card-body{
-      padding: 16px;
-    }
-    .nameBlock{
-      width: 464px;
-      background-color: $gray-2;
-      color: $blue-10;
-  
-      &__info{
-        margin-bottom: 8px;
-        &__label{
-          width: 104px;
-          color: $blue-10;
-        }
-
         &__info{
-          font-weight: 500;
-          width: 324px;
-          word-break: break-all;
-          color: $blue-10; 
+          margin-bottom: 8px;
+          &__label{
+            width: 104px;
+            color: $blue-10;
+          }
+  
+          &__info{
+            font-weight: 500;
+            width: 324px;
+            word-break: break-all;
+            color: $blue-10; 
+          }
+        }
+        i{
+          color: $gray-5;
+          margin-bottom: 8px;
+        }
+    
+        .ant-tag{
+          margin: 0;
+          margin-top: 8px;
         }
       }
-      i{
-        color: $gray-5;
-        margin-bottom: 8px;
-      }
-  
-      .ant-tag{
-        margin: 0;
-        margin-top: 8px;
-      }
     }
-  
-    .content{
+
+    &__content{
       flex: 1;
       margin-left: 40px;
       display: flex;
@@ -86,13 +94,13 @@
         >.col{
           flex:1;
         }
-        .title{
+        &__title{
           color: $gray-7;
           font-size: 12px;
           line-height: 20px;
           font-weight: 500;
         }
-        .info{
+        &__info{
           height: 22px;
           .ant-btn{
             line-height: 22px;
@@ -102,10 +110,9 @@
       }
   
     }
-  }
 
-  &__table{
-    &__title{
+
+    &__table-title{
       font-weight: 400 !important;
       &:not(:first-of-type){
         margin-left: 16px;
@@ -121,61 +128,99 @@
       }
       .value{
         margin-top: 2px;
-      }
+      } 
     }
 
+    &__consequence-table{
+      th, td{
+        &:nth-child(1){
+          width: 104px;
+        }
+        &:nth-child(2){
+          width: 256px;
+        }
+        &:nth-child(3){
+          width: 136px;
+        }
+        &:nth-child(4){
+          width: 72px;
+        }
+        &:nth-child(5){
+          width: 128px;
+        }
+        &:nth-child(7){
+          width: 224px;
+        }
+        &:nth-child(8){
+          width: 200px;
+        }
+      }
+  
+      &__tag{
+        margin-right: 0;
+      }
+  
+      &__predictionList{
+        ul{
+          margin-bottom: 0!important;
+        }
+        .close{
+          display: none;
+        }
+      }
+  
+      &__transcriptValue{
+        display: flex;
+        align-items: center;
+  
+        .canonicalIcon{
+          margin-left: 8px;
+        }
+      }
 
+      &__consequence-term {
+        color: $gray-7;
+        line-height: 22px;
+        font-size: 14px;
+    
+      }  
+    }
+    .staticCard{
+      margin-bottom: 0 !important;
+    }
+    
   }
 
-  .consequenceTable{
-    th, td{
-      &:nth-child(1){
-        width: 104px;
-      }
-      &:nth-child(2){
-        width: 256px;
-      }
-      &:nth-child(3){
-        width: 136px;
-      }
-      &:nth-child(4){
-        width: 72px;
-      }
-      &:nth-child(5){
-        width: 128px;
-      }
-      &:nth-child(7){
-        width: 224px;
-      }
-      &:nth-child(8){
-        width: 200px;
-      }
+  &__associations{
+    &__clinVarId{
+      margin: 0 4px;
     }
 
-    &__tag{
-      margin-right: 0;
-    }
-
-    &__predictionList{
-      ul{
-        margin-bottom: 0!important;
+    &__geneTable{
+      th, td{
+        &:nth-child(1){
+          width: 128px;
+        }
+        &:nth-child(2){
+          width: 208px;
+        }
+        &:nth-child(4){
+          width: 104px;
+        }
+  
       }
-      .close{
-        display: none;
+  
+      td{
+        justify-content:flex-start;
+      }
+      &__geneLink{
+        margin-left: 4px;
+      }
+
+      &__gene{
+        margin: 0;
       }
     }
-
-    &__transcriptValue{
-      display: flex;
-      align-items: center;
-
-      .canonicalIcon{
-        margin-left: 8px;
-      }
-    }
-
-
-
   }
 
   &__patient{
@@ -183,49 +228,66 @@
      margin-bottom: 8px;
      color: $gray-7;
    }
+
+   &__patientTable {
+    width: 100%;
+    .bp3-table-column-header-cell {
+      background-color: $gray-3;
+      border-bottom: none;
+    }
+    .bp3-table-column-headers {
+      background-color: $gray-3;
+    }
+    .bp3-table-menu .bp3-table-selection-enabled {
+      background-color: $gray-3;
+    }
+
+    .bp3-table-row-name {
+      border-right: none;
+      border-bottom: 1px solid $gray-4;
+    }
+    .bp3-table-cell-ledger-odd {
+      background-color: #fff;
+    }
+    .bp3-table-menu {
+      background-color:  $gray-3;
+      border-right: none;
+      border-bottom: none;
+      
+    }
+    .bp3-table-column-name {
+      border-right: none;
+      color: $gray-8;
+    }
+    .bp3-table-cell {
+      border-right: none;
+      border-bottom: 1px solid $gray-4;
+      .bp3-table-truncated-text{
+        color: $gray-8;
+      }
+    }
+    .bp3-table-row-headers .bp3-table-row-headers-cells-container .bp3-table-header .bp3-table-row-name {
+      border-right: none;
+    }
+    .bp3-table-row-headers .bp3-table-row-headers-cells-container .bp3-table-header:nth-child(even) {
+      background-color: #fff;
+    }
   }
-  .gene{
-    margin: 0;
   }
 
-  .voirPlus{
+  &__seeMore{
     font-size: 12px;
     height: 22px;
   }
+  
   .close{
     display: none;
   }
 
-  .geneTable{
-    th, td{
-      &:nth-child(1){
-        width: 128px;
-      }
-      &:nth-child(2){
-        width: 208px;
-      }
-      &:nth-child(4){
-        width: 104px;
-      }
-
-    }
-
-    td{
-      justify-content:flex-start;
-    }
-    .geneLink{
-      margin: 0 4px;
-    }
-  }
 
   .variantLink{
     height: 21px;
     line-height: 21px;
-  }
-
-  
-  .clinVarId{
-    margin: 0 4px;
   }
   .largeDivider{
     height: 8px;
@@ -258,64 +320,10 @@
     }
   }
 
-  .consequenceTerm {
-    color: #858e99;
-    line-height: 22px;
-    font-size: 14px;
 
-  }
-  .impact{
-    margin-left: 8px;
-  }
-  .patientTable {
-    width: 100%;
-    .bp3-table-column-header-cell {
-      background-color: $gray-3;
-      border-bottom: 1px solid $gray-4;
-    }
-    .bp3-table-column-headers {
-      background-color: $gray-3;
-    }
-    .bp3-table-menu .bp3-table-selection-enabled {
-      background-color: $gray-3;
-    }
-
-    .bp3-table-row-name {
-      border-right: none;
-      border-bottom: 1px solid $gray-4;
-    }
-    .bp3-table-cell-ledger-odd {
-      background-color: #fff;
-    }
-    .bp3-table-menu {
-      background-color:  $gray-3;
-      border-right: none;
-      border-bottom: 1px solid $gray-4;
-      
-    }
-    .bp3-table-column-name {
-      border-right: none;
-      color: $gray-8;
-    }
-    .bp3-table-cell {
-      border-right: none;
-      border-bottom: 1px solid $gray-4;
-      .bp3-table-truncated-text{
-        color: $gray-8;
-      }
-    }
-    .bp3-table-row-headers .bp3-table-row-headers-cells-container .bp3-table-header .bp3-table-row-name {
-      border-right: none;
-    }
-    .bp3-table-row-headers .bp3-table-row-headers-cells-container .bp3-table-header:nth-child(even) {
-      background-color: #fff;
-    }
-  }
 }
 
-
-.consequence{
-  &::first-letter{
-    text-transform: capitalize;
-  }
+.ant-table-thead > tr > th{
+  background-color: $gray-3 !important;
+  border : none;
 }

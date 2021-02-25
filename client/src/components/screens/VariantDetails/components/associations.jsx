@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-
 import React from 'react';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
@@ -139,8 +137,13 @@ class AssociationsTab extends React.Component {
         // Omim
 
         const geneSymbolOmim = (
-          <span>{ geneSymbol } ( MIM:
-            <Button type="link" target="_blank" href={`https://omim.org/entry/${gene.omim_gene_id}`} className="link--underline variantLink geneLink">
+          <span>{ geneSymbol } (MIM:
+            <Button
+              type="link"
+              target="_blank"
+              href={`https://omim.org/entry/${gene.omim_gene_id}`}
+              className="link--underline variantLink variant-page-content__associations__geneTable__geneLink"
+            >
               { gene.omim_gene_id }
             </Button>)
           </span>
@@ -152,8 +155,13 @@ class AssociationsTab extends React.Component {
             const name = element.name.replace(/[{()}]/g, '');
             const isOpen = i < 3 ? 'open' : 'close';
             const lineSign = (
-              <li className={isOpen}>{ name } ( MIM:
-                <Button type="link" target="_blank" href={`https://omim.org/entry/${element.omim_id}`} className="link--underline variantLink geneLink">
+              <li className={isOpen}>{ name } (MIM:
+                <Button
+                  type="link"
+                  target="_blank"
+                  href={`https://omim.org/entry/${element.omim_id}`}
+                  className="link--underline variantLink variant-page-content__associations__geneTable__geneLink"
+                >
                   { element.omim_id }
                 </Button>)
               </li>
@@ -170,23 +178,36 @@ class AssociationsTab extends React.Component {
         }
 
         const omimSignList = omimSign.length > 0 ? (
-          <div className={`gene omim_${index}`}>
-            <ul className="gene">{ omimSign }
+          <div className={`variant-page-content__associations__geneTable__gene omim_${index}`}>
+            <ul className="variant-page-content__associations__geneTable__gene">{ omimSign }
             </ul>
             {
               omimSign.length > 3 ? (
-                <Button className="link--underline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('omim', index); }}>{ intl.get('screen.variantdetails.seeMore') }</Button>) : null
+                <Button
+                  className="link--underline voirPlus"
+                  type="link"
+                  onClick={() => { this.handleSeeMoreGene('omim', index); }}
+                >{ intl.get('screen.variantdetails.seeMore') }
+                </Button>
+              ) : null
             }
           </div>
         ) : '--';
 
         const omimTransmissionList = omimTransmission.length > 0 ? (
-          <div className={`gene omim_${index}`}>
-            <ul className="gene">{ omimTransmission }
+          <div className={`variant-page-content__associations__geneTable__gene omim_${index}`}>
+            <ul className="variant-page-content__associations__geneTable__gene">{ omimTransmission }
             </ul>
             {
               omimSign.length > 3 ? (
-                <Button className="link--underline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('omim', index); }}>{ intl.get('screen.variantdetails.seeMore') }</Button>) : null
+                <Button
+                  className="link--underline voirPlus"
+                  type="link"
+                  onClick={() => { this.handleSeeMoreGene('omim', index); }}
+                >
+                  { intl.get('screen.variantdetails.seeMore') }
+                </Button>
+              ) : null
             }
           </div>
         ) : '--';
@@ -205,7 +226,12 @@ class AssociationsTab extends React.Component {
             const isOpen = i < 3 ? 'open' : 'close';
             const line = (
               <li className={isOpen}>
-                <Button type="link" target="_blank" href={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${element.disorder_id}`} className="link--underline variantLink">
+                <Button
+                  type="link"
+                  target="_blank"
+                  href={`https://www.orpha.net/consor/cgi-bin/Disease_Search.php?lng=FR&data_id=${element.disorder_id}`}
+                  className="link--underline variantLink"
+                >
                   { element.panel }
                 </Button>
               </li>
@@ -215,12 +241,19 @@ class AssociationsTab extends React.Component {
         }
 
         const orphanetList = orphanetSign.length > 0 ? (
-          <div className={`gene orphanet_${index}`}>
-            <ul className="gene">{ orphanetSign }
+          <div className={`variant-page-content__associations__geneTable__gene orphanet_${index}`}>
+            <ul className="variant-page-content__associations__geneTable__gene">{ orphanetSign }
             </ul>
             {
               orphanetSign.length > 3 ? (
-                <Button className="link--underline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('orphanet', index); }}>{ intl.get('screen.variantdetails.seeMore') }</Button>) : null
+                <Button
+                  className="link--underline voirPlus"
+                  type="link"
+                  onClick={() => { this.handleSeeMoreGene('orphanet', index); }}
+                >
+                  { intl.get('screen.variantdetails.seeMore') }
+                </Button>
+              ) : null
             }
           </div>
         ) : '--';
@@ -239,8 +272,13 @@ class AssociationsTab extends React.Component {
             const isOpen = i < 3 ? 'open' : 'close';
             const linkText = element.hpo_term_id.slice(3);
             const line = (
-              <li className={isOpen}>{ name } ( HP:
-                <Button type="link" target="_blank" href={`https://hpo.jax.org/app/browse/term/${element.hpo_term_id}`} className="link--underline variantLink geneLink">
+              <li className={isOpen}>{ name } (HP:
+                <Button
+                  type="link"
+                  target="_blank"
+                  href={`https://hpo.jax.org/app/browse/term/${element.hpo_term_id}`}
+                  className="link--underline variantLink variant-page-content__associations__geneTable__geneLink"
+                >
                   { linkText }
                 </Button>)
               </li>
@@ -250,12 +288,19 @@ class AssociationsTab extends React.Component {
         }
 
         const hpoList = hpoSign.length > 0 ? (
-          <div className={`gene hpo_${index}`}>
-            <ul className="gene">{ hpoSign }
+          <div className={`variant-page-content__associations__geneTable__gene hpo_${index}`}>
+            <ul className="variant-page-content__associations__geneTable__gene">{ hpoSign }
             </ul>
             {
               hpoSign.length > 3 ? (
-                <Button className="link--underline voirPlus" type="link" onClick={() => { this.handleSeeMoreGene('hpo', index); }}>{ intl.get('screen.variantdetails.seeMore') }</Button>) : null
+                <Button
+                  className="link--underline voirPlus"
+                  type="link"
+                  onClick={() => { this.handleSeeMoreGene('hpo', index); }}
+                >
+                  { intl.get('screen.variantdetails.seeMore') }
+                </Button>
+              ) : null
             }
           </div>
         ) : '--';
@@ -350,7 +395,7 @@ class AssociationsTab extends React.Component {
     const getClinVarTitle = () => (
       <span className="bold">{ intl.get('screen.variantDetails.clinicalAssociationsTab.clinVar') } (
         <Button
-          className="link--underline bold clinVarId"
+          className="link--underline bold variant-page-content__associations__clinVarId"
           target="_blank"
           type="link"
           href={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}/`}
@@ -362,7 +407,7 @@ class AssociationsTab extends React.Component {
     );
 
     return (
-      <div className="page-static-content">
+      <div className="page-static-content variant-page-content__associations">
         { clinvar ? (
           <Row className="flex-row">
             <Card
@@ -398,7 +443,7 @@ class AssociationsTab extends React.Component {
           >
             <Table
               rowKey={() => shortid.generate()}
-              className="geneTable"
+              className="variant-page-content__associations__geneTable"
               pagination={false}
               size="small"
               locale={{
