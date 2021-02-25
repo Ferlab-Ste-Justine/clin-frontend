@@ -80,6 +80,20 @@ const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   }
 };
 
+function formatRamq(value: string): string {
+  const newValue = value.toLocaleUpperCase();
+  return newValue
+    .replaceAll(/\s/g, '')
+    .split('')
+    .reduce((acc, char, index) => {
+      console.log('#debug acc, char, index', acc, char, index); // TODO @francisprovost
+
+      return ((char !== ' ' && [3, 7]
+        .includes(index)) ? `${acc}${char} ` : `${acc}${char}`);
+      // return ((char !== ' ' && index % (4 + numberOfSpaces) === 0) ? `${acc}${char} ` : `${acc}${char}`);
+    }, '').trimEnd();
+}
+
 function validateForm(formValues: any) {
   if (!Object.keys(formValues).includes('lastname')) {
     // before doing the ramq part of the form, lastname (and others)
@@ -229,7 +243,7 @@ const FormModal : React.FC<Props> = ({
               if (ramqValue && ramqValue === ramqConfirmValue) {
                 try {
                   dispatch({ type: ActionType.RAMQ_PROCESSING });
-                  actions.fetchPatientByRamq(ramqValue);
+                  actions.fetchPatientByRamq(ramqValue.replace(/\s/g, ''));
                 } catch (e) {
                   form.setFields([{ name: 'ramq', errors: [intl.get(`${I18N_PREFIX}errors.invalidRamq`)] }]);
                 }
@@ -309,7 +323,7 @@ const FormModal : React.FC<Props> = ({
                       return Promise.resolve();
                     }
 
-                    return isValidRamq(value) ? Promise.resolve() : Promise.reject();
+                    return isValidRamq(value.replace(/\s/g, '')) ? Promise.resolve() : Promise.reject();
                   },
                   message: intl.get(`${I18N_PREFIX}errors.invalidRamq`),
                 }),
@@ -317,7 +331,12 @@ const FormModal : React.FC<Props> = ({
             >
               <Input
                 placeholder="ROYL 1234 4567"
-                onChange={() => !!form.getFieldError('ramq') && form.setFields([{ name: 'ramq', errors: [] }])}
+                onChange={(event) => {
+                  form.setFieldsValue({ ramq: formatRamq(event.currentTarget.value) });
+                  if (form.getFieldError('ramq')) {
+                    form.setFields([{ name: 'ramq', errors: [] }]);
+                  }
+                }}
                 disabled={!state.ramqRequired}
               />
             </Form.Item>
@@ -341,7 +360,13 @@ const FormModal : React.FC<Props> = ({
               ]}
 
             >
-              <Input placeholder="ROYL 1234 4567" disabled={!state.ramqRequired} />
+              <Input
+                placeholder="ROYL 1234 4567"
+                disabled={!state.ramqRequired}
+                onChange={(event) => {
+                  form.setFieldsValue({ ramqConfirm: formatRamq(event.currentTarget.value) });
+                }}
+              />
             </Form.Item>
             <Form.Item label="&nbsp;" name="noRamq">
               <Checkbox.Group onChange={(values) => {
