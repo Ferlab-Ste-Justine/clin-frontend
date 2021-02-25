@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-
 import React, { Fragment } from 'react';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
@@ -159,19 +157,19 @@ class ResumeTabs extends React.Component {
             switch (g.impact) {
               case 'HIGH':
                 return (
-                  <Tag className="consequenceTable__tag" color="red"> HIGH </Tag>
+                  <Tag className="variant-page-content__resume__consequence-table__tag" color="red"> HIGH </Tag>
                 );
               case 'MODERATE':
                 return (
-                  <Tag className="consequenceTable__tag" color="gold"> MODERATE </Tag>
+                  <Tag className="variant-page-content__resume__consequence-table__tag" color="gold"> MODERATE </Tag>
                 );
               case 'LOW':
                 return (
-                  <Tag className="consequenceTable__tag" color="green"> LOW </Tag>
+                  <Tag className="variant-page-content__resume__consequence-table__tag" color="green"> LOW </Tag>
                 );
               case 'MODIFIER':
                 return (
-                  <Tag className="consequenceTable__tag"> MODIFIER </Tag>
+                  <Tag className="variant-page-content__resume__consequence-table__tag"> MODIFIER </Tag>
                 );
               default:
                 return null;
@@ -194,49 +192,49 @@ class ResumeTabs extends React.Component {
                   case 'sift':
                     return (
                       <li className={`${isOpen} sift`}>
-                        <span className="consequenceTerm">SIFT: </span>
+                        <span className="variant-page-content__resume__consequence-table__consequence-term">SIFT: </span>
                         { g.predictions.sift_pred } - { g.predictions.sift_converted_rank_score }
                       </li>
                     );
                   case 'polyphen2':
                     return (
                       <li className={`${isOpen} polyphen2`}>
-                        <span className="consequenceTerm">Polyphen2: </span>
+                        <span className="variant-page-content__resume__consequence-table__consequence-term">Polyphen2: </span>
                         { g.predictions.polyphen2_hvar_pred } - { g.predictions.polyphen2_hvar_score }
                       </li>
                     );
                   case 'cadd':
                     return (
                       <li className={`${isOpen} cadd`}>
-                        <span className="consequenceTerm">CADD score: </span>
+                        <span className="variant-page-content__resume__consequence-table__consequence-term">CADD score: </span>
                         { g.predictions.cadd_score }
                       </li>
                     );
                   case 'dann':
                     return (
                       <li className={`${isOpen} dann`}>
-                        <span className="consequenceTerm">DANN score: </span>
+                        <span className="variant-page-content__resume__consequence-table__consequence-term">DANN score: </span>
                         { g.predictions.dann_score }
                       </li>
                     );
                   case 'fathmm':
                     return (
                       <li className={`${isOpen} fathmm`}>
-                        <span className="consequenceTerm">FATHMM: </span>
+                        <span className="variant-page-content__resume__consequence-table__consequence-term">FATHMM: </span>
                         { g.predictions.fathmm_pred } - { g.predictions.fathmm_converted_rank_score }
                       </li>
                     );
                   case 'lrt':
                     return (
                       <li className={`${isOpen} lrt`}>
-                        <span className="consequenceTerm">LRT: </span>
+                        <span className="variant-page-content__resume__consequence-table__consequence-term">LRT: </span>
                         { g.predictions.lrt_pred } - { g.predictions.lrt_converted_rankscore }
                       </li>
                     );
                   case 'revel':
                     return (
                       <li className={`${isOpen} revel`}>
-                        <span className="consequenceTerm">REVEL score: </span>
+                        <span className="variant-page-content__resume__consequence-table__consequence-term">REVEL score: </span>
                         { g.predictions.revel_rankscore }
                       </li>
                     );
@@ -271,13 +269,13 @@ class ResumeTabs extends React.Component {
               items = ['--'];
             }
             return (
-              <div className={`consequenceTable__predictionList prediction_${g.symbol}_${index}`}>
+              <div className={`variant-page-content__resume__consequence-table__predictionList prediction_${g.symbol}_${index}`}>
                 <ul>
                   { items }
                 </ul>
                 {
                   items.length > 2 ? (
-                    <Button className="link--underline voirPlus" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>
+                    <Button className="link--underline variant-page-content__seeMo" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>
                       { isSameGene ? intl.get('screen.variantdetails.seeLess') : intl.get('screen.variantdetails.seeMore') }
                     </Button>
                   ) : null
@@ -295,7 +293,7 @@ class ResumeTabs extends React.Component {
                 <path d="M12.1872 10.3583C12.1087 11.1889 11.8021 11.8378 11.2674 12.3048C10.7326 12.7683 10.0214 13 9.13369 13C8.51337 13 7.96613 12.8538 7.49198 12.5615C7.02139 12.2656 6.65775 11.8467 6.40107 11.3048C6.14439 10.7629 6.0107 10.1337 6 9.41711V8.68984C6 7.95544 6.13012 7.30838 6.39037 6.74866C6.65062 6.18895 7.02317 5.75758 7.50802 5.45455C7.99643 5.15152 8.55971 5 9.19786 5C10.057 5 10.7487 5.23351 11.2727 5.70053C11.7968 6.16756 12.1016 6.82709 12.1872 7.67914H10.8396C10.7754 7.11943 10.6114 6.71658 10.3476 6.47059C10.0873 6.22103 9.7041 6.09626 9.19786 6.09626C8.60963 6.09626 8.15686 6.31194 7.83957 6.74332C7.52585 7.17112 7.36542 7.80036 7.35829 8.63102V9.32086C7.35829 10.1622 7.50802 10.8039 7.80749 11.246C8.11052 11.6881 8.55258 11.9091 9.13369 11.9091C9.66488 11.9091 10.0642 11.7897 10.3316 11.5508C10.5989 11.3119 10.7683 10.9144 10.8396 10.3583H12.1872Z" fill="#EAF3FA" />
               </svg>
             ) : '';
-            return <span className="link--underline consequenceTable__transcriptValue"><Link url={`${baseUrl}&t=${g.ensembl_feature_id}`} text={g.ensembl_feature_id} />{ canonical }</span>;
+            return <span className="link--underline variant-page-content__resume__consequence-table__transcriptValue"><Link url={`${baseUrl}&t=${g.ensembl_feature_id}`} text={g.ensembl_feature_id} />{ canonical }</span>;
           };
 
           const strand = g.strand === +1 ? '+' : '-';
@@ -400,17 +398,17 @@ class ResumeTabs extends React.Component {
       const omimGene = find(data.genes, { symbol: gene.symbol });
       return (
         <Row className="flex-row">
-          <Typography.Title level={5} className="variant-page-content__table__title">
-            Gène <span className="link--underline"><Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${gene.symbol}`} text={gene.symbol} /></span>
+          <Typography.Title level={5} className="variant-page-content__resume__table-title">
+            Gène <span className="link--underline bold"><Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${gene.symbol}`} text={gene.symbol} /></span>
           </Typography.Title>
           { omimGene && omimGene.omim_gene_id
             ? (
-              <Typography.Title level={5} className="variant-page-content__table__title">
-                OMIM <span className="link--underline"><Link url={`https://omim.org/entry/${omimGene.omim_gene_id}`} text={omimGene.omim_gene_id} /></span>
+              <Typography.Title level={5} className="variant-page-content__resume__table-title">
+                OMIM <span className="link--underline bold"><Link url={`https://omim.org/entry/${omimGene.omim_gene_id}`} text={omimGene.omim_gene_id} /></span>
               </Typography.Title>
             ) : null }
 
-          <Typography.Title level={5} className="variant-page-content__table__title">
+          <Typography.Title level={5} className="variant-page-content__resume__table-title">
             <span className="bold value">{ gene.biotype }</span>
           </Typography.Title>
 
@@ -420,52 +418,52 @@ class ResumeTabs extends React.Component {
 
     const divideGenes = getDivideGenes();
     return (
-      <div className="page-static-content">
-        <Card bordered={false} className="variant__generalInfo">
+      <div className="page-static-content variant-page-content__resume">
+        <Card bordered={false} className="variant-page-content__resume__generalInfo">
           <Row className="flex-row">
             <Col>
               <Card className="nameBlock">
-                <Row className="flex-row nameBlock__info flex-row">
+                <Row className="flex-row nameBlock__info">
                   <Typography className="nameBlock__info__label">Chr</Typography>
                   <Typography className="nameBlock__info__info">{ data.chromosome }</Typography>
                 </Row>
-                <Row className="flex-row nameBlock__info flex-row">
+                <Row className="flex-row nameBlock__info">
                   <Typography className="nameBlock__info__label">Start</Typography>
                   <Typography className="nameBlock__info__info">{ data.start }</Typography>
                 </Row>
-                <Row className="flex-row nameBlock__info flex-row">
+                <Row className="flex-row nameBlock__info">
                   <Typography className="nameBlock__info__label">Allele Alt.</Typography>
                   <Typography className="nameBlock__info__info">{ data.alternate }</Typography>
                 </Row>
-                <Row className="flex-row nameBlock__info flex-row">
+                <Row className="flex-row nameBlock__info">
                   <Typography className="nameBlock__info__label">Allele Réf.</Typography>
                   <Typography className="nameBlock__info__info">{ data.reference }</Typography>
                 </Row>
               </Card>
             </Col>
-            <Col className="content">
+            <Col className="variant-page-content__resume__content">
               <Row className="flex-row">
                 <Col>
                   <div className="row">
-                    <span className="title">Titre</span>
-                    <span className="info">{ variant_class }</span>
+                    <span className="row__title">Type</span>
+                    <span className="row__info">{ variant_class }</span>
                   </div>
                   <div className="row">
-                    <span className="title">Cytobande</span>
-                    <span className="info">
+                    <span className="row__title">Cytobande</span>
+                    <span className="row__info">
                       { genes && genes[0] ? genes[0].location : '' }
                     </span>
                   </div>
                   <div className="row">
-                    <span className="title">Genome Réf</span>
-                    <span className="info">{ assembly_version }</span>
+                    <span className="row__title">Genome Réf</span>
+                    <span className="row__info">{ assembly_version }</span>
                   </div>
                 </Col>
                 <Divider type="vertical" />
                 <Col>
                   <div className="row">
-                    <span className="title">ClinVar</span>
-                    <span className="info">{
+                    <span className="row__title">ClinVar</span>
+                    <span className="row__info">{
                       ext_db && ext_db.is_clinvar ? (
                         <span className="link--underline">
                           <Link
@@ -481,8 +479,8 @@ class ResumeTabs extends React.Component {
                     </span>
                   </div>
                   <div className="row">
-                    <span className="title">dbSNP</span>
-                    <span className="info">
+                    <span className="row__title">dbSNP</span>
+                    <span className="row__info">
                       { ext_db && ext_db.is_dbsnp ? (
                         <span className="link--underline">
                           <Link
@@ -496,8 +494,8 @@ class ResumeTabs extends React.Component {
                     </span>
                   </div>
                   <div className="row">
-                    <span className="title">PubMed</span>
-                    <span className="info">{
+                    <span className="row__title">PubMed</span>
+                    <span className="row__info">{
                       ext_db && ext_db.is_pubmed
                         ? (
                           <>
@@ -532,21 +530,21 @@ class ResumeTabs extends React.Component {
                 <Divider type="vertical" />
                 <Col>
                   <div className="row">
-                    <span className="title">Patients</span>
-                    <span className="info">
-                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.ac }</Button>
+                    <span className="row__title">Patients</span>
+                    <span className="row__info">
+                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.pn }</Button>
                       /{ frequencies.internal.an }
                     </span>
                   </div>
                   <div className="row">
-                    <span className="title">Fréquence</span>
-                    <span className="info">
-                      { Number.parseFloat(frequencies.internal.af).toExponential(5) }
+                    <span className="row__title">{ intl.get('screen.variantDetails.summaryTab.patientTable.frequencies') }</span>
+                    <span className="row__info">
+                      { Number.parseFloat(frequencies.internal.af).toExponential(2) }
                     </span>
                   </div>
                   <div className="row">
-                    <span className="title">Annotations</span>
-                    <span className="info">{ last_annotation_update }</span>
+                    <span className="row__title">Annotations</span>
+                    <span className="row__info">{ last_annotation_update }</span>
                   </div>
                 </Col>
               </Row>
@@ -569,7 +567,7 @@ class ResumeTabs extends React.Component {
                 >
                   <Table
                     rowKey={() => shortid.generate()}
-                    className="consequenceTable"
+                    className="variant-page-content__resume__consequence-table"
                     size="small"
                     pagination={false}
                     locale={{

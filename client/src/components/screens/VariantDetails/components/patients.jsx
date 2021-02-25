@@ -88,7 +88,7 @@ class PatientsTabs extends React.Component {
       },
       {
         key: 'sequencing_strategy',
-        label: 'screen.variantDetails.patientsTab.type',
+        label: 'screen.variantDetails.patientsTab.test',
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.sequencing_strategy; } catch (e) { return ''; } },
         }),
@@ -106,7 +106,7 @@ class PatientsTabs extends React.Component {
         key: 'ad_ratio',
         label: 'screen.variantDetails.patientsTab.adFreq',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return <span>{ data.ad_alt }/{ data.ad_total } ({ data.ad_ratio.toFixed(4) })</span>; } catch (e) { return ''; } },
+          renderer: (data) => { try { return <span>{ data.ad_alt }/{ data.ad_total } ({ data.ad_ratio.toFixed(2) })</span>; } catch (e) { return ''; } },
         }),
         columnWidth: COLUMN_WIDTH.WIDE,
       },
@@ -159,7 +159,7 @@ class PatientsTabs extends React.Component {
                 </div>
               </Col>
             </Row>
-            <Col className="patientTable">
+            <Col className="variant-page-content__patient__patientTable">
               <DataTable
                 size={this.getDonors().length}
                 total={this.getDonors().length}

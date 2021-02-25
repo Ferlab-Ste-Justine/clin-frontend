@@ -313,7 +313,6 @@ div.ant-card {
 //Card
 .staticCard{
   margin-bottom: 24px !important;
-  max-width: $maxWidth;
 }
 
 //tabs
@@ -679,6 +678,9 @@ div.ant-card {
   border: none;
   padding: 0 8px;
   font-family: $font;
+  span{
+    color: $blue-8;
+  }
 }
 
 .ant-tabs-tabpane-inactive{
@@ -754,6 +756,9 @@ table{
 
 //other
 .bold{
+  > *{
+    font-weight: 500;
+  }
   font-weight: 500;
 }
 

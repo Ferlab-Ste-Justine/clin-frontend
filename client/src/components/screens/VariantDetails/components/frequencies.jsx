@@ -1,9 +1,8 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-
 import React from 'react';
 import shortid from 'shortid';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { v1 as uuidv1 } from 'uuid';
 import {
@@ -15,6 +14,7 @@ import {
 
 import '../style.scss';
 import { createCellRenderer } from '../../../Table/index';
+import { navigateToVariantDetailsScreen } from '../../../../actions/router';
 
 const COLUMN_WIDTH = {
   TINY: 65,
@@ -56,6 +56,7 @@ class FrequenciesTab extends React.Component {
     };
     this.getInternalCohortFrequencies = this.getInternalCohortFrequencies.bind(this);
     this.getExternalCohortFrequencies = this.getExternalCohortFrequencies.bind(this);
+    this.goToPatientTab = this.goToPatientTab.bind(this);
 
     this.state.internalCohortsFrequenciesColumnPreset = [
       {
@@ -226,7 +227,7 @@ class FrequenciesTab extends React.Component {
         };
 
         frequency.key = <Button type="link" target="_blank" href={url} className="link--underline variantLink">{ key }</Button>;
-        frequency.af = Number.parseFloat(frequency.af).toExponential(5);
+        frequency.af = Number.parseFloat(frequency.af).toExponential(2);
         return frequency;
       });
 
@@ -234,6 +235,11 @@ class FrequenciesTab extends React.Component {
     }
 
     return [];
+  }
+
+  goToPatientTab() {
+    const { actions, variantDetails } = this.props;
+    actions.navigateToVariantDetailsScreen(variantDetails.id, 'patients');
   }
 
   render() {
@@ -253,7 +259,7 @@ class FrequenciesTab extends React.Component {
       <div className="page-static-content">
         <Row className="flex-row">
           <Card
-            title={intl.get('screen.variantDetails.summaryTab.rdmqTable.title')}
+            title={intl.get('screen.variantDetails.summaryTab.rqdmTable.title')}
             className="staticCard"
             bordered={false}
           >
@@ -311,6 +317,12 @@ FrequenciesTab.propTypes = {
 const mapStateToProps = (state) => ({
   variantDetails: state.variantDetails,
 });
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators({
+    navigateToVariantDetailsScreen,
+  }, dispatch),
+});
 export default connect(
   mapStateToProps,
+  mapDispatchToProps,
 )(FrequenciesTab);
