@@ -89,7 +89,7 @@ function validateForm(formValues: any) {
   return Object.keys(formValues).every((key: string) => {
     const value = formValues[key];
     if (key === 'mrn') {
-      return Object.values(value).every((currentValue) => !!currentValue);
+      return value.file && value.organization;
     }
     // if the field has a value or its noRamq (it's optional)
     if (value || key === 'noRamq') {
@@ -246,8 +246,8 @@ const FormModal : React.FC<Props> = ({
               const patientBuilder = new PatientBuilder()
                 .withFamily(values.lastname)
                 .withGiven(values.firstname)
-                .withMrnIdentifier(values.mrn.file, values.mrn.hospital)
-                .withOrganization(values.mrn.hospital)
+                .withMrnIdentifier(values.mrn.file, values.mrn.organization)
+                .withOrganization(values.mrn.organization)
                 .withRamq(values.ramq)
                 .withGender(values.sex)
                 .withActive(true)
@@ -435,7 +435,7 @@ const FormModal : React.FC<Props> = ({
                         </Form.Item>
                       </Col>
                       <Col span={10}>
-                        <Form.Item name={['mrn', 'hospital']} noStyle>
+                        <Form.Item name={['mrn', 'organization']} noStyle>
                           <Select
                             placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                             className="patient-creation__form__select"
@@ -443,7 +443,7 @@ const FormModal : React.FC<Props> = ({
                               // The Select doesn't trigger the form onChange so we have to trigger the validation manually
                               // onSubmit, the value is set though
                               const formValues = { ...form.getFieldsValue() };
-                              set(formValues, 'mrn.hospital', value);
+                              set(formValues, 'mrn.organization', value);
                               setIsFormValid(validateForm(formValues));
                             }}
                           >
