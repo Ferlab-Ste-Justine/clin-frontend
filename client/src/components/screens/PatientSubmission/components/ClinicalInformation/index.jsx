@@ -399,7 +399,7 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, patient, validate,
+      form, observations, localStore, validate,
     } = this.props;
 
     const { TextArea } = Input;
