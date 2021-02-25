@@ -45,3 +45,11 @@ export const fetchPatientByRamq: Action = (ramq: string) => ({
     ramq,
   },
 });
+
+export const addPatientMrn: Action = (mrn: string, organization: string) => ({
+  type: actions.PATIENT_ADD_MRN_REQUESTED,
+  payload: {
+    mrn,
+    organization,
+  },
+});

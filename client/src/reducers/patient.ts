@@ -79,6 +79,9 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       draft.fmhs = result.fmhs.records;
       break;
     }
+    case actions.PATIENT_ADD_MRN_SUCCEEDED:
+      draft.patient.original = action.payload.patient;
+      break;
     case actions.CLEAR_PATIENT_DATA_REQUESTED:
       draft.consultation = initialState.consultation;
       draft.fmhs = initialState.fmhs;

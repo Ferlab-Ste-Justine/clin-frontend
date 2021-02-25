@@ -6,7 +6,7 @@ import get from 'lodash/get';
 import * as actions from '../actions/type';
 import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import Api, { ApiError } from '../helpers/api';
-import { updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
+import { addPatientMrn, updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
 
 function* handleCreatePatient(action: any) {
   try {
@@ -66,6 +66,18 @@ function* fetchInfosByRamq(action: any) {
   }
 }
 
+function* addMrn(action: any) {
+  try {
+    const patient = yield select((state) => state.patient.patient.original);
+
+    const updatedPatient = yield addPatientMrn(patient, action.payload.mrn, action.payload.organization);
+
+    yield put({ type: actions.PATIENT_ADD_MRN_SUCCEEDED, payload: { patient: updatedPatient } });
+  } catch (error) {
+    yield put({ type: actions.PATIENT_ADD_MRN_FAILED });
+  }
+}
+
 function* watchCreatePatient() {
   yield takeLatest(actions.CREATE_PATIENT_REQUESTED, handleCreatePatient);
 }
@@ -81,11 +93,16 @@ function* watchFetchInfosByRamq() {
   yield takeLatest(actions.PATIENT_FETCH_INFO_BY_RAMQ, fetchInfosByRamq);
 }
 
+function* watchAddPatientMrn() {
+  yield takeLatest(actions.PATIENT_ADD_MRN_REQUESTED, addMrn);
+}
+
 export default function* watchedPatientSubmissionSagas() {
   yield all([
     watchCreatePatient(),
     watchCreatePatientFetus(),
     watchUpdatePatientPractitioners(),
     watchFetchInfosByRamq(),
+    watchAddPatientMrn(),
   ]);
 }
