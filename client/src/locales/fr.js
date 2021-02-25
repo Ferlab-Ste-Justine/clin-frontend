@@ -102,7 +102,7 @@ const fr = {
   'screen.patient.creation.birthday.placeholder': 'Date',
   'screen.patient.creation.file': 'Dossier',
   'screen.patient.creation.hospital.placeholder': 'Hôpital',
-  'screen.patient.creation.errors.invalidRamq': 'Le numéro de RAMQ est invalid',
+  'screen.patient.creation.errors.invalidRamq': 'Le numéro de RAMQ est invalide',
   'screen.patient.creation.errors.invalidRamqConfirm': 'Les numéro de RAMQ sont différents',
   'screen.patient.creation.errors.invalidFirstName': 'Le prénom doit avoir plus de 2 lettres',
   'screen.patient.creation.errors.invalidLastName': 'Le nom de famille doit avoir plus de 2 lettres',
