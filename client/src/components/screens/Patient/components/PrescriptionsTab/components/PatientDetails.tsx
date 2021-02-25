@@ -32,10 +32,10 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
           </Button>
         </>
       ) : (
-        <Button>
+        <>
           <Typography.Title level={3} className="patientName">{ patient.lastName }</Typography.Title>
           <Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title>
-        </Button>
+        </>
       ) }
       <div className="prescriptions-tab__patient-section__name-block__tags">
         <Tag color={patient.proband === 'Proband' ? 'red' : 'geekblue'}>{ patient.proband }</Tag>
