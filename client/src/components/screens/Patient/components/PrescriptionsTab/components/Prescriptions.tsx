@@ -239,7 +239,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     />
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.mrn')}>
-                    { patient.mrn![0].number }  |  { patient.mrn![0].hospital }
+                    { prescription.mrn } | { prescription.organization }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.prescription')}>
                     { prescription.id || DEFAULT_VALUE }
