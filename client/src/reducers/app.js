@@ -6,8 +6,8 @@ import 'moment/locale/fr';
 import 'moment/locale/en-ca';
 import { LOCATION_CHANGE } from 'connected-react-router';
 
-import * as frFr from 'antd/lib/locale-provider/fr_FR';
-import * as enUS from 'antd/lib/locale-provider/en_US';
+import enUS from 'antd/lib/locale/en_US';
+import frFr from 'antd/lib/locale/fr_FR';
 import * as actions from '../actions/type';
 
 export const initialAppState = {
