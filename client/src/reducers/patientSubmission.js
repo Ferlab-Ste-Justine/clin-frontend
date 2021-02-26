@@ -45,6 +45,7 @@ export const initialPatientSubmissionState = {
     consents: [],
     practitioner: '',
     requesterId: null,
+    status: null,
   },
   deleted: {
     fmh: [],
@@ -306,6 +307,7 @@ const patientSubmissionReducer = (
           },
           consents: range(1, 5).map((value) => `consent-${value}`),
           practitioner: '',
+          status: serviceRequest.status,
         };
 
         const requesterReference = get(patientState, `prescriptions[${index}].original.requester.reference`);
