@@ -672,14 +672,23 @@ div.ant-card {
 }
 
 
-//Button
-//Sans Bordure
-.button--borderless{
-  border: none;
-  padding: 0 8px;
+.button{
   font-family: $font;
-  span{
-    color: $blue-8;
+
+  &--borderless{
+    border: none;
+    padding: 0 8px;
+    span{
+      color: $blue-8;
+    }
+  }
+
+  &--disabled{
+    border: none;
+    padding: 0 8px;
+    span {
+      color: $gray-6;
+    }
   }
 }
 

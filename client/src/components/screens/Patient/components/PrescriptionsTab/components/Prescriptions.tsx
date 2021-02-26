@@ -125,6 +125,8 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
         {
           prescriptions.map((prescription, index) => {
             const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
+            const editablePrescription = canEdit(prescription);
+            const isDraft = prescription.status === 'draft';
             return (
               <Tabs.TabPane
                 tab={
@@ -168,10 +170,10 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     <Row>
                       <Col>
                         <Button
-                          className="button--borderless"
+                          className={`button--borderless ${!isDraft ? 'button--disabled' : ''}`}
                           icon={<DeleteOutlined />}
                           onClick={() => alert('Feature not yey implemented')}
-                          disabled={prescription.status !== 'draft'}
+                          disabled={!isDraft}
                         >
                           { intl.get('screen.patient.details.prescription.delete') }
                         </Button>
@@ -187,10 +189,10 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                       </Col>
                       <Col>
                         <Button
-                          className="button--borderless"
+                          className={`button--borderless ${!editablePrescription ? 'button--disabled' : ''}`}
                           icon={<FormOutlined />}
                           onClick={() => openEditPrescription(prescription.id!)}
-                          disabled={!canEdit(prescription)}
+                          disabled={!editablePrescription}
                         >
                           { intl.get('screen.patient.details.prescription.edit') }
                         </Button>
