@@ -609,6 +609,7 @@ const fr = {
   'screen.variantDetails.clinicalAssociationsTab.clinVar': 'ClinVar',
   'screen.variantDetails.clinicalAssociationsTab.genePhenotype': 'Gène - Phenotype',
   'screen.variantDetails.clinicalAssociationsTab.interpretation': 'Interpretation',
+  'screen.variantDetails.clinicalAssociationsTab.source': 'Source',
   'screen.variantDetails.clinicalAssociationsTab.condition': 'Condition',
   'screen.variantDetails.clinicalAssociationsTab.transmission': 'Transmission',
   'screen.variantDetails.clinicalAssociationsTab.ClinVarID': 'Identifiant clinvar',

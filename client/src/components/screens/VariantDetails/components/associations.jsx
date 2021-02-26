@@ -82,7 +82,7 @@ class AssociationsTab extends React.Component {
     this.state.genesColumnPreset = [
       {
         key: 'source',
-        label: 'screen.variantDetails.clinicalAssociationsTab.interpretation',
+        label: 'screen.variantDetails.clinicalAssociationsTab.source',
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => { try { return data; } catch (e) { return ''; } },
         }),

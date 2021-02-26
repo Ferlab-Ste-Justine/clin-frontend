@@ -219,18 +219,21 @@ class FrequenciesTab extends React.Component {
         reference,
       } = data;
 
+      const numberWithSpaces = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
       const url = `https://gnomad.broadinstitute.org/variant/${chromosome}-${start}-${reference}-${alternate}?dataset=gnomad_r3`;
       const externalCohortsKeys = Object.keys(frequencies).filter((k) => k !== 'internal' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
         const frequency = {
           ...frequencies[key],
         };
-
+        frequency.ac = numberWithSpaces(frequency.ac);
+        frequency.an = numberWithSpaces(frequency.an);
+        frequency.hom = numberWithSpaces(frequency.hom);
         frequency.key = <Button type="link" target="_blank" href={url} className="link--underline variantLink">{ key }</Button>;
         frequency.af = Number.parseFloat(frequency.af).toExponential(2);
         return frequency;
       });
-
       return rows;
     }
 

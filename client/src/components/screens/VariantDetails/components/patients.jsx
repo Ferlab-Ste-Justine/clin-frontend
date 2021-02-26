@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { v1 as uuidv1 } from 'uuid';
 import {
@@ -8,6 +9,9 @@ import {
 } from 'antd';
 import DataTable, { createCellRenderer } from '../../../Table/index';
 import '../style.scss';
+import {
+  navigateToPatientScreen,
+} from '../../../../actions/router';
 
 const COLUMN_WIDTH = {
   TINY: 65,
@@ -44,6 +48,7 @@ class PatientsTabs extends React.Component {
     this.state = {
     };
     this.getDonors = this.getDonors.bind(this);
+    this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
     this.state.donorsColumnPreset = [
       {
         key: 'patient_id',
@@ -143,6 +148,12 @@ class PatientsTabs extends React.Component {
     return [];
   }
 
+  handleGoToPatientScreen(e) {
+    const { actions } = this.props;
+    const value = e.target.getAttribute('data-id');
+    actions.navigateToPatientScreen(value);
+  }
+
   render() {
     const {
       donorsColumnPreset,
@@ -183,9 +194,16 @@ PatientsTabs.propTypes = {
   variantDetails: PropTypes.shape({}).isRequired,
 };
 
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators({
+    navigateToPatientScreen,
+  }, dispatch),
+});
+
 const mapStateToProps = (state) => ({
   variantDetails: state.variantDetails,
 });
 export default connect(
+  mapDispatchToProps,
   mapStateToProps,
 )(PatientsTabs);
