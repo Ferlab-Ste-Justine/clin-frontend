@@ -53,3 +53,38 @@ export const updatePatientPractitioners = async (
 
   return updatedPatient;
 };
+
+export const addPatientMrn = async (patient: Patient, mrn: string, organization: string) => {
+  if (mrn == null || organization == null) {
+    throw new Error('Invalid mrn number or organization');
+  }
+  if (patient.identifier.find((id) => id.value === mrn) != null) {
+    throw new Error(`MRN [${mrn}] already exists in patient resource`);
+  }
+
+  const updatedPatient = JSON.parse(JSON.stringify(patient));
+
+  updatedPatient.identifier = [
+    ...patient.identifier,
+    {
+      type: {
+        coding: [
+          {
+            code: 'MR',
+            display: 'Medical record number',
+            system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+          },
+        ],
+        text: 'Numéro du dossier médical',
+      },
+      value: mrn,
+      assigner: {
+        reference: `Organization/${organization}`,
+      },
+    },
+  ];
+
+  await httpClient.secureClinAxios.put(`${window.CLIN.fhirBaseUrl}/Patient/${updatedPatient.id}`, updatedPatient);
+
+  return updatedPatient;
+};

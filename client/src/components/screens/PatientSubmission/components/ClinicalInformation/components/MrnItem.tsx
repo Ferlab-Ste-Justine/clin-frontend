@@ -6,8 +6,11 @@ import {
 import { FormInstance } from 'antd/lib/form';
 import intl from 'react-intl-universal';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Identifier, Patient } from '../../../../../../helpers/fhir/types';
 import style from '../../../../../../containers/App/style.module.scss';
+import { addPatientMrn } from '../../../../../../actions/patientCreation';
+import { State } from '../../../../../../reducers';
 
 const getOrganizationName = (identifier: Identifier) => identifier.assigner!.reference.split('/')[1];
 
@@ -16,19 +19,33 @@ enum Mode {
 }
 
 interface Props {
-  patient: Patient;
   form: FormInstance;
   onChange: () => void
 }
 
-const MrnItem: React.FC<Props> = ({ form, patient, onChange }) => {
+const MrnItem: React.FC<Props> = ({ form, onChange }) => {
   const [mode, setMode] = useState<Mode>(Mode.SELECT);
+
+  const patient = useSelector<State>((state) => state.patient.patient.original) as Patient;
+
   const [defaultSelectedMrn, setDefaultSelctedMrn] = useState<Identifier | undefined>(
-    patient.identifier.find((id) => get(id, 'type.coding[0].code') === 'MR'),
+    patient.identifier?.find((id) => get(id, 'type.coding[0].code') === 'MR'),
   );
+
+  const dispatch = useDispatch();
 
   const onCreationMode = () => {
     setMode(Mode.CREATION);
+    setDefaultSelctedMrn(undefined);
+  };
+
+  const addMrn = () => {
+    const values = form.getFieldsValue();
+    const mrn = values['create.mrn'];
+    const organization = values['create.organization'];
+
+    dispatch(addPatientMrn(mrn, organization));
+    setMode(Mode.SELECT);
     setDefaultSelctedMrn(undefined);
   };
 
@@ -51,13 +68,13 @@ const MrnItem: React.FC<Props> = ({ form, patient, onChange }) => {
     return (
       <Row gutter={8}>
         <Col>
-          <Form.Item name="mrn">
+          <Form.Item name="create.mrn">
             <Input aria-label="mrn" />
           </Form.Item>
         </Col>
         <Col>
           <Form.Item
-            name="organization"
+            name="create.organization"
           >
             <Select
               style={{ width: 120 }}
@@ -73,7 +90,7 @@ const MrnItem: React.FC<Props> = ({ form, patient, onChange }) => {
           </Form.Item>
         </Col>
         <Col>
-          <Button type="primary">
+          <Button type="primary" onClick={addMrn}>
             { intl.get('form.patientSubmission.clinicalInformation.file.add') }
           </Button>
         </Col>
