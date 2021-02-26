@@ -334,6 +334,9 @@ const FormModal : React.FC<Props> = ({
                   }
                 }}
                 disabled={!state.ramqRequired}
+                onPaste={(event) => {
+                  event.preventDefault();
+                }}
               />
             </Form.Item>
             <Form.Item
@@ -361,6 +364,9 @@ const FormModal : React.FC<Props> = ({
                 disabled={!state.ramqRequired}
                 onChange={(event) => {
                   form.setFieldsValue({ ramqConfirm: formatRamq(event.currentTarget.value) });
+                }}
+                onPaste={(event) => {
+                  event.preventDefault();
                 }}
               />
             </Form.Item>
