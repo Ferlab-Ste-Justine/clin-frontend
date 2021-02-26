@@ -12,6 +12,7 @@ interface Props {
   initialConsentsValue: string[]
   initialPractitionerValue: string
   updateConsentmentsCallback: (checkedValue: CheckboxValueType[]) => void
+  disabled: boolean
 }
 
 const Approval: React.FC<Props> = ({
@@ -21,6 +22,7 @@ const Approval: React.FC<Props> = ({
   initialConsentsValue,
   initialPractitionerValue,
   updateConsentmentsCallback,
+  disabled,
 }) => (
   <div>
     <Card title={intl.get('form.patientSubmission.form.section.consent')} bordered={false} className="patientContent">
@@ -65,12 +67,14 @@ const Approval: React.FC<Props> = ({
             message: intl.get('form.patientSubmission.form.validation.noSpace'),
           },
         ]}
+
       >
         <AutoComplete
           className="searchInput"
           placeholder={intl.get('form.patientSubmission.form.searchNameOrLicense')}
           defaultValue={initialPractitionerValue}
           options={dataSource}
+          disabled={disabled}
           onSelect={practitionerOptionSelected}
           onChange={practitionerSearchTermChanged}
         />
