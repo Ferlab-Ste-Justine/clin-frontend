@@ -525,7 +525,7 @@ function PatientSubmissionScreen(props) {
           initialConsentsValue={consents}
           initialPractitionerValue={initialPractitionerValue}
           updateConsentmentsCallback={actions.updateConsentments}
-          disabled={initialPractitionerValue != null && localStore.status !== 'draft'}
+          disabled={initialPractitionerValue != null && get(localStore, 'status', 'draft') !== 'draft'}
         />
       ),
       name: 'Approval',
