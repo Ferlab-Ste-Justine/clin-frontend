@@ -216,6 +216,7 @@ const patientSubmissionReducer = (
         indic: {},
         consents: [],
         practitioner: '',
+        status: 'draft',
       };
       break;
     case actions.PATIENT_SUBMISSION_FROM_PATIENT:
@@ -231,6 +232,7 @@ const patientSubmissionReducer = (
         indic: {},
         consents: [],
         practitioner: '',
+        status: 'draft',
       };
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_DATA: {
@@ -238,6 +240,7 @@ const patientSubmissionReducer = (
       const index = patientState.prescriptions.findIndex((prescription) => prescription.original.id === action.payload.id);
       const patient = patientState.patient.original;
       draft.patient = patient;
+      draft.status = 'draft';
 
       if (patientState.prescriptions != null && patientState.prescriptions.length > 0) {
         const serviceRequest = patientState.prescriptions[index].original;
