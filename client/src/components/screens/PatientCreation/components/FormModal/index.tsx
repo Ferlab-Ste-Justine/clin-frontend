@@ -15,6 +15,7 @@ import set from 'lodash/set';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { LoadingOutlined } from '@ant-design/icons';
+import capitalize from 'lodash/capitalize';
 import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
 import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
 import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
@@ -85,13 +86,8 @@ function formatRamq(value: string): string {
   return newValue
     .replaceAll(/\s/g, '')
     .split('')
-    .reduce((acc, char, index) => {
-      console.log('#debug acc, char, index', acc, char, index); // TODO @francisprovost
-
-      return ((char !== ' ' && [3, 7]
-        .includes(index)) ? `${acc}${char} ` : `${acc}${char}`);
-      // return ((char !== ' ' && index % (4 + numberOfSpaces) === 0) ? `${acc}${char} ` : `${acc}${char}`);
-    }, '').trimEnd();
+    .reduce((acc, char, index) => ((char !== ' ' && [3, 7]
+      .includes(index)) ? `${acc}${char} ` : `${acc}${char}`), '').trimEnd();
 }
 
 function validateForm(formValues: any) {
@@ -258,8 +254,8 @@ const FormModal : React.FC<Props> = ({
             setIsCreating(true);
             try {
               const patientBuilder = new PatientBuilder()
-                .withFamily(values.lastname)
-                .withGiven(values.firstname)
+                .withFamily(capitalize(values.lastname))
+                .withGiven(capitalize(values.firstname))
                 .withMrnIdentifier(values.mrn.file, values.mrn.organization)
                 .withOrganization(values.mrn.organization)
                 .withRamq(values.ramq)
