@@ -194,16 +194,16 @@ PatientsTabs.propTypes = {
   variantDetails: PropTypes.shape({}).isRequired,
 };
 
+const mapStateToProps = (state) => ({
+  variantDetails: state.variantDetails,
+});
+
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     navigateToPatientScreen,
   }, dispatch),
 });
-
-const mapStateToProps = (state) => ({
-  variantDetails: state.variantDetails,
-});
 export default connect(
-  mapDispatchToProps,
   mapStateToProps,
+  mapDispatchToProps,
 )(PatientsTabs);
