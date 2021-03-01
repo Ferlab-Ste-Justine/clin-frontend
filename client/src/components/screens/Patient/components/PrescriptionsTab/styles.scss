@@ -214,7 +214,9 @@
         border-radius: 2px;
       }
       &__status-label {
-        svg {
+        &__info-button {
+          margin: 0;
+          padding: 0;
           margin-left: 5px;
         }
       }

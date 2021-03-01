@@ -29,17 +29,10 @@ import DetailsRow from './Prescription/DetailsRow';
 import FamilyHistory from './Prescription/FamilyHistory';
 import ClinicalSigns from './Prescription/ClinicalSigns';
 import { Observations } from '../../../../../../reducers/patient';
+import StatusLegend from './StatusLegend';
+import statusColors from '../../../../../../style/statusColors';
 
 const DEFAULT_VALUE = '--';
-
-const badgeColor = {
-  draft: '#7E8DA0',
-  'on-hold': '#FA8C16',
-  revoked: '#F5222D',
-  completed: '#389E0D',
-  incomplete: '#EB2F96',
-  active: '#249ED9',
-};
 
 const canEdit = (prescription: Prescription) => prescription.status === 'draft' || prescription.status === 'incomplete';
 
@@ -47,7 +40,7 @@ const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
   <span
     className="prescriptions-tab__prescriptions-section__details__status-tag"
     style={{
-      '--tag-color': badgeColor[status],
+      '--tag-color': statusColors[status],
     } as CSSProperties}
   >
     { intl.get(`screen.patient.details.status.${status}`) }
@@ -80,6 +73,7 @@ const getClinicalObservations = (
 );
 
 const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
+  const [isStatusLegendVisible, setIsStatusLegendVisible] = useState<boolean>(false);
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
   const consultation = useSelector((state: State) => state.patient.consultation!.map((cons) => cons.parsed));
   const familyHistories = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
@@ -132,7 +126,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                 tab={
                   (
                     <span className="prescriptions-tab__prescriptions-section__tab-label">
-                      <Badge color={(badgeColor[prescription.status])} />
+                      <Badge color={(statusColors[prescription.status])} />
                       { moment(prescription.date).format('yyyy-MM-DD') }
                     </span>
                   )
@@ -204,7 +198,13 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     label={(
                       <span className="prescriptions-tab__prescriptions-section__details__status-label">
                         { intl.get('screen.patient.details.prescription.status') }
-                        <InfoCircleOutlined />
+                        <Button
+                          type="text"
+                          className="prescriptions-tab__prescriptions-section__details__status-label__info-button"
+                          onClick={() => setIsStatusLegendVisible(true)}
+                        >
+                          <InfoCircleOutlined />
+                        </Button>
                       </span>
                     )}
                   >
@@ -298,7 +298,10 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   patient={patient}
                   prescription={prescription}
                 />
-                <FamilyHistory patient={patient} familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)} />
+                <FamilyHistory
+                  patient={patient}
+                  familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)}
+                />
                 <ClinicalSigns
                   clinicalImpression={clinicalImpression}
                   hpos={hpos}
@@ -308,6 +311,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
           })
         }
       </Tabs>
+      <StatusLegend isVisible={isStatusLegendVisible} onClose={() => setIsStatusLegendVisible(false)} />
     </div>
   );
 };
