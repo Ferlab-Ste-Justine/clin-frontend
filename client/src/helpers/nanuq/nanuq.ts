@@ -14,7 +14,8 @@ function getSexe(patient:PatientSearchHits) {
 }
 
 function validateData(patients: PatientSearchHits[]) {
-  return patients.length <= MAX_SIZE && patients.every((p) => p.status === 'active' && p.test === 'WXS');
+  // TODO: This should validate the request selected, not the patient holding the request.
+  return patients.length <= MAX_SIZE && patients.every((p) => p.requests.some((r) => r.status === 'active'));
 }
 
 export function generateExport(patients: PatientSearchHits[]) {
@@ -34,7 +35,7 @@ export function generateExport(patients: PatientSearchHits[]) {
       nom_patient: p.lastName,
       prenom_patient: p.firstName,
       patient_id: p.id,
-      service_request_id: p.request,
+      service_request_id: p.requests[0].request,
       dossier_medical: p.mrn,
       institution: p.organization.name || p.organization.id.split('/')[1],
       DDN: moment(p.birthDate).format('DD/MM/yyyy'),
