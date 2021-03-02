@@ -14,7 +14,7 @@ function getSexe(patient:PatientSearchHits) {
 }
 
 function validateData(patients: PatientSearchHits[]) {
-  return patients.length <= MAX_SIZE && patients.every((p) => p.status === 'active' && p.test === 'WXS');
+  return patients.length <= MAX_SIZE && patients.every((p) => p.status === 'active');
 }
 
 export function generateExport(patients: PatientSearchHits[]) {
