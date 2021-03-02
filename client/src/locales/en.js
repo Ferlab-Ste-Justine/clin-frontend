@@ -246,7 +246,7 @@ const en = {
   'screen.patient.tab.clinical': 'Clinical',
   'screen.patientsearch.yes': 'Yes',
   'screen.patientsearch.no': 'No',
-  'screen.patientsearch.title': 'Patient List',
+  'screen.patientsearch.title': 'Patients and prescriptions',
   'screen.patientsearch.button.new': 'Patient',
   'screen.patientsearch.placeholder': 'MRN, patient ID, RAMQ, last name, first name, family ID, specimen ID and study',
   'screen.patientsearch.table.nanuq': 'Nanuq',
