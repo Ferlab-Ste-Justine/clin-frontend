@@ -277,7 +277,7 @@ const fr = {
   'screen.patient.tab.clinical': 'Clinique',
   'screen.patientsearch.yes': 'Oui',
   'screen.patientsearch.no': 'Non',
-  'screen.patientsearch.title': 'Liste des patients',
+  'screen.patientsearch.title': 'Patients et prescriptions',
   'screen.patientsearch.button.new': 'Patient',
   'screen.patientsearch.placeholder': 'MRN, ID Patient, RAMQ, Nom, Prénom, ID Famille, ID Specimen et Étude',
   'screen.patientsearch.nanuqexport.process': 'Création de fichier en cours',
