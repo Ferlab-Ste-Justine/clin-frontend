@@ -231,7 +231,6 @@ export interface PractitionerRole {
 
 export interface PatientSearchHits {
   id: string;
-  status: string;
   organization: {
     id: string
     name: string
@@ -245,8 +244,6 @@ export interface PatientSearchHits {
     lastName: string,
     firstName: string
   },
-  test: string,
-  prescription: string,
   mrn: string,
   ramq: string,
   position: string,
@@ -254,7 +251,12 @@ export interface PatientSearchHits {
   familyType: string,
   ethnicity: string,
   bloodRelationship: string,
-  request: string,
+  requests: {
+    status: string;
+    request: string,
+    test: string,
+    prescription: string,
+  }[],
   timestamp: string,
   submitted: boolean,
 }
