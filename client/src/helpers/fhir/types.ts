@@ -183,6 +183,7 @@ export interface Observation {
   note: Note[];
   extension: Extension[];
   valueCodeableConcept?: CodeableConcept;
+  valueBoolean?: boolean;
 }
 
 export type FamilyGroupType = 'person' | 'animal' | 'practitioner' | 'device' | 'medication' | 'substance';

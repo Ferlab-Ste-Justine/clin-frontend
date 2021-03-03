@@ -271,12 +271,7 @@ function PatientSubmissionScreen(props) {
           code: hpo.interpretation,
         }],
       })
-      .withValue({
-        coding: [{
-          code: hpo.code,
-          display: hpo.display,
-        }],
-      })
+      .withValue(hpo.code, hpo.display)
       .withNote(hpo.note)
       .build();
 
@@ -365,6 +360,24 @@ function PatientSubmissionScreen(props) {
 
       if (content.summaryNote != null) {
         batch.observations.push(createSummary(content.summaryNote));
+      }
+
+      if (get(content, 'ethnicity.value') != null) {
+        const observationBuilder = new ObservationBuilder('ETH')
+          .withStatus('final')
+          .withValue(content.ethnicity.value,
+            intl.get(`form.patientSubmission.form.ethnicity.${content.ethnicity.value}`),
+            'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity');
+
+        if (get(content, 'ethnicity.note') != null) {
+          observationBuilder.withNote(content.ethnicity.note);
+        }
+
+        batch.observations.push(observationBuilder.build());
+      }
+
+      if (content.consanguinity != null) {
+        batch.observations.push(new ObservationBuilder('CONS').withBooleanValue(content.consanguinity === 'yes'));
       }
 
       actions.createRequest(batch);

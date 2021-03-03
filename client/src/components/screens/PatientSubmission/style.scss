@@ -503,6 +503,11 @@
     }
   }
 
+  &__row{
+    height: 10px;
+    margin-bottom: 38px;
+  }
+
   &__analysis {
     .ant-form-item-control {
       max-width: 950px;
@@ -568,3 +573,4 @@
     width: auto;
   }
 }
+

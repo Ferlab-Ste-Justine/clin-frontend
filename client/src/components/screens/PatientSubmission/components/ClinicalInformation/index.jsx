@@ -312,11 +312,7 @@ class ClinicalInformation extends React.Component {
     const { hpoResources } = this.state;
 
     const builder = new ObservationBuilder('HPO');
-    builder.withValue({
-      coding: [{
-        code, display,
-      }],
-    });
+    builder.withValue(code, display);
 
     this.setState({
       hpoResources: [
