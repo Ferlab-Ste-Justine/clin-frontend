@@ -175,7 +175,7 @@ class PatientSearchScreen extends React.Component {
         renderer: createCellRenderer('custom', this.getData, {
           renderer: (data) => {
             try {
-              const name = data.fetus ? 'Fetus' : data.firstName;
+              const name = data.fetus ? intl.get('screen.patient.table.fetus') : data.firstName;
               return name;
             } catch (e) { return ''; }
           },

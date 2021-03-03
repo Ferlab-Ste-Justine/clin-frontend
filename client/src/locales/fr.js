@@ -292,6 +292,7 @@ const fr = {
   'screen.patientsearch.table.firstName': 'Prénom',
   'screen.patientsearch.table.lastName': 'Nom',
   'screen.patientsearch.table.gender': 'Sexe',
+  'screen.patient.table.fetus': 'Foetus',
   'screen.patientsearch.table.dob': 'Date de naissance',
   'screen.patientsearch.table.familyComposition': 'Famille',
   'screen.patientsearch.table.position': 'Position',
