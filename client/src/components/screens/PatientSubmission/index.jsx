@@ -271,12 +271,7 @@ function PatientSubmissionScreen(props) {
           code: hpo.interpretation,
         }],
       })
-      .withValue({
-        coding: [{
-          code: hpo.code,
-          display: hpo.display,
-        }],
-      })
+      .withValue(hpo.code, hpo.display)
       .withNote(hpo.note)
       .build();
 
@@ -370,13 +365,9 @@ function PatientSubmissionScreen(props) {
       if (get(content, 'ethnicity.value') != null) {
         const observationBuilder = new ObservationBuilder('ETH')
           .withStatus('final')
-          .withValue({
-            coding: [{
-              system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity',
-              code: content.ethnicity.value,
-              display: intl.get(`form.patientSubmission.form.ethnicity.${content.ethnicity.value}`),
-            }],
-          });
+          .withValue(content.ethnicity.value,
+            intl.get(`form.patientSubmission.form.ethnicity.${content.ethnicity.value}`),
+            'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity');
 
         if (get(content, 'ethnicity.note') != null) {
           observationBuilder.withNote(content.ethnicity.note);

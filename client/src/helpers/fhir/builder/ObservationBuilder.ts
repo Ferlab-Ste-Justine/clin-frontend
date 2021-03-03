@@ -236,8 +236,14 @@ export class ObservationBuilder {
       return this;
     }
 
-    public withValue(value: CodeableConcept) {
-      this.valueCodeableConcept = value;
+    public withValue(code: string, display: string, system?: string) {
+      this.valueCodeableConcept = {
+        coding: [{
+          code,
+          display,
+          system,
+        }],
+      };
       return this;
     }
 
