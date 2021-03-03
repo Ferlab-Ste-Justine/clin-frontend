@@ -9,6 +9,7 @@ import watchedVariantSagas from './variant';
 import watchedVariantDetailsSagas from './variantDetails';
 import watchedRouterSagas from './router';
 import watchSavePatientSubmission from './patientSubmission';
+import watchPatientEdition from './patientEdition';
 import watchPatientCreation from './patientCreation';
 import watchNanuqReportSagas from './nanuq';
 import watchPrescriptions from './prescriptions';
@@ -38,6 +39,7 @@ const rootSagas = [
   watchPatientCreation,
   watchNanuqReportSagas,
   watchPrescriptions,
+  watchPatientEdition,
 ].map(makeRestartable);
 
 export default function* rootSaga() {
