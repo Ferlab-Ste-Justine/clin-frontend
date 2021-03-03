@@ -258,7 +258,7 @@ const FormModal : React.FC<Props> = ({
                 .withGiven(capitalize(values.firstname))
                 .withMrnIdentifier(values.mrn.file, values.mrn.organization)
                 .withOrganization(values.mrn.organization)
-                .withRamq(values.ramq)
+                .withRamq((values.ramq as string).replace(/\s/g, '').toUpperCase())
                 .withGender(values.sex)
                 .withActive(true)
                 .withGeneralPractitioner(userRole.id);
