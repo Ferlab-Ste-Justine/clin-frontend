@@ -547,12 +547,12 @@ class PatientSearchScreen extends React.Component {
 
     return (
       <Layout>
-        <Card className="patientSearch">
-          <Row>
-            <Col span={24}>
-              <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
-            </Col>
-          </Row>
+        <div className="page_headerStaticNoMargin">
+          <div className="variant-page-content__header">
+            <Title level={3}>{ intl.get('screen.patientsearch.title') }</Title>
+          </div>
+        </div>
+        <Card className="patientSearch" bordered={false}>
           <Row justify="space-between" className="flex-row searchNav">
             <Col>
               <Button className={isFacetOpen ? 'facet openFacet' : 'facet'} onClick={this.handleOpenFacet}>
