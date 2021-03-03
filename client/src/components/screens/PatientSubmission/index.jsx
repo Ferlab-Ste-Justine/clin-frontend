@@ -367,6 +367,28 @@ function PatientSubmissionScreen(props) {
         batch.observations.push(createSummary(content.summaryNote));
       }
 
+      if (get(content, 'ethnicity.value') != null) {
+        const observationBuilder = new ObservationBuilder('ETH')
+          .withStatus('final')
+          .withValue({
+            coding: [{
+              system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity',
+              code: content.ethnicity.value,
+              display: intl.get(`form.patientSubmission.form.ethnicity.${content.ethnicity.value}`),
+            }],
+          });
+
+        if (get(content, 'ethnicity.note') != null) {
+          observationBuilder.withNote(content.ethnicity.note);
+        }
+
+        batch.observations.push(observationBuilder.build());
+      }
+
+      if (content.consanguinity != null) {
+        batch.observations.push(new ObservationBuilder('CONS').withBooleanValue(content.consanguinity === 'yes'));
+      }
+
       actions.createRequest(batch);
       actions.updatePatientPractitioners(batch.serviceRequests[0], batch.clinicalImpressions[0]);
     });

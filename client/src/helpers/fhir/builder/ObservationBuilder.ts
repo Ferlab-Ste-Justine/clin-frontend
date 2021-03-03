@@ -23,7 +23,7 @@ interface AgeAtOnset extends Extension {
 }
 
 type SupportedExtensions = HpoCategoryExtension | AgeAtOnset;
-type SupportedCodes = 'CGH' | 'INDIC' | 'HPO' | 'INVES';
+type SupportedCodes = 'CGH' | 'INDIC' | 'HPO' | 'INVES' | 'ETH' | 'CONS';
 
 export class ObservationBuilder {
     private id?: string;
@@ -51,6 +51,8 @@ export class ObservationBuilder {
     private code?: CodeableConcept;
 
     private valueCodeableConcept?: CodeableConcept = undefined;
+
+    private valueBoolean?: boolean = undefined;
 
     public constructor(code: SupportedCodes) {
       switch (code) {
@@ -99,14 +101,34 @@ export class ObservationBuilder {
             ],
           };
           break;
+        case 'ETH':
+          this.code = {
+            coding: [
+              {
+                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+                code: 'ETH',
+                display: 'ethnicity',
+              },
+            ],
+          };
+          break;
+        case 'CONS':
+          this.code = {
+            coding: [
+              {
+                system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/observation-code',
+                code: 'CONS',
+                display: 'consangunity',
+              },
+            ],
+          };
+          break;
         default:
           break;
       }
 
       switch (code) {
         case 'CGH':
-        case 'INDIC':
-        case 'HPO':
           this.category = [
             {
               coding: [
@@ -119,7 +141,11 @@ export class ObservationBuilder {
             },
           ];
           break;
+        case 'HPO':
+        case 'ETH':
+        case 'CONS':
         case 'INVES':
+        case 'INDIC':
           this.category = [
             {
               coding: [
@@ -150,6 +176,7 @@ export class ObservationBuilder {
         note: this.note,
         extension: this.extension,
         valueCodeableConcept: this.valueCodeableConcept,
+        valueBoolean: this.valueBoolean,
       };
     }
 
@@ -211,6 +238,11 @@ export class ObservationBuilder {
 
     public withValue(value: CodeableConcept) {
       this.valueCodeableConcept = value;
+      return this;
+    }
+
+    public withBooleanValue(value: boolean) {
+      this.valueBoolean = value;
       return this;
     }
 }
