@@ -172,7 +172,14 @@ class PatientSearchScreen extends React.Component {
       {
         key: 'firstName',
         label: 'screen.patientsearch.table.firstName',
-        renderer: createCellRenderer('text', this.getData, { key: 'firstName' }),
+        renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => {
+            try {
+              const name = data.fetus ? 'Fetus' : data.firstName;
+              return name;
+            } catch (e) { return ''; }
+          },
+        }),
       },
       {
         key: 'gender',
@@ -287,6 +294,7 @@ class PatientSearchScreen extends React.Component {
             request: result.request,
             test: result.test,
             prescription: result.prescription,
+            fetus: result.fetus,
           };
 
           Object.keys(value).forEach((key) => {
@@ -313,6 +321,7 @@ class PatientSearchScreen extends React.Component {
             proband: result.proband,
             position: result.position,
             practitioner: `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}`,
+            fetus: result.fetus,
           };
 
           result.requests.forEach((res) => {
