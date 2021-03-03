@@ -26,7 +26,7 @@ interface Props {
 const MrnItem: React.FC<Props> = ({ form, onChange }) => {
   const [mode, setMode] = useState<Mode>(Mode.SELECT);
 
-  const patient = useSelector<State>((state) => state.patient.patient.original) as Patient;
+  const patient = useSelector<State>((state) => state.patientSubmission.patient) as Patient;
 
   const [defaultSelectedMrn, setDefaultSelctedMrn] = useState<Identifier | undefined>(
     patient.identifier?.find((id) => get(id, 'type.coding[0].code') === 'MR'),
