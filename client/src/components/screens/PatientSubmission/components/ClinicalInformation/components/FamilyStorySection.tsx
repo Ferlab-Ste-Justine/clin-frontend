@@ -27,49 +27,58 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
 
   return (
     <>
-      <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity')}>
-        <Row align="middle">
-          <Col span={4}>
+      <Row align="middle" className="clinical-information__row">
+        <Col span={8}>
+          <Form.Item
+            label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity')}
+            name={['ethnicity', 'value']}
+          >
             <Select
               placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity.placeholder')}
               onChange={(value) => {
                 setIsEthnicitySelected(!!value);
               }}
             >
-              { ['cafr', 'eu', 'afr', 'latam', 'esas', 'soas', 'abor', 'mix', 'oth'].map((eth) => (
+              { ['CA-FR', 'EU', 'AFR', 'LAT-AM', 'ES-AS', 'SO-AS', 'ABOR', 'MIX', 'OTH'].map((eth) => (
                 <Select.Option key={eth} value={eth}>
-                  { intl.get(`form.patientSubmission.clinicalInformation.familyHistory.ethnicity.${eth}`) }
+                  { intl.get(`form.patientSubmission.form.ethnicity.${eth}`) }
                 </Select.Option>
               )) }
             </Select>
-          </Col>
-          <Col>
-            <Typography.Text className="optional-item__label">
-              { intl.get('form.patientSubmission.form.validation.optional') }
-            </Typography.Text>
-          </Col>
-        </Row>
-      </Form.Item>
+          </Form.Item>
+        </Col>
+        <Col>
+          <Typography.Text className="optional-item__label">
+            { intl.get('form.patientSubmission.form.validation.optional') }
+          </Typography.Text>
+        </Col>
+      </Row>
       {
         isEthnicitySelected && (
-          <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.note')}>
-            <Row>
-              <Col span={12}>
+          <Row className="clinical-information__row">
+            <Col span={12}>
+              <Form.Item
+                label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.note')}
+                name={['ethnicity', 'note']}
+              >
                 <Input />
-              </Col>
-              <Col>
-                <Typography.Text className="optional-item__label">
-                  { intl.get('form.patientSubmission.form.validation.optional') }
-                </Typography.Text>
-              </Col>
-            </Row>
-          </Form.Item>
+              </Form.Item>
+            </Col>
+            <Col>
+              <Typography.Text className="optional-item__label">
+                { intl.get('form.patientSubmission.form.validation.optional') }
+              </Typography.Text>
+            </Col>
+          </Row>
         )
       }
 
-      <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.consanguinity')}>
-        <Row align="middle">
-          <Col>
+      <Row gutter={8} className="clinical-information__row">
+        <Col span={8}>
+          <Form.Item
+            label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.consanguinity')}
+            name="consanguinity"
+          >
             <Radio.Group>
               <Radio.Button value="yes">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.yes') }
@@ -78,14 +87,14 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.no') }
               </Radio.Button>
             </Radio.Group>
-          </Col>
-          <Col>
-            <Typography.Text className="optional-item__label">
-              { intl.get('form.patientSubmission.form.validation.optional') }
-            </Typography.Text>
-          </Col>
-        </Row>
-      </Form.Item>
+          </Form.Item>
+        </Col>
+        <Col>
+          <Typography.Text className="optional-item__label">
+            { intl.get('form.patientSubmission.form.validation.optional') }
+          </Typography.Text>
+        </Col>
+      </Row>
 
       <Row>
         <Col>
