@@ -299,7 +299,10 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   prescription={prescription}
                 />
                 <FamilyHistory
-                  patient={patient}
+                  observations={{
+                    eth: getClinicalObservations(observations!, clinicalImpression, 'eth'),
+                    cons: getClinicalObservations(observations!, clinicalImpression, 'cons'),
+                  }}
                   familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)}
                 />
                 <ClinicalSigns

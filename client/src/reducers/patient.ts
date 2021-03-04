@@ -21,7 +21,7 @@ import {
   Prescription,
 } from '../helpers/providers/types';
 
-type ObservationCode = 'CGH' | 'INDIC' | 'INVES';
+type ObservationCode = 'CGH' | 'INDIC' | 'INVES' | 'ETH' | 'CONS';
 
 const getObservations = (code: ObservationCode, resource: any) : Observation[] => {
   const clinicalImpressin = resource.entry[3];
@@ -35,6 +35,8 @@ export type Observations = {
   cgh?: Observation[];
   indic?: Observation[];
   inves?: Observation[];
+  eth?: Observation[];
+  cons?: Observation[];
 }
 
 export type PatientState = {
@@ -62,6 +64,8 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
         cgh: getObservations('CGH', action.payload.patientData),
         indic: getObservations('INDIC', action.payload.patientData),
         inves: getObservations('INVES', action.payload.patientData),
+        eth: getObservations('ETH', action.payload.patientData),
+        cons: getObservations('CONS', action.payload.patientData),
       };
       const providerChain = new ProviderChain(action.payload);
       providerChain
