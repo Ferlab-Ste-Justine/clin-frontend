@@ -10,34 +10,78 @@ import {
 
 import intl from 'react-intl-universal';
 import isEmpty from 'lodash/isEmpty';
+import get from 'lodash/get';
+import { useSelector } from 'react-redux';
 import { getFamilyRelationshipValues } from '../../../../../../helpers/fhir/fhir';
 import { FamilyObservation } from '../../../../../../helpers/providers/types';
+import { State } from '../../../../../../reducers';
+import { HiddenFormInput } from '../../../../../Utils/HiddenFormInput';
 
 interface Props {
   familyHistoryResources: Partial<FamilyObservation>[]
 }
 
+type Ethnicity = {
+  id: string;
+  code: string;
+  note: string;
+}
+
+type Consanguinity = {
+  id: string;
+  value: boolean;
+}
+
+type FamilyStoryState = {
+  ethnicity: Partial<Ethnicity>,
+  consanguinity: Partial<Consanguinity>
+}
+
 const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
-  const [isEthnicitySelected, setIsEthnicitySelected] = useState(false);
+  const { local } = useSelector((state: State) => state.patientSubmission);
+
+  const [defaultValuesState] = useState<FamilyStoryState>({
+    ethnicity: {
+      id: get(local, 'eth.id'),
+      code: get(local, 'eth.code'),
+      note: get(local, 'eth.note'),
+    },
+    consanguinity: {
+      id: get(local, 'cons.id'),
+      value: get(local, 'cons.value'),
+    },
+  });
+
+  const [isEthnicitySelected, setIsEthnicitySelected] = useState(
+    defaultValuesState.ethnicity.id != null && defaultValuesState.ethnicity.code != null,
+  );
   const [hasFamilyHealthCondition, setHasFamilyHealthCondition] = useState(
     familyHistoryResources.filter((fmh) => !isEmpty(fmh) && fmh.id != null).length > 0,
   );
+
+  const defaultConsanguinityValue = defaultValuesState.consanguinity.value != null
+    ? (defaultValuesState.consanguinity.value) ? 'yes' : 'no'
+    : undefined;
 
   const initialFmh: Partial<FamilyObservation> | undefined = familyHistoryResources && familyHistoryResources[0];
 
   return (
     <>
+      <HiddenFormInput name={['ethnicity', 'id']} value={defaultValuesState.ethnicity.id} />
+      <HiddenFormInput name={['consanguinity', 'id']} value={defaultValuesState.consanguinity.id} />
       <Row align="middle" className="clinical-information__row">
         <Col span={8}>
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity')}
             name={['ethnicity', 'value']}
+            initialValue={defaultValuesState.ethnicity.code}
           >
             <Select
               placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity.placeholder')}
               onChange={(value) => {
                 setIsEthnicitySelected(!!value);
               }}
+              defaultValue={defaultValuesState.ethnicity.code}
             >
               { ['CA-FR', 'EU', 'AFR', 'LAT-AM', 'ES-AS', 'SO-AS', 'ABOR', 'MIX', 'OTH'].map((eth) => (
                 <Select.Option key={eth} value={eth}>
@@ -60,6 +104,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
               <Form.Item
                 label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.note')}
                 name={['ethnicity', 'note']}
+                initialValue={defaultValuesState.ethnicity.note}
               >
                 <Input />
               </Form.Item>
@@ -77,9 +122,10 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
         <Col span={8}>
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.consanguinity')}
-            name="consanguinity"
+            name={['consanguinity', 'value']}
+            initialValue={defaultConsanguinityValue}
           >
-            <Radio.Group>
+            <Radio.Group defaultValue={defaultConsanguinityValue}>
               <Radio.Button value="yes">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.yes') }
               </Radio.Button>
