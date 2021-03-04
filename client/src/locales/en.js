@@ -260,6 +260,7 @@ const en = {
   'screen.patientsearch.table.firstName': 'First Name',
   'screen.patientsearch.table.lastName': 'Last Name',
   'screen.patientsearch.table.gender': 'Gender',
+  'screen.patient.table.fetus': 'Fetus',
   'screen.patientsearch.table.dob': 'Date of Birth',
   'screen.patientsearch.table.familyComposition': 'Family',
   'screen.patientsearch.table.position': 'Position',
