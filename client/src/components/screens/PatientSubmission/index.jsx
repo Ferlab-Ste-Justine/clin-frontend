@@ -67,7 +67,8 @@ const practitionerOptionFromResource = (resource) => ({
 
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
-  const isEditPrescription = get(props, 'localStore.serviceRequest.id', '').length > 0;
+  const isEditPrescription = get(props, 'localStore.serviceRequest.id', '').length > 0
+   && get(props, 'localStore.serviceRequest.status', 'draft') !== 'draft';
 
   const [state, setState] = React.useState({
     currentPageIndex: 0,
