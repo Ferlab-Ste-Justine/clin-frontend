@@ -32,8 +32,17 @@ const getEthnicity = (ethnicityObs?: Observation) => {
   return '--';
 };
 
+const getConsanguinity = (consanguinityObs?: Observation) => {
+  const consanguinity = get(consanguinityObs, 'valueBoolean', undefined);
+  if (consanguinity !== undefined) {
+    return intl.get(`form.patientSubmission.form.consanguinity.${consanguinity ? 'yes' : 'no'}`);
+  }
+  return '--';
+};
+
 const FamilyHistory: React.FC<Props> = ({ patient, familyHistories, observations }) => {
   const ethnicity = getEthnicity(observations.eth);
+  const consanguinity = getConsanguinity(observations.cons);
   const hasBloodRelationship = patient.bloodRelationship && patient.bloodRelationship !== 'N/A';
   if (!hasBloodRelationship && familyHistories.length === 0) {
     return (
@@ -49,7 +58,7 @@ const FamilyHistory: React.FC<Props> = ({ patient, familyHistories, observations
         { ethnicity }
       </DetailsRow>
       <DetailsRow label={intl.get('screen.patient.details.prescriptions.family.blood')}>
-        { hasBloodRelationship ? patient.bloodRelationship : '--' }
+        { consanguinity }
       </DetailsRow>
       {
         familyHistories.length === 0 && (
