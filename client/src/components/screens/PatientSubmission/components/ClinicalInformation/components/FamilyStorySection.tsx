@@ -63,8 +63,6 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
     ? (defaultValuesState.consanguinity.value) ? 'yes' : 'no'
     : undefined;
 
-  const initialFmh: Partial<FamilyObservation> | undefined = familyHistoryResources && familyHistoryResources[0];
-
   return (
     <>
       <HiddenFormInput name={['ethnicity', 'id']} value={defaultValuesState.ethnicity.id} />
@@ -176,7 +174,10 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
           </Row>
           <Row>
             <Col span={20}>
-              <Form.List name="fmh" initialValue={familyHistoryResources}>
+              <Form.List
+                name="fmh"
+                initialValue={familyHistoryResources}
+              >
                 {
                   (fields, { add, remove }) => (
                     <ul className="clinical-information__family-story__conditions">
@@ -186,7 +187,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                             <Form.Item
                               name={[index, 'id']}
                               className="hidden-form"
-                              initialValue={initialFmh?.id}
+                              initialValue={familyHistoryResources && familyHistoryResources[index].id}
                             >
                               <Input size="small" type="hidden" />
                             </Form.Item>
@@ -194,8 +195,8 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                               <Col span={14}>
                                 <Form.Item
                                   name={[index, 'note']}
+                                  initialValue={familyHistoryResources && familyHistoryResources[index].note}
                                   noStyle
-                                  initialValue={initialFmh?.note}
                                 >
                                   <Input
                                     placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
@@ -206,8 +207,8 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                               <Col span={6}>
                                 <Form.Item
                                   name={[index, 'relation']}
+                                  initialValue={familyHistoryResources && familyHistoryResources[index].code}
                                   noStyle
-                                  initialValue={initialFmh?.code}
                                 >
                                   <Select
                                     suffixIcon={<IconKit className="selectIcon" size={12} icon={ic_person} />}
