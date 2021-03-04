@@ -39,6 +39,8 @@ interface Props {
     cgh?: Observation
     indic?: Observation
     inves?: Observation
+    eth?: Observation
+    cons?: Observation
   }
   patient: Partial<ParsedPatientData>
   prescription: Prescription
