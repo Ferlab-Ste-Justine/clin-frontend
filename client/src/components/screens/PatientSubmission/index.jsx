@@ -365,6 +365,7 @@ function PatientSubmissionScreen(props) {
       if (get(content, 'ethnicity.value') != null) {
         const observationBuilder = new ObservationBuilder('ETH')
           .withStatus('final')
+          .withId(content.ethnicity.id)
           .withValue(content.ethnicity.value,
             intl.get(`form.patientSubmission.form.ethnicity.${content.ethnicity.value}`),
             'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity');
@@ -376,8 +377,12 @@ function PatientSubmissionScreen(props) {
         batch.observations.push(observationBuilder.build());
       }
 
-      if (content.consanguinity != null) {
-        batch.observations.push(new ObservationBuilder('CONS').withBooleanValue(content.consanguinity === 'yes'));
+      if (get(content, 'consanguinity.value') != null) {
+        batch.observations.push(
+          new ObservationBuilder('CONS')
+            .withId(content.consanguinity.id)
+            .withBooleanValue(content.consanguinity.value === 'yes'),
+        );
       }
 
       actions.createRequest(batch);
