@@ -303,7 +303,6 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     eth: getClinicalObservations(observations!, clinicalImpression, 'eth'),
                     cons: getClinicalObservations(observations!, clinicalImpression, 'cons'),
                   }}
-                  patient={patient}
                   familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)}
                 />
                 <ClinicalSigns

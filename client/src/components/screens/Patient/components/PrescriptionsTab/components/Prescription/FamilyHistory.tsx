@@ -3,7 +3,7 @@ import { Card, Table, Typography } from 'antd';
 import get from 'lodash/get';
 import intl from 'react-intl-universal';
 import { Observation } from '../../../../../../../helpers/fhir/types';
-import { FamilyObservation, ParsedPatientData } from '../../../../../../../helpers/providers/types';
+import { FamilyObservation } from '../../../../../../../helpers/providers/types';
 import DetailsRow from './DetailsRow';
 
 const Wrapper: React.FC = ({ children }) => (
@@ -19,7 +19,6 @@ interface Observations{
   cons?: Observation
 }
 interface Props {
-  patient: Partial<ParsedPatientData>
   familyHistories: FamilyObservation[]
   observations: Observations
 }
@@ -40,11 +39,10 @@ const getConsanguinity = (consanguinityObs?: Observation) => {
   return '--';
 };
 
-const FamilyHistory: React.FC<Props> = ({ patient, familyHistories, observations }) => {
+const FamilyHistory: React.FC<Props> = ({ familyHistories, observations }) => {
   const ethnicity = getEthnicity(observations.eth);
   const consanguinity = getConsanguinity(observations.cons);
-  const hasBloodRelationship = patient.bloodRelationship && patient.bloodRelationship !== 'N/A';
-  if (!hasBloodRelationship && familyHistories.length === 0) {
+  if (consanguinity === '--' && ethnicity === '--' && familyHistories.length === 0) {
     return (
       <Wrapper>
         { intl.get('screen.patient.details.prescriptions.family.empty') }
