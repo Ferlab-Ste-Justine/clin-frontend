@@ -42,6 +42,8 @@ export const initialPatientSubmissionState = {
     cgh: {},
     summary: {},
     indic: {},
+    eth: {},
+    cons: {},
     consents: [],
     practitioner: '',
     requesterId: null,
@@ -276,9 +278,21 @@ const patientSubmissionReducer = (
         };
         draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
-        const clinicalCgh = get(observations, `cgh[${index}]`, undefined);
-        const clinicalIndic = get(observations, `indic[${index}]`, undefined);
-        const clinicalInves = get(observations, `inves[${index}]`, undefined);
+        const clinicalCgh = observations.cgh.find(
+          (obs) => investigationItems.find((item) => item.reference.indexOf(obs.id) !== -1) != null,
+        );
+        const clinicalIndic = observations.indic.find(
+          (obs) => investigationItems.find((item) => item.reference.indexOf(obs.id) !== -1) != null,
+        );
+        const clinicalInves = observations.inves.find(
+          (obs) => investigationItems.find((item) => item.reference.indexOf(obs.id) !== -1) != null,
+        );
+        const clinicalEth = observations.eth.find(
+          (obs) => investigationItems.find((item) => item.reference.indexOf(obs.id) !== -1) != null,
+        );
+        const clinicalCons = observations.cons.find(
+          (obs) => investigationItems.find((item) => item.reference.indexOf(obs.id) !== -1) != null,
+        );
 
         draft.observations.hpos = hpos;
         draft.observations.fmh = fmhs;
@@ -307,6 +321,15 @@ const patientSubmissionReducer = (
           summary: {
             id: get(clinicalInves, 'id'),
             note: summary !== NOT_AVAILABLE ? summary : '',
+          },
+          eth: {
+            id: get(clinicalEth, 'id'),
+            code: get(clinicalEth, 'valueCodeableConcept.coding[0].code'),
+            note: get(clinicalEth, 'note[0].text'),
+          },
+          cons: {
+            id: get(clinicalCons, 'id'),
+            value: get(clinicalCons, 'valueBoolean'),
           },
           consents: range(1, 5).map((value) => `consent-${value}`),
           practitioner: '',
