@@ -51,6 +51,8 @@ export const updateConsentments = (consents) => ({
   },
 });
 
+export const newFunct = () => {};
+
 export const saveLocalPractitioner = (practitioner) => ({
   type: actions.PATIENT_SUBMISSION_LOCAL_PRACTITIONER,
   payload: {
