@@ -764,7 +764,7 @@ const fr = {
   'form.patientSubmission.clinicalInformation.cgh.realized': 'Réalisé',
   'form.patientSubmission.clinicalInformation.cgh.nonRealized': 'Non-réalisé',
   'form.patientSubmission.clinicalInformation.investigationResult': 'Résultat',
-  'form.patientSubmission.clinicalInformation.investigationResult.negative': 'Negative',
+  'form.patientSubmission.clinicalInformation.investigationResult.negative': 'Négatif',
   'form.patientSubmission.clinicalInformation.investigationResult.abnormal': 'Anormal',
   'form.patientSubmission.clinicalInformation.investigationResult.indeterminate': 'Indéterminé',
   'form.patientSubmission.clinicalInformation.investigationSummary': "Résumé de l'investigation",
