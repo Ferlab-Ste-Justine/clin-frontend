@@ -16,6 +16,13 @@ const getPractitionerRoleReference = (id: string): Reference => ({
   reference: `PractitionerRole/${id}`,
 });
 
+export const updatePatient = async (patient: Patient) => {
+  const updatedPatient = JSON.parse(JSON.stringify(patient));
+  await httpClient.secureClinAxios.put(`${window.CLIN.fhirBaseUrl}/Patient/${patient.id}`, updatedPatient);
+
+  return updatePatient;
+};
+
 export const updatePatientPractitioners = async (
   patient: Patient,
   serviceRequest: ServiceRequest, clinicalImpression: ClinicalImpression,
