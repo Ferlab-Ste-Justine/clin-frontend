@@ -119,7 +119,7 @@ const fr = {
   'screen.patient.details.fetus': 'Foetus',
   'screen.patient.details.edit': 'Modifier',
   'screen.patient.details.seeMore': 'Voir plus',
-  'screen.patient.details.seeLess': 'Voir mois',
+  'screen.patient.details.seeLess': 'Voir moins',
   'screen.patient.details.identifier': 'Identifiant',
   'screen.patient.details.mrn': 'Dossier(s)',
   'screen.patient.details.ramq': 'RAMQ',
