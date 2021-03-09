@@ -40,6 +40,7 @@ interface MrnValues {
   number: string
   organization: string
 }
+
 interface MrnElement {
   index: number
   status: MRN_STATUS
@@ -155,6 +156,7 @@ interface Props {
 
 const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
   const dispatch = useDispatch();
+  const userRole = useSelector((state: State) => state.user.practitionerData.practitionerRole);
   const submissionStatus = useSelector((state: State) => state.patientEdition.status);
   const [form] = useForm();
   const patient = useSelector((state: State) => state.patient.patient.original);
@@ -205,6 +207,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
         const mrnValues = mrnState.mrns;
         const updatedPatient = new PatientBuilder()
           .withPatient(patient)
+          .withGeneralPractitioner(userRole.id)
           .withFamily(formValues.lastname)
           .withGiven(formValues.firstname)
           .withRamq(formValues.ramq)
