@@ -107,13 +107,6 @@ export class PatientBuilder {
     return this;
   }
 
-  public withPractitionerId(practitionerId?: string) {
-    if (practitionerId != null) {
-      this.practitioners.push(practitionerId);
-    }
-    return this;
-  }
-
   public withGeneralPractitioner(practitionerId: string) {
     this.practitioners = this.practitioners || [];
 
@@ -127,27 +120,6 @@ export class PatientBuilder {
     practitioners?.forEach((practitioner) => {
       this.practitioners.push(practitioner.reference.split('/')[1]);
     });
-    return this;
-  }
-
-  public withEthnicityCode(ethnicityCode?: string) {
-    if (ethnicityCode != null) {
-      this.ethnicityCode = ethnicityCode;
-    }
-    return this;
-  }
-
-  public withEthnicityDisplay(ethnicityDisplay?: string) {
-    if (ethnicityDisplay != null) {
-      this.ethnicityDisplay = ethnicityDisplay;
-    }
-    return this;
-  }
-
-  public withBloodRelationship(bloodRelationship?: string) {
-    if (bloodRelationship != null) {
-      this.bloodRelationship = bloodRelationship;
-    }
     return this;
   }
 
@@ -177,9 +149,6 @@ export class PatientBuilder {
       .withBirthDate(moment(patient.birthDate).toDate())
       .withGender(patient.gender)
       .withRamq(patient.identifier?.find((id) => get(id, 'type.coding[0].code', '') === 'JHN')?.value)
-      .withEthnicityCode(patient.extension?.find((ext) => ext.url.includes('qc-ethnicity'))?.valueCoding?.code)
-      .withEthnicityDisplay(patient.extension?.find((ext) => ext.url.includes('qc-ethnicity'))?.valueCoding?.display)
-      .withBloodRelationship(patient.extension?.find((ext) => ext.url.includes('blood-relationship'))?.valueCoding?.display)
       .withOrganization(patient.managingOrganization?.reference.split('/')[1])
       .withIsProband(patient.extension?.find((ext) => ext.url.includes('is-proband'))?.valueBoolean || false)
       .withIsFetus(patient.extension?.find((ext) => ext.url.includes('is-fetus'))?.valueBoolean || false)
@@ -265,7 +234,7 @@ export class PatientBuilder {
     }
 
     if (this.practitioners.length > 0) {
-      this.practitioners.forEach((practitionerId) => {
+      [...new Set(this.practitioners)].forEach((practitionerId) => {
         patient.generalPractitioner.push({
           reference: `PractitionerRole/${practitionerId}`,
         });

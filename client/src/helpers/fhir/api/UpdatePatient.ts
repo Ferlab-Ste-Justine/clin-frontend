@@ -17,6 +17,9 @@ const getPractitionerRoleReference = (id: string): Reference => ({
 });
 
 export const updatePatient = async (patient: Patient) => {
+  if (patient.id == null) {
+    throw new Error(`Invalid patient id [${patient}]`);
+  }
   const updatedPatient = JSON.parse(JSON.stringify(patient));
   await httpClient.secureClinAxios.put(`${window.CLIN.fhirBaseUrl}/Patient/${patient.id}`, updatedPatient);
 
