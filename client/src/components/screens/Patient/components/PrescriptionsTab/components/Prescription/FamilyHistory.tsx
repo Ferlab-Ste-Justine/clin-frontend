@@ -45,7 +45,9 @@ const FamilyHistory: React.FC<Props> = ({ familyHistories, observations }) => {
   if (consanguinity === '--' && ethnicity === '--' && familyHistories.length === 0) {
     return (
       <Wrapper>
-        { intl.get('screen.patient.details.prescriptions.family.empty') }
+        <Typography.Text className="prescriptions-tab__prescriptions-section--empty">
+          { intl.get('screen.patient.details.prescriptions.family.empty') }
+        </Typography.Text>
       </Wrapper>
     );
   }
