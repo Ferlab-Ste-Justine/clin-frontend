@@ -21,6 +21,7 @@ import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuild
 import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 import { PatientCreationStatus } from '../../../../../reducers/patientCreation';
+import { formatRamq } from '../../../../../helpers/fhir/patientHelper';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 
@@ -80,15 +81,6 @@ const reducer: Reducer<State, Action> = (state: State, action: Action) => {
       throw new Error('invalid type');
   }
 };
-
-function formatRamq(value: string): string {
-  const newValue = value.toLocaleUpperCase();
-  return newValue
-    .replaceAll(/\s/g, '')
-    .split('')
-    .reduce((acc, char, index) => ((char !== ' ' && [3, 7]
-      .includes(index)) ? `${acc}${char} ` : `${acc}${char}`), '').trimEnd();
-}
 
 function validateForm(formValues: any) {
   if (!Object.keys(formValues).includes('lastname')) {
