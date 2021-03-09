@@ -1,0 +1,36 @@
+@import '../../../../../../../style/themes/colors.scss';
+
+.patient-edit {
+  &__mrn-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      padding: 9px 4px;
+      border-bottom: 1px solid $gray-4;
+    }
+
+    &__actions {
+      svg {
+        color: $blue-8;
+      }
+      &--delete {
+        svg {
+          color: $gray-7;
+        }
+      }
+
+      &:disabled {
+        svg {
+          color: $gray-6;
+        }
+      }
+    }
+
+    &__add-button {
+      padding: 0;
+      color: $blue-8;
+    }
+  }
+}

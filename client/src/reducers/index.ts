@@ -10,6 +10,7 @@ import variantDetailsReducer from './variantDetails';
 import patientSubmissionReducer from './patientSubmission';
 import patientCreation, { PatientCreationState } from './patientCreation';
 import prescriptions from './prescriptions';
+import patientEditionReducer, { PatientEditionState } from './patientEdition';
 
 const rootReducer = (history: any) => combineReducers({
   router: connectRouter(history),
@@ -20,6 +21,7 @@ const rootReducer = (history: any) => combineReducers({
   variant: variantReducer,
   variantDetails: variantDetailsReducer,
   patientSubmission: patientSubmissionReducer,
+  patientEdition: patientEditionReducer,
   patientCreation,
   prescriptions,
 });
@@ -36,4 +38,5 @@ export type State = {
   variantDetails: any,
   patientSubmission: any,
   patientCreation: PatientCreationState,
+  patientEdition: PatientEditionState
 }
