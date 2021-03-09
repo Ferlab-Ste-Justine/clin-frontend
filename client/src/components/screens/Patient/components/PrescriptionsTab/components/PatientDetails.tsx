@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import { ParsedPatientData, Prescription } from '../../../../../../helpers/providers/types';
 import FamilyTag from './FamilyTag';
 import { navigateToPatientScreen } from '../../../../../../actions/router';
+import PatientEditModal from './PatientEdit';
 
 const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
   const dispatch = useDispatch();
@@ -112,6 +113,7 @@ interface Props {
 }
 
 const PatientDetails: React.FC<Props> = ({ patient, prescriptions }) => {
+  const [isPatientEditionModalOpen, setIsPatientEditionModalOpen] = useState(false);
   const mrns = prescriptions
     .map((prescription) => ({ value: prescription.mrn, organization: prescription.organization }))
     .filter((mrn, index, arr) => {
@@ -160,10 +162,11 @@ const PatientDetails: React.FC<Props> = ({ patient, prescriptions }) => {
       <Button
         className="prescriptions-tab__patient-section__edit-button"
         icon={<FormOutlined />}
-        onClick={() => alert('This feature is not implemented yet')}
+        onClick={() => setIsPatientEditionModalOpen(true)}
       >
         { intl.get('screen.patient.details.edit') }
       </Button>
+      <PatientEditModal isVisible={isPatientEditionModalOpen} onClose={() => setIsPatientEditionModalOpen(false)} />
     </Card>
   );
 };
