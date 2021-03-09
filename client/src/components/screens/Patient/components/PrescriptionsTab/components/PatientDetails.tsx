@@ -9,10 +9,12 @@ import {
 } from 'react-icons-kit/md';
 import { FormOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { ParsedPatientData, Prescription } from '../../../../../../helpers/providers/types';
+import { ParsedPatientData } from '../../../../../../helpers/providers/types';
 import FamilyTag from './FamilyTag';
 import { navigateToPatientScreen } from '../../../../../../actions/router';
 import PatientEditModal from './PatientEdit';
+
+const MAX_MRNS_DISPLAYED = 2;
 
 const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
   const dispatch = useDispatch();
@@ -66,7 +68,7 @@ const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
     <div className="prescriptions-tab__patient-section__col__details__row__info__multiple-mrn">
       <ul>
         { mrns.map((value, index) => {
-          if (index >= 2 && !isShowingAll) {
+          if (index > (MAX_MRNS_DISPLAYED - 1) && !isShowingAll) {
             return null;
           }
           return (
@@ -109,20 +111,14 @@ const DetailsCol: React.FC<{isLast?: boolean, align: 'center' | 'top'}> = ({ chi
 
 interface Props {
   patient: ParsedPatientData
-  prescriptions: Prescription[]
 }
 
-const PatientDetails: React.FC<Props> = ({ patient, prescriptions }) => {
+const PatientDetails: React.FC<Props> = ({ patient }) => {
   const [isPatientEditionModalOpen, setIsPatientEditionModalOpen] = useState(false);
-  const mrns = prescriptions
-    .map((prescription) => ({ value: prescription.mrn, organization: prescription.organization }))
-    .filter((mrn, index, arr) => {
-      const isValueDefined = mrn != null && mrn.value != null && mrn.organization != null;
-      const isUnique = arr.findIndex((m) => m.organization === mrn.organization && m.value === mrn.value) === index;
-      return isValueDefined && isUnique;
-    }) as MrnValue[];
+  const mrns = patient.mrn
+    .map((mrn) => ({ value: mrn.number, organization: mrn.hospital })) as MrnValue[];
 
-  const hasMultipleMrn = mrns.length > 0;
+  const hasMultipleMrn = mrns.length > MAX_MRNS_DISPLAYED;
   return (
     <Card bordered={false} className="prescriptions-tab__patient-section__card">
       <div className="prescriptions-tab__patient-section">

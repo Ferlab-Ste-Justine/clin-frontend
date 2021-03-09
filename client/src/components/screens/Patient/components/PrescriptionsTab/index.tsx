@@ -23,7 +23,7 @@ const PrescriptionsTab : React.FC = () => {
 
   return (
     <div className="page-static-content prescriptions-tab">
-      <PatientDetails patient={patient} prescriptions={prescriptions} />
+      <PatientDetails patient={patient} />
       {
         prescriptions.length <= 0 ? (
           <NoPrescription onCreatePrescription={() => dispatch(navigateToSubmissionWithPatient())} />
