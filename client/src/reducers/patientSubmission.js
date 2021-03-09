@@ -299,7 +299,6 @@ const patientSubmissionReducer = (
         draft.observations.cgh = { ...clinicalCgh };
         draft.observations.indic = { ...clinicalIndic };
         draft.observations.summary = { ...clinicalInves };
-        draft.observations.fmh.push({});
 
         draft.local = {
           serviceRequest: {
