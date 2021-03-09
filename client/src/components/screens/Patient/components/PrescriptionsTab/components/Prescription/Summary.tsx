@@ -1,5 +1,5 @@
 import {
-  Card, Col, Divider, Row,
+  Card, Col, Divider, Row, Typography,
 } from 'antd';
 import get from 'lodash/get';
 import moment from 'moment';
@@ -48,7 +48,13 @@ interface Props {
 
 const Summary: React.FC<Props> = ({ observations = undefined, patient, prescription } : Props) => {
   if (observations == null) {
-    return <Wrapper>{ intl.get('screen.patient.details.prescriptions.summary.empty') }</Wrapper>;
+    return (
+      <Wrapper>
+        <Typography.Text className="prescriptions-tab__prescriptions-section--empty">
+          { intl.get('screen.patient.details.prescriptions.summary.empty') }
+        </Typography.Text>
+      </Wrapper>
+    );
   }
   const { cgh, indic, inves } = observations;
   const cghCode = get(cgh, 'interpretation[0].coding[0].code', 'NA');
