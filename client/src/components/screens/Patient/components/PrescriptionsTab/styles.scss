@@ -304,6 +304,8 @@
 
     &__clinical-sign {
       &__observed {
+        display: block;
+        margin:auto;
         &--positive {
           color: $green-6;
         }
