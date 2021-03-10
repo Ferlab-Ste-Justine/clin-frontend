@@ -532,7 +532,7 @@ class ResumeTabs extends React.Component {
                   <div className="row">
                     <span className="row__title">Patients</span>
                     <span className="row__info">
-                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.pn }</Button>
+                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>{ data.donors.length }</Button>
                       /{ frequencies.internal.an }
                     </span>
                   </div>

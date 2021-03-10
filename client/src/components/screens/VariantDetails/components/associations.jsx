@@ -82,7 +82,7 @@ class AssociationsTab extends React.Component {
     this.state.genesColumnPreset = [
       {
         key: 'source',
-        label: 'screen.variantDetails.clinicalAssociationsTab.interpretation',
+        label: 'screen.variantDetails.clinicalAssociationsTab.source',
         renderer: createCellRenderer('custom', this.getGenes, {
           renderer: (data) => { try { return data; } catch (e) { return ''; } },
         }),
@@ -349,8 +349,9 @@ class AssociationsTab extends React.Component {
     if (data.clinvar) {
       const clinvarLine = data.clinvar.clin_sig.join(', ');
       const interpretation = <span>{ clinvarLine }</span>;
-      const condition = <span>condition</span>;
-      return [{ interpretation, condition, transmission: 'transmission' }];
+      const condition = <span>{ data.clinvar.conditions.join(', ') }</span>;
+      const transmission = <span>{ data.clinvar.inheritance.join(', ') }</span>;
+      return [{ interpretation, condition, transmission }];
     }
     return [];
   }
