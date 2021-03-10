@@ -613,7 +613,7 @@ const en = {
   'screen.variantDetails.frequenciesTab.additionalInfo': 'Additional Info',
   'screen.variantDetails.clinicalAssociationsTab.clinVar': 'ClinVar',
   'screen.variantDetails.clinicalAssociationsTab.genePhenotype': 'Gene - Phenotype',
-  'screen.variantDetails.clinicalAssociationsTab.interpretation': 'Interpretation',
+  'screen.variantDetails.clinicalAssociationsTab.source': 'Source',
   'screen.variantDetails.clinicalAssociationsTab.condition': 'Condition',
   'screen.variantDetails.clinicalAssociationsTab.ClinVarID': 'Clin Var ID',
   'screen.variantDetails.clinicalAssociationsTab.signification': 'Clinical signification',

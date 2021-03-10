@@ -9,7 +9,7 @@ import {
   Button, Row, Table, Empty, Card,
 } from 'antd';
 import {
-  chain, sumBy,
+  sumBy, filter,
 } from 'lodash';
 
 import '../style.scss';
@@ -25,6 +25,31 @@ const COLUMN_WIDTH = {
   MEDIUM: 150,
   WIDE: 200,
 
+};
+
+const organizationID = {
+  OR00201: 'HVO',
+  OR00202: 'HRN',
+  OR00203: 'CHUS',
+  OR00204: 'HSCM',
+  OR00205: 'HMR',
+  OR00206: 'HJT',
+  OR00207: 'CHUSJ',
+  OR00208: 'CHUM',
+  OR00209: 'CHUL',
+  OR00210: 'HHR',
+  OR00211: 'HCS',
+  OR00212: 'HHDG',
+  OR00213: 'BMP',
+  OR00214: 'HC',
+  OR00215: 'LDM-CHUSJ',
+  OR00216: 'LDM-CUSM',
+  OR00217: 'LDM-CHUM',
+  OR00218: 'LDM-HGJ',
+  OR00219: 'LDM-CHUQ',
+  OR00220: 'LDM-HMR',
+  OR00221: 'LDM-CHUS',
+  OR00222: 'LDM-ICM',
 };
 
 const columnPresetToColumn = (c) => ({
@@ -92,7 +117,7 @@ class FrequenciesTab extends React.Component {
         columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
-        key: 'hc',
+        key: 'hom',
         label: 'screen.variantDetails.frequenciesTab.nbHomozygotes',
         renderer: createCellRenderer('custom', this.getInternalCohortFrequencies, {
           renderer: (data) => { try { return data.hc; } catch (e) { return ''; } },
@@ -168,38 +193,46 @@ class FrequenciesTab extends React.Component {
 
     if (data) {
       const {
-        frequencies,
         donors,
+        lab_frequencies,
       } = data;
 
       const rows = [];
+      let totalAf = 0;
 
-      const frequenciesByldm = chain(donors)
-        .groupBy('organization_id')
-        .map((value, key) => ({ ldm: key, info: value }))
-        .value();
-
-      frequenciesByldm.forEach((element) => {
-        const ac = sumBy(element.info, (e) => e.ad_alt);
-        const an = sumBy(element.info, (e) => e.ad_total);
+      Object.keys(lab_frequencies).forEach((key) => {
+        const nbPatient = filter(donors, { organization_id: key }).length;
         const line = {
-          ldm: element.ldm,
-          pn: element.info.length,
-          ac,
-          an,
+          ldm: organizationID[key],
+          pn: nbPatient,
+          ac: lab_frequencies[key].ac,
+          an: lab_frequencies[key].an,
+          hom: lab_frequencies[key].hom,
+          af: Number.parseFloat(lab_frequencies[key].af).toExponential(2),
         };
+        totalAf += lab_frequencies[key].af;
         rows.push(line);
       });
+
       const total = {
         ldm: (<span className="bold">Total</span>),
-        pn: (<Button className="link--underline bold variantLink" type="link" onClick={this.goToPatientTab}>{ frequencies.internal.pn }</Button>),
+        pn: (<Button className="link--underline bold variantLink" type="link" onClick={this.goToPatientTab}>{ donors.length }</Button>),
         ac: (<span className="bold">{ sumBy(rows, (e) => e.ac) }</span>),
         an: (
           <span className="bold">
             { sumBy(rows, (e) => e.an) }
           </span>),
+        hom: (
+          <span className="bold">
+            { sumBy(rows, (e) => e.hom) }
+          </span>),
+        af: (
+          <span className="bold">
+            { Number.parseFloat(totalAf).toExponential(2) }
+          </span>),
       };
       rows.push(total);
+
       return rows;
     }
 

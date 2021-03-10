@@ -27,6 +27,9 @@
     &__tag{
       margin-left: 12px;
       margin-right: 0;
+      &--variantType{
+        text-transform: capitalize;
+      }
     }
   }
 
