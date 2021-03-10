@@ -18,11 +18,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import './styles.scss';
 import { useForm } from 'antd/lib/form/Form';
 import { State } from '../../../../../../../reducers';
-import { getRAMQValue } from '../../../../../../../helpers/fhir/patientHelper';
+import { getRAMQValue, formatRamq } from '../../../../../../../helpers/fhir/patientHelper';
 import { Patient } from '../../../../../../../helpers/fhir/types';
 import { PatientBuilder } from '../../../../../../../helpers/fhir/builder/PatientBuilder';
 import { editPatient } from '../../../../../../../actions/patientEdition';
 import { PatientEditionStatus } from '../../../../../../../reducers/patientEdition';
+import { isValidRamq } from '../../../../../../../helpers/fhir/api/PatientChecker';
 
 enum MrnActionType {
   ADD,
@@ -210,7 +211,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
           .withGeneralPractitioner(userRole.id)
           .withFamily(formValues.lastname)
           .withGiven(formValues.firstname)
-          .withRamq(formValues.ramq)
+          .withRamq((formValues.ramq as string).replace(/\s/g, '').toUpperCase())
           .withGender(formValues.sex)
           .withBirthDate((formValues.birthDate as moment.Moment).toDate());
 
@@ -231,8 +232,8 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
         labelAlign="left"
         requiredMark={false}
         initialValues={{
-          ramq: originalRAMQ,
-          ramqConfirm: originalRAMQ,
+          ramq: formatRamq(originalRAMQ),
+          ramqConfirm: formatRamq(originalRAMQ),
           lastname: originalLastName,
           firstname: originalFirstName,
           sex: patient.gender,
@@ -243,12 +244,35 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
         }}
       >
         <Form.Item label={intl.get('screen.patient.details.edit.ramq')} name="ramq">
-          <Input disabled={!hasRamq} />
+          <Input
+            disabled={!hasRamq}
+            onChange={(event) => {
+              const isValueValid = isValidRamq(event.currentTarget.value);
+              const parsedValue = formatRamq(event.currentTarget.value);
+
+              if (isValueValid) {
+                form.setFields([{ name: 'ramq', errors: [], value: parsedValue }]);
+              } else {
+                form.setFields([{
+                  name: 'ramq',
+                  errors: [intl.get('screen.patient.details.edit.ramq.invalid')],
+                  value: parsedValue,
+                }]);
+              }
+            }}
+          />
         </Form.Item>
         {
           hasRamq ? (
-            <Form.Item label={intl.get('screen.patient.details.edit.ramqConfirm')} name="ramqConfirm">
-              <Input />
+            <Form.Item
+              label={intl.get('screen.patient.details.edit.ramqConfirm')}
+              name="ramqConfirm"
+            >
+              <Input onChange={(event) => {
+                const parsedValue = formatRamq(event.currentTarget.value);
+                form.setFieldsValue({ ramqConfirm: parsedValue });
+              }}
+              />
             </Form.Item>
           ) : (
             <Form.Item label=" ">

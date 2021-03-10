@@ -7,14 +7,8 @@ import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 function* handleEditPatient(action: any) {
   const hideLoadingMessage = message.loading(intl.get('screen.patient.details.edit.processing'));
   try {
-    yield updatePatient(action.payload.patient);
-
-    yield put({ type: actions.PATIENT_EDITION_SUCCEEDED });
-
-    yield put({
-      type: actions.PATIENT_FETCH_REQUESTED,
-      payload: { uid: action.payload.patient.id },
-    });
+    const updateResponse = yield updatePatient(action.payload.patient);
+    yield put({ type: actions.PATIENT_EDITION_SUCCEEDED, payload: updateResponse.data });
   } catch (e) {
     console.error(e);
     yield put({ type: actions.PATIENT_EDITION_FAILED });

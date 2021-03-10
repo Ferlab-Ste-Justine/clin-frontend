@@ -21,9 +21,7 @@ export const updatePatient = async (patient: Patient) => {
     throw new Error(`Invalid patient id [${patient}]`);
   }
   const updatedPatient = JSON.parse(JSON.stringify(patient));
-  await httpClient.secureClinAxios.put(`${window.CLIN.fhirBaseUrl}/Patient/${patient.id}`, updatedPatient);
-
-  return updatePatient;
+  return httpClient.secureClinAxios.put(`${window.CLIN.fhirBaseUrl}/Patient/${patient.id}`, updatedPatient);
 };
 
 export const updatePatientPractitioners = async (

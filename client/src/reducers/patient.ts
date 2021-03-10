@@ -4,6 +4,7 @@ import get from 'lodash/get';
 
 import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
+import { getRAMQValue } from '../helpers/fhir/patientHelper';
 import {
   ClinicalImpression, FamilyMemberHistory, Observation, Patient, ServiceRequest,
 } from '../helpers/fhir/types';
@@ -112,6 +113,19 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
     case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_FAILED:
       message.error(intl.get('screen.variantDetails.patientsTab.changeStatus.notification.failure'));
       break;
+    case actions.PATIENT_EDITION_SUCCEEDED: {
+      const originalPatient = action.payload as Patient;
+      draft.patient.original = originalPatient;
+      draft.patient.parsed.ramq = getRAMQValue(originalPatient);
+      draft.patient.parsed.lastName = get(originalPatient, 'name[0].family');
+      draft.patient.parsed.firstName = get(originalPatient, 'name[0].given[0]');
+      draft.patient.parsed.gender = originalPatient.gender;
+      draft.patient.parsed.birthDate = originalPatient.birthDate;
+      draft.patient.parsed.mrn = originalPatient.identifier
+        .filter((id) => get(id, 'type.coding[0].code', '') === 'MR')
+        .map((id) => ({ number: id.value, hospital: get(id, 'assigner.reference', '').split('/')[1] }));
+      break;
+    }
     default:
       break;
   }
