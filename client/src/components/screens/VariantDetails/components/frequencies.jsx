@@ -202,6 +202,7 @@ class FrequenciesTab extends React.Component {
 
       Object.keys(lab_frequencies).forEach((key) => {
         const nbPatient = filter(donors, { organization_id: key }).length;
+        totalAf += lab_frequencies[key].af;
         const line = {
           ldm: organizationID[key],
           pn: nbPatient,
@@ -210,7 +211,6 @@ class FrequenciesTab extends React.Component {
           hom: lab_frequencies[key].hom,
           af: Number.parseFloat(lab_frequencies[key].af).toExponential(2),
         };
-        totalAf += lab_frequencies[key].af;
         rows.push(line);
       });
 
