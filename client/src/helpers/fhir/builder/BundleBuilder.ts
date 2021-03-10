@@ -33,7 +33,7 @@ export class BundleBuilder {
 
     public withResource(resource: any) {
       const id = get(resource, 'id', undefined);
-      const idExists = id != null && !id.startsWith('urn:');
+      const idExists = !!id && !id.startsWith('urn:');
       this.entry.push({
         request: {
           method: idExists ? 'PUT' : 'POST',
