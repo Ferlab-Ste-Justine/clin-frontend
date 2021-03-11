@@ -180,6 +180,16 @@ function PatientSubmissionScreen(props) {
     }
   };
 
+  const onChange = () => {
+    // Update the select value when the mrn and organization changes (usually after you create a new MRN)
+    const mrn = form.getFieldValue('mrn');
+    const organization = form.getFieldValue('organization');
+    if (mrn && organization) {
+      form.setFieldsValue({ 'full-mrn': `${mrn} | ${organization}` });
+    }
+    validate();
+  };
+
   React.useEffect(() => {
     validate();
   });
@@ -525,7 +535,7 @@ function PatientSubmissionScreen(props) {
           form={form}
           patient={patient}
           clinicalImpression={clinicalImpression}
-          validate={validate}
+          onChange={onChange}
         />
       ),
       name: 'ClinicalInformation',
@@ -595,7 +605,7 @@ function PatientSubmissionScreen(props) {
           <Form
             form={form}
             onFinish={() => onFormFinish(isOnLastPage)}
-            onChange={validate}
+            onChange={onChange}
           >
             { pageContent }
             <Card className="patientSubmission__form__footer">

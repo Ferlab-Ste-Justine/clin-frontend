@@ -109,8 +109,8 @@ class ClinicalInformation extends React.Component {
   }
 
   componentDidUpdate() {
-    const { validate } = this.props;
-    validate();
+    const { onChange } = this.props;
+    onChange();
   }
 
   onLoadHpoChildren(treeNode) {
@@ -159,7 +159,7 @@ class ClinicalInformation extends React.Component {
       }
       return '';
     };
-    const { validate } = this.props;
+    const { onChange } = this.props;
     return (
       <div key={hpoResource.valueCodeableConcept.coding[0].code} className="phenotypeBlock">
         <div className="phenotypeFirstLine">
@@ -187,7 +187,7 @@ class ClinicalInformation extends React.Component {
                 size="small"
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOInterpretationCode(hpoResource)}
-                onChange={validate}
+                onChange={onChange}
               >
                 { hpoInterpretationValues().map((interpretation, index) => (
                   <Select.Option
@@ -210,7 +210,7 @@ class ClinicalInformation extends React.Component {
                 placeholder={intl.get('form.patientSubmission.form.hpo.ageAtOnset')}
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOOnsetCode(hpoResource)}
-                onChange={validate}
+                onChange={onChange}
               >
                 {
                   hpoOnsetValues.map((group, gIndex) => (
@@ -361,7 +361,7 @@ class ClinicalInformation extends React.Component {
 
   handleHpoDeleted(hpoId) {
     const { hpoResources } = this.state;
-    const { form, validate } = this.props;
+    const { form, onChange } = this.props;
     const values = form.getFieldsValue();
     const result = hpoResources.filter((hpo) => get(hpo, 'valueCodeableConcept.coding[0].code') !== hpoId);
     this.setState({
@@ -371,7 +371,7 @@ class ClinicalInformation extends React.Component {
       ...values,
       hpos: values.hpos.filter((hpo) => hpo.code !== hpoId),
     });
-    validate();
+    onChange();
   }
 
   renderTreeNodes(data) {
@@ -395,7 +395,7 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, validate,
+      form, observations, localStore, onChange,
     } = this.props;
 
     const { TextArea } = Input;
@@ -445,7 +445,7 @@ class ClinicalInformation extends React.Component {
           bordered={false}
         >
           <Form.Item label={intl.get('form.patientSubmission.clinicalInformation.file')}>
-            <MrnItem form={form} onChange={() => validate()} />
+            <MrnItem form={form} onChange={() => onChange()} />
           </Form.Item>
         </Card>
         <Card

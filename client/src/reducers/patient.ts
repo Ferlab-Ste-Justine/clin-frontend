@@ -84,9 +84,6 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       draft.fmhs = result.fmhs.records;
       break;
     }
-    case actions.PATIENT_ADD_MRN_SUCCEEDED:
-      draft.patient.original = action.payload.patient;
-      break;
     case actions.CLEAR_PATIENT_DATA_REQUESTED:
       draft.consultation = initialState.consultation;
       draft.fmhs = initialState.fmhs;
@@ -113,8 +110,9 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
     case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_FAILED:
       message.error(intl.get('screen.variantDetails.patientsTab.changeStatus.notification.failure'));
       break;
+    case actions.PATIENT_ADD_MRN_SUCCEEDED:
     case actions.PATIENT_EDITION_SUCCEEDED: {
-      const originalPatient = action.payload as Patient;
+      const originalPatient = action.payload.patient as Patient;
       draft.patient.original = originalPatient;
       draft.patient.parsed.ramq = getRAMQValue(originalPatient);
       draft.patient.parsed.lastName = get(originalPatient, 'name[0].family');

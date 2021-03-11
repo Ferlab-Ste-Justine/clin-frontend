@@ -361,6 +361,10 @@ const patientSubmissionReducer = (
       }
       break;
     }
+    case actions.PATIENT_ADD_MRN_SUCCEEDED: {
+      draft.patient.identifier = action.payload.patient.identifier;
+      break;
+    }
     default:
       break;
   }
