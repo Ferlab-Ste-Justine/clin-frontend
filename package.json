@@ -1,10 +1,6 @@
 {
   "name": "clin-frontend",
-<<<<<<< HEAD
-  "version": "3.1.143",
-=======
-  "version": "3.1.144",
->>>>>>> 033d5f0b631f5f7e7f238cd049957f98b86b2632
+  "version": "3.1.145",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@babel/core": "7.12.3",
