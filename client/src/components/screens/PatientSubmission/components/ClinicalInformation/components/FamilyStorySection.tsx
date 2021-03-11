@@ -187,7 +187,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                             <Form.Item
                               name={[index, 'id']}
                               className="hidden-form"
-                              initialValue={familyHistoryResources && familyHistoryResources[index].id}
+                              initialValue={get(familyHistoryResources, `[${index}].id`, '')}
                             >
                               <Input size="small" type="hidden" />
                             </Form.Item>
@@ -195,7 +195,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                               <Col span={14}>
                                 <Form.Item
                                   name={[index, 'note']}
-                                  initialValue={familyHistoryResources && familyHistoryResources[index].note}
+                                  initialValue={get(familyHistoryResources, `[${index}].note`, '')}
                                   noStyle
                                 >
                                   <Input
@@ -207,12 +207,12 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                               <Col span={6}>
                                 <Form.Item
                                   name={[index, 'relation']}
-                                  initialValue={familyHistoryResources && familyHistoryResources[index].code}
+                                  initialValue={get(familyHistoryResources, `[${index}].code`, '')}
                                   noStyle
                                 >
                                   <Select
                                     suffixIcon={<IconKit className="selectIcon" size={12} icon={ic_person} />}
-                                    className="selectRelation"
+                                    className="clinical-information__family-story__conditions__relation-select"
                                     placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
                                     aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
                                     dropdownClassName="selectDropdown"

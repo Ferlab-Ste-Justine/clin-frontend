@@ -46,7 +46,14 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
 
     dispatch(addPatientMrn(mrn, organization));
     setMode(Mode.SELECT);
-    setDefaultSelctedMrn(undefined);
+    form.setFieldsValue({
+      'create.mrn': '',
+      'create.organization': '',
+      mrn,
+      organization,
+    });
+
+    onChange();
   };
 
   React.useEffect(() => {
@@ -134,43 +141,46 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       >
         <Input hidden />
       </Form.Item>
-      <Select
-        className="clinical-information__mrn"
-        onChange={(value: string) => {
-          const [mrn, organization] = value.split('|');
-          form.setFields([
-            { name: 'mrn', value: mrn },
-            { name: 'organization', value: organization },
-          ]);
-          onChange();
-        }}
-        dropdownRender={(menu) => (
-          <div>
-            { menu }
-            <Button
-              className="clinical-information__mrn__create-button"
-              onClick={() => onCreationMode()}
-            >
-              { intl.get('form.patientSubmission.clinicalInformation.file.addFile') }
-            </Button>
-          </div>
-        )}
-        defaultValue={getMrnValue(defaultSelectedMrn)}
-      >
-        {
-          patient.identifier
-            .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
-            .map((id) => (
-              <Select.Option
-                key={getLabel(id)}
-                value={getMrnValue(id)!}
-                className="clinical-information__mrn-options"
+      <Form.Item name="full-mrn">
+        <Select
+          className="clinical-information__mrn"
+          onChange={(value: string) => {
+            const [mrn, organization] = value.split('|');
+            form.setFields([
+              { name: 'mrn', value: mrn },
+              { name: 'organization', value: organization },
+            ]);
+            onChange();
+          }}
+          dropdownRender={(menu) => (
+            <div>
+              { menu }
+              <Button
+                className="clinical-information__mrn__create-button"
+                onClick={() => onCreationMode()}
               >
-                { getLabel(id) }
-              </Select.Option>
-            ))
-        }
-      </Select>
+                { intl.get('form.patientSubmission.clinicalInformation.file.addFile') }
+              </Button>
+            </div>
+          )}
+          defaultValue={getMrnValue(defaultSelectedMrn)}
+        >
+          {
+            patient.identifier
+              .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
+              .map((id) => (
+                <Select.Option
+                  key={getLabel(id)}
+                  value={getMrnValue(id)!}
+                  className="clinical-information__mrn-options"
+                >
+                  { getLabel(id) }
+                </Select.Option>
+              ))
+          }
+        </Select>
+
+      </Form.Item>
     </>
   );
 };
