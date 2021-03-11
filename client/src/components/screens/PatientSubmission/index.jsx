@@ -125,7 +125,7 @@ function PatientSubmissionScreen(props) {
           const hpos = getValidValues(get(values, 'hpos', []));
           if (hpos.length > 0) {
             const checkValue = hpos.map(
-              (element) => get(element, 'interpretation') === null || get(element, 'onset') == null,
+              (element) => get(element, 'interpretation') === null,
             );
             if (checkValue.includes(true)) {
               return false;
@@ -286,24 +286,28 @@ function PatientSubmissionScreen(props) {
       .withNote(hpo.note)
       .build();
 
-    let value = null;
-    const keys = Object.keys(hpoOnsetValues);
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key of keys) {
-      const group = hpoOnsetValues[key];
-      value = group.options.find((onSet) => onSet.code === hpo.onset);
+    if (hpo.onset != null) {
+      let value = null;
+      const keys = Object.keys(hpoOnsetValues);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const key of keys) {
+        const group = hpoOnsetValues[key];
+        value = group.options.find((onSet) => onSet.code === hpo.onset);
+        if (value != null) {
+          break;
+        }
+      }
+
       if (value != null) {
-        break;
+        observation.extension.push({
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
+          valueCoding: {
+            code: value.code,
+            display: value.display,
+          },
+        });
       }
     }
-
-    observation.extension.push({
-      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
-      valueCoding: {
-        code: value.code,
-        display: value.display,
-      },
-    });
     return observation;
   };
 
