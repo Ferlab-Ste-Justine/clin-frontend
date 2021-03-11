@@ -114,7 +114,7 @@ export class DataExtractor {
   }
 
   public getExtension(data: any, url: string) {
-    return data.extension.find((ext: any) => ext.url === url);
+    return get(data, 'extension', []).find((ext: any) => ext.url === url);
   }
 
   public extractEmail(telecom: Telecom[]): string {

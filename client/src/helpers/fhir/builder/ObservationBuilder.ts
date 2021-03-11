@@ -1,7 +1,5 @@
 import {
   CodeableConcept,
-  Coding,
-  Extension,
   Interpretation,
   Meta,
   Note,
@@ -12,17 +10,6 @@ import {
 
 type Status = 'registered' | 'preliminary' | 'final' | 'amended';
 
-interface HpoCategoryExtension extends Extension {
-    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/hpo-category';
-    valueCoding: Coding;
-}
-
-interface AgeAtOnset extends Extension {
-    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset';
-    valueCoding: Coding;
-}
-
-type SupportedExtensions = HpoCategoryExtension | AgeAtOnset;
 type SupportedCodes = 'CGH' | 'INDIC' | 'HPO' | 'INVES' | 'ETH' | 'CONS';
 
 export class ObservationBuilder {
@@ -45,8 +32,6 @@ export class ObservationBuilder {
     private interpretation: Interpretation[] = [];
 
     private note: Note[] = [];
-
-    private extension: SupportedExtensions[] = [];
 
     private code?: CodeableConcept;
 
@@ -174,7 +159,7 @@ export class ObservationBuilder {
         subject: this.subject!,
         interpretation: this.interpretation,
         note: this.note,
-        extension: this.extension,
+        extension: [],
         valueCodeableConcept: this.valueCodeableConcept,
         valueBoolean: this.valueBoolean,
       };
@@ -228,11 +213,6 @@ export class ObservationBuilder {
           text: value,
         });
       }
-      return this;
-    }
-
-    public withExtension(value: SupportedExtensions) {
-      this.extension.push(value);
       return this;
     }
 
