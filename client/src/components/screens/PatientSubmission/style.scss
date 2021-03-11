@@ -221,10 +221,6 @@
         margin-right: 8px;
       }
     
-      .selectRelation{
-        width: 260px;
-        margin-right: 8px;
-      }
       .delButton{
         width: 24px;
         height: 24px;
@@ -548,6 +544,10 @@
 
       button {
         border: none;
+      }
+
+      &__relation-select {
+        width: 100%;
       }
     }
   }
