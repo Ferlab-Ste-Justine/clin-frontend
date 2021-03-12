@@ -2,21 +2,31 @@ import {
   all, put, takeLatest,
 } from 'redux-saga/effects';
 
+import get from 'lodash/get';
 import * as actionTypes from '../actions/type';
 // import * as actions from '../actions/app';
 import Api, { ApiError } from '../helpers/api';
 
 function* fetchVariantDetails(action) {
   const { payload } = action;
-  let variantDetailsResponse = null;
   try {
     yield put({ type: actionTypes.VARIANT_ID_SET, payload });
-    variantDetailsResponse = yield Api.getVariantDetails(payload);
+    const variantDetailsResponse = yield Api.getVariantDetails(payload);
     if (variantDetailsResponse.error) {
       throw new ApiError(variantDetailsResponse.error);
     }
 
-    yield put({ type: actionTypes.VARIANT_DETAILS_SUCCEEDED, payload: variantDetailsResponse.payload.data.data });
+    const patientIds = [...new Set(get(variantDetailsResponse, 'payload.data.data.donors', [])
+      .map((donor) => donor.patient_id))];
+    const donorsGP = yield Api.getPatientsGenderAndPosition(patientIds);
+
+    yield put({
+      type: actionTypes.VARIANT_DETAILS_SUCCEEDED,
+      payload: {
+        data: variantDetailsResponse.payload.data.data,
+        donorsGP,
+      },
+    });
   } catch (e) {
     yield put({ type: actionTypes.VARIANT_DETAILS_FAILED, payload: e });
   }
