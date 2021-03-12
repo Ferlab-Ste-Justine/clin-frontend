@@ -36,7 +36,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
         </>
       ) : (
         <>
-          <Typography.Title level={3} className="patientName">{ patient.lastName }</Typography.Title>
+          <Typography.Title level={3} className="patientName">{ patient.lastName.toUpperCase() }</Typography.Title>
           <Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title>
         </>
       ) }
