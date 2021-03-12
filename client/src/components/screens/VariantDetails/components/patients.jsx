@@ -13,17 +13,6 @@ import {
   navigateToPatientScreen,
 } from '../../../../actions/router';
 
-const COLUMN_WIDTH = {
-  TINY: 65,
-  NARROW: 80,
-  SMALL: 90,
-  NORMAL: 100,
-  SMALLMEDIUM: 120,
-  MEDIUM: 150,
-  WIDE: 200,
-
-};
-
 const Link = ({ url, text }) => (
   <Button
     key={uuidv1()}
@@ -36,6 +25,31 @@ const Link = ({ url, text }) => (
     { text }
   </Button>
 );
+
+const organizationID = {
+  OR00201: 'HVO',
+  OR00202: 'HRN',
+  OR00203: 'CHUS',
+  OR00204: 'HSCM',
+  OR00205: 'HMR',
+  OR00206: 'HJT',
+  OR00207: 'CHUSJ',
+  OR00208: 'CHUM',
+  OR00209: 'CHUL',
+  OR00210: 'HHR',
+  OR00211: 'HCS',
+  OR00212: 'HHDG',
+  OR00213: 'BMP',
+  OR00214: 'HC',
+  OR00215: 'LDM-CHUSJ',
+  OR00216: 'LDM-CUSM',
+  OR00217: 'LDM-CHUM',
+  OR00218: 'LDM-HGJ',
+  OR00219: 'LDM-CHUQ',
+  OR00220: 'LDM-HMR',
+  OR00221: 'LDM-CHUS',
+  OR00222: 'LDM-ICM',
+};
 
 Link.propTypes = {
   url: PropTypes.string.isRequired,
@@ -57,15 +71,13 @@ class PatientsTabs extends React.Component {
           key: 'patient_id',
           handler: this.handleGoToPatientScreen,
         }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
         key: 'organization_id',
         label: 'screen.variantDetails.patientsTab.LDM',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.organization_id; } catch (e) { return ''; } },
+          renderer: (data) => { try { return organizationID[data.organization_id]; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
       },
       {
         key: 'sex',
@@ -73,7 +85,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: () => '--',
         }),
-        columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
       },
       {
         key: 'position',
@@ -81,7 +92,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return <Tag>{ data.proband }--</Tag>; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
       },
       {
         key: 'family_id',
@@ -89,7 +99,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.family_id; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
       },
       {
         key: 'sequencing_strategy',
@@ -97,7 +106,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.sequencing_strategy; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.SMALL,
       },
       {
         key: 'zygosity',
@@ -105,7 +113,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.zygosity; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.SMALL,
       },
       {
         key: 'ad_ratio',
@@ -113,7 +120,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return <span>{ data.ad_alt }/{ data.ad_total } ({ data.ad_ratio.toFixed(2) })</span>; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.WIDE,
       },
       {
         key: 'gq',
@@ -121,7 +127,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.gq; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.MEDIUM,
       },
       {
         key: 'last_update',
@@ -129,7 +134,6 @@ class PatientsTabs extends React.Component {
         renderer: createCellRenderer('custom', this.getDonors, {
           renderer: (data) => { try { return data.last_update; } catch (e) { return ''; } },
         }),
-        columnWidth: COLUMN_WIDTH.SMALLMEDIUM,
       },
     ];
   }
