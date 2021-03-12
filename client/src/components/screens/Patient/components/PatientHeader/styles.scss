@@ -1,0 +1,17 @@
+.patient-page {
+  &__header {
+    &__tags {
+      margin-right: 0;
+    }
+    &__name {
+      height: 24px;
+
+      &__mother-name {
+        font-size: 14px;
+        button {
+          font-weight: inherit;
+        }
+      }
+    }
+  }
+}
