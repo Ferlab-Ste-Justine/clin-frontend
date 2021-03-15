@@ -47,6 +47,7 @@ export type PatientState = {
   hpos?: Record<Observation, ClinicalObservation>[];
   fmhs?: Record<FamilyMemberHistory, FamilyObservation>[];
   observations?: Observations;
+  canEdit?: boolean;
 };
 
 type Action = {
@@ -61,6 +62,7 @@ const initialState: PatientState = {
 const reducer = (state: PatientState = initialState, action: Action) => produce<PatientState>(state, (draft) => {
   switch (action.type) {
     case actions.PATIENT_FETCH_SUCCEEDED: {
+      draft.canEdit = action.payload.canEdit;
       draft.observations = {
         cgh: getObservations('CGH', action.payload.patientData),
         indic: getObservations('INDIC', action.payload.patientData),

@@ -9,6 +9,11 @@ import { getUserPractitionerData } from './fhir/api/UserResources';
 const successCallback = (payload) => ({ payload });
 const errorCallback = (error) => ({ error });
 
+const canEditPatients = (ids) => Http.secureClinAxios
+  .post(`${window.CLIN.patientServiceApiUrl}/can-edit`, { ids })
+  .then(successCallback)
+  .catch(errorCallback);
+
 const getPatientsGenderAndPosition = (ids) => Http.secureClinAxios
   .post(`${window.CLIN.patientServiceApiUrl}/gender-and-position`, { ids })
   .then(successCallback)
@@ -222,6 +227,7 @@ const updateServiceRequestStatus = async (user, serviceRequest, status, note) =>
 };
 
 export default {
+  canEditPatients,
   getPatientsGenderAndPosition,
   searchHpos,
   searchHpoChildren,
