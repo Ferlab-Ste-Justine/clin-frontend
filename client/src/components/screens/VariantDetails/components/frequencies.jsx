@@ -282,15 +282,17 @@ class FrequenciesTab extends React.Component {
   render() {
     const { variantDetails } = this.props;
     const { data } = variantDetails;
+    const {
+      frequencies,
+    } = data;
 
     if (!data) return null;
-
-    // const clin_sig = clinvar ? clinvar.clin_sig : '';
-
     const {
       internalCohortsFrequenciesColumnPreset,
       externalCohortsFrequenciesColumnPreset,
     } = this.state;
+
+    const isExternal = Object.keys(frequencies).filter((k) => k !== 'internal' && k.indexOf('LDx') === -1);
 
     return (
       <div className="page-static-content">
@@ -318,31 +320,34 @@ class FrequenciesTab extends React.Component {
             />
           </Card>
         </Row>
-        <Row className="flex-row">
+        { isExternal.length !== 0
+          ? (
+            <Row className="flex-row">
 
-          <Card
-            title={intl.get('screen.variantDetails.summaryTab.externalCohortsTable.title')}
-            className="staticCard"
-            bordered={false}
-          >
-            <Table
-              rowKey={() => shortid.generate()}
-              pagination={false}
-              size="small"
-              locale={{
-                emptyText: (
-                  <Empty
-                    image={null}
-                    description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
-                  />),
-              }}
-              dataSource={this.getExternalCohortFrequencies()}
-              columns={externalCohortsFrequenciesColumnPreset.map(
-                columnPresetToColumn,
-              )}
-            />
-          </Card>
-        </Row>
+              <Card
+                title={intl.get('screen.variantDetails.summaryTab.externalCohortsTable.title')}
+                className="staticCard"
+                bordered={false}
+              >
+                <Table
+                  rowKey={() => shortid.generate()}
+                  pagination={false}
+                  size="small"
+                  locale={{
+                    emptyText: (
+                      <Empty
+                        image={null}
+                        description={intl.get('screen.variantDetails.summaryTab.emptyTable')}
+                      />),
+                  }}
+                  dataSource={this.getExternalCohortFrequencies()}
+                  columns={externalCohortsFrequenciesColumnPreset.map(
+                    columnPresetToColumn,
+                  )}
+                />
+              </Card>
+            </Row>
+          ) : null }
       </div>
 
     );

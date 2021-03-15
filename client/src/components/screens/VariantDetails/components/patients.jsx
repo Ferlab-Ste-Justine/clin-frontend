@@ -7,6 +7,9 @@ import { v1 as uuidv1 } from 'uuid';
 import {
   Button, Row, Col, Card, Tag,
 } from 'antd';
+import {
+  find,
+} from 'lodash';
 import DataTable, { createCellRenderer } from '../../../Table/index';
 import '../style.scss';
 import {
@@ -83,14 +86,34 @@ class PatientsTabs extends React.Component {
         key: 'sex',
         label: 'screen.variantDetails.patientsTab.sex',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: () => '--',
+          renderer: (data) => {
+            try {
+              const { variantDetails } = this.props;
+              const { donorsGP } = variantDetails;
+              const infos = find(donorsGP, { id: data.patient_id });
+              if (!infos) {
+                return '--';
+              }
+              return intl.get(`screen.variantDetails.patientsTab.${infos.gender}`);
+            } catch (e) { return ''; }
+          },
         }),
       },
       {
         key: 'position',
         label: 'screen.variantDetails.patientsTab.relation',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return <Tag>{ data.proband }--</Tag>; } catch (e) { return ''; } },
+          renderer: (data) => {
+            try {
+              const { variantDetails } = this.props;
+              const { donorsGP } = variantDetails;
+              const infos = find(donorsGP, { id: data.patient_id });
+              if (!infos) {
+                return '--';
+              }
+              return <Tag color={infos.position === 'Parent' ? 'geekblue' : 'red'}>{ infos.position }</Tag>;
+            } catch (e) { return ''; }
+          },
         }),
       },
       {
@@ -154,7 +177,7 @@ class PatientsTabs extends React.Component {
 
   handleGoToPatientScreen(e) {
     const { actions } = this.props;
-    const value = e.target.getAttribute('data-id');
+    const value = e.target.innerText;
     actions.navigateToPatientScreen(value);
   }
 
