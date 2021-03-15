@@ -350,7 +350,7 @@ class AssociationsTab extends React.Component {
       const clinvarLine = data.clinvar.clin_sig.join(', ');
       const interpretation = <span>{ clinvarLine }</span>;
       const condition = <span>{ data.clinvar.conditions.join(', ') }</span>;
-      const transmission = <span>{ data.clinvar.inheritance.join(', ') }</span>;
+      const transmission = <span className="capitalText">{ data.clinvar.inheritance.join(', ') }</span>;
       return [{ interpretation, condition, transmission }];
     }
     return [];
