@@ -73,7 +73,7 @@ export class ServiceRequestBuilder {
       return this;
     }
 
-    public withSubmitted(value: boolean | undefined, roleId: string) {
+    public withSubmitted(value: boolean | undefined, roleId: string, status?: string) {
       const isSubmitted = value != null && value;
 
       const ext = getExtension(this.serviceRequest, EXTENSION_SUBMITTED);
@@ -93,6 +93,8 @@ export class ServiceRequestBuilder {
           time: new Date().toISOString(),
         });
         this.serviceRequest.status = 'on-hold';
+      } else {
+        this.serviceRequest.status = status || 'draft';
       }
       return this;
     }

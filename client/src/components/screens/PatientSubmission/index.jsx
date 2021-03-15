@@ -314,10 +314,11 @@ function PatientSubmissionScreen(props) {
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
-        actions, observations, userRole, currentPatient,
+        actions, userRole, currentPatient,
       } = props;
 
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
+      const { status } = localStore;
 
       const batch = {
         serviceRequests: [],
@@ -345,7 +346,7 @@ function PatientSubmissionScreen(props) {
           .withRequester(state.selectedPractitioner)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
-          .withSubmitted(submitted, userRole.id)
+          .withSubmitted(submitted, userRole.id, status)
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
           .withId(get(localStore, 'clinicalImpression.id'))
