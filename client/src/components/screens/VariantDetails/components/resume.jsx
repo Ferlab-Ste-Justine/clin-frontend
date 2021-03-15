@@ -275,7 +275,7 @@ class ResumeTabs extends React.Component {
                 </ul>
                 {
                   items.length > 2 ? (
-                    <Button className="link--underline variant-page-content__seeMo" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>
+                    <Button className="link--underline variant-page-content__seeMore" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>
                       { isSameGene ? intl.get('screen.variantdetails.seeLess') : intl.get('screen.variantdetails.seeMore') }
                     </Button>
                   ) : null
