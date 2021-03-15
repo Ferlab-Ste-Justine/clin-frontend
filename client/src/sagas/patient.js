@@ -12,12 +12,14 @@ function* fetch(action) {
       throw new ApiError(patientDataResponse.error);
     }
     const practitionersDatePresponse = yield Api.getPractitionersData(patientDataResponse.payload.data);
+    const canEdit = yield Api.canEditPatients([action.payload.uid]);
 
     yield put({
       type: actions.PATIENT_FETCH_SUCCEEDED,
       payload: {
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDatePresponse.payload.data,
+        canEdit,
       },
     });
   } catch (e) {
