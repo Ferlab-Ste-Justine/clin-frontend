@@ -32,14 +32,14 @@ function* fetch(action) {
       throw new ApiError(patientDataResponse.error);
     }
     const practitionersDataResponse = yield Api.getPractitionersData(patientDataResponse.payload.data);
-    const canEdit = yield Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data));
+    const canEditResponse = yield Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data));
 
     yield put({
       type: actions.PATIENT_FETCH_SUCCEEDED,
       payload: {
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDataResponse.payload.data,
-        canEdit,
+        canEdit: canEditResponse.payload.data.data.result,
       },
     });
   } catch (e) {

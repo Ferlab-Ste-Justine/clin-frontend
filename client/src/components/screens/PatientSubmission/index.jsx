@@ -36,6 +36,7 @@ import ClinicalInformation from './components/ClinicalInformation';
 import Approval from './components/Approval';
 import Api from '../../../helpers/api';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
+import RamqWarningModal from './components/RamqWarningModal';
 
 import './style.scss';
 
@@ -55,6 +56,7 @@ import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/Clinica
 import { createRequest } from '../../../actions/prescriptions';
 import { updatePatientPractitioners } from '../../../actions/patientCreation';
 import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder';
+import { findIdentifierByCode } from '../../../helpers/patient';
 
 const { Step } = Steps;
 
@@ -75,6 +77,7 @@ function PatientSubmissionScreen(props) {
     practitionerOptions: [],
     valid: false,
     isCancelConfirmVisible: false,
+    isRamqWarningVisible: true,
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     firstPageFields: {},
     hpoResources: get(props, 'observations.hpos'),
@@ -328,6 +331,13 @@ function PatientSubmissionScreen(props) {
       const {
         actions, userRole, currentPatient,
       } = props;
+
+      const hasRamq = findIdentifierByCode(currentPatient.identifier, 'JHN') != null;
+
+      if (!hasRamq && submitted) {
+        setState((oldState) => ({ ...oldState, isRamqWarningVisible: true }));
+        return;
+      }
 
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
       const { status } = localStore;
@@ -711,6 +721,12 @@ function PatientSubmissionScreen(props) {
         onSaveAndQuit={() => {
           saveSubmission();
           handleCancel();
+        }}
+      />
+      <RamqWarningModal
+        open={state.isRamqWarningVisible}
+        onClose={() => {
+          saveSubmission(false);
         }}
       />
     </Layout>

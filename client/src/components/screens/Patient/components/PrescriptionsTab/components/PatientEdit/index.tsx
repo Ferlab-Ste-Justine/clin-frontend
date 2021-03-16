@@ -245,7 +245,10 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
       >
         <Form.Item label={intl.get('screen.patient.details.edit.ramq')} name="ramq">
           <Input
-            disabled={!hasRamq}
+            disabled={!hasRamq || !!originalRAMQ}
+            onPaste={(event) => {
+              event.preventDefault();
+            }}
             onChange={(event) => {
               const isValueValid = isValidRamq(event.currentTarget.value);
               const parsedValue = formatRamq(event.currentTarget.value);
@@ -268,10 +271,15 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
               label={intl.get('screen.patient.details.edit.ramqConfirm')}
               name="ramqConfirm"
             >
-              <Input onChange={(event) => {
-                const parsedValue = formatRamq(event.currentTarget.value);
-                form.setFieldsValue({ ramqConfirm: parsedValue });
-              }}
+              <Input
+                disabled={!!originalRAMQ}
+                onPaste={(event) => {
+                  event.preventDefault();
+                }}
+                onChange={(event) => {
+                  const parsedValue = formatRamq(event.currentTarget.value);
+                  form.setFieldsValue({ ramqConfirm: parsedValue });
+                }}
               />
             </Form.Item>
           ) : (
