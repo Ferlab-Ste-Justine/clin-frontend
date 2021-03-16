@@ -111,9 +111,10 @@ const DetailsCol: React.FC<{isLast?: boolean, align: 'center' | 'top'}> = ({ chi
 
 interface Props {
   patient: ParsedPatientData
+  canEditPatient: boolean
 }
 
-const PatientDetails: React.FC<Props> = ({ patient }) => {
+const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
   const [isPatientEditionModalOpen, setIsPatientEditionModalOpen] = useState(false);
   const mrns = patient.mrn
     .map((mrn) => ({ value: mrn.number, organization: mrn.hospital })) as MrnValue[];
@@ -159,6 +160,7 @@ const PatientDetails: React.FC<Props> = ({ patient }) => {
         className="prescriptions-tab__patient-section__edit-button"
         icon={<FormOutlined />}
         onClick={() => setIsPatientEditionModalOpen(true)}
+        disabled={!canEditPatient}
       >
         { intl.get('screen.patient.details.edit') }
       </Button>
