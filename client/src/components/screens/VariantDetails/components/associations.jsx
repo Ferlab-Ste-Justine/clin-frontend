@@ -184,7 +184,7 @@ class AssociationsTab extends React.Component {
             {
               omimSign.length > 3 ? (
                 <Button
-                  className="link--underline voirPlus"
+                  className="link--underline variant-page-content__seeMore"
                   type="link"
                   onClick={() => { this.handleSeeMoreGene('omim', index); }}
                 >{ intl.get('screen.variantdetails.seeMore') }
@@ -201,7 +201,7 @@ class AssociationsTab extends React.Component {
             {
               omimSign.length > 3 ? (
                 <Button
-                  className="link--underline voirPlus"
+                  className="link--underline variant-page-content__seeMore"
                   type="link"
                   onClick={() => { this.handleSeeMoreGene('omim', index); }}
                 >
@@ -247,7 +247,7 @@ class AssociationsTab extends React.Component {
             {
               orphanetSign.length > 3 ? (
                 <Button
-                  className="link--underline voirPlus"
+                  className="link--underline variant-page-content__seeMore"
                   type="link"
                   onClick={() => { this.handleSeeMoreGene('orphanet', index); }}
                 >
@@ -294,7 +294,7 @@ class AssociationsTab extends React.Component {
             {
               hpoSign.length > 3 ? (
                 <Button
-                  className="link--underline voirPlus"
+                  className="link--underline variant-page-content__seeMore"
                   type="link"
                   onClick={() => { this.handleSeeMoreGene('hpo', index); }}
                 >
