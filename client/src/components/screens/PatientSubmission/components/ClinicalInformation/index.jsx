@@ -91,7 +91,6 @@ class ClinicalInformation extends React.Component {
     this.state = {
       hpoOptions: [],
       treeData: INITIAL_TREE_ROOTS,
-      fmhResources: get(props, 'fmh') || [],
     };
 
     const { treeData } = this.state;
@@ -380,12 +379,12 @@ class ClinicalInformation extends React.Component {
 
   render() {
     const {
-      hpoOptions, treeData, fmhResources,
+      hpoOptions, treeData,
     } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, onChange, hpoResources,
+      form, observations, localStore, onChange, hpoResources, fmhResources,
     } = this.props;
 
     const { TextArea } = Input;

@@ -78,6 +78,7 @@ function PatientSubmissionScreen(props) {
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     firstPageFields: {},
     hpoResources: get(props, 'observations.hpos'),
+    fmhResources: get(props, 'observations.fmh'),
   });
 
   const getFields = () => (state.currentPageIndex === 0 ? form.getFieldsValue() : state.firstPageFields);
@@ -312,6 +313,16 @@ function PatientSubmissionScreen(props) {
     return observation;
   };
 
+  const buildFmhsFromValues = (values, currentPatient) => get(values, 'fmh', []).filter(
+    (fmh) => fmh.note != null && fmh.relation != null,
+  ).map(
+    (fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation))
+      .withId(fmh.id)
+      .withNote(fmh.note)
+      .withPatient(currentPatient.id)
+      .build(),
+  );
+
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
@@ -359,15 +370,7 @@ function PatientSubmissionScreen(props) {
       });
 
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
-      batch.fmhs = get(content, 'fmh', []).filter(
-        (fmh) => fmh.note != null && fmh.relation != null,
-      ).map(
-        (fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation))
-          .withId(fmh.id)
-          .withNote(fmh.note)
-          .withPatient(currentPatient.id)
-          .build(),
-      );
+      batch.fmhs = buildFmhsFromValues(content, currentPatient);
 
       const cghObservation = createCGHResourceList();
       if (cghObservation != null) {
@@ -483,9 +486,12 @@ function PatientSubmissionScreen(props) {
 
   const previous = () => {
     const { currentPageIndex, firstPageFields } = state;
+    const { currentPatient } = props;
     const pageIndex = currentPageIndex - 1;
+
     setState({
       ...state,
+      fmhResources: buildFmhsFromValues(firstPageFields, currentPatient),
       currentPageIndex: pageIndex,
       firstPageFields: {
         ...firstPageFields,
@@ -537,7 +543,9 @@ function PatientSubmissionScreen(props) {
   const {
     patient, clinicalImpression, serviceRequest,
   } = props;
-  const { practitionerOptions, currentPageIndex, hpoResources } = state;
+  const {
+    practitionerOptions, currentPageIndex, hpoResources, fmhResources,
+  } = state;
 
   const assignedPractitioner = serviceRequest ? serviceRequest.requester : null;
   const assignedPractitionerLabel = assignedPractitioner && has(assignedPractitioner, 'resourceType')
@@ -574,6 +582,7 @@ function PatientSubmissionScreen(props) {
           hpoResources={hpoResources}
           onHpoSelected={onHpoSelected}
           onHposUpdated={onHposUpdated}
+          fmhResources={fmhResources}
         />
       ),
       name: 'ClinicalInformation',
