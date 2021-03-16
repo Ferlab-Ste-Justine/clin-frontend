@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import './styles.scss';
 import { FormItemProps } from 'antd/lib/form';
-import { useForm } from 'antd/lib/form/Form';
+import { FormInstance, useForm } from 'antd/lib/form/Form';
 import moment from 'moment';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import get from 'lodash/get';
@@ -22,6 +22,7 @@ import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 import { PatientCreationStatus } from '../../../../../reducers/patientCreation';
 import { formatRamq } from '../../../../../helpers/fhir/patientHelper';
+import api from '../../../../../helpers/api';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 
@@ -82,20 +83,24 @@ const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   }
 };
 
-function validateForm(formValues: any) {
+function validateForm(form: FormInstance<any>) {
+  const formValues = form.getFieldsValue();
   if (!Object.keys(formValues).includes('lastname')) {
     // before doing the ramq part of the form, lastname (and others)
     return false;
   }
 
+  const fileMrnError = form.getFieldError(['mrn', 'file']);
+  const fileOrganizationError = form.getFieldError(['mrn', 'organization']);
+
+  if (fileMrnError.length > 0 || fileOrganizationError.length > 0) {
+    return false;
+  }
+
   return Object.keys(formValues).every((key: string) => {
     const value = formValues[key];
-    if (value == null) {
-      return false;
-    }
-
     if (key === 'mrn') {
-      return value.file && value.organization;
+      return value != null && value.file && value.organization;
     }
     // if the field has a value or its noRamq (it's optional)
     if (value || key === 'noRamq') {
@@ -152,6 +157,19 @@ const FormModal : React.FC<Props> = ({
     className: 'patient-creation__formItem',
     wrapperCol: { span: 12 },
   };
+
+  async function validateMrn(mrnFile?: string, organization?: string) {
+    form.setFields([{ name: ['mrn', 'file'], errors: [] }, { name: ['mrn', 'organization'], errors: [] }]);
+
+    if (!mrnFile || !organization) {
+      return Promise.resolve();
+    }
+    const response = await api.getPatientByIdentifier(mrnFile, organization);
+    const identifiers = get(response, 'payload.data.entry[0].resource.identifier', []);
+    const isUnique = identifiers.length <= 0;
+    setIsFormValid((oldValue) => (isUnique === false ? false : oldValue));
+    return isUnique ? Promise.resolve() : Promise.reject();
+  }
 
   useEffect(() => {
     if (ramqChecked && state.ramqStatus === RamqStatus.PROCESSING) {
@@ -244,7 +262,7 @@ const FormModal : React.FC<Props> = ({
               setIsFetusType(currentElement.value === PatientType.FETUS);
             }
 
-            setIsFormValid(validateForm(form.getFieldsValue()));
+            setIsFormValid(validateForm(form));
           }}
           onFinish={async (values) => {
             setIsCreating(true);
@@ -453,12 +471,35 @@ const FormModal : React.FC<Props> = ({
                   <Input.Group>
                     <Row gutter={8}>
                       <Col span={14}>
-                        <Form.Item noStyle name={['mrn', 'file']}>
+                        <Form.Item
+                          noStyle
+                          name={['mrn', 'file']}
+                          rules={
+                            [
+                              {
+                                validator: async (r, value) => validateMrn(value,
+                                  form.getFieldValue(['mrn', 'organization'])),
+                                message: intl.get('screen.patient.creation.file.existing'),
+                              },
+                            ]
+                          }
+                        >
                           <Input placeholder="MRN 12345678" />
                         </Form.Item>
                       </Col>
                       <Col span={10}>
-                        <Form.Item name={['mrn', 'organization']} noStyle>
+                        <Form.Item
+                          name={['mrn', 'organization']}
+                          noStyle
+                          rules={
+                            [
+                              {
+                                validator: async (r, value) => validateMrn(form.getFieldValue(['mrn', 'file']), value),
+                                message: intl.get('screen.patient.creation.file.existing'),
+                              },
+                            ]
+                          }
+                        >
                           <Select
                             placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                             className="patient-creation__form__select"
@@ -467,7 +508,7 @@ const FormModal : React.FC<Props> = ({
                               // onSubmit, the value is set though
                               const formValues = { ...form.getFieldsValue() };
                               set(formValues, 'mrn.organization', value);
-                              setIsFormValid(validateForm(formValues));
+                              setIsFormValid(validateForm(form));
                             }}
                           >
                             <Select.Option value="CHUSJ">CHUSJ</Select.Option>

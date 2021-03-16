@@ -7,6 +7,7 @@ import * as actions from '../actions/type';
 import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import Api, { ApiError } from '../helpers/api';
 import { addPatientMrn, updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
+import { isValidRamq } from '../helpers/fhir/api/PatientChecker';
 
 function* handleCreatePatient(action: any) {
   try {
@@ -44,7 +45,11 @@ function* handleUpdatePatientPractitioners(action: any) {
 
 function* fetchInfosByRamq(action: any) {
   try {
-    const response = yield Api.getPatientByRamq(action.payload.ramq);
+    if (!isValidRamq(action.payload.ramq)) {
+      throw new Error('Invalid RAMQ');
+    }
+
+    const response = yield Api.getPatientByIdentifier(action.payload.ramq);
 
     if (response.error != null) {
       throw new ApiError(response.error);

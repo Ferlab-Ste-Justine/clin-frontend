@@ -3,7 +3,7 @@ import Http from './http-client';
 import {
   createGetPatientDataBundle, createGetPractitionersDataBundle,
 } from './fhir/fhir';
-import { getPatientByRamq } from './fhir/api/PatientChecker';
+import { getPatientByIdentifier } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
 
 const successCallback = (payload) => ({ payload });
@@ -252,5 +252,5 @@ export default {
   getPatientDataById,
   getPractitionersData,
   updateServiceRequestStatus,
-  getPatientByRamq,
+  getPatientByIdentifier,
 };
