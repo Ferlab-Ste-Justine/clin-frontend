@@ -1,9 +1,29 @@
 import {
   all, put, debounce, takeLatest, select,
 } from 'redux-saga/effects';
+import get from 'lodash/get';
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
+import { getExtension } from '../helpers/fhir/builder/Utils';
+
+const getIdsFromPatient = (data) => {
+  const patient = get(data, 'entry[0].resource.entry[0].resource');
+
+  if (patient == null || patient.id == null) {
+    throw new Error(`Invalid patient [${patient}]`);
+  }
+  const ids = [patient.id];
+
+  const extension = getExtension(patient, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation');
+  const externalReference = get(extension, 'extension[0].valueReference.reference');
+
+  if (externalReference != null) {
+    ids.push(externalReference.split('/')[1]);
+  }
+
+  return ids;
+};
 
 function* fetch(action) {
   try {
@@ -11,14 +31,14 @@ function* fetch(action) {
     if (patientDataResponse.error) {
       throw new ApiError(patientDataResponse.error);
     }
-    const practitionersDatePresponse = yield Api.getPractitionersData(patientDataResponse.payload.data);
-    const canEdit = yield Api.canEditPatients([action.payload.uid]);
+    const practitionersDataResponse = yield Api.getPractitionersData(patientDataResponse.payload.data);
+    const canEdit = yield Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data));
 
     yield put({
       type: actions.PATIENT_FETCH_SUCCEEDED,
       payload: {
         patientData: patientDataResponse.payload.data,
-        practitionersData: practitionersDatePresponse.payload.data,
+        practitionersData: practitionersDataResponse.payload.data,
         canEdit,
       },
     });
