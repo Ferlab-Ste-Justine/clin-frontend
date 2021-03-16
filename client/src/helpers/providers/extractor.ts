@@ -87,7 +87,7 @@ export class DataExtractor {
         if (resource.practitioner.reference.indexOf(id) !== -1) {
           return {
             role: resource,
-            organization: get(this.data.practitionersData.entry[i], 'resource.entry[1]', null),
+            organization: get(this.data.practitionersData.entry[i], 'resource.entry[2]', null),
           };
         }
       }
@@ -156,7 +156,7 @@ export class DataExtractor {
     const suffix = get(practMetadata.practitioner, ['name', '0', 'suffix', '0'], '');
 
     return {
-      organization: get(practMetadata.organization, 'resource.name', 'N/A'),
+      organization: get(practMetadata, 'organization.resource.name', 'N/A'),
       mrn: get(practitionerRole, 'identifier[0].value', 'N/A'),
       firstName,
       lastName,
