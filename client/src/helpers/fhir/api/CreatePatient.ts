@@ -84,7 +84,9 @@ export const createPatientFetus = async (patient: Patient) : Promise<CreatePatie
 
   const isNewPatient = patient.id == null;
   if (!isNewPatient) {
-    familyGroup.id = patient.extension.find((ext) => ext.url === EXTENSION_FAMILY_ID)!.valueReference?.reference.split('/')[1];
+    familyGroup.id = patient.extension.find(
+      (ext) => ext.url === EXTENSION_FAMILY_ID,
+    )!.valueReference?.reference.split('/')[1];
   }
 
   const bundleId = window.CLIN.fhirEsPatientBundleId;
@@ -96,6 +98,30 @@ export const createPatientFetus = async (patient: Patient) : Promise<CreatePatie
     .withResource(familyGroup)
     .build();
 
+  // Adds reference to the fetus
+  get(bundle, 'entry[0].resource.extension').push({
+    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
+    extension: [
+      {
+        url: 'subject',
+        valueReference: {
+          reference: get(bundle, 'entry[1].fullUrl'),
+        },
+      },
+      {
+        url: 'relation',
+        valueCodeableConcept: {
+          coding: [{
+            code: 'CHILD',
+            display: 'child',
+            system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
+          }],
+        },
+      },
+    ],
+  });
+
+  // Adds reference to the parent
   get(bundle, 'entry[1].resource.extension').push({
     url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
     extension: [

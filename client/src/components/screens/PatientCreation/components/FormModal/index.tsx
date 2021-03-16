@@ -90,6 +90,10 @@ function validateForm(formValues: any) {
 
   return Object.keys(formValues).every((key: string) => {
     const value = formValues[key];
+    if (value == null) {
+      return false;
+    }
+
     if (key === 'mrn') {
       return value.file && value.organization;
     }
