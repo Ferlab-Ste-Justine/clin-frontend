@@ -77,6 +77,8 @@ function PatientSubmissionScreen(props) {
     isCancelConfirmVisible: false,
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     firstPageFields: {},
+    hpoResources: get(props, 'observations.hpos'),
+    fmhResources: get(props, 'observations.fmh'),
   });
 
   const getFields = () => (state.currentPageIndex === 0 ? form.getFieldsValue() : state.firstPageFields);
@@ -311,6 +313,16 @@ function PatientSubmissionScreen(props) {
     return observation;
   };
 
+  const buildFmhsFromValues = (values, currentPatient) => get(values, 'fmh', []).filter(
+    (fmh) => fmh.note != null && fmh.relation != null,
+  ).map(
+    (fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation))
+      .withId(fmh.id)
+      .withNote(fmh.note)
+      .withPatient(currentPatient.id)
+      .build(),
+  );
+
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
@@ -358,15 +370,7 @@ function PatientSubmissionScreen(props) {
       });
 
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
-      batch.fmhs = get(content, 'fmh', []).filter(
-        (fmh) => fmh.note != null && fmh.relation != null,
-      ).map(
-        (fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation))
-          .withId(fmh.id)
-          .withNote(fmh.note)
-          .withPatient(currentPatient.id)
-          .build(),
-      );
+      batch.fmhs = buildFmhsFromValues(content, currentPatient);
 
       const cghObservation = createCGHResourceList();
       if (cghObservation != null) {
@@ -481,13 +485,19 @@ function PatientSubmissionScreen(props) {
   };
 
   const previous = () => {
-    const { currentPageIndex } = state;
+    const { currentPageIndex, firstPageFields } = state;
+    const { currentPatient } = props;
     const pageIndex = currentPageIndex - 1;
-    setState({ ...state, currentPageIndex: pageIndex });
 
-    if (currentPageIndex === 0) {
-      saveClinicalInfoPageLocalStore();
-    }
+    setState({
+      ...state,
+      fmhResources: buildFmhsFromValues(firstPageFields, currentPatient),
+      currentPageIndex: pageIndex,
+      firstPageFields: {
+        ...firstPageFields,
+        ...form.getFieldsValue(),
+      },
+    });
 
     debounce(validate, 500)();
   };
@@ -505,9 +515,37 @@ function PatientSubmissionScreen(props) {
     }
   };
 
+  const onHpoSelected = (code, display) => {
+    const { hpoResources } = state;
+
+    const builder = new ObservationBuilder('HPO');
+    builder.withValue(code, display);
+
+    setState({
+      ...state,
+      hpoResources: [
+        ...hpoResources,
+        builder.build(),
+      ],
+    });
+  };
+
+  const onHposUpdated = (hpos) => {
+    setState({
+      ...state,
+      hpoResources: [
+        ...hpos,
+      ],
+    });
+  };
+
   const { actions } = props;
-  const { patient, clinicalImpression, serviceRequest } = props;
-  const { practitionerOptions, currentPageIndex } = state;
+  const {
+    patient, clinicalImpression, serviceRequest,
+  } = props;
+  const {
+    practitionerOptions, currentPageIndex, hpoResources, fmhResources,
+  } = state;
 
   const assignedPractitioner = serviceRequest ? serviceRequest.requester : null;
   const assignedPractitionerLabel = assignedPractitioner && has(assignedPractitioner, 'resourceType')
@@ -541,6 +579,10 @@ function PatientSubmissionScreen(props) {
           patient={patient}
           clinicalImpression={clinicalImpression}
           onChange={onChange}
+          hpoResources={hpoResources}
+          onHpoSelected={onHpoSelected}
+          onHposUpdated={onHposUpdated}
+          fmhResources={fmhResources}
         />
       ),
       name: 'ClinicalInformation',
@@ -615,7 +657,7 @@ function PatientSubmissionScreen(props) {
             { pageContent }
             <Card className="patientSubmission__form__footer">
               <Row gutter={8}>
-                { !isFirstPage && (
+                { !isFirstPage() && (
                   <Col>
                     <Button icon={<LeftOutlined />} onClick={previous}>
                       { intl.get('screen.clinicalSubmission.previousButtonTitle') }

@@ -42,7 +42,6 @@ import {
 } from '../../../../../actions/patientSubmission';
 
 import Api from '../../../../../helpers/api';
-import { ObservationBuilder } from '../../../../../helpers/fhir/builder/ObservationBuilder.ts';
 import MrnItem from './components/MrnItem';
 import InvestigationSection from './components/InvestigationSection';
 import FamilyStorySection from './components/FamilyStorySection';
@@ -92,8 +91,6 @@ class ClinicalInformation extends React.Component {
     this.state = {
       hpoOptions: [],
       treeData: INITIAL_TREE_ROOTS,
-      hpoResources: get(props, 'observations.hpos') || [],
-      fmhResources: get(props, 'observations.fmh') || [],
     };
 
     const { treeData } = this.state;
@@ -309,21 +306,13 @@ class ClinicalInformation extends React.Component {
   }
 
   hpoSelected({ code, display }) {
-    const { hpoResources } = this.state;
-
-    const builder = new ObservationBuilder('HPO');
-    builder.withValue(code, display);
-
-    this.setState({
-      hpoResources: [
-        ...hpoResources,
-        builder.build(),
-      ],
-    });
+    const { onHpoSelected } = this.props;
+    onHpoSelected(code, display);
   }
 
   handleHpoNodesChecked(_e, info) {
-    const { treeData, hpoResources } = this.state;
+    const { treeData } = this.state;
+    const { hpoResources } = this.props;
 
     const checkedNodes = info.checkedNodes.map((n) => ({ code: n.key, display: n.title }));
 
@@ -360,13 +349,13 @@ class ClinicalInformation extends React.Component {
   }
 
   handleHpoDeleted(hpoId) {
-    const { hpoResources } = this.state;
-    const { form, onChange } = this.props;
+    const {
+      form, onChange, onHposUpdated, hpoResources,
+    } = this.props;
     const values = form.getFieldsValue();
     const result = hpoResources.filter((hpo) => get(hpo, 'valueCodeableConcept.coding[0].code') !== hpoId);
-    this.setState({
-      hpoResources: result,
-    });
+
+    onHposUpdated(result);
     form.setFieldsValue({
       ...values,
       hpos: values.hpos.filter((hpo) => hpo.code !== hpoId),
@@ -390,12 +379,12 @@ class ClinicalInformation extends React.Component {
 
   render() {
     const {
-      hpoOptions, treeData, hpoResources, fmhResources,
+      hpoOptions, treeData,
     } = this.state;
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, onChange,
+      form, observations, localStore, onChange, hpoResources, fmhResources,
     } = this.props;
 
     const { TextArea } = Input;
