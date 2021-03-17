@@ -101,6 +101,7 @@ const en = {
   'screen.patient.creation.birthday': 'Date Of Birth',
   'screen.patient.creation.birthday.placeholder': 'Date',
   'screen.patient.creation.file': 'File',
+  'screen.patient.creation.file.existing': 'The file number already exist for this hospital',
   'screen.patient.creation.hospital.placeholder': 'Hospital',
   'screen.patient.creation.errors.invalidRamq': 'The RAMQ number is invalid',
   'screen.patient.creation.errors.invalidRamqConfirm': 'The RAMQ numbers are different',

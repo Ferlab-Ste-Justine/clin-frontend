@@ -101,6 +101,7 @@ const fr = {
   'screen.patient.creation.birthday': 'Date de naissance',
   'screen.patient.creation.birthday.placeholder': 'Date',
   'screen.patient.creation.file': 'Dossier',
+  'screen.patient.creation.file.existing': 'Le numéro de dossier existe déjà pour cet hôpital',
   'screen.patient.creation.hospital.placeholder': 'Hôpital',
   'screen.patient.creation.errors.invalidRamq': 'Le numéro de RAMQ est invalide',
   'screen.patient.creation.errors.invalidRamqConfirm': 'Les numéro de RAMQ sont différents',
