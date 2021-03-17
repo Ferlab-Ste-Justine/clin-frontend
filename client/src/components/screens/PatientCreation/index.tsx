@@ -64,6 +64,9 @@ const PatientCreation: React.FC = () => {
         open={openModal === SCREENS.SUCCESS}
         onClose={onClose}
         onNewPatient={onCreateNew}
+        onNavigateToPatient={(patientId) => {
+          onClose(() => dispatch(navigateToPatientScreen(patientId)));
+        }}
         onCompletePrescription={() => {
           setOpenModal(null);
           dispatch(navigateToSubmissionFromPatientCreation());

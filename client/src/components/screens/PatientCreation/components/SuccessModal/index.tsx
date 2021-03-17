@@ -13,12 +13,13 @@ interface Props {
   onClose: () => void
   onNewPatient: () => void
   onCompletePrescription: () => void
+  onNavigateToPatient: (patientId: string) => void
 }
 
 const I18N_PREFIX = 'screen.patient.creation.success.';
 
 const SuccessModal: React.FC<Props> = ({
-  open, onClose, onNewPatient, onCompletePrescription,
+  open, onClose, onNewPatient, onCompletePrescription, onNavigateToPatient,
 }) => {
   const patient = useSelector((state: any) => state.patientCreation.patient) as Patient;
 
@@ -44,7 +45,9 @@ const SuccessModal: React.FC<Props> = ({
       description={(
         <>
           { intl.get(`${I18N_PREFIX}description.${isFetus ? 'fetus' : 'patient'}`) }
-          <Button type="link">{ intl.get(`${I18N_PREFIX}patientCard`) }</Button>
+          <Button type="link" onClick={() => onNavigateToPatient(patient.id!)}>
+            { intl.get(`${I18N_PREFIX}patientCard`) }
+          </Button>
         </>
       )}
       open={open}
