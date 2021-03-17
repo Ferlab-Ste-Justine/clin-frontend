@@ -327,13 +327,6 @@ function PatientSubmissionScreen(props) {
         actions, userRole, currentPatient,
       } = props;
 
-      const hasRamq = findIdentifierByCode(currentPatient.identifier, 'JHN') != null;
-
-      if (!hasRamq && submitted) {
-        setState((oldState) => ({ ...oldState }));
-        return;
-      }
-
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
       const { status } = localStore;
 
