@@ -124,7 +124,7 @@ function PatientSubmissionScreen(props) {
           const hpos = getValidValues(get(values, 'hpos', []));
           if (hpos.length > 0) {
             const checkValue = hpos.map(
-              (element) => get(element, 'interpretation') === null,
+              (element) => get(element, 'interpretation') == null,
             );
             if (checkValue.includes(true)) {
               return false;
