@@ -12,10 +12,7 @@ import {
 import find from 'lodash/find';
 import has from 'lodash/has';
 import debounce from 'lodash/debounce';
-import mapValues from 'lodash/mapValues';
 import get from 'lodash/get';
-import isEmpty from 'lodash/isEmpty';
-import toArray from 'lodash/values';
 
 import { SaveOutlined, LeftOutlined } from '@ant-design/icons';
 
@@ -36,7 +33,6 @@ import ClinicalInformation from './components/ClinicalInformation';
 import Approval from './components/Approval';
 import Api from '../../../helpers/api';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
-import RamqWarningModal from './components/RamqWarningModal';
 
 import './style.scss';
 
@@ -77,7 +73,6 @@ function PatientSubmissionScreen(props) {
     practitionerOptions: [],
     valid: false,
     isCancelConfirmVisible: false,
-    isRamqWarningVisible: true,
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     firstPageFields: {},
     hpoResources: get(props, 'observations.hpos'),
@@ -335,7 +330,7 @@ function PatientSubmissionScreen(props) {
       const hasRamq = findIdentifierByCode(currentPatient.identifier, 'JHN') != null;
 
       if (!hasRamq && submitted) {
-        setState((oldState) => ({ ...oldState, isRamqWarningVisible: true }));
+        setState((oldState) => ({ ...oldState }));
         return;
       }
 
@@ -721,12 +716,6 @@ function PatientSubmissionScreen(props) {
         onSaveAndQuit={() => {
           saveSubmission();
           handleCancel();
-        }}
-      />
-      <RamqWarningModal
-        open={state.isRamqWarningVisible}
-        onClose={() => {
-          saveSubmission(false);
         }}
       />
     </Layout>
