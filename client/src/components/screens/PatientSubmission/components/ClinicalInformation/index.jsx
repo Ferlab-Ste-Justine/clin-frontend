@@ -45,6 +45,7 @@ import Api from '../../../../../helpers/api';
 import MrnItem from './components/MrnItem';
 import InvestigationSection from './components/InvestigationSection';
 import FamilyStorySection from './components/FamilyStorySection';
+import { ObservationBuilder } from '../../../../../helpers/fhir/builder/ObservationBuilder.ts';
 
 const interpretationIcon = {
   POS: ic_visibility,
@@ -312,33 +313,36 @@ class ClinicalInformation extends React.Component {
 
   handleHpoNodesChecked(_e, info) {
     const { treeData } = this.state;
-    const { hpoResources } = this.props;
+    const { onHposUpdated, form, hpoResources } = this.props;
 
+    const { hpos } = form.getFieldsValue();
     const checkedNodes = info.checkedNodes.map((n) => ({ code: n.key, display: n.title }));
 
-    const toDelete = [];
-    const toAdd = [];
-
-    hpoResources.forEach((resource) => {
+    const updatedHpos = hpoResources.filter((resource) => {
       if (resource.valueCodeableConcept.coding.length > 0) {
         const { code } = resource.valueCodeableConcept.coding[0];
         const isUnchecked = checkedNodes.find((r) => r.code === code) === undefined;
         // Resources selected by the autocomplete aren't in the treeData
         const isHidden = treeData.find((td) => td.key === code) === undefined;
 
-        if (isUnchecked && !isHidden) {
-          toDelete.push(resource);
-        }
+        return !isUnchecked || isHidden;
       }
+      return false;
     });
 
     checkedNodes.forEach((resource) => {
-      if (hpoResources.find((r) => resource.code === r.valueCodeableConcept.coding[0].code) == null) {
-        toAdd.push(resource);
+      if (updatedHpos.find((r) => resource.code === r.valueCodeableConcept.coding[0].code) == null) {
+        updatedHpos.push(new ObservationBuilder('HPO').withValue(resource.code, resource.display).build());
       }
     });
 
-    toAdd.forEach(this.hpoSelected);
+    const hpoValues = hpos
+      .filter((hpo) => updatedHpos.find(
+        (entry) => hpo.code === get(entry, 'valueCodeableConcept.coding[0].code'),
+      ) != null);
+    form.setFieldsValue({ hpos: hpoValues });
+
+    onHposUpdated(updatedHpos);
   }
 
   handleHpoOptionSelected(value) {
