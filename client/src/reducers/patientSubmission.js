@@ -275,6 +275,7 @@ const patientSubmissionReducer = (
           ...draft.serviceRequest,
           id: serviceRequest.id,
           code: get(serviceRequest, 'code.coding[0].code', null),
+          identifier: serviceRequest.identifier || [],
         };
         draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
