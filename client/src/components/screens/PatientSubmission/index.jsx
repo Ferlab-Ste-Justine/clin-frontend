@@ -52,7 +52,6 @@ import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/Clinica
 import { createRequest } from '../../../actions/prescriptions';
 import { updatePatientPractitioners } from '../../../actions/patientCreation';
 import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder';
-import { findIdentifierByCode } from '../../../helpers/patient';
 
 const { Step } = Steps;
 
@@ -125,7 +124,7 @@ function PatientSubmissionScreen(props) {
           const hpos = getValidValues(get(values, 'hpos', []));
           if (hpos.length > 0) {
             const checkValue = hpos.map(
-              (element) => get(element, 'interpretation') === null,
+              (element) => get(element, 'interpretation') == null,
             );
             if (checkValue.includes(true)) {
               return false;
