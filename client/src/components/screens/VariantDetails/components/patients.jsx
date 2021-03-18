@@ -66,7 +66,6 @@ class PatientsTabs extends React.Component {
     };
     this.getDonors = this.getDonors.bind(this);
     this.handleGoToPatientScreen = this.handleGoToPatientScreen.bind(this);
-    this.handleGoToFamilyScreen = this.handleGoToFamilyScreen.bind(this);
     this.state.donorsColumnPreset = [
       {
         key: 'patient_id',
@@ -122,7 +121,6 @@ class PatientsTabs extends React.Component {
         label: 'screen.variantDetails.patientsTab.familyId',
         renderer: createCellRenderer('button', this.getDonors, {
           key: 'family_id',
-          handler: this.handleGoToFamilyScreen,
         }),
       },
       {
@@ -171,8 +169,7 @@ class PatientsTabs extends React.Component {
       const {
         donors,
       } = data;
-      const uniqueDonors = uniqWith(donors, isEqual);
-      return uniqueDonors;
+      return uniqWith(donors, isEqual);
     }
 
     return [];
@@ -182,9 +179,6 @@ class PatientsTabs extends React.Component {
     const { actions } = this.props;
     const value = e.target.innerText;
     actions.navigateToPatientScreen(value);
-  }
-
-  handleGoToFamilyScreen() {
   }
 
   render() {
