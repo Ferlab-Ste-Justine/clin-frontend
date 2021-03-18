@@ -5,7 +5,7 @@ import { produce } from 'immer';
 import get from 'lodash/get';
 import range from 'lodash/range';
 import isEmpty from 'lodash/isEmpty';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import intl from 'react-intl-universal';
 import { genPractitionerKey } from '../helpers/fhir/fhir';
 import * as actions from '../actions/type';
@@ -103,7 +103,10 @@ const patientSubmissionReducer = (
       message.success(intl.get('screen.clinicalSubmission.notification.save.success'));
       break;
     case actions.PATIENT_SUBMISSION_SAVE_FAILED:
-      message.error(intl.get('screen.clinicalSubmission.notification.save.error'));
+      Modal.error({
+        title: intl.get('screen.clinicalSubmission.notification.save.error.title'),
+        content: intl.get('screen.clinicalSubmission.notification.save.error'),
+      });
       break;
     case actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER:
       draft.practitionerId = action.payload.id;

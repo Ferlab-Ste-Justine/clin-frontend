@@ -9,7 +9,7 @@ import variantReducer from './variant';
 import variantDetailsReducer from './variantDetails';
 import patientSubmissionReducer from './patientSubmission';
 import patientCreation, { PatientCreationState } from './patientCreation';
-import prescriptions from './prescriptions';
+import prescriptions, { PatientRequestCreationState } from './prescriptions';
 import patientEditionReducer, { PatientEditionState } from './patientEdition';
 
 const rootReducer = (history: any) => combineReducers({
@@ -38,5 +38,6 @@ export type State = {
   variantDetails: any,
   patientSubmission: any,
   patientCreation: PatientCreationState,
-  patientEdition: PatientEditionState
+  patientEdition: PatientEditionState,
+  prescriptions: PatientRequestCreationState
 }
