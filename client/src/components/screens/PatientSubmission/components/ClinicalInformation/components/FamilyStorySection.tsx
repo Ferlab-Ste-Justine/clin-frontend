@@ -163,7 +163,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
         </Col>
       </Row>
       { hasFamilyHealthCondition && (
-        <>
+        <Form.Item label="&nbsp;">
           <Row>
             <Col>
               <Typography.Text className="clinical-information__family-story__details">
@@ -207,7 +207,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                               <Col span={6}>
                                 <Form.Item
                                   name={[index, 'relation']}
-                                  initialValue={get(familyHistoryResources, `[${index}].code`, '')}
+                                  initialValue={get(familyHistoryResources, `[${index}].code`, null)}
                                   noStyle
                                 >
                                   <Select
@@ -252,7 +252,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
               </Form.List>
             </Col>
           </Row>
-        </>
+        </Form.Item>
       ) }
 
     </>

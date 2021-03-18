@@ -782,6 +782,8 @@ const fr = {
   'form.patientSubmission.cancelModal.actions.saveAndQuit': 'Sauvegarder et quitter',
   'form.patientSubmission.clinicalInformation.medicalFile': 'Dossier médical',
   'form.patientSubmission.clinicalInformation.file': 'Dossier',
+  'form.patientSubmission.clinicalInformation.file.hospital': 'Hôpital',
+  'form.patientSubmission.clinicalInformation.file.select': 'Sélectionner',
   'form.patientSubmission.clinicalInformation.file.add': 'Ajouter',
   'form.patientSubmission.clinicalInformation.file.addFile': 'Ajouter un dossier',
   'form.patientSubmission.clinicalInformation.file.edit': 'Modifier',
