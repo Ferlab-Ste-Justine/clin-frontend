@@ -18,7 +18,7 @@ const PrescriptionsTab : React.FC = () => {
 
   const prescriptions = useSelector((state: State) => state.patient.prescriptions?.map(
     (prescription: {original: ServiceRequest, parsed: Prescription}) => prescription.parsed,
-  ) || []).sort((a, b) => ((a.id! > b.id!) ? 1 : ((b.id! > a.id!) ? -1 : 0)));
+  ) || []).sort((a, b) => ((a.id! > b.id!) ? -1 : ((b.id! > a.id!) ? 1 : 0)));
 
   const clinicalImpressions = useSelector((state: State) => state.patient.consultation?.map(
     (consultation: {original: ClinicalImpression, parsed: ConsultationSummary}) => consultation.original,
