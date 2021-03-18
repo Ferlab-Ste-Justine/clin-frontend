@@ -676,7 +676,7 @@ const fr = {
   'screen.variantDetails.patientsTab.adTotal': 'Profondeur allélique (ALT+REF)',
   'screen.variantDetails.patientsTab.adFreq': 'Profondeur allélique (ratio)',
   'screen.variantDetails.patientsTab.exomiserScore': 'Score Exomiser',
-  'screen.variantDetails.patientsTab.genotypeQuality': 'Qualité du Génotype',
+  'screen.variantDetails.patientsTab.genotypeQuality': 'Qualité génotype',
   'screen.variantDetails.patientsTab.qd': 'Qualité de la profondeur de la lecture',
   'screen.variantDetails.patientsTab.lastUpdate': 'Date',
   'screen.variantDetails.patientsTab.changeStatus.notification.success': 'Statut mise à jour',
