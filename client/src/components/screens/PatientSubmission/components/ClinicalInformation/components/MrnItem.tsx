@@ -132,14 +132,14 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       <Form.Item
         noStyle
         name="mrn"
-        initialValue={getMrnValue(get(serviceRequest, 'identifier[0]', ''))?.split('|')[0]}
+        initialValue={getMrnValue(get(serviceRequest, 'identifier[0]'))?.split('|')[0]}
       >
         <Input hidden />
       </Form.Item>
       <Form.Item
         noStyle
         name="organization"
-        initialValue={getMrnValue(get(serviceRequest, 'identifier[0]', ''))?.split('|')[1]}
+        initialValue={getMrnValue(get(serviceRequest, 'identifier[0]'))?.split('|')[1]}
       >
         <Input hidden />
       </Form.Item>
