@@ -336,7 +336,7 @@ class ClinicalInformation extends React.Component {
       }
     });
 
-    const hpoValues = hpos
+    const hpoValues = (hpos || [])
       .filter((hpo) => updatedHpos.find(
         (entry) => hpo.code === get(entry, 'valueCodeableConcept.coding[0].code'),
       ) != null);
