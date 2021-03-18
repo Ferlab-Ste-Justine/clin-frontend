@@ -124,6 +124,13 @@ export class ServiceRequestBuilder {
       return this;
     }
 
+    public withAuthoredOn(date?: string) {
+      if (date != null) {
+        this.serviceRequest.authoredOn = date;
+      }
+      return this;
+    }
+
     public build() {
       return this.serviceRequest;
     }

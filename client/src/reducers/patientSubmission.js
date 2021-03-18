@@ -303,8 +303,9 @@ const patientSubmissionReducer = (
 
         draft.local = {
           serviceRequest: {
-            code: get(serviceRequest, 'code.coding[0].code', null),
+            code: get(serviceRequest, 'code.coding[0].code'),
             id: serviceRequest.id,
+            authoredOn: get(serviceRequest, 'authoredOn'),
           },
           clinicalImpression: {
             id: clinicalImpression.id,
