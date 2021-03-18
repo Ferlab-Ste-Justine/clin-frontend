@@ -302,6 +302,11 @@
           padding: 8px;
         }
       }
+
+      &__ethnicity-note{
+        letter-spacing: 0.25px;
+        color: $gray-7;
+      }
     }
 
     &__clinical-sign {
