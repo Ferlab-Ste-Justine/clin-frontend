@@ -21,12 +21,12 @@ const ConfirmCancelModal: React.FC<Props> = ({
     footer={(
       <Row gutter={8} justify="end">
         <Col>
-          <Button danger onClick={onSaveAndQuit}>
+          <Button danger onClick={onQuit}>
             { intl.get('form.patientSubmission.cancelModal.actions.wihoutSave') }
           </Button>
         </Col>
         <Col>
-          <Button type="primary" onClick={onQuit}>
+          <Button type="primary" onClick={onSaveAndQuit}>
             { intl.get('form.patientSubmission.cancelModal.actions.saveAndQuit') }
           </Button>
         </Col>
