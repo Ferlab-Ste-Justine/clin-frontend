@@ -26,10 +26,11 @@ interface Props {
 const MrnItem: React.FC<Props> = ({ form, onChange }) => {
   const [mode, setMode] = useState<Mode>(Mode.SELECT);
 
-  const patient = useSelector<State>((state) => state.patientSubmission.patient) as Patient;
+  const patient = useSelector<State>((state) => state.patientSubmission.patient) as Partial<Patient>;
+  const serviceRequest = useSelector<State>((state) => state.patientSubmission.serviceRequest) as any;
 
   const [defaultSelectedMrn, setDefaultSelctedMrn] = useState<Identifier | undefined>(
-    patient.identifier?.find((id) => get(id, 'type.coding[0].code') === 'MR'),
+    serviceRequest.identifier?.find((id: Identifier) => get(id, 'type.coding[0].code') === 'MR'),
   );
 
   const dispatch = useDispatch();
@@ -76,7 +77,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       <Row gutter={8}>
         <Col>
           <Form.Item name="create.mrn">
-            <Input aria-label="mrn" />
+            <Input aria-label="mrn" placeholder="MRN 12345678" />
           </Form.Item>
         </Col>
         <Col>
@@ -84,6 +85,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
             name="create.organization"
           >
             <Select
+              placeholder={intl.get('form.patientSubmission.clinicalInformation.file.hospital')}
               style={{ width: 120 }}
               onChange={(value) => {
                 form.setFieldsValue({ organization: value.toString() });
@@ -130,14 +132,14 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       <Form.Item
         noStyle
         name="mrn"
-        initialValue={getMrnValue(patient.identifier[0])?.split('|')[0]}
+        initialValue={getMrnValue(get(serviceRequest, 'identifier[0]', ''))?.split('|')[0]}
       >
         <Input hidden />
       </Form.Item>
       <Form.Item
         noStyle
         name="organization"
-        initialValue={getMrnValue(patient.identifier[0])?.split('|')[1]}
+        initialValue={getMrnValue(get(serviceRequest, 'identifier[0]', ''))?.split('|')[1]}
       >
         <Input hidden />
       </Form.Item>
@@ -163,11 +165,11 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               </Button>
             </div>
           )}
+          placeholder={intl.get('form.patientSubmission.clinicalInformation.file.select')}
           defaultValue={getMrnValue(defaultSelectedMrn)}
         >
           {
-            patient.identifier
-              .filter((id) => id.type.coding && id.type.coding[0].code === 'MR')
+            patient.identifier?.filter((id) => get(id, 'type.coding[0].code', '') === 'MR')
               .map((id) => (
                 <Select.Option
                   key={getLabel(id)}

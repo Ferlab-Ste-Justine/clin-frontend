@@ -748,6 +748,8 @@ const en = {
   'form.patientSubmission.clinicalInformation.title': 'Clinical Information',
   'form.patientSubmission.clinicalInformation.medicalFile': 'Medical File',
   'form.patientSubmission.clinicalInformation.file': 'File',
+  'form.patientSubmission.clinicalInformation.file.hospital': 'Hospital',
+  'form.patientSubmission.clinicalInformation.file.select': 'Select',
   'form.patientSubmission.clinicalInformation.file.add': 'Add',
   'form.patientSubmission.clinicalInformation.file.addFile': 'Add a file',
   'form.patientSubmission.clinicalInformation.file.edit': 'Edit',
