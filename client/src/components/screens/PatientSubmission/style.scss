@@ -298,7 +298,9 @@
         &:first-child{
           margin-right: 8px;
         }
-
+        .icon{
+          margin-right: 4px;
+        }
         .observedIcon{
           color: #52C41A;;
         }
@@ -393,7 +395,9 @@
 }
 
 .selectDropdown{
-  li{
+  .icon{
+    margin-right: 4px;
+  }
     .observedIcon{
       color: #52C41A;;
     }
@@ -403,8 +407,6 @@
     .unknownIcon{
       color:#536377;
     }
-        
-  }
 }
 
 .submission-form-actions{
