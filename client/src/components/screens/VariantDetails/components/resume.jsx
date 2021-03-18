@@ -221,7 +221,7 @@ class ResumeTabs extends React.Component {
                     return (
                       <li className={`${isOpen} fathmm`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">FATHMM: </span>
-                        { g.predictions.fathmm_pred } - { g.predictions.fathmm_converted_rank_score.toFixed(2) }
+                        { g.predictions.fathmm_pred } - { g.predictions.FATHMM_converted_rankscore.toFixed(2) }
                       </li>
                     );
                   case 'lrt':
