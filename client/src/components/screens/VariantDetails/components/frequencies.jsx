@@ -9,7 +9,7 @@ import {
   Button, Row, Table, Empty, Card,
 } from 'antd';
 import {
-  sumBy, filter,
+  sumBy, filter, uniqWith, isEqual,
 } from 'lodash';
 
 import '../style.scss';
@@ -199,9 +199,10 @@ class FrequenciesTab extends React.Component {
 
       const rows = [];
       let totalAf = 0;
+      const uniqueDonors = uniqWith(donors, isEqual);
 
       Object.keys(lab_frequencies).forEach((key) => {
-        const nbPatient = filter(donors, { organization_id: key }).length;
+        const nbPatient = filter(uniqueDonors, { organization_id: key }).length;
         totalAf += lab_frequencies[key].af;
         const line = {
           ldm: organizationID[key],
@@ -216,7 +217,7 @@ class FrequenciesTab extends React.Component {
 
       const total = {
         ldm: (<span className="bold">Total</span>),
-        pn: (<Button className="link--underline bold variantLink" type="link" onClick={this.goToPatientTab}>{ donors.length }</Button>),
+        pn: (<Button className="link--underline bold variantLink" type="link" onClick={this.goToPatientTab}>{ uniqueDonors.length }</Button>),
         ac: (<span className="bold">{ sumBy(rows, (e) => e.ac) }</span>),
         an: (
           <span className="bold">

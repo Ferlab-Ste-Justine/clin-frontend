@@ -8,7 +8,7 @@ import {
   Button, Row, Col, Card, Tag,
 } from 'antd';
 import {
-  find,
+  find, uniqWith, isEqual,
 } from 'lodash';
 import DataTable, { createCellRenderer } from '../../../Table/index';
 import '../style.scss';
@@ -94,7 +94,7 @@ class PatientsTabs extends React.Component {
               if (!infos) {
                 return '--';
               }
-              return intl.get(`screen.variantDetails.patientsTab.${infos.gender}`);
+              return intl.get(`screen.variantDetails.patientsTab.${infos.gender.toLowerCase()}`);
             } catch (e) { return ''; }
           },
         }),
@@ -119,8 +119,8 @@ class PatientsTabs extends React.Component {
       {
         key: 'family_id',
         label: 'screen.variantDetails.patientsTab.familyId',
-        renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return data.family_id; } catch (e) { return ''; } },
+        renderer: createCellRenderer('button', this.getDonors, {
+          key: 'family_id',
         }),
       },
       {
@@ -169,7 +169,7 @@ class PatientsTabs extends React.Component {
       const {
         donors,
       } = data;
-      return donors;
+      return uniqWith(donors, isEqual);
     }
 
     return [];

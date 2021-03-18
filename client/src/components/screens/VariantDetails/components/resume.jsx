@@ -9,7 +9,7 @@ import {
   Button, Row, Col, Typography, Table, Empty, Card, Tag, Divider,
 } from 'antd';
 import {
-  filter, isEqual, find,
+  filter, isEqual, find, uniqWith,
 } from 'lodash';
 import { createCellRenderer } from '../../../Table/index';
 import '../style.scss';
@@ -193,49 +193,49 @@ class ResumeTabs extends React.Component {
                     return (
                       <li className={`${isOpen} sift`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">SIFT: </span>
-                        { g.predictions.sift_pred } - { g.predictions.sift_converted_rank_score }
+                        { g.predictions.sift_pred } - { g.predictions.sift_converted_rank_score.toFixed(2) }
                       </li>
                     );
                   case 'polyphen2':
                     return (
                       <li className={`${isOpen} polyphen2`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">Polyphen2: </span>
-                        { g.predictions.polyphen2_hvar_pred } - { g.predictions.polyphen2_hvar_score }
+                        { g.predictions.polyphen2_hvar_pred } - { g.predictions.polyphen2_hvar_score.toFixed(2) }
                       </li>
                     );
                   case 'cadd':
                     return (
                       <li className={`${isOpen} cadd`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">CADD score: </span>
-                        { g.predictions.cadd_score }
+                        { g.predictions.cadd_score.toFixed(2) }
                       </li>
                     );
                   case 'dann':
                     return (
                       <li className={`${isOpen} dann`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">DANN score: </span>
-                        { g.predictions.dann_score }
+                        { g.predictions.dann_score.toFixed(2) }
                       </li>
                     );
                   case 'fathmm':
                     return (
                       <li className={`${isOpen} fathmm`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">FATHMM: </span>
-                        { g.predictions.fathmm_pred } - { g.predictions.fathmm_converted_rank_score }
+                        { g.predictions.fathmm_pred } - { g.predictions.FATHMM_converted_rankscore.toFixed(2) }
                       </li>
                     );
                   case 'lrt':
                     return (
                       <li className={`${isOpen} lrt`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">LRT: </span>
-                        { g.predictions.lrt_pred } - { g.predictions.lrt_converted_rankscore }
+                        { g.predictions.lrt_pred } - { g.predictions.lrt_converted_rankscore.toFixed(2) }
                       </li>
                     );
                   case 'revel':
                     return (
                       <li className={`${isOpen} revel`}>
                         <span className="variant-page-content__resume__consequence-table__consequence-term">REVEL score: </span>
-                        { g.predictions.revel_rankscore }
+                        { g.predictions.revel_rankscore.toFixed(2) }
                       </li>
                     );
                   default:
@@ -415,8 +415,8 @@ class ResumeTabs extends React.Component {
         </Row>
       );
     };
-
     const divideGenes = getDivideGenes();
+    const uniqueDonors = uniqWith(data.donors, isEqual);
     return (
       <div className="page-static-content variant-page-content__resume">
         <Card bordered={false} className="variant-page-content__resume__generalInfo">
@@ -532,7 +532,7 @@ class ResumeTabs extends React.Component {
                   <div className="row">
                     <span className="row__title">Patients</span>
                     <span className="row__info">
-                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>{ data.donors.length }</Button>
+                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>{ uniqueDonors.length }</Button>
                       /{ frequencies.internal.an }
                     </span>
                   </div>

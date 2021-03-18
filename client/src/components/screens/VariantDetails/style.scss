@@ -158,6 +158,10 @@
           width: 200px;
         }
       }
+
+      td{
+        vertical-align: top !important;
+      }
   
       &__tag{
         margin-right: 0;
@@ -175,6 +179,7 @@
       &__transcriptValue{
         display: flex;
         align-items: center;
+        height: 22px;
   
         .canonicalIcon{
           margin-left: 8px;
@@ -210,7 +215,7 @@
       }
   
       td{
-        justify-content:flex-start;
+        vertical-align: top !important;
       }
       &__geneLink{
         margin-left: 4px;
