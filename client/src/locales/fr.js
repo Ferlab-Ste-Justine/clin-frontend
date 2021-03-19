@@ -810,7 +810,7 @@ const fr = {
   'form.patientSubmission.clinicalInformation.familyHistory.consanguinity': 'Consanguinité',
   'form.patientSubmission.clinicalInformation.familyHistory.familyHealth': 'Condition de santé chez un membre de famille',
   'form.patientSubmission.clinicalInformation.familyHistory.familyHealth.details': 'Veuillez indiquer au moins une condition de santé et son lien parental',
-  'form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation': 'Lien parentale',
+  'form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation': 'Lien parental',
   'form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition': 'Condition de santé',
   'form.patientSubmission.clinicalInformation.familyHistory.familyHealth.add': 'Ajouter',
   'form.patientSubmission.clinicalInformation.precision': 'Précision',
