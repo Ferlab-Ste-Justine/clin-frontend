@@ -48,6 +48,7 @@ export type PatientState = {
   fmhs?: Record<FamilyMemberHistory, FamilyObservation>[];
   observations?: Observations;
   canEdit?: boolean;
+  openedPrescriptionId?: string;
 };
 
 type Action = {
@@ -61,6 +62,9 @@ const initialState: PatientState = {
 
 const reducer = (state: PatientState = initialState, action: Action) => produce<PatientState>(state, (draft) => {
   switch (action.type) {
+    case actions.NAVIGATION_PATIENT_SCREEN_REQUESTED:
+      draft.openedPrescriptionId = action.payload.openedPrescriptionId;
+      break;
     case actions.PATIENT_FETCH_SUCCEEDED: {
       draft.canEdit = action.payload.canEdit;
       draft.observations = {

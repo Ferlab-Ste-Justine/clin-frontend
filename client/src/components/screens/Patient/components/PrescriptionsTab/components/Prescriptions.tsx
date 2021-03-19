@@ -74,14 +74,27 @@ const getClinicalObservations = (
   (obs: Observation) => clinicalImpression.investigation[0].item.find((i) => i.reference.indexOf(obs.id!) !== -1) != null,
 );
 
+const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId: string | undefined) => {
+  if (openedPrescriptionId == null || openedPrescriptionId.length === 0) {
+    return undefined;
+  }
+  const prescription = prescriptions.find((p) => p.id === openedPrescriptionId);
+  return get(prescription, 'id');
+};
+
 const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
+  const patientState = useSelector((state: State) => state.patient);
+  const { observations, openedPrescriptionId } = patientState;
+
   const [isStatusLegendVisible, setIsStatusLegendVisible] = useState<boolean>(false);
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
-  const consultation = useSelector((state: State) => state.patient.consultation!.map((cons) => cons.parsed));
-  const familyHistories = useSelector((state: State) => state.patient.fmhs!.map((fmh) => fmh.parsed));
-  const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
-  const patient = useSelector((state: State) => state.patient.patient.parsed);
-  const observations = useSelector((state: State) => state.patient.observations);
+  const [startingIndex] = useState(getPrescriptionKey(prescriptions, openedPrescriptionId));
+
+  const consultation = patientState.consultation!.map((cons) => cons.parsed);
+  const familyHistories = patientState.fmhs!.map((fmh) => fmh.parsed);
+  const hpos = patientState.hpos!.map((hpo) => hpo.parsed);
+  const patient = patientState.patient.parsed;
+
   const prescriptionSubmission = useSelector((state: State) => state.prescriptions);
   const dispatch = useDispatch();
 
@@ -115,6 +128,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
     <div className="prescriptions-tab__prescriptions-section">
       <Tabs
         type="card"
+        defaultActiveKey={startingIndex}
         tabBarExtraContent={{
           right: (
             <Button

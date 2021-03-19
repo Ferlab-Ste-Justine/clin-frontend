@@ -7,12 +7,13 @@ export const navigate = (location) => ({
   },
 });
 
-export const navigateToPatientScreen = (uid, tab = null, reload = false) => ({
+export const navigateToPatientScreen = (uid, { tab, reload, openedPrescriptionId }) => ({
   type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
   payload: {
     uid,
     tab,
     reload,
+    openedPrescriptionId,
   },
 });
 

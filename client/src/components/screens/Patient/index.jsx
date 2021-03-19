@@ -232,7 +232,7 @@ class PatientScreen extends React.Component {
 
   handleTabNavigation(tab) {
     const { actions, patient } = this.props;
-    actions.navigateToPatientScreen(patient.id, tab);
+    actions.navigateToPatientScreen(patient.id, { tab });
   }
 
   showModal(id) {
