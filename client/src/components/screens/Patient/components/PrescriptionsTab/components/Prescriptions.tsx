@@ -273,15 +273,10 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                   <DetailsRow label={intl.get('screen.patient.details.prescription.submittedBy')}>
                     { consultation[index] != null ? (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
-                        { formatName(consultation[index].practitioner.lastName, consultation[index].practitioner.firstName) }
-                        <Popover
-                          overlayClassName="practitionerInfo"
-                          placement="topRight"
-                          content={practitionerPopOverText(consultation[index].practitioner)}
-                          trigger="hover"
-                        >
-                          <InfoCircleOutlined />
-                        </Popover>
+                        {
+                          formatName(consultation[index].practitioner.lastName,
+                            consultation[index].practitioner.firstName)
+                        }
                       </span>
                     ) : DEFAULT_VALUE }
                   </DetailsRow>
