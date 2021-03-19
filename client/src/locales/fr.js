@@ -82,7 +82,7 @@ const fr = {
   'screen.patient.creation.creating': 'Sauvegarde de données en cours',
   'screen.patient.creation.title': 'Nouvelle prescription',
   'screen.patient.creation.cancel': 'Annuler',
-  'screen.patient.creation.ok': 'Suivant',
+  'screen.patient.creation.ok': 'Soumettre',
   'screen.patient.creation.type': 'Prescription pour',
   'screen.patient.creation.person': 'Personne',
   'screen.patient.creation.fetus': 'Foetus',

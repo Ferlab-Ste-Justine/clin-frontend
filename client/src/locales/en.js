@@ -82,7 +82,7 @@ const en = {
   'screen.patient.creation.creating': 'Data saving in progress',
   'screen.patient.creation.title': 'New Prescription',
   'screen.patient.creation.cancel': 'Cancel',
-  'screen.patient.creation.ok': 'Next',
+  'screen.patient.creation.ok': 'Submit',
   'screen.patient.creation.type': 'Prescription for a',
   'screen.patient.creation.person': 'Person',
   'screen.patient.creation.fetus': 'Fetus',
