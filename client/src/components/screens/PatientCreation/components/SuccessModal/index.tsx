@@ -45,7 +45,11 @@ const SuccessModal: React.FC<Props> = ({
       description={(
         <>
           { intl.get(`${I18N_PREFIX}description.${isFetus ? 'fetus' : 'patient'}`) }
-          <Button type="link" onClick={() => onNavigateToPatient(patient.id!)}>
+          <Button
+            type="link"
+            className="link--underline"
+            onClick={() => onNavigateToPatient(patient.id!)}
+          >
             { intl.get(`${I18N_PREFIX}patientCard`) }
           </Button>
         </>
