@@ -8,7 +8,7 @@ export function getRAMQValue(patient: Patient): string | undefined {
 export function formatRamq(value: string): string {
   const newValue = value.toUpperCase();
   return newValue
-    .replaceAll(/\s/g, '')
+    .replace(/\s/g, '')
     .split('')
     .reduce((acc, char, index) => ((char !== ' ' && [3, 7]
       .includes(index)) ? `${acc}${char} ` : `${acc}${char}`), '').trimEnd();

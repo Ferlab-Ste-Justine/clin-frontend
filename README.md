@@ -64,3 +64,37 @@ See the documentation for our convention on gitflow and docker images: https://w
 Updates to the QA environment are automatically done once a new image is pushed. No action is required.
 
 Procedures to deploy to prod will be fleshed out once we have such an environment.
+
+## Testing
+
+### Commands
+
+`yarn test` / `npm run test`
+
+Locally this command will run in `--watch` mode and on CI it won't
+
+### The workarounds
+
+#### Ant D `Form`
+
+- The `onFinish` event handler on the `Form` component doesn't seems to run when you use `form.submit()` where `form` comes from `useForm()`.
+  - To fix this, I used the `onSubmitCapture` to run the same function as `onFinish`
+    - ```jsx
+        onSubmitCapture={() => {
+          onFormSubmit(form.getFieldsValue());
+        }}
+        onFinish={(values) => {
+          onFormSubmit(values);
+        }}
+      ```
+
+#### Ant D `Select`
+
+- The `Select` component from Ant D isn't testable (you cannot open it and select an option)
+  - The workaround is to mock it with the html `select`. Since the problem is global, the mock is done in `setupTests.tsx`. This way it's automatically applied for every tests. Some feature might not be supported currently but it can be modified/addapted to support them.
+
+#### Ant D "Nested" `Form.Item`
+
+- When using "Nested" `Form.Item` (using `name={['mrn', 'organization']}`), AntD doesn't assign any `name` property on the `input` field. This makes it impossible to select the `input` with the label (best) or by role and filtering by name.
+  - You have to add the `data-testid` property supported by react-testing-library
+    - More info on [the library documentation](https://testing-library.com/docs/queries/about/#priority)
