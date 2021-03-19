@@ -1,10 +1,18 @@
+import { Modal } from 'antd';
 import { produce } from 'immer';
-import { message } from 'antd';
 import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
+import { ServiceRequest } from '../helpers/fhir/types';
 
-export type PatientCreationState = {
+export enum PatientRequestCreationStatus {
+  IN_PROGRESS = 'IN_PROGRESS',
+  SUCCEEDED = 'SUCCEEDED',
+  FAILED = 'FAILED'
+}
 
+export type PatientRequestCreationState = {
+  status: PatientRequestCreationStatus | null
+  serviceRequestIds: string[]
 };
 
 type Action = {
@@ -12,22 +20,34 @@ type Action = {
   payload: any;
 };
 
-const initialState: PatientCreationState = {
-  ramqChecked: false,
+const initialState: PatientRequestCreationState = {
+  status: null,
+  serviceRequestIds: [],
 };
 
 const reducer = (
-  state: PatientCreationState = initialState,
+  state: PatientRequestCreationState = initialState,
   action: Action,
-) => produce<PatientCreationState>(state, () => {
+) => produce<PatientRequestCreationState>(state, (draft) => {
   switch (action.type) {
     case actions.CREATE_PATIENT_REQUEST_SUCCEEDED:
-      message.success(intl.get('screen.clinicalSubmission.notification.save.success'));
+      draft.status = PatientRequestCreationStatus.SUCCEEDED;
+      draft.serviceRequestIds = action.payload.serviceRequests.map((sr: ServiceRequest) => sr.id);
       break;
     case actions.CREATE_PATIENT_REQUEST_REQUESTED:
+      draft.status = PatientRequestCreationStatus.IN_PROGRESS;
       break;
     case actions.CREATE_PATIENT_REQUEST_FAILED:
-      message.error(intl.get('screen.clinicalSubmission.notification.save.error'));
+      draft.status = PatientRequestCreationStatus.FAILED;
+      Modal.error({
+        title: intl.get('screen.clinicalSubmission.notification.save.error.title'),
+        content: intl.get('screen.clinicalSubmission.notification.save.error'),
+      });
+      break;
+
+    case actions.CREATE_PATIENT_REQUEST_STATUS_RESET:
+      draft.status = initialState.status;
+      draft.serviceRequestIds = initialState.serviceRequestIds;
       break;
     default:
       break;
