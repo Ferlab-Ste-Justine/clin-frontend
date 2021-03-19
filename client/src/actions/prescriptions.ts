@@ -8,3 +8,7 @@ export const createRequest: Action = (batch: any) => ({
     batch,
   },
 });
+
+export const resetStatus: Action = () => ({
+  type: actions.CREATE_PATIENT_REQUEST_STATUS_RESET,
+});

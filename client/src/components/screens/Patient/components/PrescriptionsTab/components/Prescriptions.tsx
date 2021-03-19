@@ -9,7 +9,7 @@ import {
   Tabs,
 } from 'antd';
 import moment from 'moment';
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import intl from 'react-intl-universal';
 import {
@@ -31,6 +31,8 @@ import ClinicalSigns from './Prescription/ClinicalSigns';
 import { Observations } from '../../../../../../reducers/patient';
 import StatusLegend from './StatusLegend';
 import statusColors from '../../../../../../style/statusColors';
+import { PatientRequestCreationStatus } from '../../../../../../reducers/prescriptions';
+import { resetStatus } from '../../../../../../actions/prescriptions';
 
 const DEFAULT_VALUE = '--';
 
@@ -80,7 +82,16 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
   const hpos = useSelector((state: State) => state.patient.hpos!.map((hpo) => hpo.parsed));
   const patient = useSelector((state: State) => state.patient.patient.parsed);
   const observations = useSelector((state: State) => state.patient.observations);
+  const prescriptionSubmission = useSelector((state: State) => state.prescriptions);
   const dispatch = useDispatch();
+
+  useEffect(() => function cleanup() {
+    if (prescriptionSubmission.status === PatientRequestCreationStatus.SUCCEEDED) {
+      // When the component unmount (leaving the page) we reset the submission status
+      // so the success banner isn't shown next time
+      dispatch(resetStatus());
+    }
+  }, []);
 
   const practitionerPopOverText = (info: any) => {
     const phonePart = info.phone.split(' ');
@@ -150,6 +161,16 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     )}
                   />
                 ) }
+                { prescriptionSubmission.status === 'SUCCEEDED'
+                 && prescriptionSubmission.serviceRequestIds.includes(prescription.id || '')
+                 && (
+                   <Alert
+                     type="success"
+                     showIcon
+                     closable
+                     message={intl.get('screen.patient.details.prescription.success.message')}
+                   />
+                 ) }
                 <Card
                   title={(
                     <>
