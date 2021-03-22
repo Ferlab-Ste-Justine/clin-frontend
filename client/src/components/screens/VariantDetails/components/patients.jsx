@@ -187,7 +187,7 @@ class PatientsTabs extends React.Component {
     } = this.state;
 
     return (
-      <div className="page-static-content">
+      <div className="page-static-content variant-page-content__patient">
         <Row type="flex">
           <Card className="staticCard" bordered={false}>
             <Row>
