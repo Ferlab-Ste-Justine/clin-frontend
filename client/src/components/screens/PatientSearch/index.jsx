@@ -154,10 +154,7 @@ class PatientSearchScreen extends React.Component {
       {
         key: 'patientId',
         label: 'screen.patientsearch.table.patientId',
-        renderer: createCellRenderer('button', this.getData, {
-          key: 'id',
-          handler: this.handleGoToPatientScreen,
-        }),
+        renderer: createCellRenderer('text', this.getData, { key: 'id' }),
       },
       {
         key: 'organization',
@@ -244,7 +241,10 @@ class PatientSearchScreen extends React.Component {
       {
         key: 'request',
         label: 'screen.patientsearch.table.request',
-        renderer: createCellRenderer('text', this.getData, { key: 'request' }),
+        renderer: createCellRenderer('button', this.getData, {
+          key: 'request',
+          handler: (e) => this.handleGoToPatientScreen(e, this.getData()),
+        }),
       },
     ];
     this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
@@ -299,7 +299,7 @@ class PatientSearchScreen extends React.Component {
 
           Object.keys(value).forEach((key) => {
             if (value[key] == null || value[key].length === 0) {
-              value[key] = 'N/A';
+              value[key] = '--';
             }
           });
           data.push(value);
@@ -334,7 +334,7 @@ class PatientSearchScreen extends React.Component {
             };
             Object.keys(requestValue).forEach((key) => {
               if (requestValue[key] == null || requestValue[key].length === 0) {
-                requestValue[key] = 'N/A';
+                requestValue[key] = '--';
               }
             });
             data.push(requestValue);
@@ -484,10 +484,13 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
-  handleGoToPatientScreen(e) {
+  handleGoToPatientScreen(e, data) {
     const { actions } = this.props;
     const value = e.currentTarget.getAttribute('data-id');
-    actions.navigateToPatientScreen(value);
+    const row = data.find((entry) => entry.request === value);
+    actions.navigateToPatientScreen(row.id, {
+      openedPrescriptionId: value,
+    });
   }
 
   handleGotoSubmissionPage() {

@@ -4,6 +4,7 @@ export const PATIENT_VARIANT_STORAGE_KEY = 'screen.variantsearch.table';
 export const defaultUserSearchColumns = [
   `${PATIENT_SEARCH_STORAGE_KEY}.select`,
   `${PATIENT_SEARCH_STORAGE_KEY}.status`,
+  `${PATIENT_SEARCH_STORAGE_KEY}.request`,
   `${PATIENT_SEARCH_STORAGE_KEY}.patientId`,
   `${PATIENT_SEARCH_STORAGE_KEY}.organization`,
   `${PATIENT_SEARCH_STORAGE_KEY}.lastName`,
@@ -38,6 +39,11 @@ export const defaultUserSearchColumnsOrder = [
   }, {
     key: 'status',
     label: `${PATIENT_SEARCH_STORAGE_KEY}.status`,
+    columnWidth: 150,
+  },
+  {
+    key: 'request',
+    label: `${PATIENT_SEARCH_STORAGE_KEY}.request`,
     columnWidth: 150,
   },
   {
