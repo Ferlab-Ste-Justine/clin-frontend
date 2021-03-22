@@ -12,7 +12,10 @@ function* handleCreateRequest(action: any) {
 
     yield put({ type: actions.CREATE_PATIENT_REQUEST_SUCCEEDED, payload: { ...response } });
 
-    yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED, payload: { uid: patient.id, reload: true } });
+    yield put({
+      type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
+      payload: { uid: patient.id, reload: true, openedPrescriptionId: action.payload.openedPrescriptionId },
+    });
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_REQUEST_FAILED });
   }
