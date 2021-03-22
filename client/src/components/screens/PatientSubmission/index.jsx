@@ -403,7 +403,7 @@ function PatientSubmissionScreen(props) {
         );
       }
 
-      actions.createRequest(batch);
+      actions.createRequest(batch, get(localStore, 'serviceRequest.id'));
       actions.updatePatientPractitioners(batch.serviceRequests[0], batch.clinicalImpressions[0]);
     });
   };
@@ -502,7 +502,11 @@ function PatientSubmissionScreen(props) {
 
   const handleCancel = () => {
     const { actions, patient } = props;
-    actions.navigateToPatientScreen(patient.id, 'clinical', true);
+    actions.navigateToPatientScreen(patient.id, {
+      tab: 'clinical',
+      reload: true,
+      openedPrescriptionId: get(localStore, 'serviceRequest.id'),
+    });
   };
 
   const onFormFinish = (isOnLastPage) => {
