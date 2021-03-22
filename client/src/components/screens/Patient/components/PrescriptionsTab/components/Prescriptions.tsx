@@ -175,7 +175,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     )}
                   />
                 ) }
-                { prescriptionSubmission.status === 'SUCCEEDED'
+                { prescription.status === 'on-hold'
                  && prescriptionSubmission.serviceRequestIds.includes(prescription.id || '')
                  && (
                    <Alert
