@@ -1,23 +1,15 @@
 import { push, LOCATION_CHANGE } from 'connected-react-router';
+import get from 'lodash/get';
 import {
   all, select, put, takeLatest, delay, takeEvery,
 } from 'redux-saga/effects';
 
-import get from 'lodash/get';
-
 import * as actions from '../actions/type';
 import {
-  isPatientSearchRoute,
-  isPatientPageRoute,
-  isPatientVariantPageRoute,
-  isVariantPageRoute,
   getPatientIdFromPatientPageRoute,
-  getPatientIdFromPatientVariantPageRoute,
-  getVariantIdFromVariantPageRoute,
   ROUTE_NAME_ROOT,
   ROUTE_NAME_PATIENT,
   PATIENT_SUBROUTE_SEARCH,
-  PATIENT_SUBROUTE_VARIANT,
   ROUTE_NAME_VARIANT,
 } from '../helpers/route';
 
@@ -28,8 +20,6 @@ function* navigateToVariantDetailsScreen(action) {
     if (tab) { url += `/#${tab}`; }
 
     yield put(push(url));
-    window.scrollTo(0, 0);
-    yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_FAILED, message: e.message });
   }
@@ -40,20 +30,11 @@ function* navigateToPatientScreen(action) {
     const { uid, tab, reload } = action.payload;
     let url = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${uid}`;
     if (tab) { url += `/#${tab}`; }
-
-    // @NOTE Only fetch patient if it is not the currently active one
-    const { patient } = yield select((state) => state.patient);
-    if ((reload || get(patient, 'parsed.id', '') !== uid) && uid !== 'search') {
-      yield put({
-        type: actions.PATIENT_FETCH_REQUESTED,
-        payload: { uid },
-      });
-      yield delay(250);
+    if (reload) {
+      url += '?reload';
     }
 
     yield put(push(url));
-    window.scrollTo(0, 0);
-    yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED, message: e.message });
   }
@@ -61,23 +42,10 @@ function* navigateToPatientScreen(action) {
 
 function* navigateToPatientVariantScreen(action) {
   try {
-    const { uid, tab } = action.payload;
-    let url = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${uid}/${PATIENT_SUBROUTE_VARIANT}`;
-    if (tab) { url += `/#${tab}`; }
-
-    // @NOTE Only fetch patient if it is not the currently active one
-    const { patient } = yield select((state) => state.patient);
-    if (get(patient, 'parsed.id', '') !== uid) {
-      yield put({
-        type: actions.PATIENT_FETCH_REQUESTED,
-        payload: { uid },
-      });
-      yield delay(250);
-    }
+    const { uid } = action.payload;
+    const url = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${uid}#variant`;
 
     yield put(push(url));
-    window.scrollTo(0, 0);
-    yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED, message: e.message });
   }
@@ -125,15 +93,7 @@ function* navigateToSubmissionScreenWithPatient() {
 }
 
 function* navigateToPatientSearchScreen() {
-  try {
-    yield put({ type: actions.CLEAR_PATIENT_DATA_REQUESTED });
-    yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
-    yield put(push(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`));
-    window.scrollTo(0, 0);
-    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
-  } catch (e) {
-    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED });
-  }
+  yield put(push(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`));
 }
 
 function* navigateToAccessDeniedScreen() {
@@ -145,16 +105,48 @@ function* navigateToAccessDeniedScreen() {
   }
 }
 
+function* processPatientPage(currentRoute, tab, forceReload) {
+  try {
+    const uid = getPatientIdFromPatientPageRoute(currentRoute);
+    const currentPatientId = yield select((state) => state.patient.patient.parsed.id);
+    if (uid !== currentPatientId || forceReload) {
+      yield put({
+        type: actions.PATIENT_FETCH_REQUESTED,
+        payload: { uid },
+      });
+      yield delay(250);
+    }
+    if (tab === 'variant') {
+      yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
+    }
+    yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED });
+  }
+}
+
+function* processPatientSearchPage() {
+  try {
+    yield put({ type: actions.CLEAR_PATIENT_DATA_REQUESTED });
+    yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
+    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
+  } catch (e) {
+    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED });
+  }
+}
+
 function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
-
-  if (isFirstRendering) {
-    const { referrer } = yield select((state) => state.app);
-    const location = !referrer.location ? action.payload : referrer.location;
-    const { pathname, search, hash } = location;
-    const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
-    const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : pathname + hash;
-    let tab = hash.replace('#', '');
+  window.scrollTo(0, 0);
+  const { referrer } = yield select((state) => state.app);
+  const location = !referrer.location || !isFirstRendering ? action.payload.location : referrer.location;
+  const { pathname, search, hash } = location;
+  const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
+  const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : `${pathname || ''}${hash || ''}`;
+  const forceReload = (location.search || '').includes('reload') || get(location, 'query.reload') != null;
+  let tab = '';
+  if (hash) {
+    tab = hash.replace('#', '');
     if (tab && tab.indexOf('?') > -1) {
       tab = tab.substring(0, tab.indexOf('?'));
     }
@@ -165,24 +157,24 @@ function* manualUserNavigation(action) {
       // Tab should not be formatted as a 'key=value'; it is not a param.
       tab = '';
     }
+  }
 
+  if (isFirstRendering) {
     yield put({ type: actions.USER_PROFILE_REQUESTED });
     yield put({ type: actions.USER_IDENTITY_REQUESTED });
+  }
 
-    if (isPatientSearchRoute(route) === true) {
-      yield navigateToPatientSearchScreen();
-    } else if (isPatientVariantPageRoute(route) === true) {
-      const patientId = getPatientIdFromPatientVariantPageRoute(route);
-      yield navigateToPatientVariantScreen({ payload: { uid: patientId, tab } });
-    } else if (isPatientPageRoute(route) === true) {
-      const patientId = getPatientIdFromPatientPageRoute(route);
-      yield navigateToPatientScreen({ payload: { uid: patientId, tab } });
-    } else if (isVariantPageRoute(route) === true) {
-      const variantId = getVariantIdFromVariantPageRoute(route);
-      yield navigateToVariantDetailsScreen({ payload: { uid: variantId, tab } });
-    } else {
-      yield navigateToPatientSearchScreen();
-    }
+  const currentRoute = route || location.pathname;
+  if (currentRoute.startsWith('/patient/search')) {
+    yield processPatientSearchPage();
+  } else if (currentRoute.startsWith('/variantDetails')) {
+    yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
+  } else if (currentRoute.startsWith('/patient/')) {
+    yield processPatientPage(currentRoute, tab, forceReload);
+  } else if (currentRoute.startsWith('/submission') && !isFirstRendering) {
+    // ignore /submission page to not change the current flow on "normal" navigation
+  } else {
+    yield navigateToPatientSearchScreen();
   }
 }
 

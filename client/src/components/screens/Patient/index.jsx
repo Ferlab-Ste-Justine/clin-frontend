@@ -253,6 +253,8 @@ class PatientScreen extends React.Component {
     } = this.props;
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
+    const hashParams = (hash.replace('#', '') || '').split('&');
+    const defaultTab = hashParams.includes('variant') ? 'variant' : 'prescriptions';
 
     return (
       <Layout>
@@ -263,7 +265,7 @@ class PatientScreen extends React.Component {
                 <div className="page_headerStaticNoMargin">
                   <PatientHeader patient={patient} />
                 </div>
-                <Tabs onChange={this.handleTabNavigation} defaultActiveKey={(hash ? hash.replace('#', '') : 'patient')} className="tabs staticTabs">
+                <Tabs onChange={this.handleTabNavigation} defaultActiveKey={defaultTab} className="tabs staticTabs">
                   <Tabs.TabPane
                     key="prescriptions"
                     style={{ height: '100%' }}
