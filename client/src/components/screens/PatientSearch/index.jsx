@@ -241,9 +241,16 @@ class PatientSearchScreen extends React.Component {
       {
         key: 'request',
         label: 'screen.patientsearch.table.request',
-        renderer: createCellRenderer('button', this.getData, {
-          key: 'request',
-          handler: (e) => this.handleGoToPatientScreen(e, this.getData()),
+        renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => (
+            <Button
+              onClick={() => this.handleGoToPatientScreen(data.id, data.request)}
+              data-id={data.request}
+              className="button link--underline"
+            >
+              { data.request }
+            </Button>
+          ),
         }),
       },
     ];
@@ -484,12 +491,10 @@ class PatientSearchScreen extends React.Component {
     }
   }
 
-  handleGoToPatientScreen(e, data) {
+  handleGoToPatientScreen(patientId, requestId) {
     const { actions } = this.props;
-    const value = e.currentTarget.getAttribute('data-id');
-    const row = data.find((entry) => entry.request === value);
-    actions.navigateToPatientScreen(row.id, {
-      openedPrescriptionId: value,
+    actions.navigateToPatientScreen(patientId, {
+      openedPrescriptionId: requestId,
     });
   }
 
