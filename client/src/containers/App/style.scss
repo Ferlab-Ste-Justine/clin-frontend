@@ -795,3 +795,9 @@ table{
     }
   }
 }
+
+.ant-popover {
+  &-inner-content {
+    padding: 8px 12px;
+  }
+}
