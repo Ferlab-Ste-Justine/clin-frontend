@@ -143,6 +143,10 @@ function* manualUserNavigation(action) {
   const { pathname, search, hash } = location;
   const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
   const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : `${pathname || ''}${hash || ''}`;
+  if (urlIsRewrite) {
+    yield put(push(route));
+    return;
+  }
   const forceReload = (location.search || '').includes('reload') || get(location, 'query.reload') != null;
   let tab = '';
   if (hash) {
