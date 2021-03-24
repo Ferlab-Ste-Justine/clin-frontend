@@ -9,6 +9,7 @@ import { Bundle, FamilyGroup, Patient } from '../types';
 const EXTENSION_IS_PROBAND = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
 const EXTENSION_IS_FETUS = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus';
 const EXTENSION_FAMILY_ID = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
+const FEMALE_GENDER = 'female';
 
 type CreatePatientResponse = {
     patient: Patient;
@@ -75,6 +76,8 @@ export const createPatientFetus = async (patient: Patient) : Promise<CreatePatie
 
   patientFetus.extension.find((ext) => ext.url === EXTENSION_IS_PROBAND)!.valueBoolean = true;
   patientFetus.extension.find((ext) => ext.url === EXTENSION_IS_FETUS)!.valueBoolean = true;
+
+  patient.gender = FEMALE_GENDER;
 
   const familyGroup = new FamilyGroupBuilder()
     .withType('person')
