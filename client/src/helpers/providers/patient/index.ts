@@ -6,6 +6,7 @@ import {
 import { Mrn, ParsedPatientData } from '../types';
 import { DataExtractor } from '../extractor';
 import { Provider, Record } from '../providers';
+import { getRAMQValue } from '../../fhir/patientHelper';
 
 const ETHNICITY_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity';
 const BLOOD_RELATIONSHIP_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship';
@@ -83,14 +84,14 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
         hospital: (id.assigner && getHospitalFromReference(id.assigner)) || '',
       }));
 
-    const ramq = has(patient, 'identifier[1].value') ? patient.identifier[1].value : 'N/A';
+    const ramq = getRAMQValue(patient);
 
     const patientData: ParsedPatientData = {
       id: patient.id!,
       status: patient.active ? 'active' : 'inactive',
       lastName: patient.name[0].family,
       firstName: patient.name[0].given[0],
-      ramq,
+      ramq: ramq || '--',
       mrn,
       organization: organization.name || organization.id,
       gender: patient.gender,
