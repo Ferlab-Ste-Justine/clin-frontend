@@ -19,7 +19,6 @@ export const initialAppState = {
   },
   referrer: null,
   loginMessage: '',
-  isFirstRendering: true,
 };
 
 // @TODO
@@ -110,9 +109,6 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
       if (!state.referrer) {
         draft.referrer = action.payload;
       }
-      break;
-    case actions.SET_IS_FIRST_RENDERING:
-      draft.isFirstRendering = action.payload.isFirstRendering;
       break;
     default:
       break;
