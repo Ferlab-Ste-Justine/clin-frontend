@@ -12,7 +12,7 @@ import { DownOutlined, MedicineBoxFilled } from '@ant-design/icons';
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_info_outline, ic_widgets,
+  ic_info_outline, ic_widgets, ic_cloud_download,
 } from 'react-icons-kit/md';
 import PatientVariantScreen from '../PatientVariant';
 import { appShape } from '../../../reducers/app';
@@ -30,6 +30,7 @@ import './style.scss';
 import Layout from '../../Layout';
 import StatusChangeModal from './components/StatusChangeModal';
 import PrescriptionsTab from './components/PrescriptionsTab';
+import FilesTab from './components/FilesTab';
 import PatientHeader from './components/PatientHeader';
 
 class PatientScreen extends React.Component {
@@ -288,6 +289,17 @@ class PatientScreen extends React.Component {
                     )}
                   >
                     <PatientVariantScreen />
+                  </Tabs.TabPane>
+                  <Tabs.TabPane
+                    key="files"
+                    tab={(
+                      <span className="tabName">
+                        <IconKit size={18} icon={ic_cloud_download} />
+                        Fichier
+                      </span>
+                    )}
+                  >
+                    <FilesTab />
                   </Tabs.TabPane>
                 </Tabs>
               </div>
