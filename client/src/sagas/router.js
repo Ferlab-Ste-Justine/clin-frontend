@@ -163,13 +163,8 @@ function* manualUserNavigation(action) {
     }
   }
 
-  if (isFirstRendering) {
-    yield put({ type: actions.USER_PROFILE_REQUESTED });
-    yield put({ type: actions.USER_IDENTITY_REQUESTED });
-    const url = `${pathname}${!hash.includes('=') ? `#${tab}` : ''}`;
-    yield put(push(url));
-    return;
-  }
+  yield put({ type: actions.USER_PROFILE_REQUESTED });
+  yield put({ type: actions.USER_IDENTITY_REQUESTED });
 
   const currentRoute = route || location.pathname;
   if (currentRoute.startsWith('/patient/search')) {
