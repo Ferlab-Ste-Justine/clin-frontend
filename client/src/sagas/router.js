@@ -139,6 +139,8 @@ function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
   window.scrollTo(0, 0);
   const { referrer } = yield select((state) => state.app);
+  const user = yield select((state) => state.user);
+
   const location = !referrer.location || !isFirstRendering ? action.payload.location : referrer.location;
   const { pathname, search, hash } = location;
   const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
@@ -163,8 +165,10 @@ function* manualUserNavigation(action) {
     }
   }
 
-  yield put({ type: actions.USER_PROFILE_REQUESTED });
-  yield put({ type: actions.USER_IDENTITY_REQUESTED });
+  if (get(user, 'profile.uid') == null) {
+    yield put({ type: actions.USER_PROFILE_REQUESTED });
+    yield put({ type: actions.USER_IDENTITY_REQUESTED });
+  }
 
   const currentRoute = route || location.pathname;
   if (currentRoute.startsWith('/patient/search')) {
