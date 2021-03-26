@@ -249,7 +249,17 @@ const patientSubmissionReducer = (
 
       if (patientState.prescriptions != null && patientState.prescriptions.length > 0) {
         const serviceRequest = patientState.prescriptions[index].original;
-        const clinicalImpression = patientState.consultation[index].original;
+        const clinRefExtension = getExtension(
+          serviceRequest, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression',
+        );
+        const clinicalImpression = patientState.consultation.find(
+          (consultation) => get(consultation, 'original.id') === get(clinRefExtension, 'valueReference.reference', '/')
+            .split('/')[1],
+        ).original;
+
+        if (clinicalImpression == null) {
+          throw new Error(`Service Request [${serviceRequest.id}]: Clinical impression not found`);
+        }
 
         const {
           cgh, precision, summary, hypothesis,
