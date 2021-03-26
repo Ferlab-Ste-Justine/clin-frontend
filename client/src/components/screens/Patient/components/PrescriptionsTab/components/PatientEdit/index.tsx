@@ -309,7 +309,6 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
             options={[
               { label: intl.get('screen.patient.details.edit.sex.male'), value: 'male' },
               { label: intl.get('screen.patient.details.edit.sex.female'), value: 'female' },
-              { label: intl.get('screen.patient.details.edit.sex.other'), value: 'other' },
               { label: intl.get('screen.patient.details.edit.sex.unknown'), value: 'unknown' },
             ]}
             optionType="button"

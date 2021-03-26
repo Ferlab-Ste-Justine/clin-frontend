@@ -442,7 +442,6 @@ const FormModal : React.FC<Props> = ({
                     options={[
                       { label: intl.get(`${I18N_PREFIX}sex.male`), value: 'male' },
                       { label: intl.get(`${I18N_PREFIX}sex.female`), value: 'female' },
-                      { label: intl.get(`${I18N_PREFIX}sex.other`), value: 'other' },
                       { label: intl.get(`${I18N_PREFIX}sex.unknown`), value: 'unknown' },
                     ]}
                     optionType="button"
