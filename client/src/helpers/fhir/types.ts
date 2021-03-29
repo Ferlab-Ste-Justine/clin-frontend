@@ -150,7 +150,7 @@ export interface FamilyMemberHistory {
   status: string;
   patient: Reference;
   relationship: CodeableConcept;
-  note: Note[];
+  note?: Note[];
 }
 
 export interface ServiceRequest {
@@ -179,9 +179,9 @@ export interface Observation {
   category: CodeableConcept[];
   code: CodeableConcept;
   subject: Reference;
-  interpretation: Interpretation[];
-  note: Note[];
-  extension: Extension[];
+  interpretation?: Interpretation[];
+  note?: Note[];
+  extension?: Extension[];
   valueCodeableConcept?: CodeableConcept;
   valueBoolean?: boolean;
 }

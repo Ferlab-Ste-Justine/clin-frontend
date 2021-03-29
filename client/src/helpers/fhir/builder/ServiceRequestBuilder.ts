@@ -25,7 +25,6 @@ const defaultSR = () : Partial<ServiceRequest> => ({
   ],
   priority: 'routine',
   authoredOn: formatDate(new Date()),
-  note: [],
 });
 
 export class ServiceRequestBuilder {
@@ -37,9 +36,6 @@ export class ServiceRequestBuilder {
           ...this.serviceRequest,
           ...serviceRequest,
         };
-      }
-      if (this.serviceRequest.note == null) {
-        this.serviceRequest.note = [];
       }
     }
 
@@ -87,6 +83,7 @@ export class ServiceRequestBuilder {
       }
 
       if (isSubmitted) {
+        this.serviceRequest.note = this.serviceRequest.note || [];
         this.serviceRequest.note?.push({
           authorReference: getPractitionerRoleReference(roleId),
           text: 'Service Request submitted.',
