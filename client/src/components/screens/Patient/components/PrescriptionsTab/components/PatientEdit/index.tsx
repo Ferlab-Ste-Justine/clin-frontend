@@ -30,7 +30,8 @@ enum MrnActionType {
   CREATE,
   DELETE,
   CHANGE,
-  CANCEL
+  CANCEL,
+  RESET,
 }
 
 enum MRN_STATUS {
@@ -69,12 +70,19 @@ interface ChangeMrnAction {
   }
 }
 
+interface ResetMrnAction {
+  type: MrnActionType.RESET,
+  payload: {
+    mrns: MrnElement[]
+  },
+}
+
 interface DeleteMrnAction {
   type: MrnActionType.DELETE | MrnActionType.CANCEL,
   payload: number
 }
 
-type MrnAction = AddMrnAction | CreateMrnAction | DeleteMrnAction | ChangeMrnAction
+type MrnAction = AddMrnAction | CreateMrnAction | DeleteMrnAction | ChangeMrnAction | ResetMrnAction;
 
 const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAction) => {
   switch (action.type) {
@@ -138,6 +146,13 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
       };
     }
 
+    case MrnActionType.RESET: {
+      return {
+        ...state,
+        mrns: action.payload.mrns,
+      };
+    }
+
     default:
       throw new Error(`Unsupporter action type ${action}`);
   }
@@ -153,7 +168,7 @@ function validateForm(values: any, mrns: MrnElement[], ramqRequired: boolean): b
     sex: !!values.sex,
     birthDate: !!values.birthDate,
   };
-  return Object.values(validationState).every((v) => v) && allMrnsValid;
+  return Object.values(validationState).every((v) => v) && mrns.length > 0 && allMrnsValid;
 }
 
 interface Props {
@@ -180,13 +195,16 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
     sex: patient.gender,
     birthDate: moment(patient.birthDate),
   };
-  const [mrnState, mrnDispatch] = useReducer<Reducer<MrnState, MrnAction>>(mrnReducer, {
+
+  const getOriginalMrns = () => ({
     mrns: originalMrns.map((mrn, index) => ({
       index,
       status: MRN_STATUS.VIEW,
       values: { number: mrn.value, organization: mrn.assigner?.reference.split('/')[1] || '' },
     })),
   });
+
+  const [mrnState, mrnDispatch] = useReducer<Reducer<MrnState, MrnAction>>(mrnReducer, getOriginalMrns());
   const [hasRamq, setHasRamq] = useState(!!originalRAMQ);
   const [isFormValid, setIsFormValid] = useState(validateForm(initialFormState, mrnState.mrns, hasRamq));
 
@@ -199,6 +217,10 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
       onClose();
     }
   }, [submissionStatus]);
+
+  useEffect(() => {
+    mrnDispatch({ type: MrnActionType.RESET, payload: getOriginalMrns() });
+  }, [isVisible]);
 
   return (
     <Modal
