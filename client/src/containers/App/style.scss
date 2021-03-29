@@ -361,6 +361,13 @@ div.ant-card {
           color: $blue-8;
         }
       }
+      .ant-tabs-tab-disabled{
+        &:hover{
+          i{
+            color: $gray-6 !important;
+          }
+        }
+      }
     }
   }
 }
