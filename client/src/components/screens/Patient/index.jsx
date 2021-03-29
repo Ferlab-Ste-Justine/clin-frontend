@@ -292,6 +292,7 @@ class PatientScreen extends React.Component {
                   </Tabs.TabPane>
                   <Tabs.TabPane
                     key="files"
+                    disabled
                     tab={(
                       <span className="tabName">
                         <IconKit size={18} icon={ic_cloud_download} />

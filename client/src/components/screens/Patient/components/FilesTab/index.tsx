@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import {
-  Card, Table, Button, Dropdown, Menu, Row,
+  Card, Table, Button, Dropdown, Menu,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import intl from 'react-intl-universal';
-import { navigateToPatientScreen } from '../../../../../actions/router';
 
 import './styles.scss';
 
@@ -42,18 +39,19 @@ const getDropdownOption = (tempoInfo : number) => {
 
   return (
     <div>
-      <Row>
-        <Dropdown overlay={menu}>
-          <Button type="link" className="link--underline">Download</Button>
-        </Dropdown>
-      </Row>
+      <Dropdown
+        overlay={menu}
+        className="files-tab__dropdownAction"
+      >
+        <Button type="link">
+          Download <DownOutlined />
+        </Button>
+      </Dropdown>
       {
         tempoInfo === 4 ? (
-          <Row>
-            <Button type="link" className="link--underline">
-              Download IGV
-            </Button>
-          </Row>
+          <Button type="link" className="link--underline">
+            IGV
+          </Button>
         ) : null
       }
 
@@ -62,8 +60,7 @@ const getDropdownOption = (tempoInfo : number) => {
 };
 
 const FilesTab : React.FC = () => {
-  const dispatch = useDispatch();
-  const dataSource = [
+  const dataSource:any = [
     {
       name: 'file1ne.cram',
       type: 'AR',
@@ -134,7 +131,6 @@ const FilesTab : React.FC = () => {
     <div className="page-static-content files-tab">
       <Card
         bordered={false}
-        className="prescriptions-tab__prescriptions-section__clinical-sign"
       >
         <Table
           pagination={false}
