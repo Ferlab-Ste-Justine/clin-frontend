@@ -119,7 +119,7 @@ const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
   const mrns = patient.mrn
     .map((mrn) => ({ value: mrn.number, organization: mrn.hospital })) as MrnValue[];
 
-  const hasMultipleMrn = mrns.length > MAX_MRNS_DISPLAYED;
+  const hasMultipleMrn = mrns.length >= MAX_MRNS_DISPLAYED;
   return (
     <Card bordered={false} className="prescriptions-tab__patient-section__card">
       <div className="prescriptions-tab__patient-section">
