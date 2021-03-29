@@ -29,9 +29,9 @@ export class ObservationBuilder {
 
     private subject?: Reference;
 
-    private interpretation: Interpretation[] = [];
+    private interpretation?: Interpretation[];
 
-    private note: Note[] = [];
+    private note?: Note[];
 
     private code?: CodeableConcept;
 
@@ -159,7 +159,6 @@ export class ObservationBuilder {
         subject: this.subject!,
         interpretation: this.interpretation,
         note: this.note,
-        extension: [],
         valueCodeableConcept: this.valueCodeableConcept,
         valueBoolean: this.valueBoolean,
       };
@@ -203,12 +202,14 @@ export class ObservationBuilder {
     }
 
     public withInterpretation(value: Interpretation) {
+      this.interpretation = this.interpretation || [];
       this.interpretation.push(value);
       return this;
     }
 
     public withNote(value?: string) {
       if (value != null && value.length > 0) {
+        this.note = this.note || [];
         this.note.push({
           text: value,
         });
