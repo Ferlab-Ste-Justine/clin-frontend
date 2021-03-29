@@ -8,7 +8,15 @@ function* handleEditPatient(action: any) {
   const hideLoadingMessage = message.loading(intl.get('screen.patient.details.edit.processing'));
   try {
     const updateResponse = yield updatePatient(action.payload.patient);
+
     yield put({ type: actions.PATIENT_EDITION_SUCCEEDED, payload: { patient: updateResponse.data } });
+    yield put({
+      type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
+      payload: {
+        uid: action.payload.patient.id,
+        reload: true,
+      },
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: actions.PATIENT_EDITION_FAILED });

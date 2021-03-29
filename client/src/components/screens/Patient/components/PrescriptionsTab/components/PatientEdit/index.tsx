@@ -96,9 +96,8 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
 
     case MrnActionType.CHANGE: {
       const clonedMrns = [...state.mrns];
-      const arrayIndex = clonedMrns.findIndex((mrnValue) => mrnValue.index === action.payload.index);
-      clonedMrns[arrayIndex] = {
-        ...clonedMrns[arrayIndex],
+      clonedMrns[action.payload.index] = {
+        ...clonedMrns[action.payload.index],
         values: action.payload.values,
       };
       return {
@@ -106,13 +105,21 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
         mrns: clonedMrns,
       };
     }
-
-    case MrnActionType.CREATE:
     case MrnActionType.DELETE: {
+      const newMrns = [...state.mrns];
+      return {
+        ...state,
+        mrns: newMrns.filter((mrn) => mrn.index !== action.payload).map((mrn, index) => ({
+          ...mrn,
+          index,
+        })),
+      };
+    }
+
+    case MrnActionType.CREATE: {
       const clonedMrns = [...state.mrns];
-      const arrayIndex = clonedMrns.findIndex((mrnValue) => mrnValue.index === action.payload);
-      clonedMrns[arrayIndex] = {
-        ...clonedMrns[arrayIndex],
+      clonedMrns[action.payload] = {
+        ...clonedMrns[action.payload],
         status: action.type === MrnActionType.CREATE ? MRN_STATUS.ADDED : MRN_STATUS.DELETED,
       };
 
@@ -124,8 +131,7 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
 
     case MrnActionType.CANCEL: {
       const clonedMrns = [...state.mrns];
-      const arrayIndex = clonedMrns.findIndex((mrnValue) => mrnValue.index === action.payload);
-      clonedMrns.splice(arrayIndex, 1);
+      clonedMrns.splice(action.payload, 1);
       return {
         ...state,
         mrns: clonedMrns,
