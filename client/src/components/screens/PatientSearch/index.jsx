@@ -74,15 +74,16 @@ class PatientSearchScreen extends React.Component {
           handler: () => {},
           renderer: (data) => {
             const { selectedPatients } = this.state;
-            const isSelected = selectedPatients.includes(data.request);
+            const id = !data.request.includes('--') ? data.request : data.id;
+            const isSelected = selectedPatients.includes(id);
             return (
               <Checkbox
                 className="checkbox"
-                id={data.request}
+                id={id}
                 onChange={() => {
                   if (isSelected) {
                     this.setState(({ selectedPatients: oldSelectedPatients }) => {
-                      const valueIndex = oldSelectedPatients.indexOf(data.request);
+                      const valueIndex = oldSelectedPatients.indexOf(id);
                       oldSelectedPatients.splice(valueIndex, 1);
                       return {
                         selectedPatients: oldSelectedPatients,
@@ -90,7 +91,7 @@ class PatientSearchScreen extends React.Component {
                     });
                   } else {
                     this.setState(({ selectedPatients: oldSelectedPatients }) => ({
-                      selectedPatients: [...oldSelectedPatients, data.request],
+                      selectedPatients: [...oldSelectedPatients, id],
                     }));
                   }
                 }}
