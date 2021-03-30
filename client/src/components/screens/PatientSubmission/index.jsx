@@ -298,6 +298,9 @@ function PatientSubmissionScreen(props) {
       }
 
       if (value != null) {
+        if (observation.extension == null) {
+          observation.extension = [];
+        }
         observation.extension.push({
           url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/age-at-onset',
           valueCoding: {
