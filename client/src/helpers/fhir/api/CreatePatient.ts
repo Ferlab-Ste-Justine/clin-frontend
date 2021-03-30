@@ -72,12 +72,13 @@ type CreatePatientFetusResponse = {
 
 export const createPatientFetus = async (patient: Patient) : Promise<CreatePatientFetusResponse> => {
   const patientFetus = JSON.parse(JSON.stringify(patient)) as Patient;
+  const patientParent = JSON.parse(JSON.stringify(patient)) as Patient;
   patientFetus.id = undefined;
 
   patientFetus.extension.find((ext) => ext.url === EXTENSION_IS_PROBAND)!.valueBoolean = true;
   patientFetus.extension.find((ext) => ext.url === EXTENSION_IS_FETUS)!.valueBoolean = true;
 
-  patient.gender = FEMALE_GENDER;
+  patientParent.gender = FEMALE_GENDER;
 
   const familyGroup = new FamilyGroupBuilder()
     .withType('person')
@@ -85,9 +86,9 @@ export const createPatientFetus = async (patient: Patient) : Promise<CreatePatie
     .withActual(true)
     .build();
 
-  const isNewPatient = patient.id == null;
+  const isNewPatient = patientParent.id == null;
   if (!isNewPatient) {
-    familyGroup.id = patient.extension.find(
+    familyGroup.id = patientParent.extension.find(
       (ext) => ext.url === EXTENSION_FAMILY_ID,
     )!.valueReference?.reference.split('/')[1];
   }
@@ -96,7 +97,7 @@ export const createPatientFetus = async (patient: Patient) : Promise<CreatePatie
   const bundle: Bundle = new BundleBuilder()
     .withId(bundleId)
     .withType('Transaction')
-    .withResource(patient)
+    .withResource(patientParent)
     .withResource(patientFetus)
     .withResource(familyGroup)
     .build();
