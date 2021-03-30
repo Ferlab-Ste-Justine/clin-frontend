@@ -22,11 +22,11 @@ const SuccessModal: React.FC<Props> = ({
   open, onClose, onNewPatient, onCompletePrescription, onNavigateToPatient,
 }) => {
   const patient = useSelector((state: any) => state.patientCreation.patient) as Patient;
-
   if (!patient?.id) {
     return <span />;
   }
-  const isFetus = patient?.extension.find((ext) => ext.url.includes('is-fetus'))?.valueBoolean || false;
+
+  const isFetus = patient?.extension.find((ext) => ext.url.includes('is-fetus'))?.valueBoolean;
 
   return (
     <ResultModal
