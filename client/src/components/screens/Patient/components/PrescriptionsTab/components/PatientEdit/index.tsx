@@ -14,6 +14,7 @@ import {
   CheckOutlined, CloseOutlined, DeleteOutlined, PlusOutlined,
 } from '@ant-design/icons';
 import get from 'lodash/get';
+import uniqueId from 'lodash/uniqueId';
 import { useDispatch, useSelector } from 'react-redux';
 import './styles.scss';
 import { useForm } from 'antd/lib/form/Form';
@@ -355,7 +356,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                 .map((mrnValue) => {
                   const mrnDisplay = `${mrnValue.values.number} | ${mrnValue.values.organization}`;
                   return (
-                    <li key={mrnDisplay}>
+                    <li key={uniqueId()}>
                       <Row align="middle" gutter={8}>
                         <Col span={22}>
                           <Typography.Text>
