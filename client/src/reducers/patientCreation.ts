@@ -31,7 +31,7 @@ const reducer = (
   switch (action.type) {
     case actions.CREATE_PATIENT_SUCCEEDED:
     case actions.CREATE_PATIENT_FETUS_SUCCEEDED: {
-      draft.patient = action.payload.patient;
+      draft.patient = action.payload.patientFetus ? action.payload.patientFetus : action.payload.patient;
       draft.familyGroup = action.payload.familyGroup;
       draft.status = PatientCreationStatus.CREATED;
       break;
