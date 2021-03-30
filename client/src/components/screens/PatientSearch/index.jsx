@@ -154,7 +154,17 @@ class PatientSearchScreen extends React.Component {
       {
         key: 'patientId',
         label: 'screen.patientsearch.table.patientId',
-        renderer: createCellRenderer('text', this.getData, { key: 'id' }),
+        renderer: createCellRenderer('custom', this.getData, {
+          renderer: (data) => (
+            <Button
+              onClick={() => this.handleGoToPatientScreen(data.id)}
+              data-id={data.request}
+              className="button link--underline"
+            >
+              { data.id }
+            </Button>
+          ),
+        }),
       },
       {
         key: 'organization',
