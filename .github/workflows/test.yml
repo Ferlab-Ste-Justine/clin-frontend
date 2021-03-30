@@ -20,5 +20,5 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn install
-      - name: Run unit tests
+      - name: Run tests
         run: yarn test

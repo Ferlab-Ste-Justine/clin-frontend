@@ -26,7 +26,6 @@ const AppRouter = ({ history }) => {
   if (!initialized) {
     return <div />;
   }
-  console.log('hey');
 
   // @NOTE In case we use intl for routes later on...
   const pathRootPage = `${ROUTE_NAME_ROOT}`;

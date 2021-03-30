@@ -15,115 +15,114 @@ const AppInitializer: React.FC = ({ children }) => {
   return <>{ children }</>;
 };
 
-const store = configureStore({
-  ...initialState,
-  user: {
-    username: 'username',
-    firstName: 'Rick',
-    lastName: 'Sanchez',
-    practitionerId: 'f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
-    profile: {
-      uid: 'HljHD3IBCGmDHXNWRxX1',
-      defaultStatement: 'O4OzdnYBj8387-8vzXtb',
-      patientTableConfig: {},
-      variantTableConfig: {},
-    },
-    practitionerData: {
-      practitioner: {
-        resourceType: 'Practitioner',
-        id: 'f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
-        meta: {
-          versionId: '1',
-          lastUpdated: '2021-01-15T17:39:07.569+00:00',
-          source: '#ad8ce4ea47446d50',
-          profile: [
-            'http://hl7.org/fhir/StructureDefinition/Practitioner',
+const AppTest: React.FC = ({ children }) => {
+  const store = configureStore({
+    ...initialState,
+    user: {
+      username: 'username',
+      firstName: 'Rick',
+      lastName: 'Sanchez',
+      practitionerId: 'f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
+      profile: {
+        uid: 'HljHD3IBCGmDHXNWRxX1',
+        defaultStatement: 'O4OzdnYBj8387-8vzXtb',
+        patientTableConfig: {},
+        variantTableConfig: {},
+      },
+      practitionerData: {
+        practitioner: {
+          resourceType: 'Practitioner',
+          id: 'f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
+          meta: {
+            versionId: '1',
+            lastUpdated: '2021-01-15T17:39:07.569+00:00',
+            source: '#ad8ce4ea47446d50',
+            profile: [
+              'http://hl7.org/fhir/StructureDefinition/Practitioner',
+            ],
+          },
+          identifier: [
+            {
+              use: 'official',
+              type: {
+                coding: [
+                  {
+                    system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                    code: 'MD',
+                    display: 'Medical License number',
+                  },
+                ],
+                text: 'Numéro de License Médicale du Québec',
+              },
+              value: '0001',
+            },
+          ],
+          name: [
+            {
+              use: 'official',
+              family: 'Sanchez',
+              given: [
+                'Rick',
+              ],
+              prefix: [
+                'Dr.',
+              ],
+            },
           ],
         },
-        identifier: [
-          {
-            use: 'official',
-            type: {
+        practitionerRole: {
+          resourceType: 'PractitionerRole',
+          id: 'PROLE-f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
+          meta: {
+            versionId: '1',
+            lastUpdated: '2021-01-15T17:39:07.569+00:00',
+            source: '#ad8ce4ea47446d50',
+            profile: [
+              'http://hl7.org/fhir/StructureDefinition/PractitionerRole',
+            ],
+          },
+          active: true,
+          practitioner: {
+            reference: 'Practitioner/f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
+          },
+          organization: {
+            reference: 'Organization/OR00210',
+          },
+          code: [
+            {
               coding: [
                 {
-                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                  code: 'MD',
-                  display: 'Medical License number',
+                  system: 'http://www.hl7.org/FHIR/valueset-practitioner-role.html',
+                  code: 'doctor',
+                  display: 'Doctor',
                 },
               ],
-              text: 'Numéro de License Médicale du Québec',
+              text: 'Médecin prescripteur',
             },
-            value: '0001',
-          },
-        ],
-        name: [
-          {
-            use: 'official',
-            family: 'Sanchez',
-            given: [
-              'Rick',
-            ],
-            prefix: [
-              'Dr.',
-            ],
-          },
-        ],
-      },
-      practitionerRole: {
-        resourceType: 'PractitionerRole',
-        id: 'PROLE-f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
-        meta: {
-          versionId: '1',
-          lastUpdated: '2021-01-15T17:39:07.569+00:00',
-          source: '#ad8ce4ea47446d50',
-          profile: [
-            'http://hl7.org/fhir/StructureDefinition/PractitionerRole',
+          ],
+          telecom: [
+            {
+              system: 'phone',
+              value: '514 123 4567',
+              use: 'work',
+              rank: 1,
+            },
+            {
+              system: 'phone',
+              value: '1234',
+              use: 'work',
+              rank: 2,
+            },
+            {
+              system: 'email',
+              value: 'rsanchez@ferlab.bio',
+              use: 'work',
+            },
           ],
         },
-        active: true,
-        practitioner: {
-          reference: 'Practitioner/f5d6b2c6-957b-4b4a-b9be-df5c1b4aa9e4',
-        },
-        organization: {
-          reference: 'Organization/OR00210',
-        },
-        code: [
-          {
-            coding: [
-              {
-                system: 'http://www.hl7.org/FHIR/valueset-practitioner-role.html',
-                code: 'doctor',
-                display: 'Doctor',
-              },
-            ],
-            text: 'Médecin prescripteur',
-          },
-        ],
-        telecom: [
-          {
-            system: 'phone',
-            value: '514 123 4567',
-            use: 'work',
-            rank: 1,
-          },
-          {
-            system: 'phone',
-            value: '1234',
-            use: 'work',
-            rank: 2,
-          },
-          {
-            system: 'email',
-            value: 'rsanchez@ferlab.bio',
-            use: 'work',
-          },
-        ],
       },
     },
-  },
-});
-
-const AppTest: React.FC = ({ children }) => {
+  });
   window.CLIN = {
     namespace: 'dev',
     patientServiceApiUrl: 'https://patient.qa.clin.ferlab.bio/patient',

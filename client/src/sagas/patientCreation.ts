@@ -15,7 +15,6 @@ function* handleCreatePatient(action: any) {
 
     yield put({ type: actions.CREATE_PATIENT_SUCCEEDED, payload: { ...response } });
   } catch (error) {
-    console.error('handleCreatePatient', error);
     yield put({ type: actions.CREATE_PATIENT_FAILED });
   }
 }

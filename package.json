@@ -181,7 +181,7 @@
       "<rootDir>/client/src/setupTests.tsx"
     ],
     "testMatch": [
-      "<rootDir>/client/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/client/src/**/__tests__/**/*{spec,test}.{js,jsx,ts,tsx}",
       "<rootDir>/client/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
     ],
     "testEnvironment": "jsdom",

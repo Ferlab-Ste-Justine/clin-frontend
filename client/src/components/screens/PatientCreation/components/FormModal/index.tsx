@@ -266,7 +266,6 @@ const FormModal : React.FC<Props> = ({
       >
 
         <Form
-          data-testid="patient-creation-form"
           form={form}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}

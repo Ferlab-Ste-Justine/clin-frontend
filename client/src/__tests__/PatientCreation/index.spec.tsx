@@ -4,14 +4,23 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
-import { server } from '../../setupTests';
 
 import AppTest from '../../AppTest';
 
 describe('PatientCreation', () => {
+  const server = setupServer();
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
+  });
+
   describe('Should be able to create a patient', () => {
-    test('as a patient', async () => {
+    test('as a patient with RAMQ', async () => {
       server.use(
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
