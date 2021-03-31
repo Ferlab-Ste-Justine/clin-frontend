@@ -99,7 +99,7 @@ describe('PatientCreation', () => {
 
       await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
       await waitFor(() => screen.getByText(/la fiche du patient a été créée avec succès/i));
-      expect(screen.getByText('SMITH, Morty')).toBeDefined();
+      expect(screen.getByText('SMITH Morty')).toBeDefined();
     });
   });
 });
