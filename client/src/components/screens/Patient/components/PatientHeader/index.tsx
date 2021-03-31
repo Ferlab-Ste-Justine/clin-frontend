@@ -71,11 +71,15 @@ const PatientHeader: React.FC<Props> = ({ patient }) => {
             <Col>
               { getGenderIcon(patient.gender) }
             </Col>
-            <Col>
-              <Tag className="patient-page__header__tags">
-                2012-10-18
-              </Tag>
-            </Col>
+            {
+              patient.birthDate && (
+                <Col>
+                  <Tag className="patient-page__header__tags">
+                    { patient.birthDate }
+                  </Tag>
+                </Col>
+              )
+            }
           </>
         ) }
         <Col>
