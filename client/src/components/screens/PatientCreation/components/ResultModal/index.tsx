@@ -28,7 +28,7 @@ const ResultModal: React.FC<Props> = ({
   }
 
   const isFetus = patient?.extension.find((ext) => ext.url.includes('is-fetus'))?.valueBoolean || false;
-  let displayedTitle = title || `${patient.name[0].family.toUpperCase()}, ${patient.name[0].given[0]}`;
+  let displayedTitle = title || `${patient.name[0].family.toUpperCase()} ${patient.name[0].given[0]}`;
   if (isFetus) {
     displayedTitle += ` (${intl.get('screen.patient.creation.fetus').toLowerCase()})`;
   }
