@@ -206,6 +206,36 @@ const FormModal : React.FC<Props> = ({
     }
   }, [patientCreationStatus]);
 
+  const onFormSubmit: ((values: any) => void) | undefined = async (values) => {
+    setIsCreating(true);
+    try {
+      const patientBuilder = new PatientBuilder()
+        .withFamily(capitalize(values.lastname))
+        .withGiven(capitalize(values.firstname))
+        .withMrnIdentifier(values.mrn.file, values.mrn.organization)
+        .withOrganization(values.mrn.organization)
+        .withRamq((values.ramq as string).replace(/\s/g, '').toUpperCase())
+        .withGender(values.sex)
+        .withActive(true)
+        .withGeneralPractitioner(userRole.id);
+
+      if (isFetusType) {
+        if (patient != null) {
+          actions.createPatientFetus(patient);
+        } else {
+          patientBuilder.withIsProband(false);
+          actions.createPatientFetus(patientBuilder.build());
+        }
+      } else {
+        patientBuilder
+          .withBirthDate(new Date(values.birthday?.toDate()))
+          .withIsProband(true);
+        actions.createPatient(patientBuilder.build());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <>
       <Modal visible={open && isCreating} title={null} footer={null} closable={false}>
@@ -264,35 +294,11 @@ const FormModal : React.FC<Props> = ({
 
             setIsFormValid(validateForm(form));
           }}
-          onFinish={async (values) => {
-            setIsCreating(true);
-            try {
-              const patientBuilder = new PatientBuilder()
-                .withFamily(capitalize(values.lastname))
-                .withGiven(capitalize(values.firstname))
-                .withMrnIdentifier(values.mrn.file, values.mrn.organization)
-                .withOrganization(values.mrn.organization)
-                .withRamq((values.ramq as string).replace(/\s/g, '').toUpperCase())
-                .withGender(values.sex)
-                .withActive(true)
-                .withGeneralPractitioner(userRole.id);
-
-              if (isFetusType) {
-                if (patient != null) {
-                  actions.createPatientFetus(patient);
-                } else {
-                  patientBuilder.withIsProband(false);
-                  actions.createPatientFetus(patientBuilder.build());
-                }
-              } else {
-                patientBuilder
-                  .withBirthDate(new Date(values.birthday?.toDate()))
-                  .withIsProband(true);
-                actions.createPatient(patientBuilder.build());
-              }
-            } catch (e) {
-              console.error(e);
-            }
+          onSubmitCapture={() => {
+            onFormSubmit(form.getFieldsValue());
+          }}
+          onFinish={(values) => {
+            onFormSubmit(values);
           }}
 
         >
@@ -483,7 +489,7 @@ const FormModal : React.FC<Props> = ({
                             ]
                           }
                         >
-                          <Input placeholder="MRN 12345678" />
+                          <Input placeholder="MRN 12345678" data-testid="mrn-file" />
                         </Form.Item>
                       </Col>
                       <Col span={10}>
@@ -500,6 +506,7 @@ const FormModal : React.FC<Props> = ({
                           }
                         >
                           <Select
+                            data-testid="mrn-organization"
                             placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                             className="patient-creation__form__select"
                             onChange={(value) => {
