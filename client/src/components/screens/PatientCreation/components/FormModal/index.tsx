@@ -206,6 +206,10 @@ const FormModal : React.FC<Props> = ({
     }
   }, [patientCreationStatus]);
 
+  useEffect(() => {
+    resetForm();
+  }, [open]);
+
   const onFormSubmit: ((values: any) => void) | undefined = async (values) => {
     setIsCreating(true);
     try {
