@@ -147,11 +147,14 @@ const FormModal : React.FC<Props> = ({
   );
   const [form] = useForm();
 
-  const resetForm = () => {
+  const resetForm = (isFetus: boolean = false) => {
     form.resetFields();
+
     setIsFormValid(false);
-    setIsFetusType(false);
+    setIsFetusType(isFetus);
     dispatch({ type: ActionType.NO_RAMQ_REQUIRED, payload: false });
+
+    form.setFieldsValue({ patientType: isFetus ? PatientType.FETUS : PatientType.PERSON });
   };
   const formInputItemProps: FormItemProps = {
     className: 'patient-creation__formItem',
@@ -292,8 +295,6 @@ const FormModal : React.FC<Props> = ({
                   form.setFields([{ name: 'ramq', errors: [intl.get(`${I18N_PREFIX}errors.invalidRamq`)] }]);
                 }
               }
-            } else if (currentElement.id === 'patientType') {
-              setIsFetusType(currentElement.value === PatientType.FETUS);
             }
 
             setIsFormValid(validateForm(form));
@@ -318,8 +319,7 @@ const FormModal : React.FC<Props> = ({
                 ]}
                 optionType="button"
                 onChange={(e: RadioChangeEvent) => {
-                  setIsFetusType(e.target.value === PatientType.FETUS);
-                  form.setFieldsValue({ patientType: e.target.value });
+                  resetForm(e.target.value === PatientType.FETUS);
                 }}
                 defaultValue={PatientType.PERSON}
               />

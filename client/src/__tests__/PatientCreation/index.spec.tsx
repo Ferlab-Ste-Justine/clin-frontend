@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  queryByText,
   render, screen, waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -752,6 +753,58 @@ describe('PatientCreation', () => {
       userEvent.click(screen.getAllByText('Nouvelle prescription')[0], null);
 
       expect(screen.getByLabelText('RAMQ')).toHaveValue('');
+    });
+
+    test('when changing the patient type', async () => {
+      server.use(
+        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+          ctx.status(200),
+          ctx.json({
+            resourceType: 'Bundle',
+            id: '2acbea67-8d49-477b-bbae-7acb18430780',
+            meta: {
+              lastUpdated: '2021-03-19T18:49:41.787+00:00',
+            },
+            type: 'searchset',
+            total: 0,
+            link: [{
+              relation: 'self',
+              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
+            }],
+          }),
+        )),
+      );
+
+      setupValidPostmockResponse();
+      server.listen({ onUnhandledRequest: 'error' });
+
+      server.printHandlers();
+
+      render(<AppTest><PatientSearchScreen /></AppTest>);
+
+      userEvent.click(screen.getByText('Nouvelle prescription'), null);
+
+      // Fill the form
+      userEvent.type(screen.getByLabelText('RAMQ'), 'BETS00000001');
+      userEvent.type(screen.getByLabelText('RAMQ (confirmation)'), 'BETS00000001');
+
+      await waitFor(() => screen.getByLabelText('Nom de famille'));
+
+      userEvent.type(screen.getByLabelText('Nom de famille'), 'Smith');
+      userEvent.type(screen.getByLabelText('Prénom'), 'Morty');
+
+      userEvent.click(screen.getByText(/masculin/i), {});
+      userEvent.type(screen.getByLabelText('Date de naissance'), '2020-01-01{enter}');
+
+      userEvent.type(screen.getByTestId('mrn-file'), 'AB1234');
+
+      userEvent.selectOptions(screen.getByTestId('mrn-organization'), 'CHUSJ');
+
+      userEvent.click(screen.getByText(/foetus/i), {});
+
+      expect(screen.getByLabelText('RAMQ')).toHaveValue('');
+      expect(screen.getByLabelText('RAMQ (confirmation)')).toHaveValue('');
+      expect(queryByText(screen.getByRole('dialog'), 'Nom de famille')).not.toBeInTheDocument();
     });
   });
 });
