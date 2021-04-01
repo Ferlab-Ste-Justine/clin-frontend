@@ -639,4 +639,119 @@ describe('PatientCreation', () => {
       expect(screen.getByText(/soumettre/i).closest('button')).toBeDisabled();
     });
   });
+
+  describe('should reset the form', () => {
+    test('when finding a patient with their RAMQ', async () => {
+      server.use(
+        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+          ctx.status(200),
+          ctx.json({
+            resourceType: 'Bundle',
+            id: '2acbea67-8d49-477b-bbae-7acb18430780',
+            meta: {
+              lastUpdated: '2021-03-19T18:49:41.787+00:00',
+            },
+            type: 'searchset',
+            total: 0,
+            link: [{
+              relation: 'self',
+              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
+            }],
+            entry: [{
+              fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
+              resource: {
+                resourceType: 'Patient',
+                id: '54382',
+                meta: {
+                  versionId: '2',
+                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
+                  source: '#5987279aae2ec2ca',
+                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
+                },
+                text: {
+                  status: 'generated',
+                  div: '',
+                },
+                extension: [{
+                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
+                  valueBoolean: true,
+                }, {
+                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+                  valueBoolean: false,
+                }, {
+                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
+                  valueReference: {
+                    reference: 'Group/38410',
+                  },
+                }],
+                identifier: [{
+                  type: {
+                    coding: [{
+                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                      code: 'MR',
+                      display: 'Medical record number',
+                    }],
+                    text: 'Numéro du dossier médical',
+                  },
+                  value: '010000',
+                  assigner: {
+                    reference: 'Organization/CUSM',
+                  },
+                }, {
+                  type: {
+                    coding: [{
+                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                      code: 'JHN',
+                      display: 'Jurisdictional health number (Canada)',
+                    }],
+                    text: 'Numéro du dossier médical',
+                  },
+                  value: 'BETS00000001',
+                }],
+                active: true,
+                name: [{
+                  family: 'Smith',
+                  given: ['Beth'],
+                }],
+                gender: 'female',
+                birthDate: '2021-03-30',
+                generalPractitioner: [{
+                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
+                }, {
+                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
+                }],
+                managingOrganization: {
+                  reference: 'Organization/CUSM',
+                },
+              },
+              search: {
+                mode: 'match',
+              },
+            }],
+          }),
+        )),
+      );
+
+      setupValidPostmockResponse();
+      server.listen({ onUnhandledRequest: 'error' });
+
+      server.printHandlers();
+
+      render(<AppTest><PatientSearchScreen /></AppTest>);
+
+      userEvent.click(screen.getByText('Nouvelle prescription'), null);
+
+      expect(screen.getByText(/soumettre/i).closest('button')).toBeDisabled();
+      userEvent.type(screen.getByLabelText('RAMQ'), 'BETS00000001');
+      userEvent.type(screen.getByLabelText('RAMQ (confirmation)'), 'BETS00000001');
+
+      await waitFor(() => screen.getByText(/Nous avons trouvé une fiche avec les mêmes identifiants./i));
+      expect(screen.getByText('SMITH Beth')).toBeDefined();
+
+      userEvent.click(screen.getByText(/Fermer/i).closest('button'), {});
+      userEvent.click(screen.getAllByText('Nouvelle prescription')[0], null);
+
+      expect(screen.getByLabelText('RAMQ')).toHaveValue('');
+    });
+  });
 });
