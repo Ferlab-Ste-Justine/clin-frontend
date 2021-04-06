@@ -1,6 +1,8 @@
 import get from 'lodash/get';
 import moment from 'moment';
-import { Identifier, Patient, Reference } from '../types';
+import {
+  Extension, Identifier, Patient, Reference,
+} from '../types';
 import { formatDate } from './Utils';
 
 export class PatientBuilder {
@@ -33,6 +35,8 @@ export class PatientBuilder {
   private isProband: boolean = true;
 
   private isFetus: boolean = false;
+
+  private extension: Extension[] = [];
 
   public withId(id?: string) {
     if (id != null) {
@@ -140,6 +144,13 @@ export class PatientBuilder {
     return this;
   }
 
+  public withExtensions(extension?: Extension[]) {
+    if (extension != null) {
+      this.extension = extension;
+    }
+    return this;
+  }
+
   public withPatient(patient: Partial<Patient>) {
     return this
       .withId(patient.id)
@@ -152,7 +163,19 @@ export class PatientBuilder {
       .withOrganization(patient.managingOrganization?.reference.split('/')[1])
       .withIsProband(patient.extension?.find((ext) => ext.url.includes('is-proband'))?.valueBoolean || false)
       .withIsFetus(patient.extension?.find((ext) => ext.url.includes('is-fetus'))?.valueBoolean || false)
-      .withGeneralPractitioners(patient.generalPractitioner);
+      .withGeneralPractitioners(patient.generalPractitioner)
+      .withExtensions(patient.extension);
+  }
+
+  private addOrSetExtension(patient: Patient, value:{url: string, [key: string]: any}) {
+    const extIndex = patient.extension.findIndex((ext) => ext.url === value.url);
+    if (extIndex === -1) {
+      patient.extension.push(value);
+    } else {
+      patient.extension[extIndex] = {
+        ...value,
+      };
+    }
   }
 
   public build() {
@@ -163,16 +186,7 @@ export class PatientBuilder {
       },
       active: this.active,
       birthDate: (this.birthDate != null) ? formatDate(this.birthDate) : undefined,
-      extension: [
-        {
-          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
-          valueBoolean: this.isProband,
-        },
-        {
-          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
-          valueBoolean: this.isFetus,
-        },
-      ],
+      extension: [...this.extension],
       gender: this.gender,
       generalPractitioner: [],
       identifier: this.identifiers,
@@ -186,13 +200,24 @@ export class PatientBuilder {
         },
       ],
     };
+
+    this.addOrSetExtension(patient, {
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
+      valueBoolean: this.isProband,
+    });
+
+    this.addOrSetExtension(patient, {
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+      valueBoolean: this.isFetus,
+    });
+
     if (
       this.ethnicityCode != null
       && this.ethnicityDisplay != null
       && this.ethnicityCode.length > 0
       && this.ethnicityDisplay.length > 0
     ) {
-      patient.extension.push({
+      this.addOrSetExtension(patient, {
         url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/qc-ethnicity',
         valueCoding: {
           system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity',
@@ -203,7 +228,8 @@ export class PatientBuilder {
     }
     if (this.bloodRelationship != null && this.bloodRelationship.length > 0) {
       const code = this.bloodRelationship.charAt(0);
-      patient.extension.push({
+
+      this.addOrSetExtension(patient, {
         url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/blood-relationship',
         valueCoding: {
           system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/blood-relationship',
