@@ -49,6 +49,7 @@ export type PatientState = {
   observations?: Observations;
   canEdit?: boolean;
   openedPrescriptionId?: string;
+  parent?: any;
 };
 
 type Action = {
@@ -66,6 +67,7 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       draft.openedPrescriptionId = action.payload.openedPrescriptionId;
       break;
     case actions.PATIENT_FETCH_SUCCEEDED: {
+      draft.parent = action.payload.parent;
       draft.canEdit = action.payload.canEdit;
       draft.observations = {
         cgh: getObservations('CGH', action.payload.patientData),

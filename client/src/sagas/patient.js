@@ -24,6 +24,26 @@ const getIdsFromPatient = (data) => {
 
   return ids;
 };
+const FETUS_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus';
+const FAMILY_REL_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
+
+const extractPatientResource = (response) => get(response, 'payload.data.entry[0].resource.entry[0].resource');
+
+const getParentIfFetus = async (response) => {
+  const patient = extractPatientResource(response);
+  const isFetusExt = getExtension(patient, FETUS_EXT_URL);
+  if (isFetusExt != null && isFetusExt.valueBoolean) {
+    const familyRelationExt = getExtension(patient, FAMILY_REL_EXT_URL);
+    const familyRelSubjectExt = getExtension(familyRelationExt, 'subject');
+    const idParts = get(familyRelSubjectExt, 'valueReference.reference', '').split('/');
+
+    if (idParts.length > 1) {
+      const parentRes = await Api.getPatientById(idParts[1]);
+      return get(parentRes, 'payload.data.data');
+    }
+  }
+  return undefined;
+};
 
 function* fetch(action) {
   try {
@@ -31,8 +51,12 @@ function* fetch(action) {
     if (patientDataResponse.error) {
       throw new ApiError(patientDataResponse.error);
     }
-    const practitionersDataResponse = yield Api.getPractitionersData(patientDataResponse.payload.data);
-    const canEditResponse = yield Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data));
+
+    const [parent, practitionersDataResponse, canEditResponse] = yield Promise.all([
+      getParentIfFetus(patientDataResponse),
+      Api.getPractitionersData(patientDataResponse.payload.data),
+      Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data)),
+    ]);
 
     yield put({
       type: actions.PATIENT_FETCH_SUCCEEDED,
@@ -40,6 +64,7 @@ function* fetch(action) {
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDataResponse.payload.data,
         canEdit: canEditResponse.payload.data.data.result,
+        parent,
       },
     });
   } catch (e) {
