@@ -8,15 +8,18 @@ import {
   ic_perm_contact_calendar,
 } from 'react-icons-kit/md';
 import { FormOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ParsedPatientData } from '../../../../../../helpers/providers/types';
 import FamilyTag from './FamilyTag';
 import { navigateToPatientScreen } from '../../../../../../actions/router';
 import PatientEditModal from './PatientEdit';
+import { State } from '../../../../../../reducers';
 
 const MAX_MRNS_DISPLAYED = 2;
 
 const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
+  const parent = useSelector<State>((state) => state.patient.parent) as any;
+
   const dispatch = useDispatch();
   return (
     <div className="prescriptions-tab__patient-section__name-block">
@@ -31,7 +34,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
             className="link--underline"
             onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
           >
-            { `${patient.lastName.toUpperCase()}, ${patient.firstName} (${intl.get('screen.patient.details.mother').toLowerCase()})` }
+            { `${parent.lastName.toUpperCase()}, ${parent.firstName} (${intl.get('screen.patient.details.mother').toLowerCase()})` }
           </Button>
         </>
       ) : (
