@@ -195,7 +195,7 @@ const FormModal : React.FC<Props> = ({
       }
       dispatch({ type: ActionType.RAMQ_VALID });
     }
-  }, [ramqChecked]);
+  }, [ramqChecked, state.ramqStatus]);
 
   useEffect(() => {
     if (patientCreationStatus) {
