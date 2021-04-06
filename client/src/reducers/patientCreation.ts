@@ -47,6 +47,9 @@ const reducer = (
       draft.ramqChecked = false;
       draft.status = undefined;
       break;
+    case actions.PATIENT_FETCH_INFO_BY_RAMQ:
+      draft.ramqChecked = false;
+      break;
     case actions.PATIENT_FETCH_INFO_BY_RAMQ_SUCCEEDED:
       draft.patient = get(action, 'payload.data.entry[0].resource');
       draft.ramqChecked = true;
