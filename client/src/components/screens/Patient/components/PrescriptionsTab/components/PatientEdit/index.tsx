@@ -209,6 +209,19 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
   const [hasRamq, setHasRamq] = useState(!!originalRAMQ);
   const [isFormValid, setIsFormValid] = useState(validateForm(initialFormState, mrnState.mrns, hasRamq));
 
+  const getInitialValues = () => ({
+    ramq: formatRamq(originalRAMQ),
+    ramqConfirm: formatRamq(originalRAMQ),
+    lastname: originalLastName,
+    firstname: originalFirstName,
+    sex: patient.gender,
+    birthDate: moment(patient.birthDate),
+  });
+
+  useEffect(() => {
+    form.setFieldsValue(getInitialValues());
+  }, [patient]);
+
   useEffect(() => {
     setIsFormValid(validateForm(initialFormState, mrnState.mrns, hasRamq));
   }, [mrnState.mrns]);
@@ -260,14 +273,6 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
         colon={false}
         labelAlign="left"
         requiredMark={false}
-        initialValues={{
-          ramq: formatRamq(originalRAMQ),
-          ramqConfirm: formatRamq(originalRAMQ),
-          lastname: originalLastName,
-          firstname: originalFirstName,
-          sex: patient.gender,
-          birthDate: moment(patient.birthDate),
-        }}
         onChange={() => {
           setIsFormValid(validateForm(form.getFieldsValue(), mrnState.mrns, hasRamq));
         }}
