@@ -35,7 +35,7 @@ const buildName = (name: {lastName: string, firstName: string}, isFetus: boolean
         <span className="patient-page__header__name__mother-name">
           (
           <Button type="link" className="link--underline" onClick={() => onNavigateToMotherFile()}>
-            { `${name.lastName.toUpperCase()}, ${name.firstName}` }
+            { `${name.lastName.toUpperCase()} ${name.firstName}` }
           </Button>
           )
         </span>
