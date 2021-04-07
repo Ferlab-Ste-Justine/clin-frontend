@@ -25,6 +25,7 @@ import { PatientBuilder } from '../../../../../../../helpers/fhir/builder/Patien
 import { editPatient } from '../../../../../../../actions/patientEdition';
 import { PatientEditionStatus } from '../../../../../../../reducers/patientEdition';
 import { isValidRamq } from '../../../../../../../helpers/fhir/api/PatientChecker';
+import { isMrnUnique } from '../../../../../../../helpers/patient';
 
 enum MrnActionType {
   ADD,
@@ -48,6 +49,7 @@ interface MrnElement {
   index: number
   status: MRN_STATUS
   values: MrnValues
+  error?: string | null
 }
 
 interface MrnState {
@@ -68,6 +70,7 @@ interface ChangeMrnAction {
   payload: {
     index: number,
     values: MrnValues
+    error?: string
   }
 }
 
@@ -98,6 +101,7 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
               number: '',
               organization: undefined,
             },
+            error: null,
           },
         ],
       };
@@ -108,6 +112,7 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
       clonedMrns[action.payload.index] = {
         ...clonedMrns[action.payload.index],
         values: action.payload.values,
+        error: action.payload.error,
       };
       return {
         ...state,
@@ -404,15 +409,19 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                           placeholder="123456"
                           aria-label={intl.get('screen.patient.details.edit.files.number')}
                           value={mrnValue.values.number}
-                          onChange={(event) => {
+                          onChange={async (event) => {
+                            const numberValue = event.currentTarget.value.replace(/[^a-zA-Z0-9]/g, '');
+                            const error = await isMrnUnique(numberValue, mrnValue.values.organization, '')
+                              ? '' : intl.get('screen.patient.details.edit.files.existing');
                             mrnDispatch({
                               type: MrnActionType.CHANGE,
                               payload: {
                                 index: mrnValue.index,
                                 values: {
-                                  number: event.currentTarget.value,
+                                  number: numberValue,
                                   organization: mrnValue.values.organization,
                                 },
+                                error,
                               },
                             });
                           }}
@@ -424,7 +433,9 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                           placeholder={intl.get('screen.patient.details.edit.files.hospital')}
                           value={mrnValue.values.organization}
                           defaultValue={undefined}
-                          onChange={(value) => {
+                          onChange={async (value) => {
+                            const error = await isMrnUnique(mrnValue.values.number, value, '')
+                              ? '' : intl.get('screen.patient.details.edit.files.existing');
                             mrnDispatch({
                               type: MrnActionType.CHANGE,
                               payload: {
@@ -433,6 +444,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                                   number: mrnValue.values.number,
                                   organization: value,
                                 },
+                                error,
                               },
                             });
                           }}
@@ -461,6 +473,12 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                         />
                       </Col>
                     </Row>
+                    { mrnValue.error && (
+                      <Row>
+                        <Typography.Text type="danger">{ mrnValue.error }</Typography.Text>
+                      </Row>
+
+                    ) }
                   </li>
                 ))
             }

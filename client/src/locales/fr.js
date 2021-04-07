@@ -283,6 +283,7 @@ const fr = {
   'screen.patient.details.edit.files.cancel': 'Annuler',
   'screen.patient.details.edit.files.number': 'Numéro de dossier',
   'screen.patient.details.edit.files.hospital': 'Hôpital',
+  'screen.patient.details.edit.files.existing': 'Le numéro de dossier existe déjà pour cet hôpital',
   'screen.patient.details.edit.cancel': 'Annuler',
   'screen.patient.details.edit.submit': 'Soumettre',
   'screen.patient.details.edit.success': 'La fiche a été mise à jour',
