@@ -491,7 +491,17 @@ const FormModal : React.FC<Props> = ({
                             ]
                           }
                         >
-                          <Input placeholder="MRN 12345678" data-testid="mrn-file" />
+                          <Input
+                            placeholder="MRN 12345678"
+                            data-testid="mrn-file"
+                            onChange={(event) => {
+                              form.setFieldsValue({
+                                mrn: {
+                                  file: event.currentTarget.value.replace(/[^a-zA-Z0-9]/g, ''),
+                                },
+                              });
+                            }}
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={10}>

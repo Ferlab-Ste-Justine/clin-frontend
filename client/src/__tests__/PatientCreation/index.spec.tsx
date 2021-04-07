@@ -807,4 +807,13 @@ describe('PatientCreation', () => {
       expect(queryByText(screen.getByRole('dialog'), 'Nom de famille')).not.toBeInTheDocument();
     });
   });
+
+  test('mrn number should only accept alpha numerical charactar', async () => {
+    render(<AppTest><PatientSearchScreen /></AppTest>);
+    userEvent.click(screen.getByText('Nouvelle prescription'), null);
+    userEvent.click(screen.getByLabelText(/Aucun numéro RAMQ disponible/i), {});
+
+    userEvent.type(screen.getByTestId('mrn-file'), 'abc-123()/é');
+    expect(screen.getByTestId('mrn-file')).toHaveValue('abc123');
+  });
 });
