@@ -246,13 +246,16 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     <div className="prescriptions-tab__prescriptions-section__details__status-value">
                       <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
                         <StatusTag status={prescription.status} />
-                        <Button
-                          className="button--borderless"
-                          icon={<EditFilled />}
-                          onClick={() => setSelectedPrescriptionId(prescription.id)}
-                        >
-                          { intl.get('screen.patient.details.prescription.change') }
-                        </Button>
+                        { (prescription.status !== 'draft' && prescription.status !== 'incomplete')
+                        && (
+                          <Button
+                            className="button--borderless"
+                            icon={<EditFilled />}
+                            onClick={() => setSelectedPrescriptionId(prescription.id)}
+                          >
+                            { intl.get('screen.patient.details.prescription.change') }
+                          </Button>
+                        ) }
                       </div>
                       { ['revoked', 'incomplete'].includes(prescription.status) && prescription.note && (
                         <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
