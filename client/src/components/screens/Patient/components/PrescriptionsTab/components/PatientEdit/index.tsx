@@ -224,7 +224,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
 
   function close() {
     onClose();
-    form.resetFields();
+    form.setFieldsValue(getInitialValues());
   }
 
   useEffect(() => {
