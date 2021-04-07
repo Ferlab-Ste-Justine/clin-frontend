@@ -11,7 +11,6 @@ import { FormInstance, useForm } from 'antd/lib/form/Form';
 import moment from 'moment';
 import { RadioChangeEvent } from 'antd/lib/radio';
 import get from 'lodash/get';
-import set from 'lodash/set';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -167,9 +166,10 @@ const FormModal : React.FC<Props> = ({
     if (!mrnFile || !organization) {
       return Promise.resolve();
     }
-    const response = await api.getPatientByIdentifier(mrnFile, organization);
+    const response: any = await api.getPatientByIdentifier(mrnFile, organization);
     const identifiers = get(response, 'payload.data.entry[0].resource.identifier', []);
-    const isUnique = identifiers.length <= 0;
+    const patientIds: string[] = get(response, 'payload.data.entry', []).map((entry: any) => entry.resource.id);
+    const isUnique = identifiers.length <= 0 || (patientIds.includes(patient?.id || ''));
     setIsFormValid((oldValue) => (isUnique === false ? false : oldValue));
     return isUnique ? Promise.resolve() : Promise.reject();
   }
@@ -186,11 +186,11 @@ const FormModal : React.FC<Props> = ({
             firstname: get(patient, 'name[0].given[0]'),
             mrn: {
               file: mrnData?.mrn,
-              hospital: mrnData?.hospital,
+              organization: mrnData?.hospital,
             },
             birthday: new Date(patient.birthDate!),
           });
-          setIsFormValid(true);
+          setIsFormValid(validateForm(form));
         }
       }
       dispatch({ type: ActionType.RAMQ_VALID });
@@ -514,11 +514,9 @@ const FormModal : React.FC<Props> = ({
                             data-testid="mrn-organization"
                             placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                             className="patient-creation__form__select"
-                            onChange={(value) => {
+                            onChange={() => {
                               // The Select doesn't trigger the form onChange so we have to trigger the validation manually
                               // onSubmit, the value is set though
-                              const formValues = { ...form.getFieldsValue() };
-                              set(formValues, 'mrn.organization', value);
                               setIsFormValid(validateForm(form));
                             }}
                           >
