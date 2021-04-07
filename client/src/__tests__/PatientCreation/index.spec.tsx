@@ -395,12 +395,10 @@ describe('PatientCreation', () => {
 
       expect(screen.getByLabelText('Nom de famille (mère)')).toBeDisabled();
       expect(screen.getByLabelText('Prénom (mère)')).toBeDisabled();
+      expect(screen.getByTestId('mrn-file')).toHaveValue('010000');
+      expect(screen.getByTestId('mrn-organization')).toHaveValue('CUSM');
 
       userEvent.click(screen.getByText(/masculin/i), {});
-
-      userEvent.type(screen.getByTestId('mrn-file'), 'AB1234');
-
-      userEvent.selectOptions(screen.getByTestId('mrn-organization'), 'CHUSJ');
 
       expect(screen.getByText(/soumettre/i).closest('button')).toBeEnabled();
       userEvent.click(screen.getByText(/soumettre/i), {});
