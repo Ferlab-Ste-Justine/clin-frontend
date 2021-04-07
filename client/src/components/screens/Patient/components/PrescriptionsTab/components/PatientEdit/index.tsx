@@ -7,7 +7,7 @@ import {
   Checkbox,
   Col,
   DatePicker,
-  Form, Input, Modal, Radio, Row, Select, Typography,
+  Form, Input, Modal, Popconfirm, Radio, Row, Select, Typography,
 } from 'antd';
 import moment from 'moment';
 import {
@@ -41,7 +41,7 @@ enum MRN_STATUS {
 
 interface MrnValues {
   number: string
-  organization: string
+  organization?: string
 }
 
 interface MrnElement {
@@ -96,7 +96,7 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
             status: MRN_STATUS.CREATING,
             values: {
               number: '',
-              organization: '',
+              organization: undefined,
             },
           },
         ],
@@ -201,7 +201,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
     mrns: originalMrns.map((mrn, index) => ({
       index,
       status: MRN_STATUS.VIEW,
-      values: { number: mrn.value, organization: mrn.assigner?.reference.split('/')[1] || '' },
+      values: { number: mrn.value, organization: mrn.assigner?.reference.split('/')[1] || undefined },
     })),
   });
 
@@ -222,13 +222,18 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
     form.setFieldsValue(getInitialValues());
   }, [patient]);
 
+  function close() {
+    onClose();
+    form.resetFields();
+  }
+
   useEffect(() => {
     setIsFormValid(validateForm(initialFormState, mrnState.mrns, hasRamq));
   }, [mrnState.mrns]);
 
   useEffect(() => {
     if (submissionStatus === PatientEditionStatus.CREATED) {
-      onClose();
+      close();
     }
   }, [submissionStatus]);
 
@@ -239,7 +244,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
   return (
     <Modal
       visible={isVisible}
-      onCancel={onClose}
+      onCancel={close}
       width={600}
       cancelText={intl.get('screen.patient.details.edit.cancel')}
       okText={intl.get('screen.patient.details.edit.submit')}
@@ -369,11 +374,19 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                           </Typography.Text>
                         </Col>
                         <Col span={2}>
-                          <Button
-                            className="button--borderless patient-edit__mrn-list__actions--delete"
-                            icon={<DeleteOutlined aria-label={intl.get('screen.patient.details.edit.files.delete')} />}
-                            onClick={() => mrnDispatch({ type: MrnActionType.DELETE, payload: mrnValue.index })}
-                          />
+                          <Popconfirm
+                            placement="topRight"
+                            arrowPointAtCenter
+                            title={intl.get('screen.patient.details.edit.files.delete.confirm')}
+                            okText={intl.get('screen.patient.details.edit.files.delete.confirm.yes')}
+                            cancelText={intl.get('screen.patient.details.edit.files.delete.confirm.no')}
+                            onConfirm={() => mrnDispatch({ type: MrnActionType.DELETE, payload: mrnValue.index })}
+                          >
+                            <Button
+                              className="button--borderless patient-edit__mrn-list__actions--delete"
+                              icon={<DeleteOutlined aria-label={intl.get('screen.patient.details.edit.files.delete')} />}
+                            />
+                          </Popconfirm>
                         </Col>
                       </Row>
                     </li>
@@ -386,8 +399,10 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                 .map((mrnValue) => (
                   <li>
                     <Row gutter={8}>
-                      <Col span={8}>
+                      <Col span={9}>
                         <Input
+                          placeholder="123456"
+                          aria-label={intl.get('screen.patient.details.edit.files.number')}
                           value={mrnValue.values.number}
                           onChange={(event) => {
                             mrnDispatch({
@@ -403,9 +418,12 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                           }}
                         />
                       </Col>
-                      <Col span={8}>
+                      <Col span={9}>
                         <Select
+                          aria-label={intl.get('screen.patient.details.edit.files.hospital')}
+                          placeholder={intl.get('screen.patient.details.edit.files.hospital')}
                           value={mrnValue.values.organization}
+                          defaultValue={undefined}
                           onChange={(value) => {
                             mrnDispatch({
                               type: MrnActionType.CHANGE,
@@ -424,7 +442,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
                           <Select.Option value="CUSM">CUSM</Select.Option>
                         </Select>
                       </Col>
-                      <Col span={4}>
+                      <Col span={2}>
                         &nbsp;
                       </Col>
                       <Col span={2}>

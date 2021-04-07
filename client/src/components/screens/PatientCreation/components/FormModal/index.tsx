@@ -321,6 +321,7 @@ const FormModal : React.FC<Props> = ({
                 onChange={(e: RadioChangeEvent) => {
                   resetForm(e.target.value === PatientType.FETUS);
                 }}
+                value={form.getFieldValue('patientType')}
                 defaultValue={PatientType.PERSON}
               />
               { isFetusType && (

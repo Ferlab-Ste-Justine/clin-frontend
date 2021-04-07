@@ -199,6 +199,8 @@ describe('PatientCreation', () => {
       expect(screen.getByText(/soumettre/i).closest('button')).toBeDisabled();
       userEvent.click(screen.getByText(/foetus/i), {});
 
+      expect(screen.getAllByText(/foetus/i)[0].parentNode).toHaveClass('ant-radio-button-wrapper-checked');
+
       expect(screen.getByText(/soumettre/i).closest('button')).toBeDisabled();
       userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
       userEvent.type(screen.getByLabelText('RAMQ (confirmation)'), 'DABC01010101');
