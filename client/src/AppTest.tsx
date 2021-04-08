@@ -15,7 +15,12 @@ const AppInitializer: React.FC = ({ children }) => {
   return <>{ children }</>;
 };
 
-const AppTest: React.FC = ({ children }) => {
+type Props = {
+  children: React.ReactNode;
+  additionalStateInfo?: any;
+}
+
+const AppTest: React.FC<Props> = ({ children, additionalStateInfo = {} }) => {
   const store = configureStore({
     ...initialState,
     user: {
@@ -201,6 +206,7 @@ const AppTest: React.FC = ({ children }) => {
         hpos: [],
       },
     },
+    ...additionalStateInfo,
   });
   window.CLIN = {
     namespace: 'dev',

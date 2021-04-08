@@ -761,6 +761,7 @@ const fr = {
   'form.patientSubmission.form.hpo.confirm.text': 'Voulez-vous vraiment supprimer ce phénotype?',
   'form.patientSubmission.form.hpo.confirm.yes': 'Oui',
   'form.patientSubmission.form.hpo.confirm.no': 'Non',
+  'form.patientSubmission.clinicalInformation.hypothesis.placeholder': 'Ajouter une hypothèse...',
   'form.patientSubmission.form.consent.father': 'Consentement (père)',
   'form.patientSubmission.form.consent.mother': 'Consentement (mère)',
   'form.patientSubmission.form.consent.research': 'Clause pour la recherche',

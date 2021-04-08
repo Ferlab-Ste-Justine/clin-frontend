@@ -157,7 +157,6 @@ describe('PrescriptionCreation', () => {
     const searchPractitionerInput = screen.getByText('Recherche par nom ou licence...');
     act(() => userEvent.type(searchPractitionerInput, 'ABCD'));
 
-    await new Promise((r) => setTimeout(r, 2000));
     const practitionerSelection = (await screen.findByText('TESTLASTNAME'));
 
     expect(practitionerSelection).toBeDefined();
@@ -213,10 +212,9 @@ describe('PrescriptionCreation', () => {
     const searchPractitionerInput = screen.getByText('Recherche par nom ou licence...');
     act(() => userEvent.type(searchPractitionerInput, 'ABCD'));
 
-    await new Promise((r) => setTimeout(r, 2000));
     const practitionerSelection = (await screen.findByText('TESTLASTNAME')).parentElement;
     userEvent.click(practitionerSelection, {});
 
     expect(screen.getByText(/Soumettre/i).closest('button')).toBeEnabled();
-  }, 15000);
+  }, 10000);
 });

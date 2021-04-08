@@ -762,6 +762,7 @@ const en = {
   'form.patientSubmission.clinicalInformation.file.select': 'Select',
   'form.patientSubmission.clinicalInformation.file.add': 'Add',
   'form.patientSubmission.clinicalInformation.file.addFile': 'Add a file',
+  'form.patientSubmission.clinicalInformation.hypothesis.placeholder': 'Add a hypothesis...',
   'form.patientSubmission.clinicalInformation.file.edit': 'Edit',
   'form.patientSubmission.clinicalInformation.analysisType': 'Analysis type',
   'form.patientSubmission.clinicalInformation.investigationSummary': 'Investigation summary',
