@@ -559,7 +559,7 @@ class PatientSearchScreen extends React.Component {
           <Row className="autocomplete-row">
             <Col>
               <Typography.Text className="autocomplete-row__name">
-                { result.firstName.toUpperCase() } { result.lastName }
+                { result.lastName.toUpperCase() } { result.firstName }
               </Typography.Text>
             </Col>
             <Col>
