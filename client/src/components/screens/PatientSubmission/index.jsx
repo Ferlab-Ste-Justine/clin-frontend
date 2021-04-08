@@ -360,6 +360,7 @@ function PatientSubmissionScreen(props) {
           .withCoding(getTestCoding(analysis))
           .withSubmitted(submitted, userRole.id, status)
           .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
+          .withNote(content['analysis.comments'])
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
           .withId(get(localStore, 'clinicalImpression.id'))
