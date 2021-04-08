@@ -319,7 +319,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     { prescription.test || DEFAULT_VALUE }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
-                    { consultation[index] != null ? consultation[index].hypothesis : DEFAULT_VALUE }
+                    { prescription.note || DEFAULT_VALUE }
                   </DetailsRow>
                 </Card>
                 <Summary

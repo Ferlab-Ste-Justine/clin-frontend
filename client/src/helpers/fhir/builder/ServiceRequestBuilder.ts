@@ -128,6 +128,17 @@ export class ServiceRequestBuilder {
       return this;
     }
 
+    public withNote(note?: string) {
+      if (note != null) {
+        this.serviceRequest.note = this.serviceRequest.note || [];
+        this.serviceRequest.note?.push({
+          text: note,
+          time: new Date().toISOString(),
+        });
+      }
+      return this;
+    }
+
     public build() {
       return this.serviceRequest;
     }

@@ -425,6 +425,7 @@ class ClinicalInformation extends React.Component {
     const analysisTestOptions = analysisTestNames.map((testName) => getTestCoding(testName));
 
     const initialAnalysisValue = get(localStore, 'serviceRequest.code', undefined);
+    const initialAnalysisNote = get(localStore, 'serviceRequest.note', undefined);
     const initialInterpretation = get(localStore, 'cgh.interpretation', undefined);
     const initialPrecision = get(localStore, 'cgh.precision', undefined);
     const initialIndicNote = get(localStore, 'indic.note', undefined);
@@ -472,12 +473,14 @@ class ClinicalInformation extends React.Component {
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.analysis.comments')}
             name="analysis.comments"
+            initialValue={initialAnalysisNote}
           >
             <Row gutter={8}>
               <Col span={17}>
                 <TextArea
                   placeholder={intl.get('form.patientSubmission.clinicalInformation.analysis.comments.placeholder')}
                   rows={4}
+                  defaultValue={initialAnalysisNote}
                 />
               </Col>
               <Col>
