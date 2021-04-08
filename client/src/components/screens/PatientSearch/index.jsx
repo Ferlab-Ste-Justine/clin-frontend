@@ -111,9 +111,8 @@ class PatientSearchScreen extends React.Component {
                 indeterminate={!isAllSelected && selectedPatients.length > 0}
                 onChange={(e) => {
                   const { checked } = e.target;
-
                   if (checked) {
-                    const newSelectedPatients = this.getData().map((data) => data.id);
+                    const newSelectedPatients = this.getData().map((data) => (!data.request.includes('--') ? data.request : data.id));
                     this.setState({ selectedPatients: newSelectedPatients });
                   } else {
                     this.setState({ selectedPatients: [] });
@@ -372,8 +371,8 @@ class PatientSearchScreen extends React.Component {
   }
 
   getData() {
-    const { data } = this.state;
-    return data;
+    const { data, size } = this.state;
+    return data.slice(0, size);
   }
 
   getValue(type) {
