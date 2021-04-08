@@ -556,7 +556,7 @@ class ClinicalInformation extends React.Component {
               },
             ]}
           >
-            <TextArea className="input note" rows={4} />
+            <TextArea placeholder="Ajouter une hypothèse..." className="input note" rows={4} />
           </Form.Item>
         </Card>
       </div>
