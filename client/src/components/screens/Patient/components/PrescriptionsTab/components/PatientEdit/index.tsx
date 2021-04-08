@@ -253,7 +253,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
       width={600}
       cancelText={intl.get('screen.patient.details.edit.cancel')}
       okText={intl.get('screen.patient.details.edit.submit')}
-      title={`${originalLastName}, ${originalFirstName}`}
+      title={`${originalLastName.toUpperCase()} ${originalFirstName}`}
       okButtonProps={{ disabled: !isFormValid || submissionStatus === PatientEditionStatus.PROCESSING }}
       onOk={async () => {
         const formValues = form.getFieldsValue();
