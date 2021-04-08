@@ -21,7 +21,7 @@ import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 import { PatientCreationStatus } from '../../../../../reducers/patientCreation';
 import { formatRamq } from '../../../../../helpers/fhir/patientHelper';
-import api from '../../../../../helpers/api';
+import { isMrnUnique } from '../../../../../helpers/patient';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 
@@ -166,10 +166,7 @@ const FormModal : React.FC<Props> = ({
     if (!mrnFile || !organization) {
       return Promise.resolve();
     }
-    const response: any = await api.getPatientByIdentifier(mrnFile, organization);
-    const identifiers = get(response, 'payload.data.entry[0].resource.identifier', []);
-    const patientIds: string[] = get(response, 'payload.data.entry', []).map((entry: any) => entry.resource.id);
-    const isUnique = identifiers.length <= 0 || (patientIds.includes(patient?.id || ''));
+    const isUnique = await isMrnUnique(mrnFile, organization, patient?.id);
     setIsFormValid((oldValue) => (isUnique === false ? false : oldValue));
     return isUnique ? Promise.resolve() : Promise.reject();
   }
