@@ -15,7 +15,12 @@ const AppInitializer: React.FC = ({ children }) => {
   return <>{ children }</>;
 };
 
-const AppTest: React.FC = ({ children }) => {
+type Props = {
+  children: React.ReactNode;
+  additionalStateInfo?: any;
+}
+
+const AppTest: React.FC<Props> = ({ children, additionalStateInfo = {} }) => {
   const store = configureStore({
     ...initialState,
     user: {
@@ -122,6 +127,86 @@ const AppTest: React.FC = ({ children }) => {
         },
       },
     },
+    patientSubmission: {
+      patient: {
+        resourceType: 'Patient',
+        id: 'PATIENT1',
+        extension: [
+          {
+            url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
+            valueBoolean: true,
+          },
+          {
+            url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+            valueBoolean: false,
+          },
+          {
+            url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
+            valueReference: {
+              reference: 'Group/GR-01',
+            },
+          },
+        ],
+        identifier: [
+          {
+            type: {
+              coding: [
+                {
+                  system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                  code: 'MR',
+                  display: 'Medical record number',
+                },
+              ],
+              text: 'Numéro du dossier médical',
+            },
+            value: 'MRN1',
+            assigner: {
+              reference: 'Organization/CHUSJ',
+            },
+          },
+        ],
+        active: true,
+        name: [
+          {
+            family: 'TestPatientLastName',
+            given: [
+              'TestPatientFIrstName',
+            ],
+          },
+        ],
+        managingOrganization: {
+          reference: 'Organization/CHUSJ',
+        },
+      },
+      familyGroup: null,
+      practitionerId: null,
+      serviceRequest: {},
+      clinicalImpression: {},
+      groupId: null,
+      observations: {
+        cgh: null,
+        indic: null,
+        summary: null,
+        fmh: [
+          {},
+        ],
+        hpos: [],
+      },
+      local: {
+        serviceRequest: {},
+        cgh: {},
+        summary: {},
+        indic: {},
+        consents: [],
+        practitioner: '',
+        status: 'draft',
+      },
+      deleted: {
+        fmh: [],
+        hpos: [],
+      },
+    },
+    ...additionalStateInfo,
   });
   window.CLIN = {
     namespace: 'dev',

@@ -24,6 +24,7 @@ jest.mock('antd', () => {
   );
 
   Select.Option = ({ children, ...otherProps }: any) => <option {...otherProps}>{ children }</option>;
+  Select.OptGroup = ({ children, ...otherProps }: any) => <optgroup {...otherProps}>{ children }</optgroup>;
 
   return {
     ...antd,
