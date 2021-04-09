@@ -20,7 +20,7 @@ import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuild
 import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
 import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
 import { PatientCreationStatus } from '../../../../../reducers/patientCreation';
-import { formatRamq } from '../../../../../helpers/fhir/patientHelper';
+import { formatRamq, getDetailsFromRamq } from '../../../../../helpers/fhir/patientHelper';
 import { isMrnUnique } from '../../../../../helpers/patient';
 
 const I18N_PREFIX = 'screen.patient.creation.';
@@ -189,6 +189,12 @@ const FormModal : React.FC<Props> = ({
           });
           setIsFormValid(validateForm(form));
         }
+      } else {
+        const ramqDetails = getDetailsFromRamq((form.getFieldValue('ramq') as string).replace(/\s/g, ''));
+        form.setFieldsValue({
+          birthday: moment(ramqDetails?.birthDate),
+          sex: ramqDetails?.sex,
+        });
       }
       dispatch({ type: ActionType.RAMQ_VALID });
     }

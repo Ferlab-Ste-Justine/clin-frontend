@@ -105,7 +105,10 @@ describe('PatientCreation', () => {
       userEvent.type(screen.getByLabelText('Nom de famille'), 'Smith');
       userEvent.type(screen.getByLabelText('Prénom'), 'Morty');
 
-      userEvent.click(screen.getByText(/masculin/i), {});
+      expect(screen.getByLabelText('Date de naissance')).toHaveValue('2001-01-01');
+
+      expect(screen.getByText(/masculin/i).previousSibling).toHaveClass('ant-radio-button-checked');
+      expect(screen.getByLabelText('Date de naissance')).toHaveValue('2001-01-01');
       userEvent.type(screen.getByLabelText('Date de naissance'), '2020-01-01{enter}');
 
       userEvent.type(screen.getByTestId('mrn-file'), 'AB1234');
