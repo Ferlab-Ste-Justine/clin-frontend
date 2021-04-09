@@ -195,8 +195,8 @@ function PatientSubmissionScreen(props) {
   });
   const { localStore } = props;
 
-  const createCGHResourceList = () => {
-    const values = getFields();
+  const createCGHResourceList = (content) => {
+    const values = content;
     if (values.cghInterpretationValue === undefined || values.cghInterpretationValue === 'non-realized') {
       return undefined;
     }
@@ -228,8 +228,8 @@ function PatientSubmissionScreen(props) {
     return builder.build();
   };
 
-  const createIndicationResourceList = () => {
-    const values = getFields();
+  const createIndicationResourceList = (content) => {
+    const values = content;
 
     if (values.indication === undefined) {
       return [];
@@ -375,11 +375,11 @@ function PatientSubmissionScreen(props) {
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
       batch.fmhs = buildFmhsFromValues(content, currentPatient);
 
-      const cghObservation = createCGHResourceList();
+      const cghObservation = createCGHResourceList(content);
       if (cghObservation != null) {
         batch.observations.push(cghObservation);
       }
-      batch.observations.push(createIndicationResourceList());
+      batch.observations.push(createIndicationResourceList(content));
 
       if (content.summaryNote != null) {
         batch.observations.push(createSummary(content.summaryNote));
@@ -718,7 +718,6 @@ function PatientSubmissionScreen(props) {
         onQuit={() => handleCancel()}
         onSaveAndQuit={() => {
           saveSubmission();
-          handleCancel();
         }}
       />
     </Layout>
