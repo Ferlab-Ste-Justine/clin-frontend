@@ -196,7 +196,7 @@ const en = {
   'screen.patient.details.diagnosticHypothesis': 'Diagnostic hypothesis',
   'screen.patient.details.cgh': 'CGH',
   'screen.patient.details.prescription.alert.message': 'This prescription is incomplete.',
-  'screen.patient.details.prescription.alert.action': 'Veuillez renseigner les informations manquantes.',
+  'screen.patient.details.prescription.alert.action': 'Please fill in the missing information.',
   'screen.patient.details.prescription.success.message': 'This prescription has been successfully submitted.',
   'screen.patient.details.prescriptions.summary.title': 'Summary',
   'screen.patient.details.prescriptions.summary.empty': 'No information entered',
