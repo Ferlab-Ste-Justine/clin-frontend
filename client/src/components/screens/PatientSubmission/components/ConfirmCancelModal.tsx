@@ -17,6 +17,7 @@ const ConfirmCancelModal: React.FC<Props> = ({
   <Modal
     afterClose={onClose}
     visible={open}
+    onCancel={onClose}
     title={intl.get('form.patientSubmission.cancelModal.title')}
     footer={(
       <Row gutter={8} justify="end">
