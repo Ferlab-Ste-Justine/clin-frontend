@@ -99,7 +99,7 @@ const fr = {
   'screen.patient.creation.sex.other': 'Autre',
   'screen.patient.creation.sex.unknown': 'Incertain',
   'screen.patient.creation.birthday': 'Date de naissance',
-  'screen.patient.creation.birthday.placeholder': 'Date',
+  'screen.patient.creation.birthday.placeholder': 'AAAA-MM-JJ',
   'screen.patient.creation.file': 'Dossier',
   'screen.patient.creation.file.existing': 'Le numéro de dossier existe déjà pour cet hôpital',
   'screen.patient.creation.hospital.placeholder': 'Hôpital',
