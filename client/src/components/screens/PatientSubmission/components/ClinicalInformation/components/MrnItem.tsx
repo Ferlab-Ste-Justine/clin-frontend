@@ -32,7 +32,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
   const [defaultSelectedMrn, setDefaultSelctedMrn] = useState<Identifier | undefined>(
     serviceRequest.identifier?.find((id: Identifier) => get(id, 'type.coding[0].code') === 'MR'),
   );
-
+  const [disable, setDisable] = useState<boolean>(true);
   const dispatch = useDispatch();
 
   const onCreationMode = () => {
@@ -57,6 +57,15 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
     onChange();
   };
 
+  const isDisable = () => {
+    const values = form.getFieldsValue();
+    if (values['create.mrn'] && values['create.organization']) {
+      setDisable(false);
+    } else {
+      setDisable(true);
+    }
+  };
+
   React.useEffect(() => {
     if (defaultSelectedMrn != null) {
       form.setFieldsValue({
@@ -71,7 +80,6 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
     }
     onChange();
   }, [defaultSelectedMrn]);
-
   if (mode === Mode.CREATION) {
     return (
       <Row gutter={8}>
@@ -81,6 +89,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               aria-label="mrn"
               placeholder="MRN 12345678"
               onChange={(event) => {
+                isDisable();
                 form.setFieldsValue({
                   'create.mrn': event.currentTarget.value.replace(/[^a-zA-Z0-9]/g, ''),
                 });
@@ -96,6 +105,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               placeholder={intl.get('form.patientSubmission.clinicalInformation.file.hospital')}
               style={{ width: 120 }}
               onChange={(value) => {
+                isDisable();
                 form.setFieldsValue({ organization: value.toString() });
                 onChange();
               }}
@@ -107,7 +117,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
           </Form.Item>
         </Col>
         <Col>
-          <Button type="primary" onClick={addMrn}>
+          <Button type="primary" onClick={addMrn} disabled={disable}>
             { intl.get('form.patientSubmission.clinicalInformation.file.add') }
           </Button>
         </Col>
