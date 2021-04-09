@@ -212,6 +212,7 @@ export class ObservationBuilder {
         this.note = this.note || [];
         this.note.push({
           text: value,
+          time: new Date().toISOString(),
         });
       }
       return this;

@@ -137,6 +137,7 @@ function PatientSubmissionScreen(props) {
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
 
         if (values['analysis.tests']
+            && values['analysis.tests'].length > 0
             && checkHpo()
             && checkCghInterpretationValue()
             && checkFamilyHistory()
@@ -585,6 +586,7 @@ function PatientSubmissionScreen(props) {
           patient={patient}
           clinicalImpression={clinicalImpression}
           onChange={onChange}
+          validate={validate}
           hpoResources={hpoResources}
           onHpoSelected={onHpoSelected}
           onHposUpdated={onHposUpdated}

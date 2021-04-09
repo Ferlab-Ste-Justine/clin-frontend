@@ -388,7 +388,7 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, onChange, hpoResources, fmhResources,
+      form, observations, localStore, onChange, hpoResources, fmhResources, validate,
     } = this.props;
 
     const { TextArea } = Input;
@@ -431,6 +431,10 @@ class ClinicalInformation extends React.Component {
     const initialIndicNote = get(localStore, 'indic.note', undefined);
     const initialSummaryNote = get(localStore, 'summary.note', undefined);
 
+    const isEditMode = initialAnalysisValue != null;
+
+    const formTests = (form.getFieldValue('analysis.tests') || []).filter((test) => test != null);
+
     return (
       <div className="clinical-information">
         <Card
@@ -452,23 +456,54 @@ class ClinicalInformation extends React.Component {
             <Input size="small" type="hidden" />
           </Form.Item>
 
-          <Form.Item
-            label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
-            name="analysis.tests"
-            initialValue={[initialAnalysisValue]}
-          >
-            <Checkbox.Group
-              disabled={initialAnalysisValue != null}
-              className="clinical-information__analysis__checkbox-group"
+          { initialAnalysisNote }
+
+          { !isEditMode
+          && (
+            <Form.Item
+              label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
+              name="analysis.tests"
+              initialValue={[initialAnalysisValue]}
             >
-              { analysisTestOptions.map((option) => (
-                <Checkbox
-                  value={option.code}
-                >{ option.display }
-                </Checkbox>
-              )) }
-            </Checkbox.Group>
-          </Form.Item>
+              <Checkbox.Group
+                className="clinical-information__analysis__checkbox-group"
+              >
+                { analysisTestOptions.map((option) => (
+                  <Checkbox
+                    value={option.code}
+                  >{ option.display }
+                  </Checkbox>
+                )) }
+              </Checkbox.Group>
+            </Form.Item>
+          ) }
+          { isEditMode
+          && (
+            <Form.Item
+              label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
+              name="analysis.tests"
+              initialValue={[initialAnalysisValue]}
+            >
+              <Checkbox.Group
+                className="clinical-information__analysis__checkbox-group"
+                onChange={() => {
+                  this.setState({});
+                  validate();
+                }}
+              >
+                { analysisTestOptions.map((option) => (
+                  <Checkbox
+                    disabled={
+                      get(localStore, 'serviceRequest.status') === 'incomplete'
+                      || (formTests.length === 1 && formTests.find((test) => test === option.code) == null)
+                    }
+                    value={option.code}
+                  >{ option.display }
+                  </Checkbox>
+                )) }
+              </Checkbox.Group>
+            </Form.Item>
+          ) }
 
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.analysis.comments')}
