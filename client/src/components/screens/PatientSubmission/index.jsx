@@ -64,8 +64,6 @@ const practitionerOptionFromResource = (resource) => ({
 
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
-  const isEditPrescription = get(props, 'localStore.serviceRequest.id', '').length > 0
-   && get(props, 'localStore.serviceRequest.status', 'draft') !== 'draft';
 
   const [state, setState] = React.useState({
     currentPageIndex: 0,
@@ -690,7 +688,7 @@ function PatientSubmissionScreen(props) {
                   <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
                     <Button
                       onClick={() => saveSubmission()}
-                      disabled={!state.valid || isEditPrescription}
+                      disabled={!state.valid}
                     >
                       <SaveOutlined />
                       { intl.get('screen.clinicalSubmission.saveButtonTitle') }
