@@ -19,7 +19,7 @@ export class FamilyMemberHistoryBuilder {
 
   private patient?: Reference;
 
-  private note: Note[] = [];
+  private note?: Note[];
 
   private readonly relationship: CodeableConcept;
 
@@ -78,10 +78,14 @@ export class FamilyMemberHistoryBuilder {
     return this;
   }
 
-  public withNote(value: string) {
-    this.note.push({
-      text: value,
-    });
+  public withNote(value?: string) {
+    if (value != null && value.length > 0) {
+      this.note = this.note || [];
+      this.note.push({
+        text: value,
+        time: new Date().toISOString(),
+      });
+    }
     return this;
   }
 }
