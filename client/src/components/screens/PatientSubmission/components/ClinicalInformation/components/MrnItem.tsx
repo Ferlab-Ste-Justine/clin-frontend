@@ -32,7 +32,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
   const [defaultSelectedMrn, setDefaultSelctedMrn] = useState<Identifier | undefined>(
     serviceRequest.identifier?.find((id: Identifier) => get(id, 'type.coding[0].code') === 'MR'),
   );
-  const [disable, setDisable] = useState<boolean>(true);
+  const [isDisabled, setDisabled] = useState<boolean>(true);
   const dispatch = useDispatch();
 
   const onCreationMode = () => {
@@ -57,12 +57,12 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
     onChange();
   };
 
-  const isDisable = () => {
+  const checkDisabled = () => {
     const values = form.getFieldsValue();
     if (values['create.mrn'] && values['create.organization']) {
-      setDisable(false);
+      setDisabled(false);
     } else {
-      setDisable(true);
+      setDisabled(true);
     }
   };
 
@@ -89,7 +89,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               aria-label="mrn"
               placeholder="MRN 12345678"
               onChange={(event) => {
-                isDisable();
+                checkDisabled();
                 form.setFieldsValue({
                   'create.mrn': event.currentTarget.value.replace(/[^a-zA-Z0-9]/g, ''),
                 });
@@ -105,7 +105,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               placeholder={intl.get('form.patientSubmission.clinicalInformation.file.hospital')}
               style={{ width: 120 }}
               onChange={(value) => {
-                isDisable();
+                checkDisabled();
                 form.setFieldsValue({ organization: value.toString() });
                 onChange();
               }}
@@ -117,7 +117,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
           </Form.Item>
         </Col>
         <Col>
-          <Button type="primary" onClick={addMrn} disabled={disable}>
+          <Button type="primary" onClick={addMrn} disabled={isDisabled}>
             { intl.get('form.patientSubmission.clinicalInformation.file.add') }
           </Button>
         </Col>
