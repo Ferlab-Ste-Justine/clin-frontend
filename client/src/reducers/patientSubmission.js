@@ -265,7 +265,7 @@ const patientSubmissionReducer = (
           cgh, precision, summary, hypothesis,
         } = patientState.consultation[index].parsed;
 
-        const { requester } = patientState.prescriptions[index].parsed;
+        const { requester, status } = patientState.prescriptions[index].parsed;
 
         const investigationItems = get(clinicalImpression, 'investigation[0].item', []);
         const hpos = patientState.hpos.map((hpo) => hpo.original).filter(
@@ -291,6 +291,7 @@ const patientSubmissionReducer = (
           identifier: serviceRequest.identifier || [],
           authoredOn: get(serviceRequest, 'authoredOn'),
           note: get(serviceRequest, 'note[0].text', ''),
+          status,
         };
         draft.clinicalImpression = { ...draft.clinicalImpression, id: clinicalImpression.id };
 
