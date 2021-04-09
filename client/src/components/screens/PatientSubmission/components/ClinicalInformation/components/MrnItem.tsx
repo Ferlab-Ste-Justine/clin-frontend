@@ -77,7 +77,15 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       <Row gutter={8}>
         <Col>
           <Form.Item name="create.mrn">
-            <Input aria-label="mrn" placeholder="MRN 12345678" />
+            <Input
+              aria-label="mrn"
+              placeholder="MRN 12345678"
+              onChange={(event) => {
+                form.setFieldsValue({
+                  'create.mrn': event.currentTarget.value.replace(/[^a-zA-Z0-9]/g, ''),
+                });
+              }}
+            />
           </Form.Item>
         </Col>
         <Col>
