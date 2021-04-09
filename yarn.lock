@@ -1086,12 +1086,12 @@
     resize-observer-polyfill "^1.5.1"
     tslib "~1.13.0"
 
-"@blueprintjs/core@^3.33.0":
-  version "3.36.0"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-3.36.0.tgz#0a271092050c17b84f29426594708180a1b5401a"
-  integrity sha512-7VUyF+qWelDysajK0Xowlou+iqbGAFfGaM3znpmm7OEEIli5XRWjG9rhNuEk3sP7zbdOJpyqh5PAPDQvm5Sxmg==
+"@blueprintjs/core@^3.18.1":
+  version "3.42.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-3.42.0.tgz#a686f9f37b7467792995c04dc907862477bf7809"
+  integrity sha512-ln+4SNqVUnAGKy8r39l+3u/ycI9YEdPUT7bWUI4lFTyckX+eQzj4Jznqvy8UljXXzJwjCNABFs83OjG70QdAQw==
   dependencies:
-    "@blueprintjs/icons" "^3.23.0"
+    "@blueprintjs/icons" "^3.26.0"
     "@types/dom4" "^2.0.1"
     classnames "^2.2"
     dom4 "^2.1.5"
@@ -1103,7 +1103,7 @@
     resize-observer-polyfill "^1.5.1"
     tslib "~1.13.0"
 
-"@blueprintjs/icons@^3.21.0", "@blueprintjs/icons@^3.23.0":
+"@blueprintjs/icons@^3.21.0":
   version "3.23.0"
   resolved "https://registry.yarnpkg.com/@blueprintjs/icons/-/icons-3.23.0.tgz#4cfe0db4363971ac5d8a0a59590a6efc16115dc6"
   integrity sha512-QOQ3P5bU1FiEwnMBl5Chn433ONSSTIMgC+zZJttyXV0m8R7D1bPBJJqIMuANXtRld/Fj+8IzoQ6jfaVUG16slA==
@@ -1111,16 +1111,23 @@
     classnames "^2.2"
     tslib "~1.13.0"
 
-"@blueprintjs/table@3.8.16":
-  version "3.8.16"
-  resolved "https://registry.yarnpkg.com/@blueprintjs/table/-/table-3.8.16.tgz#5403ee71cd44c1ace08f745a519ed19a48d5d015"
-  integrity sha512-wvo0o3g4Ve/2vC1meNi42wb3bnXX2WXEPHFdZL31WYIy19FnGrcFK6cLND0vS4UGXlexmXUU5/d1SopLh3v88A==
+"@blueprintjs/icons@^3.26.0":
+  version "3.26.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/icons/-/icons-3.26.0.tgz#d3f0aa0d35a9ebe8648db9651af364dfcc529d9f"
+  integrity sha512-1+yhYH1Fjj5qGx8drZUL2L1R42MiN0WVHTTKYqGEV9TAzhvFHCSZgALD7WNQa+FEibw/8B4U+79IRgUPJNEjow==
   dependencies:
-    "@blueprintjs/core" "^3.33.0"
     classnames "^2.2"
-    prop-types "^15.7.2"
-    react-lifecycles-compat "^3.0.4"
     tslib "~1.13.0"
+
+"@blueprintjs/table@3.7.1":
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/table/-/table-3.7.1.tgz#3e3e876a2f0b8bebfc26d4bf8350a120614c88aa"
+  integrity sha512-NSdwjBhhsSTq1lgdRWwsDGavhAbG3j/CH86kmtBaH3msHz3ENjowjeuw1JBryJZLl0raGDV0Ln3kbQ93AKuPXw==
+  dependencies:
+    "@blueprintjs/core" "^3.18.1"
+    classnames "^2.2"
+    prop-types "^15.6.0"
+    tslib "~1.9.0"
 
 "@clarketm/saga-monitor@^2.0.1":
   version "2.0.1"
@@ -10196,7 +10203,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.4"
 
-prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -12774,6 +12781,11 @@ tslib@~1.13.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
   integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
+
+tslib@~1.9.0:
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
+  integrity sha512-4krF8scpejhaOgqzBEcGM7yDIEfi0/8+8zDRZhNZZ2kjmHJ4hv3zCbQWxoJGz1iw5U0Jl0nma13xzHXcncMavQ==
 
 tsutils@^3.17.1:
   version "3.17.1"
