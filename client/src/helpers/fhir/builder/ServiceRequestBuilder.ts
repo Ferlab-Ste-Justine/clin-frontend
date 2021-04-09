@@ -129,7 +129,7 @@ export class ServiceRequestBuilder {
     }
 
     public withNote(note?: string) {
-      if (note != null) {
+      if (note != null && note.length > 0) {
         this.serviceRequest.note = this.serviceRequest.note || [];
         this.serviceRequest.note?.push({
           text: note,
