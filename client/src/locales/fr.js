@@ -224,7 +224,7 @@ const fr = {
   'screen.patient.details.prescription.submittedBy': 'Soumise par',
   'screen.patient.details.prescription.practionner': 'Médecin responsable',
   'screen.patient.details.prescription.hospital': 'Hôpital',
-  'screen.patient.details.prescription.tests': 'Analyse(s)',
+  'screen.patient.details.prescription.tests': 'Analyse',
   'screen.patient.details.prescription.comments': 'Commentaire général',
   'screen.patient.details.prescriptions.none.title': 'Aucune prescription pour ce patient',
   'screen.patient.details.prescriptions.none.description': 'Complétez le formulaire de demande de séquençage afin de créer une prescription.',
