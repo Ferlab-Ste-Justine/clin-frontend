@@ -191,7 +191,6 @@ const FormModal : React.FC<Props> = ({
         }
       } else {
         const ramqDetails = getDetailsFromRamq((form.getFieldValue('ramq') as string).replace(/\s/g, ''));
-        // @ts-ignore
         if (ramqDetails?.birthDate.toString() === 'Invalid Date') {
           form.setFieldsValue({
             sex: ramqDetails?.sex,
