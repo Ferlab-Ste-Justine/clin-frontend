@@ -41,7 +41,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       date: serviceRequest.authoredOn,
       requester: dataExtractor.getPractitionerDataFromPractitioner(serviceRequest, 'requester', serviceRequestBundle)!,
       status: this.getStatus(dataExtractor, serviceRequest) as PrescriptionStatus,
-      test: get(serviceRequest, 'code.coding[0].code', 'N/A'),
+      test: get(serviceRequest, 'code.coding[0].display', 'N/A'),
       note: this.getLastNote(serviceRequest),
       clinicalImpressionRef: this.getClinicalImpressionRef(dataExtractor, serviceRequest),
       mrn: get(serviceRequest, 'identifier[0].value', '--'),
