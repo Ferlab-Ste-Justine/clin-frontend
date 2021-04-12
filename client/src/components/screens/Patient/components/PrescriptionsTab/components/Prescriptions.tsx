@@ -167,6 +167,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                         <Button
                           type="link"
                           size="small"
+                          className="link--underline"
                           onClick={() => openEditPrescription(prescription.id!)}
                         >
                           { intl.get('screen.patient.details.prescription.alert.action') }
