@@ -191,10 +191,17 @@ const FormModal : React.FC<Props> = ({
         }
       } else {
         const ramqDetails = getDetailsFromRamq((form.getFieldValue('ramq') as string).replace(/\s/g, ''));
-        form.setFieldsValue({
-          birthday: moment(ramqDetails?.birthDate),
-          sex: ramqDetails?.sex,
-        });
+        // @ts-ignore
+        if (ramqDetails?.birthDate.toString() === 'Invalid Date') {
+          form.setFieldsValue({
+            sex: ramqDetails?.sex,
+          });
+        } else {
+          form.setFieldsValue({
+            birthday: moment(ramqDetails?.birthDate),
+            sex: ramqDetails?.sex,
+          });
+        }
       }
       dispatch({ type: ActionType.RAMQ_VALID });
     }
