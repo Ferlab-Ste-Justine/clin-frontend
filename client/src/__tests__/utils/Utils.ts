@@ -3,9 +3,21 @@ type PractitionerData = {
     lastName: string;
     firstName: string;
     number: string;
-  }
+}
 
-export class ResponseBuilder {
+type PatientData = {
+  id?: string;
+  lastName: string;
+  firstName: string;
+  isProband?: boolean;
+  isFetus?: boolean;
+  familyId?: string;
+  mrn?: string;
+  practitioner?: string;
+  gender?: string;
+}
+
+export class ResourceBuilder {
     private serviceRequest?: string;
 
     private clinicalImpression?: string;
@@ -13,6 +25,10 @@ export class ResponseBuilder {
     private observations: string[] = [];
 
     private practitioners: PractitionerData[] = [];
+
+    private patients: PatientData[] = [];
+
+    private isBundle: boolean = true;
 
     public withServiceRequest(id: string) {
       this.serviceRequest = id;
@@ -34,6 +50,16 @@ export class ResponseBuilder {
       return this;
     }
 
+    public withPatient(data: PatientData) {
+      this.patients.push(data);
+      return this;
+    }
+
+    public setBundle(value: boolean) {
+      this.isBundle = value;
+      return this;
+    }
+
     public build() {
       const bundle: any = {
         resourceType: 'Bundle',
@@ -46,8 +72,10 @@ export class ResponseBuilder {
         entry: [],
       };
 
+      const entries = this.isBundle ? bundle.entry : [];
+
       if (this.serviceRequest != null) {
-        bundle.entry.push({
+        entries.push({
           response: {
             status: '201 Created',
             location: `ServiceRequest/${this.serviceRequest}/_history/1`,
@@ -57,7 +85,7 @@ export class ResponseBuilder {
       }
 
       if (this.clinicalImpression != null) {
-        bundle.entry.push({
+        entries.push({
           response: {
             status: '201 Created',
             location: `ClinicalImpression/${this.clinicalImpression}/_history/1`,
@@ -67,7 +95,7 @@ export class ResponseBuilder {
       }
 
       this.observations.forEach((observation) => {
-        bundle.entry.push({
+        entries.push({
           response: {
             status: '201 Created',
             location: `ClinicalImpression/${observation}/_history/1`,
@@ -77,7 +105,7 @@ export class ResponseBuilder {
       });
 
       this.practitioners.forEach((practitioner, index) => {
-        bundle.entry.push({
+        entries.push({
           fullUrl: `https://fhir.qa.clin.ferlab.bio/fhir/Practitioner/${practitioner.id || index.toString()}`,
           resource: {
             resourceType: 'Practitioner',
@@ -113,6 +141,72 @@ export class ResponseBuilder {
           },
         });
       });
-      return bundle;
+
+      this.patients.forEach((patient, index) => {
+        entries.push({
+          resourceType: 'Patient',
+          id: patient.id || `PA${index}`,
+          meta: {
+            profile: [
+              'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient',
+            ],
+          },
+          extension: [
+            {
+              url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
+              valueBoolean: !!patient.isProband,
+            },
+            {
+              url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+              valueBoolean: !!patient.isFetus,
+            },
+            {
+              url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
+              valueReference: {
+                reference: patient.familyId || 'Group/ABCD',
+              },
+            },
+          ],
+          identifier: [
+            {
+              type: {
+                coding: [
+                  {
+                    system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                    code: 'MR',
+                    display: 'Medical record number',
+                  },
+                ],
+                text: 'Numéro du dossier médical',
+              },
+              value: patient.mrn,
+              assigner: {
+                reference: 'Organization/CHUSJ',
+              },
+            },
+          ],
+          active: true,
+          name: [
+            {
+              family: patient.lastName,
+              given: [
+                patient.firstName,
+              ],
+            },
+          ],
+          gender: patient.gender || 'male',
+          birthDate: '2021-01-01',
+          generalPractitioner: [
+            {
+              reference: patient.practitioner || 'PractitionerRole/ABCD',
+            },
+          ],
+          managingOrganization: {
+            reference: 'Organization/CHUSJ',
+          },
+        });
+      });
+
+      return this.isBundle ? bundle : entries;
     }
 }
