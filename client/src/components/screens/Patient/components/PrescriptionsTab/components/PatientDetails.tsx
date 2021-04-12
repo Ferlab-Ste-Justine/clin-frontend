@@ -34,7 +34,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
             className="link--underline"
             onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
           >
-            { `${parent.lastName.toUpperCase()}, ${parent.firstName} (${intl.get('screen.patient.details.mother').toLowerCase()})` }
+            { `${parent.lastName.toUpperCase()} ${parent.firstName} (${intl.get('screen.patient.details.mother').toLowerCase()})` }
           </Button>
         </>
       ) : (
