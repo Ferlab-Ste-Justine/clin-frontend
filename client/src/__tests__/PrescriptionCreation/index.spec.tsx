@@ -8,7 +8,9 @@ import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import AppTest from '../../AppTest';
 import PatientSubmission from '../../components/screens/PatientSubmission';
-import { ResponseBuilder } from '../utils/Utils';
+import { ResourceBuilder } from '../utils/Utils';
+import Patient from '../../components/screens/Patient';
+import { FakeStateProvider } from '../utils/FakeStateProvider';
 
 describe('PrescriptionCreation', () => {
   const server = setupServer();
@@ -112,7 +114,7 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Prescription (2nd Page): Practitioner Auto complete', async () => {
-    const response = new ResponseBuilder()
+    const response = new ResourceBuilder()
       .withPractitioner({
         firstName: 'FirstName',
         lastName: 'TestLastName',
@@ -163,7 +165,7 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Prescription (2nd Page): Enabled Soumettre button', async () => {
-    const response = new ResponseBuilder()
+    const response = new ResourceBuilder()
       .withPractitioner({
         firstName: 'FirstName',
         lastName: 'TestLastName',
@@ -217,4 +219,70 @@ describe('PrescriptionCreation', () => {
 
     expect(screen.getByText(/Soumettre/i).closest('button')).toBeEnabled();
   }, 10000);
+
+  test('Prescriptions: Create prescription button', async () => {
+    const patient = new ResourceBuilder()
+      .withPatient({
+        firstName: 'FirstName',
+        lastName: 'TestLastName',
+      })
+      .setBundle(false)
+      .build()[0];
+
+    const emptyState = FakeStateProvider.emptyPatientState(patient);
+
+    render(
+      <AppTest additionalStateInfo={emptyState}>
+        <Patient />
+      </AppTest>,
+    );
+
+    const createPrescriptionButton = screen.getByText('Créer une prescription').closest('button');
+    expect(createPrescriptionButton).toBeDefined();
+    expect(createPrescriptionButton).toBeEnabled();
+  });
+
+  test('Prescriptions: Modify patient button', async () => {
+    const patient = new ResourceBuilder()
+      .withPatient({
+        firstName: 'FirstName',
+        lastName: 'TestLastName',
+      })
+      .setBundle(false)
+      .build()[0];
+
+    const emptyState = FakeStateProvider.emptyPatientState(patient);
+
+    render(
+      <AppTest additionalStateInfo={emptyState}>
+        <Patient />
+      </AppTest>,
+    );
+
+    const modifyPatientButton = screen.getByText('Modifier').closest('button');
+    expect(modifyPatientButton).toBeDefined();
+    expect(modifyPatientButton).toBeEnabled();
+  });
+
+  test('Prescriptions: Modify patient button enabled', async () => {
+    const patient = new ResourceBuilder()
+      .withPatient({
+        firstName: 'FirstName',
+        lastName: 'TestLastName',
+      })
+      .setBundle(false)
+      .build()[0];
+
+    const emptyState = FakeStateProvider.emptyPatientState(patient, { canEdit: false });
+
+    render(
+      <AppTest additionalStateInfo={emptyState}>
+        <Patient />
+      </AppTest>,
+    );
+
+    const modifyPatientButton = screen.getByText('Modifier').closest('button');
+    expect(modifyPatientButton).toBeDefined();
+    expect(modifyPatientButton).toBeDisabled();
+  });
 });
