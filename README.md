@@ -65,7 +65,7 @@ Updates to the QA environment are automatically done once a new image is pushed.
 
 Procedures to deploy to prod will be fleshed out once we have such an environment.
 
-## Testing
+## Integration Testing
 
 ### Commands
 
@@ -98,3 +98,20 @@ Locally this command will run in `--watch` mode and on CI it won't
 - When using "Nested" `Form.Item` (using `name={['mrn', 'organization']}`), AntD doesn't assign any `name` property on the `input` field. This makes it impossible to select the `input` with the label (best) or by role and filtering by name.
   - You have to add the `data-testid` property supported by react-testing-library
     - More info on [the library documentation](https://testing-library.com/docs/queries/about/#priority)
+
+## End-2-end testing
+
+### Commands
+
+- `yarn cypress:open` / `npm run cypress:open`
+  - The app must be running (`yarn start`) in parallel for it to work
+
+#### Documentations
+
+##### Main
+
+- [Cypress](https://docs.cypress.io/)
+
+##### Selectors
+
+- [Cypress-Testing-Library](https://testing-library.com/docs/cypress-testing-library/intro/)
