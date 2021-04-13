@@ -49,7 +49,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
     setMode(Mode.SELECT);
     form.setFieldsValue({
       'create.mrn': '',
-      'create.organization': '',
+      'create.organization': undefined,
       mrn,
       organization,
     });
@@ -129,6 +129,10 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
             onClick={() => {
               setMode(Mode.SELECT);
               setDefaultSelctedMrn(undefined);
+              form.setFieldsValue({
+                'create.mrn': '',
+                'create.organization': undefined,
+              });
             }}
           />
         </Col>
