@@ -1,6 +1,6 @@
 import { Coding, ServiceRequest } from '../types';
 import {
-  formatDate, getExtension, getPractitionerReference, getPractitionerRoleReference,
+  formatDate, getExtension, getPractitionerReference,
 } from './Utils';
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
@@ -69,7 +69,7 @@ export class ServiceRequestBuilder {
       return this;
     }
 
-    public withSubmitted(value: boolean | undefined, roleId: string, status?: string) {
+    public withSubmitted(value: boolean | undefined, practitionerId: string, status?: string) {
       const isSubmitted = value != null && value;
 
       const ext = getExtension(this.serviceRequest, EXTENSION_SUBMITTED);
@@ -85,7 +85,7 @@ export class ServiceRequestBuilder {
       if (isSubmitted) {
         this.serviceRequest.note = this.serviceRequest.note || [];
         this.serviceRequest.note?.push({
-          authorReference: getPractitionerRoleReference(roleId),
+          authorReference: getPractitionerReference(practitionerId),
           text: 'Service Request submitted.',
           time: new Date().toISOString(),
         });

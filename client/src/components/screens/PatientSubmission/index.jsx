@@ -325,7 +325,7 @@ function PatientSubmissionScreen(props) {
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
-        actions, userRole, currentPatient,
+        actions, userRole, currentPatient, userPractitioner,
       } = props;
 
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
@@ -357,7 +357,7 @@ function PatientSubmissionScreen(props) {
           .withRequester(state.selectedPractitioner)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
-          .withSubmitted(submitted, userRole.id, status)
+          .withSubmitted(submitted, userPractitioner.id, status)
           .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
           .withNote(content['analysis.comments'])
           .build());
@@ -760,6 +760,7 @@ const mapStateToProps = (state) => ({
   localStore: state.patientSubmission.local,
   currentPatient: state.patientSubmission.patient,
   userRole: state.user.practitionerData.practitionerRole,
+  userPractitioner: state.user.practitionerData.practitioner,
 });
 
 export default connect(
