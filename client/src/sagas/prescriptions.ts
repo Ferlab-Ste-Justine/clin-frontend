@@ -6,7 +6,7 @@ import { createRequest, CreateRequestBatch, updateRequest } from '../helpers/fhi
 
 function* handleCreateRequest(action: any) {
   try {
-    const patient = yield select((state) => state.patient.patient.original);
+    const patient = yield select((state) => state.patientSubmission.patient);
     const batch = action.payload.batch as CreateRequestBatch;
     const handler = batch.update ? updateRequest : createRequest;
     const response = yield handler(batch);
