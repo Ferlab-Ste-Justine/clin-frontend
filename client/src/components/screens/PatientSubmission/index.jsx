@@ -339,6 +339,7 @@ function PatientSubmissionScreen(props) {
         fmhs: [],
         length: 0,
         submitted,
+        update: get(localStore, 'serviceRequest.id') != null,
       };
 
       const allAnalysis = content['analysis.tests'];

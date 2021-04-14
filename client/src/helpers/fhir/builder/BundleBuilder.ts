@@ -31,6 +31,22 @@ export class BundleBuilder {
       return this;
     }
 
+    public withPostResource(resource: any) {
+      const id = get(resource, 'id', `urn:uuid:${uuid()}`);
+      this.entry.push({
+        request: {
+          method: 'POST',
+          url: resource.resourceType,
+        },
+        fullUrl: id,
+        resource: {
+          ...resource,
+          id: undefined,
+        },
+      });
+      return this;
+    }
+
     public withResource(resource: any) {
       const id = get(resource, 'id', undefined);
       const idExists = !!id && !id.startsWith('urn:');

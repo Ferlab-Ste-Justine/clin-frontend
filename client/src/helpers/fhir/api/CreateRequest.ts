@@ -1,9 +1,11 @@
+import flatten from 'lodash/flatten';
+import { v4 as uuid } from 'uuid';
 import { ApiError } from '../../api';
 import httpClient from '../../http-client';
 import { BundleBuilder } from '../builder/BundleBuilder';
 import { BundleIdExtractor } from '../BundleIdExtractor';
 import {
-  Bundle, ClinicalImpression, FamilyMemberHistory, Observation, ServiceRequest,
+  Bundle, ClinicalImpression, FamilyMemberHistory, FhirResource, Observation, ServiceRequest,
 } from '../types';
 
 const CLINICAL_IMPRESSION_REF = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression';
@@ -16,9 +18,74 @@ export type CreateRequestBatch = {
   hpos: Observation[];
   fmhs: FamilyMemberHistory[];
   submitted: boolean;
+  update: boolean;
 }
 
-export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateRequestBatch> => {
+type CreateRequestResponse = {
+  serviceRequests: FhirResource[];
+}
+
+const identify = (resource: any) => ({ ...resource, id: `urn:uuid:${uuid()}` });
+
+const generateResourcesFromBatch = (batch: CreateRequestBatch) => {
+  const allResources = batch.serviceRequests.map((serviceRequest, index) => {
+    const clinicalImpression = identify(batch.clinicalImpressions[index]);
+    const sr = identify(serviceRequest);
+
+    sr.extension.push({
+      url: CLINICAL_IMPRESSION_REF,
+      valueReference: {
+        reference: clinicalImpression.id,
+      },
+    });
+
+    const resources: any[] = [
+      sr,
+      clinicalImpression,
+      ...batch.observations.map((observation) => identify(observation)),
+      ...batch.hpos.map((hpo) => identify(hpo)),
+      ...batch.fmhs.map((fmh) => identify(fmh)),
+    ];
+
+    [...resources].splice(2).forEach((resource) => {
+      clinicalImpression.investigation[0].item.push({ reference: resource.id });
+    });
+    return resources;
+  });
+  return flatten(allResources);
+};
+
+export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateRequestResponse> => {
+  if (batch.length === 0) {
+    throw new ApiError('Cannot create a ClinicalImpression without observations');
+  }
+
+  const builder = new BundleBuilder()
+    .withType('Transaction');
+
+  const resources = generateResourcesFromBatch(batch);
+  resources.forEach((resource) => builder.withPostResource(resource));
+
+  const bundle: Bundle = builder.build();
+
+  const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/`, bundle);
+  const data = BundleIdExtractor.extractIds(
+    response,
+    ...batch.serviceRequests,
+    ...batch.clinicalImpressions,
+    ...batch.observations,
+    ...batch.hpos,
+    ...batch.fmhs,
+  );
+
+  const output: CreateRequestResponse = {
+    serviceRequests: data.filter((resource) => resource.resourceType === 'ServiceRequest'),
+  };
+
+  return output;
+};
+
+export const updateRequest = async (batch: CreateRequestBatch) : Promise<CreateRequestBatch> => {
   if (batch.length === 0) {
     throw new ApiError('Cannot create a ClinicalImpression without observations');
   }
@@ -83,6 +150,7 @@ export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateR
     fmhs: [],
     length: batch.length,
     submitted: batch.submitted,
+    update: batch.update,
   };
 
   for (let i = 0; i < batch.length; i++) {
