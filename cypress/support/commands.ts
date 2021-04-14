@@ -15,3 +15,8 @@ Cypress.Commands.add('start', (path: string) => {
   cy.findByText('Patients').should('be.visible');
   return cy;
 });
+
+Cypress.Commands.add('logout', () => {
+  cy.get('.userName > .ant-dropdown-trigger', { timeout: 10000 }).click()
+    .get('.ant-dropdown-menu-item > :nth-child(1)', { timeout: 10000 }).click();
+});

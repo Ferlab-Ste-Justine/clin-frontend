@@ -136,7 +136,9 @@
     "theme:css": "lessc --js ./client/src/style/themes/antd-clin-theme.less ./client/src/style/themes/antd-clin-theme.css",
     "theme:scss": "rm ./client/src/style/themes/colors.scss; less2sass ./client/src/style/themes/colors.less",
     "theme": "pnpm run theme:css && pnpm run theme:scss",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "cypress:run:chrome": "cypress run -b chrome",
+    "cypress:run:cli": "cypress run"
   },
   "eslintConfig": {
     "extends": [

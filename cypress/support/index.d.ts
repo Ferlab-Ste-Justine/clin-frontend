@@ -6,5 +6,10 @@ declare namespace Cypress {
      * @example cy.start('/')
      */
      start(path: string): Chainable<Element>
+
+     /**
+      * Custom command to log the user out
+      */
+     logout(): Chainable<Element>
   }
 }

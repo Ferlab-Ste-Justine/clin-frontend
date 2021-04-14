@@ -105,6 +105,13 @@ Locally this command will run in `--watch` mode and on CI it won't
 
 - `yarn cypress:open` / `npm run cypress:open`
   - The app must be running (`yarn start`) in parallel for it to work
+  - Best for tests development
+- `yarn cypress:run:chrome` / `npm run cypress:run:chrome`
+  - This command will open a Chrome instance, run the tests and close the Chrome instance
+  - The closest to what runs on CI
+- `yarn cypress:run:cli` / `npm run cypress:run:cli`
+  - This command will run tests in a chromium instance
+  - The fastest
 
 #### Documentations
 
