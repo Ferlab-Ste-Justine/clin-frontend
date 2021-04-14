@@ -2,13 +2,14 @@ import {
   all, put, takeLatest, select,
 } from 'redux-saga/effects';
 import * as actions from '../actions/type';
-import { createRequest, CreateRequestBatch } from '../helpers/fhir/api/CreateRequest';
+import { createRequest, CreateRequestBatch, updateRequest } from '../helpers/fhir/api/CreateRequest';
 
 function* handleCreateRequest(action: any) {
   try {
     const patient = yield select((state) => state.patient.patient.original);
     const batch = action.payload.batch as CreateRequestBatch;
-    const response = yield createRequest(batch);
+    const handler = batch.update ? updateRequest : createRequest;
+    const response = yield handler(batch);
 
     yield put({ type: actions.CREATE_PATIENT_REQUEST_SUCCEEDED, payload: { ...response } });
 
