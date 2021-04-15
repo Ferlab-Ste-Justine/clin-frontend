@@ -83,7 +83,6 @@ function PatientSubmissionScreen(props) {
   const canGoNextPage = (currentPage) => {
     const { observations } = props;
     const { localStore } = props;
-
     const values = form.getFieldsValue();
     let hasError = null;
     switch (currentPage) {
@@ -133,15 +132,13 @@ function PatientSubmissionScreen(props) {
         };
 
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-
         if (values['analysis.tests']
             && values['analysis.tests'].length > 0
             && checkHpo()
             && checkCghInterpretationValue()
             && checkFamilyHistory()
             && values.indication
-            && values.mrn
-            && values.organization
+            && values['full-mrn']
             && !hasError
         ) {
           return false;
@@ -164,7 +161,7 @@ function PatientSubmissionScreen(props) {
 
   const validate = () => {
     const valid = !canGoNextPage(state.currentPageIndex);
-
+    console.log('validate', valid);
     if (valid && !state.valid) {
       setState((currentState) => ({
         ...currentState,
@@ -350,11 +347,17 @@ function PatientSubmissionScreen(props) {
       }
 
       const { mrn, organization } = content;
-
+      let fullMRN = [];
+      if (!mrn && !organization) {
+        fullMRN = content['full-mrn'].split(' | ');
+      } else {
+        fullMRN[0] = mrn;
+        fullMRN[1] = organization;
+      }
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withId(get(localStore, 'serviceRequest.id'))
-          .withMrn(mrn, organization)
+          .withMrn(fullMRN[0], fullMRN[1])
           .withRequester(state.selectedPractitioner)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
