@@ -1,0 +1,7 @@
+{
+  "baseUrl": "http://localhost:2000",
+  "integrationFolder": "cypress/e2e",
+  "chromeWebSecurity": false,
+  "video": false,
+  "screenshotOnRunFailure": false
+}
