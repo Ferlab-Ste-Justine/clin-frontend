@@ -40,6 +40,7 @@ function* getUserProfile() {
       if (response.error) {
         throw new ApiError(response.error);
       }
+      yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED });
     }
 
     yield put({ type: actions.USER_PROFILE_SUCCEEDED, payload: response.payload.data });
