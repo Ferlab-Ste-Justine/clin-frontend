@@ -5,7 +5,8 @@ import httpClient from '../../http-client';
 export const getUserPractitionerData = async (response: AxiosResponse) : Promise<AxiosResponse> => {
   const practitionerId = get(response, 'data.data.hits[0]._source.practitionerId');
   if (practitionerId == null) {
-    return Promise.reject(new Error(`Invalid practitioner id [${practitionerId}]`));
+    console.error(`Invalid practitioner id [${practitionerId}]`);
+    return Promise.resolve({ ...response });
   }
 
   const result = await httpClient.secureClinAxios.get(`${window.CLIN.fhirBaseUrl}/PractitionerRole?practitioner=${practitionerId}&_include=PractitionerRole:practitioner`);
