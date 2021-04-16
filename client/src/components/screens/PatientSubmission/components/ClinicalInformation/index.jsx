@@ -425,7 +425,7 @@ class ClinicalInformation extends React.Component {
     const analysisTestOptions = analysisTestNames.map((testName) => getTestCoding(testName));
 
     const initialAnalysisValue = get(localStore, 'serviceRequest.code', undefined);
-    const initialAnalysisNote = get(localStore, 'serviceRequest.note', undefined);
+    let initialAnalysisNote = get(localStore, 'serviceRequest.note', undefined);
     const initialInterpretation = get(localStore, 'cgh.interpretation', undefined);
     const initialPrecision = get(localStore, 'cgh.precision', undefined);
     const initialIndicNote = get(localStore, 'indic.note', undefined);
@@ -434,7 +434,9 @@ class ClinicalInformation extends React.Component {
     const isEditMode = initialAnalysisValue != null;
 
     const formTests = (form.getFieldValue('analysis.tests') || []).filter((test) => test != null);
-
+    if (form.getFieldValue('analysis.comments')) {
+      initialAnalysisNote = initialAnalysisNote !== form.getFieldValue('analysis.comments') ? form.getFieldValue('analysis.comments') : initialAnalysisNote;
+    }
     return (
       <div className="clinical-information">
         <Card
