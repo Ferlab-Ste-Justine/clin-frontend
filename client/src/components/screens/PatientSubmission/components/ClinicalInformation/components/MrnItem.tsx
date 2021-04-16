@@ -12,8 +12,6 @@ import style from '../../../../../../containers/App/style.module.scss';
 import { addPatientMrn } from '../../../../../../actions/patientCreation';
 import { State } from '../../../../../../reducers';
 
-const getOrganizationName = (identifier: Identifier) => identifier.assigner!.reference.split('/')[1];
-
 enum Mode {
   SELECT, CREATION
 }
@@ -65,21 +63,6 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       setDisabled(true);
     }
   };
-
-  React.useEffect(() => {
-    if (defaultSelectedMrn != null) {
-      form.setFieldsValue({
-        organization: getOrganizationName(defaultSelectedMrn),
-        mrn: defaultSelectedMrn.value,
-      });
-    } else {
-      form.setFieldsValue({
-        organization: null,
-        mrn: null,
-      });
-    }
-    onChange();
-  }, [defaultSelectedMrn]);
   if (mode === Mode.CREATION) {
     return (
       <Row gutter={8}>
@@ -106,7 +89,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               style={{ width: 120 }}
               onChange={(value) => {
                 checkDisabled();
-                form.setFieldsValue({ organization: value.toString() });
+                form.setFieldsValue({ organization: value ? value.toString() : null });
                 onChange();
               }}
             >

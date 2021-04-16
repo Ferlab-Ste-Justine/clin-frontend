@@ -161,7 +161,6 @@ function PatientSubmissionScreen(props) {
 
   const validate = () => {
     const valid = !canGoNextPage(state.currentPageIndex);
-    console.log('validate', valid);
     if (valid && !state.valid) {
       setState((currentState) => ({
         ...currentState,

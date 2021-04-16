@@ -456,8 +456,6 @@ class ClinicalInformation extends React.Component {
             <Input size="small" type="hidden" />
           </Form.Item>
 
-          { initialAnalysisNote }
-
           { !isEditMode
           && (
             <Form.Item
