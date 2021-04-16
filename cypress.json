@@ -3,5 +3,7 @@
   "integrationFolder": "cypress/e2e",
   "chromeWebSecurity": false,
   "video": false,
-  "screenshotOnRunFailure": false
+  "screenshotOnRunFailure": false,
+  "viewportWidth": 1280,
+  "viewportHeight": 800
 }
