@@ -134,9 +134,9 @@ function PatientSubmissionScreen(props) {
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
 
         const checkTest = () => {
-          if (values['analysis.tests']
-          && values['analysis.tests'].length > 0) {
-            if (values['analysis.tests'].includes(undefined)) {
+          if (values['analysis.tests']) {
+            values['analysis.tests'] = values['analysis.tests'].filter((item) => item !== undefined);
+            if (values['analysis.tests'].length === 0) {
               return false;
             }
             return true;
@@ -349,7 +349,7 @@ function PatientSubmissionScreen(props) {
         update: get(localStore, 'serviceRequest.id') != null,
       };
 
-      const allAnalysis = content['analysis.tests'];
+      const allAnalysis = content['analysis.tests'].filter((item) => item !== undefined);
       batch.length = get(allAnalysis, 'length', 0);
 
       if (batch.length === 0) {
