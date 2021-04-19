@@ -135,8 +135,8 @@ function PatientSubmissionScreen(props) {
 
         const checkTest = () => {
           if (values['analysis.tests']) {
-            values['analysis.tests'] = values['analysis.tests'].filter((item) => item !== undefined);
-            if (values['analysis.tests'].length === 0) {
+            const allAnalysis = values['analysis.tests'].filter((item) => item != null);
+            if (allAnalysis.length === 0) {
               return false;
             }
             return true;
@@ -349,7 +349,7 @@ function PatientSubmissionScreen(props) {
         update: get(localStore, 'serviceRequest.id') != null,
       };
 
-      const allAnalysis = content['analysis.tests'].filter((item) => item !== undefined);
+      const allAnalysis = content['analysis.tests'].filter((item) => item != null);
       batch.length = get(allAnalysis, 'length', 0);
 
       if (batch.length === 0) {
