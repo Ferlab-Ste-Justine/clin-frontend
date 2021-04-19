@@ -132,8 +132,19 @@ function PatientSubmissionScreen(props) {
         };
 
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-        if (values['analysis.tests']
-            && values['analysis.tests'].length > 0
+
+        const checkAnalyse = () => {
+          if (values['analysis.tests']
+          && values['analysis.tests'].length > 0) {
+            if (values['analysis.tests'].includes(undefined)) {
+              return false;
+            }
+            return true;
+          }
+          return false;
+        };
+
+        if (checkAnalyse()
             && checkHpo()
             && checkCghInterpretationValue()
             && checkFamilyHistory()
