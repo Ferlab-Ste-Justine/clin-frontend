@@ -144,12 +144,21 @@ function PatientSubmissionScreen(props) {
           return false;
         };
 
+        const checkMRN = () => {
+          if (values['full-mrn']) {
+            return true;
+          } if (values.mrn && values.organization) {
+            return true;
+          }
+          return false;
+        };
+
         if (checkTest()
             && checkHpo()
             && checkCghInterpretationValue()
             && checkFamilyHistory()
             && values.indication
-            && values['full-mrn']
+            && checkMRN()
             && !hasError
         ) {
           return false;
