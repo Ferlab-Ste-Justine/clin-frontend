@@ -4,7 +4,7 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, AutoComplete, Row, Col, Input, Typography, Button, Menu, Divider, Checkbox,
+  Card, AutoComplete, Row, Col, Input, Typography, Button, Menu, Divider, Checkbox, Tabs,
 } from 'antd';
 import { ExportToCsv } from 'export-to-csv';
 import IconKit from 'react-icons-kit';
@@ -18,11 +18,12 @@ import './style.scss';
 
 import PatientCreation from '../PatientCreation';
 import { createCellRenderer } from '../../Table/index';
-import HeaderCustomCell from '../../Table/HeaderCustomCell';
 import InteractiveTable from '../../Table/InteractiveTable';
 import { searchShape } from '../../../reducers/search';
 import { navigateToPatientScreen, navigateToSubmissionScreen } from '../../../actions/router';
-import { autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected } from '../../../actions/patient';
+import {
+  autoCompletePatients, searchPatientsByQuery, autoCompletePatientsSelected, changeSearchType,
+} from '../../../actions/patient';
 import { updateUserColumns, updateUserColumnsOrder, updateUserColumnsReset } from '../../../actions/user';
 import { generateNanuqReport } from '../../../actions/nanuq';
 import { appShape } from '../../../reducers/app';
@@ -33,12 +34,15 @@ class PatientSearchScreen extends React.Component {
     super(props);
 
     this.state = {
+      data: [],
       size: 25,
       page: 1,
       isFacetOpen: false,
       facetFilterOpen: [],
       facet: [],
       selectedPatients: [],
+      columnPreset: [],
+      handleGoToPatientScreen: this.handleGoToPatientScreen.bind(this),
     };
     this.handleAutoCompleteChange = debounce(this.handleAutoCompleteChange.bind(this), 250, { leading: true });
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -65,209 +69,14 @@ class PatientSearchScreen extends React.Component {
       'position',
       'organization',
     ];
-    this.columnPreset = [
-      {
-        key: 'selectKey',
-        label: 'screen.patientsearch.table.select',
-        columnWidth: 52,
-        renderer: createCellRenderer('custom', this.getData, {
-          handler: () => {},
-          renderer: (data) => {
-            const { selectedPatients } = this.state;
-            const id = !data.request.includes('--') ? data.request : data.id;
-            const isSelected = selectedPatients.includes(id);
-            return (
-              <Checkbox
-                className="checkbox"
-                id={id}
-                onChange={() => {
-                  if (isSelected) {
-                    this.setState(({ selectedPatients: oldSelectedPatients }) => {
-                      const valueIndex = oldSelectedPatients.indexOf(id);
-                      oldSelectedPatients.splice(valueIndex, 1);
-                      return {
-                        selectedPatients: oldSelectedPatients,
-                      };
-                    });
-                  } else {
-                    this.setState(({ selectedPatients: oldSelectedPatients }) => ({
-                      selectedPatients: [...oldSelectedPatients, id],
-                    }));
-                  }
-                }}
-                checked={isSelected}
-              />
-            );
-          },
-        }),
-        headerRenderer: () => {
-          const { selectedPatients } = this.state;
-          const isAllSelected = this.getData().length === selectedPatients.length;
-          return (
-            <HeaderCustomCell className="table__header__checkbox__wrapper">
-              <Checkbox
-                aria-label="Select All Variants"
-                checked={isAllSelected}
-                indeterminate={!isAllSelected && selectedPatients.length > 0}
-                onChange={(e) => {
-                  const { checked } = e.target;
-                  if (checked) {
-                    const newSelectedPatients = this.getData().map((data) => (!data.request.includes('--') ? data.request : data.id));
-                    this.setState({ selectedPatients: newSelectedPatients });
-                  } else {
-                    this.setState({ selectedPatients: [] });
-                  }
-                }}
-              />
-            </HeaderCustomCell>
-          );
-        },
-      },
-      {
-        key: 'status',
-        label: 'screen.patientsearch.table.status',
-        renderer: createCellRenderer('dot', this.getData, {
-          key: 'status',
-          renderer: (value) => {
-            switch (value) {
-              case intl.get('screen.patientsearch.status.draft'):
-                return '#D2DBE4';
-              case intl.get('screen.patientsearch.status.on-hold'):
-                return '#D46B08';
-              case intl.get('screen.patientsearch.status.active'):
-                return '#1D8BC6';
-              case intl.get('screen.patientsearch.status.revoked'):
-                return '#CF1322';
-              case intl.get('screen.patientsearch.status.completed'):
-                return '#389E0D';
-              case intl.get('screen.patientsearch.status.incomplete'):
-                return '#EB2F96';
-                // empty rows
-              case '':
-                return 'transparent';
-              default:
-                return 'transparent';
-            }
-          },
-        }),
-      },
-      {
-        key: 'patientId',
-        label: 'screen.patientsearch.table.patientId',
-        renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => (
-            <Button
-              onClick={() => this.handleGoToPatientScreen(data.id)}
-              data-id={data.request}
-              className="button link--underline"
-            >
-              { data.id }
-            </Button>
-          ),
-        }),
-      },
-      {
-        key: 'organization',
-        label: 'screen.patientsearch.table.organization',
-        renderer: createCellRenderer('text', this.getData, { key: 'organization' }),
-      },
-      {
-        key: 'lastName',
-        label: 'screen.patientsearch.table.lastName',
-        renderer: createCellRenderer('text', this.getData, { key: 'lastName' }),
-      },
-      {
-        key: 'firstName',
-        label: 'screen.patientsearch.table.firstName',
-        renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => {
-            try {
-              const name = data.fetus ? intl.get('screen.patient.table.fetus') : data.firstName;
-              return name;
-            } catch (e) { return ''; }
-          },
-        }),
-      },
-      {
-        key: 'gender',
-        label: 'screen.patientsearch.table.gender',
-        renderer: createCellRenderer('text', this.getData, { key: 'gender' }),
-      },
-      {
-        key: 'dob',
-        label: 'screen.patientsearch.table.dob',
-        renderer: createCellRenderer('text', this.getData, { key: 'birthDate' }),
-      },
-      {
-        key: 'practitioner',
-        label: 'screen.patientsearch.table.practitioner',
-        renderer: createCellRenderer('text', this.getData, { key: 'practitioner' }),
-      },
-      {
-        key: 'test',
-        label: 'screen.patientsearch.table.test',
-        renderer: createCellRenderer('text', this.getData, { key: 'test' }),
-      },
-      {
-        key: 'prescription',
-        label: 'screen.patientsearch.table.prescription',
-        renderer: createCellRenderer('text', this.getData, { key: 'prescription' }),
-      },
-      {
-        key: 'mrn',
-        label: 'screen.patientsearch.table.mrn',
-        renderer: createCellRenderer('text', this.getData, { key: 'mrn' }),
-      },
-      {
-        key: 'ramq',
-        label: 'screen.patientsearch.table.ramq',
-        renderer: createCellRenderer('text', this.getData, { key: 'ramq' }),
-      },
-      {
-        key: 'position',
-        label: 'screen.patientsearch.table.position',
-        renderer: createCellRenderer('text', this.getData, { key: 'position' }),
-      },
-      {
-        key: 'familyId',
-        label: 'screen.patientsearch.table.familyId',
-        renderer: createCellRenderer('text', this.getData, { key: 'familyId' }),
-      },
-      {
-        key: 'familyType',
-        label: 'screen.patientsearch.table.familyType',
-        renderer: createCellRenderer('text', this.getData, { key: 'familyType' }),
-      },
-      {
-        key: 'ethnicity',
-        label: 'screen.patientsearch.table.ethnicity',
-        renderer: createCellRenderer('text', this.getData, { key: 'ethnicity' }),
-      },
-      {
-        key: 'bloodRelationship',
-        label: 'screen.patientsearch.table.bloodRelationship',
-        renderer: createCellRenderer('text', this.getData, { key: 'bloodRelationship' }),
-      },
-      {
-        key: 'request',
-        label: 'screen.patientsearch.table.request',
-        renderer: createCellRenderer('custom', this.getData, {
-          renderer: (data) => (
-            <Button
-              onClick={() => this.handleGoToPatientScreen(data.id, data.request)}
-              data-id={data.request}
-              className="button link--underline"
-            >
-              { data.request }
-            </Button>
-          ),
-        }),
-      },
-    ];
-    this.state.facetFilterOpen = Array(this.columnPreset.length).fill(false);
+    const { columnPreset } = this.state;
+    this.state.facetFilterOpen = Array(columnPreset.length).fill(false);
   }
 
   static getDerivedStateFromProps(nextProps, state) {
+    const newState = { ...state };
+    let { columnPreset } = state;
+
     const searchType = nextProps.search.lastSearchType || 'patient';
     if (!nextProps.search[searchType].results) {
       return null;
@@ -281,15 +90,286 @@ class PatientSearchScreen extends React.Component {
     };
 
     if (searchType !== 'autocomplete') {
-      const data = [];
-      nextProps.search[searchType].results.forEach((result) => {
-        const organizationValue = () => {
-          if (result.organization.name === '') {
-            return result.organization.id.split('/')[1];
-          }
-          return result.organization.name;
-        };
-        if (result.requests == null || result.requests.length === 0) {
+      const output = [];
+      if (nextProps.search.type === 'prescriptions') {
+        nextProps.search[searchType].results.forEach((result) => {
+          const organizationValue = () => {
+            if (result.patientInfo.organization.name === '') {
+              return result.patientInfo.organization.id.split('/')[1];
+            }
+            return result.patientInfo.organization.name;
+          };
+          const value = {
+            status: getStatusLabel(result),
+            id: result.patientInfo.id,
+            mrn: result.patientInfo.mrn[0],
+            ramq: result.patientInfo.ramq,
+            organization: organizationValue(),
+            firstName: result.patientInfo.firstName,
+            lastName: result.patientInfo.lastName.toUpperCase(),
+            gender: intl.get(`screen.patientsearch.${result.patientInfo.gender.toLowerCase()}`),
+            birthDate: result.patientInfo.birthDate,
+            familyId: result.familyInfo.id,
+            familyComposition: result.familyInfo.type,
+            familyType: result.familyInfo.type,
+            ethnicity: result.ethnicity,
+            bloodRelationship: result.bloodRelationship,
+            proband: 'Proband',
+            position: result.patientInfo.position,
+            practitioner: result.practitioner.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
+            request: result.id,
+            test: result.test,
+            prescription: result.authoredOn,
+            fetus: result.patientInfo.fetus,
+          };
+
+          Object.keys(value).forEach((key) => {
+            if (value[key] == null || value[key].length === 0) {
+              value[key] = '--';
+            }
+          });
+          output.push(value);
+        });
+
+        columnPreset = [
+          {
+            key: 'patientId',
+            label: 'screen.patientsearch.table.patientId',
+            renderer: createCellRenderer('custom', (() => output), {
+              renderer: (data) => (
+                <Button
+                  onClick={() => state.handleGoToPatientScreen(data.id)}
+                  data-id={data.request}
+                  className="button link--underline"
+                >
+                  { data.id }
+                </Button>
+              ),
+            }),
+          },
+          {
+            key: 'organization',
+            label: 'screen.patientsearch.table.organization',
+            renderer: createCellRenderer('text', (() => output), { key: 'organization' }),
+          },
+          {
+            key: 'lastName',
+            label: 'screen.patientsearch.table.lastName',
+            renderer: createCellRenderer('text', (() => output), { key: 'lastName' }),
+          },
+          {
+            key: 'firstName',
+            label: 'screen.patientsearch.table.firstName',
+            renderer: createCellRenderer('custom', (() => output), {
+              renderer: (data) => {
+                try {
+                  const name = data.fetus ? intl.get('screen.patient.table.fetus') : data.firstName;
+                  return name;
+                } catch (e) { return ''; }
+              },
+            }),
+          },
+          {
+            key: 'gender',
+            label: 'screen.patientsearch.table.gender',
+            renderer: createCellRenderer('text', (() => output), { key: 'gender' }),
+          },
+          {
+            key: 'dob',
+            label: 'screen.patientsearch.table.dob',
+            renderer: createCellRenderer('text', (() => output), { key: 'birthDate' }),
+          },
+          {
+            key: 'practitioner',
+            label: 'screen.patientsearch.table.practitioner',
+            renderer: createCellRenderer('text', (() => output), { key: 'practitioner' }),
+          },
+          {
+            key: 'test',
+            label: 'screen.patientsearch.table.test',
+            renderer: createCellRenderer('text', (() => output), { key: 'test' }),
+          },
+          {
+            key: 'prescription',
+            label: 'screen.patientsearch.table.prescription',
+            renderer: createCellRenderer('text', (() => output), { key: 'prescription' }),
+          },
+          {
+            key: 'mrn',
+            label: 'screen.patientsearch.table.mrn',
+            renderer: createCellRenderer('text', (() => output), { key: 'mrn' }),
+          },
+          {
+            key: 'ramq',
+            label: 'screen.patientsearch.table.ramq',
+            renderer: createCellRenderer('text', (() => output), { key: 'ramq' }),
+          },
+          {
+            key: 'position',
+            label: 'screen.patientsearch.table.position',
+            renderer: createCellRenderer('text', (() => output), { key: 'position' }),
+          },
+          {
+            key: 'familyId',
+            label: 'screen.patientsearch.table.familyId',
+            renderer: createCellRenderer('text', (() => output), { key: 'familyId' }),
+          },
+          {
+            key: 'familyType',
+            label: 'screen.patientsearch.table.familyType',
+            renderer: createCellRenderer('text', (() => output), { key: 'familyType' }),
+          },
+          {
+            key: 'ethnicity',
+            label: 'screen.patientsearch.table.ethnicity',
+            renderer: createCellRenderer('text', (() => output), { key: 'ethnicity' }),
+          },
+          {
+            key: 'bloodRelationship',
+            label: 'screen.patientsearch.table.bloodRelationship',
+            renderer: createCellRenderer('text', (() => output), { key: 'bloodRelationship' }),
+          },
+          {
+            key: 'status',
+            label: 'screen.patientsearch.table.status',
+            renderer: createCellRenderer('dot', () => output, {
+              key: 'status',
+              renderer: (value) => {
+                switch (value) {
+                  case intl.get('screen.patientsearch.status.draft'):
+                    return '#D2DBE4';
+                  case intl.get('screen.patientsearch.status.on-hold'):
+                    return '#D46B08';
+                  case intl.get('screen.patientsearch.status.active'):
+                    return '#1D8BC6';
+                  case intl.get('screen.patientsearch.status.revoked'):
+                    return '#CF1322';
+                  case intl.get('screen.patientsearch.status.completed'):
+                    return '#389E0D';
+                  case intl.get('screen.patientsearch.status.incomplete'):
+                    return '#EB2F96';
+                    // empty rows
+                  case '':
+                    return 'transparent';
+                  default:
+                    return 'transparent';
+                }
+              },
+            }),
+          },
+          {
+            key: 'request',
+            label: 'screen.patientsearch.table.request',
+            renderer: createCellRenderer('custom', () => output, {
+              renderer: (presetData) => (
+                <Button
+                  onClick={() => state.handleGoToPatientScreen(presetData.id, presetData.request)}
+                  data-id={presetData.request}
+                  className="button link--underline"
+                >
+                  { presetData.request }
+                </Button>
+              ),
+            }),
+          },
+        ];
+      } else {
+        columnPreset = [
+          {
+            key: 'patientId',
+            label: 'screen.patientsearch.table.patientId',
+            renderer: createCellRenderer('custom', (() => output), {
+              renderer: (data) => (
+                <Button
+                  onClick={() => state.handleGoToPatientScreen(data.id)}
+                  data-id={data.request}
+                  className="button link--underline"
+                >
+                  { data.id }
+                </Button>
+              ),
+            }),
+          },
+          {
+            key: 'organization',
+            label: 'screen.patientsearch.table.organization',
+            renderer: createCellRenderer('text', (() => output), { key: 'organization' }),
+          },
+          {
+            key: 'lastName',
+            label: 'screen.patientsearch.table.lastName',
+            renderer: createCellRenderer('text', (() => output), { key: 'lastName' }),
+          },
+          {
+            key: 'firstName',
+            label: 'screen.patientsearch.table.firstName',
+            renderer: createCellRenderer('custom', (() => output), {
+              renderer: (data) => {
+                try {
+                  const name = data.fetus ? intl.get('screen.patient.table.fetus') : data.firstName;
+                  return name;
+                } catch (e) { return ''; }
+              },
+            }),
+          },
+          {
+            key: 'gender',
+            label: 'screen.patientsearch.table.gender',
+            renderer: createCellRenderer('text', (() => output), { key: 'gender' }),
+          },
+          {
+            key: 'dob',
+            label: 'screen.patientsearch.table.dob',
+            renderer: createCellRenderer('text', (() => output), { key: 'birthDate' }),
+          },
+          {
+            key: 'practitioner',
+            label: 'screen.patientsearch.table.practitioner',
+            renderer: createCellRenderer('text', (() => output), { key: 'practitioner' }),
+          },
+          {
+            key: 'test',
+            label: 'screen.patientsearch.table.test',
+            renderer: createCellRenderer('text', (() => output), { key: 'test' }),
+          },
+          {
+            key: 'prescription',
+            label: 'screen.patientsearch.table.prescription',
+            renderer: createCellRenderer('text', (() => output), { key: 'prescription' }),
+          },
+          {
+            key: 'mrn',
+            label: 'screen.patientsearch.table.mrn',
+            renderer: createCellRenderer('text', (() => output), { key: 'mrn' }),
+          },
+          {
+            key: 'ramq',
+            label: 'screen.patientsearch.table.ramq',
+            renderer: createCellRenderer('text', (() => output), { key: 'ramq' }),
+          },
+          {
+            key: 'position',
+            label: 'screen.patientsearch.table.position',
+            renderer: createCellRenderer('text', (() => output), { key: 'position' }),
+          },
+          {
+            key: 'familyId',
+            label: 'screen.patientsearch.table.familyId',
+            renderer: createCellRenderer('text', (() => output), { key: 'familyId' }),
+          },
+          {
+            key: 'familyType',
+            label: 'screen.patientsearch.table.familyType',
+            renderer: createCellRenderer('text', (() => output), { key: 'familyType' }),
+          },
+        ];
+        nextProps.search[searchType].results.forEach((result) => {
+          const organizationValue = () => {
+            if (result.organization.name === '') {
+              return result.organization.id.split('/')[1];
+            }
+            return result.organization.name;
+          };
           const value = {
             status: '--',
             id: result.id,
@@ -319,55 +399,20 @@ class PatientSearchScreen extends React.Component {
               value[key] = '--';
             }
           });
-          data.push(value);
-        } else {
-          const value = {
-            id: result.id,
-            mrn: result.mrn,
-            ramq: result.ramq,
-            organization: organizationValue(),
-            firstName: result.firstName,
-            lastName: result.lastName.toUpperCase(),
-            gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
-            birthDate: result.birthDate,
-            familyId: result.familyId,
-            familyComposition: '',
-            familyType: result.familyType,
-            ethnicity: result.ethnicity,
-            bloodRelationship: result.bloodRelationship,
-            proband: result.proband,
-            position: result.position,
-            practitioner: `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}`,
-            fetus: result.fetus,
-          };
-
-          result.requests.forEach((res) => {
-            const requestValue = {
-              ...value,
-              status: getStatusLabel(res),
-              request: res.request,
-              test: res.test,
-              prescription: res.prescription,
-            };
-            Object.keys(requestValue).forEach((key) => {
-              if (requestValue[key] == null || requestValue[key].length === 0) {
-                requestValue[key] = '--';
-              }
-            });
-            data.push(requestValue);
-          });
-        }
-      });
+          output.push(value);
+        });
+      }
 
       return {
-        data,
+        data: output,
+        columnPreset,
         page: nextProps.search[searchType].page,
         size: nextProps.search[searchType].pageSize,
-        totalLength: data.length,
+        totalLength: output.length,
       };
     }
 
-    return state;
+    return newState;
   }
 
   getData() {
@@ -542,7 +587,7 @@ class PatientSearchScreen extends React.Component {
     const { patient } = search;
     const { total } = patient;
     const {
-      size, page, isFacetOpen, facet, selectedPatients, totalLength,
+      size, page, isFacetOpen, facet, selectedPatients, totalLength, columnPreset,
     } = this.state;
 
     const { Title } = Typography;
@@ -684,8 +729,8 @@ class PatientSearchScreen extends React.Component {
                     totalLength={totalLength}
                     defaultVisibleColumns={defaultColumns}
                     defaultColumnsOrder={defaultColumnsOrder}
-                    schema={this.columnPreset}
-                    columnWidth={this.columnPreset.map((c) => c.columnWidth)}
+                    schema={columnPreset}
+                    columnWidth={columnPreset.map((c) => c.columnWidth)}
                     pageChangeCallback={this.handlePageChange}
                     pageSizeChangeCallback={this.handlePageSizeChange}
                     exportCallback={this.exportToTsv}
@@ -697,6 +742,16 @@ class PatientSearchScreen extends React.Component {
                     columnsReset={this.handleColumnsReset}
                     customHeader={(
                       <Row align="middle" gutter={32}>
+                        <Tabs
+                          className="patientSearch__tabs"
+                          activeKey={search.type}
+                          onChange={(key) => {
+                            actions.changeSearchType(key);
+                          }}
+                        >
+                          <Tabs.TabPane tab={intl.get('screen.patientsearch.tabs.prescriptions')} key="prescriptions" />
+                          <Tabs.TabPane tab={intl.get('screen.patientsearch.tabs.patients')} key="patients" />
+                        </Tabs>
                         { selectedPatients.length > 0 && (
                           <>
                             <Col>
@@ -751,6 +806,7 @@ const mapDispatchToProps = (dispatch) => ({
     updateUserColumnsOrder,
     updateUserColumnsReset,
     generateNanuqReport,
+    changeSearchType,
   }, dispatch),
 });
 

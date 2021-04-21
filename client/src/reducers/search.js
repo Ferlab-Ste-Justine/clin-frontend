@@ -16,6 +16,9 @@ import {
 
 import { ClinStorage } from '../helpers/clin_storage';
 
+const SEARCH_TYPE_PRESCRIPTIONS = 'prescriptions';
+const SEARCH_TYPE_PATIENTS = 'patients';
+
 export const initialSearchState = {
   lastSearchType: null,
   autocomplete: {
@@ -34,6 +37,7 @@ export const initialSearchState = {
   },
   columns: [],
   columnsOrder: [],
+  type: SEARCH_TYPE_PRESCRIPTIONS,
 };
 
 // @TODO
@@ -55,6 +59,7 @@ export const searchShape = {
   }),
   columns: PropTypes.array,
   columnsOrder: PropTypes.array,
+  type: PropTypes.string,
 };
 
 const retrieveColumns = () => ClinStorage.getArray(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_KEY, defaultUserSearchColumns,
@@ -79,6 +84,21 @@ const searchReducer = (state = ({ ...initialSearchState }), action) => produce(s
     case actions.PATIENT_SEARCH_SUCCEEDED:
       draft.patient.total = action.payload.data.data.total;
       draft.patient.results = action.payload.data.data.hits.map((hit) => hit._source);
+      draft.columns = retrieveColumns();
+      draft.columnsOrder = retrieveColumnsOrder();
+      draft.lastSearchType = 'patient';
+      draft.patient.page = action.payload.page || initialSearchState.patient.page;
+      draft.patient.pageSize = action.payload.size || initialSearchState.patient.pageSize;
+      draft.patient.query = action.payload.query || null;
+      break;
+
+    case actions.CHANGE_SEARCH_TYPE_REQUESTED:
+      if (action.payload.type === SEARCH_TYPE_PRESCRIPTIONS || action.payload.type === SEARCH_TYPE_PATIENTS) {
+        draft.type = action.payload.type;
+      } else {
+        throw new Error(`Invalid search type [${action.payload.type}]`);
+      }
+      draft.patient.results = [];
       break;
 
     case actions.PATIENT_SEARCH_REQUESTED:

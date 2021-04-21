@@ -39,3 +39,10 @@ export const getPatientByRamq: Action = (ramq: string) => ({
   type: actions.PATIENT_FETCH_INFO_BY_RAMQ,
   payload: { ramq },
 });
+
+export const changeSearchType: Action = (type: string) => ({
+  type: actions.CHANGE_SEARCH_TYPE_REQUESTED,
+  payload: {
+    type,
+  },
+});

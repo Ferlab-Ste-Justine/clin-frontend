@@ -46,11 +46,12 @@ const getPatientsByAutoComplete = (type, query, page, size) => Http.secureClinAx
   .then(successCallback)
   .catch(errorCallback);
 
-const searchPatients = (query, page, size) => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
+const searchPatients = (query, page, size, type = 'patient') => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
   params: {
     query,
     page,
     size,
+    type,
   },
 })
   .then(successCallback)

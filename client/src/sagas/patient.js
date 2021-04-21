@@ -117,11 +117,16 @@ function* autoComplete(action) {
 function* search(action) {
   try {
     let response = null;
+    const searchState = yield select((state) => state.search);
+
+    const searchType = searchState.type;
+    const page = action.payload.page || get(searchState, 'patients.page', 1);
+    const size = action.payload.size || get(searchState, 'patients.pageSize', 25);
 
     if (!action.payload.query) {
-      response = yield Api.searchPatients(null, action.payload.page, action.payload.size);
+      response = yield Api.searchPatients(null, page, size, searchType);
     } else {
-      response = yield Api.searchPatients(action.payload.query, action.payload.page, action.payload.size);
+      response = yield Api.searchPatients(action.payload.query, page, size);
     }
     if (response.error) {
       throw new ApiError(response.error);
@@ -167,7 +172,10 @@ function* debouncePatientAutoComplete() {
 }
 
 function* watchPatientSearch() {
-  yield takeLatest(actions.PATIENT_SEARCH_REQUESTED, search);
+  yield takeLatest([
+    actions.PATIENT_SEARCH_REQUESTED,
+    actions.CHANGE_SEARCH_TYPE_REQUESTED,
+  ], search);
 }
 
 function* watchPrescriptionChangeStatus() {

@@ -209,7 +209,7 @@ function PatientSubmissionScreen(props) {
   });
   const { localStore } = props;
 
-  const createCGHResourceList = (content) => {
+  const createCGHResourceList = (content, patientId) => {
     const values = content;
     if (values.cghInterpretationValue === undefined || values.cghInterpretationValue === 'non-realized') {
       return undefined;
@@ -223,6 +223,7 @@ function PatientSubmissionScreen(props) {
 
     const cghPrecision = values['cgh.precision'] ? values['cgh.precision'].trim() : undefined;
     const builder = new ObservationBuilder('CGH')
+      .withSubject(patientId)
       .withId(get(localStore, 'cgh.id'))
       .withStatus('final');
 
@@ -242,7 +243,7 @@ function PatientSubmissionScreen(props) {
     return builder.build();
   };
 
-  const createIndicationResourceList = (content) => {
+  const createIndicationResourceList = (content, patientId) => {
     const values = content;
 
     if (values.indication === undefined) {
@@ -256,7 +257,9 @@ function PatientSubmissionScreen(props) {
     indication = indication ? indication.trim() : indication;
 
     const builder = new ObservationBuilder('INDIC');
-    builder.withId(get(localStore, 'indic.id'));
+    builder
+      .withSubject(patientId)
+      .withId(get(localStore, 'indic.id'));
     if (indication != null) {
       builder.withNote(indication);
     }
@@ -264,10 +267,12 @@ function PatientSubmissionScreen(props) {
     return builder.build();
   };
 
-  const createSummary = (note) => {
+  const createSummary = (note, patientId) => {
     // const values = getFields();
     const builder = new ObservationBuilder('INVES');
-    builder.withId(get(localStore, 'inves.id'));
+    builder
+      .withSubject(patientId)
+      .withId(get(localStore, 'inves.id'));
 
     if (note == null && localStore.summary.note != null) {
       builder.withNote(localStore.summary.note);
@@ -396,19 +401,20 @@ function PatientSubmissionScreen(props) {
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
       batch.fmhs = buildFmhsFromValues(content, currentPatient);
 
-      const cghObservation = createCGHResourceList(content);
+      const cghObservation = createCGHResourceList(content, currentPatient.id);
       if (cghObservation != null) {
         batch.observations.push(cghObservation);
       }
-      batch.observations.push(createIndicationResourceList(content));
+      batch.observations.push(createIndicationResourceList(content, currentPatient.id));
 
       if (content.summaryNote != null) {
-        batch.observations.push(createSummary(content.summaryNote));
+        batch.observations.push(createSummary(content.summaryNote, currentPatient.id));
       }
 
       if (get(content, 'ethnicity.value') != null) {
         const observationBuilder = new ObservationBuilder('ETH')
           .withStatus('final')
+          .withSubject(currentPatient.id)
           .withId(content.ethnicity.id)
           .withValue(content.ethnicity.value,
             intl.get(`form.patientSubmission.form.ethnicity.${content.ethnicity.value}`),
@@ -424,6 +430,7 @@ function PatientSubmissionScreen(props) {
       if (get(content, 'consanguinity.value') != null) {
         batch.observations.push(
           new ObservationBuilder('CONS')
+            .withSubject(currentPatient.id)
             .withId(content.consanguinity.id)
             .withBooleanValue(content.consanguinity.value === 'yes'),
         );

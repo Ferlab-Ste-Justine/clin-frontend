@@ -196,7 +196,14 @@ export class ObservationBuilder {
       return this;
     }
 
-    public withSubject(value: Reference) {
+    public withSubject(id: string) {
+      this.subject = {
+        reference: `Patient/${id}`,
+      };
+      return this;
+    }
+
+    public withSubjectReference(value: Reference) {
       this.subject = value;
       return this;
     }
