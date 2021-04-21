@@ -28,6 +28,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         env:
+          CI: "true"
           CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME}}
           CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD}}
           REACT_APP_PATIENT_SERVICE_URL: https://patient.qa.clin.ferlab.bio/patient
