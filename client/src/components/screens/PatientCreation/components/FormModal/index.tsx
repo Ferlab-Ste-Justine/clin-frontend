@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import intl from 'react-intl-universal';
 import {
-  Checkbox, Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Spin, Typography,
+  Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Spin, Typography,
 } from 'antd';
 import './styles.scss';
 import { FormItemProps } from 'antd/lib/form';
@@ -48,35 +48,36 @@ enum RamqStatus {
 }
 interface State {
   ramqStatus: RamqStatus
-  ramqRequired: boolean
 }
 
 enum ActionType {
-  NO_RAMQ_REQUIRED,
   RAMQ_PROCESSING,
-  RAMQ_VALID
+  RAMQ_VALID,
+  RAMQ_INVALID,
 }
 
 interface RamqProcessAction {
-  type: ActionType.RAMQ_PROCESSING | ActionType.RAMQ_VALID
+  type: ActionType.RAMQ_PROCESSING
 }
 
-interface RamqRequiredAction {
-  type: ActionType.NO_RAMQ_REQUIRED,
-  payload: boolean
+interface RamqValidAction {
+  type: ActionType.RAMQ_VALID
 }
 
-type Action = RamqProcessAction | RamqRequiredAction
+interface RamqInvalidAction {
+  type: ActionType.RAMQ_INVALID
+}
+
+type Action = RamqProcessAction | RamqValidAction |RamqInvalidAction
 
 const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   switch (action.type) {
-    case ActionType.NO_RAMQ_REQUIRED:
-      return action.payload
-        ? { ramqStatus: RamqStatus.VALID, ramqRequired: false } : { ramqStatus: RamqStatus.INVALID, ramqRequired: true };
     case ActionType.RAMQ_PROCESSING:
       return { ...state, ramqStatus: RamqStatus.PROCESSING };
     case ActionType.RAMQ_VALID:
-      return { ramqStatus: RamqStatus.VALID, ramqRequired: true };
+      return { ramqStatus: RamqStatus.VALID };
+    case ActionType.RAMQ_INVALID:
+      return { ramqStatus: RamqStatus.INVALID };
     default:
       throw new Error('invalid type');
   }
@@ -91,8 +92,10 @@ function validateForm(form: FormInstance<any>) {
 
   const fileMrnError = form.getFieldError(['mrn', 'file']);
   const fileOrganizationError = form.getFieldError(['mrn', 'organization']);
-
-  if (fileMrnError.length > 0 || fileOrganizationError.length > 0) {
+  const ramqError = form.getFieldError('ramq');
+  const ramqConfirmError = form.getFieldError('ramqConfirm');
+  const errors = [...fileMrnError, ...fileOrganizationError, ...ramqError, ...ramqConfirmError];
+  if (errors.length > 0) {
     return false;
   }
 
@@ -101,21 +104,20 @@ function validateForm(form: FormInstance<any>) {
     if (key === 'mrn') {
       return value != null && value.file && value.organization;
     }
-    // if the field has a value or its noRamq (it's optional)
-    if (value || key === 'noRamq') {
-      return true;
+
+    if (key === 'ramq') {
+      return !!value && value === formValues.ramqConfirm;
     }
 
-    // if ramq and ramqConfirm doesn't have a value, it's valid if noRamq is checked
-    if (key === 'ramq' || key === 'ramqConfirm') {
-      return formValues.noRamq != null && formValues.noRamq.includes('noRamq');
+    if (key === 'ramqConfirm') {
+      return !!value && value === formValues.ramq;
     }
 
     if (key === 'birthday') {
       return value || formValues.patientType === PatientType.FETUS;
     }
 
-    return false;
+    return !!value;
   });
 }
 
@@ -142,7 +144,7 @@ const FormModal : React.FC<Props> = ({
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFetusType, setIsFetusType] = useState(false);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(
-    reducer, { ramqStatus: RamqStatus.INVALID, ramqRequired: true },
+    reducer, { ramqStatus: RamqStatus.INVALID },
   );
   const [form] = useForm();
 
@@ -151,7 +153,7 @@ const FormModal : React.FC<Props> = ({
 
     setIsFormValid(false);
     setIsFetusType(isFetus);
-    dispatch({ type: ActionType.NO_RAMQ_REQUIRED, payload: false });
+    dispatch({ type: ActionType.RAMQ_INVALID });
 
     form.setFieldsValue({ patientType: isFetus ? PatientType.FETUS : PatientType.PERSON });
   };
@@ -280,7 +282,6 @@ const FormModal : React.FC<Props> = ({
         width={600}
         okButtonProps={{ disabled: !isFormValid }}
       >
-
         <Form
           form={form}
           labelCol={{ span: 8 }}
@@ -346,13 +347,8 @@ const FormModal : React.FC<Props> = ({
               label={intl.get(`${I18N_PREFIX}ramq`)}
               name="ramq"
               rules={[
-                { required: state.ramqRequired, message: intl.get(`${I18N_PREFIX}errors.invalidRamq`) },
                 () => ({
                   validator(rule, value) {
-                    if (!state.ramqRequired) {
-                      return Promise.resolve();
-                    }
-
                     return isValidRamq(value.replace(/\s/g, '')) ? Promise.resolve() : Promise.reject();
                   },
                   message: intl.get(`${I18N_PREFIX}errors.invalidRamq`),
@@ -367,7 +363,6 @@ const FormModal : React.FC<Props> = ({
                     form.setFields([{ name: 'ramq', errors: [] }]);
                   }
                 }}
-                disabled={!state.ramqRequired}
                 onPaste={(event) => {
                   event.preventDefault();
                 }}
@@ -380,12 +375,12 @@ const FormModal : React.FC<Props> = ({
               name="ramqConfirm"
               dependencies={['ramq']}
               rules={[
-                { required: state.ramqRequired, message: intl.get(`${I18N_PREFIX}errors.invalidRamqConfirm`) },
                 ({ getFieldValue }) => ({
                   validator(rule, value) {
                     if (!value || getFieldValue('ramq') === value) {
                       return Promise.resolve();
                     }
+                    setIsFormValid(false);
                     return Promise.reject();
                   },
                   message: intl.get(`${I18N_PREFIX}errors.invalidRamqConfirm`),
@@ -395,7 +390,6 @@ const FormModal : React.FC<Props> = ({
             >
               <Input
                 placeholder="ROYL 1234 4567"
-                disabled={!state.ramqRequired}
                 onChange={(event) => {
                   form.setFieldsValue({ ramqConfirm: formatRamq(event.currentTarget.value) });
                 }}
@@ -403,18 +397,6 @@ const FormModal : React.FC<Props> = ({
                   event.preventDefault();
                 }}
               />
-            </Form.Item>
-            <Form.Item label="&nbsp;" name="noRamq">
-              <Checkbox.Group onChange={(values) => {
-                dispatch({ type: ActionType.NO_RAMQ_REQUIRED, payload: values.includes('noRamq') });
-                form.setFieldsValue({
-                  ramq: '',
-                  ramqConfirm: '',
-                });
-              }}
-              >
-                <Checkbox value="noRamq">{ intl.get(`${I18N_PREFIX}noRamq`) }</Checkbox>
-              </Checkbox.Group>
             </Form.Item>
           </fieldset>
           { (state.ramqStatus !== RamqStatus.INVALID) && (

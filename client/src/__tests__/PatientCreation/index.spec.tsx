@@ -122,54 +122,6 @@ describe('PatientCreation', () => {
       await waitFor(() => screen.getByText(/la fiche du patient a été créée avec succès/i));
       expect(screen.getByText('SMITH Morty')).toBeDefined();
     });
-
-    test('as a patient WITHOUT ramq', async () => {
-      setupValidPostmockResponse();
-      server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
-          ctx.status(200),
-          ctx.json({
-            resourceType: 'Bundle',
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            type: 'searchset',
-            total: 0,
-            link: [],
-          }),
-        )),
-      );
-
-      server.listen({ onUnhandledRequest: 'error' });
-      server.printHandlers();
-
-      render(<AppTest><PatientSearchScreen /></AppTest>);
-
-      userEvent.click(screen.getByText('Nouvelle prescription'), null);
-
-      expect(screen.getByText(/soumettre/i).closest('button')).toBeDisabled();
-      userEvent.click(screen.getByLabelText(/Aucun numéro RAMQ disponible/i), {});
-
-      await waitFor(() => screen.getByLabelText('Nom de famille'));
-
-      userEvent.type(screen.getByLabelText('Nom de famille'), 'Smith');
-      userEvent.type(screen.getByLabelText('Prénom'), 'Morty');
-
-      userEvent.click(screen.getByText(/masculin/i), {});
-      userEvent.type(screen.getByLabelText('Date de naissance'), '2020-01-01{enter}');
-
-      userEvent.type(screen.getByTestId('mrn-file'), 'AB1234');
-
-      userEvent.selectOptions(screen.getByTestId('mrn-organization'), 'CHUSJ');
-
-      expect(screen.getByText(/soumettre/i).closest('button')).toBeEnabled();
-      userEvent.click(screen.getByText(/soumettre/i), {});
-
-      await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
-      await waitFor(() => screen.getByText(/la fiche du patient a été créée avec succès/i));
-      expect(screen.getByText('SMITH Morty')).toBeDefined();
-    });
   });
 
   describe('Create a fetus', () => {
@@ -224,57 +176,6 @@ describe('PatientCreation', () => {
 
       await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
 
-      await waitFor(() => screen.getByText(/La fiche du foetus a été créée avec succès/i));
-
-      expect(screen.getByText('SMITH Beth (foetus)')).toBeDefined();
-    });
-
-    test("without the mother's RAMQ", async () => {
-      server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
-          ctx.status(200),
-          ctx.json({
-            resourceType: 'Bundle',
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            type: 'searchset',
-            total: 0,
-            link: [],
-          }),
-        )),
-      );
-
-      setupValidPostmockResponse(true);
-      server.listen({ onUnhandledRequest: 'error' });
-
-      server.printHandlers();
-
-      render(<AppTest><PatientSearchScreen /></AppTest>);
-
-      userEvent.click(screen.getByText('Nouvelle prescription'), null);
-
-      userEvent.click(screen.getByText(/foetus/i), {});
-
-      expect(screen.getByText(/soumettre/i).closest('button')).toBeDisabled();
-      userEvent.click(screen.getByLabelText(/Aucun numéro RAMQ disponible/i), {});
-
-      await waitFor(() => screen.getByLabelText('Nom de famille (mère)'));
-
-      userEvent.type(screen.getByLabelText('Nom de famille (mère)'), 'Smith');
-      userEvent.type(screen.getByLabelText('Prénom (mère)'), 'Beth');
-
-      userEvent.click(screen.getByText(/masculin/i), {});
-
-      userEvent.type(screen.getByTestId('mrn-file'), 'AB1234');
-
-      userEvent.selectOptions(screen.getByTestId('mrn-organization'), 'CHUSJ');
-
-      expect(screen.getByText(/soumettre/i).closest('button')).toBeEnabled();
-      userEvent.click(screen.getByText(/soumettre/i), {});
-
-      await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
       await waitFor(() => screen.getByText(/La fiche du foetus a été créée avec succès/i));
 
       expect(screen.getByText('SMITH Beth (foetus)')).toBeDefined();
@@ -625,7 +526,9 @@ describe('PatientCreation', () => {
       userEvent.click(screen.getByText('Nouvelle prescription'), null);
 
       expect(screen.getByText(/soumettre/i).closest('button')).toBeDisabled();
-      userEvent.click(screen.getByLabelText(/Aucun numéro RAMQ disponible/i), {});
+
+      userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
+      userEvent.type(screen.getByLabelText('RAMQ (confirmation)'), 'DABC01010101');
 
       await waitFor(() => screen.getByLabelText('Nom de famille'));
 
@@ -812,9 +715,32 @@ describe('PatientCreation', () => {
   });
 
   test('mrn number should only accept alpha numerical charactar', async () => {
+    server.use(
+      rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+        ctx.status(200),
+        ctx.json({
+          resourceType: 'Bundle',
+          id: '2acbea67-8d49-477b-bbae-7acb18430780',
+          meta: {
+            lastUpdated: '2021-03-19T18:49:41.787+00:00',
+          },
+          type: 'searchset',
+          total: 0,
+          link: [{
+            relation: 'self',
+            url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=DABC01010101',
+          }],
+        }),
+      )),
+    );
+
+    server.listen({ onUnhandledRequest: 'error' });
+
     render(<AppTest><PatientSearchScreen /></AppTest>);
     userEvent.click(screen.getByText('Nouvelle prescription'), null);
-    userEvent.click(screen.getByLabelText(/Aucun numéro RAMQ disponible/i), {});
+
+    userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
+    userEvent.type(screen.getByLabelText('RAMQ (confirmation)'), 'DABC01010101');
 
     userEvent.type(screen.getByTestId('mrn-file'), 'abc-123()/é');
     expect(screen.getByTestId('mrn-file')).toHaveValue('abc123');
