@@ -146,6 +146,14 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
             const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
             const editablePrescription = canEdit(prescription);
             const isDraft = prescription.status === 'draft';
+            const getInitalStatus = () => {
+              if (prescription.status === 'on-hold') {
+                return StatusType.submitted;
+              } if (prescription.status === 'active') {
+                return StatusType.active;
+              }
+              return undefined;
+            };
             return (
               <Tabs.TabPane
                 tab={
@@ -247,7 +255,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     <div className="prescriptions-tab__prescriptions-section__details__status-value">
                       <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
                         <StatusTag status={prescription.status} />
-                        { (prescription.status !== 'draft' && prescription.status !== 'incomplete')
+                        { (prescription.status !== 'draft' && prescription.status !== 'incomplete' && prescription.status !== 'completed')
                         && (
                           <Button
                             className="button--borderless"
@@ -268,7 +276,6 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                         </div>
                       ) }
                     </div>
-
                     <StatusChangeModal
                       isVisible={selectedPrescriptionId === prescription.id}
                       onOk={(newStatus, note) => {
@@ -276,7 +283,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                         setSelectedPrescriptionId(undefined);
                       }}
                       onCancel={() => setSelectedPrescriptionId(undefined)}
-                      initialStatus={StatusType.draft}
+                      initialStatus={getInitalStatus()}
                     />
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.mrn')}>
