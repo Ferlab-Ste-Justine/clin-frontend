@@ -76,6 +76,7 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
     case actions.PATIENT_VARIANT_SEARCH_REQUESTED:
     case actions.PATIENT_VARIANT_COUNT_REQUESTED:
     case actions.VARIANT_SCHEMA_REQUESTED:
+    case actions.CHANGE_SEARCH_TYPE_REQUESTED:
       draft.showSubloadingAnimation = true;
       break;
 
