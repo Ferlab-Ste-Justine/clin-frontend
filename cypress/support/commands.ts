@@ -4,6 +4,10 @@ import '@testing-library/cypress/add-commands';
 
 Cypress.Commands.add('start', (path: string, withLogin: boolean = false) => {
   cy.visit(path);
+  cy.intercept({
+    method: 'GET',
+    url: `${Cypress.env('patientFhirUrl')}/search?page=1&size=25&type=prescriptions`,
+  }).as('search-request');
 
   if (withLogin) {
     cy.get('#username').type(Cypress.env('username'));
@@ -11,9 +15,8 @@ Cypress.Commands.add('start', (path: string, withLogin: boolean = false) => {
     cy.get('button[type="submit"]').click();
   }
 
-  cy.intercept('GET', 'https://patient.qa.clin.ferlab.bio/patient/search').as('search-request');
   cy.wait('@search-request').its('request.headers.authorization').as('auth-token');
-  cy.findByText('Patients').should('be.visible');
+  cy.findByText('Patients et prescriptions').should('be.visible');
   return cy;
 });
 

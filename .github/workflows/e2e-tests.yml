@@ -2,7 +2,7 @@ name: End 2 end testing
 
 on:
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   cypress-run:
