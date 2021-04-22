@@ -71,7 +71,7 @@ const getClinicalObservations = (
   clinicalImpression: ClinicalImpression,
   key: string,
 ) => get(observations, key)?.find(
-  (obs: Observation) => clinicalImpression.investigation[0].item.find((i) => i.reference.indexOf(obs.id!) !== -1) != null,
+  (obs: Observation) => clinicalImpression?.investigation[0].item.find((i) => i.reference.indexOf(obs.id!) !== -1) != null,
 );
 
 const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId: string | undefined) => {
