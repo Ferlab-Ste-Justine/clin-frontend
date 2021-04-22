@@ -4,7 +4,6 @@ import React, {
 import intl from 'react-intl-universal';
 import {
   Button,
-  Checkbox,
   Col,
   DatePicker,
   Form, Input, Modal, Popconfirm, Radio, Row, Select, Typography,
@@ -164,11 +163,11 @@ const mrnReducer: Reducer<MrnState, MrnAction> = (state: MrnState, action: MrnAc
   }
 };
 
-function validateForm(values: any, mrns: MrnElement[], ramqRequired: boolean): boolean {
+function validateForm(values: any, mrns: MrnElement[]): boolean {
   const allMrnsValid = mrns.every((m) => m.status !== MRN_STATUS.CREATING);
   const validationState = {
-    ramq: !!values.ramq || !ramqRequired,
-    ramqConfirm: values.ramq === values.ramqConfirm || !ramqRequired,
+    ramq: !!values.ramq,
+    ramqConfirm: values.ramq === values.ramqConfirm,
     lastname: !!values.lastname,
     firstname: !!values.firstname,
     sex: !!values.sex,
@@ -211,8 +210,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
   });
 
   const [mrnState, mrnDispatch] = useReducer<Reducer<MrnState, MrnAction>>(mrnReducer, getOriginalMrns());
-  const [hasRamq, setHasRamq] = useState(!!originalRAMQ);
-  const [isFormValid, setIsFormValid] = useState(validateForm(initialFormState, mrnState.mrns, hasRamq));
+  const [isFormValid, setIsFormValid] = useState(validateForm(initialFormState, mrnState.mrns));
 
   const getInitialValues = () => ({
     ramq: formatRamq(originalRAMQ),
@@ -233,7 +231,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
   }
 
   useEffect(() => {
-    setIsFormValid(validateForm(initialFormState, mrnState.mrns, hasRamq));
+    setIsFormValid(validateForm(initialFormState, mrnState.mrns));
   }, [mrnState.mrns]);
 
   useEffect(() => {
@@ -284,12 +282,11 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
         labelAlign="left"
         requiredMark={false}
         onChange={() => {
-          setIsFormValid(validateForm(form.getFieldsValue(), mrnState.mrns, hasRamq));
+          setIsFormValid(validateForm(form.getFieldsValue(), mrnState.mrns));
         }}
       >
         <Form.Item label={intl.get('screen.patient.details.edit.ramq')} name="ramq">
           <Input
-            disabled={!hasRamq || !!originalRAMQ}
             onPaste={(event) => {
               event.preventDefault();
             }}
@@ -309,34 +306,21 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
             }}
           />
         </Form.Item>
-        {
-          hasRamq ? (
-            <Form.Item
-              label={intl.get('screen.patient.details.edit.ramqConfirm')}
-              name="ramqConfirm"
-            >
-              <Input
-                disabled={!!originalRAMQ}
-                onPaste={(event) => {
-                  event.preventDefault();
-                }}
-                onChange={(event) => {
-                  const parsedValue = formatRamq(event.currentTarget.value);
-                  form.setFieldsValue({ ramqConfirm: parsedValue });
-                }}
-              />
-            </Form.Item>
-          ) : (
-            <Form.Item label=" ">
-              <Checkbox
-                checked={!hasRamq}
-                onChange={(event) => setHasRamq(!event.target.checked)}
-              >
-                { intl.get('screen.patient.details.edit.noRamq') }
-              </Checkbox>
-            </Form.Item>
-          )
-        }
+        <Form.Item
+          label={intl.get('screen.patient.details.edit.ramqConfirm')}
+          name="ramqConfirm"
+        >
+          <Input
+            disabled={!!originalRAMQ}
+            onPaste={(event) => {
+              event.preventDefault();
+            }}
+            onChange={(event) => {
+              const parsedValue = formatRamq(event.currentTarget.value);
+              form.setFieldsValue({ ramqConfirm: parsedValue });
+            }}
+          />
+        </Form.Item>
 
         <Form.Item label={intl.get('screen.patient.details.edit.lastname')} name="lastname">
           <Input />
