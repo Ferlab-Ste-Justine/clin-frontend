@@ -306,7 +306,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     ) : DEFAULT_VALUE }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
-                    { prescription.requester != null ? (
+                    { prescription.requester != null && prescription.requester.formattedName !== 'N/A' ? (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
                         { formatName(prescription.requester.lastName, prescription.requester.firstName) }
                         <Popover
