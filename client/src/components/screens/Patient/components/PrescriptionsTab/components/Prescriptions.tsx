@@ -255,7 +255,7 @@ const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions })
                     <div className="prescriptions-tab__prescriptions-section__details__status-value">
                       <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
                         <StatusTag status={prescription.status} />
-                        { (prescription.status !== 'draft' && prescription.status !== 'incomplete' && prescription.status !== 'completed')
+                        { (prescription.status !== 'draft' && prescription.status !== 'incomplete' && prescription.status !== 'completed' && prescription.status !== 'revoked')
                         && (
                           <Button
                             className="button--borderless"
