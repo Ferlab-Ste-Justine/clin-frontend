@@ -311,7 +311,6 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
           name="ramqConfirm"
         >
           <Input
-            disabled={!!originalRAMQ}
             onPaste={(event) => {
               event.preventDefault();
             }}
