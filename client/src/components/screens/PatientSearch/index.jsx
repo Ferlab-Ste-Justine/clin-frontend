@@ -92,44 +92,46 @@ class PatientSearchScreen extends React.Component {
     if (searchType !== 'autocomplete') {
       const output = [];
       if (nextProps.search.type === 'prescriptions') {
-        nextProps.search[searchType].results.forEach((result) => {
-          const organizationValue = () => {
-            if (result.patientInfo.organization.name === '') {
-              return result.patientInfo.organization.id.split('/')[1];
-            }
-            return result.patientInfo.organization.name;
-          };
-          const value = {
-            status: getStatusLabel(result),
-            id: result.patientInfo.id,
-            mrn: result.patientInfo.mrn[0],
-            ramq: result.patientInfo.ramq,
-            organization: organizationValue(),
-            firstName: result.patientInfo.firstName,
-            lastName: result.patientInfo.lastName.toUpperCase(),
-            gender: intl.get(`screen.patientsearch.${result.patientInfo.gender.toLowerCase()}`),
-            birthDate: result.patientInfo.birthDate,
-            familyId: result.familyInfo.id,
-            familyComposition: result.familyInfo.type,
-            familyType: result.familyInfo.type,
-            ethnicity: result.ethnicity,
-            bloodRelationship: result.bloodRelationship,
-            proband: 'Proband',
-            position: result.patientInfo.position,
-            practitioner: result.practitioner.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
-            request: result.id,
-            test: result.test,
-            prescription: result.authoredOn,
-            fetus: result.patientInfo.fetus,
-          };
+        nextProps.search[searchType].results
+          .filter((result) => result != null && result.patientInfo != null)
+          .forEach((result) => {
+            const organizationValue = () => {
+              if (result.patientInfo.organization.name === '') {
+                return result.patientInfo.organization.id.split('/')[1];
+              }
+              return result.patientInfo.organization.name;
+            };
+            const value = {
+              status: getStatusLabel(result),
+              id: result.patientInfo.id,
+              mrn: result.patientInfo.mrn[0],
+              ramq: result.patientInfo.ramq,
+              organization: organizationValue(),
+              firstName: result.patientInfo.firstName,
+              lastName: result.patientInfo.lastName.toUpperCase(),
+              gender: intl.get(`screen.patientsearch.${result.patientInfo.gender.toLowerCase()}`),
+              birthDate: result.patientInfo.birthDate,
+              familyId: result.familyInfo.id,
+              familyComposition: result.familyInfo.type,
+              familyType: result.familyInfo.type,
+              ethnicity: result.ethnicity,
+              bloodRelationship: result.bloodRelationship,
+              proband: 'Proband',
+              position: result.patientInfo.position,
+              practitioner: result.practitioner.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
+              request: result.id,
+              test: result.test,
+              prescription: result.authoredOn,
+              fetus: result.patientInfo.fetus,
+            };
 
-          Object.keys(value).forEach((key) => {
-            if (value[key] == null || value[key].length === 0) {
-              value[key] = '--';
-            }
+            Object.keys(value).forEach((key) => {
+              if (value[key] == null || value[key].length === 0) {
+                value[key] = '--';
+              }
+            });
+            output.push(value);
           });
-          output.push(value);
-        });
 
         columnPreset = [
           {
@@ -363,44 +365,46 @@ class PatientSearchScreen extends React.Component {
             renderer: createCellRenderer('text', (() => output), { key: 'familyType' }),
           },
         ];
-        nextProps.search[searchType].results.forEach((result) => {
-          const organizationValue = () => {
-            if (result.organization.name === '') {
-              return result.organization.id.split('/')[1];
-            }
-            return result.organization.name;
-          };
-          const value = {
-            status: '--',
-            id: result.id,
-            mrn: result.mrn,
-            ramq: result.ramq,
-            organization: organizationValue(),
-            firstName: result.firstName,
-            lastName: result.lastName.toUpperCase(),
-            gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
-            birthDate: result.birthDate,
-            familyId: result.familyId,
-            familyComposition: '',
-            familyType: result.familyType,
-            ethnicity: result.ethnicity,
-            bloodRelationship: result.bloodRelationship,
-            proband: result.proband,
-            position: result.position,
-            practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
-            request: result.request,
-            test: result.test,
-            prescription: result.prescription,
-            fetus: result.fetus,
-          };
+        nextProps.search[searchType].results
+          .filter((result) => result != null && result.organization != null)
+          .forEach((result) => {
+            const organizationValue = () => {
+              if (result.organization.name === '') {
+                return result.organization.id.split('/')[1];
+              }
+              return result.organization.name;
+            };
+            const value = {
+              status: '--',
+              id: result.id,
+              mrn: result.mrn,
+              ramq: result.ramq,
+              organization: organizationValue(),
+              firstName: result.firstName,
+              lastName: result.lastName.toUpperCase(),
+              gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
+              birthDate: result.birthDate,
+              familyId: result.familyId,
+              familyComposition: '',
+              familyType: result.familyType,
+              ethnicity: result.ethnicity,
+              bloodRelationship: result.bloodRelationship,
+              proband: result.proband,
+              position: result.position,
+              practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
+              request: result.request,
+              test: result.test,
+              prescription: result.prescription,
+              fetus: result.fetus,
+            };
 
-          Object.keys(value).forEach((key) => {
-            if (value[key] == null || value[key].length === 0) {
-              value[key] = '--';
-            }
+            Object.keys(value).forEach((key) => {
+              if (value[key] == null || value[key].length === 0) {
+                value[key] = '--';
+              }
+            });
+            output.push(value);
           });
-          output.push(value);
-        });
       }
 
       return {
