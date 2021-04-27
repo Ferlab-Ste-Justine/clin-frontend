@@ -26,6 +26,7 @@ export const initialPatientSubmissionState = {
   },
   familyGroup: null,
   practitionerId: null,
+  residentId: null,
   serviceRequest: {},
   clinicalImpression: {},
   groupId: null,
@@ -46,6 +47,7 @@ export const initialPatientSubmissionState = {
     cons: {},
     consents: [],
     practitioner: '',
+    resident: '',
     requesterId: null,
     status: null,
   },
@@ -115,6 +117,33 @@ const patientSubmissionReducer = (
         requester: action.payload,
       };
       break;
+    case actions.PATIENT_SUBMISSION_ASSIGN_RESIDENT: {
+      draft.residentId = action.payload != null ? action.payload.id : null;
+      if (draft.serviceRequest.extension == null) {
+        draft.serviceRequest.extension = [];
+      }
+
+      const extensions = [...draft.serviceRequest.extension];
+      const residentExtensionIndex = extensions.findIndex((ext) => ext.url.includes('resident'));
+      if (residentExtensionIndex !== -1) {
+        extensions.splice(residentExtensionIndex, 1);
+      }
+
+      if (action.payload) {
+        extensions.push({
+          url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident',
+          valueReference: {
+            reference: `PractitionerRole/${action.payload.id}`,
+          },
+        });
+      }
+
+      draft.serviceRequest = {
+        ...draft.serviceRequest,
+        extension: extensions,
+      };
+      break;
+    }
     case actions.PATIENT_SUBMISSION_LOCAL_SAVE_REQUESTED:
       draft.patient = {
         ...draft.patient,
@@ -147,6 +176,9 @@ const patientSubmissionReducer = (
       break;
     case actions.PATIENT_SUBMISSION_LOCAL_PRACTITIONER:
       draft.local.practitioner = action.payload.practitioner;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_RESIDENT:
+      draft.local.resident = action.payload.resident;
       break;
     case actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE:
       draft.observations.hpos.push(action.payload);

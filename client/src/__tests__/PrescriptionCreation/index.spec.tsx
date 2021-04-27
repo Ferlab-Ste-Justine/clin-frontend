@@ -108,7 +108,7 @@ describe('PrescriptionCreation', () => {
     expect(screen.getByText(/Suivant/i).closest('button')).toBeEnabled();
 
     act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
-    await waitFor(() => screen.getByText('Clause pour la recherche'));
+    await waitFor(() => screen.getByText('Médecins prescripteurs'));
 
     expect(screen.getByText(/Soumettre/i).closest('button')).toBeDisabled();
   });
@@ -154,10 +154,11 @@ describe('PrescriptionCreation', () => {
     expect(screen.getByText(/Suivant/i).closest('button')).toBeEnabled();
 
     act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
-    await waitFor(() => screen.getByText('Clause pour la recherche'));
+    await waitFor(() => screen.getByText('Médecins prescripteurs'));
 
-    const searchPractitionerInput = screen.getByText('Recherche par nom ou licence...');
-    act(() => userEvent.type(searchPractitionerInput, 'ABCD'));
+    userEvent.click(screen.getByText('Médecin responsable'), {});
+
+    act(() => userEvent.type(screen.getByPlaceholderText('Recherche par nom de famille ou licence...'), 'ABCD'));
 
     const practitionerSelection = (await screen.findByText('TESTLASTNAME'));
 
@@ -205,14 +206,13 @@ describe('PrescriptionCreation', () => {
     expect(screen.getByText(/Suivant/i).closest('button')).toBeEnabled();
 
     act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
-    await waitFor(() => screen.getByText('Clause pour la recherche'));
+    await waitFor(() => screen.getByText('Médecins prescripteurs'));
 
     expect(screen.getByText(/Soumettre/i).closest('button')).toBeDisabled();
 
-    act(() => userEvent.click(screen.getByText('Clause pour la recherche'), {}));
+    userEvent.click(screen.getByText('Médecin responsable'), {});
 
-    const searchPractitionerInput = screen.getByText('Recherche par nom ou licence...');
-    act(() => userEvent.type(searchPractitionerInput, 'ABCD'));
+    act(() => userEvent.type(screen.getByPlaceholderText('Recherche par nom de famille ou licence...'), 'ABCD'));
 
     const practitionerSelection = (await screen.findByText('TESTLASTNAME')).parentElement;
     userEvent.click(practitionerSelection, {});

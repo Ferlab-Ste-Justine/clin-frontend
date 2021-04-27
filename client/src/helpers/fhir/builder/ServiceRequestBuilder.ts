@@ -4,6 +4,7 @@ import {
 } from './Utils';
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
+const EXTENSION_RESIDENT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident';
 
 const defaultSR = () : Partial<ServiceRequest> => ({
   resourceType: 'ServiceRequest',
@@ -135,6 +136,25 @@ export class ServiceRequestBuilder {
           text: note,
           time: new Date().toISOString(),
         });
+      }
+      return this;
+    }
+
+    public withResident(id?: string) {
+      if (id != null) {
+        const ext = getExtension(this.serviceRequest, EXTENSION_RESIDENT);
+        if (ext) {
+          ext.valueReference = {
+            reference: `PractitionerRole/${id}`,
+          };
+        } else {
+          this.serviceRequest.extension?.push({
+            url: EXTENSION_RESIDENT,
+            valueReference: {
+              reference: `PractitionerRole/${id}`,
+            },
+          });
+        }
       }
       return this;
     }
