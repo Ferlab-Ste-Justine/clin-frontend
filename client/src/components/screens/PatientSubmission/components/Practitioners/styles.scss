@@ -1,0 +1,31 @@
+@import '../../../../../style/themes/colors.scss';
+
+.prescription-form__practitioners {
+  &__form-item {
+    &__autocomplete {
+      max-width: 340px;
+
+      &__label {
+        font-family: Roboto;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 22px;
+        letter-spacing: 0.25px;
+        text-align: left;
+        color: $gray-8;
+
+        &__family-name{
+          font-family: Roboto;
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 22px;
+          letter-spacing: 0.25px;
+          text-align: left;
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}

@@ -58,6 +58,13 @@ export const saveLocalPractitioner = (practitioner) => ({
   },
 });
 
+export const saveLocalResident = (resident) => ({
+  type: actions.PATIENT_SUBMISSION_LOCAL_RESIDENT,
+  payload: {
+    resident,
+  },
+});
+
 export const addHpoResource = (resource) => ({
   type: actions.PATIENT_SUBMISSION_ADD_HPO_RESOURCE,
   payload: resource,
@@ -123,6 +130,13 @@ export const setFamilyRelationshipResourceDeletionFlag = (deleted) => ({
 export const assignServiceRequestPractitioner = (resource) => (
   {
     type: actions.PATIENT_SUBMISSION_ASSIGN_PRACTITIONER,
+    payload: resource,
+  }
+);
+
+export const assignServiceRequestResident = (resource) => (
+  {
+    type: actions.PATIENT_SUBMISSION_ASSIGN_RESIDENT,
     payload: resource,
   }
 );

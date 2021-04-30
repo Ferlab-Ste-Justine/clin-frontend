@@ -750,21 +750,6 @@ table{
   display: flex;
 }
 
-//AUTOCOMPLETE
-.ant-select-selection:hover{
-  border:0px solid transparent !important;
-}
-.ant-input-affix-wrapper{
-  border: none;
-  outline: none;
-  box-shadow:none;
-  &::before{
-    display: none;
-  }
-  &:hover{
-    border-color: transparent;
-  }
-}
 //ROW
 .flex-row{
   display: flex !important;

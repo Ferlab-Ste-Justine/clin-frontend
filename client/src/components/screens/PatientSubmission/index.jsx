@@ -19,6 +19,7 @@ import { SaveOutlined, LeftOutlined } from '@ant-design/icons';
 import { navigateToPatientSearchScreen, navigateToPatientScreen } from '../../../actions/router';
 import {
   assignServiceRequestPractitioner,
+  assignServiceRequestResident,
   savePatientSubmission,
   savePatientLocal,
   saveObservations,
@@ -28,9 +29,10 @@ import {
   saveLocalIndic,
   updateConsentments,
   saveLocalPractitioner,
+  saveLocalResident,
 } from '../../../actions/patientSubmission';
 import ClinicalInformation from './components/ClinicalInformation';
-import Approval from './components/Approval';
+import SecondPage from './components/SecondPage';
 import Api from '../../../helpers/api';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
 
@@ -55,13 +57,6 @@ import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBui
 
 const { Step } = Steps;
 
-const stringifyPractionerOption = (po) => `${po.family}, ${po.given} License No: ${po.license}`;
-const practitionerOptionFromResource = (resource) => ({
-  given: resource.name[0].given[0],
-  family: resource.name[0].family,
-  license: resource.identifier[0].value,
-});
-
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
 
@@ -71,12 +66,11 @@ function PatientSubmissionScreen(props) {
     valid: false,
     isCancelConfirmVisible: false,
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
+    selectedResident: get(props, 'localStore.residentId', undefined),
     firstPageFields: {},
     hpoResources: get(props, 'observations.hpos'),
     fmhResources: get(props, 'observations.fmh'),
   });
-
-  const getFields = () => (state.currentPageIndex === 0 ? form.getFieldsValue() : state.firstPageFields);
 
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
 
@@ -165,15 +159,21 @@ function PatientSubmissionScreen(props) {
         }
         return true;
       }
-      case 1:
+      case 1: {
         hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
         if (hasError) {
           return true;
         }
-        if (values.consent != null && values.consent.length > 0 && localStore.practitioner != null && localStore.practitioner.length > 0) {
+        const isResidentValid = values.prescribingDoctorType === 'doctor'
+         || (
+           values.prescribingDoctorType === 'resident' && localStore.resident != null && localStore.resident.length > 0
+         );
+
+        if (localStore.practitioner != null && localStore.practitioner.length > 0 && isResidentValid) {
           return false;
         }
         return true;
+      }
       default:
         return false;
     }
@@ -282,16 +282,6 @@ function PatientSubmissionScreen(props) {
     return builder.build();
   };
 
-  const saveClinicalInfoPageLocalStore = () => {
-    const { actions } = props;
-    const values = getFields();
-
-    actions.saveServiceRequest(values.analyse);
-    actions.saveLocalCgh(values.cghInterpretationValue, values.cghPrecision);
-    actions.saveLocalSummary(values.summaryNote);
-    actions.saveLocalIndic(values.indication);
-  };
-
   const buildHpoObservation = (hpo) => {
     const observation = new ObservationBuilder('HPO')
       .withId(hpo.id)
@@ -383,6 +373,7 @@ function PatientSubmissionScreen(props) {
           .withId(get(localStore, 'serviceRequest.id'))
           .withMrn(fullMRN[0], fullMRN[1])
           .withRequester(state.selectedPractitioner)
+          .withResident(state.selectedResident)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
           .withSubmitted(submitted, userPractitioner.id, status)
@@ -446,66 +437,44 @@ function PatientSubmissionScreen(props) {
     return currentPageIndex === 0;
   };
 
-  const handlePractitionerOptionSelected = (selected) => {
+  const handlePractitionerOptionSelected = (practitionerSelected) => {
     const { actions } = props;
     const { practitionerOptions } = state;
-    const practitioner = practitionerOptions.find((o) => genPractitionerKey(o) === selected);
 
-    if (practitioner != null) {
-      const practitionerText = genPractitionerKey(practitioner);
+    if (practitionerSelected != null) {
+      const practitionerText = genPractitionerKey(practitionerSelected);
       actions.saveLocalPractitioner(practitionerText);
-      const resource = createPractitionerResource(practitioner);
+      const resource = createPractitionerResource(practitionerSelected);
       actions.assignServiceRequestPractitioner(resource);
 
       setState((currentState) => ({
         ...currentState,
-        selectedPractitioner: practitioner.id,
+        selectedPractitioner: practitionerSelected.id,
       }));
     }
   };
 
-  const handlePractitionerSearchTermChanged = (term, callback = null) => {
-    if (term == null) {
-      return;
+  const handleResidentOptionSelected = (residentSelected) => {
+    const { actions } = props;
+
+    if (residentSelected != null) {
+      const practitionerText = genPractitionerKey(residentSelected);
+      actions.saveLocalResident(practitionerText);
+      const resource = createPractitionerResource(residentSelected);
+      actions.assignServiceRequestResident(resource);
+
+      setState((currentState) => ({
+        ...currentState,
+        selectedResident: residentSelected.id,
+      }));
+    } else {
+      actions.saveLocalResident(null);
+      actions.assignServiceRequestResident(null);
+      setState((currentState) => ({
+        ...currentState,
+        selectedResident: null,
+      }));
     }
-    const normalizedTerm = term.toLowerCase().trim();
-
-    if (normalizedTerm.length > 0 && normalizedTerm.length < 10) {
-      const params = { term: normalizedTerm };
-      Api.searchPractitioners(params).then((response) => {
-        if (response.payload) {
-          const { data } = response.payload;
-
-          const result = [];
-          if (data.entry != null) {
-            data.entry.forEach((entry) => {
-              const { resource } = entry;
-              if (resource != null && resource.name != null && resource.name.length > 0) {
-                result.push({
-                  id: resource.id,
-                  family: resource.name[0].family,
-                  given: resource.name[0].given[0],
-                  license: resource.identifier[0].value,
-                });
-              }
-            });
-          }
-
-          setState((currentState) => ({
-            ...currentState,
-            practitionerOptions: result,
-          }));
-
-          if (callback != null) {
-            callback();
-          }
-        }
-      });
-    }
-  };
-
-  const searchPractitioner = (term) => {
-    handlePractitionerSearchTermChanged(term);
   };
 
   const next = () => {
@@ -579,30 +548,11 @@ function PatientSubmissionScreen(props) {
     patient, clinicalImpression, serviceRequest,
   } = props;
   const {
-    practitionerOptions, currentPageIndex, hpoResources, fmhResources,
+    currentPageIndex, hpoResources, fmhResources,
   } = state;
 
-  const assignedPractitioner = serviceRequest ? serviceRequest.requester : null;
-  const assignedPractitionerLabel = assignedPractitioner && has(assignedPractitioner, 'resourceType')
-    ? stringifyPractionerOption(practitionerOptionFromResource(assignedPractitioner))
-    : '';
-
-  const consents = get(localStore, 'consents', []);
   const initialPractitionerValue = get(localStore, 'practitioner', '');
-
-  const practitionerOptionsLabels = practitionerOptions.map((practitioner) => (
-    {
-      value: genPractitionerKey(practitioner),
-      label: (
-        <>
-          <div className="page3__autocomplete">
-            <span className="page3__autocomplete__family-name">{ practitioner.family.toUpperCase() }</span> { practitioner.given }
-            { practitioner.license != null && practitioner.license.length > 0 && <> – { practitioner.license }</> }
-          </div>
-        </>
-      ),
-    }
-  ));
+  const initialResidentValue = get(localStore, 'resident', '');
 
   const pages = [
     {
@@ -628,15 +578,16 @@ function PatientSubmissionScreen(props) {
     {
       title: intl.get('screen.clinicalSubmission.approval'),
       content: (
-        <Approval
-          parentForm={this}
-          dataSource={practitionerOptionsLabels}
-          practitionerOptionSelected={handlePractitionerOptionSelected}
-          practitionerSearchTermChanged={searchPractitioner}
-          assignedPractitionerLabel={assignedPractitionerLabel}
-          initialConsentsValue={consents}
-          initialPractitionerValue={initialPractitionerValue}
-          updateConsentmentsCallback={actions.updateConsentments}
+        <SecondPage
+          form={form}
+          doctorOptions={{
+            optionSelected: handlePractitionerOptionSelected,
+            initialValue: initialPractitionerValue,
+          }}
+          residentOptions={{
+            optionSelected: handleResidentOptionSelected,
+            initialValue: initialResidentValue,
+          }}
         />
       ),
       name: 'Approval',
@@ -751,11 +702,6 @@ function PatientSubmissionScreen(props) {
   );
 }
 
-PatientSubmissionScreen.propTypes = {
-  router: PropTypes.shape({}).isRequired,
-  actions: PropTypes.shape({}).isRequired,
-};
-
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
     navigateToPatientSearchScreen,
@@ -763,6 +709,7 @@ const mapDispatchToProps = (dispatch) => ({
     savePatientSubmission,
     savePatientLocal,
     assignServiceRequestPractitioner,
+    assignServiceRequestResident,
     saveObservations,
     saveServiceRequest,
     saveLocalCgh,
@@ -770,6 +717,7 @@ const mapDispatchToProps = (dispatch) => ({
     saveLocalIndic,
     updateConsentments,
     saveLocalPractitioner,
+    saveLocalResident,
     createRequest,
     updatePatientPractitioners,
   }, dispatch),

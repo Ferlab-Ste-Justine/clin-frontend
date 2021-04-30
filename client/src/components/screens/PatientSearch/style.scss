@@ -92,6 +92,18 @@ div.ant-tag {
         padding: 0 12px;
         height: 40px;
         
+        border: none;
+        outline: none;
+        box-shadow:none;
+        &::before{
+          display: none;
+        }
+        &:hover{
+          border-color: transparent;
+        }
+      }
+      .ant-select-selection:hover{
+        border:0px solid transparent !important;
       }
       .ant-input{
         border:1px solid white;
@@ -130,6 +142,7 @@ div.ant-tag {
         height: 16px;
         width: 16px;
       }
+
     }
   }
 
