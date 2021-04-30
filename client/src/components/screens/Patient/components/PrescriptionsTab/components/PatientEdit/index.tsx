@@ -291,7 +291,7 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
               event.preventDefault();
             }}
             onChange={(event) => {
-              const isValueValid = isValidRamq(event.currentTarget.value);
+              const isValueValid = isValidRamq(event.currentTarget.value.replace(/\s/g, ''));
               const parsedValue = formatRamq(event.currentTarget.value);
 
               if (isValueValid) {
