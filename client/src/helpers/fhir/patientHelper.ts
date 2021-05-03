@@ -29,7 +29,7 @@ export function getDetailsFromRamq(ramq: string): RamqDetails | null {
     return null;
   }
 
-  const yearValue = Number.parseInt(ramq.slice(4, 6), 10);
+  const yearValue = ramq.slice(4, 6);
   const monthValue = Number.parseInt(ramq.slice(6, 8), 10);
   const dayValue = Number.parseInt(ramq.slice(8, 10), 10);
 
@@ -38,10 +38,14 @@ export function getDetailsFromRamq(ramq: string): RamqDetails | null {
   }
 
   const isFemale = monthValue >= 51;
+  const birthDateYearPrefix = moment().year() > Number.parseInt(`${20}${yearValue}`, 10) ? '20' : '19';
+  const birthDateString = `${birthDateYearPrefix}${yearValue}/${isFemale ? monthValue - 50 : monthValue}/${dayValue} 00:00`;
+  const birthDate = moment(birthDateString, 'YYYY/M/D').toDate();
+
   return {
     startFirstname: ramq.slice(3, 4),
     startLastname: capitalize(ramq.slice(0, 3)),
     sex: isFemale ? 'female' : 'male',
-    birthDate: moment(`${yearValue}/${isFemale ? monthValue - 50 : monthValue}/${dayValue} 00:00`, 'YY/M/D').toDate(),
+    birthDate: birthDate <= moment().toDate() ? birthDate : undefined,
   };
 }
