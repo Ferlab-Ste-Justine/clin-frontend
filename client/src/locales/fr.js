@@ -312,6 +312,7 @@ const fr = {
   'screen.patient.header.generalInformation': 'Informations générales',
   'screen.patient.header.familyMembers': 'Membres de la famille',
   'screen.patient.tab.prescriptions': 'Prescriptions',
+  'screen.patient.tab.family': 'Famille',
   'screen.patient.tab.clinical': 'Clinique',
   'screen.patientsearch.tabs.prescriptions': 'Prescriptions',
   'screen.patientsearch.tabs.patients': 'Patients',

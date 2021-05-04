@@ -12,7 +12,7 @@ import { DownOutlined, MedicineBoxFilled } from '@ant-design/icons';
 
 import IconKit from 'react-icons-kit';
 import {
-  ic_info_outline, ic_widgets, ic_cloud_download,
+  ic_info_outline, ic_widgets, ic_cloud_download, ic_people,
 } from 'react-icons-kit/md';
 import PatientVariantScreen from '../PatientVariant';
 import { appShape } from '../../../reducers/app';
@@ -32,6 +32,7 @@ import StatusChangeModal from './components/StatusChangeModal';
 import PrescriptionsTab from './components/PrescriptionsTab';
 import FilesTab from './components/FilesTab';
 import PatientHeader from './components/PatientHeader';
+import FamilyTab from './components/FamilyTab';
 
 class PatientScreen extends React.Component {
   constructor(props) {
@@ -255,53 +256,74 @@ class PatientScreen extends React.Component {
     const { showSubloadingAnimation } = app;
     const { hash } = router.location;
     const hashParams = (hash.replace('#', '') || '').split('&');
-    const defaultTab = hashParams.includes('variant') ? 'variant' : 'prescriptions';
 
+    const tabs = [
+      {
+        name: 'prescriptions',
+        title: (
+          <span className="tabName">
+            <MedicineBoxFilled />
+            { intl.get('screen.patient.tab.prescriptions') }
+          </span>),
+        content: <PrescriptionsTab />,
+      },
+      {
+        name: 'family',
+        title: (
+          <span className="tabName">
+            <IconKit size={18} icon={ic_people} />
+            { intl.get('screen.patient.tab.family') }
+          </span>),
+        content: <FamilyTab />,
+      },
+      {
+        name: 'variant',
+        title: (
+          <span className="tabName">
+            <IconKit size={18} icon={ic_widgets} />
+            Variants
+          </span>
+        ),
+        content: <PatientVariantScreen />,
+      },
+      {
+        name: 'files',
+        title: (
+          <span className="tabName">
+            <IconKit size={18} icon={ic_cloud_download} />
+            Fichier
+          </span>
+        ),
+        content: <FilesTab />,
+      },
+    ];
+    const defaultTab = tabs.map((t) => t.name).includes(hashParams[0]) ? hashParams[0] : 'prescriptions';
     return (
       <Layout>
         <Spin spinning={showSubloadingAnimation}>
           { patient != null && patient.id != null && patient.id.length > 0
             && (
-              <div className="patientPage">
+              <div className="patient-page">
                 <div className="page_headerStaticNoMargin">
                   <PatientHeader patient={patient} />
                 </div>
-                <Tabs onChange={this.handleTabNavigation} defaultActiveKey={defaultTab} className="tabs staticTabs">
-                  <Tabs.TabPane
-                    key="prescriptions"
-                    style={{ height: '100%' }}
-                    tab={(
-                      <span className="tabName">
-                        <MedicineBoxFilled />
-                        { intl.get('screen.patient.tab.prescriptions') }
-                      </span>
-                    )}
-                  >
-                    <PrescriptionsTab />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane
-                    key="variant"
-                    tab={(
-                      <span className="tabName">
-                        <IconKit size={18} icon={ic_widgets} />
-                        Variants
-                      </span>
-                    )}
-                  >
-                    <PatientVariantScreen />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane
-                    key="files"
-                    disabled
-                    tab={(
-                      <span className="tabName">
-                        <IconKit size={18} icon={ic_cloud_download} />
-                        Fichier
-                      </span>
-                    )}
-                  >
-                    <FilesTab />
-                  </Tabs.TabPane>
+                <Tabs
+                  onChange={this.handleTabNavigation}
+                  defaultActiveKey={defaultTab}
+                  className="patient-page__tabs staticTabs"
+                >
+                  {
+                    tabs.map((tab) => (
+
+                      <Tabs.TabPane
+                        key={tab.name}
+                        style={{ height: '100%' }}
+                        tab={tab.title}
+                      >
+                        { tab.content }
+                      </Tabs.TabPane>
+                    ))
+                  }
                 </Tabs>
               </div>
             ) }

@@ -61,8 +61,17 @@
   }
 }
 
-.patientPage {
+.patient-page {
   padding-bottom: 24px;
+  min-height: 100%;
+
+  &__tabs {
+    min-height: 100%;
+
+    .ant-tabs-content {
+      min-height: 100%;
+    }
+  }
 }
 
 .clinical{

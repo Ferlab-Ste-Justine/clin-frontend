@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   ConsultationSummary, ParsedPatientData, Prescription,
 } from '../../../../../helpers/providers/types';
-import PatientDetails from './components/PatientDetails';
+import PatientDetails from '../PatientDetails';
 import './styles.scss';
 import Prescriptions from './components/Prescriptions';
 import { State } from '../../../../../reducers';
