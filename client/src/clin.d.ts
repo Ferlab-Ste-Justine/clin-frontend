@@ -11,8 +11,6 @@ interface ClinData {
     defaultPassword: string,
     fhirEsPatientBundleId: string,
     fhirEsRequestBundleId: string,
-    keycloakUrl: string;
-    keycloakAuthClientId: string;
 }
 
 export declare global {
