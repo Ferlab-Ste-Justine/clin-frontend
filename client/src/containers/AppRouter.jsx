@@ -4,6 +4,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Spin } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
 import AuthRoute from './AuthRoute';
 import PublicRoute from './PublicRoute';
 import AccessDenied from '../components/screens/AccessDenied';
@@ -16,29 +17,44 @@ import {
   PATIENT_SUBROUTE_SEARCH,
   PATIENT_SUBROUTE_VARIANT,
   ROUTE_NAME_PATIENT,
-  ROUTE_NAME_ROOT, ROUTE_NAME_SUBMISSION,
+  ROUTE_NAME_ROOT,
   ROUTE_NAME_VARIANT,
 } from '../helpers/route';
+import { getUserIdentity, getUserProfile, updateAuthPermissions } from '../actions/user';
+import {
+  KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST,
+  KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS, KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS,
+} from '../helpers/keycloak-api/utils';
 
 const AppRouter = ({ history }) => {
-  const { initialized } = useKeycloak();
+  const { initialized, keycloak } = useKeycloak();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
-  if (!initialized) {
-    return <div />;
+  keycloak.onAuthSuccess = () => {
+    dispatch(getUserProfile());
+    dispatch(getUserIdentity());
+    dispatch(updateAuthPermissions());
+  };
+
+  if (!initialized) { return <div />; }
+
+  if (!keycloak.authenticated) {
+    keycloak.login();
   }
 
-  // @NOTE In case we use intl for routes later on...
+  if (user.permissions == null) { return <div />; }
+
   const pathRootPage = `${ROUTE_NAME_ROOT}`;
   const pathPatientSearch = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`;
   const pathPatientPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/:uid`;
   const pathPatientVariants = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/:uid/${PATIENT_SUBROUTE_VARIANT}`;
   const pathVariantPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_VARIANT}/:uid`;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const pathSubmissionPage = `${ROUTE_NAME_ROOT}${ROUTE_NAME_SUBMISSION}/:uid`;
 
   return (
     <ConnectedRouter key="connected-router" history={history}>
       <Switch key="switch">
+        <PublicRoute Component={AccessDenied} path="/access-denied" key="route-access-denied" />
         <PublicRoute
           exact
           path={pathRootPage}
@@ -52,12 +68,40 @@ const AppRouter = ({ history }) => {
           )}
           key="route-loading"
         />
-        <AuthRoute roles={[]} path={pathPatientSearch} exact Component={PatientSearchScreen} key="route-patient-search" />
-        <AuthRoute roles={[]} path={pathPatientVariants} exact Component={PatientVariantScreen} key="route-patient-variant" />
-        <AuthRoute roles={[]} path={pathPatientPage} exact Component={PatientScreen} key="route-patient" />
-        <AuthRoute roles={[]} path={pathVariantPage} exact Component={VariantDetailsScreen} key="route-variant-details" />
-        <AuthRoute roles={[]} Component={PatientSubmissionScreen} key="route-patient-submission" />
-        <PublicRoute component={AccessDenied} key="route-access-denied" />
+        <AuthRoute
+          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST}
+          roles={[]}
+          path={pathPatientSearch}
+          exact
+          Component={PatientSearchScreen}
+          key="route-patient-search"
+        />
+        <AuthRoute
+          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS}
+          path={pathPatientVariants}
+          exact
+          Component={PatientVariantScreen}
+          key="route-patient-variant"
+        />
+        <AuthRoute
+          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS}
+          path={pathPatientPage}
+          exact
+          Component={PatientScreen}
+          key="route-patient"
+        />
+        <AuthRoute
+          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS}
+          path={pathVariantPage}
+          exact
+          Component={VariantDetailsScreen}
+          key="route-variant-details"
+        />
+        <AuthRoute
+          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS}
+          Component={PatientSubmissionScreen}
+          key="route-patient-submission"
+        />
       </Switch>
     </ConnectedRouter>
   );
