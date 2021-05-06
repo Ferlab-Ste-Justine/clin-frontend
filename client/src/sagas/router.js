@@ -139,7 +139,6 @@ function* manualUserNavigation(action) {
   const { isFirstRendering } = action.payload;
   window.scrollTo(0, 0);
   const { referrer } = yield select((state) => state.app);
-  const user = yield select((state) => state.user);
 
   const location = !referrer.location || !isFirstRendering ? action.payload.location : referrer.location;
   const { pathname, search, hash } = location;
@@ -165,11 +164,6 @@ function* manualUserNavigation(action) {
     }
   }
 
-  if (get(user, 'profile.uid') == null) {
-    yield put({ type: actions.USER_PROFILE_REQUESTED });
-    yield put({ type: actions.USER_IDENTITY_REQUESTED });
-  }
-
   const currentRoute = route || location.pathname;
   if (currentRoute.startsWith('/patient/search')) {
     yield processPatientSearchPage();
@@ -177,6 +171,8 @@ function* manualUserNavigation(action) {
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
   } else if (currentRoute.startsWith('/patient/')) {
     yield processPatientPage(currentRoute, tab, forceReload);
+  } else if (currentRoute.startsWith('/access-denied')) {
+    // Access denied
   } else if (currentRoute.startsWith('/submission') && !isFirstRendering) {
     // ignore /submission page to not change the current flow on "normal" navigation
   } else {
