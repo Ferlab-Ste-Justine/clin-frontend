@@ -8,6 +8,10 @@ export const getUserProfile = () => ({
   type: actions.USER_PROFILE_REQUESTED,
 });
 
+export const getUserIdentity = () => ({
+  type: actions.USER_IDENTITY_REQUESTED,
+});
+
 export const updateUserProfile = (id, defaultStatement, patientTableConfig, variantTableConfig) => ({
   type: actions.USER_PROFILE_UPDATE_REQUESTED,
   payload: {
@@ -34,4 +38,8 @@ export const updateUserColumnsOrder = (columnsOrder) => ({
 
 export const updateUserColumnsReset = () => ({
   type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET_REQUESTED,
+});
+
+export const updateAuthPermissions = () => ({
+  type: actions.UPDATE_USER_AUTH_PERMISSIONS_REQUESTED,
 });
