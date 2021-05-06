@@ -5,6 +5,7 @@ import {
 } from './fhir/fhir';
 import { getPatientByIdentifier } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
+import { userAuthPermissions } from './keycloak-api';
 
 const successCallback = (payload) => ({ payload });
 const errorCallback = (error) => ({ error });
@@ -13,6 +14,8 @@ const canEditPatients = (ids) => Http.secureClinAxios
   .post(`${window.CLIN.patientServiceApiUrl}/can-edit`, { ids })
   .then(successCallback)
   .catch(errorCallback);
+
+const getUserAuthPermissions = () => userAuthPermissions().then(successCallback).catch(errorCallback);
 
 const getPatientsGenderAndPosition = (ids) => Http.secureClinAxios
   .post(`${window.CLIN.patientServiceApiUrl}/gender-and-position`, { ids })
@@ -229,6 +232,7 @@ const updateServiceRequestStatus = async (user, serviceRequest, status, note) =>
 
 export default {
   canEditPatients,
+  getUserAuthPermissions,
   getPatientsGenderAndPosition,
   searchHpos,
   searchHpoChildren,
