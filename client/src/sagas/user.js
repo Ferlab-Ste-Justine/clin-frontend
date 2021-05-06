@@ -74,6 +74,22 @@ function* columnsReset() {
   }
 }
 
+function* updateUserAuthPermissions() {
+  try {
+    const response = yield Api.getUserAuthPermissions();
+    const permissions = response.payload.data.map((permission) => permission.rsname);
+    permissions.sort();
+    yield put({
+      type: actions.UPDATE_USER_AUTH_PERMISSIONS_SUCCEEDED,
+      payload: {
+        permissions,
+      },
+    });
+  } catch (e) {
+    yield put({ type: actions.UPDATE_USER_AUTH_PERMISSIONS_FAILED });
+  }
+}
+
 function* watchUserLogout() {
   yield takeLatest(actions.USER_LOGOUT_REQUESTED, logout);
 }
@@ -94,6 +110,10 @@ function* watchColumnsReset() {
   yield takeLatest(actions.USER_PROFILE_UPDATE_COLUMNS_RESET_REQUESTED, columnsReset);
 }
 
+function* watchUpdateUserAuthPermissions() {
+  yield takeLatest(actions.UPDATE_USER_AUTH_PERMISSIONS_REQUESTED, updateUserAuthPermissions);
+}
+
 export default function* watchedUserSagas() {
   yield all([
     watchUserIdentity(),
@@ -101,5 +121,6 @@ export default function* watchedUserSagas() {
     watchGetUserProfile(),
     watchUpdateUserProfile(),
     watchColumnsReset(),
+    watchUpdateUserAuthPermissions(),
   ]);
 }
