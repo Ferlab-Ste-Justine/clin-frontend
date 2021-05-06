@@ -19,6 +19,7 @@ export const initialUserState = {
     practitioner: null,
     practitionerRole: null,
   },
+  permissions: null,
 };
 
 export const userShape = {
@@ -60,6 +61,10 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.profile.defaultStatement = action.payload.data.defaultStatement;
       draft.profile.patientTableConfig = JSON.parse(action.payload.data.patientTableConfig);
       draft.profile.variantTableConfig = JSON.parse(action.payload.data.variantTableConfig);
+      break;
+
+    case actions.UPDATE_USER_AUTH_PERMISSIONS_SUCCEEDED:
+      draft.permissions = action.payload.permissions;
       break;
 
     default:
