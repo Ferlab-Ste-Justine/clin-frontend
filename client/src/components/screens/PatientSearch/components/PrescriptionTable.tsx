@@ -54,7 +54,7 @@ const PrescriptionTable: React.FC<Props> = ({
 
   const results = patient.results.filter((result:any) => result != null && result.patientInfo != null);
 
-  const handleGoToPatientScreen:any = (patientId: any, requestId: any = null) => {
+  const handleGoToPatientScreen:any = (patientId: string, requestId: string | null = null) => {
     dispatch(navigateToPatientScreen(patientId, {
       tab: null,
       reload: null,
@@ -62,7 +62,7 @@ const PrescriptionTable: React.FC<Props> = ({
     }));
   };
 
-  const output:any = [];
+  const output:any[] = [];
   if (results) {
     results.forEach((result: any) => {
       const organizationValue = () => {

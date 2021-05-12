@@ -7,9 +7,9 @@ import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
 import { generateNanuqReport } from '../../../../actions/nanuq';
 
-  interface Props {
-    selectedPatients: string[]
-  }
+interface Props {
+  selectedPatients: string[]
+}
 
 const PrescriptionTableHeader: React.FC<Props> = ({
   selectedPatients,
