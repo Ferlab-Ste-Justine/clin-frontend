@@ -10,18 +10,18 @@ import { navigateToPatientScreen } from '../../../../actions/router';
 import InteractiveTable from '../../../Table/InteractiveTable';
 
 interface Props {
-searchProps: any
-defaultVisibleColumns: string[]
-defaultColumnsOrder: { columnWidth: number, key: string, label: string }[]
-pageChangeCallback: (page: number, size: number) => void
-pageSizeChangeCallback: (size: number) => void
-exportCallback: () => void
-isLoading: boolean
-columnsUpdated: (columns: string[]) => void
-columnsOrderUpdated: (columns: any[]) => void
-columnsReset: () => void
-size:number
-page:number
+  searchProps: any
+  defaultVisibleColumns: string[]
+  defaultColumnsOrder: { columnWidth: number, key: string, label: string }[]
+  pageChangeCallback: (page: number, size: number) => void
+  pageSizeChangeCallback: (size: number) => void
+  exportCallback: () => void
+  isLoading: boolean
+  columnsUpdated: (columns: string[]) => void
+  columnsOrderUpdated: (columns: any[]) => void
+  columnsReset: () => void
+  size:number
+  page:number
 }
 
 const PatientTable: React.FC<Props> = ({
@@ -40,12 +40,12 @@ const PatientTable: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
   const { patient } = searchProps;
-  const handleGoToPatientScreen:any = (patientId: any, requestId: any) => {
-    dispatch(navigateToPatientScreen(patientId, requestId));
+  const handleGoToPatientScreen:any = (patientId: string) => {
+    dispatch(navigateToPatientScreen(patientId));
   };
 
   const results = patient.results.filter((result:any) => result != null && result.organization != null);
-  const output: any = [];
+  const output: any[] = [];
 
   if (results) {
     results.forEach((result:any) => {
