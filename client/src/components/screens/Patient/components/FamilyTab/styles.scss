@@ -1,7 +1,6 @@
 @import '../../../../../style/themes/colors.scss';
 
 .family-tab {
-  margin: 0 24px;
   height: 100%;
 
   &__details {
@@ -83,6 +82,33 @@
       }
       .ant-modal-footer {
         padding: 16px;
+      }
+    }
+
+    &__table {
+      .ant-table-thead {
+        .ant-table-cell {
+          &:last-child {
+            text-align: center;
+          }
+        }
+      }
+      .ant-table-cell {
+        padding: 8px;
+      }
+
+      &__name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      &__actions {
+        text-align: center;
+      }
+
+      &__status {
+        width: 144px;
       }
     }
   }

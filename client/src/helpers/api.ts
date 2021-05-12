@@ -1,42 +1,53 @@
 import get from 'lodash/get';
 import Http from './http-client';
 import {
+  createGetMultiplePatientDataBundle,
   createGetPatientDataBundle, createGetPractitionersDataBundle,
 } from './fhir/fhir';
 import { getPatientByIdentifier } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
+import { Group, ServiceRequest } from './fhir/types';
 import { userAuthPermissions } from './keycloak-api';
 
-const successCallback = (payload) => ({ payload });
-const errorCallback = (error) => ({ error });
+const successCallback = (payload: any) => ({ payload });
+const errorCallback = (error: any) => ({ error });
 
-const canEditPatients = (ids) => Http.secureClinAxios
+const getUserAuthPermissions = () => userAuthPermissions().then(successCallback).catch(errorCallback);
+
+const canEditPatients = (ids: string[]) => Http.secureClinAxios
   .post(`${window.CLIN.patientServiceApiUrl}/can-edit`, { ids })
   .then(successCallback)
   .catch(errorCallback);
 
-const getUserAuthPermissions = () => userAuthPermissions().then(successCallback).catch(errorCallback);
-
-const getPatientsGenderAndPosition = (ids) => Http.secureClinAxios
+const getPatientsGenderAndPosition = (ids: string[]) => Http.secureClinAxios
   .post(`${window.CLIN.patientServiceApiUrl}/gender-and-position`, { ids })
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientById = (uid) => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
+const getPatientById = (uid: string) => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientDataById = (id) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+const getPatientDataById = (id: string) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
   createGetPatientDataBundle(id))
   .then(successCallback)
   .catch(errorCallback);
 
-const getPractitionersData = (data) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+const getGroupById = (id: string) => Http.secureClinAxios.get(`${window.CLIN.fhirBaseUrl}/Group?_id=${id}`)
+  .then(successCallback)
+  .catch(errorCallback);
+
+const getPatientDataByIds = (ids: string[], withIncludes = true) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+  createGetMultiplePatientDataBundle(ids, withIncludes))
+  .then(successCallback)
+  .catch(errorCallback);
+
+const getPractitionersData = (data: any) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
   createGetPractitionersDataBundle(data))
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientsByAutoComplete = (type, query, page, size) => Http.secureClinAxios.get(
+const getPatientsByAutoComplete = (type: string, query: string, page: number, size: number) => Http.secureClinAxios.get(
   `${window.CLIN.patientServiceApiUrl}/autocomplete`, {
     params: {
       type,
@@ -49,7 +60,7 @@ const getPatientsByAutoComplete = (type, query, page, size) => Http.secureClinAx
   .then(successCallback)
   .catch(errorCallback);
 
-const searchPatients = (query, page, size, type = 'patient') => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
+const searchPatients = (query: string, page: number, size: number, type = 'patient') => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
   params: {
     query,
     page,
@@ -61,13 +72,13 @@ const searchPatients = (query, page, size, type = 'patient') => Http.secureClinA
   .catch(errorCallback);
 
 export class ApiError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.name = this.constructor.name;
   }
 }
 
-const getVariantDetails = (id) => Http.secureClinAxios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
+const getVariantDetails = (id: string) => Http.secureClinAxios.get(`${window.CLIN.variantServiceApiUrl}/${id}`)
   .then(successCallback)
   .catch(errorCallback);
 
@@ -75,7 +86,7 @@ const getVariantSchema = () => Http.secureClinAxios.get(`${window.CLIN.variantSe
   .then(successCallback)
   .catch(errorCallback);
 
-const searchVariantsForPatient = (patient, statement, query, page, size, group) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
+const searchVariantsForPatient = (patient: string, statement: string, query: string, page: number, size: number, group: string) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
   patient,
   statement,
   query,
@@ -86,7 +97,7 @@ const searchVariantsForPatient = (patient, statement, query, page, size, group) 
   .then(successCallback)
   .catch(errorCallback);
 
-const searchFacetsForPatient = (patient, statement, query) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/facet`, {
+const searchFacetsForPatient = (patient: any, statement: string, query: string) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/facet`, {
   patient,
   statement,
   query,
@@ -94,7 +105,7 @@ const searchFacetsForPatient = (patient, statement, query) => Http.secureClinAxi
   .then(successCallback)
   .catch(errorCallback);
 
-const countVariantsForPatient = (patient, statement, queries) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
+const countVariantsForPatient = (patient: any, statement: string, queries: any) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
   patient,
   statement,
   queries,
@@ -106,7 +117,7 @@ const getStatements = () => Http.secureClinAxios.get(`${window.CLIN.metaServiceA
   .then(successCallback)
   .catch(errorCallback);
 
-const createStatement = (title, description, queries) => Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const createStatement = (title: string, description: string, queries: any) => Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
   title,
   description,
   queries,
@@ -114,7 +125,7 @@ const createStatement = (title, description, queries) => Http.secureClinAxios.po
   .then(successCallback)
   .catch(errorCallback);
 
-const updateStatement = (uid, title, description, queries) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const updateStatement = (uid: string, title: string, description: string, queries: any) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
   uid,
   title,
   description,
@@ -123,7 +134,7 @@ const updateStatement = (uid, title, description, queries) => Http.secureClinAxi
   .then(successCallback)
   .catch(errorCallback);
 
-const deleteStatement = (uid) => Http.secureClinAxios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
+const deleteStatement = (uid: string) => Http.secureClinAxios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
   data: { uid },
 })
   .then(successCallback)
@@ -142,7 +153,7 @@ const createUserProfile = (defaultStatement = '', patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
-const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, variantTableConfig = {}) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/profile`, {
+const updateUserProfile = (uid: string, defaultStatement: any, patientTableConfig = {}, variantTableConfig = {}) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/profile`, {
   uid,
   defaultStatement,
   patientTableConfig,
@@ -151,11 +162,11 @@ const updateUserProfile = (uid, defaultStatement, patientTableConfig = {}, varia
   .then(successCallback)
   .catch(errorCallback);
 
-const convertToExcelData = (data) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
+const convertToExcelData = (data: any) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
   .then(successCallback)
   .catch(errorCallback);
 
-const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
+const getGeneAutocomplete = (query: string, type: string) => Http.secureClinAxios.get(
   `${window.CLIN.geneServiceApiUrl}/autocomplete`, {
     params: {
       type,
@@ -166,21 +177,21 @@ const getGeneAutocomplete = (query, type) => Http.secureClinAxios.get(
   .then(successCallback)
   .catch(errorCallback);
 
-const searchHpos = async (term) => {
+const searchHpos = async (term: string) => {
   const url = `${window.CLIN.hpoBaseUrl}/autocomplete?prefix=${term}`;
   return Http.secureClinAxios.get(url)
     .then(successCallback)
     .catch(errorCallback);
 };
 
-const searchHpoChildren = async (hpoCode) => {
+const searchHpoChildren = async (hpoCode: string) => {
   const url = `${window.CLIN.hpoBaseUrl}/descendants?parentHpoId=${hpoCode}`;
   return Http.secureClinAxios.get(url)
     .then(successCallback)
     .catch(errorCallback);
 };
 
-const searchPractitioners = async ({ term }) => {
+const searchPractitioners = async ({ term }: {term: string}) => {
   const filter = `name sw "${term}" or identifier sw "${term}"`;
   const url = `${window.CLIN.fhirBaseUrl}/Practitioner?_filter=${filter}&_pretty=true&_count=5`;
   return Http.secureClinAxios.get(url)
@@ -188,7 +199,7 @@ const searchPractitioners = async ({ term }) => {
     .catch(errorCallback);
 };
 
-const updateServiceRequestStatus = async (user, serviceRequest, status, note) => {
+const updateServiceRequestStatus = async (user: any, serviceRequest: ServiceRequest, status: string, note: string) => {
   const extension = serviceRequest.extension.map((ext) => {
     const isSubmittedExt = ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 
@@ -201,7 +212,7 @@ const updateServiceRequestStatus = async (user, serviceRequest, status, note) =>
     return ext;
   });
 
-  let notes = get(serviceRequest, 'note', []);
+  let notes: any[] = get(serviceRequest, 'note', []);
 
   if (note != null) {
     notes = [
@@ -230,14 +241,50 @@ const updateServiceRequestStatus = async (user, serviceRequest, status, note) =>
     .catch(errorCallback);
 };
 
+const addPatientToGroup = async (groupId: string, parentId: string) => {
+  const groupResult = await getGroupById(groupId);
+  const group: Group = get(groupResult, 'payload.data.entry[0].resource', null);
+  if (!group) {
+    return Promise.reject(new Error('groupId is invalid'));
+  }
+
+  group.member.push({
+    entity: {
+      reference: `Patient/${parentId}`,
+    },
+  });
+
+  return Http.secureClinAxios.put(`${window.CLIN.fhirBaseUrl}/Group/${groupId}`, group)
+    .then(successCallback).catch(errorCallback);
+};
+
+const deletePatientFromGroup = async (groupId: string, parentId: string) => {
+  const groupResult = await getGroupById(groupId);
+  const group: Group = get(groupResult, 'payload.data.entry[0].resource', null);
+  if (!group) {
+    return Promise.reject(new Error('groupId is invalid'));
+  }
+
+  const newMembers = group.member.filter((member) => !member.entity.reference.includes(parentId));
+
+  group.member = newMembers;
+
+  return Http.secureClinAxios.put(`${window.CLIN.fhirBaseUrl}/Group/${groupId}`, group)
+    .then(successCallback).catch(errorCallback);
+};
+
 export default {
-  canEditPatients,
   getUserAuthPermissions,
+  addPatientToGroup,
+  deletePatientFromGroup,
+  canEditPatients,
   getPatientsGenderAndPosition,
   searchHpos,
   searchHpoChildren,
   getPatientById,
+  getPatientDataByIds,
   getPatientsByAutoComplete,
+  getGroupById,
   searchPatients,
   searchPractitioners,
   getVariantDetails,

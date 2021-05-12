@@ -17,6 +17,7 @@ import { ServiceRequestProvider } from '../helpers/providers/service-request/ind
 import {
   ClinicalObservation,
   ConsultationSummary,
+  FamilyMember,
   FamilyObservation,
   ParsedPatientData,
   Prescription,
@@ -49,7 +50,8 @@ export type PatientState = {
   observations?: Observations;
   canEdit?: boolean;
   openedPrescriptionId?: string;
-  parent?: any;
+  parent?: FamilyMember;
+  family?: FamilyMember[];
 };
 
 type Action = {
@@ -61,21 +63,35 @@ const initialState: PatientState = {
   patient: { parsed: { id: '' }, original: {} }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observations: {},
 };
 
+function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[] {
+  if (familyData == null) {
+    return [];
+  }
+
+  return familyData.map((fd: any) => {
+    const familyPatientId = get(fd, 'resource.entry[0].resource.id', '');
+    const extensionFamily = patient?.extension.find(
+      (ext) => get(ext, 'extension[0].valueReference.reference', []).includes(familyPatientId),
+    );
+
+    return ({
+      id: familyPatientId,
+      firstName: get(fd, 'resource.entry[0].resource.name[0].given[0]', ''),
+      lastName: get(fd, 'resource.entry[0].resource.name[0].family', ''),
+      ramq: getRAMQValue(get(fd, 'resource.entry[0].resource', {})),
+      birthDate: get(fd, 'resource.entry[0].resource.birthDate', ''),
+      gender: get(fd, 'resource.entry[0].resource.gender', ''),
+      type: get(extensionFamily, 'extension[1].valueCodeableConcept.coding[0].code', ''),
+    } as FamilyMember);
+  }).filter((fm) => !!fm.type);
+}
+
 const reducer = (state: PatientState = initialState, action: Action) => produce<PatientState>(state, (draft) => {
   switch (action.type) {
     case actions.NAVIGATION_PATIENT_SCREEN_REQUESTED:
       draft.openedPrescriptionId = action.payload.openedPrescriptionId;
       break;
     case actions.PATIENT_FETCH_SUCCEEDED: {
-      draft.parent = action.payload.parent;
-      draft.canEdit = action.payload.canEdit;
-      draft.observations = {
-        cgh: getObservations('CGH', action.payload.patientData),
-        indic: getObservations('INDIC', action.payload.patientData),
-        inves: getObservations('INVES', action.payload.patientData),
-        eth: getObservations('ETH', action.payload.patientData),
-        cons: getObservations('CONS', action.payload.patientData),
-      };
       const providerChain = new ProviderChain(action.payload);
       providerChain
         .add(new PatientProvider('patient'))
@@ -84,8 +100,22 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
         .add(new HPOProvider('hpos'))
         .add(new FMHProvider('fmhs'));
       const result = providerChain.execute();
+      const patient = result.patient.records![0];
+
+      draft.patient = patient;
+
       // eslint-disable-next-line prefer-destructuring
-      draft.patient = result.patient.records![0];
+      draft.parent = parseFamilyMember(action.payload.parent, patient.original)[0];
+      draft.family = parseFamilyMember(action.payload.family, patient.original);
+      draft.canEdit = action.payload.canEdit;
+      draft.observations = {
+        cgh: getObservations('CGH', action.payload.patientData),
+        indic: getObservations('INDIC', action.payload.patientData),
+        inves: getObservations('INVES', action.payload.patientData),
+        eth: getObservations('ETH', action.payload.patientData),
+        cons: getObservations('CONS', action.payload.patientData),
+      };
+
       draft.prescriptions = result.prescriptions.records;
       draft.consultation = result.consultation.records;
       draft.hpos = result.hpos.records;
@@ -132,6 +162,18 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
         .map((id) => ({ number: id.value, hospital: get(id, 'assigner.reference', '').split('/')[1] }));
       break;
     }
+    case actions.PATIENT_ADD_PARENT_SUCCEEDED:
+      message.success(intl.get('screen.patient.details.family.add.success'));
+      break;
+    case actions.PATIENT_ADD_PARENT_FAILED:
+      message.error(intl.get('screen.patient.details.family.add.error'));
+      break;
+    case actions.PATIENT_REMOVE_PARENT_SUCCEEDED:
+      message.success(intl.get('screen.patient.details.family.remove.success'));
+      break;
+    case actions.PATIENT_REMOVE_PARENT_FAILED:
+      message.error(intl.get('screen.patient.details.family.remove.error'));
+      break;
     default:
       break;
   }

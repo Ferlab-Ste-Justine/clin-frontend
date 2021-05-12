@@ -398,18 +398,31 @@ export const createPractitionerResource = ({
   }
 );
 
-export const createGetPatientDataBundle = (id) => (
+const buildPatientEntry = (id, withIncludes = true) => (
+  {
+    request: {
+      method: 'GET',
+      url: `Patient?_id=${id}${withIncludes ? '&_include=Patient:general-practitioner&_include=Patient:organization' : ''}`,
+    },
+  }
+);
+
+export const createGetMultiplePatientDataBundle = (ids, withIncludes = true) => (
+  {
+    resourceType: 'Bundle',
+    id: 'bundle-request-patients-data',
+    type: 'batch',
+    entry: ids.map((id) => buildPatientEntry(id, withIncludes)),
+  }
+);
+
+export const createGetPatientDataBundle = (id, withIncludes = true) => (
   {
     resourceType: 'Bundle',
     id: 'bundle-request-patient-data',
     type: 'batch',
     entry: [
-      {
-        request: {
-          method: 'GET',
-          url: `Patient?_id=${id}&_include=Patient:general-practitioner&_include=Patient:organization`,
-        },
-      },
+      buildPatientEntry(id, withIncludes),
       {
         request: {
           method: 'GET',

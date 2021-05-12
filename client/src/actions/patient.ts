@@ -1,3 +1,4 @@
+import { FamilyMemberType } from '../helpers/providers/types';
 import * as actions from './type';
 
 type Action = (...args:any) => {type: keyof typeof actions, payload?: any};
@@ -45,4 +46,14 @@ export const changeSearchType: Action = (type: string) => ({
   payload: {
     type,
   },
+});
+
+export const addParentToFamily: Action = (parentId: string, parentType: FamilyMemberType) => ({
+  type: actions.PATIENT_ADD_PARENT_REQUESTED,
+  payload: { parentId, parentType },
+});
+
+export const removeParentToFamily: Action = (parentId: string) => ({
+  type: actions.PATIENT_REMOVE_PARENT_REQUESTED,
+  payload: { parentId },
 });

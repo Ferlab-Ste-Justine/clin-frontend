@@ -17,6 +17,42 @@ export type ParsedPatientData = {
   familyRelation?: string;
 };
 
+export enum FamilyMemberType {
+  FATHER= 'FTH',
+  MOTHER = 'MTH',
+  NATURAL_MOTHER_OF_FETUS = 'NMTHF',
+  BROTHER = 'BRO',
+  SISTER = 'SIS',
+  HALF_BROTHER = 'HBRO',
+  HALF_SISTER ='HSIS',
+  IDENTICAL_TWIN = 'ITWIN',
+  FRATERNAL_TWIN = 'FTWIN',
+  SON = 'SONC',
+  DAUGHTER = 'DTH',
+  MATERNAL_AUNT = 'MAUNT',
+  PATERNAL_AUNT = 'PAUNT',
+  MATERNAL_UNCLE = 'MUNCLE',
+  PATERNAL_UNCLE = 'PUNCLE',
+  MATERNAL_COUSIN = 'MCOUSN',
+  PATERNAL_COUSIN = 'PCOUSN',
+  MATERNAL_GRAND_FATHER = 'MGRFTH',
+  PATERNAL_GRAND_FATHER = 'PGRFTH',
+  MATERNAL_GRAND_MOTHER = 'MGRMTH',
+  PATERNAL_GRAND_MOTHER = 'PGRMTH',
+  NEPHEW = 'NEPHEW',
+  NIECE = 'NIECE'
+}
+
+export type FamilyMember = {
+  id: string;
+  lastName: string;
+  firstName: string;
+  ramq?: string;
+  birthDate?: string;
+  gender?: string;
+  type?: FamilyMemberType
+}
+
 export type PractitionerData = {
   lastName: string;
   firstName: string;
