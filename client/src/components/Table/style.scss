@@ -30,7 +30,7 @@
         align-items: center;
         height: inherit;
         border-right: 1px solid #CDDDE8;
-            
+ 
             
       }
       &:nth-child(even){
@@ -56,6 +56,14 @@
 
 
 .bp3-table-header{
+  &:nth-child(2){
+    border: none;
+    .bp3-table-column-name{
+      border-right: none
+
+          
+    }
+  } 
   .bp3-table-column-name{
     padding:5px 0;
     color: $primary-dark;
@@ -156,11 +164,12 @@
 
 /* Cell style*/
 .cellValue{
-  span{
+  span, div{
     font-size: $small-font;
     font-family: $font;
     letter-spacing:$small-letter-spacing;
     height: auto;
+    font-weight: 400;
         
   }
   .link{
@@ -338,4 +347,9 @@ div[class^='bp3-table-cell-col'] {
 
 .data-table{
   width: 100%;
+}
+
+
+.table__header__checkbox__wrapper{
+  width: 50px;
 }
