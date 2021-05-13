@@ -357,6 +357,8 @@ const fr = {
   'screen.patientsearch.status.active': 'Approuvée',
   'screen.patientsearch.status.revoked': 'Refusée',
   'screen.patientsearch.status.completed': 'Complétée',
+  'screen.patientsearch.bloodRelationship.yes': 'Oui',
+  'screen.patientsearch.bloodRelationship.no': 'Non',
   'screen.patientvariant.parentalOrigin.variantConverage': 'couverture de la variation',
   'screen.patientvariant.parentalOrigin.sequenceReads': 'lectures de séquences',
   'screen.patientvariant.clinVarVariationId': 'ID de variation ClinVar',

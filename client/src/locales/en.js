@@ -319,6 +319,8 @@ const en = {
   'screen.patientsearch.status.active': 'Active',
   'screen.patientsearch.status.revoked': 'Revoked',
   'screen.patientsearch.status.completed': 'Completed',
+  'screen.patientsearch.bloodRelationship.yes': 'Yes',
+  'screen.patientsearch.bloodRelationship.no': 'No',
   'screen.patientvariant.parentalOrigin.variantConverage': 'Variant converage',
   'screen.patientvariant.parentalOrigin.sequenceReads': 'sequence reads',
   'screen.patientvariant.clinVarVariationId': 'ClinVar variation ID',
