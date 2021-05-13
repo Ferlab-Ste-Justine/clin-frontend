@@ -8,6 +8,7 @@ import { createCellRenderer } from '../../../Table/index';
 import { navigateToPatientScreen } from '../../../../actions/router';
 
 import InteractiveTable from '../../../Table/InteractiveTable';
+import { PatientData } from '../../../../helpers/search/types';
 
 interface Props {
   searchProps: any
@@ -48,14 +49,14 @@ const PatientTable: React.FC<Props> = ({
   const output: any[] = [];
 
   if (results) {
-    results.forEach((result:any) => {
+    results.forEach((result:PatientData) => {
       const organizationValue = () => {
         if (result.organization.name === '') {
           return result.organization.id.split('/')[1];
         }
         return result.organization.name;
       };
-      const value = {
+      const value:any = {
         status: '--',
         id: result.id,
         mrn: result.mrn,
@@ -69,20 +70,15 @@ const PatientTable: React.FC<Props> = ({
         familyComposition: '',
         familyType: result.familyType,
         ethnicity: result.ethnicity,
-        bloodRelationship: result.bloodRelationship,
-        proband: result.proband,
+        bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? 'Yes' : 'No',
         position: result.position,
         practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
-        request: result.request,
-        test: result.test,
-        prescription: result.prescription,
+        request: result.requests,
         fetus: result.fetus,
       };
 
       Object.keys(value).forEach((key) => {
-      // @ts-ignore
         if (value[key] == null || value[key].length === 0) {
-        // @ts-ignore
           value[key] = '--';
         }
       });
@@ -141,16 +137,6 @@ const PatientTable: React.FC<Props> = ({
       key: 'practitioner',
       label: 'screen.patientsearch.table.practitioner',
       renderer: createCellRenderer('text', (() => output), { key: 'practitioner' }),
-    },
-    {
-      key: 'test',
-      label: 'screen.patientsearch.table.test',
-      renderer: createCellRenderer('text', (() => output), { key: 'test' }),
-    },
-    {
-      key: 'prescription',
-      label: 'screen.patientsearch.table.prescription',
-      renderer: createCellRenderer('text', (() => output), { key: 'prescription' }),
     },
     {
       key: 'mrn',

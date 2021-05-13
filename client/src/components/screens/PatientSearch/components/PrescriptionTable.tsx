@@ -9,6 +9,7 @@ import { cloneDeep } from 'lodash';
 import { createCellRenderer } from '../../../Table/index';
 import HeaderCustomCell from '../../../Table/HeaderCustomCell';
 import { navigateToPatientScreen } from '../../../../actions/router';
+import { PrescriptionData } from '../../../../helpers/search/types';
 
 import InteractiveTable from '../../../Table/InteractiveTable';
 import PrescriptionTableHeader from './PrescriptionHeader';
@@ -24,8 +25,8 @@ interface Props {
   columnsUpdated: (columns: string[]) => void
   columnsOrderUpdated: (columns: any[]) => void
   columnsReset: () => void
-  size:number
-  page:number
+  size: number
+  page: number
 }
 
 const PrescriptionTable: React.FC<Props> = ({
@@ -64,7 +65,7 @@ const PrescriptionTable: React.FC<Props> = ({
 
   const output:any[] = [];
   if (results) {
-    results.forEach((result: any) => {
+    results.forEach((result: PrescriptionData) => {
       const organizationValue = () => {
         if (result.patientInfo.organization.name === '') {
           return result.patientInfo.organization.id.split('/')[1];
@@ -72,7 +73,7 @@ const PrescriptionTable: React.FC<Props> = ({
         return result.patientInfo.organization.name;
       };
 
-      const value = {
+      const value:any = {
         status: getStatusLabel(result),
         id: result.patientInfo.id,
         mrn: result.patientInfo.mrn[0],
@@ -86,7 +87,7 @@ const PrescriptionTable: React.FC<Props> = ({
         familyComposition: result.familyInfo.type,
         familyType: result.familyInfo.type,
         ethnicity: result.ethnicity,
-        bloodRelationship: result.bloodRelationship,
+        bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? intl.get('screen.patientsearch.bloodRelationship.yes') : intl.get('screen.patientsearch.bloodRelationship.no'),
         proband: 'Proband',
         position: result.patientInfo.position,
         practitioner: result.practitioner.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
@@ -97,9 +98,7 @@ const PrescriptionTable: React.FC<Props> = ({
       };
 
       Object.keys(value).forEach((key) => {
-        // @ts-ignore
         if (value[key] == null || value[key].length === 0) {
-          // @ts-ignore
           value[key] = '--';
         }
       });
