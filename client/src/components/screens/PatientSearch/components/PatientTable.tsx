@@ -21,8 +21,8 @@ interface Props {
   columnsUpdated: (columns: string[]) => void
   columnsOrderUpdated: (columns: any[]) => void
   columnsReset: () => void
-  size:number
-  page:number
+  size: number
+  page: number
 }
 
 const PatientTable: React.FC<Props> = ({
