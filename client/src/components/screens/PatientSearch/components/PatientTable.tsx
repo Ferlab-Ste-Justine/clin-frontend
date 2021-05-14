@@ -4,6 +4,7 @@ import {
 import React from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
+import { get } from 'lodash';
 import { createCellRenderer } from '../../../Table/index';
 import { navigateToPatientScreen } from '../../../../actions/router';
 
@@ -73,7 +74,7 @@ const PatientTable: React.FC<Props> = ({
         bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? 'Yes' : 'No',
         position: result.position,
         practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
-        request: result.requests,
+        request: get(result, 'requests.length', 0),
         fetus: result.fetus,
       };
 
