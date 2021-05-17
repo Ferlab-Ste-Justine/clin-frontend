@@ -74,10 +74,9 @@ const PatientTable: React.FC<Props> = ({
         bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? 'Yes' : 'No',
         position: result.position,
         practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
-        request: get(result, 'requests.length', 0),
+        request: get(result, 'requests.length', 0) === 0 ? '--' : get(result, 'requests.length', 0).toString(),
         fetus: result.fetus,
       };
-
       Object.keys(value).forEach((key) => {
         if (value[key] == null || value[key].length === 0) {
           value[key] = '--';
@@ -163,6 +162,11 @@ const PatientTable: React.FC<Props> = ({
       key: 'familyType',
       label: 'screen.patientsearch.table.familyType',
       renderer: createCellRenderer('text', (() => output), { key: 'familyType' }),
+    },
+    {
+      key: 'nbPrescription',
+      label: 'screen.patientsearch.table.nbPrescription',
+      renderer: createCellRenderer('text', (() => output), { key: 'request' }),
     },
   ];
   return (
