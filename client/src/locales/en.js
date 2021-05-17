@@ -305,6 +305,7 @@ const en = {
   'screen.patientsearch.table.prescription': 'Prescription',
   'screen.patientsearch.table.ramq': 'RAMQ',
   'screen.patientsearch.table.familyId': 'Family ID',
+  'screen.patientsearch.table.nbPrescription': 'Prescription count',
   'screen.patientsearch.table.familyType': 'Family Type',
   'screen.patientsearch.table.ethnicity': 'Ethnicity',
   'screen.patientsearch.table.bloodRelationship': 'Blood Relationship',

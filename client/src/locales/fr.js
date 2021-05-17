@@ -344,6 +344,7 @@ const fr = {
   'screen.patientsearch.table.ramq': 'RAMQ',
   'screen.patientsearch.table.familyId': 'ID Famille',
   'screen.patientsearch.table.familyType': 'Type de famille',
+  'screen.patientsearch.table.nbPrescription': 'Nb de prescriptions',
   'screen.patientsearch.table.ethnicity': 'Ethnicité',
   'screen.patientsearch.table.bloodRelationship': 'Consanguinité',
   'screen.patientsearch.download': 'Téléchargez la page en TSV',
