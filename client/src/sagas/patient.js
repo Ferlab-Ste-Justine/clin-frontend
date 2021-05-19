@@ -57,7 +57,7 @@ function* fetch(action) {
       type: actions.PATIENT_FETCH_SUCCEEDED,
       payload: {
         patientData: patientDataResponse.payload.data,
-        practitionersData: practitionersDataResponse.payload.data,
+        practitionersData: practitionersDataResponse.payload?.data,
         canEdit: canEditResponse.payload.data.data.result,
         family: familyMembersData,
         parent: familyMembersData,

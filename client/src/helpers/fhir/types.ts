@@ -47,7 +47,7 @@ export interface Meta {
 export interface Coding {
   system?: string;
   code: string;
-  display: string;
+  display?: string;
 }
 
 export interface CodeableConcept {

@@ -49,7 +49,7 @@ export type FamilyMember = {
   firstName: string;
   ramq?: string;
   birthDate?: string;
-  gender?: string;
+  gender?: 'male' | 'female';
   type?: FamilyMemberType
 }
 
