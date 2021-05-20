@@ -72,6 +72,7 @@
     "jest-resolve": "26.6.0",
     "jest-watch-typeahead": "0.6.1",
     "jszip": "^3.5.0",
+    "jwt-decode": "^3.1.2",
     "keycloak-connect": "^12.0.4",
     "keycloak-js": "^12.0.4",
     "less": "^3.12.2",

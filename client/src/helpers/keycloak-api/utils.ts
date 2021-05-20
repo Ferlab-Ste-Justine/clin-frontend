@@ -1,3 +1,7 @@
+import { AxiosResponse } from 'axios';
+import jwtdecode from 'jwt-decode';
+import httpClient from '../http-client';
+
 export const KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS = 'patient-variants';
 export const KEYCLOAK_AUTH_RESOURCE_PATIENT_FAMILY = 'patient-family';
 export const KEYCLOAK_AUTH_RESOURCE_PATIENT_FILES = 'patient-files';
@@ -15,9 +19,68 @@ export const KEYCLOAK_AUTH_RESOURCES = [
 export const KEYCLOAK_AUTH_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:uma-ticket';
 export const KEYCLOAK_AUTH_RESPONSE_MODE = 'permissions';
 
-type Config = {
-    url: string;
-    authClientId: string;
-  };
+export const KEYCLOAK_REFRESH_GRANT_TYPE = 'refresh_token';
 
+export const RPT_SESSION_KEY = 'rpt';
+
+type Config = {
+  url: string;
+  authClientId: string;
+  clientId: string;
+};
+
+export type Rpt = {
+  decoded: DecodedRpt;
+  accessToken: string;
+  refreshToken: string;
+  accessExpiresIn: number;
+  refreshExpiresIn: number;
+}
+
+export type DecodedRpt = {
+  exp: number;
+  iat: number;
+  auth_time: number;
+  iss: string;
+  authorization: {
+      permissions: {
+          rsid: string;
+          rsname: string;
+      }[];
+  };
+}
+
+const CLOSE_TO_EXPIRE_TIME = 300; // 5 minutes in seconds
+
+const tokenStatus = (iat: number, expires_in: number) => {
+  const currentTime = Math.floor(Date.now() / 1000);
+  const expirationTime = iat + expires_in;
+
+  return {
+    expired: currentTime > expirationTime,
+    closeToExpire: expirationTime - currentTime <= CLOSE_TO_EXPIRE_TIME,
+  };
+};
+
+const decodeRptFromResponse = (response: AxiosResponse<any>): Rpt => {
+  const decoded: DecodedRpt = jwtdecode(response.data.access_token);
+  return {
+    decoded,
+    accessToken: response.data.access_token,
+    refreshToken: response.data.refresh_token,
+    accessExpiresIn: response.data.expires_in,
+    refreshExpiresIn: response.data.refresh_expires_in,
+  };
+};
+
+export const getRefreshTokenStatus = (rpt: Rpt) => tokenStatus(rpt.decoded.iat, rpt.refreshExpiresIn);
 export const KEYCLOAK_CONFIG = JSON.parse(process.env.REACT_APP_KEYCLOAK_CONFIG) as Config;
+export const rptRequest = async (data: any) => {
+  const response = await httpClient.secureClinAxios.post(
+    `${KEYCLOAK_CONFIG.url}realms/clin/protocol/openid-connect/token`,
+    data,
+  );
+  const rpt = decodeRptFromResponse(response);
+  sessionStorage.setItem('rpt', JSON.stringify(rpt));
+  return rpt;
+};
