@@ -1,14 +1,14 @@
-import { PatientSearchHits } from '../fhir/types';
+import { PrescriptionData } from '../search/types';
 import { generateExport } from './nanuq';
 import {
-  INVALID_TYPE_VALUE, INVALID_TEST_VALUE, VALID_VALUE_ONE_PATIENT, VALID_VALUE_MULTIPLE_PATIENT,
+  INVALID_TYPE_VALUE, VALID_VALUE_ONE_PATIENT, VALID_VALUE_MULTIPLE_PATIENT,
 } from './nanuq.mocks';
 
 describe('Helpers: Nanuq', () => {
   describe('should throw an error when', () => {
     test('it has more than 96 element', (done) => {
       try {
-        generateExport(new Array<PatientSearchHits>(97));
+        generateExport(new Array<PrescriptionData>(97));
         done.fail('it should trigger an error');
       } catch (error) {
         expect(error.message).toEqual('invalid_data');
@@ -17,7 +17,7 @@ describe('Helpers: Nanuq', () => {
     });
 
     test('it has a status other than approved', (done) => {
-      const patient: PatientSearchHits[] = INVALID_TYPE_VALUE;
+      const patient: PrescriptionData[] = INVALID_TYPE_VALUE;
 
       try {
         generateExport(patient);
@@ -28,8 +28,8 @@ describe('Helpers: Nanuq', () => {
       }
     });
 
-    test('it has another test than WXS', (done) => {
-      const patient: PatientSearchHits[] = INVALID_TEST_VALUE;
+  /*     test('it has another test than WXS', (done) => {
+      const patient: PrescriptionData[] = INVALID_TEST_VALUE;
 
       try {
         generateExport(patient);
@@ -38,7 +38,7 @@ describe('Helpers: Nanuq', () => {
         expect(error.message).toEqual('invalid_data');
         done();
       }
-    });
+    }); */
   });
 
   describe('should generate a valid export', () => {
@@ -52,7 +52,7 @@ describe('Helpers: Nanuq', () => {
         prenom_patient: 'Rick',
         patient_id: 'PA1',
         service_request_id: 'SR1',
-        dossier_medical: '1234',
+        dossier_medical: 'MRN0001',
         institution: 'CHUSJ',
         DDN: '01/01/2021',
         sexe: 'male',
@@ -71,7 +71,7 @@ describe('Helpers: Nanuq', () => {
         prenom_patient: 'Rick',
         patient_id: 'PA1',
         service_request_id: 'SR1',
-        dossier_medical: '1234',
+        dossier_medical: 'MRN0001',
         institution: 'CHUSJ',
         DDN: '01/01/2021',
         sexe: 'male',
@@ -86,7 +86,7 @@ describe('Helpers: Nanuq', () => {
         prenom_patient: 'Morty',
         patient_id: 'PA2',
         service_request_id: 'SR2',
-        dossier_medical: '4321',
+        dossier_medical: 'MRN0001',
         institution: 'CHUSJ',
         DDN: '05/10/2006',
         sexe: 'male',
