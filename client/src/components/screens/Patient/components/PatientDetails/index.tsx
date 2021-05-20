@@ -9,11 +9,12 @@ import {
 } from 'react-icons-kit/md';
 import { FormOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { ParsedPatientData } from '../../../../../../helpers/providers/types';
-import FamilyTag from './FamilyTag';
-import { navigateToPatientScreen } from '../../../../../../actions/router';
-import PatientEditModal from './PatientEdit';
-import { State } from '../../../../../../reducers';
+import { ParsedPatientData } from '../../../../../helpers/providers/types';
+import FamilyTag from '../PrescriptionsTab/components/FamilyTag';
+import { navigateToPatientScreen } from '../../../../../actions/router';
+import PatientEditModal from './components/PatientEdit';
+import { State } from '../../../../../reducers';
+import './styles.scss';
 
 const MAX_MRNS_DISPLAYED = 2;
 
@@ -22,7 +23,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
 
   const dispatch = useDispatch();
   return (
-    <div className="prescriptions-tab__patient-section__name-block">
+    <div className="patient-section__name-block">
       <IconKit size={56} icon={ic_perm_contact_calendar} style={{ color: '#DADADA' }} />
       { patient.isFetus ? (
         <>
@@ -43,7 +44,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
           <Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title>
         </>
       ) }
-      <div className="prescriptions-tab__patient-section__name-block__tags">
+      <div className="patient-section__name-block__tags">
         <Tag color={patient.proband === 'Proband' ? 'red' : 'geekblue'}>{ patient.proband }</Tag>
         {
           patient.isFetus && (
@@ -68,7 +69,7 @@ const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
   const [isShowingAll, setIsShowingAll] = useState(false);
 
   return (
-    <div className="prescriptions-tab__patient-section__col__details__row__info__multiple-mrn">
+    <div className="patient-section__col__details__row__info__multiple-mrn">
       <ul>
         { mrns.map((value, index) => {
           if (index > (MAX_MRNS_DISPLAYED - 1) && !isShowingAll) {
@@ -90,20 +91,20 @@ const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
 };
 
 const DetailsRow: React.FC<{title: string, value?: string | ReactNode}> = ({ title, value }) => (
-  <div className="prescriptions-tab__patient-section__col__details__row">
-    <span className="prescriptions-tab__patient-section__col__details__row__title">
+  <div className="patient-section__col__details__row">
+    <span className="patient-section__col__details__row__title">
       { title }
     </span>
-    <span className="prescriptions-tab__patient-section__col__details__row__info">
+    <span className="patient-section__col__details__row__info">
       { value || '--' }
     </span>
   </div>
 );
 
 const DetailsCol: React.FC<{isLast?: boolean, align: 'center' | 'top'}> = ({ children, isLast = false, align }) => (
-  <div className="prescriptions-tab__patient-section__col">
+  <div className="patient-section__col">
     <div
-      className="prescriptions-tab__patient-section__col__details"
+      className="patient-section__col__details"
       style={{ '--details-col-justify': align } as CSSProperties}
     >
       { children }
@@ -124,8 +125,8 @@ const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
 
   const hasMultipleMrn = mrns.length >= MAX_MRNS_DISPLAYED;
   return (
-    <Card bordered={false} className="prescriptions-tab__patient-section__card">
-      <div className="prescriptions-tab__patient-section">
+    <Card bordered={false} className="patient-section__card">
+      <div className="patient-section">
         <ProfileCard patient={patient} />
 
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
@@ -160,7 +161,7 @@ const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
         </DetailsCol>
       </div>
       <Button
-        className="prescriptions-tab__patient-section__edit-button"
+        className="patient-section__edit-button"
         icon={<FormOutlined />}
         onClick={() => setIsPatientEditionModalOpen(true)}
         disabled={!canEditPatient}

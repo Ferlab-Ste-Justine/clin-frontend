@@ -1,0 +1,78 @@
+@import '../../../../../style/themes/colors.scss';
+
+.patient-section {
+  display: flex;
+  padding: 16px;
+
+  &__card {
+    position: relative;
+  }
+
+  &__name-block {
+    width: 240px;
+    text-align: center;
+    background-color: $gray-2;
+    padding: 16px 0;
+    border: 1px solid $gray-5;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    word-wrap: break-word;
+
+    &__tags {
+      margin-top: 8px;
+    }
+  }
+
+  &__col {
+    flex: 1;
+    display: flex;
+    .ant-divider {
+      height: 100%;
+      margin-left: auto;
+    }
+
+    &__details {
+      --details-col-justify: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: var(--details-col-justify);
+      margin-left: 24px;
+      gap: 16px;
+
+      &__row {
+        display: flex;
+        flex-direction: column;
+        
+        &__title {
+          color: $gray-7;
+          font-weight: 500;
+        }
+  
+        &__info {
+          &__multiple-mrn {
+            ul {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+            }
+            button {
+              span {
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+  &__edit-button {
+    position: absolute;
+    top: 17px;
+    right: 20px;
+    border: none;
+  }
+
+}

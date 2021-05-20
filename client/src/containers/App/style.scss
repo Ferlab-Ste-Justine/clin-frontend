@@ -240,8 +240,7 @@ div.ant-page-header {
 }
 
 div.ant-spin-nested-loading, div.ant-spin-container, div.ant-col-24, div#spinner, section#layout, div#content {
-  display: flex;
-  flex-direction: column;
+  min-height: 100%;
 }
 
 div.ant-card {

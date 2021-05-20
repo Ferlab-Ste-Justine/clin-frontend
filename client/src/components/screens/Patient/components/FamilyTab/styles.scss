@@ -1,0 +1,115 @@
+@import '../../../../../style/themes/colors.scss';
+
+.family-tab {
+  height: 100%;
+
+  &__details {
+    height: 100%;
+    margin-top: 24px;
+
+    &--empty{
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 610px;
+
+      svg {
+        color: $gray-5;
+      }
+      &__texts {
+        
+        &__title {
+          margin-top:35px;
+          color: $blue-10;
+          font-size: 24px;
+          line-height: 32px;
+        }
+
+        &__description {
+          margin-bottom: 35px;
+        }
+      }
+    }
+
+    &__add-parent__modal {
+      &__form {
+        &__search { 
+          .ant-form-item-label {
+            padding: 0;
+            & > label {
+              color: $gray-8;
+              height: unset;
+            }
+          }
+        }
+        &__status {
+          .ant-form-item-label {
+            padding: 0;
+            & > label {
+              color: $gray-9;
+              height: unset;
+            }
+          }
+        }
+      }
+
+      &__patient-card {
+        background-color: $gray-2;
+        border: 1px solid $gray-5;
+        padding: 16px;
+        margin-bottom: 16px;
+
+        &__info {
+          margin-bottom: 8px;
+          &__name {
+            font-size: 16px;
+            color: $gray-8;
+            font-weight: 500;
+          }
+        }
+
+        dl {
+          color: $gray-7;
+          dt {
+            font-size: 12px;
+            font-weight: 500;
+          }
+          dd {
+            font-size: 14px;
+          }
+        }
+      }
+      .ant-modal-footer {
+        padding: 16px;
+      }
+    }
+
+    &__table {
+      .ant-table-thead {
+        .ant-table-cell {
+          &:last-child {
+            text-align: center;
+          }
+        }
+      }
+      .ant-table-cell {
+        padding: 8px;
+      }
+
+      &__name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      &__actions {
+        text-align: center;
+      }
+
+      &__status {
+        width: 144px;
+      }
+    }
+  }
+}

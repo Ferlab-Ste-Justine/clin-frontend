@@ -87,6 +87,8 @@ export interface Extension {
   valueReference?: Reference;
   valueBoolean?: boolean;
   valueAge?: Age;
+  valueCodeableConcept?: CodeableConcept
+  extension?: Extension[];
   [key: string]: any;
 }
 
@@ -260,4 +262,15 @@ export interface PatientSearchHits {
   }[],
   timestamp: string,
   submitted: boolean,
+}
+
+export interface Member {
+  entity: Reference
+}
+
+export interface Group {
+  id: string
+  meta: Meta
+  extension: Extension[]
+  member: Member[]
 }

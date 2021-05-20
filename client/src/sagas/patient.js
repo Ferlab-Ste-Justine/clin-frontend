@@ -6,6 +6,7 @@ import get from 'lodash/get';
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { getExtension } from '../helpers/fhir/builder/Utils';
+import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 
 const getIdsFromPatient = (data) => {
   const patient = get(data, 'entry[0].resource.entry[0].resource');
@@ -24,25 +25,14 @@ const getIdsFromPatient = (data) => {
 
   return ids;
 };
-const FETUS_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus';
-const FAMILY_REL_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
 
-const extractPatientResource = (response) => get(response, 'payload.data.entry[0].resource.entry[0].resource');
+const getFamily = async (patientDataResponse, mainPatientId) => {
+  const familyMembers = get(patientDataResponse, 'payload.data.entry[1].resource.entry[0].resource.member', []);
+  const otherFamilyMemberIds = familyMembers
+    .filter((member) => !member.entity.reference.includes(mainPatientId))
+    .map((member) => member.entity.reference.split('/')[1]);
 
-const getParentIfFetus = async (response) => {
-  const patient = extractPatientResource(response);
-  const isFetusExt = getExtension(patient, FETUS_EXT_URL);
-  if (isFetusExt != null && isFetusExt.valueBoolean) {
-    const familyRelationExt = getExtension(patient, FAMILY_REL_EXT_URL);
-    const familyRelSubjectExt = getExtension(familyRelationExt, 'subject');
-    const idParts = get(familyRelSubjectExt, 'valueReference.reference', '').split('/');
-
-    if (idParts.length > 1) {
-      const parentRes = await Api.getPatientById(idParts[1]);
-      return get(parentRes, 'payload.data.data');
-    }
-  }
-  return undefined;
+  return Api.getPatientDataByIds(otherFamilyMemberIds, false);
 };
 
 function* fetch(action) {
@@ -52,11 +42,13 @@ function* fetch(action) {
       throw new ApiError(patientDataResponse.error);
     }
 
-    const [parent, practitionersDataResponse, canEditResponse] = yield Promise.all([
-      getParentIfFetus(patientDataResponse),
+    const [familyResponse, practitionersDataResponse, canEditResponse] = yield Promise.all([
+      getFamily(patientDataResponse, action.payload.uid),
       Api.getPractitionersData(patientDataResponse.payload.data),
       Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data)),
     ]);
+
+    const familyMembersData = get(familyResponse, 'payload.data.entry', null);
 
     yield put({
       type: actions.PATIENT_FETCH_SUCCEEDED,
@@ -64,10 +56,12 @@ function* fetch(action) {
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDataResponse.payload.data,
         canEdit: canEditResponse.payload.data.data.result,
-        parent,
+        family: familyMembersData,
+        parent: familyMembersData,
       },
     });
   } catch (e) {
+    console.error('patient.fetch', e);
     yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
   }
 }
@@ -163,8 +157,79 @@ function* prescriptionChangeStatus(action) {
   }
 }
 
+function* addParent(action) {
+  try {
+    const { parentId, parentType } = action.payload;
+    const parsedPatient = yield select((state) => state.patient.patient.parsed);
+    const originalPatient = yield select((state) => state.patient.patient.original);
+
+    const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
+
+    patientToUpdate.extension.push({
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
+      extension: [
+        {
+          url: 'subject',
+          valueReference: { reference: `Patient/${parentId}` },
+        },
+        {
+          url: 'relation',
+          valueCodeableConcept: {
+            coding: [{
+              system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
+              code: parentType,
+            }],
+          },
+        },
+      ],
+    });
+
+    yield updatePatient(patientToUpdate);
+
+    yield Api.addPatientToGroup(parsedPatient.familyId, parentId, parentType);
+    yield put({ type: actions.PATIENT_ADD_PARENT_SUCCEEDED, payload: { uid: parsedPatient.id } });
+  } catch (e) {
+    console.error('addParent', e);
+    yield put({ type: actions.PATIENT_ADD_PARENT_FAILED, payload: e });
+  }
+}
+
+function* removeParent(action) {
+  try {
+    const { parentId } = action.payload;
+    const patientParsed = yield select((state) => state.patient.patient.parsed);
+    const originalPatient = yield select((state) => state.patient.patient.original);
+
+    const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
+
+    const extToDeleteIndex = patientToUpdate.extension.findIndex(
+      (ext) => get(ext, 'extension[1].valueReference.reference', '').includes(parentId),
+    );
+
+    patientToUpdate.extension.splice(extToDeleteIndex, 1);
+    yield Api.deletePatientFromGroup(patientParsed.familyId, parentId);
+
+    yield put({ type: actions.PATIENT_REMOVE_PARENT_SUCCEEDED, payload: { uid: patientParsed.id } });
+  } catch (e) {
+    console.error('removeParent', e);
+    yield put({ type: actions.PATIENT_REMOVE_PARENT_FAILED, payload: e });
+  }
+}
+
+function* watchAddParent() {
+  yield takeLatest(actions.PATIENT_ADD_PARENT_REQUESTED, addParent);
+}
+
+function* watchRemoveParent() {
+  yield takeLatest(actions.PATIENT_REMOVE_PARENT_REQUESTED, removeParent);
+}
+
 function* watchPatientFetch() {
-  yield takeLatest(actions.PATIENT_FETCH_REQUESTED, fetch);
+  yield takeLatest([
+    actions.PATIENT_FETCH_REQUESTED,
+    actions.PATIENT_ADD_PARENT_SUCCEEDED,
+    actions.PATIENT_REMOVE_PARENT_SUCCEEDED,
+  ], fetch);
 }
 
 function* debouncePatientAutoComplete() {
@@ -188,5 +253,7 @@ export default function* watchedPatientSagas() {
     debouncePatientAutoComplete(),
     watchPatientSearch(),
     watchPrescriptionChangeStatus(),
+    watchAddParent(),
+    watchRemoveParent(),
   ]);
 }
