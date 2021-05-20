@@ -76,7 +76,7 @@ const PrescriptionTable: React.FC<Props> = ({
       const value:any = {
         status: getStatusLabel(result),
         id: result.patientInfo.id,
-        mrn: result.patientInfo.mrn[0],
+        mrn: 'MRN0001',
         ramq: result.patientInfo.ramq,
         organization: organizationValue(),
         firstName: result.patientInfo.firstName,
@@ -159,6 +159,21 @@ const PrescriptionTable: React.FC<Props> = ({
       },
     },
     {
+      key: 'request',
+      label: 'screen.patientsearch.table.request',
+      renderer: createCellRenderer('custom', () => output, {
+        renderer: (presetData: any) => (
+          <Button
+            onClick={() => handleGoToPatientScreen(presetData.id, presetData.request)}
+            data-id={presetData.request}
+            className="button link--underline"
+          >
+            { presetData.request }
+          </Button>
+        ),
+      }),
+    },
+    {
       key: 'patientId',
       label: 'screen.patientsearch.table.patientId',
       renderer: createCellRenderer('custom', (() => output), {
@@ -171,6 +186,34 @@ const PrescriptionTable: React.FC<Props> = ({
             { data.id }
           </Button>
         ),
+      }),
+    },
+    {
+      key: 'status',
+      label: 'screen.patientsearch.table.status',
+      renderer: createCellRenderer('dot', () => output, {
+        key: 'status',
+        renderer: (value: any) => {
+          switch (value) {
+            case intl.get('screen.patientsearch.status.draft'):
+              return '#D2DBE4';
+            case intl.get('screen.patientsearch.status.on-hold'):
+              return '#D46B08';
+            case intl.get('screen.patientsearch.status.active'):
+              return '#1D8BC6';
+            case intl.get('screen.patientsearch.status.revoked'):
+              return '#CF1322';
+            case intl.get('screen.patientsearch.status.completed'):
+              return '#389E0D';
+            case intl.get('screen.patientsearch.status.incomplete'):
+              return '#EB2F96';
+              // empty rows
+            case '':
+              return 'transparent';
+            default:
+              return 'transparent';
+          }
+        },
       }),
     },
     {
@@ -254,49 +297,6 @@ const PrescriptionTable: React.FC<Props> = ({
       key: 'bloodRelationship',
       label: 'screen.patientsearch.table.bloodRelationship',
       renderer: createCellRenderer('text', (() => output), { key: 'bloodRelationship' }),
-    },
-    {
-      key: 'status',
-      label: 'screen.patientsearch.table.status',
-      renderer: createCellRenderer('dot', () => output, {
-        key: 'status',
-        renderer: (value: any) => {
-          switch (value) {
-            case intl.get('screen.patientsearch.status.draft'):
-              return '#D2DBE4';
-            case intl.get('screen.patientsearch.status.on-hold'):
-              return '#D46B08';
-            case intl.get('screen.patientsearch.status.active'):
-              return '#1D8BC6';
-            case intl.get('screen.patientsearch.status.revoked'):
-              return '#CF1322';
-            case intl.get('screen.patientsearch.status.completed'):
-              return '#389E0D';
-            case intl.get('screen.patientsearch.status.incomplete'):
-              return '#EB2F96';
-              // empty rows
-            case '':
-              return 'transparent';
-            default:
-              return 'transparent';
-          }
-        },
-      }),
-    },
-    {
-      key: 'request',
-      label: 'screen.patientsearch.table.request',
-      renderer: createCellRenderer('custom', () => output, {
-        renderer: (presetData: any) => (
-          <Button
-            onClick={() => handleGoToPatientScreen(presetData.id, presetData.request)}
-            data-id={presetData.request}
-            className="button link--underline"
-          >
-            { presetData.request }
-          </Button>
-        ),
-      }),
     },
   ];
 
