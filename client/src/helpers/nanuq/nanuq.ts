@@ -6,7 +6,7 @@ const MAX_SIZE = 96;
 
 function validateData(patients:PrescriptionData[]) {
   // TODO: This should validate the request selected, not the patient holding the request.
-  return patients.length <= MAX_SIZE && patients.every((p:any) => p.status === 'active');
+  return patients.length <= MAX_SIZE && patients.every((p:PrescriptionData) => p.status === 'active');
 }
 
 export function generateExport(patients:PrescriptionData[]) {
