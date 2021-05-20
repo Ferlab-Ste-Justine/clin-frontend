@@ -76,7 +76,7 @@ const PrescriptionTable: React.FC<Props> = ({
       const value:any = {
         status: getStatusLabel(result),
         id: result.patientInfo.id,
-        mrn: 'MRN0001',
+        mrn: 'MRN0001', // HardCoder à changer
         ramq: result.patientInfo.ramq,
         organization: organizationValue(),
         firstName: result.patientInfo.firstName,
