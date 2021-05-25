@@ -7,8 +7,8 @@ import {
 import {
   NANUQ_EXPORT_FAILED, NANUQ_EXPORT_INVALID, NANUQ_EXPORT_REQUESTED, NANUQ_EXPORT_SUCCEEDED,
 } from '../actions/type';
-import { PatientSearchHits } from '../helpers/fhir/types';
 import { generateExport } from '../helpers/nanuq/nanuq';
+import { PrescriptionData } from '../helpers/search/types';
 
 function downloadJSONFile(content: string, filename: string) {
   const fileBlob = new Blob([content], { type: 'text/json' });
@@ -22,9 +22,8 @@ function downloadJSONFile(content: string, filename: string) {
 
 function* generateNanuqReport(action: {type: 'NANUQ_EXPORT_REQUESTED', payload: string[]}) {
   const hideMessage = message.loading(intl.get('screen.patientsearch.nanuqexport.process'));
-  const patients: PatientSearchHits[] = yield select((state: any) => state.search.patient.results);
-  const selectedPatients = patients.filter((p: PatientSearchHits) => action.payload.includes(p.id));
-
+  const patients: PrescriptionData[] = yield select((state: any) => state.search.patient.results);
+  const selectedPatients = patients.filter((p: PrescriptionData) => action.payload.includes(p.id));
   try {
     const report = generateExport(selectedPatients);
     downloadJSONFile(JSON.stringify(report, null, 2), `${moment().format('yyyy-MM-DD')}-clin-nanuq.json`);

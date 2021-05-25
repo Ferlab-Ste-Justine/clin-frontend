@@ -11,7 +11,6 @@ export function getNanuqModalConfigs() {
         <Typography.Text>{ intl.get('components.nanuqModal.criteria.description') }</Typography.Text>
         <ul>
           <li>{ intl.getHTML('components.nanuqModal.criteria.status') }</li>
-          <li>{ intl.getHTML('components.nanuqModal.criteria.test') }</li>
           <li>{ intl.getHTML('components.nanuqModal.criteria.number') }</li>
         </ul>
       </div>
