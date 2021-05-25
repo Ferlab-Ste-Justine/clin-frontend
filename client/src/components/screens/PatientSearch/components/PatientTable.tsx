@@ -60,7 +60,7 @@ const PatientTable: React.FC<Props> = ({
       const value:any = {
         status: '--',
         id: result.id,
-        mrn: result.mrn,
+        mrn: result.mrn.join(', '),
         ramq: result.ramq,
         organization: organizationValue(),
         firstName: result.firstName,
