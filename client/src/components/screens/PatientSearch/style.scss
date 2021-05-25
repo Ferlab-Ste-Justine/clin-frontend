@@ -313,8 +313,8 @@ div.ant-tag {
 
   &__table__header__nanuq {
     text-align: end;
-    button {
-      display: inline-flex;
+    .ant-divider{
+      height: 24px;
     }
   }
 }

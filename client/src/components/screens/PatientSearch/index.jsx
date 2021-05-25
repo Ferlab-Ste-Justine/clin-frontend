@@ -375,6 +375,9 @@ class PatientSearchScreen extends React.Component {
                   activeKey={search.type}
                   onChange={(key) => {
                     actions.changeSearchType(key);
+                    this.setState({
+                      page: 1,
+                    });
                   }}
                 >
                   <Tabs.TabPane
