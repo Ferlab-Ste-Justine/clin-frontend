@@ -11,6 +11,7 @@ import PatientSubmission from '../../components/screens/PatientSubmission';
 import { ResourceBuilder } from '../utils/Utils';
 import Patient from '../../components/screens/Patient';
 import { FakeStateProvider } from '../utils/FakeStateProvider';
+import { mockRptToken } from '../mocks';
 
 describe('PrescriptionCreation', () => {
   const server = setupServer();
@@ -114,6 +115,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Prescription (2nd Page): Practitioner Auto complete', async () => {
+    mockRptToken();
+
     const response = new ResourceBuilder()
       .withPractitioner({
         firstName: 'FirstName',
@@ -166,6 +169,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Prescription (2nd Page): Enabled Soumettre button', async () => {
+    mockRptToken();
+
     const response = new ResourceBuilder()
       .withPractitioner({
         firstName: 'FirstName',
