@@ -32,6 +32,9 @@ const getFamily = async (patientDataResponse, mainPatientId) => {
     .filter((member) => !member.entity.reference.includes(mainPatientId))
     .map((member) => member.entity.reference.split('/')[1]);
 
+  if (otherFamilyMemberIds.length === 0) {
+    return null;
+  }
   return Api.getPatientDataByIds(otherFamilyMemberIds, false);
 };
 

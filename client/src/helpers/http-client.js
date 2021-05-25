@@ -7,7 +7,7 @@ const secureClinAxios = Axios.create({
   // withCredentials: true
 });
 secureClinAxios.defaults.crossdomain = true;
-secureClinAxios.interceptors.request.use(async (config) => {
+secureClinAxios.interceptors.request.use((config) => {
   config.headers.Authorization = `Bearer ${keycloak.token}`;
   // config.headers['Accept-Language'] = 'fr-CA'
   return config;
