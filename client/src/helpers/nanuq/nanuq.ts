@@ -27,7 +27,7 @@ export function generateExport(patients:PrescriptionData[]) {
       prenom_patient: p.patientInfo.firstName,
       patient_id: p.patientInfo.id,
       service_request_id: p.id,
-      dossier_medical: 'MRN0001', // Hardcoded for now
+      dossier_medical: p.mrn ? p.mrn : 'MRN0001',
       institution: p.patientInfo.organization.name || p.patientInfo.organization.id.split('/')[1],
       DDN: moment(p.patientInfo.birthDate).format('DD/MM/yyyy'),
       sexe: p.patientInfo.gender.toLowerCase(),

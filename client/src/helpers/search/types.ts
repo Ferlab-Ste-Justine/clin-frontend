@@ -10,6 +10,7 @@ export type PrescriptionData = {
     practitioner: Practitioner;
     patientInfo: PatientInformation;
     familyInfo: FamilyGroupInfo;
+    mrn: string;
 }
 
 export type PatientData = {
