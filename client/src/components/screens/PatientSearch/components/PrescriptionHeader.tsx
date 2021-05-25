@@ -31,9 +31,10 @@ const PrescriptionTableHeader: React.FC<Props> = ({
       <Col flex={1} className="patientSearch__table__header__nanuq">
         <Button
           disabled={selectedPatients.length === 0}
+          type="link"
           onClick={() => dispatch(generateNanuqReport(selectedPatients))}
+          icon={<FileTextOutlined />}
         >
-          <FileTextOutlined />
           { intl.get('screen.patientsearch.table.nanuq') }
         </Button>
         <Divider type="vertical" />
