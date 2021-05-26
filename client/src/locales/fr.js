@@ -244,7 +244,7 @@ const fr = {
   'screen.patient.details.prescriptions.summary.cgh.IND': 'Indéterminé',
   'screen.patient.details.prescriptions.summary.cgh.NA': 'Non-réalisé',
   'screen.patient.details.prescriptions.summary.investigationSummary': "Résumé de l'investigation",
-  'screen.patient.details.prescriptions.summary.diagnosticHypothesis': 'Hypothèse de diagnostique',
+  'screen.patient.details.prescriptions.summary.diagnosticHypothesis': 'Hypothèse diagnostique',
   'screen.patient.details.prescriptions.family.title': 'Histoire familiale',
   'screen.patient.details.prescriptions.family.empty': 'Aucun renseignement saisie',
   'screen.patient.details.prescriptions.family.ethnicity': 'Ethnicité',
