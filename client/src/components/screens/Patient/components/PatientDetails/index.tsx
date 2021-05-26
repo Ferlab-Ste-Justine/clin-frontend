@@ -72,7 +72,6 @@ const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
     <div className="patient-section__col__details__row__info__multiple-mrn">
       <ul>
         { mrns.map((value, index) => {
-          console.log('coucou', MAX_MRNS_DISPLAYED);
           if (index > (MAX_MRNS_DISPLAYED - 1) && !isShowingAll) {
             return null;
           }
