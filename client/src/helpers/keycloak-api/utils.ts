@@ -21,8 +21,6 @@ export const KEYCLOAK_AUTH_RESPONSE_MODE = 'permissions';
 
 export const KEYCLOAK_REFRESH_GRANT_TYPE = 'refresh_token';
 
-export const RPT_SESSION_KEY = 'rpt';
-
 type Config = {
   url: string;
   authClientId: string;
@@ -73,14 +71,13 @@ const decodeRptFromResponse = (response: AxiosResponse<any>): Rpt => {
   };
 };
 
-export const getRefreshTokenStatus = (rpt: Rpt) => tokenStatus(rpt.decoded.iat, rpt.refreshExpiresIn);
+export const getAccessTokenStatus = (rpt: Rpt) => tokenStatus(rpt.decoded.iat, rpt.accessExpiresIn);
+
 export const KEYCLOAK_CONFIG = JSON.parse(process.env.REACT_APP_KEYCLOAK_CONFIG) as Config;
 export const rptRequest = async (data: any) => {
   const response = await httpClient.secureClinAxios.post(
     `${KEYCLOAK_CONFIG.url}realms/clin/protocol/openid-connect/token`,
     data,
   );
-  const rpt = decodeRptFromResponse(response);
-  sessionStorage.setItem('rpt', JSON.stringify(rpt));
-  return rpt;
+  return decodeRptFromResponse(response);
 };
