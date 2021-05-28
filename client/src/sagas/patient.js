@@ -7,6 +7,7 @@ import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { getExtension } from '../helpers/fhir/builder/Utils';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
+import { getFamilyMembersFromPatientDataResponse } from '../helpers/patient';
 
 const getIdsFromPatient = (data) => {
   const patient = get(data, 'entry[0].resource.entry[0].resource');
@@ -27,8 +28,8 @@ const getIdsFromPatient = (data) => {
 };
 
 const getFamily = async (patientDataResponse, mainPatientId) => {
-  const familyMembers = get(patientDataResponse, 'payload.data.entry[1].resource.entry[0].resource.member', []);
-  const otherFamilyMemberIds = familyMembers
+  // Remove "mainPatientId" since we already have all of their details and we don't want to fetch it in double
+  const otherFamilyMemberIds = getFamilyMembersFromPatientDataResponse(patientDataResponse)
     .filter((member) => !member.entity.reference.includes(mainPatientId))
     .map((member) => member.entity.reference.split('/')[1]);
 
@@ -37,6 +38,28 @@ const getFamily = async (patientDataResponse, mainPatientId) => {
   }
   return Api.getPatientDataByIds(otherFamilyMemberIds, false);
 };
+
+function* updateParentGroup(parentId, newGroupId) {
+  const patientDataResponse = yield Api.getPatientDataById(parentId);
+  const parentPatientData = get(patientDataResponse, 'payload.data.entry[0].resource.entry[0].resource');
+  if (parentPatientData == null) {
+    throw new Error(`updateParentGroup:: Did not find a patient with id [${parentId}]`);
+  }
+
+  const familyExtensionIndex = parentPatientData.extension.findIndex((ext) => ext.url.includes('family-id'));
+  if (familyExtensionIndex >= 0) {
+    parentPatientData.extension.splice(familyExtensionIndex, 1);
+  }
+  if (newGroupId) {
+    parentPatientData.extension.push({
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
+      valueReference: {
+        reference: `Group/${newGroupId}`,
+      },
+    });
+  }
+  return updatePatient(parentPatientData);
+}
 
 function* fetch(action) {
   try {
@@ -188,8 +211,9 @@ function* addParent(action) {
     });
 
     yield updatePatient(patientToUpdate);
-
+    yield updateParentGroup(parentId, parsedPatient.familyId);
     yield Api.addPatientToGroup(parsedPatient.familyId, parentId, parentType);
+
     yield put({ type: actions.PATIENT_ADD_PARENT_SUCCEEDED, payload: { uid: parsedPatient.id } });
   } catch (e) {
     console.error('addParent', e);
@@ -210,6 +234,9 @@ function* removeParent(action) {
     );
 
     patientToUpdate.extension.splice(extToDeleteIndex, 1);
+
+    yield updatePatient(patientToUpdate);
+    yield updateParentGroup(parentId, null);
     yield Api.deletePatientFromGroup(patientParsed.familyId, parentId);
 
     yield put({ type: actions.PATIENT_REMOVE_PARENT_SUCCEEDED, payload: { uid: patientParsed.id } });
