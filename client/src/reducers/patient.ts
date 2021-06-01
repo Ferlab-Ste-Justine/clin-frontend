@@ -27,7 +27,7 @@ type ObservationCode = 'CGH' | 'INDIC' | 'INVES' | 'ETH' | 'CONS';
 
 const getObservations = (code: ObservationCode, resource: any) : Observation[] => {
   const clinicalImpressin = resource.entry[3];
-  const observation = clinicalImpressin.resource.entry
+  const observation = clinicalImpressin?.resource.entry
     ?.filter((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
 
   return observation?.map((obs: {resource: Observation}) => obs.resource);

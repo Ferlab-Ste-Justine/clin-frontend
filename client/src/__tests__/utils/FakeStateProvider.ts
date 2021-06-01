@@ -1,7 +1,8 @@
 import { Patient } from '../../helpers/fhir/types';
+import { PatientState } from '../../reducers/patient';
 
 export class FakeStateProvider {
-  public static emptyPatientState(patient: Patient, options: any = {}) {
+  public static emptyPatientState(patient: Patient, options: Partial<PatientState> = {}) {
     return {
       patient: {
         patient: {

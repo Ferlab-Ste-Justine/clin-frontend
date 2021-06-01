@@ -13,7 +13,25 @@ process.env.REACT_APP_KEYCLOAK_CONFIG = '{}';
 // Ant Design Select component isn't easily selectable so we mock it with the default html one
 // and changed some part to mimick AntD's version
 jest.mock('antd', () => {
+  // eslint-disable-next-line global-require
+  const { useState } = require('react');
   const antd = jest.requireActual('antd');
+
+  const MockDropdown: React.FC<any> = ({ children, overlay }) => {
+    const [showMenu, setShowMenu] = useState(false);
+
+    return (
+      <>
+        <button
+          onClick={() => setShowMenu(true)}
+          type="button"
+        >
+          { children }
+        </button>
+        { showMenu && overlay }
+      </>
+    );
+  };
 
   const Select = ({ children, onChange, ...otherProps }: any) => (
     <select
@@ -29,6 +47,7 @@ jest.mock('antd', () => {
   return {
     ...antd,
     Select,
+    Dropdown: MockDropdown,
   };
 });
 
