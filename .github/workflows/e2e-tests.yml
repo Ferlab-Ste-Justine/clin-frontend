@@ -29,6 +29,7 @@ jobs:
         uses: cypress-io/github-action@v2
         env:
           CI: "true"
+          CYPRESS: "true"
           CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME}}
           CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD}}
           REACT_APP_PATIENT_SERVICE_URL: https://patient.qa.clin.ferlab.bio/patient
@@ -39,10 +40,11 @@ jobs:
           REACT_APP_HPO_SERVICE_URL: https://hpo.qa.clin.ferlab.bio/hpo
           REACT_APP_FHIR_ES_PATIENT_BUNDLE_ID: 3531cb44-6eeb-4e3f-9eb6-710bff83dfc0
           REACT_APP_FHIR_ES_REQUEST_BUNDLE_ID: 39d1814b-818e-4083-a9ff-c1580da38001
-          REACT_APP_KEYCLOAK_CONFIG: '{"realm": "clin", "url": "https://auth.qa.cqdg.ferlab.bio/auth/", "clientId": "clin-client"}'
+          REACT_APP_KEYCLOAK_CONFIG: '{"realm": "clin", "url": "https://auth.qa.cqdg.ferlab.bio/auth/", "clientId": "clin-client", "authClientId": "clin-acl"}'
         with:
           browser: chrome
           install-command: yarn install --production=false
-          start: npm start
+          build: yarn build
+          start: npx serve -p 2000 -s client/build
           wait-on: "http://localhost:2000"
           wait-on-timeout: 120

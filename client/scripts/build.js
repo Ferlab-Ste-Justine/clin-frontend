@@ -171,16 +171,21 @@ function build(previousFileSizes) {
         }
         return reject(new Error(messages.errors.join('\n\n')));
       }
+
+      const isCypressActived = process.env.CYPRESS
+        && (typeof process.env.CYPRESS === 'string' && process.env.CYPRESS.toLowerCase() === 'true');
+
       if (
-        process.env.CI
-        && (typeof process.env.CI !== 'string'
-          || process.env.CI.toLowerCase() !== 'false')
-        && messages.warnings.length
+        !isCypressActived
+          && process.env.CI
+            && (typeof process.env.CI !== 'string'
+              || process.env.CI.toLowerCase() !== 'false')
+            && messages.warnings.length
       ) {
         console.log(
           chalk.yellow(
             '\nTreating warnings as errors because process.env.CI = true.\n'
-              + 'Most CI servers set it automatically.\n',
+                  + 'Most CI servers set it automatically.\n',
           ),
         );
         return reject(new Error(messages.warnings.join('\n\n')));
