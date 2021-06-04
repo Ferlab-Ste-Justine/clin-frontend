@@ -174,7 +174,7 @@ function mainPatientLoadBundle(
             }, {
               url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
               valueReference: {
-                reference: 'Group/22413',
+                reference: 'Group/10',
               },
             },
             ...(parents || []).map((p) => ({
@@ -301,9 +301,10 @@ function mainPatientLoadBundle(
           url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?_id=19818',
         }],
         entry: [{
-          fullUrl: 'http://fhir.cqgc.ferlab.bio',
+          fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Group/10',
           resource: {
             resourceType: 'Group',
+            id: '10',
             meta: {
               profile: [
                 'http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-family-group',
@@ -434,6 +435,10 @@ describe('Patient/Family', () => {
         ),
         rest.put(
           'https://fhir.qa.clin.ferlab.bio/fhir/Patient/1',
+          (req, res, ctx) => res(ctx.status(200), ctx.json({})),
+        ),
+        rest.put(
+          'https://fhir.qa.clin.ferlab.bio/fhir/Patient/3',
           (req, res, ctx) => res(ctx.status(200), ctx.json({})),
         ),
         rest.put(

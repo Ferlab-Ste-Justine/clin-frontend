@@ -6,7 +6,7 @@ import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
 import { getRAMQValue } from '../helpers/fhir/patientHelper';
 import {
-  ClinicalImpression, FamilyMemberHistory, Observation, Patient, ServiceRequest,
+  ClinicalImpression, Extension, FamilyMemberHistory, Observation, Patient, ServiceRequest,
 } from '../helpers/fhir/types';
 import { ClinicalImpressionProvider } from '../helpers/providers/clinical-impression/index';
 import { FMHProvider } from '../helpers/providers/fmh/index';
@@ -22,6 +22,8 @@ import {
   ParsedPatientData,
   Prescription,
 } from '../helpers/providers/types';
+
+const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
 
 type ObservationCode = 'CGH' | 'INDIC' | 'INVES' | 'ETH' | 'CONS';
 
@@ -68,9 +70,23 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
     return [];
   }
 
-  return familyData.map((fd: any) => {
+  // Extract relations extension from the patient that as them
+  let relations = patient?.extension.filter((ext) => ext.url === FAMILY_RELATION_EXT_URL);
+  if (!relations || relations.length === 0) {
+    // if patient didn't have the relations, we try to find them in the other members
+    familyData.forEach((fd) => {
+      if (!relations || relations.length === 0) {
+        const newRelations = get(fd, 'resource.entry[0].resource.extension', [])
+          .filter((ext: Extension) => ext.url === FAMILY_RELATION_EXT_URL);
+        relations = newRelations.length > 0 ? newRelations : relations;
+      }
+    });
+  }
+
+  const members = familyData.map((fd: any) => {
     const familyPatientId = get(fd, 'resource.entry[0].resource.id', '');
-    const extensionFamily = patient?.extension.find(
+
+    const extensionFamily = relations?.find(
       (ext) => get(ext, 'extension[0].valueReference.reference', []).includes(familyPatientId),
     );
 
@@ -83,7 +99,26 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
       gender: get(fd, 'resource.entry[0].resource.gender', ''),
       type: get(extensionFamily, 'extension[1].valueCodeableConcept.coding[0].code', ''),
     } as FamilyMember);
-  }).filter((fm) => !!fm.type);
+  });
+
+  if (patient) {
+    // patient isn't included in `familyData` so we manualy add it
+    const extensionFamily = relations?.find(
+      (ext) => get(ext, 'extension[0].valueReference.reference', []).includes(patient.id),
+    );
+
+    members.push({
+      id: patient.id || '',
+      firstName: patient.name[0].given[0],
+      lastName: patient.name[0].family,
+      ramq: getRAMQValue(patient),
+      birthDate: patient.birthDate,
+      gender: patient.gender as ('male' | 'female'),
+      type: get(extensionFamily, 'extension[1].valueCodeableConcept.coding[0].code', ''),
+    });
+  }
+
+  return members;
 }
 
 const reducer = (state: PatientState = initialState, action: Action) => produce<PatientState>(state, (draft) => {

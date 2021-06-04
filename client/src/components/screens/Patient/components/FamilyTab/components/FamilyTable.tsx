@@ -20,8 +20,8 @@ interface Props {
 
 interface DataType {
   patient: Partial<ParsedPatientData> | FamilyMember
-  mother?: FamilyMember
-  father?: FamilyMember
+  mother?: FamilyMember | null
+  father?: FamilyMember | null
 }
 
 function getProbandIcon(sex: string) {
@@ -168,15 +168,17 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
       width: 70,
     },
   ] as ColumnType<DataType>[];
-  const patient = useSelector((state: State) => state.patient.patient.parsed);
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
-  const data: DataType[] = [{
-    patient,
-    mother: familyMembers.find(
-      (fm) => [FamilyMemberType.MOTHER, FamilyMemberType.NATURAL_MOTHER_OF_FETUS].includes(fm.type!),
-    ),
-    father: familyMembers.find((fm) => fm.type === FamilyMemberType.FATHER),
-  }, ...familyMembers.map((fm) => ({ patient: fm }))];
+  const data: DataType[] = familyMembers.map((fm) => ({
+    patient: fm,
+    mother: !fm.type ? familyMembers.find(
+      (fmm) => [FamilyMemberType.MOTHER, FamilyMemberType.NATURAL_MOTHER_OF_FETUS].includes(fmm.type!),
+    ) : null,
+    father: !fm.type ? familyMembers.find((fmf) => fmf.type === FamilyMemberType.FATHER) : null,
+  }
+  // The sort puts the "main patient" first since they doesn't have a type set
+  )).sort((fma, fmb) => fma.patient.type?.localeCompare(fmb.patient.type || '') || -1);
+
   return (
     <Card
       className="family-tab__details"
