@@ -86,9 +86,17 @@ const Practitioners: React.FC<Props> = ({
   form, doctorOptions, residentOptions,
 }) => {
   const [shownFieldState, dispatch] = useReducer(shownFieldReducer, {
-    doctor: false,
-    resident: false,
+    doctor: !!doctorOptions.initialValue,
+    resident: !!residentOptions.initialValue,
   });
+  let radioDefaultValue = null;
+  if (doctorOptions.initialValue) {
+    radioDefaultValue = PrescribingDoctor.DOCTOR;
+  }
+
+  if (residentOptions.initialValue) {
+    radioDefaultValue = PrescribingDoctor.RESIDENT;
+  }
 
   return (
     <Card
@@ -104,6 +112,7 @@ const Practitioners: React.FC<Props> = ({
         name="prescribingDoctorType"
       >
         <Radio.Group
+          defaultValue={radioDefaultValue}
           options={[
             {
               label: intl.get('form.patientSubmission.form.prescribingDoctor.resident'),
