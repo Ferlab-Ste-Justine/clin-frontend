@@ -72,7 +72,7 @@ const HpoHiddenFields = ({
 
 const INITIAL_TREE_ROOTS = [
   { key: 'HP:0001197', title: 'Abnormality of prenatal development or birth', is_leaf: false },
-  { key: 'HP:0001507', title: 'Growth abnormality', is_Leaf: false },
+  { key: 'HP:0001507', title: 'Growth abnormality', is_leaf: false },
   { key: 'HP:0000478', title: 'Abnormality of the eye', is_leaf: false },
   { key: 'HP:0001574', title: 'Abnormality of the ear', is_leaf: false },
   { key: 'HP:0012519', title: 'Hypoplastic posterior communicating artery', is_leaf: false },
@@ -372,12 +372,12 @@ class ClinicalInformation extends React.Component {
       const { TreeNode } = Tree;
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.key} dataRef={item}>
+          <TreeNode title={item.title} key={item.key} dataRef={item} checkable={item.checkable === true}>
             { this.renderTreeNodes(item.children) }
           </TreeNode>
         );
       }
-      return <TreeNode key={item.key} {...item} dataRef={item} />;
+      return <TreeNode key={item.key} {...item} dataRef={item} checkable={item.checkable === true} />;
     });
   }
 

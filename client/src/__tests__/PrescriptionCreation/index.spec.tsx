@@ -13,6 +13,37 @@ import Patient from '../../components/screens/Patient';
 import { FakeStateProvider } from '../utils/FakeStateProvider';
 import { mockRptToken } from '../mocks';
 
+function buildHPORequest() {
+  return rest.get(
+    'https://hpo.qa.clin.ferlab.bio/hpo/descendants',
+    (req, res, ctx) => res(ctx.status(200), ctx.json({
+      timestamp: 1623252338496,
+      message: 'Ok',
+      data: {
+        total: 1,
+        hits: [
+          {
+            _index: 'hpo',
+            _type: '_doc',
+            _id: '-ID',
+            _score: 9.455486,
+            _source: {
+              id: 'HP:0012373',
+              name: 'Abnormal eye physiology',
+              parents: [{ id: 'HP:0000478', name: 'Abnormality of the eye' }],
+              ancestors: [
+                { id: 'HP:0000478', name: 'Abnormality of the eye' },
+                { id: 'HP:0000118', name: 'Phenotypic abnormality' },
+                { id: 'HP:0000001', name: 'All' },
+              ],
+            },
+          },
+        ],
+      },
+    })),
+  );
+}
+
 describe('PrescriptionCreation', () => {
   const server = setupServer();
 
@@ -29,6 +60,7 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Enable/Disable Save Prescription Button', async () => {
+    server.use(buildHPORequest());
     render(
       <AppTest>
         <PatientSubmission />
@@ -46,7 +78,12 @@ describe('PrescriptionCreation', () => {
     const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
     act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    const clinicalSign = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    act(() => userEvent.click(clinicalSignRoot, {}));
+
+    await waitFor(() => screen.getByText('Abnormal eye physiology'));
+
+    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
     act(() => userEvent.click(clinicalSign, {}));
 
     const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
@@ -56,6 +93,7 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Enable/Disable Next Prescription Button', async () => {
+    server.use(buildHPORequest());
     render(
       <AppTest>
         <PatientSubmission />
@@ -73,7 +111,12 @@ describe('PrescriptionCreation', () => {
     const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
     act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    const clinicalSign = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    act(() => userEvent.click(clinicalSignRoot, {}));
+
+    await waitFor(() => screen.getByText('Abnormal eye physiology'));
+
+    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
     act(() => userEvent.click(clinicalSign, {}));
 
     const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
@@ -83,6 +126,7 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Prescription (2nd Page): Disabled Soumettre button', async () => {
+    server.use(buildHPORequest());
     render(
       <AppTest>
         <PatientSubmission />
@@ -100,7 +144,12 @@ describe('PrescriptionCreation', () => {
     const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
     act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    const clinicalSign = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    act(() => userEvent.click(clinicalSignRoot, {}));
+
+    await waitFor(() => screen.getByText('Abnormal eye physiology'));
+
+    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
     act(() => userEvent.click(clinicalSign, {}));
 
     const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
@@ -125,6 +174,7 @@ describe('PrescriptionCreation', () => {
       }).build();
 
     server.use(
+      buildHPORequest(),
       rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Practitioner?', (req, res, ctx) => res(
         ctx.status(200),
         ctx.json(response),
@@ -148,7 +198,12 @@ describe('PrescriptionCreation', () => {
     const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
     act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    const clinicalSign = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    act(() => userEvent.click(clinicalSignRoot, {}));
+
+    await waitFor(() => screen.getByText('Abnormal eye physiology'));
+
+    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
     act(() => userEvent.click(clinicalSign, {}));
 
     const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
@@ -179,6 +234,7 @@ describe('PrescriptionCreation', () => {
       }).build();
 
     server.use(
+      buildHPORequest(),
       rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Practitioner?', (req, res, ctx) => res(
         ctx.status(200),
         ctx.json(response),
@@ -202,7 +258,12 @@ describe('PrescriptionCreation', () => {
     const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
     act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    const clinicalSign = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    act(() => userEvent.click(clinicalSignRoot, {}));
+
+    await waitFor(() => screen.getByText('Abnormal eye physiology'));
+
+    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
     act(() => userEvent.click(clinicalSign, {}));
 
     const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
