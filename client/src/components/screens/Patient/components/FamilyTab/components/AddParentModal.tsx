@@ -5,12 +5,13 @@ import { useForm } from 'antd/lib/form/Form';
 import Modal from 'antd/lib/modal/Modal';
 import React, { useState } from 'react';
 import intl from 'react-intl-universal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addParentToFamily } from '../../../../../../actions/patient';
 import api from '../../../../../../helpers/api';
 import { GroupMemberStatusCode } from '../../../../../../helpers/fhir/patientHelper';
 import { FamilyMemberType } from '../../../../../../helpers/providers/types';
 import { PatientData } from '../../../../../../helpers/search/types';
+import { State } from '../../../../../../reducers';
 
 interface Props {
   parentType: FamilyMemberType | null
@@ -44,11 +45,15 @@ const AddParentModal: React.FC<Props> = ({
   const [searchResult, setSearchResult] = useState<SearchResult[] | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<PatientData | null>(null);
   const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | undefined>(undefined);
+  const family = useSelector((state: State) => state.patient.family);
+  const familyMemberIds = family?.map((member) => member.id);
 
   async function search(searchTerm: string) {
     const response: any = await api.getPatientsByAutoComplete('partial', searchTerm, 1, 5, getGenderByType(parentType!));
     if (response.payload?.data) {
       setSearchResult(response.payload.data.data.hits
+
+        .filter((hit: any) => !familyMemberIds?.includes(hit._id))
         .map((hit: any) => ({
           id: hit._id,
           lastName: hit._source.lastName,
