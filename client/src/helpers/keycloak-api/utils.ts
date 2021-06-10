@@ -74,7 +74,7 @@ const decodeRptFromResponse = (response: AxiosResponse<any>): Rpt => {
 export const getAccessTokenStatus = (rpt: Rpt) => tokenStatus(rpt.decoded.iat, rpt.accessExpiresIn);
 
 export const KEYCLOAK_CONFIG = JSON.parse(
-  window.env.REACT_APP_KEYCLOAK_CONFIG || process.env.REACT_APP_KEYCLOAK_CONFIG,
+  window.env?.REACT_APP_KEYCLOAK_CONFIG || process.env.REACT_APP_KEYCLOAK_CONFIG,
 ) as Config;
 export const rptRequest = async (data: any) => {
   const response = await httpClient.secureClinAxios.post(
