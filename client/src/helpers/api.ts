@@ -247,7 +247,7 @@ const addPatientToGroup = async (groupId: string, parentId: string, status: Grou
   const groupResult = await getGroupById(groupId);
   const group: Group = get(groupResult, 'payload.data.entry[0].resource', null);
   if (!group) {
-    return Promise.reject(new Error('groupId is invalid'));
+    return Promise.reject(new Error(`groupId [${groupId}] is invalid`));
   }
 
   group.member.push({
