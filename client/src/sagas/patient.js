@@ -235,8 +235,9 @@ function* removeParent(action) {
 
     patientToUpdate.extension.splice(extToDeleteIndex, 1);
 
+    const newGroupResponse = yield Api.createGroup(parentId);
     yield updatePatient(patientToUpdate);
-    yield updateParentGroup(parentId, null);
+    yield updateParentGroup(parentId, newGroupResponse.payload.data.id);
     yield Api.deletePatientFromGroup(patientParsed.familyId, parentId);
 
     yield put({ type: actions.PATIENT_REMOVE_PARENT_SUCCEEDED, payload: { uid: patientParsed.id } });
