@@ -14,7 +14,7 @@ interface ClinData {
 }
 
 export declare global {
-    interface Window { CLIN: ClinData }
+    interface Window { CLIN: ClinData, env: any }
     declare namespace NodeJS {
         interface ProcessEnv {
             NODE_ENV: string
