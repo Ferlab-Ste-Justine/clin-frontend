@@ -265,6 +265,7 @@ export interface PatientSearchHits {
 }
 
 export interface Member {
+  extension: Extension[];
   entity: Reference
 }
 

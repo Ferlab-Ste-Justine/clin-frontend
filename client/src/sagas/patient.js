@@ -31,12 +31,20 @@ const getFamily = async (patientDataResponse, mainPatientId) => {
   // Remove "mainPatientId" since we already have all of their details and we don't want to fetch it in double
   const otherFamilyMemberIds = getFamilyMembersFromPatientDataResponse(patientDataResponse)
     .filter((member) => !member.entity.reference.includes(mainPatientId))
-    .map((member) => member.entity.reference.split('/')[1]);
+    .map((member) => ({
+      id: member.entity.reference.split('/')[1],
+      statusCode: get(member, 'extension[0].valueCoding.code', 'UNK'),
+    }));
 
   if (otherFamilyMemberIds.length === 0) {
     return null;
   }
-  return Api.getPatientDataByIds(otherFamilyMemberIds, false);
+  const response = await Api.getPatientDataByIds(otherFamilyMemberIds.map((member) => member.id), false);
+
+  return get(response, 'payload.data.entry', []).map((entry, index) => ({
+    entry,
+    statusCode: otherFamilyMemberIds[index].statusCode,
+  }));
 };
 
 function* updateParentGroup(parentId, newGroupId) {
@@ -74,16 +82,13 @@ function* fetch(action) {
       Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data)),
     ]);
 
-    const familyMembersData = get(familyResponse, 'payload.data.entry', null);
-
     yield put({
       type: actions.PATIENT_FETCH_SUCCEEDED,
       payload: {
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDataResponse.payload?.data,
         canEdit: canEditResponse.payload.data.data.result,
-        family: familyMembersData,
-        parent: familyMembersData,
+        family: familyResponse,
       },
     });
   } catch (e) {
@@ -185,7 +190,7 @@ function* prescriptionChangeStatus(action) {
 
 function* addParent(action) {
   try {
-    const { parentId, parentType } = action.payload;
+    const { parentId, parentType, status } = action.payload;
     const parsedPatient = yield select((state) => state.patient.patient.parsed);
     const originalPatient = yield select((state) => state.patient.patient.original);
 
@@ -212,7 +217,7 @@ function* addParent(action) {
 
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, parsedPatient.familyId);
-    yield Api.addPatientToGroup(parsedPatient.familyId, parentId, parentType);
+    yield Api.addPatientToGroup(parsedPatient.familyId, parentId, status);
 
     yield put({ type: actions.PATIENT_ADD_PARENT_SUCCEEDED, payload: { uid: parsedPatient.id } });
   } catch (e) {

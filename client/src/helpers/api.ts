@@ -8,6 +8,7 @@ import { getPatientByIdentifier } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
 import { Group, ServiceRequest } from './fhir/types';
 import { userAuthPermissions } from './keycloak-api';
+import { generateGroupStatus, GroupMemberStatus } from './fhir/patientHelper';
 
 const successCallback = (payload: any) => ({ payload });
 const errorCallback = (error: any) => ({ error });
@@ -241,7 +242,7 @@ const updateServiceRequestStatus = async (user: any, serviceRequest: ServiceRequ
     .catch(errorCallback);
 };
 
-const addPatientToGroup = async (groupId: string, parentId: string) => {
+const addPatientToGroup = async (groupId: string, parentId: string, status: GroupMemberStatus) => {
   const groupResult = await getGroupById(groupId);
   const group: Group = get(groupResult, 'payload.data.entry[0].resource', null);
   if (!group) {
@@ -249,6 +250,7 @@ const addPatientToGroup = async (groupId: string, parentId: string) => {
   }
 
   group.member.push({
+    extension: [generateGroupStatus(status)],
     entity: {
       reference: `Patient/${parentId}`,
     },

@@ -76,7 +76,7 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
     // if patient didn't have the relations, we try to find them in the other members
     familyData.forEach((fd) => {
       if (!relations || relations.length === 0) {
-        const newRelations = get(fd, 'resource.entry[0].resource.extension', [])
+        const newRelations = get(fd, 'entry.resource.entry[0].resource.extension', [])
           .filter((ext: Extension) => ext.url === FAMILY_RELATION_EXT_URL);
         relations = newRelations.length > 0 ? newRelations : relations;
       }
@@ -84,7 +84,7 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
   }
 
   const members = familyData.map((fd: any) => {
-    const familyPatientId = get(fd, 'resource.entry[0].resource.id', '');
+    const familyPatientId = get(fd, 'entry.resource.entry[0].resource.id', '');
 
     const extensionFamily = relations?.find(
       (ext) => get(ext, 'extension[0].valueReference.reference', []).includes(familyPatientId),
@@ -92,12 +92,13 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
 
     return ({
       id: familyPatientId,
-      firstName: get(fd, 'resource.entry[0].resource.name[0].given[0]', ''),
-      lastName: get(fd, 'resource.entry[0].resource.name[0].family', ''),
-      ramq: getRAMQValue(get(fd, 'resource.entry[0].resource', {})),
-      birthDate: get(fd, 'resource.entry[0].resource.birthDate', ''),
-      gender: get(fd, 'resource.entry[0].resource.gender', ''),
+      firstName: get(fd, 'entry.resource.entry[0].resource.name[0].given[0]', ''),
+      lastName: get(fd, 'entry.resource.entry[0].resource.name[0].family', ''),
+      ramq: getRAMQValue(get(fd, 'entry.resource.entry[0].resource', {})),
+      birthDate: get(fd, 'entry.resource.entry[0].resource.birthDate', ''),
+      gender: get(fd, 'entry.resource.entry[0].resource.gender', ''),
       type: get(extensionFamily, 'extension[1].valueCodeableConcept.coding[0].code', ''),
+      code: fd.statusCode,
     } as FamilyMember);
   });
 
@@ -115,6 +116,7 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
       birthDate: patient.birthDate,
       gender: patient.gender as ('male' | 'female'),
       type: get(extensionFamily, 'extension[1].valueCodeableConcept.coding[0].code', ''),
+      code: 'AFF',
     });
   }
 
@@ -140,7 +142,7 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       draft.patient = patient;
 
       // eslint-disable-next-line prefer-destructuring
-      draft.parent = parseFamilyMember(action.payload.parent, patient.original)[0];
+      draft.parent = parseFamilyMember(action.payload.family, patient.original)[0];
       draft.family = parseFamilyMember(action.payload.family, patient.original);
       draft.canEdit = action.payload.canEdit;
       draft.observations = {
