@@ -8,11 +8,8 @@ import { getPatientByIdentifier } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
 import { Group, ServiceRequest } from './fhir/types';
 import { userAuthPermissions } from './keycloak-api';
-<<<<<<< HEAD
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
-=======
 import keycloak from '../keycloak';
->>>>>>> Bonne data pour tableau
 
 const successCallback = (payload: any) => ({ payload });
 const errorCallback = (error: any) => ({ error });
@@ -279,7 +276,6 @@ const deletePatientFromGroup = async (groupId: string, parentId: string) => {
     .then(successCallback).catch(errorCallback);
 };
 
-<<<<<<< HEAD
 const createGroup = async (patientId: string) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/Group`, {
   resourceType: 'Group',
   extension: [{
@@ -298,12 +294,10 @@ const createGroup = async (patientId: string) => Http.secureClinAxios.post(`${wi
     },
   }],
 }).then(successCallback).catch(errorCallback);
-=======
 const getFileURL = async (file: string) => Http.secureClinAxios
   .get(`${file}?format=json`, { headers: { Authorization: `Bearer ${keycloak.token}` } })
   .then(successCallback)
   .catch(errorCallback);
->>>>>>> Bonne data pour tableau
 
 export default {
   getUserAuthPermissions,
