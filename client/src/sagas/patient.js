@@ -252,6 +252,19 @@ function* removeParent(action) {
   }
 }
 
+function* getFileURL(action) {
+  try {
+    const { file } = action.payload;
+    const fileURL = yield Api.getFileURL(file);
+    if (fileURL.error) {
+      throw new ApiError(fileURL.error);
+    }
+    yield put({ type: actions.PATIENT_FILE_URL_SUCCEEDED, payload: { uid: fileURL } });
+  } catch (e) {
+    yield put({ type: actions.PATIENT_FILE_URL_FAILED, payload: e });
+  }
+}
+
 function* watchAddParent() {
   yield takeLatest(actions.PATIENT_ADD_PARENT_REQUESTED, addParent);
 }
@@ -283,6 +296,10 @@ function* watchPrescriptionChangeStatus() {
   yield takeLatest(actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED, prescriptionChangeStatus);
 }
 
+function* watchFile() {
+  yield takeLatest(actions.PATIENT_FILE_URL_REQUESTED, getFileURL);
+}
+
 export default function* watchedPatientSagas() {
   yield all([
     watchPatientFetch(),
@@ -291,5 +308,6 @@ export default function* watchedPatientSagas() {
     watchPrescriptionChangeStatus(),
     watchAddParent(),
     watchRemoveParent(),
+    watchFile(),
   ]);
 }

@@ -1,130 +1,182 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card, Table, Button, Dropdown, Menu,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import intl from 'react-intl-universal';
+import { useDispatch, useSelector } from 'react-redux';
+import { ParsedPatientData } from '../../../../../helpers/providers/types';
+import { navigateToPatientScreen } from '../../../../../actions/router';
+import { State } from '../../../../../reducers';
+import Api from '../../../../../helpers/api';
+import { TaskResponse } from '../../../../../helpers/search/types';
+import MetadataModal from './metadataModal';
 
 import './styles.scss';
 
 const getDropdownOption = (tempoInfo: number) => {
   const option = [];
+const fileInfo: {[key: string]: any} = require('./info.json');
 
-  if (tempoInfo >= 3) {
-    option.push(
-      (<Menu.Item><Button type="link">Metadata</Button></Menu.Item>),
-      (<Menu.Item><Button type="link">File</Button></Menu.Item>),
-      (<Menu.Item><Button type="link"> Index</Button></Menu.Item>),
-    );
-  }
-  if (tempoInfo === 2) {
-    option.push(
-      (<Menu.Item><Button type="link">Metadata</Button></Menu.Item>),
-      (<Menu.Item><Button type="link">File</Button></Menu.Item>),
-    );
-  }
-  if (tempoInfo === 1) {
-    option.push(
-      (<Menu.Item><Button type="link">File</Button></Menu.Item>),
-    );
-  }
-  const menu = (
-    <Menu>
-      {
-        option
-      }
-    </Menu>
-  );
-
-  return (
-    <div>
-      <Dropdown
-        overlay={menu}
-        className="files-tab__dropdownAction"
-      >
-        <Button type="link">
-          Download <DownOutlined />
-        </Button>
-      </Dropdown>
-      {
-        tempoInfo === 4 ? (
-          <Button type="link" className="link--underline">
-            IGV
-          </Button>
-        ) : null
-      }
-
-    </div>
-  );
+const getURL = async (url:string) => {
+  const data: any = await Api.getFileURL(url);
+  return data.payload.data.url;
 };
 
-const FilesTab: React.FC = () => {
-  const dataSource: any = [
-    {
-      name: 'file1ne.cram',
-      type: 'AR',
-      format: 'CRAM',
-      size: '34 GB',
-      sample: '1',
+const FilesTab : React.FC = () => {
+  const { Patient } = fileInfo;
+
+  const dispatch = useDispatch();
+  const dataSource:any[] = [];
+  const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
+  const [isOpen, setIsOpenModal] = useState<boolean>(false);
+  const [documentReference, setDocumentReference] = useState<string>('');
+
+  const handleGoToPatientScreen:any = (patientId: string, requestId: string | null = null) => {
+    dispatch(navigateToPatientScreen(patientId, {
+      tab: 'prescriptions',
+      reload: false,
+      openedPrescriptionId: requestId,
+    }));
+  };
+
+  const getFileSize = (size: number) => {
+    let newSize = size;
+    if (size >= 1000 && size < 10 ** 6) {
+      newSize = size / 1000;
+      return `${newSize} ko`;
+    } if (size >= 10 ** 6 && size < 10 ** 9) {
+      newSize = size / 10 ** 6;
+      return `${newSize} mo`;
+    } if (size >= 10 ** 9 && size < 10 ** 12) {
+      newSize = size / 10 ** 9;
+      return `${newSize} go`;
+    }
+
+    return `${newSize} o`;
+  };
+
+  const handleCloseModal = () => {
+    setIsOpenModal(false);
+  };
+
+  const getDropdownOption = (format: string, url:any, documentR:string) => {
+    const option = [];
+    option.push(
+      (
+        <Menu.Item>
+          <Button
+            type="link"
+            className="link--underline"
+            target="_blank"
+            onClick={async () => {
+              const newUrl = await getURL(url.file);
+              window.open(newUrl, '_blank');
+            }}
+          >
+            File
+          </Button>
+        </Menu.Item>
+      ),
+      (
+        <Menu.Item>
+          <Button
+            type="link"
+            className="link--underline"
+            target="_blank"
+            onClick={async () => {
+              setDocumentReference(documentR);
+              setIsOpenModal(true);
+            }}
+          >
+            Metadata
+          </Button>
+        </Menu.Item>
+      ),
+    );
+    if (format === 'CRAM' || format === 'VCF') {
+      option.push(
+        (
+          <Menu.Item>
+            <Button
+              type="link"
+              className="link--underline"
+              target="_blank"
+              onClick={async () => {
+                const newUrl = await getURL(url.index);
+                window.open(newUrl, '_blank');
+              }}
+            >
+              Index
+            </Button>
+          </Menu.Item>
+        ),
+      );
+    }
+
+    const menu = (
+      <Menu>
+        {
+          option
+        }
+      </Menu>
+    );
+
+    return (
+      <div>
+        <Dropdown
+          overlay={menu}
+          className="files-tab__dropdownAction"
+        >
+          <Button type="link">
+            Download <DownOutlined />
+          </Button>
+        </Dropdown>
+
+      </div>
+    );
+  };
+
+  Patient.tasks.forEach((element:TaskResponse) => {
+    const {
+      format, title, size,
+    } = element.output.resource.content[0];
+    const { type } = element.output.resource;
+    const prescription = element.resource.id.split('/')[1];
+    const url = {
+      file: element.output.resource.content[0].url,
+      index: element.output.resource.content.length > 1 ? element.output.resource.content[1].url : null,
+    };
+    const date = element.runDate[0].split('T')[0];
+    const documentR = JSON.stringify(element.output.resource, undefined, 4);
+    const specimen = element.output.resource.specimen
+      ? `${element.output.resource.specimen[0].external_id} / ${element.output.resource.specimen[0].organization.name}`
+      : '--';
+    const sizeWithUnity = getFileSize(Number(size));
+    const data = {
+      title,
+      type,
+      format,
+      size: sizeWithUnity,
+      sample: specimen,
       prescription: (
         <Button
           type="link"
           className="link--underline"
+          onClick={() => {
+            handleGoToPatientScreen(patient.id, prescription);
+            window.location.reload();
+          }}
+          data-id={prescription}
         >
-          31979
+          { prescription }
         </Button>),
-      date: '2020-02-12',
-      action: getDropdownOption(4),
-    },
-    {
-      name: 'filename.vcf',
-      type: 'SNV',
-      format: 'gVCF',
-      size: '245 MB',
-      sample: '4',
-      prescription: (
-        <Button
-          type="link"
-          className="link--underline"
-        >
-          47908
-        </Button>),
-      date: '2020-04-05',
-      action: getDropdownOption(3),
-    },
-    {
-      name: 'file.tar.gz',
-      type: 'QC',
-      format: 'TGZ',
-      size: '2 MB',
-      sample: '3',
-      prescription: (
-        <Button
-          type="link"
-          className="link--underline"
-        >
-          33070
-        </Button>),
-      date: '2020-12-17',
-      action: getDropdownOption(2),
-    },
-    {
-      name: 'file3name.pdf',
-      type: 'Consent',
-      format: 'PDF',
-      size: '23 KB',
-      sample: '6',
-      prescription: (
-        <Button
-          type="link"
-          className="link--underline"
-        >
-          31979
-        </Button>),
-      date: '2020-06-24',
-      action: getDropdownOption(1),
-    },
-  ];
+      date,
+      action: getDropdownOption(format, url, documentR),
+    };
+
+    dataSource.push(data);
+  });
 
   return (
     <div className="page-static-content files-tab">
@@ -135,8 +187,8 @@ const FilesTab: React.FC = () => {
           pagination={false}
           columns={[
             {
-              key: 'name',
-              dataIndex: 'name',
+              key: 'title',
+              dataIndex: 'title',
               title: intl.get('screen.patient.details.file.name'),
             },
             {
@@ -187,6 +239,12 @@ const FilesTab: React.FC = () => {
           size="small"
         />
       </Card>
+
+      <MetadataModal
+        open={isOpen}
+        data={documentReference}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
