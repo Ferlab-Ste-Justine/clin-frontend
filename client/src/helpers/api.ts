@@ -273,6 +273,25 @@ const deletePatientFromGroup = async (groupId: string, parentId: string) => {
     .then(successCallback).catch(errorCallback);
 };
 
+const createGroup = async (patientId: string) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/Group`, {
+  resourceType: 'Group',
+  extension: [{
+    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/fm-structure',
+    valueCoding: {
+      system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/fm-structure',
+      code: 'SOL',
+      display: 'Solo',
+    },
+  }],
+  type: 'person',
+  actual: true,
+  member: [{
+    entity: {
+      reference: `Patient/${patientId}`,
+    },
+  }],
+}).then(successCallback).catch(errorCallback);
+
 export default {
   getUserAuthPermissions,
   addPatientToGroup,
@@ -305,4 +324,5 @@ export default {
   getPractitionersData,
   updateServiceRequestStatus,
   getPatientByIdentifier,
+  createGroup,
 };
