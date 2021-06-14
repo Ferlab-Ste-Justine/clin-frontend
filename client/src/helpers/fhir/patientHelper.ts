@@ -2,7 +2,9 @@ import capitalize from 'lodash/capitalize';
 import get from 'lodash/get';
 import moment from 'moment';
 import { isValidRamq } from './api/PatientChecker';
-import { Patient } from './types';
+import { Extension, Patient } from './types';
+
+const EXTENSION_GROUP_MEMBER_STATUS = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/group-member-status';
 
 export function getRAMQValue(patient: Patient): string | undefined {
   return patient.identifier.find((id) => get(id, 'type.coding[0].code', '') === 'JHN')?.value;
@@ -49,3 +51,28 @@ export function getDetailsFromRamq(ramq: string): RamqDetails | null {
     birthDate: birthDate <= moment().toDate() ? birthDate : undefined,
   };
 }
+
+export type GroupMemberStatus = 'Affected' | 'Unaffected' | 'Unknown';
+export type GroupMemberStatusCode = 'AFF' | 'UNF' | 'UNK';
+
+export const groupStatusObject = (code: GroupMemberStatusCode, display: GroupMemberStatus): Extension => ({
+  url: EXTENSION_GROUP_MEMBER_STATUS,
+  valueCoding: {
+    code,
+    display,
+    system: 'http://fhir.cqgc.ferlab.bio/ValueSet/group-member-status',
+  },
+});
+
+export const generateGroupStatus = (status: GroupMemberStatus): Extension => {
+  switch (status) {
+    case 'Affected':
+      return groupStatusObject('AFF', status);
+    case 'Unaffected':
+      return groupStatusObject('UNF', status);
+    case 'Unknown':
+      return groupStatusObject('UNK', status);
+    default:
+      throw new Error(`Unknown group member status [${status}]`);
+  }
+};
