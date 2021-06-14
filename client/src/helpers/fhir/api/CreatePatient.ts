@@ -37,7 +37,7 @@ export const createPatient = async (patient: Patient) : Promise<CreatePatientRes
 
   const members = get(bundle, 'entry[1].resource.member', []);
   members.push({
-    extension: [generateGroupStatus('Affected')],
+    extension: [generateGroupStatus('AFF')],
     entity: {
       reference: get(bundle, 'entry[0].fullUrl'),
     },
@@ -170,13 +170,13 @@ export const createPatientFetus = async (patient: Patient) : Promise<CreatePatie
 
   set(bundle, 'entry[2].resource.member', [
     {
-      extension: [generateGroupStatus('Unaffected')],
+      extension: [generateGroupStatus('UNF')],
       entity: {
         reference: get(bundle, 'entry[0].fullUrl'),
       },
     },
     {
-      extension: [generateGroupStatus('Affected')],
+      extension: [generateGroupStatus('AFF')],
       entity: {
         reference: get(bundle, 'entry[1].fullUrl'),
       },

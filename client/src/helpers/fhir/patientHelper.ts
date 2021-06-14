@@ -64,14 +64,14 @@ export const groupStatusObject = (code: GroupMemberStatusCode, display: GroupMem
   },
 });
 
-export const generateGroupStatus = (status: GroupMemberStatus): Extension => {
+export const generateGroupStatus = (status: GroupMemberStatusCode): Extension => {
   switch (status) {
-    case 'Affected':
-      return groupStatusObject('AFF', status);
-    case 'Unaffected':
-      return groupStatusObject('UNF', status);
-    case 'Unknown':
-      return groupStatusObject('UNK', status);
+    case 'AFF':
+      return groupStatusObject(status, 'Affected');
+    case 'UNF':
+      return groupStatusObject(status, 'Unaffected');
+    case 'UNK':
+      return groupStatusObject(status, 'Unknown');
     default:
       throw new Error(`Unknown group member status [${status}]`);
   }

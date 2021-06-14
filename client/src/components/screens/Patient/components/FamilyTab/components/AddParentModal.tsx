@@ -8,7 +8,7 @@ import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
 import { addParentToFamily } from '../../../../../../actions/patient';
 import api from '../../../../../../helpers/api';
-import { GroupMemberStatus } from '../../../../../../helpers/fhir/patientHelper';
+import { GroupMemberStatusCode } from '../../../../../../helpers/fhir/patientHelper';
 import { FamilyMemberType } from '../../../../../../helpers/providers/types';
 import { PatientData } from '../../../../../../helpers/search/types';
 
@@ -31,7 +31,7 @@ const AddParentModal: React.FC<Props> = ({
   const [form] = useForm();
   const [searchResult, setSearchResult] = useState<SearchResult[] | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<PatientData | null>(null);
-  const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatus | undefined>(undefined);
+  const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | undefined>(undefined);
 
   async function search(searchTerm: string) {
     const response: any = await api.getPatientsByAutoComplete('partial', searchTerm, 1, 5);
@@ -120,13 +120,13 @@ const AddParentModal: React.FC<Props> = ({
               className="family-tab__details__add-parent__modal__form__status"
             >
               <Radio.Group onChange={updateStatus}>
-                <Radio value="Unaffected">
+                <Radio value="UNF">
                   { intl.get('screen.patient.details.family.modal.status.no') }
                 </Radio>
-                <Radio value="Affected">
+                <Radio value="AFF">
                   { intl.get('screen.patient.details.family.modal.status.yes') }
                 </Radio>
-                <Radio value="Unknown">
+                <Radio value="UNK">
                   { intl.get('screen.patient.details.family.modal.status.unknown') }
                 </Radio>
               </Radio.Group>
