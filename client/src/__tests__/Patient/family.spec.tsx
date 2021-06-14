@@ -615,6 +615,8 @@ describe('Patient/Family', () => {
 
       expect(screen.getByText(/TESTF91010101/i)).toBeVisible();
 
+      userEvent.click(screen.getByText('Inconnu'), {});
+
       userEvent.click(screen.getByText('Ajouter'), {});
 
       await waitFor(() => screen.getByText('Familly (trio seulement)'));
@@ -860,6 +862,7 @@ describe('Patient/Family', () => {
       await waitFor(() => screen.getByText(/TESTF91010101/i));
 
       expect(screen.getByText(/TESTF91010101/i)).toBeVisible();
+      userEvent.click(screen.getByText('Inconnu'), {});
 
       userEvent.click(screen.getByText('Ajouter'), {});
 

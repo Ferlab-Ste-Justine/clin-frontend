@@ -19,7 +19,7 @@ interface Props {
 }
 
 interface DataType {
-  patient: Partial<ParsedPatientData> | FamilyMember
+  patient: Partial<ParsedPatientData> & FamilyMember
   mother?: FamilyMember | null
   father?: FamilyMember | null
 }
@@ -119,14 +119,14 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
         }
 
         return (
-          <Select className="family-tab__details__table__status">
-            <Select.Option value="no">
+          <Select className="family-tab__details__table__status" value={record.patient.code} disabled>
+            <Select.Option value="UNF">
               { intl.get('screen.patient.details.family.modal.status.no') }
             </Select.Option>
-            <Select.Option value="yes">
+            <Select.Option value="AFF">
               { intl.get('screen.patient.details.family.modal.status.yes') }
             </Select.Option>
-            <Select.Option value="unknown">
+            <Select.Option value="UNK">
               { intl.get('screen.patient.details.family.modal.status.unknown') }
             </Select.Option>
           </Select>

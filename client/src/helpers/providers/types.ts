@@ -1,3 +1,5 @@
+import { GroupMemberStatusCode } from '../fhir/patientHelper';
+
 export type ParsedPatientData = {
   id: string;
   status: string;
@@ -50,6 +52,7 @@ export type FamilyMember = {
   ramq?: string;
   birthDate?: string;
   gender?: 'male' | 'female';
+  code: GroupMemberStatusCode
   type?: FamilyMemberType
 }
 

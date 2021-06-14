@@ -4,7 +4,10 @@ import httpClient from '../../http-client';
 import { BundleBuilder } from '../builder/BundleBuilder';
 import { FamilyGroupBuilder, FamilyStructure } from '../builder/FamilyGroupBuilder';
 import { BundleIdExtractor } from '../BundleIdExtractor';
-import { Bundle, FamilyGroup, Patient } from '../types';
+import { generateGroupStatus } from '../patientHelper';
+import {
+  Bundle, FamilyGroup, Patient,
+} from '../types';
 
 const EXTENSION_IS_PROBAND = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
 const EXTENSION_IS_FETUS = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus';
@@ -34,6 +37,7 @@ export const createPatient = async (patient: Patient) : Promise<CreatePatientRes
 
   const members = get(bundle, 'entry[1].resource.member', []);
   members.push({
+    extension: [generateGroupStatus('AFF')],
     entity: {
       reference: get(bundle, 'entry[0].fullUrl'),
     },
@@ -166,11 +170,13 @@ export const createPatientFetus = async (patient: Patient) : Promise<CreatePatie
 
   set(bundle, 'entry[2].resource.member', [
     {
+      extension: [generateGroupStatus('UNF')],
       entity: {
         reference: get(bundle, 'entry[0].fullUrl'),
       },
     },
     {
+      extension: [generateGroupStatus('AFF')],
       entity: {
         reference: get(bundle, 'entry[1].fullUrl'),
       },
