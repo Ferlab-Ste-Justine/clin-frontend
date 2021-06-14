@@ -60,3 +60,8 @@ export const removeParentToFamily: Action = (parentId: string) => ({
   type: actions.PATIENT_REMOVE_PARENT_REQUESTED,
   payload: { parentId },
 });
+
+export const getPatientFileURL = (file: string) => ({
+  type: actions.PATIENT_FILE_URL_REQUESTED,
+  payload: { file },
+});

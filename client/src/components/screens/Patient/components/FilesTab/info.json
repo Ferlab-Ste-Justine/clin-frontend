@@ -1,0 +1,131 @@
+{
+    "Patient": {
+      "tasks": [
+        {
+          "id": "Task/23713/_history/1",
+          "runDate": [
+            "2014-09-21T11:50:23-05:00"
+          ],
+          "resource": {
+            "id": "ServiceRequest/16216/_history/3"
+          },
+          "output": {
+            "resource": {
+              "id": "DocumentReference/23710/_history/1",
+              "type": "AR",
+              "content": [
+                {
+                  "url": "https://ferload.qa.clin.ferlab.bio/eafcca1e-5b92-419b-a51e-5ff947c4a576",
+                  "size": 4,
+                  "hash": "YjQ5NzMyNDhjOWFiZjUxYTI1ZWY3NTRiMGY1MGE3OTM=",
+                  "title": "file.cram",
+                  "format": "CRAM"
+                },
+                {
+                  "url": "https://ferload.qa.clin.ferlab.bio/eafcca1e-5b92-419b-a51e-5ff947c4a576.crai",
+                  "size": 4,
+                  "hash": "NDg1Y2RhYWFiYTQyOTRiNzY4M2M5YjYzOTA5ZDU0ZmM=",
+                  "title": "file.crai",
+                  "format": "CRAI"
+                }
+              ],
+              "specimen": [
+                {
+                    "external_id": "12345",
+                    "organization": {
+                        "id": "Organization/OR00211/_history/1",
+                        "alias": [
+                            "HCS"
+                        ],
+                        "name": "Hôpital de la Cité-de-la-Santé"
+                    }
+                }
+            ],
+              "status": "current"
+            }
+          }
+        },
+        {
+          "id": "Task/23715/_history/1",
+          "resource": {
+            "id": "ServiceRequest/16216/_history/3"
+          },
+          "runDate": [
+            "2014-09-21T11:50:23-05:00"
+          ],
+          "output": {
+            "resource": {
+              "id": "DocumentReference/23712/_history/1",
+              "type": "QC",
+              "content": [
+                {
+                  "url": "https://ferload.qa.clin.ferlab.bio/123cd943-717b-4cbd-a3aa-93c43271a0f3",
+                  "size": 2,
+                  "hash": "MGY2NmY3MDRhNmVkZTk2MzllMTY1ODdlN2IyMTY0ZmE=",
+                  "title": "file.tgz",
+                  "format": "TGZ"
+                }
+              ],
+              "specimen": [
+                {
+                    "external_id": "12345",
+                    "organization": {
+                        "id": "Organization/OR00211/_history/1",
+                        "alias": [
+                            "HCS"
+                        ],
+                        "name": "Hôpital de la Cité-de-la-Santé"
+                    }
+                }
+            ],
+              "status": "current"
+            }
+          }
+        },
+        {
+          "id": "Task/23714/_history/1",
+          "runDate": [
+            "2014-09-21T11:50:23-05:00"
+          ],
+          "resource": {
+            "id": "ServiceRequest/16216/_history/3"
+          },
+          "output": {
+            "resource": {
+              "id": "DocumentReference/23711/_history/1",
+              "type": "SNV",
+              "content": [
+                {
+                  "url": "https://ferload.qa.clin.ferlab.bio/cd11d590-1eba-42c5-9881-7d61a5327661",
+                  "size": 3,
+                  "hash": "MGU0NTM1NDY3N2Q5MDRkZWYyOWJjYWMwNzRlYTk1ZmE=",
+                  "title": "file.vcf",
+                  "format": "VCF"
+                },
+                {
+                  "url": "https://ferload.qa.clin.ferlab.bio/cd11d590-1eba-42c5-9881-7d61a5327661.tbi",
+                  "size": 3,
+                  "hash": "ZWZiZTUzZTk5MDk0NzkwMDkwZDhmYjAyYjA4NDU2Mzg=",
+                  "title": "file.tbi",
+                  "format": "TBI"
+                }
+              ],
+              "specimen": [
+                {
+                    "external_id": "12345",
+                    "organization": {
+                        "id": "Organization/OR00211/_history/1",
+                        "alias": [
+                            "HCS"
+                        ],
+                        "name": "Hôpital de la Cité-de-la-Santé"
+                    }
+                }
+            ],
+              "status": "current"
+            }
+          }
+        }
+      ]
+    }
+  }

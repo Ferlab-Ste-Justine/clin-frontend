@@ -69,3 +69,43 @@ export type RequestData = {
     submitted: boolean;
     prescription: string;
 }
+
+export type DocumentReferenceContent = {
+    url: string;
+    size: number;
+    hash: string;
+    title: string;
+    format: string;
+}
+
+export type SpecimenContent = {
+    external_id: string;
+    organization: {
+        id: string;
+        alias: string[];
+        name: string;
+    }
+}
+export type DocumentReferenceResponse = {
+    resource:{
+        id: string;
+        type: string;
+        content: DocumentReferenceContent[];
+        specimen: SpecimenContent[];
+    }
+}
+export type TaskResponse = {
+    id: string;
+    // Resource should be renamed to serviceRequest [if possible]
+    resource:{
+        id: string; // Also has history
+    }
+    runDate: string[];
+    output: DocumentReferenceResponse;
+}
+export type PatientResponse ={
+    tasks: TaskResponse[];
+}
+export type FileResponse = {
+    Patient: PatientResponse;
+}
