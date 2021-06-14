@@ -1,3 +1,4 @@
+import { GroupMemberStatus } from '../helpers/fhir/patientHelper';
 import { FamilyMemberType } from '../helpers/providers/types';
 import * as actions from './type';
 
@@ -48,9 +49,11 @@ export const changeSearchType: Action = (type: string) => ({
   },
 });
 
-export const addParentToFamily: Action = (parentId: string, parentType: FamilyMemberType) => ({
+export const addParentToFamily: Action = (
+  parentId: string, parentType: FamilyMemberType, status: GroupMemberStatus,
+) => ({
   type: actions.PATIENT_ADD_PARENT_REQUESTED,
-  payload: { parentId, parentType },
+  payload: { parentId, parentType, status },
 });
 
 export const removeParentToFamily: Action = (parentId: string) => ({
