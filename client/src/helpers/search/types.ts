@@ -87,7 +87,7 @@ export type SpecimenContent = {
     }
 }
 export type DocumentReferenceResponse = {
-    resource:{
+    resource: {
         id: string;
         type: string;
         content: DocumentReferenceContent[];
@@ -97,7 +97,7 @@ export type DocumentReferenceResponse = {
 export type TaskResponse = {
     id: string;
     // Resource should be renamed to serviceRequest [if possible]
-    resource:{
+    resource: {
         id: string; // Also has history
     }
     runDate: string[];
