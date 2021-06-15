@@ -467,7 +467,7 @@ class ResumeTabs extends React.Component {
                       ext_db && ext_db.is_clinvar ? (
                         <span className="link--underline">
                           <Link
-                            url={`https://www.ncbi.nlm.nih.gov/snp/${clinvar.clinvar_id}`}
+                            url={`https://www.ncbi.nlm.nih.gov/clinvar/variation/${clinvar.clinvar_id}`}
                             text={`${clinvar.clinvar_id}`}
                           />
                         </span>
