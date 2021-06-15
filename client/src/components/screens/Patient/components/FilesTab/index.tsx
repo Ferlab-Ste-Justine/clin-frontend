@@ -13,25 +13,23 @@ import MetadataModal from './metadataModal';
 
 import './styles.scss';
 
-const getDropdownOption = (tempoInfo: number) => {
-  const option = [];
 const fileInfo: {[key: string]: any} = require('./info.json');
 
-const getURL = async (url:string) => {
+const getURL = async (url: string) => {
   const data: any = await Api.getFileURL(url);
   return data.payload.data.url;
 };
 
-const FilesTab : React.FC = () => {
+const FilesTab: React.FC = () => {
   const { Patient } = fileInfo;
 
   const dispatch = useDispatch();
-  const dataSource:any[] = [];
+  const dataSource: any[] = [];
   const patient = useSelector((state: State) => state.patient.patient.parsed);
   const [isOpen, setIsOpenModal] = useState<boolean>(false);
   const [documentReference, setDocumentReference] = useState<string>('');
 
-  const handleGoToPatientScreen:any = (patientId: string, requestId: string | null = null) => {
+  const handleGoToPatientScreen: any = (patientId: string, requestId: string | null = null) => {
     dispatch(navigateToPatientScreen(patientId, {
       tab: 'prescriptions',
       reload: false,
@@ -59,7 +57,7 @@ const FilesTab : React.FC = () => {
     setIsOpenModal(false);
   };
 
-  const getDropdownOption = (format: string, url:any, documentR:string) => {
+  const getDropdownOption = (format: string, url: any, documentR: string) => {
     const option = [];
     option.push(
       (
@@ -133,7 +131,7 @@ const FilesTab : React.FC = () => {
     );
   };
 
-  Patient.tasks.forEach((element:TaskResponse) => {
+  Patient.tasks.forEach((element: TaskResponse) => {
     const {
       format, title, size,
     } = element.output.resource.content[0];
