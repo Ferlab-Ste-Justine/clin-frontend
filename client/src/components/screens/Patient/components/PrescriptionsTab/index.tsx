@@ -11,7 +11,7 @@ import { navigateToSubmissionWithPatient } from '../../../../../actions/router';
 import NoPrescription from './components/NoPrescription';
 import { ClinicalImpression, ServiceRequest } from '../../../../../helpers/fhir/types';
 
-const PrescriptionsTab : React.FC = () => {
+const PrescriptionsTab: React.FC = () => {
   const dispatch = useDispatch();
   const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
   const canEditPatient = !!useSelector((state: State) => state.patient.canEdit);

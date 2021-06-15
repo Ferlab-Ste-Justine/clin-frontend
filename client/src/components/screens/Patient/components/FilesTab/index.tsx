@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 
 import './styles.scss';
 
-const getDropdownOption = (tempoInfo : number) => {
+const getDropdownOption = (tempoInfo: number) => {
   const option = [];
 
   if (tempoInfo >= 3) {
@@ -28,7 +28,6 @@ const getDropdownOption = (tempoInfo : number) => {
       (<Menu.Item><Button type="link">File</Button></Menu.Item>),
     );
   }
-
   const menu = (
     <Menu>
       {
@@ -59,8 +58,8 @@ const getDropdownOption = (tempoInfo : number) => {
   );
 };
 
-const FilesTab : React.FC = () => {
-  const dataSource:any = [
+const FilesTab: React.FC = () => {
+  const dataSource: any = [
     {
       name: 'file1ne.cram',
       type: 'AR',

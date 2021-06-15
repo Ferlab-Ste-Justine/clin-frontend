@@ -46,16 +46,16 @@ const PrescriptionTable: React.FC<Props> = ({
   const [selectedPatients, setselectedPatients] = useState([] as string[]);
   const { patient } = searchProps;
   const dispatch = useDispatch();
-  const getStatusLabel = (req:any) => {
+  const getStatusLabel = (req: any) => {
     if (req.status === 'on-hold' && !req.submitted) {
       return intl.get('screen.patientsearch.status.incomplete');
     }
     return intl.get(`screen.patientsearch.status.${req.status}`);
   };
 
-  const results = patient.results.filter((result:any) => result != null && result.patientInfo != null);
+  const results = patient.results.filter((result: any) => result != null && result.patientInfo != null);
 
-  const handleGoToPatientScreen:any = (patientId: string, requestId: string | null = null) => {
+  const handleGoToPatientScreen: any = (patientId: string, requestId: string | null = null) => {
     dispatch(navigateToPatientScreen(patientId, {
       tab: null,
       reload: null,
@@ -63,7 +63,7 @@ const PrescriptionTable: React.FC<Props> = ({
     }));
   };
 
-  const output:any[] = [];
+  const output: any[] = [];
   if (results) {
     results.forEach((result: PrescriptionData) => {
       const organizationValue = () => {
@@ -72,7 +72,7 @@ const PrescriptionTable: React.FC<Props> = ({
         }
         return result.patientInfo.organization.name;
       };
-      const value:any = {
+      const value: any = {
         status: getStatusLabel(result),
         id: result.patientInfo.id,
         mrn: result.mrn ? result.mrn : '--',
@@ -111,14 +111,14 @@ const PrescriptionTable: React.FC<Props> = ({
       label: 'screen.patientsearch.table.select',
       renderer: createCellRenderer('custom', (() => output), {
         renderer: (data: any) => {
-          const id:string = !data.request.includes('--') ? data.request : data.id;
+          const id: string = !data.request.includes('--') ? data.request : data.id;
           const isSelected = selectedPatients.includes(id);
           return (
             <Checkbox
               className="checkbox"
               id={id}
               onChange={() => {
-                const oldSelectedPatients:string[] = cloneDeep(selectedPatients);
+                const oldSelectedPatients: string[] = cloneDeep(selectedPatients);
                 if (isSelected) {
                   if (id) {
                     const valueIndex = oldSelectedPatients.indexOf(id);
@@ -146,7 +146,7 @@ const PrescriptionTable: React.FC<Props> = ({
               onChange={(e) => {
                 const { checked } = e.target;
                 if (checked) {
-                  const newSelectedPatients = results.map((data:any) => (data.id));
+                  const newSelectedPatients = results.map((data: any) => (data.id));
                   setselectedPatients(newSelectedPatients);
                 } else {
                   setselectedPatients([]);

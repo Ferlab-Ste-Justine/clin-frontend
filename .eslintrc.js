@@ -59,11 +59,12 @@ module.exports = {
     'no-empty-function': 'off',
     'max-classes-per-file': 'off',
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-    ],
     'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': ['error'],
     'no-plusplus': 'off',
+    '@typescript-eslint/type-annotation-spacing': ['error'],
+    '@typescript-eslint/no-unused-vars': ['error'],
+    '@typescript-eslint/keyword-spacing': ['error'],
+    '@typescript-eslint/no-shadow': ['error'],
+    '@typescript-eslint/comma-spacing': ['error'],
   },
 };

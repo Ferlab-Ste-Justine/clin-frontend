@@ -19,7 +19,7 @@ type CreatePatientResponse = {
     familyGroup: FamilyGroup;
 }
 
-export const createPatient = async (patient: Patient) : Promise<CreatePatientResponse> => {
+export const createPatient = async (patient: Patient): Promise<CreatePatientResponse> => {
   const bundleId = window.CLIN.fhirEsPatientBundleId;
 
   const familyGroup = new FamilyGroupBuilder()
@@ -74,7 +74,7 @@ type CreatePatientFetusResponse = {
   familyGroup?: FamilyGroup;
 }
 
-export const createPatientFetus = async (patient: Patient) : Promise<CreatePatientFetusResponse> => {
+export const createPatientFetus = async (patient: Patient): Promise<CreatePatientFetusResponse> => {
   const patientFetus = JSON.parse(JSON.stringify(patient)) as Patient;
   const patientParent = JSON.parse(JSON.stringify(patient)) as Patient;
   patientFetus.id = undefined;

@@ -82,7 +82,7 @@ const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId:
   return get(prescription, 'id');
 };
 
-const Prescriptions : React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
+const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
   const patientState = useSelector((state: State) => state.patient);
   const { observations, openedPrescriptionId } = patientState;
 

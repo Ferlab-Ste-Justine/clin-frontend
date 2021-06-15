@@ -15,7 +15,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     super(name);
   }
 
-  private getStatus(dataExtractor: DataExtractor, serviceRequest: ServiceRequest) : string {
+  private getStatus(dataExtractor: DataExtractor, serviceRequest: ServiceRequest): string {
     if (serviceRequest.status !== ON_HOLD) {
       return serviceRequest.status;
     }
@@ -24,11 +24,11 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     return isSubmittedExtension.valueBoolean ? ON_HOLD : INCOMPLETE;
   }
 
-  private getClinicalImpressionRef(dataExtractor: DataExtractor, serviceRequest: ServiceRequest) : string {
+  private getClinicalImpressionRef(dataExtractor: DataExtractor, serviceRequest: ServiceRequest): string {
     return get(dataExtractor.getExtension(serviceRequest, CLIN_REF_EXT), 'valueReference.reference');
   }
 
-  private getLastNote(serviceRequest: ServiceRequest) : string {
+  private getLastNote(serviceRequest: ServiceRequest): string {
     return get(serviceRequest, `note[${get(serviceRequest, 'note', []).length - 1}].text`, '');
   }
 

@@ -42,22 +42,22 @@ const PatientTable: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch();
   const { patient } = searchProps;
-  const handleGoToPatientScreen:any = (patientId: string) => {
+  const handleGoToPatientScreen: any = (patientId: string) => {
     dispatch(navigateToPatientScreen(patientId));
   };
 
-  const results = patient.results.filter((result:any) => result != null && result.organization != null);
+  const results = patient.results.filter((result: any) => result != null && result.organization != null);
   const output: any[] = [];
 
   if (results) {
-    results.forEach((result:PatientData) => {
+    results.forEach((result: PatientData) => {
       const organizationValue = () => {
         if (result.organization.name === '') {
           return result.organization.id.split('/')[1];
         }
         return result.organization.name;
       };
-      const value:any = {
+      const value: any = {
         status: '--',
         id: result.id,
         mrn: result.mrn.join(', '),
@@ -90,7 +90,7 @@ const PatientTable: React.FC<Props> = ({
       key: 'patientId',
       label: 'screen.patientsearch.table.patientId',
       renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data:any) => (
+        renderer: (data: any) => (
           <Button
             onClick={() => handleGoToPatientScreen(data.id)}
             data-id={data.request}
@@ -115,7 +115,7 @@ const PatientTable: React.FC<Props> = ({
       key: 'firstName',
       label: 'screen.patientsearch.table.firstName',
       renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data:any) => {
+        renderer: (data: any) => {
           try {
             const name = data.fetus ? intl.get('screen.patient.table.fetus') : data.firstName;
             return name;

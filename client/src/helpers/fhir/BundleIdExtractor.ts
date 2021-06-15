@@ -21,7 +21,7 @@ export class BundleIdExtractor {
     return location.split('/')[1];
   }
 
-  public static extractIds(bundleResponse: BundleResponse, ...resources: FhirResource[]) : FhirResource[] {
+  public static extractIds(bundleResponse: BundleResponse, ...resources: FhirResource[]): FhirResource[] {
     let index = 0;
     return resources.map((resource) => ({
       ...resource,

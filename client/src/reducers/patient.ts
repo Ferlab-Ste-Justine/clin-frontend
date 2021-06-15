@@ -27,7 +27,7 @@ const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition
 
 type ObservationCode = 'CGH' | 'INDIC' | 'INVES' | 'ETH' | 'CONS';
 
-const getObservations = (code: ObservationCode, resource: any) : Observation[] => {
+const getObservations = (code: ObservationCode, resource: any): Observation[] => {
   const clinicalImpressin = resource.entry[3];
   const observation = clinicalImpressin?.resource.entry
     ?.filter((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
