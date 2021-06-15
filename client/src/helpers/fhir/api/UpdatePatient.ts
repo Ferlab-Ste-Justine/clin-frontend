@@ -10,7 +10,7 @@ const shouldAddAsGeneralPractitioner = (patient: Patient, reference?: Reference)
   return patient.generalPractitioner.find((pract) => pract.reference === reference.reference) == null;
 };
 
-const getReferenceId = (reference?: Reference) : string => reference!.reference.split('/')[1];
+const getReferenceId = (reference?: Reference): string => reference!.reference.split('/')[1];
 
 const getPractitionerRoleReference = (id: string): Reference => ({
   reference: `PractitionerRole/${id}`,

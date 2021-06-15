@@ -25,7 +25,7 @@ export type FhirResource =
 export type BundleMethod = 'PUT' | 'GET' | 'POST';
 
 export interface BundleEntry{
-  request:{
+  request: {
     method: BundleMethod,
     url: string,
   }

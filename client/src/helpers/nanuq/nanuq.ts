@@ -4,12 +4,12 @@ import { PrescriptionData } from '../search/types';
 
 const MAX_SIZE = 96;
 
-function validateData(patients:PrescriptionData[]) {
+function validateData(patients: PrescriptionData[]) {
   // TODO: This should validate the request selected, not the patient holding the request.
-  return patients.length <= MAX_SIZE && patients.every((p:PrescriptionData) => p.status === 'active');
+  return patients.length <= MAX_SIZE && patients.every((p: PrescriptionData) => p.status === 'active');
 }
 
-export function generateExport(patients:PrescriptionData[]) {
+export function generateExport(patients: PrescriptionData[]) {
   if (!validateData(patients)) {
     throw new Error('invalid_data');
   }
@@ -19,7 +19,7 @@ export function generateExport(patients:PrescriptionData[]) {
     version_id: '1.0',
     test_genomique: 'exome',
     LDM: 'CHU Sainte-Justine', // Hardcoded for now
-    patients: patients.map((p:PrescriptionData) => ({
+    patients: patients.map((p: PrescriptionData) => ({
       type_echantillon: 'ADN',
       tissue_source: 'Sang',
       type_specimen: 'Normal',

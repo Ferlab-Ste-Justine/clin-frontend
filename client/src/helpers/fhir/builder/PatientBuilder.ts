@@ -167,7 +167,7 @@ export class PatientBuilder {
       .withExtensions(patient.extension);
   }
 
-  private addOrSetExtension(patient: Patient, value:{url: string, [key: string]: any}) {
+  private addOrSetExtension(patient: Patient, value: {url: string, [key: string]: any}) {
     const extIndex = patient.extension.findIndex((ext) => ext.url === value.url);
     if (extIndex === -1) {
       patient.extension.push(value);

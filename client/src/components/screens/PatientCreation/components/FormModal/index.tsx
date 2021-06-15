@@ -126,7 +126,7 @@ type MrnData ={
   hospital: string;
 }
 
-const extractMrnData = (patient: Patient) : MrnData | undefined => {
+const extractMrnData = (patient: Patient): MrnData | undefined => {
   const identifier = patient.identifier.find((id) => get(id, 'type.coding[0].code') === 'MR');
   if (identifier == null) {
     return undefined;
@@ -137,7 +137,7 @@ const extractMrnData = (patient: Patient) : MrnData | undefined => {
   };
 };
 
-const FormModal : React.FC<Props> = ({
+const FormModal: React.FC<Props> = ({
   open, onClose, onCreated, onError, onExistingPatient, userRole, actions, patient, ramqChecked, patientCreationStatus,
 }) => {
   const [isCreating, setIsCreating] = useState(false);

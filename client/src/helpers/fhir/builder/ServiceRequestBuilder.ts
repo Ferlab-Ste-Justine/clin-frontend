@@ -6,7 +6,7 @@ import {
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const EXTENSION_RESIDENT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident';
 
-const defaultSR = () : Partial<ServiceRequest> => ({
+const defaultSR = (): Partial<ServiceRequest> => ({
   resourceType: 'ServiceRequest',
   status: 'draft',
   meta: {

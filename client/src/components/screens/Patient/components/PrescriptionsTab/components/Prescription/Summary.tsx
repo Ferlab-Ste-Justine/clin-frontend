@@ -46,7 +46,7 @@ interface Props {
   prescription: Prescription
 }
 
-const Summary: React.FC<Props> = ({ observations = undefined, patient, prescription } : Props) => {
+const Summary: React.FC<Props> = ({ observations = undefined, patient, prescription }: Props) => {
   if (observations == null) {
     return (
       <Wrapper>

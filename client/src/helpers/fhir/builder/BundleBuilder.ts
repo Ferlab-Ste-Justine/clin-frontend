@@ -64,7 +64,7 @@ export class BundleBuilder {
       return this;
     }
 
-    public build() : Bundle {
+    public build(): Bundle {
       return {
         resourceType: 'Bundle',
         id: this.id,

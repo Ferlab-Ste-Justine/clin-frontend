@@ -57,7 +57,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
   );
 };
 interface MrnValue {
-  value:string,
+  value: string,
   organization: string
 }
 

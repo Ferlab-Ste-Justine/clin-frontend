@@ -55,7 +55,7 @@ const generateResourcesFromBatch = (batch: CreateRequestBatch) => {
   return flatten(allResources);
 };
 
-export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateRequestResponse> => {
+export const createRequest = async (batch: CreateRequestBatch): Promise<CreateRequestResponse> => {
   if (batch.length === 0) {
     throw new ApiError('Cannot create a ClinicalImpression without observations');
   }
@@ -85,7 +85,7 @@ export const createRequest = async (batch: CreateRequestBatch) : Promise<CreateR
   return output;
 };
 
-export const updateRequest = async (batch: CreateRequestBatch) : Promise<CreateRequestBatch> => {
+export const updateRequest = async (batch: CreateRequestBatch): Promise<CreateRequestBatch> => {
   if (batch.length === 0) {
     throw new ApiError('Cannot create a ClinicalImpression without observations');
   }

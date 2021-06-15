@@ -1,6 +1,6 @@
 import { PrescriptionData } from '../search/types';
 
-export const INVALID_TYPE_VALUE : PrescriptionData[] = [
+export const INVALID_TYPE_VALUE: PrescriptionData[] = [
   {
     id: '1',
     mrn: 'MRN0001',
@@ -38,7 +38,7 @@ export const INVALID_TYPE_VALUE : PrescriptionData[] = [
   },
 ];
 
-export const INVALID_TEST_VALUE : PrescriptionData[] = [
+export const INVALID_TEST_VALUE: PrescriptionData[] = [
   {
     id: '1',
     mrn: 'MRN0001',
@@ -76,7 +76,7 @@ export const INVALID_TEST_VALUE : PrescriptionData[] = [
   },
 ];
 
-export const VALID_VALUE_ONE_PATIENT : PrescriptionData[] = [
+export const VALID_VALUE_ONE_PATIENT: PrescriptionData[] = [
   {
     id: 'SR1',
     mrn: 'MRN0001',
@@ -114,7 +114,7 @@ export const VALID_VALUE_ONE_PATIENT : PrescriptionData[] = [
   },
 ];
 
-export const VALID_VALUE_MULTIPLE_PATIENT : PrescriptionData[] = [
+export const VALID_VALUE_MULTIPLE_PATIENT: PrescriptionData[] = [
   {
     id: 'SR1',
     mrn: 'MRN0001',

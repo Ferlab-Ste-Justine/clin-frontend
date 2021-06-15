@@ -36,7 +36,7 @@ interface Props {
   hpos: ClinicalObservation[]
 }
 
-const ClinicalSigns : React.FC<Props> = ({ clinicalImpression, hpos }) => {
+const ClinicalSigns: React.FC<Props> = ({ clinicalImpression, hpos }) => {
   const dataSource = hpos.filter(
     (hpo) => clinicalImpression
       .investigation[0].item.find((obs) => obs.reference.indexOf(hpo.id) !== -1) != null,

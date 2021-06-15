@@ -22,7 +22,7 @@ interface Props {
   allOptions: any,
   editor: any,
   onCancelCallback: () => void,
-  onApply: ()=> void,
+  onApply: () => void,
   onOperandChangeCallBack: (key: React.ReactText) => void,
   hasChanges: boolean,
   config: any,

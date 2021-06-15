@@ -123,7 +123,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
     );
   }
 
-  const getMrnValue = (identifier: Identifier | undefined) : string | undefined => {
+  const getMrnValue = (identifier: Identifier | undefined): string | undefined => {
     if (identifier == null) {
       return undefined;
     }

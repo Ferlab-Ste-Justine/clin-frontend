@@ -2,7 +2,7 @@ import { GroupMemberStatus } from '../helpers/fhir/patientHelper';
 import { FamilyMemberType } from '../helpers/providers/types';
 import * as actions from './type';
 
-type Action = (...args:any) => {type: keyof typeof actions, payload?: any};
+type Action = (...args: any) => {type: keyof typeof actions, payload?: any};
 
 export const autoCompletePatients: Action = (type: string, query: any, page: number, size: number) => ({
   type: actions.PATIENT_AUTOCOMPLETE_REQUESTED,
