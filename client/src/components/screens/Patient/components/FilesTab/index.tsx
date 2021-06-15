@@ -5,7 +5,6 @@ import {
 import { DownOutlined } from '@ant-design/icons';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
-import { ParsedPatientData } from '../../../../../helpers/providers/types';
 import { navigateToPatientScreen } from '../../../../../actions/router';
 import { State } from '../../../../../reducers';
 import Api from '../../../../../helpers/api';
@@ -28,7 +27,7 @@ const FilesTab : React.FC = () => {
 
   const dispatch = useDispatch();
   const dataSource:any[] = [];
-  const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
+  const patient = useSelector((state: State) => state.patient.patient.parsed);
   const [isOpen, setIsOpenModal] = useState<boolean>(false);
   const [documentReference, setDocumentReference] = useState<string>('');
 
@@ -70,8 +69,7 @@ const FilesTab : React.FC = () => {
             className="link--underline"
             target="_blank"
             onClick={async () => {
-              const newUrl = await getURL(url.file);
-              window.open(newUrl, '_blank');
+              window.open(await getURL(url.file), '_blank');
             }}
           >
             File
@@ -83,8 +81,7 @@ const FilesTab : React.FC = () => {
           <Button
             type="link"
             className="link--underline"
-            target="_blank"
-            onClick={async () => {
+            onClick={() => {
               setDocumentReference(documentR);
               setIsOpenModal(true);
             }}
@@ -103,8 +100,7 @@ const FilesTab : React.FC = () => {
               className="link--underline"
               target="_blank"
               onClick={async () => {
-                const newUrl = await getURL(url.index);
-                window.open(newUrl, '_blank');
+                window.open(await getURL(url.index), '_blank');
               }}
             >
               Index
