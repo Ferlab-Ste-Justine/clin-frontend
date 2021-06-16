@@ -1,6 +1,14 @@
-import { AxiosResponse } from 'axios';
+import Axios, { AxiosResponse } from 'axios';
 import jwtdecode from 'jwt-decode';
-import httpClient from '../http-client';
+import keycloak from '../../keycloak';
+
+const client = Axios.create({
+  timeout: 15000,
+});
+client.interceptors.request.use((config) => {
+  config.headers.Authorization = `Bearer ${keycloak.token}`;
+  return config;
+});
 
 export const KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS = 'patient-variants';
 export const KEYCLOAK_AUTH_RESOURCE_PATIENT_FAMILY = 'patient-family';
@@ -77,7 +85,7 @@ export const KEYCLOAK_CONFIG = JSON.parse(
   window.env?.REACT_APP_KEYCLOAK_CONFIG || process.env.REACT_APP_KEYCLOAK_CONFIG,
 ) as Config;
 export const rptRequest = async (data: any) => {
-  const response = await httpClient.secureClinAxios.post(
+  const response = await client.post(
     `${KEYCLOAK_CONFIG.url}realms/clin/protocol/openid-connect/token`,
     data,
   );
