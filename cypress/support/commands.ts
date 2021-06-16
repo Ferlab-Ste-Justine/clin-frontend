@@ -21,8 +21,8 @@ Cypress.Commands.add('start', (path: string, withLogin: boolean = false) => {
 });
 
 Cypress.Commands.add('logout', () => {
-  cy.get('.userName > .ant-dropdown-trigger', { timeout: 10000 }).click()
-    .get('.ant-dropdown-menu-item > :nth-child(1)', { timeout: 10000 }).click();
+  cy.get('.userName > :nth-child(1) > .ant-dropdown-trigger', { timeout: 10000 }).click()
+    .get('#logout-button', { timeout: 10000 }).click();
 
   cy.findByText('Enter your credentials to log in').should('be.visible');
   return cy;
