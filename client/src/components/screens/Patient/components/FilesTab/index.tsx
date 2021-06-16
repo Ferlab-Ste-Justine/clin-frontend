@@ -41,16 +41,16 @@ const FilesTab: React.FC = () => {
     let newSize = size;
     if (size >= 1000 && size < 10 ** 6) {
       newSize = size / 1000;
-      return `${newSize} ko`;
+      return `${newSize} ${intl.get('screen.patient.details.file.size.kb')}`;
     } if (size >= 10 ** 6 && size < 10 ** 9) {
       newSize = size / 10 ** 6;
-      return `${newSize} mo`;
+      return `${newSize} ${intl.get('screen.patient.details.file.size.mb')}`;
     } if (size >= 10 ** 9 && size < 10 ** 12) {
       newSize = size / 10 ** 9;
-      return `${newSize} go`;
+      return `${newSize} ${intl.get('screen.patient.details.file.size.gb')}`;
     }
 
-    return `${newSize} o`;
+    return `${newSize} ${intl.get('screen.patient.details.file.size.b')}`;
   };
 
   const handleCloseModal = () => {
@@ -123,7 +123,7 @@ const FilesTab: React.FC = () => {
           className="files-tab__dropdownAction"
         >
           <Button type="link">
-            Download <DownOutlined />
+            { intl.get('screen.patient.details.file.download') } <DownOutlined />
           </Button>
         </Dropdown>
 
