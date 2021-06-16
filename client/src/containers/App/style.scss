@@ -53,7 +53,9 @@ header#header {
     .userName{
       padding-right:24px
     }
-    a{
+    a, button{
+      display: inline-flex;
+      align-items: center;
       color:$text-onprimary-medium;
       padding-top: 2px;
       letter-spacing: 1.25px;
@@ -61,7 +63,6 @@ header#header {
       font-family: $font;
       font-weight: 500;
       font-size: 12px;
-      height: 16px;
 
       i{
         padding-right: 8px;
@@ -73,6 +74,12 @@ header#header {
         }
       };
     };
+
+    .ant-dropdown-menu-item {
+      button {
+        color: $navigation-color;
+      }
+    }
 
     .ant-divider{
       height:32px;

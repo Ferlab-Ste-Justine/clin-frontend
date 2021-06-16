@@ -51,6 +51,15 @@ jest.mock('antd', () => {
   };
 });
 
+jest.mock('react-router-dom', () => {
+  const reactRouterDom = jest.requireActual('react-router-dom');
+
+  return {
+    ...reactRouterDom,
+    Link: ({ to, children }: any) => <a href={to}>{ children }</a>,
+  };
+});
+
 // JSDom used by Jest doesn't support matchMedia and some part of AntD use this
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
