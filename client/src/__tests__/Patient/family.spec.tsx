@@ -10,7 +10,7 @@ import AppTest from '../../AppTest';
 import Patient from '../../components/screens/Patient';
 import { FakeStateProvider } from '../utils/FakeStateProvider';
 import { ResourceBuilder } from '../utils/Utils';
-import { mockRptToken } from '../mocks';
+import { mockRptToken, mockRequiresIdentity } from '../mocks';
 import { FamilyMemberType } from '../../helpers/providers/types';
 
 function parentPatientBundle(patientId: string, firstName: string, lastName: string) {
@@ -381,6 +381,7 @@ describe('Patient/Family', () => {
   describe('Creating a mother', () => {
     test('should be enabled and the mother shown in the list', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       const parentPatient = {
         id: '3',
         firstName: 'Family',
@@ -633,6 +634,7 @@ describe('Patient/Family', () => {
   describe('Create father', () => {
     test('should be enabled and the father shown in the list', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       const parentPatient = {
         id: '3',
         firstName: 'Family',
@@ -923,6 +925,7 @@ describe('Patient/Family', () => {
           gender: 'female',
           ramq: 'NAMM90510101',
           type: FamilyMemberType.MOTHER,
+          code: 'UNK',
         }, {
           id: '3',
           firstName: 'Father',
@@ -931,6 +934,7 @@ describe('Patient/Family', () => {
           gender: 'male',
           ramq: 'NAMF90010101',
           type: FamilyMemberType.FATHER,
+          code: 'UNK',
         }],
       });
       render(

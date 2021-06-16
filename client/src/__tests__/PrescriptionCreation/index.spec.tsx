@@ -11,7 +11,7 @@ import PatientSubmission from '../../components/screens/PatientSubmission';
 import { ResourceBuilder } from '../utils/Utils';
 import Patient from '../../components/screens/Patient';
 import { FakeStateProvider } from '../utils/FakeStateProvider';
-import { mockRptToken } from '../mocks';
+import { mockRptToken, mockRequiresIdentity } from '../mocks';
 
 function buildHPORequest() {
   return rest.get(
@@ -60,6 +60,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Enable/Disable Save Prescription Button', async () => {
+    mockRptToken();
+    mockRequiresIdentity();
     server.use(buildHPORequest());
     render(
       <AppTest>
@@ -93,6 +95,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Enable/Disable Next Prescription Button', async () => {
+    mockRptToken();
+    mockRequiresIdentity();
     server.use(buildHPORequest());
     render(
       <AppTest>
@@ -126,6 +130,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Prescription (2nd Page): Disabled Soumettre button', async () => {
+    mockRptToken();
+    mockRequiresIdentity();
     server.use(buildHPORequest());
     render(
       <AppTest>
@@ -165,6 +171,7 @@ describe('PrescriptionCreation', () => {
 
   test('Prescription (2nd Page): Practitioner Auto complete', async () => {
     mockRptToken();
+    mockRequiresIdentity();
 
     const response = new ResourceBuilder()
       .withPractitioner({
@@ -225,6 +232,7 @@ describe('PrescriptionCreation', () => {
 
   test('Prescription (2nd Page): Enabled Soumettre button', async () => {
     mockRptToken();
+    mockRequiresIdentity();
 
     const response = new ResourceBuilder()
       .withPractitioner({

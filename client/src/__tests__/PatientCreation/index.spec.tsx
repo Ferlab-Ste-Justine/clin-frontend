@@ -9,7 +9,7 @@ import { setupServer } from 'msw/node';
 import PatientSearchScreen from '../../components/screens/PatientSearch';
 
 import AppTest from '../../AppTest';
-import { mockRptToken } from '../mocks';
+import { mockRptToken, mockRequiresIdentity } from '../mocks';
 
 describe('PatientCreation', () => {
   const server = setupServer();
@@ -70,6 +70,7 @@ describe('PatientCreation', () => {
   describe('Should be able to create a patient', () => {
     test('as a patient with RAMQ', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       server.use(
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
@@ -129,6 +130,7 @@ describe('PatientCreation', () => {
   describe('Create a fetus', () => {
     test("with the mother's RAMQ", async () => {
       mockRptToken();
+      mockRequiresIdentity();
       server.use(
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
@@ -186,6 +188,7 @@ describe('PatientCreation', () => {
 
     test('with an existing RAMQ', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       const ramq = 'BETS00000001';
 
       server.use(
@@ -322,6 +325,7 @@ describe('PatientCreation', () => {
   describe('Should not be able to create a patient', () => {
     test('with an existing RAMQ', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       server.use(
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
@@ -431,6 +435,7 @@ describe('PatientCreation', () => {
 
     test('with an existing MRN', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       server.use(
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => {
           let entry;
@@ -556,6 +561,7 @@ describe('PatientCreation', () => {
   describe('should reset the form', () => {
     test('when finding a patient with their RAMQ', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       server.use(
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
@@ -670,6 +676,7 @@ describe('PatientCreation', () => {
 
     test('when changing the patient type', async () => {
       mockRptToken();
+      mockRequiresIdentity();
       server.use(
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
@@ -724,6 +731,7 @@ describe('PatientCreation', () => {
 
   test('mrn number should only accept alpha numerical charactar', async () => {
     mockRptToken();
+    mockRequiresIdentity();
     server.use(
       rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
         ctx.status(200),
