@@ -104,7 +104,7 @@ export class PatientProvider extends Provider<Patient, ParsedPatientData> {
           ? bloodRelationshipExt.valueCoding.display
           : 'N/A',
       familyId: get(familyIdExt, 'valueReference.reference', '').split('/')[1],
-      familyType: group.type,
+      familyType: get(group, 'type', 'solo'),
       proband: probandExt != null && probandExt.valueBoolean ? 'Proband' : 'Parent',
       isFetus: fetusExt != null && fetusExt.valueBoolean,
       familyRelation: familyRelationExt?.extension[0].valueReference.reference.split('/')[1],
