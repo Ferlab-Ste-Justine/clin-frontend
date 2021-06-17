@@ -104,12 +104,11 @@ export class DataExtractor {
   }
 
   public extractResource<T>(data: any, resourceType: ResourceType): T {
-    return data.entry.find((entry: any) => entry.resource.resourceType === resourceType).resource as T;
+    return data.entry?.find((entry: any) => entry.resource.resourceType === resourceType).resource as T;
   }
 
   public extractResources<T>(data: any, resourceType: ResourceType): T[] {
-    return data.entry
-      .filter((entry: any) => entry.resource.resourceType === resourceType)
+    return data.entry?.filter((entry: any) => entry.resource.resourceType === resourceType)
       .map((entry: any) => entry.resource as T) as T[];
   }
 
