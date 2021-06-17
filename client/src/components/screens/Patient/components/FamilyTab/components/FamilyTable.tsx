@@ -12,7 +12,7 @@ import MaleProband from './icons/MaleProband';
 import FemaleProband from './icons/FemaleProband';
 import UnknownProband from './icons/UnknownProband';
 import { navigateToPatientScreen } from '../../../../../../actions/router';
-import { removeParentToFamily } from '../../../../../../actions/patient';
+import { removeParentToFamily, updateParentStatusInFamily } from '../../../../../../actions/patient';
 
 interface Props {
   addParentMenu: React.ReactElement
@@ -119,7 +119,13 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
         }
 
         return (
-          <Select className="family-tab__details__table__status" value={record.patient.code} disabled>
+          <Select
+            className="family-tab__details__table__status"
+            value={record.patient.code}
+            onChange={(newStatus) => {
+              dispatch(updateParentStatusInFamily(record.patient.id, newStatus));
+            }}
+          >
             <Select.Option value="UNF">
               { intl.get('screen.patient.details.family.modal.status.no') }
             </Select.Option>

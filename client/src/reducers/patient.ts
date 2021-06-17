@@ -199,6 +199,27 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
         .map((id) => ({ number: id.value, hospital: get(id, 'assigner.reference', '').split('/')[1] }));
       break;
     }
+    case actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED: {
+      const { parentId, status } = action.payload;
+      if (!draft.family) {
+        console.error('Received a familly update action without family');
+        message.error(intl.get('screen.patient.details.family.update.error'));
+        break;
+      }
+      const familyMemberIndex = draft.family.findIndex((fm) => fm.id === parentId);
+      if (familyMemberIndex >= 0) {
+        draft.family[familyMemberIndex].code = status;
+        message.success(intl.get('screen.patient.details.family.update.success'));
+      } else {
+        console.error(`Received a familly update action for a non-existant family member id [${parentId}]`);
+        message.error(intl.get('screen.patient.details.family.update.error'));
+      }
+      break;
+    }
+    case actions.PATIENT_UPDATE_PARENT_STATUS_FAILED:
+      console.error('Failed to update the parent status', action.payload.error);
+      message.error(intl.get('screen.patient.details.family.update.error'));
+      break;
     case actions.PATIENT_ADD_PARENT_SUCCEEDED:
       message.success(intl.get('screen.patient.details.family.add.success'));
       break;

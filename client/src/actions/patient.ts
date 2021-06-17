@@ -61,6 +61,13 @@ export const removeParentToFamily: Action = (parentId: string) => ({
   payload: { parentId },
 });
 
+export const updateParentStatusInFamily: Action = (parentId: string, status: GroupMemberStatus) => ({
+  type: actions.PATIENT_UPDATE_PARENT_STATUS_REQUESTED,
+  payload: {
+    parentId, status,
+  },
+});
+
 export const getPatientFileURL = (file: string) => ({
   type: actions.PATIENT_FILE_URL_REQUESTED,
   payload: { file },

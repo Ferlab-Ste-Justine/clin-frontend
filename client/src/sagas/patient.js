@@ -217,7 +217,7 @@ function* addParent(action) {
 
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, parsedPatient.familyId);
-    yield Api.addPatientToGroup(parsedPatient.familyId, parentId, status);
+    yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
 
     yield put({ type: actions.PATIENT_ADD_PARENT_SUCCEEDED, payload: { uid: parsedPatient.id } });
   } catch (e) {
@@ -252,6 +252,20 @@ function* removeParent(action) {
   }
 }
 
+function* updateParentStatus(action) {
+  try {
+    const { parentId, status } = action.payload;
+    const parsedPatient = yield select((state) => state.patient.patient.parsed);
+
+    yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
+
+    yield put({ type: actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED, payload: { parentId, status } });
+  } catch (error) {
+    console.error('updateParentStatus', error);
+    yield put({ type: actions.PATIENT_UPDATE_PARENT_STATUS_FAILED, payload: error });
+  }
+}
+
 function* getFileURL(action) {
   try {
     const { file } = action.payload;
@@ -267,6 +281,10 @@ function* getFileURL(action) {
 
 function* watchAddParent() {
   yield takeLatest(actions.PATIENT_ADD_PARENT_REQUESTED, addParent);
+}
+
+function* watchUpdateParentStatus() {
+  yield takeLatest(actions.PATIENT_UPDATE_PARENT_STATUS_REQUESTED, updateParentStatus);
 }
 
 function* watchRemoveParent() {
@@ -308,6 +326,7 @@ export default function* watchedPatientSagas() {
     watchPrescriptionChangeStatus(),
     watchAddParent(),
     watchRemoveParent(),
+    watchUpdateParentStatus(),
     watchFile(),
   ]);
 }
