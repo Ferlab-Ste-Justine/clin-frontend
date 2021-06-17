@@ -295,6 +295,8 @@ const fr = {
   'screen.patient.details.family.modal.status.unknown': 'Inconnu',
   'screen.patient.details.family.add.success': 'Le parent a été ajouté à cette famille',
   'screen.patient.details.family.add.error': "Une erreur est survenue lors de l'ajout du parent. Veuillez essayer à nouveau",
+  'screen.patient.details.family.update.success': 'Le status du parent a été mise à jour',
+  'screen.patient.details.family.update.error': 'Une erreur est survenue lors de la mise à jour du status du parent. Veuillez essayer à nouveau',
   'screen.patient.details.family.remove.success': 'Le parent a été supprimé à cette famille',
   'screen.patient.details.family.remove.error': 'Une erreur est survenue lors de la suppression du parent. Veuillez essayer à nouveau',
   'screen.patient.details.family.remove.confirm.title': 'Vous êtes sur le point de supprimer le membre de la famille',

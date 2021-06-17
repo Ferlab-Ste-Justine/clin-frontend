@@ -243,11 +243,17 @@ const updateServiceRequestStatus = async (user: any, serviceRequest: ServiceRequ
     .catch(errorCallback);
 };
 
-const addPatientToGroup = async (groupId: string, parentId: string, status: GroupMemberStatusCode) => {
+const addOrUpdatePatientToGroup = async (groupId: string, parentId: string, status: GroupMemberStatusCode) => {
   const groupResult = await getGroupById(groupId);
   const group: Group = get(groupResult, 'payload.data.entry[0].resource', null);
   if (!group) {
     return Promise.reject(new Error(`groupId [${groupId}] is invalid`));
+  }
+
+  const parentMemberIndex = group.member.findIndex((member) => member.entity.reference.includes(parentId));
+
+  if (parentMemberIndex >= 0) {
+    group.member.splice(parentMemberIndex, 1);
   }
 
   group.member.push({
@@ -294,6 +300,7 @@ const createGroup = async (patientId: string) => Http.secureClinAxios.post(`${wi
     },
   }],
 }).then(successCallback).catch(errorCallback);
+
 const getFileURL = async (file: string) => Http.secureClinAxios
   .get(`${file}?format=json`, { headers: { Authorization: `Bearer ${keycloak.token}` } })
   .then(successCallback)
@@ -301,7 +308,7 @@ const getFileURL = async (file: string) => Http.secureClinAxios
 
 export default {
   getUserAuthPermissions,
-  addPatientToGroup,
+  addOrUpdatePatientToGroup,
   deletePatientFromGroup,
   canEditPatients,
   getPatientsGenderAndPosition,
