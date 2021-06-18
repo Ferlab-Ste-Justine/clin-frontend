@@ -21,6 +21,7 @@ interface SearchResult {
   id: string
   lastName: string
   firstName: string
+  ramq: string;
 }
 
 const getGenderByType = (type: FamilyMemberType) => {
@@ -48,7 +49,12 @@ const AddParentModal: React.FC<Props> = ({
     const response: any = await api.getPatientsByAutoComplete('partial', searchTerm, 1, 5, getGenderByType(parentType!));
     if (response.payload?.data) {
       setSearchResult(response.payload.data.data.hits
-        .map((hit: any) => ({ id: hit._id, lastName: hit._source.lastName, firstName: hit._source.firstName })));
+        .map((hit: any) => ({
+          id: hit._id,
+          lastName: hit._source.lastName,
+          firstName: hit._source.firstName,
+          ramq: hit._source.ramq,
+        })));
     } else {
       setSearchResult([]);
     }
