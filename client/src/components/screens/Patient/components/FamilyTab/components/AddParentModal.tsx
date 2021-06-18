@@ -1,5 +1,5 @@
 import {
-  AutoComplete, Form, Radio, RadioChangeEvent,
+  AutoComplete, Form, Radio, RadioChangeEvent, Typography,
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import Modal from 'antd/lib/modal/Modal';
@@ -100,7 +100,20 @@ const AddParentModal: React.FC<Props> = ({
             notFoundContent={searchResult != null && intl.get('screen.patient.details.family.modal.search.empty')}
             allowClear
             onSearch={search}
-            options={searchResult?.map((sr) => ({ key: sr.id, value: `${sr.lastName.toUpperCase()} ${sr.firstName}` }))}
+            options={searchResult?.map((sr) => ({
+              key: sr.id,
+              value: `${sr.lastName.toUpperCase()} ${sr.firstName}`,
+              label: (
+                <div>
+                  <Typography className="family-tab__details__add-parent__modal__form__search__result__name">
+                    { `${sr.lastName.toUpperCase()} ${sr.firstName}` }
+                  </Typography>
+                  <Typography className="family-tab__details__add-parent__modal__form__search__result__ramq">
+                    { sr.ramq }
+                  </Typography>
+                </div>
+              ),
+            }))}
             onSelect={onSelectPatient}
           />
         </Form.Item>
