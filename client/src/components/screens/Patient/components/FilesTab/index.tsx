@@ -90,10 +90,9 @@ const FilesTab: React.FC = () => {
               type="link"
               className="link--underline"
               target="_blank"
-              onClick={async () => {
-                window.open(await getURL(url.index), '_blank');
-              }}
+              onClick={() => openUrl(url.index)}
             >
+
               Index
             </Button>
           </Menu.Item>
