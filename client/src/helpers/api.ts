@@ -49,13 +49,16 @@ const getPractitionersData = (data: any) => Http.secureClinAxios.post(`${window.
   .then(successCallback)
   .catch(errorCallback);
 
-const getPatientsByAutoComplete = (type: string, query: string, page: number, size: number) => Http.secureClinAxios.get(
+const getPatientsByAutoComplete = (
+  type: string, query: string, page: number, size: number, gender?: string,
+) => Http.secureClinAxios.get(
   `${window.CLIN.patientServiceApiUrl}/autocomplete`, {
     params: {
       type,
       query,
       page,
       size,
+      gender,
     },
   },
 )
