@@ -23,6 +23,17 @@ interface SearchResult {
   firstName: string
 }
 
+const getGenderByType = (type: FamilyMemberType) => {
+  switch (type) {
+    case FamilyMemberType.FATHER:
+      return 'Male';
+    case FamilyMemberType.MOTHER:
+      return 'Female';
+    default:
+      throw new Error(`Type [${type}] not supported yet.`);
+  }
+};
+
 const AddParentModal: React.FC<Props> = ({
   parentType,
   onClose,
@@ -34,7 +45,7 @@ const AddParentModal: React.FC<Props> = ({
   const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | undefined>(undefined);
 
   async function search(searchTerm: string) {
-    const response: any = await api.getPatientsByAutoComplete('partial', searchTerm, 1, 5);
+    const response: any = await api.getPatientsByAutoComplete('partial', searchTerm, 1, 5, getGenderByType(parentType!));
     if (response.payload?.data) {
       setSearchResult(response.payload.data.data.hits
         .map((hit: any) => ({ id: hit._id, lastName: hit._source.lastName, firstName: hit._source.firstName })));

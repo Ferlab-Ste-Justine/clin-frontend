@@ -20,7 +20,7 @@ export type ParsedPatientData = {
 };
 
 export enum FamilyMemberType {
-  FATHER= 'FTH',
+  FATHER = 'FTH',
   MOTHER = 'MTH',
   NATURAL_MOTHER_OF_FETUS = 'NMTHF',
   BROTHER = 'BRO',
