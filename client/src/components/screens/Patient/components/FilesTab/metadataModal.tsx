@@ -1,5 +1,5 @@
 import {
-  Modal,
+  Modal, Button,
 } from 'antd';
 import React from 'react';
 
@@ -16,6 +16,11 @@ const MetadataModal: React.FC<Props> = ({
     visible={open}
     title="Metadata"
     onCancel={onClose}
+    footer={[
+      <Button key="back" type="primary" onClick={onClose}>
+        Ok
+      </Button>,
+    ]}
   >
     <div>
       { data }
