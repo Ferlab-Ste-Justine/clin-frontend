@@ -626,7 +626,7 @@ describe('Patient/Family', () => {
 
       userEvent.click(screen.getByText('Ajouter un parent'), {});
       // The mother "add parent" is disabled when there's already a created mother
-      await waitFor(() => expect(screen.getAllByText('Mère')[0]).toHaveAttribute('aria-disabled', 'true'));
+      await waitFor(() => expect(screen.getAllByText('Mère')[0].closest('button')).toBeDisabled());
     });
   });
 
@@ -873,7 +873,7 @@ describe('Patient/Family', () => {
 
       userEvent.click(screen.getByText('Ajouter un parent'), {});
       // The father "add parent" is disabled when there's already a created mother
-      await waitFor(() => expect(screen.getAllByText('Père')[0]).toHaveAttribute('aria-disabled', 'true'));
+      await waitFor(() => expect(screen.getAllByText('Père')[0].closest('button')).toBeDisabled());
     });
   });
 
@@ -923,6 +923,7 @@ describe('Patient/Family', () => {
           gender: 'female',
           ramq: 'NAMM90510101',
           type: FamilyMemberType.MOTHER,
+          code: 'AFF',
         }, {
           id: '3',
           firstName: 'Father',
@@ -931,6 +932,7 @@ describe('Patient/Family', () => {
           gender: 'male',
           ramq: 'NAMF90010101',
           type: FamilyMemberType.FATHER,
+          code: 'AFF',
         }],
       });
       render(

@@ -1,4 +1,5 @@
 import {
+  Button,
   Menu,
 } from 'antd';
 import React, { useState } from 'react';
@@ -26,16 +27,28 @@ const FamilyTab: React.FC = () => {
   ) != null;
 
   const menu = (
-    <Menu onClick={({ key }) => {
-      const parentType = key as FamilyMemberType;
-      setAddParentType(parentType);
-    }}
-    >
+    <Menu>
       <Menu.Item key={FamilyMemberType.MOTHER} disabled={hasMother}>
-        { intl.get('screen.patient.details.family.mother') }
+        <Button
+          disabled={hasMother}
+          type="text"
+          onClick={() => {
+            setAddParentType(FamilyMemberType.MOTHER);
+          }}
+        >
+          { intl.get('screen.patient.details.family.mother') }
+        </Button>
       </Menu.Item>
       <Menu.Item key={FamilyMemberType.FATHER} disabled={hasFather}>
-        { intl.get('screen.patient.details.family.father') }
+        <Button
+          disabled={hasFather}
+          type="text"
+          onClick={() => {
+            setAddParentType(FamilyMemberType.FATHER);
+          }}
+        >
+          { intl.get('screen.patient.details.family.father') }
+        </Button>
       </Menu.Item>
     </Menu>
   );

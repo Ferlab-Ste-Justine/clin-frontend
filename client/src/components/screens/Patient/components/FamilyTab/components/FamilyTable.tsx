@@ -190,7 +190,12 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
       className="family-tab__details"
       title={intl.get('screen.patient.details.family.title')}
       extra={(
-        <Dropdown overlay={addParentMenu} trigger={['click']}>
+        <Dropdown
+          overlay={addParentMenu}
+          placement="bottomCenter"
+          trigger={['click']}
+          overlayClassName="family-tab__add-parent"
+        >
           <Button>
             { intl.get('screen.patient.details.family.addParent') }
             <DownOutlined />
