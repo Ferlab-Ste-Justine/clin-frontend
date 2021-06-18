@@ -340,6 +340,7 @@ const fr = {
   'screen.patient.details.file.date': 'Date',
   'screen.patient.details.file.action': 'Action',
   'screen.patient.details.file.download': 'Telecharger',
+  'screen.patient.details.file.download.file': 'Fichier',
   'screen.patient.details.file.size.b': 'o',
   'screen.patient.details.file.size.kb': 'ko',
   'screen.patient.details.file.size.mb': 'mo',

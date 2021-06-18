@@ -4,9 +4,6 @@ import {
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import intl from 'react-intl-universal';
-import { useDispatch, useSelector } from 'react-redux';
-import { navigateToPatientScreen } from '../../../../../actions/router';
-import { State } from '../../../../../reducers';
 import Api from '../../../../../helpers/api';
 import { TaskResponse } from '../../../../../helpers/search/types';
 import MetadataModal from './metadataModal';
@@ -23,19 +20,9 @@ const getURL = async (url: string) => {
 const FilesTab: React.FC = () => {
   const { Patient } = fileInfo;
 
-  const dispatch = useDispatch();
   const dataSource: any[] = [];
-  const patient = useSelector((state: State) => state.patient.patient.parsed);
   const [isOpen, setIsOpenModal] = useState<boolean>(false);
   const [documentReference, setDocumentReference] = useState<string>('');
-
-  const handleGoToPatientScreen: any = (patientId: string, requestId: string | null = null) => {
-    dispatch(navigateToPatientScreen(patientId, {
-      tab: 'prescriptions',
-      reload: false,
-      openedPrescriptionId: requestId,
-    }));
-  };
 
   const getFileSize = (size: number) => {
     let newSize = size;
@@ -57,8 +44,16 @@ const FilesTab: React.FC = () => {
     setIsOpenModal(false);
   };
 
+  const openUrl = (url: string) => {
+    const tab = window.open('', '_blank');
+    getURL(url).then((redirect) => {
+      tab!.location.href = redirect;
+    });
+  };
+
   const getDropdownOption = (format: string, url: any, documentR: string) => {
     const option = [];
+
     option.push(
       (
         <Menu.Item>
@@ -66,11 +61,9 @@ const FilesTab: React.FC = () => {
             type="link"
             className="link--underline"
             target="_blank"
-            onClick={async () => {
-              window.open(await getURL(url.file), '_blank');
-            }}
+            onClick={() => openUrl(url.file)}
           >
-            File
+            { intl.get('screen.patient.details.file.download.file') }
           </Button>
         </Menu.Item>
       ),
@@ -153,18 +146,7 @@ const FilesTab: React.FC = () => {
       format,
       size: sizeWithUnity,
       sample: specimen,
-      prescription: (
-        <Button
-          type="link"
-          className="link--underline"
-          onClick={() => {
-            handleGoToPatientScreen(patient.id, prescription);
-            window.location.reload();
-          }}
-          data-id={prescription}
-        >
-          { prescription }
-        </Button>),
+      prescription,
       date,
       action: getDropdownOption(format, url, documentR),
     };

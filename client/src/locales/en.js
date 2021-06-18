@@ -261,6 +261,7 @@ const en = {
   'screen.patient.details.file.date': 'Date',
   'screen.patient.details.file.action': 'Action',
   'screen.patient.details.file.download': 'Download',
+  'screen.patient.details.file.download.file': 'File',
   'screen.patient.details.file.size.b': 'B',
   'screen.patient.details.file.size.kb': 'kb',
   'screen.patient.details.file.size.mb': 'mg',
