@@ -42,6 +42,17 @@
               height: unset;
             }
           }
+          &__result {
+            &__name {
+              font-size: 14px;
+              color: $gray-8;
+            }
+  
+            &__ramq {
+              font-size: 12px;
+              color: $gray-7;
+            }
+          }
         }
         &__status {
           .ant-form-item-label {
@@ -51,6 +62,7 @@
               height: unset;
             }
           }
+
         }
       }
 
