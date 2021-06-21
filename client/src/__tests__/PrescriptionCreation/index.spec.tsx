@@ -60,6 +60,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Enable/Disable Save Prescription Button', async () => {
+    mockRptToken();
+
     server.use(buildHPORequest());
     render(
       <AppTest>
@@ -93,6 +95,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Enable/Disable Next Prescription Button', async () => {
+    mockRptToken();
+
     server.use(buildHPORequest());
     render(
       <AppTest>
@@ -126,6 +130,8 @@ describe('PrescriptionCreation', () => {
   });
 
   test('Prescription (2nd Page): Disabled Soumettre button', async () => {
+    mockRptToken();
+
     server.use(buildHPORequest());
     render(
       <AppTest>

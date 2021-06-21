@@ -923,7 +923,7 @@ describe('Patient/Family', () => {
           gender: 'female',
           ramq: 'NAMM90510101',
           type: FamilyMemberType.MOTHER,
-          code: 'AFF',
+          code: 'UNK',
         }, {
           id: '3',
           firstName: 'Father',
@@ -932,7 +932,7 @@ describe('Patient/Family', () => {
           gender: 'male',
           ramq: 'NAMF90010101',
           type: FamilyMemberType.FATHER,
-          code: 'AFF',
+          code: 'UNK',
         }],
       });
       render(
