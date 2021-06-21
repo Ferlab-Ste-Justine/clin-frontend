@@ -594,7 +594,7 @@ class VariantNavigation extends React.Component {
     const selectedVariant = getSelectedVariant();
 
     return (
-      <div className="navigationFilter">
+      <div className="variant-navigation-filters">
         <SearchInput
           handleAutoCompleteChange={this.handleAutoCompleteChange}
           handleNavigationSearch={this.handleNavigationSearch}
@@ -618,13 +618,10 @@ class VariantNavigation extends React.Component {
                 key={id}
                 onTitleClick={this.handleMenuSelection}
                 title={(
-                  <span className="subMenuTitle">
-                    <div>
-                      { getCategoryIcon(category.label) }
-                      <span className="value">{ label }</span>
-                    </div>
-                    <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrowDropDown" />
-                  </span>
+                  <Button type="text" className="variant-navigation-filters__submenu__title">
+                    { getCategoryIcon(category.label) }
+                    <span className="value">{ label }</span>
+                  </Button>
                 )}
                 popupClassName={activeMenu?.includes(id) ? 'submenuOpen menuDropdown' : 'menuDropdown'}
               >
@@ -643,7 +640,6 @@ class VariantNavigation extends React.Component {
                       <IconKit size={18} icon={ic_cloud_upload} />
                       { intl.get('screen.patientvariant.navigation.importList') }
                     </Button>
-
                   </div>
                 ) }
                 { activeFilterId === null && category.label === 'category_genomic' && (
@@ -684,10 +680,13 @@ class VariantNavigation extends React.Component {
                      {
                        f.label === 'filter_gene_symbol' ? null
                          : (
-                           <div className={category.label === 'category_variant' ? 'subMenuVariant' : 'subMenuTitle'}>
+                           <Button
+                             type="text"
+                             className={category.label === 'category_variant' ? 'subMenuVariant' : 'subMenuTitle'}
+                           >
                              <span className="menu__item__label">{ intl.get(`screen.patientvariant.${f.label}`) }</span>
                              <IconKit size={24} icon={ic_keyboard_arrow_right} className="iconRightArrow" />
-                           </div>
+                           </Button>
                          )
                      }
                    </Menu.Item>

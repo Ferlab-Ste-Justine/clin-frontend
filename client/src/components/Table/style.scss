@@ -351,3 +351,9 @@ div[class^='bp3-table-cell-col'] {
 .table__header__checkbox__wrapper{
   width: 50px;
 }
+
+*:focus { 
+  outline-color: red!important;
+  outline-width: 2px!important;
+  outline-style: solid!important;
+}
