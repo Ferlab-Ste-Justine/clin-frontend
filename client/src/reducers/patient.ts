@@ -245,7 +245,7 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       message.error(intl.get('screen.patient.details.family.remove.error'));
       break;
     case actions.PATIENT_SET_CURRENT_ACTIVE_KEY:
-      if (action.payload.activeKey != null) {
+      if (get(action, 'payload.activeKey', '').length > 0) {
         draft.currentActiveKey = action.payload.activeKey;
       }
       break;
