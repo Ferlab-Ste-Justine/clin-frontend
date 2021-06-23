@@ -251,11 +251,9 @@ class PatientScreen extends React.Component {
 
   render() {
     const {
-      app, router, patient,
+      app, patient, currentActiveKey,
     } = this.props;
     const { showSubloadingAnimation } = app;
-    const { hash } = router.location;
-    const hashParams = (hash.replace('#', '') || '').split('&');
 
     const tabs = [
       {
@@ -297,7 +295,6 @@ class PatientScreen extends React.Component {
         content: <FilesTab />,
       },
     ];
-    const defaultTab = tabs.map((t) => t.name).includes(hashParams[0]) ? hashParams[0] : 'prescriptions';
     return (
       <Layout>
         <Spin spinning={showSubloadingAnimation}>
@@ -309,8 +306,8 @@ class PatientScreen extends React.Component {
                 </div>
                 <Tabs
                   onChange={this.handleTabNavigation}
-                  defaultActiveKey={defaultTab}
                   className="patient-page__tabs staticTabs"
+                  activeKey={currentActiveKey}
                 >
                   {
                     tabs.map((tab) => (
@@ -353,9 +350,9 @@ const mapDispatchToProps = (dispatch) => ({
 
 const mapStateToProps = (state) => ({
   app: state.app,
-  router: state.router,
   patient: state.patient.patient.parsed,
   prescriptions: state.patient.prescriptions?.map((prescription) => prescription.parsed) || [],
+  currentActiveKey: state.patient.currentActiveKey,
 });
 
 export default connect(

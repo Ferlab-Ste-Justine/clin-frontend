@@ -54,6 +54,7 @@ export type PatientState = {
   openedPrescriptionId?: string;
   parent?: FamilyMember;
   family?: FamilyMember[];
+  currentActiveKey: 'prescriptions' | 'family' | 'variant' | 'files';
 };
 
 type Action = {
@@ -62,7 +63,18 @@ type Action = {
 };
 
 const initialState: PatientState = {
-  patient: { parsed: { id: '' }, original: {} }, prescriptions: [], consultation: [], hpos: [], fmhs: [], observations: {},
+  patient: {
+    parsed: {
+      id: '',
+    },
+    original: {},
+  },
+  prescriptions: [],
+  consultation: [],
+  hpos: [],
+  fmhs: [],
+  observations: {},
+  currentActiveKey: 'prescriptions',
 };
 
 function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[] {
@@ -231,6 +243,11 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       break;
     case actions.PATIENT_REMOVE_PARENT_FAILED:
       message.error(intl.get('screen.patient.details.family.remove.error'));
+      break;
+    case actions.PATIENT_SET_CURRENT_ACTIVE_KEY:
+      if (action.payload.activeKey != null) {
+        draft.currentActiveKey = action.payload.activeKey;
+      }
       break;
     default:
       break;

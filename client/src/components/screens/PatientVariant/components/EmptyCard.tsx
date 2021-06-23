@@ -16,7 +16,11 @@ const EmptyCard: React.FC = () => {
   const dispatch = useDispatch();
   const patient = useSelector((state: State) => state.patient.patient.parsed);
   const handleGoToPrescriptionTab = () => {
-    console.log('changement Onglet');
+    dispatch(navigateToPatientScreen(patient.id, {
+      openedPrescriptionId: null,
+      tab: 'prescriptions',
+      reload: false,
+    }));
   };
 
   return (
