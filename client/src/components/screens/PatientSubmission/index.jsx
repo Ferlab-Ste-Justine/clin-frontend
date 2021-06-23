@@ -373,7 +373,6 @@ function PatientSubmissionScreen(props) {
           .withId(get(localStore, 'serviceRequest.id'))
           .withMrn(fullMRN[0], fullMRN[1])
           .withRequester(state.selectedPractitioner)
-          .withResident(state.selectedResident)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
           .withSubmitted(submitted, userPractitioner.id, status)
