@@ -34,6 +34,7 @@ function* navigateToPatientScreen(action) {
       url += '?reload';
     }
 
+    yield put({ type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY, payload: { activeKey: tab } });
     yield put(push(url));
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED, message: e.message });
@@ -119,6 +120,7 @@ function* processPatientPage(currentRoute, tab, forceReload) {
     if (tab === 'variant') {
       yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
     }
+    yield put({ type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY, payload: { activeKey: tab } });
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED });
