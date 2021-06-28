@@ -1,3 +1,6 @@
+@import '../../../containers/App/variables.scss';
+@import '../../../style/themes/colors.scss';
+
 .entity{
   background-color:#EDF0F3;
 }
@@ -5,4 +8,38 @@
 .table__header__checkbox__wrapper {
   justify-content: center;
   height: 40px;
+  width: $maxWidth;
+}
+
+.variant-tab {
+  height: 100%;
+
+  &__details {
+    height: 100%;
+
+    &--empty{
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 610px;
+
+      svg {
+        color: $gray-5;
+      }
+      &__texts {
+        
+        &__title {
+          margin-top:35px;
+          color: $blue-10;
+          font-size: 24px;
+          line-height: 32px;
+        }
+
+        &__description {
+          margin-bottom: 35px;
+        }
+      }
+    }
+  }
 }
