@@ -24,20 +24,23 @@ const EmptyCard: React.FC = () => {
   };
 
   return (
-    <Card className="family-tab__details" bordered={false}>
-      <div className="family-tab__details--empty">
-        <IconKit size={42} icon={ic_widgets} />
-        <Typography.Text className="family-tab__details--empty__texts__title">
-          { intl.get('screen.patient.details.variant.empty.title') }
-        </Typography.Text>
-        <Typography.Text className="family-tab__details--empty__texts__description">
-          { intl.get('screen.patient.details.variant.empty.description') }
-          <Button type="link" onClick={handleGoToPrescriptionTab}>
-            { intl.get('screen.patient.details.variant.empty.link') }
-          </Button>
-        </Typography.Text>
-      </div>
-    </Card>
+    <div className="page-static-content">
+      <Card className="staticCard variant-tab__details" bordered={false}>
+        <div className="variant-tab__details--empty">
+          <IconKit size={42} icon={ic_widgets} />
+          <Typography.Text className="family-tab__details--empty__texts__title">
+            { intl.get('screen.patient.details.variant.empty.title') }
+          </Typography.Text>
+          <Typography.Text className="family-tab__details--empty__texts__description">
+            { intl.get('screen.patient.details.variant.empty.description') }
+            <Button type="link" onClick={handleGoToPrescriptionTab}>
+              { intl.get('screen.patient.details.variant.empty.link') }
+            </Button>
+          </Typography.Text>
+        </div>
+      </Card>
+    </div>
+
   );
 };
 

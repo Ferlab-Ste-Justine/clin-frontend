@@ -43,7 +43,11 @@ const PatientTable: React.FC<Props> = ({
   const dispatch = useDispatch();
   const { patient } = searchProps;
   const handleGoToPatientScreen: any = (patientId: string) => {
-    dispatch(navigateToPatientScreen(patientId));
+    dispatch(navigateToPatientScreen(patientId, {
+      tab: 'prescriptions',
+      reload: null,
+      openedPrescriptionId: null,
+    }));
   };
 
   const results = patient.results.filter((result: any) => result != null && result.organization != null);
