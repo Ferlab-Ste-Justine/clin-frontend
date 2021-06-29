@@ -57,7 +57,7 @@ const PrescriptionTable: React.FC<Props> = ({
 
   const handleGoToPatientScreen: any = (patientId: string, requestId: string | null = null) => {
     dispatch(navigateToPatientScreen(patientId, {
-      tab: null,
+      tab: 'prescriptions',
       reload: null,
       openedPrescriptionId: requestId,
     }));
