@@ -504,7 +504,7 @@ function PatientSubmissionScreen(props) {
   const handleCancel = () => {
     const { actions, patient } = props;
     actions.navigateToPatientScreen(patient.id, {
-      tab: 'clinical',
+      tab: 'prescriptions',
       reload: true,
       openedPrescriptionId: get(localStore, 'serviceRequest.id'),
     });
