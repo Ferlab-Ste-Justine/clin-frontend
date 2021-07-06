@@ -49,11 +49,11 @@ const AddParentModal: React.FC<Props> = ({
   const familyMemberIds = family?.map((member) => member.id);
 
   async function search(searchTerm: string) {
-    const response: any = await api.getPatientsByAutoComplete('partial', searchTerm, 1, 5, getGenderByType(parentType!));
+    const response: any = await api.getPatientsByAutoComplete('complete', searchTerm, 1, 5, getGenderByType(parentType!));
     if (response.payload?.data) {
       setSearchResult(response.payload.data.data.hits
 
-        .filter((hit: any) => !familyMemberIds?.includes(hit._id))
+        .filter((hit: any) => !familyMemberIds?.includes(hit._id) && !hit._source.fetus)
         .map((hit: any) => ({
           id: hit._id,
           lastName: hit._source.lastName,
