@@ -87,7 +87,7 @@ export class ServiceRequestBuilder {
         this.serviceRequest.note = this.serviceRequest.note || [];
         this.serviceRequest.note?.push({
           authorReference: getPractitionerReference(practitionerId),
-          text: 'Service Request submitted.',
+          text: '--',
           time: new Date().toISOString(),
         });
         this.serviceRequest.status = 'on-hold';
