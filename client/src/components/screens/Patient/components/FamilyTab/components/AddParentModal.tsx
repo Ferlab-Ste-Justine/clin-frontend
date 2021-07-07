@@ -70,13 +70,29 @@ const AddParentModal: React.FC<Props> = ({
     setSelectedPatient(response.payload.data.data);
   }
 
+  const resetValues = () => {
+    setSearchResult(null);
+    setSelectedPatient(null);
+    setAffectedStatus(undefined);
+    form.setFields([{
+      name: 'patientSearch',
+      value: '',
+    }]);
+  };
+
   async function onSubmit() {
     dispatch(addParentToFamily(selectedPatient?.id, parentType, affectedStatus!));
+    resetValues();
     onClose();
   }
 
   const updateStatus = (event: RadioChangeEvent) => {
     setAffectedStatus(event.target.value);
+  };
+
+  const onCancel = () => {
+    resetValues();
+    onClose();
   };
 
   return (
@@ -87,7 +103,7 @@ const AddParentModal: React.FC<Props> = ({
       okText={intl.get('screen.patient.details.family.modal.add')}
       cancelText={intl.get('screen.patient.details.family.modal.cancel')}
       okButtonProps={{ disabled: !selectedPatient || !affectedStatus }}
-      onCancel={onClose}
+      onCancel={onCancel}
       onOk={() => form.submit()}
     >
       <Form
@@ -97,6 +113,7 @@ const AddParentModal: React.FC<Props> = ({
       >
         <Form.Item
           labelCol={{ span: 24 }}
+          name="patientSearch"
           label={intl.get('screen.patient.details.family.modal.search.label')}
           className="family-tab__details__add-parent__modal__form__search"
         >
