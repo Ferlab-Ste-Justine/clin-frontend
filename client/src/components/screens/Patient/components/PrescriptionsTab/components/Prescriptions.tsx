@@ -16,11 +16,11 @@ import {
   DeleteOutlined, EditFilled, FormOutlined, InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined,
 } from '@ant-design/icons';
 import get from 'lodash/get';
+import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
 import { FamilyObservation, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
 import Badge from '../../../../../Badge';
 import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
-import { ClinicalImpression, Observation } from '../../../../../../helpers/fhir/types';
 import { updateServiceRequestStatus } from '../../../../../../actions/patient';
 import StatusChangeModal, { StatusType } from '../../StatusChangeModal';
 import { editPrescription } from '../../../../../../actions/patientSubmission';
@@ -62,7 +62,9 @@ const findFamilyHistories = (
 ) => {
   const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
   return familyHistories.filter(
-    (fmh) => clinicalImpression.investigation[0].item.find((obs) => obs.reference.indexOf(fmh.id) !== -1) != null,
+    (fmh) => get(clinicalImpression, 'investigation[0].item', []).find(
+      (item: Reference) => item.reference.indexOf(fmh.id) !== -1,
+    ) != null,
   );
 };
 
@@ -71,7 +73,9 @@ const getClinicalObservations = (
   clinicalImpression: ClinicalImpression,
   key: string,
 ) => get(observations, key)?.find(
-  (obs: Observation) => clinicalImpression?.investigation[0].item.find((i) => i.reference.indexOf(obs.id!) !== -1) != null,
+  (obs: Observation) => get(clinicalImpression, 'investigation[0].item', []).find(
+    (item: Reference) => item.reference.indexOf(obs.id!) !== -1,
+  ) != null,
 );
 
 const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId: string | undefined) => {
