@@ -6,6 +6,7 @@
       "dom.iterable",
       "esnext"
     ],
+    "baseUrl": "client/src",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -19,10 +20,13 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "types": ["cypress", "@testing-library/cypress"]
+    "types": [
+      "cypress",
+      "@testing-library/cypress"
+    ]
   },
   "include": [
     "client/src",
-    "cypress"
+    "cypress",
   ]
 }

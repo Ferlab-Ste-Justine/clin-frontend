@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card, Table } from 'antd';
 import intl from 'react-intl-universal';
+import get from 'lodash/get';
 import { EyeFilled, EyeInvisibleFilled, QuestionCircleFilled } from '@ant-design/icons';
-import { ClinicalImpression } from '../../../../../../../helpers/fhir/types';
+import { ClinicalImpression, Reference } from 'helpers/fhir/types';
 import { ClinicalObservation } from '../../../../../../../helpers/providers/types';
 
 const getObservedIcon = (status: string) => {
@@ -38,8 +39,9 @@ interface Props {
 
 const ClinicalSigns: React.FC<Props> = ({ clinicalImpression, hpos }) => {
   const dataSource = hpos.filter(
-    (hpo) => clinicalImpression
-      .investigation[0].item.find((obs) => obs.reference.indexOf(hpo.id) !== -1) != null,
+    (hpo) => get(clinicalImpression, 'investigation[0].item', []).find(
+      (item: Reference) => item.reference.indexOf(hpo.id) !== -1,
+    ) != null,
   ).map((obs) => ({
     observed: getObservedIcon(obs.observed),
     category: obs.category,
