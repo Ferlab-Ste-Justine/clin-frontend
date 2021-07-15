@@ -765,6 +765,8 @@ const en = {
   'form.patientSubmission.ramqWarning.title': 'Missing RAMQ',
   'form.patientSubmission.ramqWarning.description': "The patient doesn't have a RAMQ. Please edit his profile bfore submitting a prescription",
   'form.patientSubmission.ramqWarning.save': 'Save and quit',
+  'form.patientSubmission.cancelModal.actions.cancel': 'Cancel',
+  'form.patientSubmission.cancelModal.actions.close': 'Close',
   'form.patientSubmission.clinicalInformation.delete': 'Delete',
   'form.patientSubmission.clinicalInformation.title': 'Clinical Information',
   'form.patientSubmission.clinicalInformation.medicalFile': 'Medical File',

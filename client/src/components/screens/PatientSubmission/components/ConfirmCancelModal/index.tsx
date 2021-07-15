@@ -3,6 +3,7 @@ import {
 } from 'antd';
 import React from 'react';
 import intl from 'react-intl-universal';
+import styles from './style.module.scss';
 
 interface Props {
   open: boolean
@@ -12,7 +13,7 @@ interface Props {
 }
 
 const ConfirmCancelModal: React.FC<Props> = ({
-  open, onQuit, onSaveAndQuit, onClose,
+  open, onQuit, onClose,
 }) => (
   <Modal
     afterClose={onClose}
@@ -22,13 +23,17 @@ const ConfirmCancelModal: React.FC<Props> = ({
     footer={(
       <Row gutter={8} justify="end">
         <Col>
-          <Button danger onClick={onQuit}>
-            { intl.get('form.patientSubmission.cancelModal.actions.wihoutSave') }
+          <Button onClick={onClose}>
+            { intl.get('form.patientSubmission.cancelModal.actions.close') }
           </Button>
         </Col>
         <Col>
-          <Button type="primary" onClick={onSaveAndQuit}>
-            { intl.get('form.patientSubmission.cancelModal.actions.saveAndQuit') }
+          <Button
+            type="primary"
+            className={styles['cancel-modal__cancel-btn']}
+            onClick={onQuit}
+          >
+            { intl.get('form.patientSubmission.cancelModal.actions.cancel') }
           </Button>
         </Col>
       </Row>

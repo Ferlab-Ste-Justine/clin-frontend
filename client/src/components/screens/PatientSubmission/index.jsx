@@ -542,6 +542,29 @@ function PatientSubmissionScreen(props) {
     });
   };
 
+  const isPrescriptionEmpty = () => {
+    const values = form.getFieldsValue();
+    return values.cghId == null
+    && get(values, 'analysis.tests', []).filter((i) => i != null).length === 0
+    && values.cghInterpretationValue === 'non-realized'
+    && get(values, 'ethnicity.value') == null
+    && get(values, 'consanguinity.value') == null
+    && values.indication == null
+    && get(values, 'analysis.comments') == null
+    && values['full-mrn'] == null
+    && values.mrn == null
+    && values.organization == null
+    && values.indication == null;
+  };
+
+  const onCancelClick = () => {
+    if (isPrescriptionEmpty()) {
+      handleCancel();
+    } else {
+      setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }));
+    }
+  };
+
   const { actions } = props;
   const {
     patient, clinicalImpression, serviceRequest,
@@ -662,22 +685,9 @@ function PatientSubmissionScreen(props) {
                     }
                   </Button>
                 </Col>
-                <Col flex={1}>&nbsp;</Col>
-                <Col>
-                  <Tooltip placement="top" title="Enregistrez les données de cette prescription et complétez-la plus tard.">
-                    <Button
-                      onClick={() => saveSubmission()}
-                      disabled={!state.valid}
-                    >
-                      <SaveOutlined />
-                      { intl.get('screen.clinicalSubmission.saveButtonTitle') }
-                    </Button>
-                  </Tooltip>
-
-                </Col>
                 <Col>
                   <Button
-                    onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
+                    onClick={onCancelClick}
                     danger
                     type="text"
                   >
