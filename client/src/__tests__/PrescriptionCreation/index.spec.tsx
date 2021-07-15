@@ -69,7 +69,7 @@ describe('PrescriptionCreation', () => {
       </AppTest>,
     );
 
-    expect(screen.getByText(/compléter plus tard/i).closest('button')).toBeDisabled();
+    expect(screen.getByText(/Suivant/i).closest('button')).toBeDisabled();
 
     const mrnOptions = screen.getByPlaceholderText(/Sélectionner un dossier/i);
     act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
@@ -91,7 +91,7 @@ describe('PrescriptionCreation', () => {
     const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
     act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
 
-    expect(screen.getByText(/compléter plus tard/i).closest('button')).toBeEnabled();
+    expect(screen.getByText(/Suivant/i).closest('button')).toBeEnabled();
   });
 
   test('Enable/Disable Next Prescription Button', async () => {
