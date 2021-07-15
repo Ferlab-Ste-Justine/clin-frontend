@@ -6,17 +6,27 @@ import React from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
 import { generateNanuqReport } from '../../../../actions/nanuq';
+import { TableItemsCount } from './TableItemsCount';
 
 interface Props {
+  page: number;
+  size: number;
+  total: number;
   selectedPatients: string[]
 }
 
 const PrescriptionTableHeader: React.FC<Props> = ({
+  page,
+  size,
+  total,
   selectedPatients,
 }) => {
   const dispatch = useDispatch();
   return (
     <Row align="middle" gutter={32}>
+      <Col>
+        <TableItemsCount page={page} size={size} total={total} />
+      </Col>
       { selectedPatients.length > 0 && (
         <>
           <Col>

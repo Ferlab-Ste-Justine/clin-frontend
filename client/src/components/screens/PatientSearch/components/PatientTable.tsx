@@ -10,6 +10,7 @@ import { navigateToPatientScreen } from '../../../../actions/router';
 
 import InteractiveTable from '../../../Table/InteractiveTable';
 import { PatientData } from '../../../../helpers/search/types';
+import { PatientsTableHeader } from './PatientTableHeader';
 
 interface Props {
   searchProps: any
@@ -194,6 +195,13 @@ const PatientTable: React.FC<Props> = ({
           columnsUpdated={columnsUpdated}
           columnsOrderUpdated={columnsOrderUpdated}
           columnsReset={columnsReset}
+          customHeader={(
+            <PatientsTableHeader
+              page={page}
+              size={size}
+              total={patient.total}
+            />
+          )}
         />
       </div>
     </div>

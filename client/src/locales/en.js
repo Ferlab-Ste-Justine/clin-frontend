@@ -282,6 +282,7 @@ const en = {
   'screen.patient.header.familyMembers': 'Family Members',
   'screen.patient.tab.prescriptions': 'Prescriptions',
   'screen.patient.tab.clinical': 'Clinical',
+  'screen.patientsearch.headers.count.of': 'of',
   'screen.patientsearch.tabs.prescriptions': 'Prescriptions',
   'screen.patientsearch.tabs.patients': 'Patients',
   'screen.patientsearch.yes': 'Yes',
