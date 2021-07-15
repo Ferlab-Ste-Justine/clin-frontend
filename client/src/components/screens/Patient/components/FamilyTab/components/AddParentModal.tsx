@@ -3,7 +3,7 @@ import {
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import Modal from 'antd/lib/modal/Modal';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
 import { addParentToFamily } from '../../../../../../actions/patient';
@@ -47,6 +47,13 @@ const AddParentModal: React.FC<Props> = ({
   const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | undefined>(undefined);
   const family = useSelector((state: State) => state.patient.family);
   const familyMemberIds = family?.map((member) => member.id);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!!parentType && searchRef != null && searchRef.current != null) {
+      setTimeout(() => { searchRef.current?.focus(); }, 50);
+    }
+  }, [parentType]);
 
   async function search(searchTerm: string) {
     const response: any = await api.getPatientsByAutoComplete('complete', searchTerm, 1, 5, getGenderByType(parentType!));
@@ -121,6 +128,7 @@ const AddParentModal: React.FC<Props> = ({
             placeholder={intl.get('screen.patient.details.family.modal.search.placeholder')}
             notFoundContent={searchResult != null && intl.get('screen.patient.details.family.modal.search.empty')}
             allowClear
+            ref={searchRef}
             onSearch={search}
             options={searchResult?.map((sr) => ({
               key: sr.id,
