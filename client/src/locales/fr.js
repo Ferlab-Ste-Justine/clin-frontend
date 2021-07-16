@@ -365,6 +365,7 @@ const fr = {
   'screen.patient.tab.prescriptions': 'Prescriptions',
   'screen.patient.tab.family': 'Famille',
   'screen.patient.tab.clinical': 'Clinique',
+  'screen.patientsearch.headers.count.of': 'sur',
   'screen.patientsearch.tabs.prescriptions': 'Prescriptions',
   'screen.patientsearch.tabs.patients': 'Patients',
   'screen.patientsearch.yes': 'Oui',
