@@ -8,7 +8,6 @@ Critères de succès
 
 ## Validation
 
-- [ ] Code Approved
 - [ ] Test Coverage
 - [ ] QA Done
 - [ ] Design/UI Approved from design
