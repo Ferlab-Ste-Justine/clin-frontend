@@ -1,5 +1,5 @@
 import {
-  Button,
+  Button, Tooltip,
 } from 'antd';
 import React from 'react';
 import intl from 'react-intl-universal';
@@ -11,6 +11,7 @@ import { navigateToPatientScreen } from '../../../../actions/router';
 import InteractiveTable from '../../../Table/InteractiveTable';
 import { PatientData } from '../../../../helpers/search/types';
 import { PatientsTableHeader } from './PatientTableHeader';
+import './style.scss';
 
 interface Props {
   searchProps: any
@@ -114,19 +115,33 @@ const PatientTable: React.FC<Props> = ({
     {
       key: 'lastName',
       label: 'screen.patientsearch.table.lastName',
-      renderer: createCellRenderer('text', (() => output), { key: 'lastName' }),
+      renderer: createCellRenderer('custom', (() => output), {
+        renderer: (data: any) => {
+          try {
+            return (
+              <div
+                className="patients-table__cell-container"
+              >
+                <p>{ data.lastName.toUpperCase() }</p>
+                { data.fetus && (
+                  <Tooltip title={intl.get('screen.patient.table.fetus')}>
+                    <img
+                      src="/assets/icons/patient-fetus.svg"
+                      alt={intl.get('screen.patient.table.fetus')}
+                      className="patients-table__fetus-icon"
+                    />
+                  </Tooltip>
+                ) }
+              </div>
+            );
+          } catch (e) { return ''; }
+        },
+      }),
     },
     {
       key: 'firstName',
       label: 'screen.patientsearch.table.firstName',
-      renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data: any) => {
-          try {
-            const name = data.fetus ? intl.get('screen.patient.table.fetus') : data.firstName;
-            return name;
-          } catch (e) { return ''; }
-        },
-      }),
+      renderer: createCellRenderer('text', (() => output), { key: 'firstName' }),
     },
     {
       key: 'gender',
