@@ -6,13 +6,14 @@ import React from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
 import { generateNanuqReport } from '../../../../actions/nanuq';
+import { PatientNanuqInformation } from '../../../../helpers/search/types';
 import { TableItemsCount } from './TableItemsCount';
 
 interface Props {
   page: number;
   size: number;
   total: number;
-  selectedPatients: string[]
+  selectedPatients: PatientNanuqInformation[]
 }
 
 const PrescriptionTableHeader: React.FC<Props> = ({
