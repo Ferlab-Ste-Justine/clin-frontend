@@ -37,7 +37,6 @@ const PrescriptionTable: React.FC<Props> = ({
   defaultColumnsOrder,
   pageChangeCallback,
   pageSizeChangeCallback,
-  exportCallback,
   isLoading,
   columnsUpdated,
   columnsOrderUpdated,
@@ -346,7 +345,6 @@ const PrescriptionTable: React.FC<Props> = ({
           schema={columnPreset}
           pageChangeCallback={pageChangeCallback}
           pageSizeChangeCallback={pageSizeChangeCallback}
-          exportCallback={exporstCallback}
           numFrozenColumns={2}
           isLoading={isLoading}
           rowHeights={Array(patient.pageSize).fill(36)}
