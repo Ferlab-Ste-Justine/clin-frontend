@@ -57,6 +57,10 @@ import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBui
 
 const { Step } = Steps;
 
+const isFetus = (patient) => patient?.extension.find(
+  (ext) => ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+)?.valueBoolean || false;
+
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
 
@@ -633,6 +637,7 @@ function PatientSubmissionScreen(props) {
                 <Divider type="vertical" className="patientSubmission__header__divider" />
                 { ` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}`
               + ` ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}` }
+                { isFetus(patient) ? ` (${intl.get('screen.patient.creation.fetus')})` : '' }
               </Typography.Text>
             </Title>
 
