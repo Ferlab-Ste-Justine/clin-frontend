@@ -62,6 +62,7 @@ describe('Helpers: Nanuq', () => {
 
     test('with multiple patients selected', () => {
       const result = generateExport(VALID_VALUE_MULTIPLE_PATIENT);
+      console.log('result', result);
       expect(result.patients).toEqual([{
         type_echantillon: 'ADN',
         tissue_source: 'Sang',
@@ -89,7 +90,7 @@ describe('Helpers: Nanuq', () => {
         institution: 'CHUSJ',
         DDN: '05/10/2006',
         sexe: 'male',
-        famille_id: 'FA1',
+        family_id: 'FA1',
         position: 'Proband',
       },
       ]);
