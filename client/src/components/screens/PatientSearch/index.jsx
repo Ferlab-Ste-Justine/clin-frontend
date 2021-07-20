@@ -9,7 +9,7 @@ import {
 import { ExportToCsv } from 'export-to-csv';
 import IconKit from 'react-icons-kit';
 import {
-  ic_keyboard_arrow_right, ic_tune, ic_close, ic_search, ic_keyboard_arrow_down,
+  ic_keyboard_arrow_right, ic_search, ic_keyboard_arrow_down,
 } from 'react-icons-kit/md';
 import { SearchOutlined } from '@ant-design/icons';
 import debounce from 'lodash/debounce';
@@ -276,17 +276,6 @@ class PatientSearchScreen extends React.Component {
         </div>
         <Card className="patientSearch" bordered={false}>
           <Row justify="space-between" className="flex-row searchNav">
-            <Col>
-              <Button className={isFacetOpen ? 'facet openFacet' : 'facet'} onClick={this.handleOpenFacet}>
-                <div>
-                  <IconKit className="btnIcon" size={16} icon={ic_tune} />
-                  { intl.get('screen.patientsearch.filter') }
-                </div>
-                { isFacetOpen && (
-                  <IconKit className="btnClose" size={16} icon={ic_close} />
-                ) }
-              </Button>
-            </Col>
             <Col className="autoSearch">
               <AutoComplete
                 style={{ width: '100%' }}
