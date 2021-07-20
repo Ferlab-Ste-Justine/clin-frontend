@@ -46,6 +46,23 @@ export type PatientInformation = {
     organization: Organization;
 }
 
+export type PatientNanuqInformation = {
+      type_echantillon: string;
+      tissue_source: string;
+      type_specimen: string;
+      nom_patient: string;
+      prenom_patient: string;
+      patient_id: string;
+      service_request_id: string;
+      dossier_medical: string;
+      institution: string;
+      DDN: string;
+      sexe: string;
+      family_id: string;
+      position: string;
+      isActive: boolean;
+}
+
 export type FamilyGroupInfo = {
     id: string;
     type: string;

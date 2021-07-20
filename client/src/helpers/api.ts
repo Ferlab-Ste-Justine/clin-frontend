@@ -65,6 +65,21 @@ const getPatientsByAutoComplete = (
   .then(successCallback)
   .catch(errorCallback);
 
+const getPrescriptionsByAutoComplete = (
+  type: string, query: string, page: number, size: number,
+) => Http.secureClinAxios.get(
+  `${window.CLIN.patientServiceApiUrl}/prescriptions`, {
+    params: {
+      type,
+      query,
+      page,
+      size,
+    },
+  },
+)
+  .then(successCallback)
+  .catch(errorCallback);
+
 const searchPatients = (query: string, page: number, size: number, type = 'patient') => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
   params: {
     query,
@@ -320,6 +335,7 @@ export default {
   getPatientById,
   getPatientDataByIds,
   getPatientsByAutoComplete,
+  getPrescriptionsByAutoComplete,
   getGroupById,
   searchPatients,
   searchPractitioners,

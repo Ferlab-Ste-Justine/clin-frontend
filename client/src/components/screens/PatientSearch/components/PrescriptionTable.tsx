@@ -4,12 +4,13 @@ import {
 import React, { useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, find, findIndex } from 'lodash';
+import moment from 'moment';
 
 import { createCellRenderer } from '../../../Table/index';
 import HeaderCustomCell from '../../../Table/HeaderCustomCell';
 import { navigateToPatientScreen } from '../../../../actions/router';
-import { PrescriptionData } from '../../../../helpers/search/types';
+import { PrescriptionData, PatientNanuqInformation } from '../../../../helpers/search/types';
 
 import InteractiveTable from '../../../Table/InteractiveTable';
 import PrescriptionTableHeader from './PrescriptionHeader';
@@ -27,6 +28,7 @@ interface Props {
   columnsReset: () => void
   size: number
   page: number
+  autocompleteResults: any
 }
 
 const PrescriptionTable: React.FC<Props> = ({
@@ -35,15 +37,15 @@ const PrescriptionTable: React.FC<Props> = ({
   defaultColumnsOrder,
   pageChangeCallback,
   pageSizeChangeCallback,
-  exportCallback,
   isLoading,
   columnsUpdated,
   columnsOrderUpdated,
   columnsReset,
   page,
   size,
+  autocompleteResults,
 }) => {
-  const [selectedPatients, setselectedPatients] = useState([] as string[]);
+  const [selectedPatients, setselectedPatients] = useState([] as PatientNanuqInformation[]);
   const { patient } = searchProps;
   const dispatch = useDispatch();
   const getStatusLabel = (req: any) => {
@@ -53,7 +55,9 @@ const PrescriptionTable: React.FC<Props> = ({
     return intl.get(`screen.patientsearch.status.${req.status}`);
   };
 
-  const results = patient.results.filter((result: any) => result != null && result.patientInfo != null);
+  const results = autocompleteResults
+    ? autocompleteResults.hits.map((element: any) => element._source)
+    : patient.results.filter((result: any) => result != null && result.patientInfo != null);
 
   const handleGoToPatientScreen: any = (patientId: string, requestId: string | null = null) => {
     dispatch(navigateToPatientScreen(patientId, {
@@ -112,24 +116,52 @@ const PrescriptionTable: React.FC<Props> = ({
       renderer: createCellRenderer('custom', (() => output), {
         renderer: (data: any) => {
           const id: string = !data.request.includes('--') ? data.request : data.id;
-          const isSelected = selectedPatients.includes(id);
+
+          const getGender = () => {
+            switch (data.gender) {
+              case 'Homme' || 'Male':
+                return 'male';
+              case 'Femme' || 'Female':
+                return 'female';
+              default:
+                return 'unknown';
+            }
+          };
+
+          const patientInfo: PatientNanuqInformation = {
+            type_echantillon: 'ADN',
+            tissue_source: 'Sang',
+            type_specimen: 'Normal',
+            nom_patient: data.lastName,
+            prenom_patient: data.firstName,
+            patient_id: data.id,
+            service_request_id: data.request,
+            dossier_medical: data.mrn ? data.mrn : '--',
+            institution: data.organization,
+            DDN: moment(data.birthDate).format('DD/MM/yyyy'),
+            sexe: getGender(),
+            family_id: data.familyId,
+            position: data.position,
+            isActive: !!(data.status === 'active' || data.status === 'Approuvée'),
+          };
+          const isSelected = find(selectedPatients, { service_request_id: data.request });
           return (
             <Checkbox
               className="checkbox"
               id={id}
               onChange={() => {
-                const oldSelectedPatients: string[] = cloneDeep(selectedPatients);
+                const oldSelectedPatients: PatientNanuqInformation[] = cloneDeep(selectedPatients);
                 if (isSelected) {
                   if (id) {
-                    const valueIndex = oldSelectedPatients.indexOf(id);
+                    const valueIndex = findIndex(oldSelectedPatients, { service_request_id: id });
                     oldSelectedPatients.splice(valueIndex, 1);
                     setselectedPatients([...oldSelectedPatients]);
                   }
                 } else {
-                  setselectedPatients([...oldSelectedPatients, id]);
+                  setselectedPatients([...oldSelectedPatients, patientInfo]);
                 }
               }}
-              checked={isSelected}
+              checked={!!isSelected}
             />
           );
         },
@@ -306,14 +338,13 @@ const PrescriptionTable: React.FC<Props> = ({
           key="patient-interactive-table"
           size={size}
           page={page}
-          total={patient.total}
+          total={autocompleteResults ? autocompleteResults.total : patient.total}
           totalLength={output.length}
           defaultVisibleColumns={defaultVisibleColumns}
           defaultColumnsOrder={defaultColumnsOrder}
           schema={columnPreset}
           pageChangeCallback={pageChangeCallback}
           pageSizeChangeCallback={pageSizeChangeCallback}
-          exportCallback={exportCallback}
           numFrozenColumns={2}
           isLoading={isLoading}
           rowHeights={Array(patient.pageSize).fill(36)}
@@ -324,7 +355,7 @@ const PrescriptionTable: React.FC<Props> = ({
             <PrescriptionTableHeader
               page={page}
               size={size}
-              total={patient.total}
+              total={autocompleteResults ? autocompleteResults.total : patient.total}
               selectedPatients={selectedPatients}
             />
           )}

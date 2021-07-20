@@ -27,6 +27,7 @@ import { appShape } from '../../../reducers/app';
 import Layout from '../../Layout';
 import PrescriptionTable from './components/PrescriptionTable';
 import PatientTable from './components/PatientTable';
+import api from '../../../helpers/api';
 
 class PatientSearchScreen extends React.Component {
   constructor(props) {
@@ -40,6 +41,7 @@ class PatientSearchScreen extends React.Component {
       facetFilterOpen: [],
       facet: [],
       columnPreset: [],
+      autocompletePrescription: null,
     };
     this.handleAutoCompleteChange = debounce(this.handleAutoCompleteChange.bind(this), 250, { leading: true });
     this.handleAutoCompleteSelect = this.handleAutoCompleteSelect.bind(this);
@@ -105,16 +107,25 @@ class PatientSearchScreen extends React.Component {
     });
   }
 
-  handleAutoCompletePressEnter(e) {
-    const { size } = this.state;
-    const { actions } = this.props;
+  async handleAutoCompletePressEnter(e) {
+    const { size, page } = this.state;
+    const { actions, search } = this.props;
     const query = e.currentTarget.attributes.value.nodeValue;
+    async function getPrescription(searchTerm) {
+      const response = await api.getPrescriptionsByAutoComplete('partial', searchTerm, page, size);
+      return response;
+    }
     this.setState({
       page: 1,
     });
-
     if (!query || query.length < 1) {
       actions.searchPatientsByQuery({}, 1, size);
+    } else if (search.type === 'prescriptions') {
+      getPrescription(query).then((result) => {
+        this.setState({
+          autocompletePrescription: result.payload.data.data,
+        });
+      });
     } else {
       actions.autoCompletePatients('complete', query, 1, size);
     }
@@ -122,10 +133,21 @@ class PatientSearchScreen extends React.Component {
 
   handlePageChange(page, size) {
     const { actions, search } = this.props;
+    const { autocompletePrescription } = this.state;
+    async function getPrescription(searchTerm) {
+      const response = await api.getPrescriptionsByAutoComplete('partial', searchTerm, page, size);
+      return response;
+    }
     this.setState({
       page,
     });
-
+    if (autocompletePrescription) {
+      getPrescription(search.autocomplete.query).then((result) => {
+        this.setState({
+          autocompletePrescription: result.payload.data.data,
+        });
+      });
+    }
     if (search.lastSearchType === 'autocomplete') {
       actions.autoCompletePatients('partial', search.autocomplete.query, page, size);
     } else {
@@ -155,10 +177,23 @@ class PatientSearchScreen extends React.Component {
   handlePageSizeChange(size) {
     const { actions, search } = this.props;
     const { page } = this.state;
+    const { autocompletePrescription } = this.state;
     this.setState({
       size,
     });
 
+    async function getPrescription(searchTerm) {
+      const response = await api.getPrescriptionsByAutoComplete('partial', searchTerm, page, size);
+      return response;
+    }
+
+    if (autocompletePrescription) {
+      getPrescription(search.autocomplete.query).then((result) => {
+        this.setState({
+          autocompletePrescription: result.payload.data.data,
+        });
+      });
+    }
     if (search.lastSearchType === 'autocomplete') {
       actions.autoCompletePatients('partial', search.autocomplete.query, page, size);
     } else {
@@ -186,6 +221,7 @@ class PatientSearchScreen extends React.Component {
     } else {
       this.setState({
         page: 1,
+        autocompletePrescription: null,
       });
       actions.autoCompletePatients('partial', null, 1, size);
       actions.searchPatientsByQuery(null, 1, size);
@@ -240,7 +276,7 @@ class PatientSearchScreen extends React.Component {
     } = this.props;
     const { showSubloadingAnimation } = app;
     const {
-      isFacetOpen, facet, size, page,
+      isFacetOpen, facet, size, page, autocompletePrescription,
     } = this.state;
     const { Title } = Typography;
     const { SubMenu } = Menu;
@@ -400,6 +436,7 @@ class PatientSearchScreen extends React.Component {
                         size={size}
                         page={page}
                         searchProps={search}
+                        autocompleteResults={autocompletePrescription}
                         defaultVisibleColumns={defaultColumns}
                         defaultColumnsOrder={defaultColumnsOrder}
                         pageChangeCallback={this.handlePageChange}
