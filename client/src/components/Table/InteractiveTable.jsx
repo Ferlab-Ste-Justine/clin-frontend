@@ -338,6 +338,10 @@ class InteractiveTable extends React.Component {
     const isSelectable = this.isSelectable();
     const isExportable = this.isExportable();
     const filteredColumns = orderedColumns.filter((column) => visibleColumns.indexOf(column.label) !== -1);
+    const index = matchingColumns.indexOf('screen.patientsearch.table.select');
+    if (index > -1) {
+      matchingColumns.splice(index, 1);
+    }
     const content = (
       <Card
         className={`${styleTable.columnFilter}`}
