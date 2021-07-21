@@ -308,6 +308,7 @@ const fr = {
   'screen.patient.details.family.remove.confirm.remove': 'Supprimer',
   'screen.patient.details.edit.ramq': 'RAMQ',
   'screen.patient.details.edit.ramq.invalid': 'Le numéro de RAMQ est invalide',
+  'screen.patient.details.edit.ramq.notAvailable': 'Ce numéro de RAMQ est déjà attribué à un autre patient',
   'screen.patient.details.edit.ramqConfirm': 'RAMQ (confirmation)',
   'screen.patient.details.edit.noRamq': 'Aucun numéro RAMQ disponible',
   'screen.patient.details.edit.lastname': 'Nom de famille',

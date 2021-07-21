@@ -17,13 +17,13 @@ import uniqueId from 'lodash/uniqueId';
 import { useDispatch, useSelector } from 'react-redux';
 import './styles.scss';
 import { useForm } from 'antd/lib/form/Form';
+import { getPatientByIdentifier, isValidRamq } from '../../../../../../../helpers/fhir/api/PatientChecker';
 import { State } from '../../../../../../../reducers';
 import { getRAMQValue, formatRamq } from '../../../../../../../helpers/fhir/patientHelper';
 import { Patient } from '../../../../../../../helpers/fhir/types';
 import { PatientBuilder } from '../../../../../../../helpers/fhir/builder/PatientBuilder';
 import { editPatient } from '../../../../../../../actions/patientEdition';
 import { PatientEditionStatus } from '../../../../../../../reducers/patientEdition';
-import { isValidRamq } from '../../../../../../../helpers/fhir/api/PatientChecker';
 import { isMrnUnique } from '../../../../../../../helpers/patient';
 
 enum MrnActionType {
@@ -244,6 +244,26 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
     mrnDispatch({ type: MrnActionType.RESET, payload: getOriginalMrns() });
   }, [isVisible]);
 
+  const verifyRamqAvailable = async () => {
+    const ramq = form.getFieldValue('ramq');
+    const ramqConfirm = form.getFieldValue('ramqConfirm');
+    const unformattedRamq = ramq.replace(/\s/g, '');
+    const isValueValid = isValidRamq(unformattedRamq);
+    if (ramq != null && isValueValid && unformattedRamq !== originalRAMQ && ramq === ramqConfirm) {
+      const response = await getPatientByIdentifier(unformattedRamq);
+      const notAvailable = get(response, 'payload.data.entry[0].resource.id') != null;
+      if (notAvailable) {
+        form.setFields([{
+          name: 'ramq',
+          errors: [intl.get('screen.patient.details.edit.ramq.notAvailable')],
+          value: ramq,
+        }]);
+      }
+      return !notAvailable;
+    }
+    return true;
+  };
+
   return (
     <Modal
       visible={isVisible}
@@ -281,8 +301,8 @@ const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
         colon={false}
         labelAlign="left"
         requiredMark={false}
-        onChange={() => {
-          setIsFormValid(validateForm(form.getFieldsValue(), mrnState.mrns));
+        onChange={async () => {
+          setIsFormValid(validateForm(form.getFieldsValue(), mrnState.mrns) && await verifyRamqAvailable());
         }}
       >
         <Form.Item label={intl.get('screen.patient.details.edit.ramq')} name="ramq">
