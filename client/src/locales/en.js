@@ -232,6 +232,7 @@ const en = {
   'screen.patient.details.prescriptions.clinicalSign.notes': 'Notes',
   'screen.patient.details.edit.ramq': 'RAMQ',
   'screen.patient.details.edit.ramq.invalid': 'The ramq number is invalid',
+  'screen.patient.details.edit.ramq.notAvailable': 'This RAMQ number is already assigned to another patient',
   'screen.patient.details.edit.ramqConfirm': 'RAMQ (confirmation)',
   'screen.patient.details.edit.noRamq': 'No RAMQ available',
   'screen.patient.details.edit.lastname': 'Lastname',
