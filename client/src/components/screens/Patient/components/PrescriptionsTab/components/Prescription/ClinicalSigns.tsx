@@ -65,11 +65,6 @@ const ClinicalSigns: React.FC<Props> = ({ clinicalImpression, hpos }) => {
             width: 80,
           },
           {
-            key: 'category',
-            dataIndex: 'category',
-            title: intl.get('screen.patient.details.prescriptions.clinicalSign.category'),
-          },
-          {
             key: 'term',
             dataIndex: 'term',
             title: intl.get('screen.patient.details.prescriptions.clinicalSign.term'),
