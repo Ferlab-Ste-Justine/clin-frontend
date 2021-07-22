@@ -158,6 +158,10 @@ class PatientSearchScreen extends React.Component {
   handleColumnsUpdated(columns) {
     if (columns != null) {
       const { actions } = this.props;
+      const indexSelect = columns.indexOf('screen.patientsearch.table.select');
+      if (indexSelect === -1) {
+        columns.unshift('screen.patientsearch.table.select');
+      }
       actions.updateUserColumns(columns);
     }
   }
