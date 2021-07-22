@@ -19,6 +19,7 @@ const FamilyTab: React.FC = () => {
   const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
   const familyMembers = useSelector((state: State) => state.patient.family);
   const canEditPatient = !!useSelector((state: State) => state.patient.canEdit);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const hasMother = familyMembers?.find(
     (fm) => fm.type === FamilyMemberType.MOTHER || fm.type === FamilyMemberType.NATURAL_MOTHER_OF_FETUS,
   ) != null;
@@ -34,6 +35,7 @@ const FamilyTab: React.FC = () => {
           type="text"
           onClick={() => {
             setAddParentType(FamilyMemberType.MOTHER);
+            setIsVisible(false);
           }}
         >
           { intl.get('screen.patient.details.family.mother') }
@@ -45,6 +47,7 @@ const FamilyTab: React.FC = () => {
           type="text"
           onClick={() => {
             setAddParentType(FamilyMemberType.FATHER);
+            setIsVisible(false);
           }}
         >
           { intl.get('screen.patient.details.family.father') }
@@ -58,7 +61,11 @@ const FamilyTab: React.FC = () => {
       <PatientDetails patient={patient} canEditPatient={canEditPatient} />
       {
         isEmpty(familyMembers) ? (
-          <EmptyCard addParentMenu={menu} />
+          <EmptyCard
+            addParentMenu={menu}
+            isVisible={isVisible}
+            setIsVisible={setIsVisible}
+          />
         ) : (
           <FamilyTable addParentMenu={menu} />
         )
