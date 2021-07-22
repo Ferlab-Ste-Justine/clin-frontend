@@ -10,7 +10,13 @@ import {
 import intl from 'react-intl-universal';
 import Dropdown from '../../../../../Dropdown';
 
-const EmptyCard: React.FC<{addParentMenu: React.ReactElement}> = ({ addParentMenu }) => (
+type State = {
+  addParentMenu: React.ReactElement,
+  isVisible: boolean,
+  setIsVisible: (visible: boolean) => void;
+};
+
+const EmptyCard: React.FC<State> = ({ addParentMenu, isVisible, setIsVisible }) => (
   <Card className="family-tab__details" bordered={false}>
     <div className="family-tab__details--empty">
       <IconKit size={42} icon={ic_people} />
@@ -25,6 +31,8 @@ const EmptyCard: React.FC<{addParentMenu: React.ReactElement}> = ({ addParentMen
         placement="bottomCenter"
         trigger={['click']}
         overlayClassName="family-tab__add-parent"
+        visible={isVisible}
+        onVisibleChange={setIsVisible}
       >
         <Button type="primary">
           { intl.get('screen.patient.details.family.addParent') }
