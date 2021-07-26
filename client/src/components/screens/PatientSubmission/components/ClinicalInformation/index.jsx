@@ -428,7 +428,7 @@ class ClinicalInformation extends React.Component {
     let initialAnalysisNote = get(localStore, 'serviceRequest.note', undefined);
     const initialInterpretation = get(localStore, 'cgh.interpretation', undefined);
     const initialPrecision = get(localStore, 'cgh.precision', undefined);
-    const initialIndicNote = observations.indic ? observations.indic.note[0].text : null;
+    const initialIndicNote = observations.indic ? get(observations, 'indic.note[0].text') : null;
     const initialSummaryNote = get(localStore, 'summary.note', undefined);
 
     const isEditMode = initialAnalysisValue != null;
