@@ -266,7 +266,7 @@ const fr = {
   'screen.patient.details.variant.empty.link': 'Voir le statut de ses préscriptions.',
   'screen.patient.details.family.empty.title': 'Aucune famille n\'existe pour ce patient',
   'screen.patient.details.family.empty.description': 'Veuillez ajouter un parent afin de créer une famille.',
-  'screen.patient.details.family.title': 'Familly (trio seulement)',
+  'screen.patient.details.family.title': 'Famille (trio seulement)',
   'screen.patient.details.family.addParent': 'Ajouter un parent',
   'screen.patient.details.family.removeParent': 'Supprimer le parent',
   'screen.patient.details.family.father': 'Père',

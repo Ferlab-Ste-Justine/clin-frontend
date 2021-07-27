@@ -77,37 +77,34 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
       title: intl.get('screen.patient.details.family.table.name'),
       dataIndex: 'patient',
       render: renderPatientCell,
-      width: 195,
     },
     {
       title: intl.get('screen.patient.details.family.table.ramq'),
       dataIndex: ['patient', 'ramq'],
-      width: 195,
+      width: 180,
       render: renderIfFetus,
     },
     {
       title: intl.get('screen.patient.details.family.table.birthDate'),
       dataIndex: ['patient', 'birthDate'],
       render: renderIfFetus,
-      width: 195,
+      width: 180,
     }, {
       title: intl.get('screen.patient.details.family.table.sex'),
       dataIndex: ['patient', 'gender'],
       render: (value: string, record: any) => (
         !value || record.patient.isFetus ? '--' : intl.get(`screen.patient.details.family.table.sex.${value}`)
       ),
-      width: 195,
+      width: 200,
     },
     {
       title: intl.get('screen.patient.details.family.table.father'),
       dataIndex: 'father',
-      width: 195,
       render: renderPatientCell,
     },
     {
       title: intl.get('screen.patient.details.family.table.mother'),
       dataIndex: 'mother',
-      width: 195,
       render: renderPatientCell,
     },
     {
@@ -171,7 +168,7 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
           </Wrapper>
         );
       },
-      width: 70,
+      width: 80,
     },
   ] as ColumnType<DataType>[];
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
