@@ -232,7 +232,7 @@ const updateServiceRequestStatus = async (user: any, serviceRequest: ServiceRequ
     return ext;
   });
 
-  let notes: any[] = get(serviceRequest, 'note', []);
+  let notes: any[] = get(serviceRequest, 'note', []).filter((n) => n.text != null);
 
   if (note != null) {
     notes = [
