@@ -753,7 +753,7 @@ const fr = {
   'screen.variantDetails.patientsTab.genotypeQuality': 'Qualité génotype',
   'screen.variantDetails.patientsTab.qd': 'Qualité de la profondeur de la lecture',
   'screen.variantDetails.patientsTab.lastUpdate': 'Date',
-  'screen.variantDetails.patientsTab.changeStatus.notification.success': 'Statut mise à jour',
+  'screen.variantDetails.patientsTab.changeStatus.notification.success': 'Statut mis à jour',
   'screen.variantDetails.patientsTab.changeStatus.notification.failure': "Le status n'a pu être mis à jour",
   'screen.variantDetails.patientsTab.female': 'Femme',
   'screen.variantDetails.patientsTab.male': 'Homme',
