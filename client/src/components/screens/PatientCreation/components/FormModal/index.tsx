@@ -1,5 +1,5 @@
 import React, {
-  useReducer, Reducer, useState, useEffect,
+  useReducer, Reducer, useState, useEffect, useRef,
 } from 'react';
 import intl from 'react-intl-universal';
 import {
@@ -83,6 +83,17 @@ const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   }
 };
 
+const updateSelection = (ramqRef: React.RefObject<Input>, ramq: string, formattedRamq: string) => {
+  const start = ramqRef.current?.input.selectionStart;
+  const end = ramqRef.current?.input.selectionEnd;
+  if (start != null && end != null && ramq != null) {
+    setTimeout(() => {
+      const spaceCount = start === ramq.length ? formattedRamq.split(' ').length - 1 : 0;
+      ramqRef.current?.input.setSelectionRange(start + spaceCount, end + spaceCount);
+    }, 0);
+  }
+};
+
 function validateForm(form: FormInstance<any>) {
   const formValues = form.getFieldsValue();
   if (!Object.keys(formValues).includes('lastname')) {
@@ -147,6 +158,8 @@ const FormModal: React.FC<Props> = ({
     reducer, { ramqStatus: RamqStatus.INVALID },
   );
   const [form] = useForm();
+  const ramqRef = useRef<Input>(null);
+  const ramqConfirmRef = useRef<Input>(null);
 
   const resetForm = (isFetus: boolean = false) => {
     form.resetFields();
@@ -356,9 +369,13 @@ const FormModal: React.FC<Props> = ({
               ]}
             >
               <Input
+                ref={ramqRef}
                 placeholder="ROYL 1234 4567"
                 onChange={(event) => {
-                  form.setFieldsValue({ ramq: formatRamq(event.currentTarget.value) });
+                  const ramq = event.currentTarget.value;
+                  const formattedRamq = formatRamq(ramq);
+                  form.setFieldsValue({ ramq: formattedRamq });
+                  updateSelection(ramqRef, ramq, formattedRamq);
                   if (form.getFieldError('ramq')) {
                     form.setFields([{ name: 'ramq', errors: [] }]);
                   }
@@ -390,8 +407,12 @@ const FormModal: React.FC<Props> = ({
             >
               <Input
                 placeholder="ROYL 1234 4567"
+                ref={ramqConfirmRef}
                 onChange={(event) => {
-                  form.setFieldsValue({ ramqConfirm: formatRamq(event.currentTarget.value) });
+                  const ramq = event.currentTarget.value;
+                  const formattedRamq = formatRamq(ramq);
+                  form.setFieldsValue({ ramqConfirm: formattedRamq });
+                  updateSelection(ramqConfirmRef, ramq, formattedRamq);
                 }}
                 onPaste={(event) => {
                   event.preventDefault();
