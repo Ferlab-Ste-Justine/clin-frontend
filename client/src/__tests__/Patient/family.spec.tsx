@@ -619,7 +619,7 @@ describe('Patient/Family', () => {
 
       userEvent.click(screen.getByText('Ajouter'), {});
 
-      await waitFor(() => screen.getByText('Familly (trio seulement)'));
+      await waitFor(() => screen.getByText('Famille (trio seulement)'));
       await waitFor(() => screen.getAllByText(/Family Test/i));
 
       expect(screen.getAllByText(/Family Test/i).length).toEqual(2);
@@ -866,7 +866,7 @@ describe('Patient/Family', () => {
 
       userEvent.click(screen.getByText('Ajouter'), {});
 
-      await waitFor(() => screen.getByText('Familly (trio seulement)'));
+      await waitFor(() => screen.getByText('Famille (trio seulement)'));
       await waitFor(() => screen.getAllByText(/Family Test/i));
 
       expect(screen.getAllByText(/Family Test/i).length).toEqual(2);
