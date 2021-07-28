@@ -325,6 +325,7 @@ class InteractiveTable extends React.Component {
       onColumnWidthChanged,
       sizeOptions,
       customHeader,
+      enableRowHeader,
     } = this.props;
     const {
       matchingColumns, columnReordererIsActive, columnSelectorIsActive, searchValue,
@@ -444,6 +445,7 @@ class InteractiveTable extends React.Component {
             columns={filteredColumns}
             enableGhostCells
             rowHeights={rowHeights}
+            enableRowHeader={enableRowHeader}
           />
         </Row>
         <Row className={`${styleTable.pagination}`}>
