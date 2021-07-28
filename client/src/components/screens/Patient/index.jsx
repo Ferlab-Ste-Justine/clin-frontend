@@ -289,7 +289,7 @@ class PatientScreen extends React.Component {
         title: (
           <span className="tabName">
             <IconKit size={18} icon={ic_cloud_download} />
-            Fichier
+            Fichiers
           </span>
         ),
         content: <FilesTab />,
