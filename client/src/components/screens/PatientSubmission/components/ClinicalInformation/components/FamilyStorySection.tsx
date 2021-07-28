@@ -79,6 +79,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
               onChange={(value) => {
                 setIsEthnicitySelected(!!value);
               }}
+              className="clinical-information__family-story__ethnicity"
               defaultValue={defaultValuesState.ethnicity.code}
             >
               { ['CA-FR', 'EU', 'AFR', 'LAT-AM', 'ES-AS', 'SO-AS', 'ABOR', 'MIX', 'OTH'].map((eth) => (

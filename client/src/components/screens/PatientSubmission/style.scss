@@ -492,7 +492,7 @@
 
 .clinical-information {
   &__mrn {
-    max-width: 183px;
+    max-width: 260px;
 
     &__create-button{
       width: 100%;
@@ -536,6 +536,9 @@
       letter-spacing: 0.4px;
       color: $gray-7;
       margin: 14px 0 8px;
+    }
+    &__ethnicity {
+      max-width: 260px;
     }
     &__conditions {
       list-style: none;
