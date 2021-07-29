@@ -352,6 +352,7 @@ const PrescriptionTable: React.FC<Props> = ({
           columnsOrderUpdated={columnsOrderUpdated}
           columnsReset={columnsReset}
           enableRowHeader={false}
+          isExportable={false}
           customHeader={(
             <PrescriptionTableHeader
               page={page}
