@@ -210,6 +210,7 @@ const PatientTable: React.FC<Props> = ({
           columnsUpdated={columnsUpdated}
           columnsOrderUpdated={columnsOrderUpdated}
           columnsReset={columnsReset}
+          isExportable={false}
           enableRowHeader={false}
           customHeader={(
             <PatientsTableHeader
