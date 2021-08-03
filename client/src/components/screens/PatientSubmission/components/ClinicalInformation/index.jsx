@@ -17,6 +17,7 @@ import isEmpty from 'lodash/isEmpty';
 import get from 'lodash/get';
 import map from 'lodash/map';
 import toArray from 'lodash/values';
+import findIndex from 'lodash/findIndex';
 
 import {
   hpoOnsetValues,
@@ -92,6 +93,7 @@ class ClinicalInformation extends React.Component {
     this.state = {
       hpoOptions: [],
       treeData: INITIAL_TREE_ROOTS,
+      hpoInterpretation: [],
     };
 
     const { treeData } = this.state;
@@ -158,6 +160,30 @@ class ClinicalInformation extends React.Component {
       return '';
     };
     const { onChange } = this.props;
+    const { hpoInterpretation } = this.state;
+
+    const onChangeInterpretation = (e) => {
+      const hpoDisplay = getHPODisplay(hpoResource);
+      if (e === 'POS') {
+        this.setState({
+          hpoInterpretation: [...hpoInterpretation, hpoDisplay],
+        });
+      } if (hpoInterpretation.includes(hpoDisplay)) {
+        const indexObservedDisplay = hpoInterpretation.indexOf(hpoDisplay);
+        hpoInterpretation.splice(indexObservedDisplay, 1);
+        const hposForm = form.getFieldValue('hpos');
+        const indexHpos = findIndex(hposForm, { display: hpoDisplay });
+        const hpoElement = hposForm[indexHpos];
+        delete hpoElement.onset;
+        hposForm.splice(indexHpos, 1, hpoElement);
+        form.setFieldsValue({ hpos: hposForm });
+        this.setState({
+          hpoInterpretation,
+        });
+      }
+      onChange();
+    };
+
     return (
       <div key={hpoResource.valueCodeableConcept.coding[0].code} className="phenotypeBlock">
         <div className="phenotypeFirstLine">
@@ -185,7 +211,7 @@ class ClinicalInformation extends React.Component {
                 size="small"
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOInterpretationCode(hpoResource)}
-                onChange={onChange}
+                onChange={onChangeInterpretation}
               >
                 { hpoInterpretationValues().map((interpretation, index) => (
                   <Select.Option
@@ -209,6 +235,7 @@ class ClinicalInformation extends React.Component {
                 dropdownClassName="selectDropdown"
                 defaultValue={getHPOOnsetCode(hpoResource)}
                 onChange={onChange}
+                disabled={!hpoInterpretation.includes(getHPODisplay(hpoResource))}
               >
                 {
                   hpoOnsetValues.map((group, gIndex) => (
