@@ -19,7 +19,7 @@ type State = {
 const EmptyCard: React.FC<State> = ({ addParentMenu, isVisible, setIsVisible }) => (
   <Card className="family-tab__details" bordered={false}>
     <div className="family-tab__details--empty">
-      <IconKit size={42} icon={ic_people} />
+      <IconKit size={72} icon={ic_people} />
       <Typography.Text className="family-tab__details--empty__texts__title">
         { intl.get('screen.patient.details.family.empty.title') }
       </Typography.Text>
