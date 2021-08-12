@@ -7,14 +7,13 @@ import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Button, Card, Form, Steps, Typography, Col, Row, Tooltip, Divider,
+  Button, Card, Form, Steps, Typography, Col, Row, Tooltip, Divider, Alert,
 } from 'antd';
 import find from 'lodash/find';
 import has from 'lodash/has';
 import debounce from 'lodash/debounce';
 import get from 'lodash/get';
-
-import { SaveOutlined, LeftOutlined } from '@ant-design/icons';
+import { WarningOutlined, SaveOutlined, LeftOutlined } from '@ant-design/icons';
 
 import { navigateToPatientSearchScreen, navigateToPatientScreen } from '../../../actions/router';
 import {
@@ -574,7 +573,7 @@ function PatientSubmissionScreen(props) {
     patient, clinicalImpression, serviceRequest,
   } = props;
   const {
-    currentPageIndex, hpoResources, fmhResources,
+    currentPageIndex, hpoResources, fmhResources, valid,
   } = state;
 
   const initialPractitionerValue = get(localStore, 'practitioner', '');
@@ -624,6 +623,17 @@ function PatientSubmissionScreen(props) {
   const currentPage = pages[currentPageIndex];
   const pageContent = currentPage.content;
   const isOnLastPage = currentPageIndex === pages.length - 1;
+  if (valid) {
+    document.querySelector('.patientSubmission__form__alert').style.display = 'none';
+  }
+
+  const onFailedSubmit = () => {
+    document.querySelector('.patientSubmission__form__alert').style.display = 'flex';
+    if (!form.getFieldValue('hposTree')) {
+      document.querySelector('.hposTree').classList.add('treeError');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   return (
     <Layout>
       <>
@@ -654,8 +664,15 @@ function PatientSubmissionScreen(props) {
             </Button>
           </Col>
         </Row>
-
         <div className="page-static-content">
+          <Alert
+            message="Des erreurs se sont produites"
+            description="Veuillez corriger les champs indiqués ci-dessous"
+            type="error"
+            className="patientSubmission__form__alert"
+            icon={<WarningOutlined />}
+            showIcon
+          />
           <Card bordered={false} className="step">
             <Steps current={currentPageIndex}>
               { pages.map((item) => <Step key={item.title} title={item.title} />) }
@@ -665,6 +682,7 @@ function PatientSubmissionScreen(props) {
           <Form
             form={form}
             onFinish={() => onFormFinish(isOnLastPage)}
+            onFinishFailed={onFailedSubmit}
             onChange={onChange}
           >
             { pageContent }
@@ -681,7 +699,6 @@ function PatientSubmissionScreen(props) {
                   <Button
                     htmlType="submit"
                     type="primary"
-                    disabled={!state.valid}
                   >
                     {
                       isOnLastPage

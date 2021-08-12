@@ -11,6 +11,7 @@ import { Identifier, Patient } from '../../../../../../helpers/fhir/types';
 import style from '../../../../../../containers/App/style.module.scss';
 import { addPatientMrn } from '../../../../../../actions/patientCreation';
 import { State } from '../../../../../../reducers';
+import ErrorText from './ErrorText';
 
 enum Mode {
   SELECT, CREATION
@@ -148,8 +149,12 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       >
         <Input hidden />
       </Form.Item>
-      <Form.Item name="full-mrn">
+      <Form.Item
+        name="full-mrn"
+        rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.mrn" /> }]}
+      >
         <Select
+          data-testid="mrn-organization-submission"
           className="clinical-information__mrn"
           onChange={(value: string) => {
             const [mrn, organization] = value.split('|');
@@ -170,7 +175,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               </Button>
             </div>
           )}
-          placeholder={intl.get('form.patientSubmission.clinicalInformation.file.select')}
+          placeholder={<span className="select-Placeholder">{ intl.get('form.patientSubmission.clinicalInformation.file.select') }</span>}
           defaultValue={getMrnValue(defaultSelectedMrn)}
         >
           {

@@ -3,6 +3,7 @@ import {
   Radio, Input, Form, Row, Col, Typography,
 } from 'antd';
 import intl from 'react-intl-universal';
+import ErrorText from './ErrorText';
 
 const { TextArea } = Input;
 
@@ -26,7 +27,7 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summ
       <Form.Item
         label={intl.get('form.patientSubmission.clinicalInformation.cgh')}
         name="cghInterpretationValue"
-        initialValue={interpretation == null ? InterpretationValue.NON_REALIZED : InterpretationValue.REALIZED}
+        rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.requiredField" /> }]}
       >
         <Radio.Group
           buttonStyle="solid"

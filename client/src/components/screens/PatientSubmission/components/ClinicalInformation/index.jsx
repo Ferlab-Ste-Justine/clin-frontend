@@ -18,6 +18,7 @@ import get from 'lodash/get';
 import map from 'lodash/map';
 import toArray from 'lodash/values';
 import findIndex from 'lodash/findIndex';
+import ErrorText from './components/ErrorText';
 
 import {
   hpoOnsetValues,
@@ -204,6 +205,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item
               name={['hpos', hpoIndex, 'interpretation']}
               initialValue={getHPOInterpretationCode(hpoResource)}
+              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.requiredField" /> }]}
             >
               <Select
                 className="select selectObserved"
@@ -367,7 +369,7 @@ class ClinicalInformation extends React.Component {
       .filter((hpo) => updatedHpos.find(
         (entry) => hpo.code === get(entry, 'valueCodeableConcept.coding[0].code'),
       ) != null);
-    form.setFieldsValue({ hpos: hpoValues });
+    form.setFieldsValue({ hpos: hpoValues, hposTree: info.checkedNodes });
 
     onHposUpdated(updatedHpos);
   }
@@ -390,6 +392,7 @@ class ClinicalInformation extends React.Component {
     form.setFieldsValue({
       ...values,
       hpos: values.hpos.filter((hpo) => hpo.code !== hpoId),
+      hposTree: result.length > 0 ? result : null,
     });
     onChange();
   }
@@ -481,7 +484,11 @@ class ClinicalInformation extends React.Component {
           bordered={false}
         >
 
-          <Form.Item name="cghId" initialValue={cghId} className="hidden-form">
+          <Form.Item
+            name="cghId"
+            initialValue={cghId}
+            className="hidden-form"
+          >
             <Input size="small" type="hidden" />
           </Form.Item>
 
@@ -490,7 +497,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item
               label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
               name="analysis.tests"
-              initialValue={[initialAnalysisValue]}
+              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.mrn" /> }]}
             >
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
@@ -510,6 +517,7 @@ class ClinicalInformation extends React.Component {
               label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
               name="analysis.tests"
               initialValue={[initialAnalysisValue]}
+              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.mrn" /> }]}
             >
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
@@ -571,25 +579,33 @@ class ClinicalInformation extends React.Component {
         <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
           <div className="separator">
             <div className="cardSeparator">
-              <Form.Item className="searchInput searchInputFull">
-                <AutoComplete
-                  className="searchInput"
-                  placeholder={intl.get('form.patientSubmission.clinicalInformation.searchClinicalSign')}
-                  dataSource={hpoOptionsLabels}
-                  onSelect={this.handleHpoOptionSelected}
-                  onChange={this.handleHpoSearchTermChanged}
-                />
+              <Form.Item
+                name="hposTree"
+                rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.hposTree" /> }]}
+              >
+                <div className="hposTree">
+                  <Form.Item className="searchInput searchInputFull">
+                    <AutoComplete
+                      className="searchInput"
+                      placeholder={intl.get('form.patientSubmission.clinicalInformation.searchClinicalSign')}
+                      dataSource={hpoOptionsLabels}
+                      onSelect={this.handleHpoOptionSelected}
+                      onChange={this.handleHpoSearchTermChanged}
+                    />
+
+                  </Form.Item>
+                  <Tree
+                    loadData={this.onLoadHpoChildren}
+                    checkStrictly
+                    checkable
+                    checkedKeys={hpoCodes}
+                    onCheck={this.handleHpoNodesChecked}
+                  >
+                    { this.renderTreeNodes(treeData) }
+                  </Tree>
+                </div>
 
               </Form.Item>
-              <Tree
-                loadData={this.onLoadHpoChildren}
-                checkStrictly
-                checkable
-                checkedKeys={hpoCodes}
-                onCheck={this.handleHpoNodesChecked}
-              >
-                { this.renderTreeNodes(treeData) }
-              </Tree>
             </div>
             <div className={hpoResources.length === 0 ? 'cardSeparator message' : 'cardSeparator'}>{
               hpoResources.length === 0
@@ -613,7 +629,7 @@ class ClinicalInformation extends React.Component {
             rules={[
               {
                 required: true,
-                message: intl.get('form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis'),
+                message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis" />,
               },
               {
                 whitespace: true,
