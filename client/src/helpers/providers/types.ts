@@ -53,7 +53,7 @@ export type FamilyMember = {
   birthDate?: string;
   gender?: 'male' | 'female';
   code: GroupMemberStatusCode
-  type?: FamilyMemberType
+  type?: string | FamilyMemberType;
 }
 
 export type PractitionerData = {

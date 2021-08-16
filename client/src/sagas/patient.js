@@ -48,25 +48,27 @@ const getFamily = async (patientDataResponse, mainPatientId) => {
 };
 
 function* updateParentGroup(parentId, newGroupId) {
-  const patientDataResponse = yield Api.getPatientDataById(parentId);
+  const [patientDataResponse, groupDataResponse] = yield Promise.all([
+    Api.getPatientDataById(parentId),
+    Api.getGroupByMemberId(parentId),
+  ]);
   const parentPatientData = get(patientDataResponse, 'payload.data.entry[0].resource.entry[0].resource');
+
+  const parentGroupData = get(groupDataResponse, 'payload.data.entry[0].resource');
   if (parentPatientData == null) {
     throw new Error(`updateParentGroup:: Did not find a patient with id [${parentId}]`);
   }
 
-  const familyExtensionIndex = parentPatientData.extension.findIndex((ext) => ext.url.includes('family-id'));
-  if (familyExtensionIndex >= 0) {
-    parentPatientData.extension.splice(familyExtensionIndex, 1);
+  const patients = [];
+  if (parentGroupData != null) {
+    const membersResponse = yield Api.getGroupMembers(parentGroupData);
+    const entries = get(membersResponse, 'payload.data.entry', []);
+    entries.filter((entry) => entry.resource != null).forEach((entry) => patients.push(entry.resource));
+  } else {
+    patients.push(parentPatientData);
   }
-  if (newGroupId) {
-    parentPatientData.extension.push({
-      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
-      valueReference: {
-        reference: `Group/${newGroupId}`,
-      },
-    });
-  }
-  return updatePatient(parentPatientData);
+
+  return Api.updatePatientsGroup(patients, newGroupId);
 }
 
 function* fetch(action) {
@@ -235,10 +237,30 @@ function* removeParent(action) {
     const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
 
     const extToDeleteIndex = patientToUpdate.extension.findIndex(
-      (ext) => get(ext, 'extension[1].valueReference.reference', '').includes(parentId),
+      (ext) => {
+        if (ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation') {
+          return ext.extension.find((extension) => extension.url === 'subject')?.valueReference.reference.indexOf(parentId) != null;
+        }
+        return false;
+      },
     );
 
-    patientToUpdate.extension.splice(extToDeleteIndex, 1);
+    if (extToDeleteIndex !== -1) {
+      const relationExt = patientToUpdate.extension[extToDeleteIndex].extension.find((ext) => ext.url === 'relation');
+      const relation = get(relationExt, 'valueCodeableConcept.coding[0].code');
+
+      if (relation != null) {
+        patientToUpdate.extension = patientToUpdate.extension.filter((ext) => {
+          if (ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation') {
+            const extRelation = ext.extension.find((extension) => extension.url === 'relation');
+            return get(extRelation, 'valueCodeableConcept.coding[0].code') !== relation;
+          }
+          return true;
+        });
+      } else {
+        patientToUpdate.extension.splice(extToDeleteIndex, 1);
+      }
+    }
 
     const newGroupResponse = yield Api.createGroup(parentId);
     yield updatePatient(patientToUpdate);

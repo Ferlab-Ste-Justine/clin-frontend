@@ -72,6 +72,7 @@ function renderPatientCell(value: ParsedPatientData | FamilyMember, record: Data
 
 const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
   const dispatch = useDispatch();
+  const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
   const columns = [
     {
       title: intl.get('screen.patient.details.family.table.name'),
@@ -174,13 +175,13 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
   const data: DataType[] = familyMembers.map((fm) => ({
     patient: fm,
-    mother: !fm.type ? familyMembers.find(
-      (fmm) => [FamilyMemberType.MOTHER, FamilyMemberType.NATURAL_MOTHER_OF_FETUS].includes(fmm.type!),
+    mother: !fm.type && patient.id === fm.id ? familyMembers.find(
+      (fmm) => fmm.type != null && [FamilyMemberType.MOTHER.toString(), FamilyMemberType.NATURAL_MOTHER_OF_FETUS.toString()].includes(fmm.type),
     ) : null,
-    father: !fm.type ? familyMembers.find((fmf) => fmf.type === FamilyMemberType.FATHER) : null,
-  }
+    father: !fm.type && patient.id === fm.id ? familyMembers.find((fmf) => fmf.type === FamilyMemberType.FATHER) : null,
+  }))
   // The sort puts the "main patient" first since they doesn't have a type set
-  )).sort((fma, fmb) => fma.patient.type?.localeCompare(fmb.patient.type || '') || -1);
+    .sort((fma, fmb) => fma.patient.type?.localeCompare(fmb.patient.type || '') || -1);
 
   return (
     <Card
