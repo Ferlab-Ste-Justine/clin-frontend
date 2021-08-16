@@ -6,7 +6,7 @@ import intl from 'react-intl-universal';
 import * as actions from '../actions/type';
 import { getRAMQValue } from '../helpers/fhir/patientHelper';
 import {
-  ClinicalImpression, Extension, FamilyMemberHistory, Observation, Patient, ServiceRequest,
+  ClinicalImpression, FamilyMemberHistory, Observation, Patient, ServiceRequest,
 } from '../helpers/fhir/types';
 import { ClinicalImpressionProvider } from '../helpers/providers/clinical-impression/index';
 import { FMHProvider } from '../helpers/providers/fmh/index';
@@ -82,25 +82,17 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
     return [];
   }
 
-  // Extract relations extension from the patient that as them
-  let relations = patient?.extension.filter((ext) => ext.url === FAMILY_RELATION_EXT_URL);
-  if (!relations || relations.length === 0) {
-    // if patient didn't have the relations, we try to find them in the other members
-    familyData.forEach((fd) => {
-      if (!relations || relations.length === 0) {
-        const newRelations = get(fd, 'entry.resource.entry[0].resource.extension', [])
-          .filter((ext: Extension) => ext.url === FAMILY_RELATION_EXT_URL);
-        relations = newRelations.length > 0 ? newRelations : relations;
-      }
-    });
-  }
+  const relations = patient?.extension.filter((ext) => ext.url === FAMILY_RELATION_EXT_URL) || [];
+  const map: {[key: string]: string | null} = {};
+  relations.forEach((relation) => {
+    const reference = get(relation, 'extension[0].valueReference.reference').split('/')[1];
+    const code = get(relation, 'extension[1].valueCodeableConcept.coding[0].code');
+
+    map[reference] = code;
+  });
 
   const members = familyData.map((fd: any) => {
     const familyPatientId = get(fd, 'entry.resource.entry[0].resource.id', '');
-
-    const extensionFamily = relations?.find(
-      (ext) => get(ext, 'extension[0].valueReference.reference', []).includes(familyPatientId),
-    );
 
     return ({
       id: familyPatientId,
@@ -109,16 +101,13 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
       ramq: getRAMQValue(get(fd, 'entry.resource.entry[0].resource', {})),
       birthDate: get(fd, 'entry.resource.entry[0].resource.birthDate', ''),
       gender: get(fd, 'entry.resource.entry[0].resource.gender', ''),
-      type: get(extensionFamily, 'extension[1].valueCodeableConcept.coding[0].code', ''),
+      type: map[get(fd, 'entry.resource.entry[0].resource.id')],
       code: fd.statusCode,
     } as FamilyMember);
   });
 
   if (patient) {
     // patient isn't included in `familyData` so we manualy add it
-    const extensionFamily = relations?.find(
-      (ext) => get(ext, 'extension[0].valueReference.reference', []).includes(patient.id),
-    );
 
     members.push({
       id: patient.id || '',
@@ -127,11 +116,9 @@ function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[
       ramq: getRAMQValue(patient),
       birthDate: patient.birthDate,
       gender: patient.gender as ('male' | 'female'),
-      type: get(extensionFamily, 'extension[1].valueCodeableConcept.coding[0].code', ''),
       code: 'AFF',
     });
   }
-
   return members;
 }
 
@@ -153,9 +140,11 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
 
       draft.patient = patient;
 
+      const family = parseFamilyMember(action.payload.family, patient.original);
+      draft.family = family;
       // eslint-disable-next-line prefer-destructuring
-      draft.parent = parseFamilyMember(action.payload.family, patient.original)[0];
-      draft.family = parseFamilyMember(action.payload.family, patient.original);
+      draft.parent = family[0];
+
       draft.canEdit = action.payload.canEdit;
       draft.observations = {
         cgh: getObservations('CGH', action.payload.patientData),

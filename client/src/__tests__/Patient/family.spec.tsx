@@ -3,6 +3,7 @@ import {
   render, screen, waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import get from 'lodash/get';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { act } from 'react-dom/test-utils';
@@ -461,6 +462,17 @@ describe('Patient/Family', () => {
                 ctx.status(200),
                 ctx.json(parentPatientBundle(parentPatient.id, parentPatient.firstName, parentPatient.lastName)),
               );
+            } if (
+              // @ts-ignore
+              req?.body?.entry?.[0].request.url.startsWith('Patient')
+              // @ts-ignore
+              && req?.body?.entry?.[1].request.url.startsWith('Patient')
+            ) {
+              return res(
+                ctx.status(200),
+                // @ts-ignore
+                ctx.json(get(parentPatientBundle(parentPatient.id, parentPatient.firstName, parentPatient.lastName), '[0].resource')),
+              );
             }
 
             return res(
@@ -708,6 +720,17 @@ describe('Patient/Family', () => {
               return res(
                 ctx.status(200),
                 ctx.json(parentPatientBundle(parentPatient.id, parentPatient.firstName, parentPatient.lastName)),
+              );
+            } if (
+              // @ts-ignore
+              req?.body?.entry?.[0].request.url.startsWith('Patient')
+              // @ts-ignore
+              && req?.body?.entry?.[1].request.url.startsWith('Patient')
+            ) {
+              return res(
+                ctx.status(200),
+                // @ts-ignore
+                ctx.json(get(parentPatientBundle(parentPatient.id, parentPatient.firstName, parentPatient.lastName), '[0].resource')),
               );
             }
 

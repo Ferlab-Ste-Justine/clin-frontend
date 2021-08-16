@@ -6,10 +6,12 @@ import {
 } from './fhir/fhir';
 import { getPatientByIdentifier } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
-import { Group, ServiceRequest } from './fhir/types';
+import { Group, Patient, ServiceRequest } from './fhir/types';
 import { userAuthPermissions } from './keycloak-api';
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
 import keycloak from '../keycloak';
+import { BundleBuilder } from './fhir/builder/BundleBuilder';
+import { getExtension } from './fhir/builder/Utils';
 
 const successCallback = (payload: any) => ({ payload });
 const errorCallback = (error: any) => ({ error });
@@ -36,6 +38,10 @@ const getPatientDataById = (id: string) => Http.secureClinAxios.post(`${window.C
   .catch(errorCallback);
 
 const getGroupById = (id: string) => Http.secureClinAxios.get(`${window.CLIN.fhirBaseUrl}/Group?_id=${id}`)
+  .then(successCallback)
+  .catch(errorCallback);
+
+const getGroupByMemberId = (id: string) => Http.secureClinAxios.get(`${window.CLIN.fhirBaseUrl}/Group?member=${id}`)
   .then(successCallback)
   .catch(errorCallback);
 
@@ -319,6 +325,40 @@ const createGroup = async (patientId: string) => Http.secureClinAxios.post(`${wi
   }],
 }).then(successCallback).catch(errorCallback);
 
+const getGroupMembers = async (group: Group) => {
+  const builder = new BundleBuilder();
+  group.member.forEach((member) => {
+    builder.withGet(member.entity.reference);
+  });
+
+  return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`, builder.build())
+    .then(successCallback).catch(errorCallback);
+};
+
+const updatePatientsGroup = async (members: Patient[], newGroupId: string) => {
+  const builder = new BundleBuilder();
+  members.forEach((member) => {
+    const ext = member.extension.findIndex((extension) => extension.url.includes('family-id'));
+    if (ext > 0) {
+      member.extension.splice(ext, 1);
+    }
+
+    member.extension.push({
+      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
+      valueReference: {
+        reference: `Group/${newGroupId}`,
+      },
+    });
+
+    getExtension(member, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband')!.valueBoolean = false;
+
+    builder.withResource(member);
+  });
+
+  return Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`, builder.build())
+    .then(successCallback).catch(errorCallback);
+};
+
 const getFileURL = async (file: string) => Http.secureClinAxios
   .get(`${file}?format=json`, { headers: { Authorization: `Bearer ${keycloak.token}` } })
   .then(successCallback)
@@ -337,6 +377,7 @@ export default {
   getPatientsByAutoComplete,
   getPrescriptionsByAutoComplete,
   getGroupById,
+  getGroupByMemberId,
   searchPatients,
   searchPractitioners,
   getVariantDetails,
@@ -359,4 +400,6 @@ export default {
   updateServiceRequestStatus,
   getPatientByIdentifier,
   createGroup,
+  getGroupMembers,
+  updatePatientsGroup,
 };
