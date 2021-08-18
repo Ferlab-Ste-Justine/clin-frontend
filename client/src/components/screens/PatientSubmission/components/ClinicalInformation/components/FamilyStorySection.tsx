@@ -149,7 +149,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                 setHasFamilyHealthCondition(event.target.value === 'yes');
               }}
             >
-              <Radio.Button value="yes">
+              <Radio.Button data-testid="familyHealth" value="yes">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.yes') }
               </Radio.Button>
               <Radio.Button value="no">
@@ -193,6 +193,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                                 <Form.Item
                                   name={[index, 'note']}
                                   initialValue={get(familyHistoryResources, `[${index}].note`, '')}
+                                  rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.requiredField" /> }]}
                                   noStyle
                                 >
                                   <Input

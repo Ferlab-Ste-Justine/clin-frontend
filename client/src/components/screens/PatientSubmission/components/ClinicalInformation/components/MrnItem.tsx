@@ -68,7 +68,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
     return (
       <Row gutter={8}>
         <Col>
-          <Form.Item name="create.mrn">
+          <Form.Item name="create.mrn" rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.mrn" /> }]}>
             <Input
               aria-label="mrn"
               placeholder="MRN 12345678"
@@ -84,6 +84,7 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
         <Col>
           <Form.Item
             name="create.organization"
+            rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.requiredField" /> }]}
           >
             <Select
               placeholder={intl.get('form.patientSubmission.clinicalInformation.file.hospital')}

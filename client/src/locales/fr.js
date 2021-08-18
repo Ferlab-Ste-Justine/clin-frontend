@@ -907,6 +907,7 @@ const fr = {
   'form.patientSubmission.clinicalInformation.validation.requiredField': 'Ce champs est requis',
   'form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis': 'Vous devez entrer une hypothèse de diagnostique',
   'form.patientSubmission.clinicalInformation.validation.hposTree': 'Reseignez au moins un signe clinique',
+  'form.patientSubmission.clinicalInformation.validation.analyse': 'Choisissez au moins une analyse',
   'form.patientSubmission.clinicalInformation.validation.noSpace': 'Ne peut pas contenir que des espaces',
   'form.patientSubmission.clinicalInformation.validation.cghResults': 'Veuillez indiquer le résultat du CGH',
   'form.patientSubmission.clinicalInformation.validation.clinicalSign': 'Choisissez au moins un signe clinique depuis l’arbre de gauche afin de fournir l’information la plus complète possible sur le patient à tester.',

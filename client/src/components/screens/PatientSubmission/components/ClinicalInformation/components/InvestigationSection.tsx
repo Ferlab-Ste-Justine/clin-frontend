@@ -35,7 +35,7 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summ
             setIsRealizedSelected(event.target.value === InterpretationValue.REALIZED);
           }}
         >
-          <Radio.Button value={InterpretationValue.REALIZED}>
+          <Radio.Button data-testid="cgh" value={InterpretationValue.REALIZED}>
             { intl.get('form.patientSubmission.clinicalInformation.cgh.realized') }
           </Radio.Button>
           <Radio.Button value={InterpretationValue.NON_REALIZED}>

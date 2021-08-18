@@ -73,6 +73,7 @@ function PatientSubmissionScreen(props) {
     firstPageFields: {},
     hpoResources: get(props, 'observations.hpos'),
     fmhResources: get(props, 'observations.fmh'),
+    asError: false,
   });
 
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
@@ -573,7 +574,7 @@ function PatientSubmissionScreen(props) {
     patient, clinicalImpression, serviceRequest,
   } = props;
   const {
-    currentPageIndex, hpoResources, fmhResources, valid,
+    currentPageIndex, hpoResources, fmhResources, valid, asError,
   } = state;
 
   const initialPractitionerValue = get(localStore, 'practitioner', '');
@@ -623,16 +624,22 @@ function PatientSubmissionScreen(props) {
   const currentPage = pages[currentPageIndex];
   const pageContent = currentPage.content;
   const isOnLastPage = currentPageIndex === pages.length - 1;
-  if (valid) {
-    document.querySelector('.patientSubmission__form__alert').style.display = 'none';
+  if (valid && asError) {
+    setState((currentState) => ({
+      ...currentState,
+      asError: false,
+    }));
   }
 
   const onFailedSubmit = () => {
-    document.querySelector('.patientSubmission__form__alert').style.display = 'flex';
     if (!form.getFieldValue('hposTree')) {
       document.querySelector('.hposTree').classList.add('treeError');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setState((currentState) => ({
+      ...currentState,
+      asError: true,
+    }));
   };
   return (
     <Layout>
@@ -665,14 +672,18 @@ function PatientSubmissionScreen(props) {
           </Col>
         </Row>
         <div className="page-static-content">
-          <Alert
-            message="Des erreurs se sont produites"
-            description="Veuillez corriger les champs indiqués ci-dessous"
-            type="error"
-            className="patientSubmission__form__alert"
-            icon={<WarningOutlined />}
-            showIcon
-          />
+          { asError
+            ? (
+              <Alert
+                data-testid="alert"
+                message="Des erreurs se sont produites"
+                description="Veuillez corriger les champs indiqués ci-dessous"
+                type="error"
+                className="patientSubmission__form__alert"
+                icon={<WarningOutlined />}
+                showIcon
+              />
+            ) : null }
           <Card bordered={false} className="step">
             <Steps current={currentPageIndex}>
               { pages.map((item) => <Step key={item.title} title={item.title} />) }

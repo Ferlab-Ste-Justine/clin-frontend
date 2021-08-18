@@ -497,7 +497,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item
               label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
               name="analysis.tests"
-              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.mrn" /> }]}
+              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.analyse" /> }]}
             >
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
