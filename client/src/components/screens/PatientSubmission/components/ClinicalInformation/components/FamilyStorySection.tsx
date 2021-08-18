@@ -149,10 +149,10 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                 setHasFamilyHealthCondition(event.target.value === 'yes');
               }}
             >
-              <Radio.Button data-testid="familyHealth" value="yes">
+              <Radio.Button value="yes">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.yes') }
               </Radio.Button>
-              <Radio.Button value="no">
+              <Radio.Button data-testid="familyHealth" value="no">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.no') }
               </Radio.Button>
             </Radio.Group>
