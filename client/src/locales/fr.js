@@ -770,6 +770,8 @@ const fr = {
   'screen.clinicalSubmission.notification.save.success': 'Formulaire sauvegardé avec succès',
   'screen.clinicalSubmission.notification.save.error': 'Veuillez valider vos données et réessayer',
   'screen.clinicalSubmission.notification.save.error.title': "Une erreur s'est produite lors de la sauvegarde",
+  'form.patientSubmission.form.alert.title': 'Des erreurs se sont produites',
+  'form.patientSubmission.form.alert.description': 'Veuillez corriger les champs indiqués ci-dessous',
   'form.patientSubmission.form.lastName': 'Nom',
   'form.patientSubmission.form.given': 'Prénom',
   'form.patientSubmission.form.gender': 'Sexe',

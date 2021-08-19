@@ -674,8 +674,8 @@ function PatientSubmissionScreen(props) {
             ? (
               <Alert
                 data-testid="alert"
-                message="Des erreurs se sont produites"
-                description="Veuillez corriger les champs indiqués ci-dessous"
+                message={intl.get('form.patientSubmission.form.alert.title')}
+                description={intl.get('form.patientSubmission.form.alert.description')}
                 type="error"
                 className="patientSubmission__form__alert"
                 icon={<WarningOutlined />}
