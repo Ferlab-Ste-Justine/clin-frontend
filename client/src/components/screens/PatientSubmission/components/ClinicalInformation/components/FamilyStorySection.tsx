@@ -16,6 +16,7 @@ import { getFamilyRelationshipValues } from '../../../../../../helpers/fhir/fhir
 import { FamilyObservation } from '../../../../../../helpers/providers/types';
 import { State } from '../../../../../../reducers';
 import { HiddenFormInput } from '../../../../../Utils/HiddenFormInput';
+import ErrorText from './ErrorText';
 
 interface Props {
   familyHistoryResources: Partial<FamilyObservation>[]
@@ -58,10 +59,6 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
   const [hasFamilyHealthCondition, setHasFamilyHealthCondition] = useState(
     familyHistoryResources.filter((fmh) => !isEmpty(fmh) && fmh.id != null).length > 0,
   );
-
-  const defaultConsanguinityValue = defaultValuesState.consanguinity.value != null
-    ? (defaultValuesState.consanguinity.value) ? 'yes' : 'no'
-    : undefined;
 
   return (
     <>
@@ -122,9 +119,8 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.consanguinity')}
             name={['consanguinity', 'value']}
-            initialValue={defaultConsanguinityValue}
           >
-            <Radio.Group defaultValue={defaultConsanguinityValue}>
+            <Radio.Group>
               <Radio.Button value="yes">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.yes') }
               </Radio.Button>
@@ -145,18 +141,18 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
         <Col>
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth')}
-            initialValue={hasFamilyHealthCondition ? 'yes' : 'no'}
+            rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
+            name="familyHealth"
           >
             <Radio.Group
               onChange={(event) => {
                 setHasFamilyHealthCondition(event.target.value === 'yes');
               }}
-              defaultValue={hasFamilyHealthCondition ? 'yes' : 'no'}
             >
               <Radio.Button value="yes">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.yes') }
               </Radio.Button>
-              <Radio.Button value="no">
+              <Radio.Button data-testid="familyHealth" value="no">
                 { intl.get('form.patientSubmission.clinicalInformation.familyHistory.no') }
               </Radio.Button>
             </Radio.Group>
@@ -197,6 +193,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                                 <Form.Item
                                   name={[index, 'note']}
                                   initialValue={get(familyHistoryResources, `[${index}].note`, '')}
+                                  rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
                                   noStyle
                                 >
                                   <Input

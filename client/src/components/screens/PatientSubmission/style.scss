@@ -567,6 +567,14 @@
   }
   
   &__form {
+    &__alert{
+      margin-bottom: 8px;
+    }
+    &__errorText{
+      .anticon{
+        padding-right: 4px;
+      }
+    }
     &__footer {
       margin-bottom: 24px;
     }
@@ -579,3 +587,35 @@
   }
 }
 
+.ant-form-item-has-error {
+  .clinical-information__analysis__checkbox-group{
+    background-color: $red-0;
+    border: 1px solid $red-8;
+    padding: 8px;
+    border-radius: 2px;
+  }
+
+  .ant-radio-button-wrapper{
+    background-color: $red-0;
+    color:$gray-8;
+  }
+
+  textarea::placeholder, .select-Placeholder{
+    color:$gray-7 !important;
+  }
+
+  .treeError{
+    background-color: $red-0;
+    border: 1px solid $red-8;
+    padding: 16px;
+
+    .ant-tree{
+      background-color: transparent;
+    }
+
+    .ant-select:not(.ant-select-disabled):not(.ant-select-customize-input) .ant-select-selector{
+      background-color: #fff !important;
+      border-color: #abbed3 !important;
+    }
+}
+}
