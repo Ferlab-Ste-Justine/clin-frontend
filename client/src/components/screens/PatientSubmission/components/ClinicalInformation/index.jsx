@@ -205,7 +205,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item
               name={['hpos', hpoIndex, 'interpretation']}
               initialValue={getHPOInterpretationCode(hpoResource)}
-              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.requiredField" /> }]}
+              rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
             >
               <Select
                 className="select selectObserved"
@@ -418,7 +418,7 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, onChange, hpoResources, fmhResources, validate,
+      form, observations, localStore, onChange, hpoResources, fmhResources, validate, submitFailed,
     } = this.props;
 
     const { TextArea } = Input;
@@ -497,7 +497,7 @@ class ClinicalInformation extends React.Component {
             <Form.Item
               label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
               name="analysis.tests"
-              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.analyse" /> }]}
+              rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.analyse')} /> }]}
             >
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
@@ -517,7 +517,7 @@ class ClinicalInformation extends React.Component {
               label={intl.get('form.patientSubmission.clinicalInformation.analysis.selection')}
               name="analysis.tests"
               initialValue={[initialAnalysisValue]}
-              rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.mrn" /> }]}
+              rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.mrn')} /> }]}
             >
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
@@ -581,9 +581,9 @@ class ClinicalInformation extends React.Component {
             <div className="cardSeparator">
               <Form.Item
                 name="hposTree"
-                rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.hposTree" /> }]}
+                rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.hposTree')} /> }]}
               >
-                <div className="hposTree">
+                <div className={submitFailed ? 'treeError hposTree' : 'hposTree'}>
                   <Form.Item className="searchInput searchInputFull">
                     <AutoComplete
                       className="searchInput"
@@ -629,7 +629,7 @@ class ClinicalInformation extends React.Component {
             rules={[
               {
                 required: true,
-                message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis" />,
+                message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis')} />,
               },
               {
                 whitespace: true,

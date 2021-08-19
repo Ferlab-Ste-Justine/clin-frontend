@@ -1,5 +1,4 @@
 import { WarningFilled } from '@ant-design/icons';
-import intl from 'react-intl-universal';
 import React from 'react';
 
     interface Props {
@@ -11,7 +10,7 @@ const ErrorText: React.FC<Props> = ({
 }) => (
   <div className="patientSubmission__form__errorText">
     <WarningFilled />
-    { intl.get(text) }
+    { text }
   </div>
 );
 

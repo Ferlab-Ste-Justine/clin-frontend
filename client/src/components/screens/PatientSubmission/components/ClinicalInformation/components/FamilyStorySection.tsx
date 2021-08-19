@@ -141,7 +141,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
         <Col>
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth')}
-            rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.requiredField" /> }]}
+            rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
             name="familyHealth"
           >
             <Radio.Group
@@ -193,7 +193,7 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                                 <Form.Item
                                   name={[index, 'note']}
                                   initialValue={get(familyHistoryResources, `[${index}].note`, '')}
-                                  rules={[{ required: true, message: <ErrorText text="form.patientSubmission.clinicalInformation.validation.requiredField" /> }]}
+                                  rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
                                   noStyle
                                 >
                                   <Input

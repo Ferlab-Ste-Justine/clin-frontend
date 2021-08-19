@@ -73,7 +73,7 @@ function PatientSubmissionScreen(props) {
     firstPageFields: {},
     hpoResources: get(props, 'observations.hpos'),
     fmhResources: get(props, 'observations.fmh'),
-    asError: false,
+    submitFailed: false,
   });
 
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
@@ -574,7 +574,7 @@ function PatientSubmissionScreen(props) {
     patient, clinicalImpression, serviceRequest,
   } = props;
   const {
-    currentPageIndex, hpoResources, fmhResources, valid, asError,
+    currentPageIndex, hpoResources, fmhResources, valid, submitFailed,
   } = state;
 
   const initialPractitionerValue = get(localStore, 'practitioner', '');
@@ -595,6 +595,7 @@ function PatientSubmissionScreen(props) {
           onHpoSelected={onHpoSelected}
           onHposUpdated={onHposUpdated}
           fmhResources={fmhResources}
+          submitFailed={submitFailed}
         />
       ),
       name: 'ClinicalInformation',
@@ -624,21 +625,18 @@ function PatientSubmissionScreen(props) {
   const currentPage = pages[currentPageIndex];
   const pageContent = currentPage.content;
   const isOnLastPage = currentPageIndex === pages.length - 1;
-  if (valid && asError) {
+  if (valid && submitFailed) {
     setState((currentState) => ({
       ...currentState,
-      asError: false,
+      submitFailed: false,
     }));
   }
 
   const onFailedSubmit = () => {
-    if (!form.getFieldValue('hposTree')) {
-      document.querySelector('.hposTree').classList.add('treeError');
-    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setState((currentState) => ({
       ...currentState,
-      asError: true,
+      submitFailed: true,
     }));
   };
   return (
@@ -672,7 +670,7 @@ function PatientSubmissionScreen(props) {
           </Col>
         </Row>
         <div className="page-static-content">
-          { asError
+          { submitFailed
             ? (
               <Alert
                 data-testid="alert"

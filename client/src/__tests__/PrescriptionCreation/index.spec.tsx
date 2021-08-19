@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import {
   render, screen, waitFor,
@@ -9,9 +8,6 @@ import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import AppTest from '../../AppTest';
 import PatientSubmission from '../../components/screens/PatientSubmission';
-import { ResourceBuilder } from '../utils/Utils';
-import Patient from '../../components/screens/Patient';
-import { FakeStateProvider } from '../utils/FakeStateProvider';
 import { mockRptToken } from '../mocks';
 
 function buildHPORequest() {
@@ -59,111 +55,106 @@ describe('PrescriptionCreation', () => {
   afterAll(() => {
     server.close();
   });
+  describe('Error Alert Save Prescription Button', () => {
+    test('Withous Mrn and hypothesis', async () => {
+      mockRptToken();
 
-  test('Error Alert Save Prescription Button', async () => {
-    mockRptToken();
+      server.use(buildHPORequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
 
-    server.use(buildHPORequest());
-    render(
-      <AppTest>
-        <PatientSubmission />
-      </AppTest>,
-    );
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
 
-    // Sans MRN , test et hypothèse diagnostique
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
 
-    const familyHealth = screen.getByTestId('familyHealth');
-    act(() => userEvent.click(familyHealth, {}));
+      const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+      act(() => userEvent.click(clinicalSignRoot, {}));
 
-    const cgh = screen.getByTestId('cgh');
-    act(() => userEvent.click(cgh, {}));
+      await waitFor(() => screen.getByText('Abnormal eye physiology'));
 
-    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
-    act(() => userEvent.click(clinicalSignRoot, {}));
+      const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
+      act(() => userEvent.click(clinicalSign, {}));
 
-    await waitFor(() => screen.getByText('Abnormal eye physiology'));
+      const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
+      act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
 
-    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
-    act(() => userEvent.click(clinicalSign, {}));
+      act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
 
-    const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
-    act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
+      await waitFor(() => screen.getByTestId('alert'));
+      expect(alert).toBeDefined();
+    });
 
-    act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
+    test('Without cgh and familyHealth', async () => {
+      mockRptToken();
 
-    await waitFor(() => screen.getByTestId('alert'));
-    expect(alert).toBeDefined();
-  });
+      server.use(buildHPORequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
 
-  test('Error Alert Save Prescription Button', async () => {
-    mockRptToken();
+      const mrnOptions = screen.getByTestId('mrn-organization-submission');
+      act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
 
-    server.use(buildHPORequest());
-    render(
-      <AppTest>
-        <PatientSubmission />
-      </AppTest>,
-    );
+      const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
+      act(() => userEvent.click(prescriptionTestLabel, {}));
 
-    // Sans CGH, condition de santé
+      const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+      act(() => userEvent.click(clinicalSignRoot, {}));
 
-    const mrnOptions = screen.getByTestId('mrn-organization-submission');
-    act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
+      await waitFor(() => screen.getByText('Abnormal eye physiology'));
 
-    const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
-    act(() => userEvent.click(prescriptionTestLabel, {}));
+      const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
+      act(() => userEvent.click(clinicalSign, {}));
 
-    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
-    act(() => userEvent.click(clinicalSignRoot, {}));
+      const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
+      act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
 
-    await waitFor(() => screen.getByText('Abnormal eye physiology'));
+      const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
+      act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
-    act(() => userEvent.click(clinicalSign, {}));
+      act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
 
-    const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
-    act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
+      await waitFor(() => screen.getByTestId('alert'));
+      expect(alert).toBeDefined();
+    });
 
-    const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
-    act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
+    test('Whitout Hpo', async () => {
+      mockRptToken();
 
-    act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
+      server.use(buildHPORequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
 
-    await waitFor(() => screen.getByTestId('alert'));
-    expect(alert).toBeDefined();
-  });
+      const mrnOptions = screen.getByTestId('mrn-organization-submission');
+      act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
 
-  test('Error Alert Save Prescription Button', async () => {
-    mockRptToken();
+      const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
+      act(() => userEvent.click(prescriptionTestLabel, {}));
 
-    server.use(buildHPORequest());
-    render(
-      <AppTest>
-        <PatientSubmission />
-      </AppTest>,
-    );
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
 
-    // Sans HPO
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
 
-    const mrnOptions = screen.getByTestId('mrn-organization-submission');
-    act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
+      const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
+      act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
-    act(() => userEvent.click(prescriptionTestLabel, {}));
+      act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
 
-    const familyHealth = screen.getByTestId('familyHealth');
-    act(() => userEvent.click(familyHealth, {}));
-
-    const cgh = screen.getByTestId('cgh');
-    act(() => userEvent.click(cgh, {}));
-
-    const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
-    act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
-
-    act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
-
-    await waitFor(() => screen.getByTestId('alert'));
-    expect(alert).toBeDefined();
+      await waitFor(() => screen.getByTestId('alert'));
+      expect(alert).toBeDefined();
+    });
   });
 
   test('Go to next page', async () => {
