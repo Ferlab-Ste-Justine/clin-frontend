@@ -190,36 +190,6 @@ const PrescriptionTable: React.FC<Props> = ({
       },
     },
     {
-      key: 'request',
-      label: 'screen.patientsearch.table.request',
-      renderer: createCellRenderer('custom', () => output, {
-        renderer: (presetData: any) => (
-          <Button
-            onClick={() => handleGoToPatientScreen(presetData.id, presetData.request)}
-            data-id={presetData.request}
-            className="button link--underline"
-          >
-            { presetData.request }
-          </Button>
-        ),
-      }),
-    },
-    {
-      key: 'patientId',
-      label: 'screen.patientsearch.table.patientId',
-      renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data: any) => (
-          <Button
-            onClick={() => handleGoToPatientScreen(data.id)}
-            data-id={data.request}
-            className="button link--underline"
-          >
-            { data.id }
-          </Button>
-        ),
-      }),
-    },
-    {
       key: 'status',
       label: 'screen.patientsearch.table.status',
       renderer: createCellRenderer('dot', () => output, {
@@ -248,46 +218,19 @@ const PrescriptionTable: React.FC<Props> = ({
       }),
     },
     {
-      key: 'organization',
-      label: 'screen.patientsearch.table.organization',
-      renderer: createCellRenderer('text', (() => output), { key: 'organization' }),
-    },
-    {
-      key: 'lastName',
-      label: 'screen.patientsearch.table.lastName',
-      renderer: createCellRenderer('text', (() => output), { key: 'lastName' }),
-    },
-    {
-      key: 'firstName',
-      label: 'screen.patientsearch.table.firstName',
-      renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data: any) => {
-          try {
-            const name = data.fetus ? intl.get('screen.patient.table.fetus') : data.firstName;
-            return name;
-          } catch (e) { return ''; }
-        },
+      key: 'request',
+      label: 'screen.patientsearch.table.id',
+      renderer: createCellRenderer('custom', () => output, {
+        renderer: (presetData: any) => (
+          <Button
+            onClick={() => handleGoToPatientScreen(presetData.id, presetData.request)}
+            data-id={presetData.request}
+            className="button link--underline"
+          >
+            { presetData.request }
+          </Button>
+        ),
       }),
-    },
-    {
-      key: 'gender',
-      label: 'screen.patientsearch.table.gender',
-      renderer: createCellRenderer('text', (() => output), { key: 'gender' }),
-    },
-    {
-      key: 'dob',
-      label: 'screen.patientsearch.table.dob',
-      renderer: createCellRenderer('text', (() => output), { key: 'birthDate' }),
-    },
-    {
-      key: 'practitioner',
-      label: 'screen.patientsearch.table.practitioner',
-      renderer: createCellRenderer('text', (() => output), { key: 'practitioner' }),
-    },
-    {
-      key: 'test',
-      label: 'screen.patientsearch.table.test',
-      renderer: createCellRenderer('text', (() => output), { key: 'test' }),
     },
     {
       key: 'prescription',
@@ -295,9 +238,34 @@ const PrescriptionTable: React.FC<Props> = ({
       renderer: createCellRenderer('text', (() => output), { key: 'prescription' }),
     },
     {
-      key: 'mrn',
-      label: 'screen.patientsearch.table.mrn',
-      renderer: createCellRenderer('text', (() => output), { key: 'mrn' }),
+      key: 'test',
+      label: 'screen.patientsearch.table.test',
+      renderer: createCellRenderer('text', (() => output), { key: 'test' }),
+    },
+    {
+      key: 'practitioner',
+      label: 'screen.patientsearch.table.practitioner',
+      renderer: createCellRenderer('text', (() => output), { key: 'practitioner' }),
+    },
+    {
+      key: 'organization',
+      label: 'screen.patientsearch.table.organization',
+      renderer: createCellRenderer('text', (() => output), { key: 'organization' }),
+    },
+    {
+      key: 'patientId',
+      label: 'screen.patientsearch.table.patientId',
+      renderer: createCellRenderer('custom', (() => output), {
+        renderer: (data: any) => (
+          <Button
+            onClick={() => handleGoToPatientScreen(data.id)}
+            data-id={data.request}
+            className="button link--underline"
+          >
+            { data.id }
+          </Button>
+        ),
+      }),
     },
     {
       key: 'ramq',
@@ -305,29 +273,9 @@ const PrescriptionTable: React.FC<Props> = ({
       renderer: createCellRenderer('text', (() => output), { key: 'ramq' }),
     },
     {
-      key: 'position',
-      label: 'screen.patientsearch.table.position',
-      renderer: createCellRenderer('text', (() => output), { key: 'position' }),
-    },
-    {
-      key: 'familyId',
-      label: 'screen.patientsearch.table.familyId',
-      renderer: createCellRenderer('text', (() => output), { key: 'familyId' }),
-    },
-    {
-      key: 'familyType',
-      label: 'screen.patientsearch.table.familyType',
-      renderer: createCellRenderer('text', (() => output), { key: 'familyType' }),
-    },
-    {
-      key: 'ethnicity',
-      label: 'screen.patientsearch.table.ethnicity',
-      renderer: createCellRenderer('text', (() => output), { key: 'ethnicity' }),
-    },
-    {
-      key: 'bloodRelationship',
-      label: 'screen.patientsearch.table.bloodRelationship',
-      renderer: createCellRenderer('text', (() => output), { key: 'bloodRelationship' }),
+      key: 'mrn',
+      label: 'screen.patientsearch.table.mrn',
+      renderer: createCellRenderer('text', (() => output), { key: 'mrn' }),
     },
   ];
 
@@ -338,6 +286,8 @@ const PrescriptionTable: React.FC<Props> = ({
           key="patient-interactive-table"
           size={size}
           page={page}
+          isReorderable={false}
+          isSelectable={false}
           total={autocompleteResults ? autocompleteResults.total : patient.total}
           totalLength={output.length}
           defaultVisibleColumns={defaultVisibleColumns}

@@ -94,7 +94,7 @@ const PatientTable: React.FC<Props> = ({
   const columnPreset = [
     {
       key: 'patientId',
-      label: 'screen.patientsearch.table.patientId',
+      label: 'screen.patientsearch.table.id',
       renderer: createCellRenderer('custom', (() => output), {
         renderer: (data: any) => (
           <Button
@@ -108,9 +108,9 @@ const PatientTable: React.FC<Props> = ({
       }),
     },
     {
-      key: 'organization',
-      label: 'screen.patientsearch.table.organization',
-      renderer: createCellRenderer('text', (() => output), { key: 'organization' }),
+      key: 'ramq',
+      label: 'screen.patientsearch.table.ramq',
+      renderer: createCellRenderer('text', (() => output), { key: 'ramq' }),
     },
     {
       key: 'lastName',
@@ -154,31 +154,6 @@ const PatientTable: React.FC<Props> = ({
       renderer: createCellRenderer('text', (() => output), { key: 'birthDate' }),
     },
     {
-      key: 'practitioner',
-      label: 'screen.patientsearch.table.practitioner',
-      renderer: createCellRenderer('text', (() => output), { key: 'practitioner' }),
-    },
-    {
-      key: 'mrn',
-      label: 'screen.patientsearch.table.mrn',
-      renderer: createCellRenderer('text', (() => output), { key: 'mrn' }),
-    },
-    {
-      key: 'ramq',
-      label: 'screen.patientsearch.table.ramq',
-      renderer: createCellRenderer('text', (() => output), { key: 'ramq' }),
-    },
-    {
-      key: 'position',
-      label: 'screen.patientsearch.table.position',
-      renderer: createCellRenderer('text', (() => output), { key: 'position' }),
-    },
-    {
-      key: 'familyId',
-      label: 'screen.patientsearch.table.familyId',
-      renderer: createCellRenderer('text', (() => output), { key: 'familyId' }),
-    },
-    {
       key: 'familyType',
       label: 'screen.patientsearch.table.familyType',
       renderer: createCellRenderer('text', (() => output), { key: 'familyType' }),
@@ -196,6 +171,8 @@ const PatientTable: React.FC<Props> = ({
           key="patient-interactive-table"
           size={size}
           page={page}
+          isReorderable={false}
+          isSelectable={false}
           total={patient.total}
           totalLength={output.length}
           defaultVisibleColumns={defaultVisibleColumns}
@@ -204,7 +181,7 @@ const PatientTable: React.FC<Props> = ({
           pageChangeCallback={pageChangeCallback}
           pageSizeChangeCallback={pageSizeChangeCallback}
           exportCallback={exportCallback}
-          numFrozenColumns={2}
+          numFrozenColumns={0}
           isLoading={isLoading}
           rowHeights={Array(patient.pageSize).fill(36)}
           columnsUpdated={columnsUpdated}

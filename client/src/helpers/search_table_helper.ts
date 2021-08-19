@@ -2,18 +2,6 @@ export const PATIENT_SEARCH_STORAGE_KEY = 'screen.patientsearch.table';
 export const PATIENT_VARIANT_STORAGE_KEY = 'screen.variantsearch.table';
 
 export const defaultUserSearchColumns = [
-  `${PATIENT_SEARCH_STORAGE_KEY}.select`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.request`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.patientId`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.status`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.organization`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.lastName`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.firstName`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.gender`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.dob`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.practitioner`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.test`,
-  `${PATIENT_SEARCH_STORAGE_KEY}.prescription`,
 ];
 
 export const defaultUserVariantColumns = [
@@ -32,66 +20,6 @@ export const defaultUserVariantColumns = [
 ];
 
 export const defaultUserSearchColumnsOrder = [
-  {
-    key: 'selectKey',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.select`,
-    columnWidth: 100,
-  },
-  {
-    key: 'request',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.request`,
-    columnWidth: 150,
-  },
-  {
-    key: 'patientId',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.patientId`,
-    columnWidth: 150,
-  },
-  {
-    key: 'status',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.status`,
-    columnWidth: 150,
-  },
-  {
-    key: 'organization',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.organization`,
-    columnWidth: 150,
-  },
-  {
-    key: 'lastName',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.lastName`,
-    columnWidth: 150,
-  },
-  {
-    key: 'firstName',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.firstName`,
-    columnWidth: 150,
-  },
-  {
-    key: 'gender',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.gender`,
-    columnWidth: 150,
-  },
-  {
-    key: 'dob',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.dob`,
-    columnWidth: 160,
-  },
-  {
-    key: 'practitioner',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.practitioner`,
-    columnWidth: 180,
-  },
-  {
-    key: 'test',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.test`,
-    columnWidth: 150,
-  },
-  {
-    key: 'prescription',
-    label: `${PATIENT_SEARCH_STORAGE_KEY}.prescription`,
-    columnWidth: 150,
-  },
 ];
 
 export const defaultUserVariantColumnsOrder = [
