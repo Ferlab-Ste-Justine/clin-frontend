@@ -422,6 +422,7 @@ class PatientSearchScreen extends React.Component {
                         size={size}
                         page={page}
                         searchProps={search}
+                        autocompleteResults={autocompletePrescription}
                         defaultVisibleColumns={defaultColumns}
                         defaultColumnsOrder={defaultColumnsOrder}
                         pageChangeCallback={this.handlePageChange}
