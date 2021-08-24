@@ -70,18 +70,12 @@ const PrescriptionTable: React.FC<Props> = ({
   const output: any[] = [];
   if (results) {
     results.forEach((result: PrescriptionData) => {
-      const organizationValue = () => {
-        if (result.patientInfo.organization.name === '') {
-          return result.patientInfo.organization.id.split('/')[1];
-        }
-        return result.patientInfo.organization.name;
-      };
       const value: any = {
         status: getStatusLabel(result),
         id: result.patientInfo.id,
         mrn: result.mrn ? result.mrn : '--',
         ramq: result.patientInfo.ramq,
-        organization: organizationValue(),
+        organization: result.patientInfo.organization.id.split('/')[1],
         firstName: result.patientInfo.firstName,
         lastName: result.patientInfo.lastName.toUpperCase(),
         gender: intl.get(`screen.patientsearch.${result.patientInfo.gender.toLowerCase()}`),
