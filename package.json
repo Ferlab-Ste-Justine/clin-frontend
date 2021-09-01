@@ -3,6 +3,7 @@
   "version": "3.1.163",
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
+    "@apollo/client": "^3.4.9",
     "@babel/core": "7.12.3",
     "@blueprintjs/core": "3.32.0",
     "@blueprintjs/table": "3.7.1",
@@ -63,6 +64,7 @@
     "file-loader": "6.1.1",
     "file-saver": "^2.0.5",
     "fs-extra": "^9.0.1",
+    "graphql": "^15.5.1",
     "history": "^4.10.1",
     "html-webpack-plugin": "4.5.0",
     "http": "0.0.0",
