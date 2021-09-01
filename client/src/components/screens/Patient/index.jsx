@@ -1,22 +1,24 @@
-/* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import IconKit from 'react-icons-kit';
 import { ic_cloud_download, ic_people, ic_widgets } from 'react-icons-kit/md';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { MedicineBoxFilled } from '@ant-design/icons';
-import { Spin, Tabs } from 'antd';
-import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
-
-import { updateServiceRequestStatus } from '../../../actions/patient';
+import { updateServiceRequestStatus } from 'actions/patient';
 import {
   navigateToPatientScreen,
   navigateToPatientSearchScreen,
   navigateToPatientVariantScreen,
   navigateToSubmissionWithPatient,
-} from '../../../actions/router';
-import { appShape } from '../../../reducers/app';
+} from 'actions/router';
+import { Spin, Tabs } from 'antd';
+import keycloak from 'keycloak';
+import PropTypes from 'prop-types';
+import { appShape } from 'reducers/app';
+import { bindActionCreators } from 'redux';
+
+import ApolloProvider from 'store/providers/apollo';
+
 import Layout from '../../Layout';
 import PatientVariantScreen from '../PatientVariant';
 
@@ -136,7 +138,8 @@ class PatientScreen extends React.Component {
         ),
       },
       {
-        content: <FilesTab />,
+        // FixMe
+        content: <ApolloProvider userToken={keycloak.token}><FilesTab /></ApolloProvider>,
         name: 'files',
         title: (
           <span className="tabName">

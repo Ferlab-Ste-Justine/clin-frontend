@@ -258,6 +258,7 @@ const en = {
   'screen.patient.details.file.format': 'Format',
   'screen.patient.details.file.size': 'Size',
   'screen.patient.details.file.sample': 'Sample',
+  'screen.patient.details.file.aliquot': 'Aliquot',
   'screen.patient.details.file.prescription': 'Prescription',
   'screen.patient.details.file.date': 'Date',
   'screen.patient.details.file.action': 'Action',

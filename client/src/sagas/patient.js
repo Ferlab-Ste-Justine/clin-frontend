@@ -344,6 +344,7 @@ function* getFileURL(action) {
     if (fileURL.error) {
       throw new ApiError(fileURL.error);
     }
+    window.open(fileURL.payload.data.url , '_blank');
     yield put({ payload: { uid: fileURL }, type: actions.PATIENT_FILE_URL_SUCCEEDED });
   } catch (e) {
     yield put({ payload: e, type: actions.PATIENT_FILE_URL_FAILED });
