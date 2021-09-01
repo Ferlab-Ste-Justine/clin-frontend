@@ -55,6 +55,8 @@ const interpretationIcon = {
   IND: ic_help,
 };
 
+const ROOT_PHENOTYPE = 'Phenotypic abnormality (HP:0000118)';
+
 const intlPrefixKey = 'form.patientSubmission';
 
 const HpoHiddenFields = ({
@@ -74,28 +76,30 @@ const HpoHiddenFields = ({
   </div>
 );
 
-const INITIAL_TREE_ROOTS = [
-  { key: 'HP:0001197', title: 'Abnormality of prenatal development or birth', is_leaf: false },
-  { key: 'HP:0001507', title: 'Growth abnormality', is_leaf: false },
-  { key: 'HP:0000478', title: 'Abnormality of the eye', is_leaf: false },
-  { key: 'HP:0001574', title: 'Abnormality of the ear', is_leaf: false },
-  { key: 'HP:0012519', title: 'Hypoplastic posterior communicating artery', is_leaf: false },
-  { key: 'HP:0001626', title: 'Abnormality of the cardiovascular system', is_leaf: false },
-  { key: 'HP:0002086', title: 'Abnormality of the respiratory system', is_leaf: false },
-  { key: 'HP:0000924', title: 'Abnormality of the skeletal system', is_leaf: false },
-  { key: 'HP:0003011', title: 'Abnormality of the musculature', is_leaf: false },
-  { key: 'HP:0000119', title: 'Abnormality of the genitourinary system', is_leaf: false },
-  { key: 'HP:0025031', title: 'Abnormal digestive system', is_leaf: false },
-  { key: 'HP:0000152', title: 'Abnormality of head or neck', is_leaf: false },
-  { key: 'HP:0000707', title: 'Abnormality of the nervous system', is_leaf: false },
-];
+const hpoDisplayName = (key, name) => `${name} (${key})`;
+
+// const INITIAL_TREE_ROOTS = [
+//   { key: 'HP:0001197', title: 'Abnormality of prenatal development or birth', is_leaf: false },
+//   { key: 'HP:0001507', title: 'Growth abnormality', is_leaf: false },
+//   { key: 'HP:0000478', title: 'Abnormality of the eye', is_leaf: false },
+//   { key: 'HP:0001574', title: 'Abnormality of the ear', is_leaf: false },
+//   { key: 'HP:0012519', title: 'Hypoplastic posterior communicating artery', is_leaf: false },
+//   { key: 'HP:0001626', title: 'Abnormality of the cardiovascular system', is_leaf: false },
+//   { key: 'HP:0002086', title: 'Abnormality of the respiratory system', is_leaf: false },
+//   { key: 'HP:0000924', title: 'Abnormality of the skeletal system', is_leaf: false },
+//   { key: 'HP:0003011', title: 'Abnormality of the musculature', is_leaf: false },
+//   { key: 'HP:0000119', title: 'Abnormality of the genitourinary system', is_leaf: false },
+//   { key: 'HP:0025031', title: 'Abnormal digestive system', is_leaf: false },
+//   { key: 'HP:0000152', title: 'Abnormality of head or neck', is_leaf: false },
+//   { key: 'HP:0000707', title: 'Abnormality of the nervous system', is_leaf: false },
+// ];
 
 class ClinicalInformation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       hpoOptions: [],
-      treeData: INITIAL_TREE_ROOTS,
+      treeData: [],
       hpoInterpretation: [],
     };
 
@@ -116,23 +120,34 @@ class ClinicalInformation extends React.Component {
     onChange();
   }
 
+  componentDidMount() {
+    Api.searchHpoChildren(ROOT_PHENOTYPE)
+      .then((res) => {
+        const phenotypes = (res.payload?.data?.data.hits || [])
+          .map((h) => ({ key: h._source.hpo_id, title: h._source.name }));
+        this.setState({
+          treeData: [...phenotypes],
+        });
+      });
+  }
+
   onLoadHpoChildren(treeNode) {
     return new Promise((resolve) => {
       const { treeData } = this.state;
       const { dataRef } = treeNode.props;
-      const { key } = dataRef;
+      const { key, title } = dataRef;
 
       if (treeNode.props.children) {
         resolve();
         return;
       }
 
-      Api.searchHpoChildren(key).then((response) => {
+      Api.searchHpoChildren(hpoDisplayName(key, title)).then((response) => {
         if (response.payload) {
           const { data } = response.payload.data;
           const { hits } = data;
           const results = map(hits, '_source')
-            .map((r) => ({ title: r.name, key: r.id, checkable: true }))
+            .map((r) => ({ title: r.name, key: r.hpo_id, checkable: true }))
             .map((r) => ({ ...r, checked: true }));
 
           treeNode.props.dataRef.children = results;
@@ -416,12 +431,24 @@ class ClinicalInformation extends React.Component {
       const { TreeNode } = Tree;
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.key} dataRef={item} checkable={item.checkable === true}>
+          <TreeNode
+            title={hpoDisplayName(item.key, item.title)}
+            key={item.key}
+            dataRef={item}
+            checkable={item.checkable === true}
+          >
             { this.renderTreeNodes(item.children) }
           </TreeNode>
         );
       }
-      return <TreeNode key={item.key} {...item} dataRef={item} checkable={item.checkable === true} />;
+      return (
+        <TreeNode
+          key={item.key}
+          title={hpoDisplayName(item.key, item.title)}
+          dataRef={item}
+          checkable={item.checkable === true}
+        />
+      );
     });
   }
 
@@ -437,7 +464,6 @@ class ClinicalInformation extends React.Component {
 
     const { TextArea } = Input;
 
-    // const cghInterpretationValue = has(localStore, 'cgh.interpretation') ? localStore.cgh.interpretation : null;
     let cghId = null;
     if (observations.cgh != null) {
       cghId = observations.cgh.id;
