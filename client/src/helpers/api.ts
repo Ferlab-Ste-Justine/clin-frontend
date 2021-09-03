@@ -235,6 +235,14 @@ const searchHpoChildren = async (hpoCode: string) => {
     .catch(errorCallback);
 };
 
+const searchHPOByAncestorId = async (hpoId: string, size: number = 1000, after?: string) => {
+  const url = `${window.CLIN.hpoBaseUrl}/ancestors?hpoId=${hpoId}&after=${after}&size=${size}`;
+  return Http.secureClinAxios.get(url)
+    .then(successCallback)
+    .catch(errorCallback);
+};
+
+
 const searchPractitioners = async ({ term }: {term: string}) => {
   const filter = `name sw "${term}" or identifier sw "${term}"`;
   const url = `${window.CLIN.fhirBaseUrl}/Practitioner?_filter=${filter}&_pretty=true&_count=5`;
@@ -390,6 +398,7 @@ export default {
   getPatientsGenderAndPosition,
   searchHpos,
   searchHpoChildren,
+  searchHPOByAncestorId,
   getPatientById,
   getPatientDataByIds,
   getPatientsByAutoComplete,

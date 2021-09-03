@@ -4,12 +4,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Card, Form, Input, Button, Tree, Select, AutoComplete, Typography, Popconfirm, Checkbox, Row, Col,
+  AutoComplete, Button, Card, Checkbox, Col, Form, Input, Popconfirm, Row, Select, Tree, Typography,
 } from 'antd';
 import IconKit from 'react-icons-kit';
-import {
-  ic_help, ic_visibility, ic_visibility_off,
-} from 'react-icons-kit/md';
+import { ic_help, ic_visibility, ic_visibility_off } from 'react-icons-kit/md';
 
 import intl from 'react-intl-universal';
 
@@ -21,26 +19,26 @@ import findIndex from 'lodash/findIndex';
 import ErrorText from './components/ErrorText';
 
 import {
-  hpoOnsetValues,
-  getResourceId,
   getHPOCode,
   getHPODisplay,
-  getHPOOnsetCode,
   getHPOInterpretationCode,
-  hpoInterpretationValues,
+  getHPOOnsetCode,
+  getResourceId,
   getTestCoding,
+  hpoInterpretationValues,
+  hpoOnsetValues,
 } from '../../../../../helpers/fhir/fhir';
 
 import {
-  addHpoResource,
-  setHpoResourceDeletionFlag,
-  setFamilyRelationshipResourceDeletionFlag,
-  addFamilyHistoryResource,
   addEmptyFamilyHistory,
+  addFamilyHistoryResource,
+  addHpoResource,
+  setFamilyRelationshipResourceDeletionFlag,
+  setHpoResourceDeletionFlag,
+  updateFMHNote,
+  updateHpoAgeOnSet,
   updateHpoNote,
   updateHpoObservation,
-  updateHpoAgeOnSet,
-  updateFMHNote,
 } from '../../../../../actions/patientSubmission';
 
 import Api from '../../../../../helpers/api';
@@ -48,6 +46,7 @@ import MrnItem from './components/MrnItem';
 import InvestigationSection from './components/InvestigationSection';
 import FamilyStorySection from './components/FamilyStorySection';
 import { ObservationBuilder } from '../../../../../helpers/fhir/builder/ObservationBuilder.ts';
+import OntologyTree from './components/OntologyTree';
 
 const interpretationIcon = {
   POS: ic_visibility,
@@ -76,23 +75,7 @@ const HpoHiddenFields = ({
   </div>
 );
 
-const hpoDisplayName = (key, name) => `${name} (${key})`;
-
-// const INITIAL_TREE_ROOTS = [
-//   { key: 'HP:0001197', title: 'Abnormality of prenatal development or birth', is_leaf: false },
-//   { key: 'HP:0001507', title: 'Growth abnormality', is_leaf: false },
-//   { key: 'HP:0000478', title: 'Abnormality of the eye', is_leaf: false },
-//   { key: 'HP:0001574', title: 'Abnormality of the ear', is_leaf: false },
-//   { key: 'HP:0012519', title: 'Hypoplastic posterior communicating artery', is_leaf: false },
-//   { key: 'HP:0001626', title: 'Abnormality of the cardiovascular system', is_leaf: false },
-//   { key: 'HP:0002086', title: 'Abnormality of the respiratory system', is_leaf: false },
-//   { key: 'HP:0000924', title: 'Abnormality of the skeletal system', is_leaf: false },
-//   { key: 'HP:0003011', title: 'Abnormality of the musculature', is_leaf: false },
-//   { key: 'HP:0000119', title: 'Abnormality of the genitourinary system', is_leaf: false },
-//   { key: 'HP:0025031', title: 'Abnormal digestive system', is_leaf: false },
-//   { key: 'HP:0000152', title: 'Abnormality of head or neck', is_leaf: false },
-//   { key: 'HP:0000707', title: 'Abnormality of the nervous system', is_leaf: false },
-// ];
+export const hpoDisplayName = (key, name) => `${name} (${key})`;
 
 class ClinicalInformation extends React.Component {
   constructor(props) {
@@ -103,9 +86,6 @@ class ClinicalInformation extends React.Component {
       hpoInterpretation: [],
     };
 
-    const { treeData } = this.state;
-    this.loadedHpoTreeNodes = treeData.reduce((acc, value) => { acc[value.key] = true; return acc; }, {});
-    this.onLoadHpoChildren = this.onLoadHpoChildren.bind(this);
     this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
     this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
     this.handleHpoOptionSelected = this.handleHpoOptionSelected.bind(this);
@@ -129,38 +109,6 @@ class ClinicalInformation extends React.Component {
           treeData: [...phenotypes],
         });
       });
-  }
-
-  onLoadHpoChildren(treeNode) {
-    return new Promise((resolve) => {
-      const { treeData } = this.state;
-      const { dataRef } = treeNode.props;
-      const { key, title } = dataRef;
-
-      if (treeNode.props.children) {
-        resolve();
-        return;
-      }
-
-      Api.searchHpoChildren(hpoDisplayName(key, title)).then((response) => {
-        if (response.payload) {
-          const { data } = response.payload.data;
-          const { hits } = data;
-          const results = map(hits, '_source')
-            .map((r) => ({ title: r.name, key: r.hpo_id, checkable: true }))
-            .map((r) => ({ ...r, checked: true }));
-
-          treeNode.props.dataRef.children = results;
-
-          results.forEach((r) => { this.loadedHpoTreeNodes[r.key] = true; });
-
-          this.setState({
-            treeData: [...treeData],
-          });
-          resolve();
-        }
-      });
-    });
   }
 
   phenotype({
@@ -426,32 +374,6 @@ class ClinicalInformation extends React.Component {
     onChange();
   }
 
-  renderTreeNodes(data) {
-    return data.map((item) => {
-      const { TreeNode } = Tree;
-      if (item.children) {
-        return (
-          <TreeNode
-            title={hpoDisplayName(item.key, item.title)}
-            key={item.key}
-            dataRef={item}
-            checkable={item.checkable === true}
-          >
-            { this.renderTreeNodes(item.children) }
-          </TreeNode>
-        );
-      }
-      return (
-        <TreeNode
-          key={item.key}
-          title={hpoDisplayName(item.key, item.title)}
-          dataRef={item}
-          checkable={item.checkable === true}
-        />
-      );
-    });
-  }
-
   render() {
     const {
       hpoOptions, treeData,
@@ -649,15 +571,12 @@ class ClinicalInformation extends React.Component {
                     />
 
                   </Form.Item>
-                  <Tree
+                  <OntologyTree
                     loadData={this.onLoadHpoChildren}
-                    checkStrictly
-                    checkable
                     checkedKeys={hpoCodes}
                     onCheck={this.handleHpoNodesChecked}
-                  >
-                    { this.renderTreeNodes(treeData) }
-                  </Tree>
+                    treeData={treeData}
+                  />
                 </div>
 
               </Form.Item>
