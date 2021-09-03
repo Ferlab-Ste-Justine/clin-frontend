@@ -38,6 +38,8 @@ type FamilyStoryState = {
   consanguinity: Partial<Consanguinity>
 }
 
+const intlKeyPrefix = 'form.patientSubmission.clinicalInformation';
+
 const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
   const { local } = useSelector((state: State) => state.patientSubmission);
 
@@ -141,7 +143,10 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
         <Col>
           <Form.Item
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth')}
-            rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
+            rules={[{
+              required: true,
+              message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
+            }]}
             name="familyHealth"
           >
             <Radio.Group
@@ -193,12 +198,15 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                                 <Form.Item
                                   name={[index, 'note']}
                                   initialValue={get(familyHistoryResources, `[${index}].note`, '')}
-                                  rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
+                                  rules={[{
+                                    required: true,
+                                    message: <ErrorText text={intl.get(`${intlKeyPrefix}.validation.requiredField`)} />,
+                                  }]}
                                   noStyle
                                 >
                                   <Input
-                                    placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
-                                    aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.healthCondition')}
+                                    placeholder={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.healthCondition`)}
+                                    aria-label={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.healthCondition`)}
                                   />
                                 </Form.Item>
                               </Col>
@@ -211,8 +219,8 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                                   <Select
                                     suffixIcon={<IconKit className="selectIcon" size={12} icon={ic_person} />}
                                     className="clinical-information__family-story__conditions__relation-select"
-                                    placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
-                                    aria-label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.familyRelation')}
+                                    placeholder={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.familyRelation`)}
+                                    aria-label={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.familyRelation`)}
                                     dropdownClassName="selectDropdown"
                                   >
                                     { Object.values(getFamilyRelationshipValues()).map((rv) => (

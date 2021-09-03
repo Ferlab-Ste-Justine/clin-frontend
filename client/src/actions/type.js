@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export const START_LOADING_ANIMATION = 'START_LOADING_ANIMATION';
 export const STOP_LOADING_ANIMATION = 'STOP_LOADING_ANIMATION';
 

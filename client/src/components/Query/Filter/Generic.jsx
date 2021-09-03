@@ -93,7 +93,9 @@ class GenericFilter extends React.Component {
     const selectNone = intl.get('screen.patientvariant.filter.selection.none');
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
-    const loadedOptionsClone = loadedOptions.length ? [...loadedOptions] : allOptions.slice(0, Math.min(10, allOptions.length));
+    const loadedOptionsClone = loadedOptions.length
+      ? [...loadedOptions]
+      : allOptions.slice(0, Math.min(10, allOptions.length));
     const options = loadedOptionsClone.map((option) => {
       const value = option.value.length < 30 ? option.value : `${option.value.substring(0, 25)} ...`;
       return {
@@ -122,7 +124,12 @@ class GenericFilter extends React.Component {
           </Row>
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+              <Checkbox.Group
+                onChange={this.handleSelectionChange}
+                option={options.map((option) => option.value)}
+                className={`${styleFilter.checkboxGroup} `}
+                value={selection}
+              >
                 <div className="scrollFilter" ref={(ref) => { this.scrollParentRef = ref; }}>
                   <InfiniteScroll
                     pageStart={0}
@@ -135,7 +142,14 @@ class GenericFilter extends React.Component {
                     { options.map((option) => (
                       <Row key={shortid.generate()}>
                         <Col className="checkboxLine">
-                          <Checkbox key={`${option.value}`} className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                          <Checkbox
+                            key={`${option.value}`}
+                            className={selection.includes(option.value)
+                              ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
+                            value={option.value}
+                          >
+                            { option.label }
+                          </Checkbox>
                         </Col>
                       </Row>
                     )) }

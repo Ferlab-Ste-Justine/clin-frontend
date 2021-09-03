@@ -166,7 +166,12 @@ class CompositeFilter extends React.Component {
             <Tooltip title={option.value}>
               { valueText }
             </Tooltip>
-            <Tag className={selectionActive ? `${styleFilter.valueCount}` : `${styleFilter.valueCount} ${styleFilter.valueCountDisabled}`}>{ option.count }</Tag>
+            <Tag
+              className={selectionActive
+                ? `${styleFilter.valueCount}` : `${styleFilter.valueCount} ${styleFilter.valueCountDisabled}`}
+            >
+              { option.count }
+            </Tag>
           </span>
         ),
         value: option.value,
@@ -195,13 +200,19 @@ class CompositeFilter extends React.Component {
 
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+              <Checkbox.Group
+                onChange={this.handleSelectionChange}
+                option={options.map((option) => option.value)}
+                className={`${styleFilter.checkboxGroup} `}
+                value={selection}
+              >
                 <div className="scrollFilter" ref={(ref) => { this.scrollParentRef = ref; }}>
                   { options.map((option) => (
                     <Row>
                       <Col className="checkboxLine">
                         <Checkbox
-                          className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
+                          className={selection.includes(option.value)
+                            ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
                           value={option.value}
                           disabled={!selectionActive}
                         >

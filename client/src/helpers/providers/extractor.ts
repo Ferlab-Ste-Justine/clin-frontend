@@ -131,7 +131,11 @@ export class DataExtractor {
     return get(ext, 'value', 'N/A');
   }
 
-  public getPractitionerDataFromPractitionerRole(resource: any, attributeName: string, bundle: any): PractitionerData | null {
+  public getPractitionerDataFromPractitionerRole(
+    resource: any,
+    attributeName: string,
+    bundle: any,
+  ): PractitionerData | null {
     const reference = get(resource, `${attributeName}.reference`, null);
     if (reference == null) {
       return PRACTITIONER_NOT_FOUND;

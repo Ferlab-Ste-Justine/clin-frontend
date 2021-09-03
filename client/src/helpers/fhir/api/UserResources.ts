@@ -9,7 +9,9 @@ export const getUserPractitionerData = async (response: AxiosResponse): Promise<
     return Promise.resolve({ ...response });
   }
 
-  const result = await httpClient.secureClinAxios.get(`${window.CLIN.fhirBaseUrl}/PractitionerRole?practitioner=${practitionerId}&_include=PractitionerRole:practitioner`);
+  const result = await httpClient.secureClinAxios.get(
+    `${window.CLIN.fhirBaseUrl}/PractitionerRole?practitioner=${practitionerId}&_include=PractitionerRole:practitioner`,
+  );
 
   if ((<any>result).error != null) {
     return Promise.reject();

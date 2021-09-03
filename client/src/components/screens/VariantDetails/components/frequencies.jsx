@@ -217,7 +217,11 @@ class FrequenciesTab extends React.Component {
 
       const total = {
         ldm: (<span className="bold">Total</span>),
-        pn: (<Button className="link--underline bold variantLink" type="link" onClick={this.goToPatientTab}>{ uniqueDonors.length }</Button>),
+        pn: (
+          <Button className="link--underline bold variantLink" type="link" onClick={this.goToPatientTab}>
+            { uniqueDonors.length }
+          </Button>
+        ),
         ac: (<span className="bold">{ sumBy(rows, (e) => e.ac) }</span>),
         an: (
           <span className="bold">
@@ -254,6 +258,7 @@ class FrequenciesTab extends React.Component {
       } = data;
       const numberWithSpaces = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
+      // eslint-disable-next-line max-len
       const url = `https://gnomad.broadinstitute.org/variant/${chromosome}-${start}-${reference}-${alternate}?dataset=gnomad_r3`;
       const externalCohortsKeys = Object.keys(frequencies).filter((k) => k !== 'internal' && k.indexOf('LDx') === -1);
       const rows = externalCohortsKeys.map((key) => {
@@ -264,7 +269,11 @@ class FrequenciesTab extends React.Component {
         frequency.an = numberWithSpaces(frequency.an);
         frequency.hom = numberWithSpaces(frequency.hom);
 
-        frequency.key = <Button type="link" target="_blank" href={url} className="link--underline variantLink">{ key }</Button>;
+        frequency.key = (
+          <Button type="link" target="_blank" href={url} className="link--underline variantLink">
+            { key }
+          </Button>
+        );
         frequency.af = Number.parseFloat(frequency.af).toExponential(2);
         return frequency;
       });

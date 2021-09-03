@@ -141,7 +141,10 @@ function* duplicateStatement(action) {
       throw new Error('Filtre non-trouvé.');
     }
 
-    statement.title = intl.get('screen.patientvariant.modal.statement.duplicate.input.title.format', { title: statement.title });
+    statement.title = intl.get(
+      'screen.patientvariant.modal.statement.duplicate.input.title.format',
+      { title: statement.title },
+    );
     statement.queries = draftQueries;
     yield put({ type: actionTypes.PATIENT_VARIANT_DUPLICATE_STATEMENT_SUCCEEDED, payload: { statement } });
     yield put(actions.success('screen.patientvariant.notification.duplicate.success'));
@@ -225,7 +228,10 @@ function* fetchGenebyAutocomplete(action) {
     if (variantResponse.error) {
       throw new ApiError(variantResponse.error);
     }
-    yield put({ type: actionTypes.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_SUCCEEDED, payload: variantResponse.payload.data });
+    yield put({
+      type: actionTypes.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_SUCCEEDED,
+      payload: variantResponse.payload.data,
+    });
   } catch (e) {
     yield put({ type: actionTypes.PATIENT_VARIANT_FETCH_GENES_BY_AUTOCOMPLETE_FAILED, payload: e });
   }

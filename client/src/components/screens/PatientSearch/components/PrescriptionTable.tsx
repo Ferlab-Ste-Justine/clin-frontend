@@ -84,10 +84,16 @@ const PrescriptionTable: React.FC<Props> = ({
         familyComposition: result.familyInfo.type,
         familyType: result.familyInfo.type,
         ethnicity: result.ethnicity,
-        bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? intl.get('screen.patientsearch.bloodRelationship.yes') : intl.get('screen.patientsearch.bloodRelationship.no'),
+        bloodRelationship: (result.bloodRelationship == null)
+          ? '--'
+          : result.bloodRelationship
+            ? intl.get('screen.patientsearch.bloodRelationship.yes')
+            : intl.get('screen.patientsearch.bloodRelationship.no'),
         proband: 'Proband',
         position: result.patientInfo.position,
-        practitioner: result.practitioner.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
+        practitioner: result.practitioner.id.startsWith('PA')
+          ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}`
+          : 'FERRETTI, Vincent',
         request: result.id,
         test: result.test,
         prescription: result.authoredOn,

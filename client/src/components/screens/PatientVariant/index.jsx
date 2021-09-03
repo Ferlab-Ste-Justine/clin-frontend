@@ -145,10 +145,15 @@ const parentalOriginLines = (variant, _gene) => {
       : intl.get('screen.variantDetails.heterozygote');
   };
 
-  const coverage = (donor) => [
-    intl.get('screen.patientvariant.parentalOrigin.variantConverage'),
-    `${getValue(donor, 'ad_alt')}/${getValue(donor, 'ad_total')} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
-  ];
+  const coverage = (donor) => {
+    const adAlt = getValue(donor, 'ad_alt');
+    const adTotal = getValue(donor, 'ad_total');
+
+    return [
+      intl.get('screen.patientvariant.parentalOrigin.variantConverage'),
+      `${adAlt}/${adTotal} ${intl.get('screen.patientvariant.parentalOrigin.sequenceReads')}`,
+    ];
+  };
 
   const origin = (d) => {
     switch (d.origin) {
@@ -212,7 +217,8 @@ const clinVar = (variant, _gene) => {
   }
 
   const clinvarLabel = intl.get(`clinvar.value.${getValue(variant.clinvar, 'clinvar_clinsig')}`);
-  const cvcs = `${clinvarLabel} (${intl.get('screen.patientvariant.clinVarVariationId')}: ${getValue(variant.clinvar, 'clinvar_id')})`;
+  const clinvarId = getValue(variant.clinvar, 'clinvar_id');
+  const cvcs = `${clinvarLabel} (${intl.get('screen.patientvariant.clinVarVariationId')}: ${clinvarId})`;
   return cvcs || 0;
 };
 
@@ -398,7 +404,13 @@ class PatientVariantScreen extends React.Component {
             renderer: (data) => {
               try {
                 return (
-                  <Button data-id={data.id} onClick={this.handleNavigationToVariantDetailsScreen} className="button">{ data.hgvsg }</Button>
+                  <Button
+                    data-id={data.id}
+                    onClick={this.handleNavigationToVariantDetailsScreen}
+                    className="button"
+                  >
+                    { data.hgvsg }
+                  </Button>
                 );
               } catch (e) { return ''; }
             },
@@ -480,8 +492,8 @@ class PatientVariantScreen extends React.Component {
           excelRenderer: (data) => {
             try {
               const consequences = formatConsequences(data.consequences);
-              return consequences.map((consequence) => (consequence.pick === true
-                ? `${consequence.consequence[0]} ${consequence.symbol ? consequence.symbol : ''} ${consequence.aa_change ? consequence.aa_change : ''}`
+              return consequences.map((c) => (c.pick === true
+                ? `${c.consequence[0]} ${c.symbol ? c.symbol : ''} ${c.aa_change ? c.aa_change : ''}`
                 : ''));
             } catch (e) { return ''; }
           },
@@ -543,14 +555,21 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'frequencies',
           label: 'screen.variantsearch.table.frequencies',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
+          description: '',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
                 return (
                   <>
                     <Row className="frequenciesLine">
-                      <Button type="link" className="frequenciesLink" data-id={data.id} onClick={this.goToVariantPatientTab}>{ data.frequencies.internal.ac }</Button>
+                      <Button
+                        type="link"
+                        className="frequenciesLink"
+                        data-id={data.id}
+                        onClick={this.goToVariantPatientTab}
+                      >
+                        { data.frequencies.internal.ac }
+                      </Button>
                       <span> / </span>
                       { data.frequencies.internal.an }
                     </Row>
@@ -569,7 +588,7 @@ class PatientVariantScreen extends React.Component {
             <div>
               <HeaderCellWithTooltip
                 name={intl.get('screen.variantsearch.table.frequencies')}
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus."
+                description=""
               />
             </div>
           )
@@ -585,6 +604,7 @@ class PatientVariantScreen extends React.Component {
                   <>
                     <Row>
                       <a
+                        // eslint-disable-next-line max-len
                         href={`https://gnomad.broadinstitute.org/variant/${data.chromosome}-${data.start}-${data.reference}-${data.alternate}?dataset=gnomad_r3`}
                         rel="noopener noreferrer"
                         target="_blank"
@@ -633,7 +653,7 @@ class PatientVariantScreen extends React.Component {
         {
           key: 'seq',
           label: 'screen.variantsearch.table.seq',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus.',
+          description: '',
           renderer: createCellRenderer('custom', this.getData, {
             renderer: (data) => {
               try {
@@ -659,7 +679,7 @@ class PatientVariantScreen extends React.Component {
             <div>
               <HeaderCellWithTooltip
                 name={intl.get('screen.variantsearch.table.seq')}
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non placerat metus, sit amet rhoncus."
+                description=""
               />
             </div>
           ),
@@ -1071,7 +1091,9 @@ class PatientVariantScreen extends React.Component {
       size, page, currentTab, columnPreset,
     } = this.state;
     const defaultStatementId = user.profile.defaultStatement ? user.profile.defaultStatement : null;
-    const total = currentTab === VARIANT_TAB && activeStatementTotals[activeQuery] != null ? activeStatementTotals[activeQuery] : 0;
+    const total = currentTab === VARIANT_TAB && activeStatementTotals[activeQuery] != null
+      ? activeStatementTotals[activeQuery]
+      : 0;
 
     const searchData = [];
     const reverseCategories = {};
@@ -1099,7 +1121,8 @@ class PatientVariantScreen extends React.Component {
 
     /*
       This loop has been seen to take 70 ms to complete.
-      This is something that will have to be addressed before going to prod alongside a more generalized performance problem:
+      This is something that will have to be addressed before going to prod alongside
+      a more generalized performance problem:
       the whole cycle from setState to the end of rendering the page may take 360 ms on average.
     */
     if (facets[activeQuery]) {

@@ -177,7 +177,8 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "msw": "^0.27.1"
+    "msw": "^0.27.1",
+    "prettier": "^2.3.2"
   },
   "jest": {
     "roots": [
@@ -235,5 +236,10 @@
     "presets": [
       "react-app"
     ]
+  },
+  "prettier": {
+    "printWidth": 100,
+    "trailingComma": "all",
+    "singleQuote": true
   }
 }

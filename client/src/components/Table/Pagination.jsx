@@ -5,7 +5,16 @@ import { Pagination } from 'antd';
 
 const DataTablePagination = (props) => {
   const {
-    total, page, defaultPage, size, defaultSize, sizeOptions, canChangeSize, isDisabled, pageChangeCallback, pageSizeChangeCallback,
+    total,
+    page,
+    defaultPage,
+    size,
+    defaultSize,
+    sizeOptions,
+    canChangeSize,
+    isDisabled,
+    pageChangeCallback,
+    pageSizeChangeCallback,
   } = props;
 
   return (

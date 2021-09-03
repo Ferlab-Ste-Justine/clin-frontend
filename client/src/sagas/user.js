@@ -54,7 +54,9 @@ function* updateUserProfile(action) {
     const defaultStatement = action.payload.defaultStatement ? action.payload.defaultStatement : '';
     const patientTableConfig = action.payload.patientTableConfig ? action.payload.patientTableConfig : {};
     const variantTableConfig = action.payload.variantTableConfig ? action.payload.variantTableConfig : {};
-    const statementResponse = yield Api.updateUserProfile(action.payload.id, defaultStatement, patientTableConfig, variantTableConfig);
+    const statementResponse = yield Api.updateUserProfile(
+      action.payload.id, defaultStatement, patientTableConfig, variantTableConfig,
+    );
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
     }

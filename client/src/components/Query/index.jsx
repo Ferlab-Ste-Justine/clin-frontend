@@ -107,7 +107,9 @@ class Query extends React.Component {
   addInstruction(instruction) {
     // @NOTE Cannot add new filters to a query using an exclusion operator; not implemented yet.
     const { draft } = this.props;
-    const andNotOperator = find(draft.instructions, (dInstruction) => (dInstruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT));
+    const andNotOperator = find(draft.instructions, (dInstruction) => (
+      dInstruction.type === INSTRUCTION_TYPE_OPERATOR && instruction.data.type === OPERATOR_TYPE_AND_NOT
+    ));
     if (!andNotOperator) {
       const { display, index, onEditCallback } = this.props;
       const newDraft = cloneDeep(draft);
@@ -243,7 +245,15 @@ class Query extends React.Component {
 
   handleMenuSelection({ key }) {
     const {
-      display, draft, index, original, onCopyCallback, onDisplayCallback, onRemoveCallback, onDuplicateCallback, onEditCallback,
+      display,
+      draft,
+      index,
+      original,
+      onCopyCallback,
+      onDisplayCallback,
+      onRemoveCallback,
+      onDuplicateCallback,
+      onEditCallback,
     } = this.props;
     const sqon = JSON.stringify(this.sqon());
 
@@ -294,7 +304,17 @@ class Query extends React.Component {
 
   render() {
     const {
-      active, options, original, onSelectCallback, findQueryIndexForKey, findQueryTitle, results, facets, categories, draft, externalData,
+      active,
+      options,
+      original,
+      onSelectCallback,
+      findQueryIndexForKey,
+      findQueryTitle,
+      results,
+      facets,
+      categories,
+      draft,
+      externalData,
     } = this.props;
     const {
       copyable, removable,
@@ -312,7 +332,8 @@ class Query extends React.Component {
     if (isDirty) { classNames.push(styleQuery.dirtyQuery); }
     if (active) { classNames.push(styleQuery.activeQuery); } else { classNames.push(styleQuery.inactiveQuery); }
     return (
-      <div className={classNames.join(' ')} onClick={this.handleClick}> { /* eslint-disable-line */}
+      // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+      <div className={classNames.join(' ')} onClick={this.handleClick}>
         <div className={styleQuery.toolbar}>
           <Tooltip title={editTitleText}>
             <div className={styleQuery.title}>
@@ -337,7 +358,12 @@ class Query extends React.Component {
           <div className={styleQuery.actions}>
             { copyable && !isEmpty && (
               <Tooltip title={duplicateText}>
-                <IconKit icon={ic_filter_none} size={16} className={styleQuery.icon} onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }} />
+                <IconKit
+                  icon={ic_filter_none}
+                  size={16}
+                  className={styleQuery.icon}
+                  onClick={() => { this.handleMenuSelection({ key: QUERY_ACTION_DUPLICATE }); }}
+                />
               </Tooltip>
             ) }
             { removable && (
@@ -508,16 +534,14 @@ class Query extends React.Component {
                     }
                     break;
                   case INSTRUCTION_TYPE_SUBQUERY:
-                    const queryIndex = findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null; /* eslint-disable-line no-case-declarations */
-                    const queryTitle = findQueryTitle ? findQueryTitle(item.data.query) : null; /* eslint-disable-line no-case-declarations */
                     return (
                       <Subquery
                         index={index}
                         options={options}
                         data={item.data}
                         autoSelect={active}
-                        queryIndex={queryIndex}
-                        queryTitle={queryTitle}
+                        queryIndex={findQueryIndexForKey ? findQueryIndexForKey(item.data.query) : null}
+                        queryTitle={findQueryTitle ? findQueryTitle(item.data.query) : null}
                         onEditCallback={this.handleSubqueryChange}
                         onRemoveCallback={this.handleSubqueryRemoval}
                         onSelectCallback={onSelectCallback}

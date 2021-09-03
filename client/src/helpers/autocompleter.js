@@ -13,7 +13,11 @@ export const tokenizeObjectByKeys = (keys = ['value']) => (datum) => {
   return flatten(tokens);
 };
 
-const Autocompleter = async (dataset, datumTokenizer = Bloodhound.tokenizers.whitespace, queryTokenizer = Bloodhound.tokenizers.whitespace) => {
+const Autocompleter = async (
+  dataset,
+  datumTokenizer = Bloodhound.tokenizers.whitespace,
+  queryTokenizer = Bloodhound.tokenizers.whitespace,
+) => {
   const engine = new Bloodhound({
     sufficient: 1,
     initialize: true,

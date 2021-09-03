@@ -27,7 +27,10 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summ
       <Form.Item
         label={intl.get('form.patientSubmission.clinicalInformation.cgh')}
         name="cghInterpretationValue"
-        rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
+        rules={[{
+          required: true,
+          message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
+        }]}
       >
         <Radio.Group
           buttonStyle="solid"

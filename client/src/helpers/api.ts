@@ -86,7 +86,12 @@ const getPrescriptionsByAutoComplete = (
   .then(successCallback)
   .catch(errorCallback);
 
-const searchPatients = (query: string, page: number, size: number, type = 'patient') => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
+const searchPatients = (
+  query: string,
+  page: number,
+  size: number,
+  type = 'patient',
+) => Http.secureClinAxios.get(`${window.CLIN.patientServiceApiUrl}/search`, {
   params: {
     query,
     page,
@@ -112,7 +117,14 @@ const getVariantSchema = () => Http.secureClinAxios.get(`${window.CLIN.variantSe
   .then(successCallback)
   .catch(errorCallback);
 
-const searchVariantsForPatient = (patient: string, statement: string, query: string, page: number, size: number, group: string) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
+const searchVariantsForPatient = (
+  patient: string,
+  statement: string,
+  query: string,
+  page: number,
+  size: number,
+  group: string,
+) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/search`, {
   patient,
   statement,
   query,
@@ -123,42 +135,46 @@ const searchVariantsForPatient = (patient: string, statement: string, query: str
   .then(successCallback)
   .catch(errorCallback);
 
-const searchFacetsForPatient = (patient: any, statement: string, query: string) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/facet`, {
-  patient,
-  statement,
-  query,
-})
-  .then(successCallback)
-  .catch(errorCallback);
+const searchFacetsForPatient = (patient: any, statement: string, query: string) => (
+  Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/facet`, {
+    patient,
+    statement,
+    query,
+  })
+    .then(successCallback)
+    .catch(errorCallback));
 
-const countVariantsForPatient = (patient: any, statement: string, queries: any) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
-  patient,
-  statement,
-  queries,
-})
-  .then(successCallback)
-  .catch(errorCallback);
+const countVariantsForPatient = (patient: any, statement: string, queries: any) => (
+  Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/count`, {
+    patient,
+    statement,
+    queries,
+  })
+    .then(successCallback)
+    .catch(errorCallback));
 
 const getStatements = () => Http.secureClinAxios.get(`${window.CLIN.metaServiceApiUrl}/statement`, {})
   .then(successCallback)
   .catch(errorCallback);
 
-const createStatement = (title: string, description: string, queries: any) => Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
-  title,
-  description,
-  queries,
-})
-  .then(successCallback)
-  .catch(errorCallback);
+const createStatement = (title: string, description: string, queries: any) => (
+  Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/statement`, {
+    title,
+    description,
+    queries,
+  })
+    .then(successCallback)
+    .catch(errorCallback));
 
-const updateStatement = (uid: string, title: string, description: string, queries: any) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
-  uid,
-  title,
-  description,
-  queries,
-})
-  .then(successCallback)
-  .catch(errorCallback);
+const updateStatement = (uid: string, title: string, description: string, queries: any) => (
+  Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/statement`, {
+    uid,
+    title,
+    description,
+    queries,
+  })
+    .then(successCallback)
+    .catch(errorCallback));
 
 const deleteStatement = (uid: string) => Http.secureClinAxios.delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
   data: { uid },
@@ -171,22 +187,24 @@ const getUserProfile = () => Http.secureClinAxios.get(`${window.CLIN.metaService
   .then(successCallback)
   .catch(errorCallback);
 
-const createUserProfile = (defaultStatement = '', patientTableConfig = {}, variantTableConfig = {}) => Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/profile`, {
-  defaultStatement,
-  patientTableConfig,
-  variantTableConfig,
-})
-  .then(successCallback)
-  .catch(errorCallback);
+const createUserProfile = (defaultStatement = '', patientTableConfig = {}, variantTableConfig = {}) => (
+  Http.secureClinAxios.post(`${window.CLIN.metaServiceApiUrl}/profile`, {
+    defaultStatement,
+    patientTableConfig,
+    variantTableConfig,
+  })
+    .then(successCallback)
+    .catch(errorCallback));
 
-const updateUserProfile = (uid: string, defaultStatement: any, patientTableConfig = {}, variantTableConfig = {}) => Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/profile`, {
-  uid,
-  defaultStatement,
-  patientTableConfig,
-  variantTableConfig,
-})
-  .then(successCallback)
-  .catch(errorCallback);
+const updateUserProfile = (uid: string, defaultStatement: any, patientTableConfig = {}, variantTableConfig = {}) => (
+  Http.secureClinAxios.put(`${window.CLIN.metaServiceApiUrl}/profile`, {
+    uid,
+    defaultStatement,
+    patientTableConfig,
+    variantTableConfig,
+  })
+    .then(successCallback)
+    .catch(errorCallback));
 
 const convertToExcelData = (data: any) => Http.secureClinAxios.post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
   .then(successCallback)

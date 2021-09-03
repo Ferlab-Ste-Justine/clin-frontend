@@ -364,7 +364,12 @@ class InteractiveTable extends React.Component {
           </Row>
         ) }
         <Row>
-          <Checkbox.Group onChange={this.handleColumnsSelected} option={orderedColumns.map((column) => column.key)} className={`${style.checkbox} `} value={cloneDeep(visibleColumns)}>
+          <Checkbox.Group
+            onChange={this.handleColumnsSelected}
+            option={orderedColumns.map((column) => column.key)}
+            className={`${style.checkbox} `}
+            value={cloneDeep(visibleColumns)}
+          >
             { matchingColumns.map((key) => (
               <Row key={key} justify="space-between" style={{ paddingLeft: '8px' }}>
                 <Col>
@@ -389,7 +394,11 @@ class InteractiveTable extends React.Component {
               </Col>
               { isReorderable && (
                 <Col>
-                  <Button onClick={this.toggleColumnReorderer} className={columnReordererIsActive ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
+                  <Button
+                    onClick={this.toggleColumnReorderer}
+                    className={columnReordererIsActive
+                      ? `${styleTable.activeButton} ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}
+                  >
                     <IconKit size={16} icon={ic_swap_horiz} />
                     { intl.get('components.table.action.organize') }
                   </Button>
@@ -403,7 +412,11 @@ class InteractiveTable extends React.Component {
                     placement="bottom"
                     onVisibleChange={this.handleColumnsVisible}
                   >
-                    <Button onClick={this.toggleColumnSelector} className={columnSelectorIsActive ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}>
+                    <Button
+                      onClick={this.toggleColumnSelector}
+                      className={columnSelectorIsActive
+                        ? `${styleTable.activeButton}  ${style.btnSec} ${style.btn}` : `${style.btnSec}  ${style.btn}`}
+                    >
                       <IconKit size={16} icon={ic_view_column} />
                       { intl.get('components.table.action.display') }
                     </Button>
@@ -421,7 +434,11 @@ class InteractiveTable extends React.Component {
               {
                 canCreateReport && (
                   <Col>
-                    <Button onClick={this.handleCreateReport} className={`${style.btn} ${style.btnSec}`} disabled={!isReportAvailable}>
+                    <Button
+                      onClick={this.handleCreateReport}
+                      className={`${style.btn} ${style.btnSec}`}
+                      disabled={!isReportAvailable}
+                    >
                       <IconKit size={16} icon={ic_cloud_download} /> { intl.get('components.table.action.createReport') }
                     </Button>
                   </Col>

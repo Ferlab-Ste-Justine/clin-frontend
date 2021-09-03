@@ -141,7 +141,9 @@ function StatusChangeModal({
     dispatch({ type: ActionType.SET_NOTE, payload: { key, value: e.target.value } });
   };
 
-  const statusToDisplay = initialStatus === 'submitted' ? [statuses[StatusType['on-hold']], statuses.revoked, statuses.active] : [statuses.completed];
+  const statusToDisplay = initialStatus === 'submitted'
+    ? [statuses[StatusType['on-hold']], statuses.revoked, statuses.active]
+    : [statuses.completed];
   const onOk = () => onOkCallback(state.selectedStatus, state.notes[state.selectedStatus]);
 
   const isShowNote = (status: StatusType) => status === state.selectedStatus && statusWithNotes.includes(status);

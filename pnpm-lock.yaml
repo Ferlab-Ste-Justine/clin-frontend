@@ -98,6 +98,7 @@ specifiers:
   postcss-normalize: 8.0.1
   postcss-preset-env: 6.7.0
   postcss-safe-parser: 5.0.2
+  prettier: ^2.3.2
   prop-types: ^15.7.2
   react: ^17.0.1
   react-app-polyfill: ^2.0.0
@@ -277,6 +278,7 @@ devDependencies:
   eslint-config-airbnb: 18.2.1_c421c6b40b1f1ab9eeee27d8e87272cc
   eslint-plugin-cypress: 2.11.3_eslint@7.14.0
   msw: 0.27.2
+  prettier: 2.3.2
 
 packages:
 
@@ -4306,8 +4308,8 @@ packages:
       tslib: 1.14.1
     dev: false
 
-  /chromedriver/92.0.1:
-    resolution: {integrity: sha512-LptlDVCs1GgyFNVbRoHzzy948JDVzTgGiVPXjNj385qXKQP3hjAVBIgyvb/Hco0xSEW8fjwJfsm1eQRmu6t4pQ==}
+  /chromedriver/92.0.2:
+    resolution: {integrity: sha512-WMBQju3eJ80gdA+JggWpuGwob5dGpuFXaab8Bxs9oN3W1WuxzRShQ4dkwvtXm4lYyBIjoNbETNk0JvsqRe5mzg==}
     engines: {node: '>=10'}
     hasBin: true
     requiresBuild: true
@@ -8719,7 +8721,7 @@ packages:
     dependencies:
       jwk-to-pem: 2.0.5
     optionalDependencies:
-      chromedriver: 92.0.1
+      chromedriver: 92.0.2
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -11030,6 +11032,12 @@ packages:
     resolution: {integrity: sha1-1PRWKwzjaW5BrFLQ4ALlemNdxtw=}
     engines: {node: '>=0.10.0'}
     dev: false
+
+  /prettier/2.3.2:
+    resolution: {integrity: sha512-lnJzDfJ66zkMy58OL5/NY5zp70S7Nz6KqcKkXYzn2tMVrNxvbqaBpg7H3qHaLxCJ5lNMsGuM8+ohS7cZrthdLQ==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
 
   /pretty-bytes/5.4.1:
     resolution: {integrity: sha512-s1Iam6Gwz3JI5Hweaz4GoCD1WUNUIyzePFy5+Js2hjwGVt2Z79wNN+ZKOZ2vB6C+Xs6njyB84Z1IthQg8d9LxA==}

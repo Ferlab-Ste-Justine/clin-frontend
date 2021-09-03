@@ -64,7 +64,9 @@ const optionObservedNeg = (externalDataSet) => (option) => {
 const sortOptions = (externalDataSet) => (options) => {
   const observedPos = options.filter(optionObservedPos(externalDataSet));
   const observedNeg = options.filter(optionObservedNeg(externalDataSet));
-  const notObserved = options.filter((o) => !optionObservedPos(externalDataSet)(o) && !optionObservedNeg(externalDataSet)(o));
+  const notObserved = options.filter((o) => (
+    !optionObservedPos(externalDataSet)(o) && !optionObservedNeg(externalDataSet)(o)
+  ));
   return [...observedPos, ...observedNeg, ...notObserved];
 };
 
@@ -305,7 +307,9 @@ class SpecificFilter extends Filter {
 
     pullAllBy(allOptions, [{ value: '' }], 'value');
 
-    const loadedOptionsClone = loadedOptions.length ? [...loadedOptions] : allOptions.slice(0, Math.min(10, allOptions.length));
+    const loadedOptionsClone = loadedOptions.length
+      ? [...loadedOptions]
+      : allOptions.slice(0, Math.min(10, allOptions.length));
 
     const observedOptions = allOptions.filter((option) => {
       const code = option.value.match(HPO_REGEX).toString();
@@ -412,7 +416,8 @@ class SpecificFilter extends Filter {
                         <Col className="checkboxLine">
                           <Checkbox
                             onChange={this.handleSelectionChange}
-                            className={draft.values.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
+                            className={draft.values.includes(option.value)
+                              ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
                             value={option.value}
                           >{ option.label }
                           </Checkbox>
