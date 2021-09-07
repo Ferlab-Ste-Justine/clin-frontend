@@ -1,5 +1,5 @@
 ![](https://github.com/Ferlab-Ste-Justine/clin-frontend/workflows/Build/badge.svg)
-![](https://github.com/Ferlab-Ste-Justine/clin-frontend/workflows/Publish Image%20Using%20Commit%20Hash/badge.svg)
+![](https://github.com/Ferlab-Ste-Justine/clin-frontend/workflows/Publish%20Image%20Using%20Commit%20Hash/badge.svg)
 ![](https://github.com/Ferlab-Ste-Justine/clin-frontend/workflows/Publish%20Image%20Using%20Tag/badge.svg)
 
 # CLIN Frontend
