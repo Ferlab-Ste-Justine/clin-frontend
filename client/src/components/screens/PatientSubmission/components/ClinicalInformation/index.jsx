@@ -4,7 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  AutoComplete, Button, Card, Checkbox, Col, Form, Input, Popconfirm, Row, Select, Tree, Typography,
+  AutoComplete, Button, Card, Checkbox, Col, Form, Input, Popconfirm, Row, Select, Typography,
 } from 'antd';
 import IconKit from 'react-icons-kit';
 import { ic_help, ic_visibility, ic_visibility_off } from 'react-icons-kit/md';

@@ -242,7 +242,6 @@ const searchHPOByAncestorId = async (hpoId: string, size: number = 1000, after?:
     .catch(errorCallback);
 };
 
-
 const searchPractitioners = async ({ term }: {term: string}) => {
   const filter = `name sw "${term}" or identifier sw "${term}"`;
   const url = `${window.CLIN.fhirBaseUrl}/Practitioner?_filter=${filter}&_pretty=true&_count=5`;

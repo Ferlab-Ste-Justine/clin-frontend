@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Key, useEffect, useState } from 'react';
 import { Tree } from 'antd';
 import Api from 'helpers/api';
 import { hpoDisplayName } from '../index';
@@ -19,9 +19,23 @@ type HPO = {
   compact_ancestors: { hpo_id: string, name: string }[];
 };
 
+type Hits = {
+  _source: HPO
+};
+
+type Response = {
+  payload: {
+    data: {
+      data: {
+        hits: Hits[]
+      };
+    }
+  }
+};
+
 type Props = {
-    checkedKeys: any;
-        onCheck: any;
+    checkedKeys: string[];
+        onCheck: (checked: Key[] | { checked: Key[]; halfChecked: Key[]; }) => void
 };
 
 const ROOT_PHENOTYPE = 'Phenotypic abnormality (HP:0000118)';
@@ -35,7 +49,7 @@ const hpoToTreeNode = (hpo: HPO): TreeNode => ({
 });
 
 const fetchRootNodes = (root: string) => Api.searchHpoChildren(root).then((res) => {
-  const response = res as any; // TODO fix type here
+  const response = res as Response;
   if (response.payload) {
     const { data } = response.payload.data;
     const { hits } = data;
@@ -60,7 +74,7 @@ const OntologyTree = (props: Props) => {
     const { title } = treeNodeClicked;
 
     Api.searchHpoChildren(title).then((response) => {
-      const res = response as any; // TODO fix type here
+      const res = response as Response;
       const node: TreeNode = treeNodeClicked.props.data;
 
       if (res.payload) {
