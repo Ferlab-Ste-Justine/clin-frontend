@@ -64,6 +64,10 @@ export const variantShape = {
 
 export const DRAFT_STATEMENT_UID = 'draft';
 
+const intlKeys = {
+  defaultTitle: 'screen.patientvariant.modal.statement.save.input.title.default',
+};
+
 const createNewQuery = (
   title = intl.get('screen.patientvariant.query.title.increment', { count: 1 }),
   key = uuidv1(),
@@ -152,14 +156,17 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
         draft.draftQueries = draft.draftQueries.filter((query) => action.payload.keys.indexOf(query.key) === -1);
         // @NOTE Remove matching subquery instructions
         const filteredDrafts = draft.draftQueries.map((draftQuery) => {
-          const filteredInstructions = draftQuery.instructions.filter((instruction) => !(instruction.type === INSTRUCTION_TYPE_SUBQUERY && action.payload.keys.indexOf(instruction.data.query) !== -1));
+          const filteredInstructions = draftQuery.instructions.filter(
+            (instruction) => !(instruction.type === INSTRUCTION_TYPE_SUBQUERY
+                && action.payload.keys.indexOf(instruction.data.query) !== -1),
+          );
           draftQuery.instructions = sanitizeInstructions(filteredInstructions);
           return draftQuery;
         });
         draft.draftQueries = filteredDrafts;
         draft.activeQuery = last(draft.draftQueries).key;
       } else {
-        const newStatement = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
+        const newStatement = createDraftStatement(intl.get(`${intlKeys.defaultTitle}`));
         draft.statements[draft.activeStatementId].queries = newStatement.queries;
         draft.activeQuery = head(newStatement.queries).key;
         draft.draftQueries = newStatement.queries;
@@ -250,7 +257,7 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
       if (!doesDefaultStatementExist && !wasAStatementSelected) {
         // @NOTE Don't override draft if one exists
         if (!draft.statements[DRAFT_STATEMENT_UID]) {
-          draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
+          draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get(`${intlKeys.defaultTitle}`));
           draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
           draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
           draft.draftQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
@@ -328,7 +335,7 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
           payload.statement.title,
         );
       } else {
-        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get('screen.patientvariant.modal.statement.save.input.title.default'));
+        draft.statements[DRAFT_STATEMENT_UID] = createDraftStatement(intl.get(`${intlKeys.defaultTitle}`));
       }
       draft.activeQuery = head(draft.statements[DRAFT_STATEMENT_UID].queries).key;
       draft.originalQueries = draft.statements[DRAFT_STATEMENT_UID].queries;
@@ -345,7 +352,10 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
       break;
 
     case actions.PATIENT_VARIANT_UPDATE_COLUMNS_ORDER:
-      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_ORDER_KEY, JSON.stringify(action.payload.columnsOrder));
+      window.localStorage.setItem(
+        LOCAL_STORAGE_PATIENT_VARIANT_COLUMNS_ORDER_KEY,
+        JSON.stringify(action.payload.columnsOrder),
+      );
       draft.columnsOrder = action.payload.columnsOrder;
       break;
 

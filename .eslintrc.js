@@ -33,10 +33,17 @@ module.exports = {
         when: 'always',
       },
     }],
-    'max-len': [1, 124, 4],
+    'max-len': [
+      'error',
+      {
+        code: 124,
+        ignoreComments: true,
+      },
+    ],
     camelcase: 'off',
     'react/jsx-one-expression-per-line': 'off',
     'react/forbid-prop-types': 'off',
+    'no-console': ['error', { allow: ['warn', 'error'] }],
     'no-param-reassign': 'off',
     'no-underscore-dangle': 'off',
     // note you must disable the base rule as it can report incorrect errors

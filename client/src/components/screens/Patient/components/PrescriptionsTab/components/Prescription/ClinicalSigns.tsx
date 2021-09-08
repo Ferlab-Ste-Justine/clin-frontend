@@ -7,10 +7,12 @@ import { ClinicalImpression, Reference } from 'helpers/fhir/types';
 import { ClinicalObservation } from '../../../../../../../helpers/providers/types';
 
 const getObservedIcon = (status: string) => {
+  const prescriptionTabCN = 'prescriptions-tab__prescriptions-section__clinical-sign__observed ';
+
   if (status === 'POS') {
     return (
       <EyeFilled
-        className="prescriptions-tab__prescriptions-section__clinical-sign__observed prescriptions-tab__prescriptions-section__clinical-sign__observed--positive"
+        className={`${prescriptionTabCN} ${prescriptionTabCN}--positive`}
         aria-label={intl.get('screen.patient.details.prescriptions.clinicalSign.observed')}
       />
     );
@@ -18,7 +20,7 @@ const getObservedIcon = (status: string) => {
   if (status === 'NEG') {
     return (
       <EyeInvisibleFilled
-        className="prescriptions-tab__prescriptions-section__clinical-sign__observed prescriptions-tab__prescriptions-section__clinical-sign__observed--negative"
+        className={`${prescriptionTabCN} ${prescriptionTabCN}--negative`}
         aria-label={intl.get('screen.patient.details.prescriptions.clinicalSign.negative')}
       />
     );
@@ -26,7 +28,7 @@ const getObservedIcon = (status: string) => {
 
   return (
     <QuestionCircleFilled
-      className="prescriptions-tab__prescriptions-section__clinical-sign__observed prescriptions-tab__prescriptions-section__clinical-sign__observed--unknown"
+      className={`${prescriptionTabCN} ${prescriptionTabCN}--unknown`}
       aria-label={intl.get('screen.patient.details.prescriptions.clinicalSign.unknown')}
     />
   );

@@ -145,7 +145,10 @@ const searchReducer = (state = ({ ...initialSearchState }), action) => produce(s
       break;
 
     case actions.USER_PROFILE_UPDATE_COLUMNS_ORDER:
-      window.localStorage.setItem(LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY, JSON.stringify(action.payload.columnsOrder));
+      window.localStorage.setItem(
+        LOCAL_STORAGE_PATIENT_SEARCH_COLUMNS_ORDER_KEY,
+        JSON.stringify(action.payload.columnsOrder),
+      );
       draft.columnsOrder = action.payload.columnsOrder;
       break;
 

@@ -79,7 +79,9 @@ const PatientTable: React.FC<Props> = ({
         ethnicity: result.ethnicity,
         bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? 'Yes' : 'No',
         position: result.position,
-        practitioner: result.id.startsWith('PA') ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}` : 'FERRETTI, Vincent',
+        practitioner: result.id.startsWith('PA')
+          ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}`
+          : 'FERRETTI, Vincent',
         request: get(result, 'requests.length', 0) === 0 ? '--' : get(result, 'requests.length', 0).toString(),
         fetus: result.fetus,
       };

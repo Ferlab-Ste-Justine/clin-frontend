@@ -62,7 +62,12 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
     case actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED:
       draft.showLoadingAnimation = false;
       if (window.agent) {
-        const agentIdle = ['IdleScratch', 'IdleStretch', 'IdleTailWagA', 'IdleTailWagB', 'IdleTailWagC', 'IdleTailWagD', 'IdleTwitch', 'IdleYawn', 'IdleButterFly', 'IdleCleaning', 'IdleLegLick', 'GetArtsy'];
+        const agentIdle = [
+          'IdleScratch', 'IdleStretch', 'IdleTailWagA',
+          'IdleTailWagB', 'IdleTailWagC', 'IdleTailWagD',
+          'IdleTwitch', 'IdleYawn', 'IdleButterFly',
+          'IdleCleaning', 'IdleLegLick', 'GetArtsy',
+        ];
         window.agent.play(agentIdle[Math.floor((Math.random() * agentIdle.length))]);
       }
       break;

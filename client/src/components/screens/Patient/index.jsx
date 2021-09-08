@@ -156,7 +156,12 @@ class PatientScreen extends React.Component {
           }
         };
 
-        const status = <span><Badge className="impact" color={getStatusColor(r.status)} />{ intl.get(`screen.patient.details.status.${r.status}`) }</span>;
+        const status = (
+          <span>
+            <Badge className="impact" color={getStatusColor(r.status)} />
+            { intl.get(`screen.patient.details.status.${r.status}`) }
+          </span>
+        );
         const phonePart = r.requester.phone.split(' ');
         const phone = `(${phonePart[0]}) ${phonePart[1]}- ${phonePart[2]} `;
         const requesterPopOverText = (info) => (
@@ -171,7 +176,12 @@ class PatientScreen extends React.Component {
           <span className="logoText">
             { r.requester.formattedName }  |  4425615
             { r.requester.formattedName !== 'N/A' ? (
-              <Popover overlayClassName="practitionerInfo" placement="topRight" content={requesterPopOverText(r.requester)} trigger="hover">
+              <Popover
+                overlayClassName="practitionerInfo"
+                placement="topRight"
+                content={requesterPopOverText(r.requester)}
+                trigger="hover"
+              >
                 <Button className="logoText__button" type="link"><IconKit size={16} icon={ic_info_outline} /></Button>
               </Popover>
             ) : null }

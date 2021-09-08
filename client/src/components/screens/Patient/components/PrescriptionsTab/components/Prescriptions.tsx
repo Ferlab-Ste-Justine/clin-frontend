@@ -36,11 +36,14 @@ import { resetStatus } from '../../../../../../actions/prescriptions';
 
 const DEFAULT_VALUE = '--';
 
+const tabCNPrefix = 'prescriptions-tab__prescriptions-section';
+const tabDetailsCNPrefix = `${tabCNPrefix}__details`;
+
 const canEdit = (prescription: Prescription) => prescription.status === 'draft' || prescription.status === 'incomplete';
 
 const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
   <span
-    className="prescriptions-tab__prescriptions-section__details__status-tag"
+    className={`${tabDetailsCNPrefix}__status-tag`}
     style={{
       '--tag-color': statusColors[status],
     } as CSSProperties}
@@ -54,7 +57,10 @@ interface Props {
   clinicalImpressions: ClinicalImpression[]
 }
 
-const findClinicalImpression = (prescription: Prescription, clinicalImpressions: ClinicalImpression[]) => clinicalImpressions
+const findClinicalImpression = (
+  prescription: Prescription,
+  clinicalImpressions: ClinicalImpression[],
+) => clinicalImpressions
   .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
 
 const findFamilyHistories = (
@@ -129,7 +135,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
   };
 
   return (
-    <div className="prescriptions-tab__prescriptions-section">
+    <div className={`${tabCNPrefix}`}>
       <Tabs
         type="card"
         defaultActiveKey={startingIndex}
@@ -244,11 +250,11 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                 >
                   <DetailsRow
                     label={(
-                      <span className="prescriptions-tab__prescriptions-section__details__status-label">
+                      <span className={`${tabDetailsCNPrefix}__status-label`}>
                         { intl.get('screen.patient.details.prescription.status') }
                         <Button
                           type="text"
-                          className="prescriptions-tab__prescriptions-section__details__status-label__info-button"
+                          className={`${tabDetailsCNPrefix}__status-label__info-button`}
                           onClick={() => setIsStatusLegendVisible(true)}
                         >
                           <InfoCircleOutlined />
@@ -256,10 +262,13 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                       </span>
                     )}
                   >
-                    <div className="prescriptions-tab__prescriptions-section__details__status-value">
-                      <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
+                    <div className={`${tabDetailsCNPrefix}__status-value`}>
+                      <div className={`${tabDetailsCNPrefix}__status-value__row`}>
                         <StatusTag status={prescription.status} />
-                        { (prescription.status !== 'draft' && prescription.status !== 'incomplete' && prescription.status !== 'completed' && prescription.status !== 'revoked')
+                        { (prescription.status !== 'draft'
+                          && prescription.status !== 'incomplete'
+                          && prescription.status !== 'completed'
+                          && prescription.status !== 'revoked')
                         && (
                           <Button
                             className="button--borderless"
@@ -271,9 +280,9 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                         ) }
                       </div>
                       { ['revoked', 'incomplete'].includes(prescription.status) && prescription.note && (
-                        <div className="prescriptions-tab__prescriptions-section__details__status-value__row">
+                        <div className={`${tabDetailsCNPrefix}__status-value__row`}>
                           <span
-                            className={`prescriptions-tab__prescriptions-section__details__status-value__row__note ${prescription.status}`}
+                            className={`${tabDetailsCNPrefix}__status-value__row__note ${prescription.status}`}
                           >
                             { prescription.note }
                           </span>

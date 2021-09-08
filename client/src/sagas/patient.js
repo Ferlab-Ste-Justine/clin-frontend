@@ -237,12 +237,10 @@ function* removeParent(action) {
     const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
 
     const extToDeleteIndex = patientToUpdate.extension.findIndex(
-      (ext) => {
-        if (ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation') {
-          return ext.extension.find((extension) => extension.url === 'subject')?.valueReference.reference.indexOf(parentId) != null;
-        }
-        return false;
-      },
+      (ext) => ((ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation')
+        ? ext.extension.find((extension) => extension.url === 'subject')?.valueReference.reference.indexOf(parentId) != null
+        : false
+      ),
     );
 
     if (extToDeleteIndex !== -1) {

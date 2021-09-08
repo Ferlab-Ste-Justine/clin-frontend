@@ -176,6 +176,7 @@ class ResumeTabs extends React.Component {
             }
           };
           let isSameGene = false;
+          const consequenceTermCN = 'variant-page-content__resume__consequence-table__consequence-term';
           const getImpact = () => {
             let items = [];
             if (g.predictions) {
@@ -192,49 +193,49 @@ class ResumeTabs extends React.Component {
                   case 'sift':
                     return (
                       <li className={`${isOpen} sift`}>
-                        <span className="variant-page-content__resume__consequence-table__consequence-term">SIFT: </span>
+                        <span className={`${consequenceTermCN}`}>SIFT: </span>
                         { g.predictions.sift_pred } - { g.predictions.sift_converted_rank_score.toFixed(2) }
                       </li>
                     );
                   case 'polyphen2':
                     return (
                       <li className={`${isOpen} polyphen2`}>
-                        <span className="variant-page-content__resume__consequence-table__consequence-term">Polyphen2: </span>
+                        <span className={`${consequenceTermCN}`}>Polyphen2: </span>
                         { g.predictions.polyphen2_hvar_pred } - { g.predictions.polyphen2_hvar_score.toFixed(2) }
                       </li>
                     );
                   case 'cadd':
                     return (
                       <li className={`${isOpen} cadd`}>
-                        <span className="variant-page-content__resume__consequence-table__consequence-term">CADD score: </span>
+                        <span className={`${consequenceTermCN}`}>CADD score: </span>
                         { g.predictions.cadd_score.toFixed(2) }
                       </li>
                     );
                   case 'dann':
                     return (
                       <li className={`${isOpen} dann`}>
-                        <span className="variant-page-content__resume__consequence-table__consequence-term">DANN score: </span>
+                        <span className={`${consequenceTermCN}`}>DANN score: </span>
                         { g.predictions.dann_score.toFixed(2) }
                       </li>
                     );
                   case 'fathmm':
                     return (
                       <li className={`${isOpen} fathmm`}>
-                        <span className="variant-page-content__resume__consequence-table__consequence-term">FATHMM: </span>
+                        <span className={`${consequenceTermCN}`}>FATHMM: </span>
                         { g.predictions.fathmm_pred } - { g.predictions.FATHMM_converted_rankscore.toFixed(2) }
                       </li>
                     );
                   case 'lrt':
                     return (
                       <li className={`${isOpen} lrt`}>
-                        <span className="variant-page-content__resume__consequence-table__consequence-term">LRT: </span>
+                        <span className={`${consequenceTermCN}`}>LRT: </span>
                         { g.predictions.lrt_pred } - { g.predictions.lrt_converted_rankscore.toFixed(2) }
                       </li>
                     );
                   case 'revel':
                     return (
                       <li className={`${isOpen} revel`}>
-                        <span className="variant-page-content__resume__consequence-table__consequence-term">REVEL score: </span>
+                        <span className={`${consequenceTermCN}`}>REVEL score: </span>
                         { g.predictions.revel_rankscore.toFixed(2) }
                       </li>
                     );
@@ -269,13 +270,20 @@ class ResumeTabs extends React.Component {
               items = ['--'];
             }
             return (
-              <div className={`variant-page-content__resume__consequence-table__predictionList prediction_${g.symbol}_${index}`}>
+              <div
+                // eslint-disable-next-line max-len
+                className={`variant-page-content__resume__consequence-table__predictionList prediction_${g.symbol}_${index}`}
+              >
                 <ul>
                   { items }
                 </ul>
                 {
                   items.length > 2 ? (
-                    <Button className="link--underline variant-page-content__seeMore" type="link" onClick={() => this.handleSeeMoreImpact(g, index)}>
+                    <Button
+                      className="link--underline variant-page-content__seeMore"
+                      type="link"
+                      onClick={() => this.handleSeeMoreImpact(g, index)}
+                    >
                       { isSameGene ? intl.get('screen.variantdetails.seeLess') : intl.get('screen.variantdetails.seeMore') }
                     </Button>
                   ) : null
@@ -288,12 +296,26 @@ class ResumeTabs extends React.Component {
           const getTranscript = () => {
             const baseUrl = 'https://useast.ensembl.org/Homo_sapiens/Transcript/Summary?db=core';
             const canonical = g.canonical ? (
-              <svg className="canonicalIcon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                className="canonicalIcon"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                { /* eslint-disable-next-line max-len */ }
                 <path d="M0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9Z" fill="#5BC5ED" />
+                { /* eslint-disable-next-line max-len */ }
                 <path d="M12.1872 10.3583C12.1087 11.1889 11.8021 11.8378 11.2674 12.3048C10.7326 12.7683 10.0214 13 9.13369 13C8.51337 13 7.96613 12.8538 7.49198 12.5615C7.02139 12.2656 6.65775 11.8467 6.40107 11.3048C6.14439 10.7629 6.0107 10.1337 6 9.41711V8.68984C6 7.95544 6.13012 7.30838 6.39037 6.74866C6.65062 6.18895 7.02317 5.75758 7.50802 5.45455C7.99643 5.15152 8.55971 5 9.19786 5C10.057 5 10.7487 5.23351 11.2727 5.70053C11.7968 6.16756 12.1016 6.82709 12.1872 7.67914H10.8396C10.7754 7.11943 10.6114 6.71658 10.3476 6.47059C10.0873 6.22103 9.7041 6.09626 9.19786 6.09626C8.60963 6.09626 8.15686 6.31194 7.83957 6.74332C7.52585 7.17112 7.36542 7.80036 7.35829 8.63102V9.32086C7.35829 10.1622 7.50802 10.8039 7.80749 11.246C8.11052 11.6881 8.55258 11.9091 9.13369 11.9091C9.66488 11.9091 10.0642 11.7897 10.3316 11.5508C10.5989 11.3119 10.7683 10.9144 10.8396 10.3583H12.1872Z" fill="#EAF3FA" />
               </svg>
             ) : '';
-            return <span className="link--underline variant-page-content__resume__consequence-table__transcriptValue"><Link url={`${baseUrl}&t=${g.ensembl_feature_id}`} text={g.ensembl_feature_id} />{ canonical }</span>;
+            return (
+              <span className="link--underline variant-page-content__resume__consequence-table__transcriptValue">
+                <Link url={`${baseUrl}&t=${g.ensembl_feature_id}`} text={g.ensembl_feature_id} />
+                { canonical }
+              </span>
+            );
           };
 
           const strand = g.strand === +1 ? '+' : '-';
@@ -399,12 +421,18 @@ class ResumeTabs extends React.Component {
       return (
         <Row className="flex-row">
           <Typography.Title level={5} className="variant-page-content__resume__table-title">
-            Gène <span className="link--underline bold"><Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${gene.symbol}`} text={gene.symbol} /></span>
+            Gène
+            <span className="link--underline bold">
+              <Link url={`https://useast.ensembl.org/Homo_sapiens/Gene/Summary?g=${gene.symbol}`} text={gene.symbol} />
+            </span>
           </Typography.Title>
           { omimGene && omimGene.omim_gene_id
             ? (
               <Typography.Title level={5} className="variant-page-content__resume__table-title">
-                OMIM <span className="link--underline bold"><Link url={`https://omim.org/entry/${omimGene.omim_gene_id}`} text={omimGene.omim_gene_id} /></span>
+                OMIM
+                <span className="link--underline bold">
+                  <Link url={`https://omim.org/entry/${omimGene.omim_gene_id}`} text={omimGene.omim_gene_id} />
+                </span>
               </Typography.Title>
             ) : null }
 
@@ -532,12 +560,16 @@ class ResumeTabs extends React.Component {
                   <div className="row">
                     <span className="row__title">Patients</span>
                     <span className="row__info">
-                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>{ uniqueDonors.length }</Button>
+                      <Button className="link--underline" type="link" onClick={this.goToPatientTab}>
+                        { uniqueDonors.length }
+                      </Button>
                       /{ frequencies.internal.an }
                     </span>
                   </div>
                   <div className="row">
-                    <span className="row__title">{ intl.get('screen.variantDetails.summaryTab.patientTable.frequencies') }</span>
+                    <span className="row__title">
+                      { intl.get('screen.variantDetails.summaryTab.patientTable.frequencies') }
+                    </span>
                     <span className="row__info">
                       { Number.parseFloat(frequencies.internal.af).toExponential(2) }
                     </span>
@@ -586,7 +618,9 @@ class ResumeTabs extends React.Component {
                   { gene.length > 1
                     ? (
                       <Button className="link--underline" onClick={() => this.handleOpenGeneTable(gene)} type="link">
-                        { openGeneTable.includes(gene[0].symbol) ? 'Afficher moins -' : ` ${gene.length - 1}  autres transcrits +` }
+                        { openGeneTable.includes(gene[0].symbol)
+                          ? 'Afficher moins -'
+                          : ` ${gene.length - 1}  autres transcrits +` }
                       </Button>
                     ) : null }
 

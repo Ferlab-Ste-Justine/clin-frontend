@@ -19,8 +19,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run tests
-        run: yarn test
+        run: pnpm test

@@ -37,7 +37,14 @@ export const createCellRenderer = (type, getData, options = {}) => {
       case 'capitalText':
         valueRenderer = (value) => (
           <>
-            <Typography.Text {...options.style} type={options.type} className="capitalText" ellipsis>{ value }</Typography.Text>
+            <Typography.Text
+              {...options.style}
+              type={options.type}
+              className="capitalText"
+              ellipsis
+            >
+              { value }
+            </Typography.Text>
           </>
         );
         break;
@@ -145,7 +152,7 @@ class DataTable extends React.Component {
       const copyTextToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(() => {
         }, (err) => {
-          console.log('Could not copy text: ', err);
+          console.error('Could not copy text: ', err);
         });
       };
       const copyArrayToClipboard = (array) => {

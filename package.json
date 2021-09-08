@@ -13,21 +13,6 @@
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.2",
     "@react-keycloak/web": "^3.4.0",
     "@svgr/webpack": "5.4.0",
-    "@testing-library/cypress": "^7.0.6",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^13.0.3",
-    "@types/jest": "^26.0.15",
-    "@types/lodash": "^4.14.165",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.53",
-    "@types/react-dom": "^16.9.8",
-    "@types/react-redux": "^7.1.11",
-    "@types/react-router": "^5.1.15",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^4.5.0",
-    "@typescript-eslint/parser": "^4.5.0",
     "animate-sass": "^0.8.2",
     "antd": "^4.9.4",
     "axios": "^0.21.0",
@@ -46,18 +31,6 @@
     "css-loader": "4.3.0",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
-    "eslint": "^7.11.0",
-    "eslint-config-react-app": "^6.0.0",
-    "eslint-import-resolver-node": "^0.3.4",
-    "eslint-loader": "2.1.1",
-    "eslint-plugin-flowtype": "^5.2.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^24.1.0",
-    "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-react": "^7.21.5",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-testing-library": "^3.9.2",
-    "eslint-webpack-plugin": "^2.1.0",
     "excel4node": "^1.7.2",
     "export-to-csv": "^0.2.1",
     "express": "^4.17.1",
@@ -166,6 +139,15 @@
     ]
   },
   "devDependencies": {
+    "@types/jest": "^26.0.15",
+    "@types/lodash": "^4.14.165",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.53",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-redux": "^7.1.11",
+    "@types/react-router": "^5.1.15",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/uuid": "^8.3.0",
     "@types/shortid": "0.0.29",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
@@ -177,7 +159,19 @@
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "msw": "^0.27.1"
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-import-resolver-node": "^0.3.4",
+    "eslint-loader": "2.1.1",
+    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-testing-library": "^3.9.2",
+    "eslint-webpack-plugin": "^2.1.0",
+    "msw": "^0.27.1",
+    "prettier": "^2.3.2",
+    "@testing-library/cypress": "^7.0.6",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^13.0.3"
   },
   "jest": {
     "roots": [
@@ -235,5 +229,10 @@
     "presets": [
       "react-app"
     ]
+  },
+  "prettier": {
+    "printWidth": 100,
+    "trailingComma": "all",
+    "singleQuote": true
   }
 }

@@ -22,7 +22,8 @@ const extractBundle = (data: any, type: BundleType) => {
   }
 };
 
-const extractResource = <T>(data: any, resourceType: ResourceType) => data.entry.find((entry: any) => entry.resource.resourceType === resourceType).resource as T;
+const extractResource = <T>(data: any, resourceType: ResourceType) => (
+  data.entry.find((entry: any) => entry.resource.resourceType === resourceType).resource as T);
 
 export const normalizePatientDetails = (data: any) => {
   const patientBundle = extractBundle(data, 'Patient');

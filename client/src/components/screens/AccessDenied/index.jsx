@@ -27,7 +27,12 @@ const AccessDeniedScreen = () => (
           <Typography.Text className="text">{ intl.get('screen.accessdenied.description') }</Typography.Text>
         </Row>
         <Row>
-          { window.history.length > 2 ? <button type="button" className="buttonBack" onClick={goBack}>{ intl.get('screen.accessdenied.button') }</button> : null }
+          { window.history.length > 2
+            ? (
+              <button type="button" className="buttonBack" onClick={goBack}>
+                { intl.get('screen.accessdenied.button') }
+              </button>
+            ) : null }
         </Row>
       </Card>
     </Card>

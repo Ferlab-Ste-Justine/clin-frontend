@@ -43,9 +43,11 @@ export type Observations = {
   cons?: Observation[];
 }
 
+type PrescriptionRecord = Record<ServiceRequest, Prescription>;
+
 export type PatientState = {
   patient: Record<Partial<Patient>, Partial<ParsedPatientData>>;
-  prescriptions?: Record<ServiceRequest, Prescription>[];
+  prescriptions?: PrescriptionRecord[];
   consultation?: Record<ClinicalImpression, ConsultationSummary>[];
   hpos?: Record<Observation, ClinicalObservation>[];
   fmhs?: Record<FamilyMemberHistory, FamilyObservation>[];
@@ -170,7 +172,7 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       break;
     case actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED: {
       const serviceRequestIndex = state.prescriptions?.findIndex(
-        (prescription: Record<ServiceRequest, Prescription>) => prescription.original.id === action.payload.serviceRequestId,
+        (prescription: PrescriptionRecord) => prescription.original.id === action.payload.serviceRequestId,
       );
 
       const status = action.payload.status === 'on-hold' ? 'incomplete' : action.payload.status;

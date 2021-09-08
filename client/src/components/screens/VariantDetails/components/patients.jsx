@@ -141,7 +141,13 @@ class PatientsTabs extends React.Component {
         key: 'ad_ratio',
         label: 'screen.variantDetails.patientsTab.adFreq',
         renderer: createCellRenderer('custom', this.getDonors, {
-          renderer: (data) => { try { return <span>{ data.ad_alt }/{ data.ad_total } ({ data.ad_ratio.toFixed(2) })</span>; } catch (e) { return ''; } },
+          renderer: (data) => {
+            try {
+              return <span>{ data.ad_alt }/{ data.ad_total } ({ data.ad_ratio.toFixed(2) })</span>;
+            } catch (e) {
+              return '';
+            }
+          },
         }),
       },
       {

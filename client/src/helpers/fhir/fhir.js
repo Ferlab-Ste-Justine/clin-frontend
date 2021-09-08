@@ -128,7 +128,9 @@ export const getTestCoding = (name) => {
   }
 };
 
-export const genPractitionerKey = (practitioner) => `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`;
+export const genPractitionerKey = (practitioner) => (
+  `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`
+);
 
 export const getResourceCode = (r) => {
   try {
@@ -438,6 +440,7 @@ export const createGetPatientDataBundle = (id, withIncludes = true) => (
       {
         request: {
           method: 'GET',
+          // eslint-disable-next-line max-len
           url: `/ClinicalImpression?patient=${id}&_include=ClinicalImpression:assessor&_include=ClinicalImpression:investigation`,
         },
       },
@@ -451,9 +454,11 @@ export const createGetPractitionersDataBundle = (data) => {
   data.entry.forEach((bundle) => {
     if (bundle.resource.entry != null) {
       bundle.resource.entry.forEach((entry) => {
-        if (get(entry, 'resource.resourceType', '') === 'PractitionerRole' && practitionerRoleIds.find((id) => id === entry.resource.id) == null) {
+        if (get(entry, 'resource.resourceType', '') === 'PractitionerRole'
+          && practitionerRoleIds.find((id) => id === entry.resource.id) == null) {
           practitionerRoleIds.push(entry.resource.id);
-        } else if (get(entry, 'resource.resourceType', '') === 'Practitioner' && practitionerIds.find((id) => id === entry.resource.id) == null) {
+        } else if (get(entry, 'resource.resourceType', '') === 'Practitioner'
+          && practitionerIds.find((id) => id === entry.resource.id) == null) {
           practitionerIds.push(entry.resource.id);
         }
       });

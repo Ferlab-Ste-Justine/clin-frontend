@@ -131,7 +131,12 @@ class VariantDetailsScreen extends React.Component {
                   </Typography.Text>
                 </span>
               </Tooltip>
-              <Tag className="variant-page-content__header__tag variant-page-content__header__tag--variantType" color="purple"> { data.variant_type } </Tag>
+              <Tag
+                className="variant-page-content__header__tag variant-page-content__header__tag--variantType"
+                color="purple"
+              >
+                { data.variant_type }
+              </Tag>
               { getVepTag() }
             </div>
           </div>

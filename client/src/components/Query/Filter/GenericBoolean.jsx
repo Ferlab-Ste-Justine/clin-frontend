@@ -113,12 +113,23 @@ class GenericBooleanFilter extends React.Component {
           </Row>
           <Row>
             <Col span={24}>
-              <Checkbox.Group onChange={this.handleSelectionChange} option={options.map((option) => option.value)} className={`${styleFilter.checkboxGroup} `} value={selection}>
+              <Checkbox.Group
+                onChange={this.handleSelectionChange}
+                option={options.map((option) => option.value)}
+                className={`${styleFilter.checkboxGroup} `}
+                value={selection}
+              >
                 <div className="scrollFilter">
                   { options.map((option) => (
                     <Row key={shortid.generate()}>
                       <Col className="checkboxLine">
-                        <Checkbox className={selection.includes(option.value) ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`} value={option.value}>{ option.label }</Checkbox>
+                        <Checkbox
+                          className={selection.includes(option.value)
+                            ? `${styleFilter.check} ${styleFilter.checkboxLabel}` : `${styleFilter.checkboxLabel}`}
+                          value={option.value}
+                        >
+                          { option.label }
+                        </Checkbox>
                       </Col>
                     </Row>
                   )) }
@@ -178,7 +189,9 @@ class GenericBooleanFilter extends React.Component {
     const { dataSet } = this.props;
     const allOptions = orderBy(cloneDeep(dataSet), ['count'], ['desc']);
     const search = values;
-    const toRemove = filter(cloneDeep(allOptions), (o) => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null));
+    const toRemove = filter(
+      cloneDeep(allOptions), (o) => (search !== '' ? !o.value.toLowerCase().startsWith(search) : null),
+    );
 
     pullAllBy(allOptions, cloneDeep(toRemove), 'value');
     this.setState({

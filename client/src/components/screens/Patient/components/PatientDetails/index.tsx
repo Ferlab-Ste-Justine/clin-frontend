@@ -20,6 +20,7 @@ const MAX_MRNS_DISPLAYED = 2;
 
 const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
   const parent = useSelector<State>((state) => state.patient.parent) as any;
+  const intlDetails = intl.get('screen.patient.details.mother').toLowerCase();
 
   const dispatch = useDispatch();
   return (
@@ -35,7 +36,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
             className="link--underline"
             onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
           >
-            { `${parent.lastName.toUpperCase()} ${parent.firstName} (${intl.get('screen.patient.details.mother').toLowerCase()})` }
+            { `${parent.lastName.toUpperCase()} ${parent.firstName} (${intlDetails})` }
           </Button>
         </>
       ) : (

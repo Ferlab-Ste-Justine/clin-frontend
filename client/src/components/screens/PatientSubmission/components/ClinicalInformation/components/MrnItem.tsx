@@ -68,7 +68,13 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
     return (
       <Row gutter={8}>
         <Col>
-          <Form.Item name="create.mrn" rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.mrn')} /> }]}>
+          <Form.Item
+            name="create.mrn"
+            rules={[{
+              required: true,
+              message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.mrn')} />,
+            }]}
+          >
             <Input
               aria-label="mrn"
               placeholder="MRN 12345678"
@@ -84,7 +90,10 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
         <Col>
           <Form.Item
             name="create.organization"
-            rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} /> }]}
+            rules={[{
+              required: true,
+              message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
+            }]}
           >
             <Select
               placeholder={intl.get('form.patientSubmission.clinicalInformation.file.hospital')}
@@ -152,7 +161,10 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
       </Form.Item>
       <Form.Item
         name="full-mrn"
-        rules={[{ required: true, message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.mrn')} /> }]}
+        rules={[{
+          required: true,
+          message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.mrn')} />,
+        }]}
       >
         <Select
           data-testid="mrn-organization-submission"
@@ -176,7 +188,11 @@ const MrnItem: React.FC<Props> = ({ form, onChange }) => {
               </Button>
             </div>
           )}
-          placeholder={<span className="select-Placeholder">{ intl.get('form.patientSubmission.clinicalInformation.file.select') }</span>}
+          placeholder={(
+            <span className="select-Placeholder">
+              { intl.get('form.patientSubmission.clinicalInformation.file.select') }
+            </span>
+          )}
           defaultValue={getMrnValue(defaultSelectedMrn)}
         >
           {

@@ -74,8 +74,16 @@ const patientSubmissionReducer = (
       if (action.payload.result.groupId != null) {
         draft.groupId = action.payload.result.groupId.id;
       }
-      draft.serviceRequest = { ...draft.serviceRequest, ...action.payload.serviceRequest, ...action.payload.result.serviceRequest };
-      draft.clinicalImpression = { ...draft.clinicalImpression, ...action.payload.clinicalImpression, ...action.payload.result.clinicalImpression };
+      draft.serviceRequest = {
+        ...draft.serviceRequest,
+        ...action.payload.serviceRequest,
+        ...action.payload.result.serviceRequest,
+      };
+      draft.clinicalImpression = {
+        ...draft.clinicalImpression,
+        ...action.payload.clinicalImpression,
+        ...action.payload.result.clinicalImpression,
+      };
 
       draft.observations = {
         ...draft.observations,
@@ -185,11 +193,17 @@ const patientSubmissionReducer = (
       break;
     case actions.PATIENT_SUBMISSION_MARK_HPO_FOR_DELETION:
       if (draft.observations.hpos.find((hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code) != null) {
-        if (draft.observations.hpos.find((hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code).id != null) {
-          draft.deleted.hpos.push(draft.observations.hpos.find((hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code));
+        if (draft.observations.hpos.find(
+          (hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code,
+        ).id != null) {
+          draft.deleted.hpos.push(
+            draft.observations.hpos.find((hpo) => hpo.valueCodeableConcept.coding[0].code === action.payload.code),
+          );
         }
       }
-      draft.observations.hpos = draft.observations.hpos.filter((hpo) => hpo.valueCodeableConcept.coding[0].code !== action.payload.code);
+      draft.observations.hpos = draft.observations.hpos.filter(
+        (hpo) => hpo.valueCodeableConcept.coding[0].code !== action.payload.code,
+      );
       break;
     case actions.PATIENT_SUBMISSION_UPDATE_HPO_NOTE:
       draft.observations.hpos[action.payload.index].note = [{

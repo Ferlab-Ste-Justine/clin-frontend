@@ -28,7 +28,8 @@ export const sanitizeOperators = (instructions) => {
 
   // @NOTE No suffix operator
   const instructionsLength = sanitizedInstructions.length - 1;
-  if (sanitizedInstructions[instructionsLength] && sanitizedInstructions[instructionsLength].type === INSTRUCTION_TYPE_OPERATOR) {
+  if (sanitizedInstructions[instructionsLength]
+    && sanitizedInstructions[instructionsLength].type === INSTRUCTION_TYPE_OPERATOR) {
     sanitizedInstructions.pop();
   }
 
@@ -38,8 +39,10 @@ export const sanitizeOperators = (instructions) => {
   sanitizedInstructions.forEach((instruction, i) => {
     const nextI = Number(i) + 1;
     if (nextI < sanitizedInstructions.length) {
-      if (sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY) {
-        if (sanitizedInstructions[nextI].type === INSTRUCTION_TYPE_FILTER || sanitizedInstructions[nextI].type === INSTRUCTION_TYPE_SUBQUERY) {
+      if (sanitizedInstructions[i].type === INSTRUCTION_TYPE_FILTER
+        || sanitizedInstructions[i].type === INSTRUCTION_TYPE_SUBQUERY) {
+        if (sanitizedInstructions[nextI].type === INSTRUCTION_TYPE_FILTER
+          || sanitizedInstructions[nextI].type === INSTRUCTION_TYPE_SUBQUERY) {
           sanitizedInstructions.splice(nextI, 0, createOperatorInstruction(operatorType));
         }
       }
@@ -88,6 +91,7 @@ export const calculateTitleWidth = (value) => {
   const x2 = ['r', 'f', '(', ')', '{', '}'];
   const x3 = ['v', 'x', 'y', 'z', '_', '*', '»', '«'];
   const x4 = ['c', 'k', 's'];
+  // eslint-disable-next-line max-len
   const x5 = ['g', 'p', 'q', 'b', 'd', 'h', 'n', 'u', 'û', 'ù', 'ü', 'o', 'ô', 'ö', 'E', 'Ê', 'É', 'È', 'Ë', 'J', '+', '=', '$', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
   const x6 = ['T', 'S', 'Y', 'Z'];
   const x7 = ['K', 'X', 'B', 'R', 'P', '&', '#'];
@@ -151,9 +155,12 @@ export const calculateTitleWidth = (value) => {
       numberOf_X_Letter += 1;
     }
   });
-  const width = (numberOf_X0_Letter * 0.47) + (numberOf_X1_Letter * 0.6) + (numberOf_X2_Letter * 0.64) + (numberOf_X3_Letter * 0.90) + (numberOf_X4_Letter * 0.94)
-    + (numberOf_X_Letter * 0.98) + (numberOf_X5_Letter * 1.02) + (numberOf_X6_Letter * 1.1) + (numberOf_X7_Letter * 1.14) + (numberOf_X8_Letter * 1.17) + (numberOf_X9_Letter * 1.20)
-    + (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33) + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
+  const width = (numberOf_X0_Letter * 0.47) + (numberOf_X1_Letter * 0.6)
+    + (numberOf_X2_Letter * 0.64) + (numberOf_X3_Letter * 0.90) + (numberOf_X4_Letter * 0.94)
+    + (numberOf_X_Letter * 0.98) + (numberOf_X5_Letter * 1.02) + (numberOf_X6_Letter * 1.1)
+    + (numberOf_X7_Letter * 1.14) + (numberOf_X8_Letter * 1.17) + (numberOf_X9_Letter * 1.20)
+    + (numberOf_X10_Letter * 1.24) + (numberOf_X11_Letter * 1.29) + (numberOf_X12_Letter * 1.33)
+    + (numberOf_X13_Letter * 1.56) + (numberOf_X14_Letter * 1.58);
   return width;
 };
 

@@ -1,6 +1,7 @@
 import { Extension, Reference } from '../types';
 
-export const getExtension = (resource: {extension?: Extension[]}, url: string) => (resource.extension != null ? resource.extension.find((ext) => ext.url === url) : null);
+export const getExtension = (resource: {extension?: Extension[]}, url: string) => (
+  resource.extension != null ? resource.extension.find((ext) => ext.url === url) : null);
 
 export const getPractitionerRoleReference = (id: string): Reference | undefined => {
   if (id == null) {

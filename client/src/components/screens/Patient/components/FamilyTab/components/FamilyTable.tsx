@@ -176,7 +176,10 @@ const FamilyTable: React.FC<Props> = ({ addParentMenu }) => {
   const data: DataType[] = familyMembers.map((fm) => ({
     patient: fm,
     mother: !fm.type && patient.id === fm.id ? familyMembers.find(
-      (fmm) => fmm.type != null && [FamilyMemberType.MOTHER.toString(), FamilyMemberType.NATURAL_MOTHER_OF_FETUS.toString()].includes(fmm.type),
+      (fmm) => (
+        fmm.type != null
+          && [FamilyMemberType.MOTHER.toString(), FamilyMemberType.NATURAL_MOTHER_OF_FETUS.toString()].includes(fmm.type)
+      ),
     ) : null,
     father: !fm.type && patient.id === fm.id ? familyMembers.find((fmf) => fmf.type === FamilyMemberType.FATHER) : null,
   }))
