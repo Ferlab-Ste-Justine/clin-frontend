@@ -35,7 +35,7 @@ type Response = {
 
 type Props = {
     checkedKeys: string[];
-        onCheck: (checked: Key[] | { checked: Key[]; halfChecked: Key[]; }) => void
+    onCheck: (checked: Key[] | { checked: Key[]; halfChecked: Key[]; }) => void
 };
 
 const ROOT_PHENOTYPE = 'Phenotypic abnormality (HP:0000118)';
@@ -50,13 +50,13 @@ const hpoToTreeNode = (hpo: HPO): TreeNode => ({
 
 const fetchRootNodes = (root: string) => Api.searchHpoChildren(root).then((res) => {
   const response = res as Response;
-  if (response.payload) {
-    const { data } = response.payload.data;
-    const { hits } = data;
-
-    return hits.map((h: { _source: HPO }) => hpoToTreeNode(h._source));
+  if (!response.payload) {
+    return [];
   }
-  return [];
+
+  const { data } = response.payload.data;
+  const { hits } = data;
+  return hits.map((h: { _source: HPO }) => hpoToTreeNode(h._source));
 });
 
 const OntologyTree = (props: Props) => {
