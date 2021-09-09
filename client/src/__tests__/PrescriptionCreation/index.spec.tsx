@@ -25,13 +25,14 @@ function buildHPORequest() {
             _id: '-ID',
             _score: 9.455486,
             _source: {
-              id: 'HP:0012373',
+              hpo_id: 'HP:0012373',
               name: 'Abnormal eye physiology',
-              parents: [{ id: 'HP:0000478', name: 'Abnormality of the eye' }],
-              ancestors: [
-                { id: 'HP:0000478', name: 'Abnormality of the eye' },
-                { id: 'HP:0000118', name: 'Phenotypic abnormality' },
-                { id: 'HP:0000001', name: 'All' },
+              parents: ['Abnormality of the eye (HP:0000478)'],
+              is_leaf: false,
+              compact_ancestors: [
+                { hpo_id: 'HP:0000478', name: 'Abnormality of the eye' },
+                { hpo_id: 'HP:0000118', name: 'Phenotypic abnormality' },
+                { hpo_id: 'HP:0000001', name: 'All' },
               ],
             },
           },
@@ -72,13 +73,10 @@ describe('PrescriptionCreation', () => {
       const cgh = screen.getByTestId('cgh');
       act(() => userEvent.click(cgh, {}));
 
-      const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+      await waitFor(() => screen);
+
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling;
       act(() => userEvent.click(clinicalSignRoot, {}));
-
-      await waitFor(() => screen.getByText('Abnormal eye physiology'));
-
-      const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
-      act(() => userEvent.click(clinicalSign, {}));
 
       const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
       act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
@@ -105,13 +103,9 @@ describe('PrescriptionCreation', () => {
       const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
       act(() => userEvent.click(prescriptionTestLabel, {}));
 
-      const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+      await waitFor(() => screen);
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling;
       act(() => userEvent.click(clinicalSignRoot, {}));
-
-      await waitFor(() => screen.getByText('Abnormal eye physiology'));
-
-      const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
-      act(() => userEvent.click(clinicalSign, {}));
 
       const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
       act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
@@ -179,13 +173,9 @@ describe('PrescriptionCreation', () => {
     const cgh = screen.getByTestId('cgh');
     act(() => userEvent.click(cgh, {}));
 
-    const clinicalSignRoot = screen.getByText('Abnormality of the eye').parentElement?.previousSibling;
+    await waitFor(() => screen);
+    const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling;
     act(() => userEvent.click(clinicalSignRoot, {}));
-
-    await waitFor(() => screen.getByText('Abnormal eye physiology'));
-
-    const clinicalSign = screen.getByText('Abnormal eye physiology').parentElement?.previousSibling;
-    act(() => userEvent.click(clinicalSign, {}));
 
     const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
     act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
