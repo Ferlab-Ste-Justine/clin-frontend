@@ -21,7 +21,7 @@ function* logout() {
 
 function* identity() {
   try {
-    const response = yield keycloak.loadUserProfile();
+    const response = yield keycloak.loadUserInfo();
     yield put({ type: actions.USER_IDENTITY_SUCCEEDED, payload: response });
   } catch (e) {
     yield put({ type: actions.USER_IDENTITY_FAILED, payload: e });

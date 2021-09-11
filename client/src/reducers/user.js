@@ -42,9 +42,9 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       break;
 
     case actions.USER_IDENTITY_SUCCEEDED:
-      draft.username = action.payload.username;
-      draft.firstName = action.payload.firstName;
-      draft.lastName = action.payload.lastName;
+      draft.username = action.payload.preferred_username;
+      draft.firstName = action.payload.given_name;
+      draft.lastName = action.payload.family_name;
       draft.practitionerId = get(action.payload, 'attributes.fhir_practitioner_id[0]', '');
       break;
 
