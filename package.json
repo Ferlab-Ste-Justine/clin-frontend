@@ -8,6 +8,8 @@
     "@blueprintjs/core": "3.32.0",
     "@blueprintjs/table": "3.7.1",
     "@clarketm/saga-monitor": "^2.0.1",
+    "@ferlab/style": "^1.8.5",
+    "@ferlab/ui": "^1.9.1",
     "@hapi/joi": "^15.1.0",
     "@hot-loader/react-dom": "^17.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.4.2",
@@ -219,7 +221,10 @@
       "jsx",
       "node"
     ],
-    "moduleDirectories": ["node_modules", "src"],
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
     "watchPlugins": [
       "jest-watch-typeahead/filename",
       "jest-watch-typeahead/testname"

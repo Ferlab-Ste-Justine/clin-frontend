@@ -62,11 +62,14 @@
 }
 
 .patient-page {
-  padding-bottom: 24px;
   min-height: 100%;
 
   &__tabs {
     min-height: 100%;
+
+    div[role="tablist"] {
+      margin-bottom: 0;
+    }
 
     .ant-tabs-content {
       min-height: 100%;
