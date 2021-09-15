@@ -2298,7 +2298,7 @@ html {
 .ant-btn[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -2391,7 +2391,7 @@ html {
 .ant-btn-primary[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -2494,7 +2494,7 @@ html {
 .ant-btn-ghost[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -2577,7 +2577,7 @@ html {
 .ant-btn-dashed[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -2661,7 +2661,7 @@ html {
 .ant-btn-danger[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -2744,7 +2744,7 @@ html {
 .ant-btn-link[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -2863,7 +2863,7 @@ html {
 .ant-btn-text[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -2984,7 +2984,7 @@ html {
 .ant-btn-dangerous[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -3068,7 +3068,7 @@ html {
 .ant-btn-dangerous.ant-btn-primary[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -3151,7 +3151,7 @@ html {
 .ant-btn-dangerous.ant-btn-link[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -3299,7 +3299,7 @@ html {
 .ant-btn-dangerous.ant-btn-text[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -3745,7 +3745,7 @@ html {
 .ant-btn-background-ghost.ant-btn-primary[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -3825,7 +3825,7 @@ html {
 .ant-btn-background-ghost.ant-btn-danger[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -3905,7 +3905,7 @@ html {
 .ant-btn-background-ghost.ant-btn-dangerous[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }
@@ -3985,7 +3985,7 @@ html {
 .ant-btn-background-ghost.ant-btn-dangerous.ant-btn-link[disabled]:active {
   color: #8B9DB2;
   border-color: #abbed3;
-  background: transparent;
+  background: #F1F5F9;
   text-shadow: none;
   box-shadow: none;
 }

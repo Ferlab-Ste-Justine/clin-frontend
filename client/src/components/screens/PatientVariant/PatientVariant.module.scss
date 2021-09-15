@@ -1,0 +1,21 @@
+.patientVariantLayout {
+  display: flex;
+  flex-direction: row;
+
+  .patientVariantSidebar {
+    ul {
+      font-weight: 500 !important;
+    }
+  }
+
+  .scrollContent {
+    width: 100%;
+    padding: 24px;
+    width: 100%;
+    min-height: 600px;
+
+    .pageContainer {
+      position: relative;
+    }
+  }
+}
