@@ -8,6 +8,17 @@
     }
   }
 
+  .tableContainer {
+    background-color: white;
+    margin-top: 24px;
+    border-radius: 2px;
+    border: 1px solid #D8E1EB;
+  }
+  
+  .tableContainer > * {
+    margin: 24px;
+  }
+
   .scrollContent {
     width: 100%;
     padding: 24px;
