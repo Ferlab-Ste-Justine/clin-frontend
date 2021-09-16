@@ -961,6 +961,23 @@ const fr = {
   'components.nanuqModal.criteria.status': 'Status: <span class="bold">approuvée</span>',
   'components.nanuqModal.criteria.test': 'Test: <span class="bold">WXS</span>',
   'components.nanuqModal.criteria.number': 'Nombre: <span class="bold">maximum de 96 items</span> à la fois',
+  'querybuilder.query.combine.and': 'Et',
+  'querybuilder.query.combine.or': 'Ou',
+  'querybuilder.query.noQuery': 'Utiliser les filtres pour créer une requête',
+  'querybuilder.actions.addQuery': 'Nouvelle requête',
+  'querybuilder.actions.combine': 'Combiner',
+  'querybuilder.actions.labels': 'Champs',
+  'querybuilder.actions.delete.title': 'Supprimer cette requête ?',
+  'querybuilder.actions.delete.titleSelected': 'Supprimer cette requête ?',
+  'querybuilder.actions.delete.cancel': 'Annuler',
+  'querybuilder.actions.delete.confirm': 'Supprimer',
+  'querybuilder.actions.clear.title': 'Supprimer toutes les requêtes ?',
+  'querybuilder.actions.clear.cancel': 'Annuler',
+  'querybuilder.actions.clear.confirm': 'Supprimer',
+  'querybuilder.actions.clear.buttonTitle': 'Tout effacer',
+  'querybuilder.actions.clear.description': 'Vous êtes sur le point de supprimer toutes vos requêtes. Ils seront perdus à jamais.',
+  'querybuilder.actions.new': 'Nouvelle',
+  'querybuilder.actions.changeOperatorTo': 'Changer l\'opérateur à',
 };
 
 export default fr;

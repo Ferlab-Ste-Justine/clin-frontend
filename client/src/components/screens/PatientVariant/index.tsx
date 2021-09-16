@@ -1,24 +1,57 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
-import React from 'react';
+import React, { useState } from 'react';
 import { Layout } from 'antd';
 import intl from 'react-intl-universal';
-import { createBrowserHistory } from 'history';
 import SidebarMenu, { ISidebarMenuItem } from '@ferlab/ui/core/components/sidebarMenu';
 import { useFilters } from '@ferlab/ui/core/data/filters/utils';
 import QueryBuilder from '@ferlab/ui/core/components/QueryBuilder';
+import { IDictionary } from '@ferlab/ui/core/components/QueryBuilder/types';
 import ScrollView from '@ferlab/ui/core/layout/ScrollView';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 import LineStyleIcon from '../../icons/LineStyleIcon';
+import GeneIcon from '../../icons/GeneIcon';
+import DiseaseIcon from '../../icons/DiseaseIcon';
+import FrequencyIcon from '../../icons/FrequencyIcon';
+import OccurenceIcon from '../../icons/OccurenceIcon';
+import VariantTableContainer from './VariantTableContainer';
 
 import styles from './PatientVariant.module.scss';
 
-const history = createBrowserHistory();
+const DEFAULT_PAGE_NUM = 1;
 
 const PatientVariantScreen = () => {
+  const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const { filters } = useFilters();
-  const dictionary = {};
+  const dictionary: IDictionary = {
+    query: {
+      combine: {
+        and: intl.get('querybuilder.combine.and'),
+        or: intl.get('querybuilder.combine.or'),
+      },
+      noQuery: intl.get('querybuilder.query.noQuery'),
+      facet: (field: string) => field,
+    },
+    actions: {
+      addQuery: intl.get('querybuilder.actions.addQuery'),
+      combine: intl.get('querybuilder.actions.combine'),
+      labels: intl.get('querybuilder.actions.labels'),
+      changeOperatorTo: intl.get('querybuilder.actions.changeOperatorTo'),
+      actionDelete: {
+        title: intl.get('querybuilder.actions.delete.title'),
+        cancel: intl.get('querybuilder.actions.delete.cancel'),
+        actionConfirm: intl.get('querybuilder.actions.delete.confirm'),
+      },
+      clear: {
+        title: intl.get('querybuilder.actions.clear.title'),
+        cancel: intl.get('querybuilder.actions.clear.cancel'),
+        actionConfirm: intl.get('querybuilder.actions.clear.confirm'),
+        buttonTitle: intl.get('querybuilder.actions.clear.buttonTitle'),
+        description: intl.get('querybuilder.actions.clear.description'),
+      },
+    },
+  };
   const results = {
     loading: false,
     total: 1000,
@@ -35,25 +68,25 @@ const PatientVariantScreen = () => {
     {
       key: '2',
       title: intl.get('screen.patientvariant.category_genomic'),
-      icon: <LineStyleIcon />,
+      icon: <GeneIcon />,
       panelContent: <>Genes Filters</>,
     },
     {
       key: '3',
       title: intl.get('screen.patientvariant.category_impacts'),
-      icon: <LineStyleIcon />,
+      icon: <DiseaseIcon />,
       panelContent: <>Impacts Filters</>,
     },
     {
       key: '4',
       title: intl.get('screen.patientvariant.category_cohort'),
-      icon: <LineStyleIcon />,
+      icon: <FrequencyIcon />,
       panelContent: <>Frequency Filters</>,
     },
     {
       key: '5',
       title: intl.get('screen.patientvariant.category_metric'),
-      icon: <LineStyleIcon />,
+      icon: <OccurenceIcon />,
       panelContent: <>Metriques</>,
     },
   ];
@@ -67,15 +100,17 @@ const PatientVariantScreen = () => {
             className="variant-repo__query-builder"
             showHeader={true}
             headerTitle="Variant Query"
-            showHeaderTools={true}
+            showHeaderTools={false}
             cacheKey="patient-variant-repo"
-            enableCombine={true}
+            enableCombine={false}
             currentQuery={filters?.content?.length ? filters : {}}
-            history={history}
             loading={results.loading}
             total={total}
             dictionary={dictionary}
           />
+          <StackLayout vertical className={styles.tableContainer}>
+            <VariantTableContainer setCurrentPageCb={setCurrentPageNum} />
+          </StackLayout>
         </StackLayout>
       </ScrollView>
     </Layout>
