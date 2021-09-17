@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Button, Modal, Typography } from 'antd';
 import intl from 'react-intl-universal';
 import './styles.scss';
 import statusColors from '../../../../../../../style/statusColors';
 
 interface Props {
-  isVisible: boolean
-  onClose: () => void
+  isVisible: boolean;
+  onClose: () => void;
 }
+
 const statusNames = ['draft', 'on-hold', 'active', 'incomplete', 'revoked', 'completed'];
 
-const StatusLegend: React.FC<Props> = ({ isVisible, onClose }) => (
+const StatusLegend = ({ isVisible, onClose }: Props) => (
   <Modal
     visible={isVisible}
     onOk={onClose}
@@ -25,9 +26,9 @@ const StatusLegend: React.FC<Props> = ({ isVisible, onClose }) => (
     <dl className="status-legend">
       {
         statusNames.map((statusName) => (
-          <>
+          <Fragment key={statusName}>
             <dt className="status-legend__row__name">
-              <Typography.Text style={{ color: (statusColors as any)[statusName] }}>
+              <Typography.Text style={{ color: (statusColors as { [index: string]: string })[statusName] }}>
                 { intl.get(`screen.patient.details.prescription.status.legend.${statusName}`) }
               </Typography.Text>
             </dt>
@@ -36,7 +37,7 @@ const StatusLegend: React.FC<Props> = ({ isVisible, onClose }) => (
                 { intl.get(`screen.patient.details.prescription.status.legend.${statusName}.description`) }
               </Typography.Text>
             </dd>
-          </>
+          </Fragment>
         ))
       }
     </dl>

@@ -6,10 +6,10 @@ import Modal from 'antd/lib/modal/Modal';
 import React, { useEffect, useRef, useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
+import { FamilyMemberType } from 'store/FamilyMemberTypes';
 import { addParentToFamily } from '../../../../../../actions/patient';
 import api from '../../../../../../helpers/api';
 import { GroupMemberStatusCode } from '../../../../../../helpers/fhir/patientHelper';
-import { FamilyMemberType } from '../../../../../../helpers/providers/types';
 import { PatientData } from '../../../../../../helpers/search/types';
 import { State } from '../../../../../../reducers';
 
