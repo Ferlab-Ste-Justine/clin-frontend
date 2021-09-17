@@ -1,12 +1,12 @@
 @import './variables.scss';
-@import '../../../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 .status--modal{
 
   &__group{
     display: flex;
     flex-direction: column;
-  
+
     .ant-radio-wrapper{
       line-height: 0;
       margin-bottom: 12px;
@@ -25,7 +25,7 @@
         width: calc(100% - 24px);
       }
     }
-  
+
     .submitted{
       color:$orange-7;
     }
@@ -44,7 +44,7 @@
   }
   .ant-modal-footer{
     button{
-      border-color: $gray-5; 
+      border-color: $gray-5;
     }
     .cancel{
       color: $gray-8;

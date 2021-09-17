@@ -1,5 +1,5 @@
 @import './variables.scss';
-@import '../../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 .navigationFilter{
   margin-bottom:24px;
@@ -207,7 +207,7 @@
         background: rgba(35, 55, 80, 0.14);
       }
 
-    }    
+    }
     .ant-select-selection__clear{
       background-color: transparent;
     }
@@ -244,20 +244,20 @@
         line-height: 24px;
         border-radius: 2px;
         height: 32px;
-    
+
         &:focus{
           box-shadow: none;
         }
-    
+
         &:hover{
           background: rgba(35, 55, 80, 0.08);
         }
-    
+
         &:disabled{
           background: rgba(35, 55, 80, 0.14);
         }
-    
-      }    
+
+      }
     }
   }
 
@@ -277,7 +277,7 @@
           border-top: 1px solid transparent;
         }
       }
-            
+
       &:first-of-type{
         .geneValues{
           border-top: 1px solid transparent;
@@ -295,7 +295,7 @@
           letter-spacing: 0.15px;
           color: #233750;
         }
-    
+
         .alias{
           font-family: $font;
           font-size: 12px;
@@ -321,15 +321,15 @@
         .iconRightArrowDropDown{
           display: none;
         }
-        color:#125a90;    
+        color:#125a90;
         &:hover{
           border-top:1px solid transparent;
-                    
+
         }
         .iconRightArrow{
           color:#1b7ab2;
         }
-    
+
       }
     }
 
@@ -388,13 +388,13 @@
       background: rgba(29, 139, 198, 0.08);
       .menu__item__label{
         >span{
-          color:#125a90;  
+          color:#125a90;
           border-top:1px solid transparent;
           padding: 2px 0;
         }
       }
     }
-  
+
     &:hover + .ant-menu-item:not(.filterChoise){
       .menu__item__label{
         >span{
@@ -403,7 +403,7 @@
         }
       }
     }
-  
+
     &:first-of-type{
       .menu__item__label{
         >span{
@@ -415,7 +415,7 @@
     .menu__item__label{
       margin:0;
       height: 48px;
-  
+
       >span{
         color: rgba(35, 55, 80, 0.78);
         display: flex;
@@ -423,7 +423,7 @@
         align-items: center;
         border-top: 1px solid rgba(35, 55, 80,0.12);
         padding: 2px 0;
-  
+
         div{
           display: flex;
           align-items: center;

@@ -1,5 +1,5 @@
 @import '../../../containers/App/variables.scss';
-@import '../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 .entity{
   background-color:#EDF0F3;
@@ -27,7 +27,7 @@
         color: $gray-5;
       }
       &__texts {
-        
+
         &__title {
           margin-top:24px;
           color: $blue-10;

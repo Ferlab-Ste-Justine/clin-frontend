@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 @import '../../../containers/App/variables.scss';
 @import './variables.scss';
-@import '../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 
 div.bp3-table-container {
@@ -91,7 +91,7 @@ div.ant-tag {
       .ant-input-affix-wrapper{
         padding: 0 12px;
         height: 40px;
-        
+
         border: none;
         outline: none;
         box-shadow:none;
@@ -149,7 +149,7 @@ div.ant-tag {
   .menuCaterogy{
     width:280px;
     background-color: transparent;
-    border: none;      
+    border: none;
 
 
     .category{
@@ -226,15 +226,15 @@ div.ant-tag {
             }
             &:hover{
               span{
-                color: rgb(35, 55, 80);  
+                color: rgb(35, 55, 80);
                 text-decoration: none;
               }
             }
-            
-            
+
+
             &:after{
               animation: 0s !important;
-            } 
+            }
           }
           >div{
             margin: 0 4px;
@@ -249,7 +249,7 @@ div.ant-tag {
             color: rgba(35, 55, 80, 0.78);
             font-size: 14px;
             padding: 8px 16px;
-            line-height: 0 !important; 
+            line-height: 0 !important;
 
             span:nth-of-type(2){
               margin-top: -2px;
@@ -265,7 +265,7 @@ div.ant-tag {
               .checkboxValue{
                 .valueCount{
                   background-color: #fff;
-                                    
+
                 }
               }
 

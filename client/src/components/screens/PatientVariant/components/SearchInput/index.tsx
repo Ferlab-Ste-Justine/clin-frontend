@@ -1,15 +1,16 @@
 import React from 'react';
+import IconKit from 'react-icons-kit';
+import {
+  ic_done,
+  ic_search,
+} from 'react-icons-kit/md';
 import intl from 'react-intl-universal';
 import {
   AutoComplete, Col, Input, Row, Tag, Typography,
 } from 'antd';
-import IconKit from 'react-icons-kit';
-import {
-  ic_search,
-  ic_done,
-} from 'react-icons-kit/md';
+
 import './searchInput.scss';
-import '../../../../../style/themes/antd-clin-theme.css';
+import 'style/themes/clin/dist/antd.css';
 
 function getHighlightSearch(value: string, searchValue: string) {
   const regex = new RegExp(searchValue, 'i');

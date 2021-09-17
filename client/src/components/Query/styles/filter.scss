@@ -1,10 +1,10 @@
-@import '../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 .intersection{
   span{
     color:#2d8700 !important;
   }
-   
+
 }
 
 .difference{
@@ -79,8 +79,8 @@
       i{
         color: #233750;
       }
-                
-    }    
+
+    }
   }
   .searchInput{
     margin: 16px 0;
@@ -97,7 +97,7 @@
       &:focus{
         box-shadow: none;
       }
-    
+
       &:disabled{
         background: rgba(35, 55, 80, 0.14);
       }
@@ -121,7 +121,7 @@
   }
   button:not([disabled]){
     .operator-icon{
-            
+
       color: $blue-1 !important;
     }
   }

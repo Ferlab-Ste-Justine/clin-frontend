@@ -1,5 +1,5 @@
 @import "./variables.scss";
-@import '../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 .variant-page-content {
   .page-static-content{
     min-width: 1392px;
@@ -9,12 +9,12 @@
   }
 
   &__header{
-    
+
     display: flex;
     height: 24px;
     margin-left: 24px;
     align-items: center;
-    
+
     &__title{
       font-style: normal;
       font-weight: 500;
@@ -33,7 +33,7 @@
     }
   }
 
-  
+
   &__resume{
     &__generalInfo{
       margin-bottom: 24px;
@@ -44,26 +44,26 @@
         width: 464px;
         background-color: $gray-2;
         color: $blue-10;
-    
+
         &__info{
           margin-bottom: 8px;
           &__label{
             width: 104px;
             color: $blue-10;
           }
-  
+
           &__info{
             font-weight: 500;
             width: 324px;
             word-break: break-all;
-            color: $blue-10; 
+            color: $blue-10;
           }
         }
         i{
           color: $gray-5;
           margin-bottom: 8px;
         }
-    
+
         .ant-tag{
           margin: 0;
           margin-top: 8px;
@@ -93,7 +93,7 @@
         &:last-child{
           margin-bottom: 0;
         }
-        
+
         >.col{
           flex:1;
         }
@@ -111,7 +111,7 @@
           }
         }
       }
-  
+
     }
 
 
@@ -120,8 +120,8 @@
       &:not(:first-of-type){
         margin-left: 16px;
       }
-      
-      
+
+
       &:last-child{
         line-height: 30px;
       }
@@ -131,7 +131,7 @@
       }
       .value{
         margin-top: 2px;
-      } 
+      }
     }
 
     &__consequence-table{
@@ -162,11 +162,11 @@
       td{
         vertical-align: top !important;
       }
-  
+
       &__tag{
         margin-right: 0;
       }
-  
+
       &__predictionList{
         ul{
           margin-bottom: 0!important;
@@ -175,12 +175,12 @@
           display: none;
         }
       }
-  
+
       &__transcriptValue{
         display: flex;
         align-items: center;
         height: 22px;
-  
+
         .canonicalIcon{
           margin-left: 8px;
         }
@@ -190,13 +190,13 @@
         color: $gray-7;
         line-height: 22px;
         font-size: 14px;
-    
-      }  
+
+      }
     }
     .staticCard{
       margin-bottom: 0 !important;
     }
-    
+
   }
 
   &__associations{
@@ -211,9 +211,9 @@
         &:nth-child(4){
           width: 104px;
         }
-  
+
       }
-  
+
       td{
         vertical-align: top !important;
       }
@@ -265,7 +265,7 @@
       background-color:  $gray-3;
       border-right: none;
       border-bottom: none;
-      
+
     }
     .bp3-table-column-name {
       border-right: none;
@@ -291,7 +291,7 @@
     font-size: 12px;
     height: 22px;
   }
-  
+
   .close{
     display: none;
   }
@@ -311,7 +311,7 @@
     }
   }
 
-  .ant-typography ul{ 
+  .ant-typography ul{
     margin: 0;
     li{
       list-style-type: none;
@@ -324,7 +324,7 @@
     }
 
   }
-    
+
   ul{
     padding: 0;
     li{
