@@ -27,26 +27,27 @@ const PatientVariantScreen = () => {
   const dictionary: IDictionary = {
     query: {
       combine: {
-        and: intl.get('querybuilder.combine.and'),
-        or: intl.get('querybuilder.combine.or'),
+        and: intl.get('querybuilder.query.combine.and'),
+        or: intl.get('querybuilder.query.combine.or'),
       },
       noQuery: intl.get('querybuilder.query.noQuery'),
       facet: (field: string) => field,
     },
     actions: {
+      new: intl.get('querybuilder.actions.new'),
       addQuery: intl.get('querybuilder.actions.addQuery'),
       combine: intl.get('querybuilder.actions.combine'),
       labels: intl.get('querybuilder.actions.labels'),
       changeOperatorTo: intl.get('querybuilder.actions.changeOperatorTo'),
-      actionDelete: {
+      delete: {
         title: intl.get('querybuilder.actions.delete.title'),
         cancel: intl.get('querybuilder.actions.delete.cancel'),
-        actionConfirm: intl.get('querybuilder.actions.delete.confirm'),
+        confirm: intl.get('querybuilder.actions.delete.confirm'),
       },
       clear: {
         title: intl.get('querybuilder.actions.clear.title'),
         cancel: intl.get('querybuilder.actions.clear.cancel'),
-        actionConfirm: intl.get('querybuilder.actions.clear.confirm'),
+        confirm: intl.get('querybuilder.actions.clear.confirm'),
         buttonTitle: intl.get('querybuilder.actions.clear.buttonTitle'),
         description: intl.get('querybuilder.actions.clear.description'),
       },
@@ -54,7 +55,7 @@ const PatientVariantScreen = () => {
   };
   const results = {
     loading: false,
-    total: 1000,
+    total: 0,
   };
   const { total } = results;
 
@@ -100,7 +101,7 @@ const PatientVariantScreen = () => {
             className="variant-repo__query-builder"
             showHeader={true}
             headerTitle="Variant Query"
-            showHeaderTools={false}
+            showHeaderTools={true}
             cacheKey="patient-variant-repo"
             enableCombine={false}
             currentQuery={filters?.content?.length ? filters : {}}
