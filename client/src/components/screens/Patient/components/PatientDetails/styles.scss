@@ -1,4 +1,4 @@
-@import '../../../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 .patient-section {
   display: flex;
@@ -43,12 +43,12 @@
       &__row {
         display: flex;
         flex-direction: column;
-        
+
         &__title {
           color: $gray-7;
           font-weight: 500;
         }
-  
+
         &__info {
           &__multiple-mrn {
             ul {

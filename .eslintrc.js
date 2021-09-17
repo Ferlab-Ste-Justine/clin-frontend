@@ -21,6 +21,7 @@ module.exports = {
     'react',
     '@typescript-eslint',
     'jest',
+    'simple-import-sort',
   ],
   rules: {
     indent: ['error', 2, {
@@ -68,6 +69,23 @@ module.exports = {
     'no-unused-vars': 'off',
     'no-shadow': 'off',
     'no-plusplus': 'off',
+    'simple-import-sort/imports': ['warn', {
+      groups: [
+        // Side effect imports.
+        ['^\\u0000'],
+        // Packages. `react` related packages come first.
+        ['^react', '^@?\\w'],
+        // Internal packages.
+        // eslint-disable-next-line max-len
+        ['^(@|assets|charkit|common|components|utils|hooks|icons|pages|services|assets|shapes|stateProviders|store|style|theme|ui|uikit)(/.*|$)'],
+        // Parent imports. Put `..` last.
+        ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+        // Other relative imports. Put same-folder imports and `.` last.
+        ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+        // Style imports.
+        ['^.+\\.s?css$'],
+      ],
+    }],
     '@typescript-eslint/type-annotation-spacing': ['error'],
     '@typescript-eslint/no-unused-vars': ['error'],
     '@typescript-eslint/keyword-spacing': ['error'],

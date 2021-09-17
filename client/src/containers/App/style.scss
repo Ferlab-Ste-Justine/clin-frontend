@@ -2,7 +2,7 @@ $use-all: true;
 @import '~animate-sass/animate';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
 @import './variables.scss';
-@import '../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 
 body{
@@ -353,7 +353,7 @@ div.ant-card {
         .tabName{
           display: flex;
           align-items: center;
-          
+
         }
         i{
           padding-right: 8px;
@@ -384,7 +384,7 @@ div.ant-card {
   .cardSeparator{
     border: 1px solid #D2DBE4;
     padding:16px;
-  } 
+  }
 
 }
 
@@ -426,11 +426,11 @@ div.ant-card {
     &::placeholder{
       color: #ABB3BC;;
     }
-  
+
     &:hover{
       border: 1px solid #3EB8EA !important;
     }
-  
+
     &:focus{
       border: 1px solid #3EB8EA;
       box-sizing: border-box;
@@ -449,7 +449,7 @@ div.ant-card {
 //Date Picker
 .ant-calendar-picker{
   border-radius: 2px;
-  
+
   .ant-calendar-picker-input{
     border: 1px solid #ABBED3 !important;
     &:hover{
@@ -470,9 +470,9 @@ div.ant-card {
 }
 .ant-calendar-my-select{
   a{
-    color: #125A90 !important; 
+    color: #125A90 !important;
   }
-  
+
 }
 
 .ant-calendar-date{
@@ -527,7 +527,7 @@ div.ant-card {
     line-height: 22px;
     letter-spacing: 0.25px;
     color: #536377;
-      
+
   }
 
   &:hover{
@@ -552,7 +552,7 @@ div.ant-card {
     background: #249ED9 !important;
     color: #ffffff;
   }
-  
+
 }
 
 // Select
@@ -614,10 +614,10 @@ div.ant-card {
         margin-top: -3px;
       }
     }
-    
+
     .selectIcon{
       margin-top: -3px;
-    
+
     }
   }
 
@@ -648,7 +648,7 @@ div.ant-card {
   .ant-tree-title{
     font-weight: normal;
   }
-  
+
 }
 
 //Checkbox
@@ -658,7 +658,7 @@ div.ant-card {
       .checkbox{
         margin-bottom: 0;
       }
-      
+
     }
     .checkbox{
       margin-bottom: 8px;

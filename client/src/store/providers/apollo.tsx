@@ -6,12 +6,12 @@ import {
   InMemoryCache,
   NormalizedCacheObject,
 } from '@apollo/client';
-
 import { setContext } from '@apollo/client/link/context';
+
 import { GraphqlBackend, GraphqlProvider } from 'store/providers';
 
 const ARRANGER_API = process.env.REACT_APP_ARRANGER_API;
-const PROJECT_ID = process.env.REACT_APP_PROJECT_ID;
+const PROJECT_ID = process.env.REACT_APP_ARRANGER_PROJECT_ID;
 
 const fhirLink = createHttpLink({
   uri: `${process.env.REACT_APP_FHIR_SERVICE_URL}/$graphql`,

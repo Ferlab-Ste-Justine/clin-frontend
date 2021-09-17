@@ -1,16 +1,19 @@
 // @ts-nocheck
 import React from 'react';
-import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom';
-import './index.css';
-import 'antd/dist/antd.css';
+import { Provider } from 'react-redux';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
-import reportWebVitals from './reportWebVitals';
-import keycloak from './keycloak';
+
 import { ConnectedApp } from './containers/App';
 import configureStore, { history, initialState } from './configureStore';
+import keycloak from './keycloak';
+import reportWebVitals from './reportWebVitals';
+
+import './index.css';
+import 'style/themes/clin/main.scss';
 
 const store = configureStore(initialState);
+
 ReactDOM.render(
   <ReactKeycloakProvider
     authClient={keycloak}

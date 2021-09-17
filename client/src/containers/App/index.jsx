@@ -1,19 +1,17 @@
-import { hot } from 'react-hot-loader/root';
-
 import React from 'react';
-import PropTypes from 'prop-types';
+import { hot } from 'react-hot-loader/root';
 import { connect } from 'react-redux';
+import { ConfigProvider, Layout, Spin } from 'antd';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import { Spin, Layout, ConfigProvider } from 'antd';
-
-import '../../style/themes/antd-clin-theme.css';
-import './style.scss';
-
-import MaintenanceScreen from '../../components/screens/Maintenance';
 
 import { loadApp } from '../../actions/app';
+import MaintenanceScreen from '../../components/screens/Maintenance';
 import { appShape } from '../../reducers/app';
 import AppRouter from '../AppRouter';
+
+import 'style/themes/clin/dist/antd.css';
+import './style.scss';
 
 export class App extends React.Component {
   constructor() {

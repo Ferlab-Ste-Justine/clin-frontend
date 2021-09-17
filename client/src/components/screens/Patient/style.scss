@@ -1,5 +1,5 @@
 @import './variables.scss';
-@import '../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 .prescription{
   margin-bottom: 24px;
@@ -29,7 +29,7 @@
 
 .dropDownButton{
   color: $gray-8;
-    
+
 }
 
 
@@ -75,7 +75,7 @@
 }
 
 .clinical{
-    
+
   &__info{
     flex-wrap: nowrap;
     &:not(:last-of-type){
@@ -91,7 +91,7 @@
         height: 22px;
         i{
           height: 16px;
-                    
+
           svg{
             vertical-align: sub !important;
           }
@@ -103,7 +103,7 @@
       &--normal{
         color: $green-7;
       }
-    
+
     }
   }
   .ant-card-body{
@@ -113,7 +113,7 @@
 
   .ant-table-body{
     margin: 0 !important;
-        
+
   }
 
   .familyHistory{

@@ -1,4 +1,4 @@
-@import '../../../../../style/themes/colors.scss';
+@import 'style/themes/clin/dist/_colors.scss';
 
 .family-tab {
   height: 100%;
@@ -18,7 +18,7 @@
         color: $gray-5;
       }
       &__texts {
-        
+
         &__title {
           margin-top:24px;
           color: $blue-10;
@@ -35,7 +35,7 @@
 
     &__add-parent__modal {
       &__form {
-        &__search { 
+        &__search {
           .ant-form-item-label {
             padding: 0;
             & > label {
@@ -48,7 +48,7 @@
               font-size: 14px;
               color: $gray-8;
             }
-  
+
             &__ramq {
               font-size: 12px;
               color: $gray-7;

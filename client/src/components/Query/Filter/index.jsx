@@ -1,29 +1,31 @@
 import React, { Fragment } from 'react';
-import shortid from 'shortid';
-import PropTypes from 'prop-types';
-import intl from 'react-intl-universal';
-import {
-  Tag, Dropdown,
-} from 'antd';
-import Icon from '@ant-design/icons';
-import cloneDeep from 'lodash/cloneDeep';
 import IconKit from 'react-icons-kit';
 import {
   ic_cancel,
 } from 'react-icons-kit/md';
-
-import '../../../style/themes/antd-clin-theme.css';
-import style from '../styles/term.module.scss';
-import styleFilter from '../styles/filter.module.scss';
+import intl from 'react-intl-universal';
+import Icon from '@ant-design/icons';
+import {
+  Dropdown,
+  Tag,
+} from 'antd';
+import cloneDeep from 'lodash/cloneDeep';
+import PropTypes from 'prop-types';
+import shortid from 'shortid';
 
 import {
-  OPERATOR_TYPE_UNION,
+  OPERATOR_TYPE_EQUAL,
   OPERATOR_TYPE_INTERSECTION,
   OPERATOR_TYPE_NOT_EQUAL,
+  OPERATOR_TYPE_UNION,
   OperatorIconComponent,
-  OPERATOR_TYPE_EQUAL,
 } from '../Operator';
+
 import FilterContent from './FilterContent';
+
+import 'style/themes/clin/dist/antd.css';
+import styleFilter from '../styles/filter.module.scss';
+import style from '../styles/term.module.scss';
 
 export const FILTER_OPERAND_TYPE_ALL = 'all';
 export const FILTER_OPERAND_TYPE_ONE = 'one';

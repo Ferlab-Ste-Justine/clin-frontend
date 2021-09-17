@@ -1,38 +1,40 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import React from 'react';
-import PropTypes from 'prop-types';
-import intl from 'react-intl-universal';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import {
-  Tabs, Button, Spin, Badge, Card, Popover, Menu, Dropdown,
-} from 'antd';
-import { DownOutlined, MedicineBoxFilled } from '@ant-design/icons';
-
 import IconKit from 'react-icons-kit';
 import {
-  ic_info_outline, ic_widgets, ic_cloud_download, ic_people,
+  ic_cloud_download,
+  ic_info_outline, ic_people,
+  ic_widgets,
 } from 'react-icons-kit/md';
-import PatientVariantScreen from '../PatientVariant';
-import { appShape } from '../../../reducers/app';
+import intl from 'react-intl-universal';
+import { connect } from 'react-redux';
+import { DownOutlined, MedicineBoxFilled } from '@ant-design/icons';
 import {
-  navigateToPatientScreen,
-  navigateToPatientVariantScreen,
-  navigateToPatientSearchScreen,
-  navigateToSubmissionWithPatient,
-} from '../../../actions/router';
+  Badge, Button, Card, Dropdown, Menu, Popover, Spin, Tabs,
+} from 'antd';
+import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
 
 import { updateServiceRequestStatus } from '../../../actions/patient';
-
-import '../../../style/themes/antd-clin-theme.css';
-import './style.scss';
+import {
+  navigateToPatientScreen,
+  navigateToPatientSearchScreen,
+  navigateToPatientVariantScreen,
+  navigateToSubmissionWithPatient,
+} from '../../../actions/router';
+import { appShape } from '../../../reducers/app';
 import Layout from '../../Layout';
-import StatusChangeModal from './components/StatusChangeModal';
-import PrescriptionsTab from './components/PrescriptionsTab';
+import PatientVariantScreen from '../PatientVariant';
+
+import FamilyTab from './components/FamilyTab';
 import FilesTab from './components/FilesTab';
 import PatientHeader from './components/PatientHeader';
-import FamilyTab from './components/FamilyTab';
+import PrescriptionsTab from './components/PrescriptionsTab';
+import StatusChangeModal from './components/StatusChangeModal';
+
+import 'style/themes/clin/dist/antd.css';
+import './style.scss';
 
 class PatientScreen extends React.Component {
   constructor(props) {
