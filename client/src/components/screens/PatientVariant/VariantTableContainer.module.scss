@@ -9,10 +9,21 @@
 }
 
 .variantSearchTable {
+  margin-top: 24px;
+
+  > div {
+    padding: 8px;
+  }
+
   :global(.ant-table-content) {
     overflow: scroll;
     table {
       min-width: 1500px;
     }
   }
+}
+
+.tabletotalTitle {
+  font-size: 14px;
+  font-weight: 400;
 }
