@@ -1,20 +1,21 @@
+import React from 'react';
+import intl from 'react-intl-universal';
+import { useSelector } from 'react-redux';
 import { DownOutlined } from '@ant-design/icons';
 import {
   Button, Card, Dropdown, Table,
 } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import intl from 'react-intl-universal';
-import { State } from '../../../../../../reducers';
-import { ParsedPatientData } from '../../../../../../helpers/providers/types';
+
 import { updateParentStatusInFamily } from '../../../../../../actions/patient';
-import StatusCell from './StatusCell';
+import { isFetusOnly } from '../../../../../../helpers/fhir/familyMemberHelper';
+import { State } from '../../../../../../reducers';
+import { FamilyMember } from '../../../../../../store/FamilyMemberTypes';
+
+import ActionsCell from './ActionsCell';
 import NameCell from './NameCell';
 import PositionCell from './PositionCell';
-import ActionsCell from './ActionsCell';
-import { FamilyMember } from '../../../../../../store/FamilyMemberTypes';
-import { isFetusOnly } from '../../../../../../helpers/fhir/familyMemberHelper';
+import StatusCell from './StatusCell';
 
 interface Props {
   addParentMenu: React.ReactElement;
@@ -23,7 +24,6 @@ interface Props {
 interface DataType {
   key: number;
   member: FamilyMember;
-  pagePatientId: string;
 }
 
 const renderExceptIfFetus = (value: string, record: DataType) => !value || (isFetusOnly(record.member) ? '--' : value);
@@ -33,13 +33,11 @@ const sortProbandFirst = (members: FamilyMember[]) => members
   .sort((a, b) => +b.isProband - +a.isProband);
 
 const FamilyTable = ({ addParentMenu }: Props) => {
-  const pagePatient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
 
   const data: DataType[] = sortProbandFirst(familyMembers).map((fm, index: number) => ({
     key: index,
     member: fm,
-    pagePatientId: pagePatient.id,
   }));
 
   const columns = [
@@ -83,7 +81,7 @@ const FamilyTable = ({ addParentMenu }: Props) => {
       title: intl.get('screen.patient.details.family.table.status'),
       key: 'status',
       render: (value, record) => {
-        if (record.member.id === record.pagePatientId) {
+        if (record.member.isProband) {
           return '--';
         }
         return (
@@ -99,7 +97,7 @@ const FamilyTable = ({ addParentMenu }: Props) => {
     {
       title: intl.get('screen.patient.details.family.table.actions'),
       render: (value, record) => {
-        if (record.member.id === record.pagePatientId) {
+        if (record.member.isProband) {
           return '--';
         }
 
