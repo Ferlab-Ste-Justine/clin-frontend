@@ -108,9 +108,7 @@ const PatientVariantScreen = () => {
             total={total}
             dictionary={dictionary}
           />
-          <StackLayout vertical className={styles.tableContainer}>
-            <VariantTableContainer setCurrentPageCb={setCurrentPageNum} />
-          </StackLayout>
+          <VariantTableContainer setCurrentPageCb={setCurrentPageNum} />
         </StackLayout>
       </ScrollView>
     </Layout>
