@@ -1,4 +1,4 @@
-name: Tests
+name: Quality
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     name: Run Tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Check out source code
         uses: actions/checkout@v2
@@ -19,7 +19,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install pnpm
         run: npm install -g pnpm
       - name: Install dependencies
@@ -28,3 +28,21 @@ jobs:
         run: npm run theme
       - name: Run tests
         run: npm test
+  linter:
+    name: Run Linter
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v2
+      - name: Set up node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.18"
+      - name: use cache
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Run linter
+        run: npm run lint
