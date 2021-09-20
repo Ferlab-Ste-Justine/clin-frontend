@@ -9,8 +9,6 @@ import {
   Tabs,
 } from 'antd';
 import moment from 'moment';
-import split from 'lodash/split';
-import size from 'lodash/size';
 import React, { CSSProperties, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import intl from 'react-intl-universal';
@@ -119,8 +117,8 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
   }, []);
 
   const practitionerPopOverText = (info: any) => {
-    const phonePart = split(info.phone, ' ');
-    const phone = size(phonePart) === 3 ? `(${phonePart[0]}) ${phonePart[1]}- ${phonePart[2]} ` : info.phone;
+    const phonePart = info.phone ? info.phone.split(' ') : [];
+    const phone = phonePart.length === 3 ? `(${phonePart[0]}) ${phonePart[1]}-${phonePart[2]}` : info.phone;
     return (
       <Card title={intl.get('screen.patient.details.practitioner')} bordered={false}>
         <p><span className="popOverName">{ info.formattedName }</span>  | { info.mrn }</p>
