@@ -1,22 +1,21 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import {
-  Layout, Row, Col, Typography,
-} from 'antd';
-import intl from 'react-intl-universal';
 import IconKit from 'react-icons-kit';
 import {
-  ic_phone, ic_launch, ic_email, ic_location_on,
+  ic_email, ic_launch, ic_location_on,
+  ic_phone,
 } from 'react-icons-kit/md';
+import intl from 'react-intl-universal';
+import { connect } from 'react-redux';
+import { Col, Layout, Row, Typography } from 'antd';
 
 const { Text } = Typography;
 
 const Footer = () => (
   <Layout.Footer id="footer">
-    <Row className="flex-row footerPrimary" align="middle">
+    <Row align="middle" className="flex-row footerPrimary">
       <div className="footerNav">
         <Col>
-          <Text type="primary" className="navTitle">{ intl.get('footer.navigation.primary.information') }</Text>
+          <Text className="navTitle" type="primary">{ intl.get('footer.navigation.primary.information') }</Text>
           <nav>
             <ul>
               <li>
@@ -26,37 +25,37 @@ const Footer = () => (
               <li>
                 <a href="#">
                   { intl.get('footer.navigation.primary.link') }
-                  <IconKit size={16} icon={ic_launch} />
+                  <IconKit icon={ic_launch} size={16} />
                 </a>
               </li>
             </ul>
           </nav>
         </Col>
         <Col>
-          <Text type="primary" className="navTitle">{ intl.get('footer.navigation.primary.contact') }</Text>
+          <Text className="navTitle" type="primary">{ intl.get('footer.navigation.primary.contact') }</Text>
           <nav>
             <ul>
               <li>
-                <IconKit size={16} icon={ic_phone} />
+                <IconKit icon={ic_phone} size={16} />
                 { intl.get('footer.navigation.primary.phone') }
               </li>
               <li>
-                <IconKit size={16} icon={ic_email} />
+                <IconKit icon={ic_email} size={16} />
                 { intl.get('footer.navigation.primary.email') }
               </li>
               <li>
-                <IconKit size={16} icon={ic_location_on} />
+                <IconKit icon={ic_location_on} size={16} />
                 { intl.get('footer.navigation.primary.address') }
               </li>
             </ul>
           </nav>
         </Col>
         <Col>
-          <img className="logo" alt="Saint-Justine" src="/assets/logos/chujs-white.svg" />
+          <img alt="Saint-Justine" className="logo" src="/assets/logos/chujs-white.svg" />
         </Col>
       </div>
     </Row>
-    <Row className="flex-row footerSecondary" align="middle">
+    <Row align="middle" className="flex-row footerSecondary">
       <div className="footerLogo">
         <nav>
           <ul>
@@ -68,7 +67,7 @@ const Footer = () => (
             <li><a href="https://fhir-console.qa.clin.ferlab.bio/home"> Fhir </a></li>
           </ul>
         </nav>
-        <img className="logo" alt="Saint-Justine" src="/assets/logos/msssq.svg" />
+        <img alt="Saint-Justine" className="logo" src="/assets/logos/msssq.svg" />
       </div>
     </Row>
   </Layout.Footer>
