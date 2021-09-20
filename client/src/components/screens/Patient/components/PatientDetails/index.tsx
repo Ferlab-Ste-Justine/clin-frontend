@@ -18,10 +18,9 @@ import './styles.scss';
 
 const MAX_MRNS_DISPLAYED = 2;
 
-const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
+const ProfileCard = ({ patient }: { patient: ParsedPatientData }) => {
   const parent = useSelector<State>((state) => state.patient.parent) as any;
   const intlDetails = intl.get('screen.patient.details.mother').toLowerCase();
-
   const dispatch = useDispatch();
   return (
     <div className="patient-section__name-block">
@@ -36,7 +35,7 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
             className="link--underline"
             onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
           >
-            { `${parent.lastName.toUpperCase()} ${parent.firstName} (${intlDetails})` }
+            { `${parent?.lastName?.toUpperCase()} ${parent?.firstName} (${intlDetails})` }
           </Button>
         </>
       ) : (
@@ -57,13 +56,14 @@ const ProfileCard: React.FC<{patient: ParsedPatientData}> = ({ patient }) => {
 
   );
 };
+
 interface MrnValue {
   value: string,
   organization: string
 }
 
 interface MultipleMrnProps {
-  mrns: MrnValue[]
+  mrns: MrnValue[];
 }
 
 const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
@@ -77,9 +77,9 @@ const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
             return null;
           }
           return (
-            <li>{ `${value.value} - ${value.organization}` }</li>
+            <li key={value.value}>{ `${value.value} - ${value.organization}` }</li>
           );
-        }) }
+        }).filter((e) => e) }
       </ul>
       {
         mrns.length > MAX_MRNS_DISPLAYED
@@ -97,7 +97,7 @@ const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
   );
 };
 
-const DetailsRow: React.FC<{title: string, value?: string | ReactNode}> = ({ title, value }) => (
+const DetailsRow: React.FC<{ title: string, value?: string | ReactNode }> = ({ title, value }) => (
   <div className="patient-section__col__details__row">
     <span className="patient-section__col__details__row__title">
       { title }
@@ -108,7 +108,7 @@ const DetailsRow: React.FC<{title: string, value?: string | ReactNode}> = ({ tit
   </div>
 );
 
-const DetailsCol: React.FC<{isLast?: boolean, align: 'center' | 'top'}> = ({ children, isLast = false, align }) => (
+const DetailsCol: React.FC<{ isLast?: boolean, align: 'center' | 'top' }> = ({ children, isLast = false, align }) => (
   <div className="patient-section__col">
     <div
       className="patient-section__col__details"
@@ -121,8 +121,8 @@ const DetailsCol: React.FC<{isLast?: boolean, align: 'center' | 'top'}> = ({ chi
 );
 
 interface Props {
-  patient: ParsedPatientData
-  canEditPatient: boolean
+  patient: ParsedPatientData;
+  canEditPatient: boolean;
 }
 
 const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {

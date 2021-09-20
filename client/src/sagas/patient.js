@@ -48,16 +48,15 @@ const getFamily = async (patientDataResponse, mainPatientId) => {
 };
 
 function* updateParentGroup(parentId, newGroupId) {
-  const [patientDataResponse, groupDataResponse] = yield Promise.all([
-    Api.getPatientDataById(parentId),
-    Api.getGroupByMemberId(parentId),
-  ]);
-  const parentPatientData = get(patientDataResponse, 'payload.data.entry[0].resource.entry[0].resource');
+  const patientDataResponse = yield Api.getPatientDataById(parentId);
 
-  const parentGroupData = get(groupDataResponse, 'payload.data.entry[0].resource');
+  const parentPatientData = get(patientDataResponse, 'payload.data.entry[0].resource.entry[0].resource');
   if (parentPatientData == null) {
     throw new Error(`updateParentGroup:: Did not find a patient with id [${parentId}]`);
   }
+
+  const groupDataResponse = yield Api.getGroupByMemberId(parentId);
+  const parentGroupData = get(groupDataResponse, 'payload.data.entry[0].resource');
 
   const patients = [];
   if (parentGroupData != null) {
@@ -75,7 +74,9 @@ function* fetch(action) {
   try {
     const patientDataResponse = yield Api.getPatientDataById(action.payload.uid);
     if (patientDataResponse.error) {
-      throw new ApiError(patientDataResponse.error);
+      const error = new ApiError(patientDataResponse.error);
+      yield put({ type: actions.PATIENT_FETCH_FAILED, payload: error });
+      return;
     }
 
     const [familyResponse, practitionersDataResponse, canEditResponse] = yield Promise.all([

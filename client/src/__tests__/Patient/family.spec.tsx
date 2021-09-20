@@ -12,7 +12,7 @@ import Patient from '../../components/screens/Patient';
 import { FakeStateProvider } from '../utils/FakeStateProvider';
 import { ResourceBuilder } from '../utils/Utils';
 import { mockRptToken } from '../mocks';
-import { FamilyMemberType } from '../../helpers/providers/types';
+import { FamilyMemberType } from '../../store/FamilyMemberTypes';
 
 function parentPatientBundle(patientId: string, firstName: string, lastName: string) {
   return {
@@ -471,7 +471,13 @@ describe.skip('Patient/Family', () => {
               return res(
                 ctx.status(200),
                 // @ts-ignore
-                ctx.json(get(parentPatientBundle(parentPatient.id, parentPatient.firstName, parentPatient.lastName), '[0].resource')),
+                ctx.json(get(
+                  parentPatientBundle(
+                    parentPatient.id,
+                    parentPatient.firstName,
+                    parentPatient.lastName,
+                  ), '[0].resource',
+                )),
               );
             }
 
@@ -621,6 +627,7 @@ describe.skip('Patient/Family', () => {
       userEvent.type(screen.getByRole('combobox'), 'test');
 
       const autocompleteElement = (await screen.findByText(/TEST Family/i)).parentElement;
+      // @ts-ignore
       act(() => userEvent.click(autocompleteElement, {}));
 
       await waitFor(() => screen.getByText(/TESTF91010101/i));
@@ -730,7 +737,13 @@ describe.skip('Patient/Family', () => {
               return res(
                 ctx.status(200),
                 // @ts-ignore
-                ctx.json(get(parentPatientBundle(parentPatient.id, parentPatient.firstName, parentPatient.lastName), '[0].resource')),
+                ctx.json(get(
+                  parentPatientBundle(
+                    parentPatient.id,
+                    parentPatient.firstName,
+                    parentPatient.lastName,
+                  ), '[0].resource',
+                )),
               );
             }
 
@@ -880,6 +893,7 @@ describe.skip('Patient/Family', () => {
       userEvent.type(screen.getByRole('combobox'), 'test');
 
       const autocompleteElement = (await screen.findByText(/TEST Family/i)).parentElement;
+      // @ts-ignore
       act(() => userEvent.click(autocompleteElement, {}));
 
       await waitFor(() => screen.getByText(/TESTF91010101/i));
@@ -945,8 +959,10 @@ describe.skip('Patient/Family', () => {
           birthDate: '1990-01-01',
           gender: 'female',
           ramq: 'NAMM90510101',
-          type: FamilyMemberType.MOTHER,
+          relationCode: FamilyMemberType.MOTHER,
           code: 'UNK',
+          isProband: false,
+          isFetus: false,
         }, {
           id: '3',
           firstName: 'Father',
@@ -954,8 +970,10 @@ describe.skip('Patient/Family', () => {
           birthDate: '1990-01-01',
           gender: 'male',
           ramq: 'NAMF90010101',
-          type: FamilyMemberType.FATHER,
+          relationCode: FamilyMemberType.FATHER,
           code: 'UNK',
+          isProband: false,
+          isFetus: false,
         }],
       });
       render(

@@ -44,13 +44,15 @@ const ClinicalSigns: React.FC<Props> = ({ clinicalImpression, hpos }) => {
     (hpo) => get(clinicalImpression, 'investigation[0].item', []).find(
       (item: Reference) => item.reference.indexOf(hpo.id) !== -1,
     ) != null,
-  ).map((obs) => ({
+  ).map((obs, index) => ({
+    key: index,
     observed: getObservedIcon(obs.observed),
     category: obs.category,
     term: obs.term,
     apparition: obs.ageAtOnset,
     notes: obs.note || '--',
   }));
+
   return (
     <Card
       title={intl.get('screen.patient.details.prescriptions.clinicalSign.title')}
