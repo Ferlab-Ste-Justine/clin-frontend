@@ -93,7 +93,7 @@ const PatientVariantScreen = () => {
   ];
 
   return (
-    <Layout className={styles.patientVariantLayout}>
+    <div className={styles.patientVariantLayout}>
       <SidebarMenu className={styles.patientVariantSidebar} menuItems={menuItems} />
       <ScrollView className={styles.scrollContent}>
         <StackLayout vertical className={styles.pageContainer}>
@@ -112,7 +112,7 @@ const PatientVariantScreen = () => {
           <VariantTableContainer setCurrentPageCb={setCurrentPageNum} />
         </StackLayout>
       </ScrollView>
-    </Layout>
+    </div>
   );
 };
 
