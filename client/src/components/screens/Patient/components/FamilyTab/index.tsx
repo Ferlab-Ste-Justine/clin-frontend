@@ -1,35 +1,40 @@
-import {
-  Button,
-  Menu,
-} from 'antd';
+import { Button, Menu } from 'antd';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import intl from 'react-intl-universal';
-import { FamilyMemberType, ParsedPatientData } from '../../../../../helpers/providers/types';
+import { ParsedPatientData } from '../../../../../helpers/providers/types';
 import { State } from '../../../../../reducers';
 import PatientDetails from '../PatientDetails';
-import './styles.scss';
 import AddParentModal from './components/AddParentModal';
 import EmptyCard from './components/EmptyCard';
 import FamilyTable from './components/FamilyTable';
+import { FamilyMemberType } from '../../../../../store/FamilyMemberTypes';
+import './styles.scss';
+import {
+  hasAtLeastOneFatherInMembers,
+  hasAtLeastOneMotherInMembers,
+} from '../../../../../helpers/fhir/familyMemberHelper';
 
-const FamilyTab: React.FC = () => {
-  const [addParentType, setAddParentType] = useState<FamilyMemberType | null>(null);
+const FamilyTab = () => {
   const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
-  const familyMembers = useSelector((state: State) => state.patient.family);
+  const familyMembers = useSelector((state: State) => state.patient.family) || [];
   const canEditPatient = !!useSelector((state: State) => state.patient.canEdit);
+
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const hasMother = familyMembers?.find(
-    (fm) => fm.type === FamilyMemberType.MOTHER || fm.type === FamilyMemberType.NATURAL_MOTHER_OF_FETUS,
-  ) != null;
-  const hasFather = familyMembers?.find(
-    (fm) => fm.type === FamilyMemberType.FATHER,
-  ) != null;
+  const [addParentType, setAddParentType] = useState<FamilyMemberType | null>(null);
+
+  const isPatientProband = patient.proband;
+
+  const hasMother = hasAtLeastOneMotherInMembers(familyMembers);
+  const canAddMother = isPatientProband && !hasMother;
+
+  const hasFather = hasAtLeastOneFatherInMembers(familyMembers);
+  const canAddFather = isPatientProband && !hasFather;
 
   const menu = (
     <Menu>
-      <Menu.Item key={FamilyMemberType.MOTHER} disabled={hasMother}>
+      <Menu.Item key={FamilyMemberType.MOTHER} disabled={!canAddMother}>
         <Button
           disabled={hasMother}
           type="text"
@@ -41,7 +46,7 @@ const FamilyTab: React.FC = () => {
           { intl.get('screen.patient.details.family.mother') }
         </Button>
       </Menu.Item>
-      <Menu.Item key={FamilyMemberType.FATHER} disabled={hasFather}>
+      <Menu.Item key={FamilyMemberType.FATHER} disabled={!canAddFather}>
         <Button
           disabled={hasFather}
           type="text"

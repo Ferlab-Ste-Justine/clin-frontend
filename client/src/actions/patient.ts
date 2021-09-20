@@ -1,6 +1,6 @@
 import { GroupMemberStatus } from '../helpers/fhir/patientHelper';
-import { FamilyMemberType } from '../helpers/providers/types';
 import * as actions from './type';
+import { FamilyMemberType } from '../store/FamilyMemberTypes';
 
 type Action = (...args: any) => {type: keyof typeof actions, payload?: any};
 

@@ -11,28 +11,29 @@ export type ResourceType =
   | 'Bundle';
 
 export type FhirResource =
-| Practitioner
-| Patient
-| Observation
-| ClinicalImpression
-| FamilyMemberHistory
-| ServiceRequest
-| Organization
-| PractitionerRole
-| FamilyGroup
-| Bundle;
+  | Practitioner
+  | Patient
+  | Observation
+  | ClinicalImpression
+  | FamilyMemberHistory
+  | ServiceRequest
+  | Organization
+  | PractitionerRole
+  | FamilyGroup
+  | Bundle;
 
 export type BundleMethod = 'PUT' | 'GET' | 'POST';
 
-export interface BundleEntry{
+export interface BundleEntry {
   request: {
     method: BundleMethod,
     url: string,
-  }
+  };
   fullUrl?: string;
   resource?: FhirResource;
 }
-export interface Bundle{
+
+export interface Bundle {
   resourceType: ResourceType;
   id?: string;
   type: string;
@@ -87,8 +88,9 @@ export interface Extension {
   valueReference?: Reference;
   valueBoolean?: boolean;
   valueAge?: Age;
-  valueCodeableConcept?: CodeableConcept
+  valueCodeableConcept?: CodeableConcept;
   extension?: Extension[];
+
   [key: string]: any;
 }
 
@@ -266,12 +268,12 @@ export interface PatientSearchHits {
 
 export interface Member {
   extension: Extension[];
-  entity: Reference
+  entity: Reference;
 }
 
 export interface Group {
-  id: string
-  meta: Meta
-  extension: Extension[]
-  member: Member[]
+  id: string;
+  meta: Meta;
+  extension: Extension[];
+  member: Member[];
 }

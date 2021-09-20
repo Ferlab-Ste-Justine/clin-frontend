@@ -17,31 +17,14 @@ import { ServiceRequestProvider } from '../helpers/providers/service-request/ind
 import {
   ClinicalObservation,
   ConsultationSummary,
-  FamilyMember,
   FamilyObservation,
   ParsedPatientData,
   Prescription,
 } from '../helpers/providers/types';
-
-const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
-
-type ObservationCode = 'CGH' | 'INDIC' | 'INVES' | 'ETH' | 'CONS';
-
-const getObservations = (code: ObservationCode, resource: any): Observation[] => {
-  const clinicalImpressin = resource.entry[3];
-  const observation = clinicalImpressin?.resource.entry
-    ?.filter((entry: any) => get(entry, 'resource.code.coding[0].code', '') === code);
-
-  return observation?.map((obs: {resource: Observation}) => obs.resource);
-};
-
-export type Observations = {
-  cgh?: Observation[];
-  indic?: Observation[];
-  inves?: Observation[];
-  eth?: Observation[];
-  cons?: Observation[];
-}
+import { parseFamilyMember } from '../helpers/fhir/familyMemberHelper';
+import { Observations } from '../store/ObservationTypes';
+import { getObservations } from '../helpers/fhir/ObservationHelper';
+import { FamilyMember } from '../store/FamilyMemberTypes';
 
 type PrescriptionRecord = Record<ServiceRequest, Prescription>;
 
@@ -79,51 +62,6 @@ const initialState: PatientState = {
   currentActiveKey: 'prescriptions',
 };
 
-function parseFamilyMember(familyData?: any[], patient?: Patient): FamilyMember[] {
-  if (familyData == null) {
-    return [];
-  }
-
-  const relations = patient?.extension.filter((ext) => ext.url === FAMILY_RELATION_EXT_URL) || [];
-  const map: {[key: string]: string | null} = {};
-  relations.forEach((relation) => {
-    const reference = get(relation, 'extension[0].valueReference.reference').split('/')[1];
-    const code = get(relation, 'extension[1].valueCodeableConcept.coding[0].code');
-
-    map[reference] = code;
-  });
-
-  const members = familyData.map((fd: any) => {
-    const familyPatientId = get(fd, 'entry.resource.entry[0].resource.id', '');
-
-    return ({
-      id: familyPatientId,
-      firstName: get(fd, 'entry.resource.entry[0].resource.name[0].given[0]', ''),
-      lastName: get(fd, 'entry.resource.entry[0].resource.name[0].family', ''),
-      ramq: getRAMQValue(get(fd, 'entry.resource.entry[0].resource', {})),
-      birthDate: get(fd, 'entry.resource.entry[0].resource.birthDate', ''),
-      gender: get(fd, 'entry.resource.entry[0].resource.gender', ''),
-      type: map[get(fd, 'entry.resource.entry[0].resource.id')],
-      code: fd.statusCode,
-    } as FamilyMember);
-  });
-
-  if (patient) {
-    // patient isn't included in `familyData` so we manualy add it
-
-    members.push({
-      id: patient.id || '',
-      firstName: patient.name[0].given[0],
-      lastName: patient.name[0].family,
-      ramq: getRAMQValue(patient),
-      birthDate: patient.birthDate,
-      gender: patient.gender as ('male' | 'female'),
-      code: 'AFF',
-    });
-  }
-  return members;
-}
-
 const reducer = (state: PatientState = initialState, action: Action) => produce<PatientState>(state, (draft) => {
   switch (action.type) {
     case actions.NAVIGATION_PATIENT_SCREEN_REQUESTED:
@@ -143,6 +81,7 @@ const reducer = (state: PatientState = initialState, action: Action) => produce<
       draft.patient = patient;
 
       const family = parseFamilyMember(action.payload.family, patient.original);
+
       draft.family = family;
       // eslint-disable-next-line prefer-destructuring
       draft.parent = family[0];
