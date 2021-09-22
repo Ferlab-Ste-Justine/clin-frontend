@@ -1,85 +1,81 @@
-import { push, LOCATION_CHANGE } from 'connected-react-router';
+import { LOCATION_CHANGE,push } from 'connected-react-router';
 import get from 'lodash/get';
 import {
-  all, select, put, takeLatest, delay, takeEvery,
-} from 'redux-saga/effects';
+  all, delay, put, select, takeEvery,
+takeLatest, } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
 import {
-  getPatientIdFromPatientPageRoute,
-  ROUTE_NAME_ROOT,
-  ROUTE_NAME_PATIENT,
-  PATIENT_SUBROUTE_SEARCH,
-  ROUTE_NAME_VARIANT,
+  Routes,
 } from '../helpers/route';
 
 function* navigateToVariantDetailsScreen(action) {
   try {
-    const { uid, tab } = action.payload;
-    let url = `${ROUTE_NAME_ROOT}${ROUTE_NAME_VARIANT}/${uid}`;
+    const { tab, uid } = action.payload;
+    let url = Routes.getPatientPath(uid);
     if (tab) { url += `/#${tab}`; }
 
     yield put(push(url));
   } catch (e) {
-    yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_FAILED, message: e.message });
+    yield put({ message: e.message, type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_FAILED });
   }
 }
 
 function* navigateToPatientScreen(action) {
   try {
-    const { uid, tab, reload } = action.payload;
-    let url = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${uid}`;
-    if (tab) { url += `/#${tab}`; }
+    const { reload, tab, uid } = action.payload;
+    let url = Routes.getPatientPath(uid, tab);
+
     if (reload) {
       url += '?reload';
     }
 
-    yield put({ type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY, payload: { activeKey: tab } });
+    yield put({ payload: { activeKey: tab }, type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY });
     yield put(push(url));
   } catch (e) {
-    yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED, message: e.message });
+    yield put({ message: e.message, type: actions.NAVIGATION_PATIENT_SCREEN_FAILED });
   }
 }
 
 function* navigateToPatientVariantScreen(action) {
   try {
     const { uid } = action.payload;
-    const url = `${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${uid}#variant`;
+    const url = Routes.getPatientPath(uid, 'variant');
 
     yield put(push(url));
   } catch (e) {
-    yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED, message: e.message });
+    yield put({ message: e.message, type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED });
   }
 }
 
 function* navigateToSubmissionScreen() {
   try {
-    yield put(push(yield put(push('/submission'))));
+    yield put(push(yield put(push(Routes.Submission))));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
-    yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
+    yield put({ message: e.message, type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED });
   }
 }
 
 function* navigateToSubmissionScreenWithPatientProcess(patient) {
   try {
-    yield put({ type: actions.PATIENT_SUBMISSION_FROM_PATIENT, payload: { patient } });
-    yield put(push(yield put(push('/submission'))));
+    yield put({ payload: { patient }, type: actions.PATIENT_SUBMISSION_FROM_PATIENT });
+    yield put(push(yield put(push(Routes.Submission))));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_SUCCEEDED });
   } catch (e) {
-    yield put({ type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED, message: e.message });
+    yield put({ message: e.message, type: actions.NAVIGATION_SUBMISSION_SCREEN_FAILED });
   }
 }
 
 function* navigateToEditSubmission() {
   try {
-    yield put(push(yield put(push('/submission'))));
+    yield put(push(yield put(push(Routes.Submission))));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_EDIT_SUBMISSION_SUCCEEDED });
   } catch (e) {
-    yield put({ type: actions.NAVIGATION_EDIT_SUBMISSION_FAILED, message: e.message });
+    yield put({ message: e.message, type: actions.NAVIGATION_EDIT_SUBMISSION_FAILED });
   }
 }
 
@@ -94,7 +90,7 @@ function* navigateToSubmissionScreenWithPatient() {
 }
 
 function* navigateToPatientSearchScreen() {
-  yield put(push(`${ROUTE_NAME_ROOT}${ROUTE_NAME_PATIENT}/${PATIENT_SUBROUTE_SEARCH}`));
+  yield put(push(Routes.PatientSearch));
 }
 
 function* navigateToAccessDeniedScreen() {
@@ -108,19 +104,19 @@ function* navigateToAccessDeniedScreen() {
 
 function* processPatientPage(currentRoute, tab, forceReload) {
   try {
-    const uid = getPatientIdFromPatientPageRoute(currentRoute);
+    const uid = Routes.getPatientIdFromPatientPageRoute(currentRoute);
     const currentPatientId = yield select((state) => state.patient.patient.parsed.id);
     if (uid !== currentPatientId || forceReload) {
       yield put({
-        type: actions.PATIENT_FETCH_REQUESTED,
         payload: { uid },
+        type: actions.PATIENT_FETCH_REQUESTED,
       });
       yield delay(250);
     }
     if (tab === 'variant') {
       yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
     }
-    yield put({ type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY, payload: { activeKey: tab } });
+    yield put({ payload: { activeKey: tab }, type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY });
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED });
@@ -130,7 +126,7 @@ function* processPatientPage(currentRoute, tab, forceReload) {
 function* processPatientSearchPage() {
   try {
     yield put({ type: actions.CLEAR_PATIENT_DATA_REQUESTED });
-    yield put({ type: actions.PATIENT_SEARCH_REQUESTED, payload: { query: null } });
+    yield put({ payload: { query: null }, type: actions.PATIENT_SEARCH_REQUESTED });
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED });
@@ -143,7 +139,7 @@ function* manualUserNavigation(action) {
   const { referrer } = yield select((state) => state.app);
 
   const location = !referrer.location || !isFirstRendering ? action.payload.location : referrer.location;
-  const { pathname, search, hash } = location;
+  const { hash, pathname, search } = location;
   const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
   const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : `${pathname || ''}${hash || ''}`;
   if (urlIsRewrite) {
@@ -167,15 +163,15 @@ function* manualUserNavigation(action) {
   }
 
   const currentRoute = route || location.pathname;
-  if (currentRoute.startsWith('/patient/search')) {
+  if (currentRoute.startsWith(Routes.PatientSearch)) {
     yield processPatientSearchPage();
-  } else if (currentRoute.startsWith('/variantDetails')) {
+  } else if (currentRoute.startsWith(Routes.Variant)) {
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
-  } else if (currentRoute.startsWith('/patient/')) {
+  } else if (currentRoute.startsWith(Routes.Patient)) {
     yield processPatientPage(currentRoute, tab, forceReload);
-  } else if (currentRoute.startsWith('/access-denied')) {
+  } else if (currentRoute.startsWith(Routes.AccessDenied)) {
     // Access denied
-  } else if (currentRoute.startsWith('/submission') && !isFirstRendering) {
+  } else if (currentRoute.startsWith(Routes.Submission) && !isFirstRendering) {
     // ignore /submission page to not change the current flow on "normal" navigation
   } else {
     yield navigateToPatientSearchScreen();

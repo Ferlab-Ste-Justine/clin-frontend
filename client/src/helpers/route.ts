@@ -1,20 +1,26 @@
-export const ROUTE_NAME_ROOT = '/';
-export const ROUTE_NAME_PATIENT = 'patient';
-export const ROUTE_NAME_SUBMISSION = 'submission';
-export const PATIENT_SUBROUTE_SEARCH = 'search';
-export const PATIENT_SUBROUTE_VARIANT = 'variant';
-export const ROUTE_NAME_VARIANT = 'variantDetails';
+export const ROOT = '/';
+export const ROUTE_PATIENT = 'patient';
+export const ROUTE_PATIENT_SEARCH = 'search';
 
-const patientIdMatch = new RegExp('[a-zA-Z0-9]{1,}', 'gi');
-const variantIdMatch = new RegExp('[a-f0-9]{40}', 'gi');
-const tabIdMatch = new RegExp('//.*[#]([\\w+]{1,})', 'gi');
+export class Routes {
+  static AccessDenied = `${ROOT}access-denied`;
+  static MainSearch = `${ROOT}search`;
+  static Patient = `${ROOT}${ROUTE_PATIENT}`;
+  static PatientSearch = `${ROOT}${ROUTE_PATIENT}/${ROUTE_PATIENT_SEARCH}`;
+  static PatientSearchArranger = `${Routes.PatientSearch}_arranger`;
+  static PatientVariants = `${ROOT}${ROUTE_PATIENT}/:uid/variant`;
+  static Root = `${ROOT}`;
+  static Submission = `${ROOT}submission`;
+  static Variant = `${ROOT}variantDetails`;
 
-export const getPatientIdFromPatientPageRoute = (location: string) => location.split('/')[2].split('#')[0];
+  public static getPatientPath(uid?: string, tab?: string): string {
+    return uid && tab ?
+    `${Routes.Patient}/${uid}/#${tab}` :
+    uid ? `${Routes.Patient}/${uid}` : `${Routes.Patient}/:uid`
+  }
 
-export const getTabIdFromPatientPageRoute = (location: string) => location.match(tabIdMatch);
+  public static getVariantPath = (uid?: string): string =>  uid ? `${Routes.Variant}/${uid}` : `${Routes.Variant}/:uid`
 
-export const getPatientIdFromPatientVariantPageRoute = (location: string) => location.match(patientIdMatch);
-
-export const getTabIdFromPatientVariantPageRoute = (location: string) => location.match(tabIdMatch);
-
-export const getVariantIdFromVariantPageRoute = (location: string) => location.match(variantIdMatch);
+  public static getPatientIdFromPatientPageRoute = (location: string): string =>
+    location?.split('/')[2].split('#')[0];
+}

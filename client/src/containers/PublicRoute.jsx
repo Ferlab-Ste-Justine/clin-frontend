@@ -1,6 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Route, withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const PublicRoute = ({ Component, ...rest }) => (
   <Route
@@ -13,10 +13,10 @@ const PublicRoute = ({ Component, ...rest }) => (
 
 PublicRoute.propTypes = {
   Component: PropTypes.oneOfType([PropTypes.instanceOf(React.Component), PropTypes.func]).isRequired,
-  roles: PropTypes.arrayOf(PropTypes.string).isRequired,
-  match: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
+  roles: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default withRouter(PublicRoute);
