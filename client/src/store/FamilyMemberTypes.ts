@@ -24,13 +24,11 @@ export type FamilyMember = {
 }
 
 export type FamilyMembersResponse = {
-  statusCode: string;
   entry: {
     resource: {
       id: string;
       entry: {fullUrl: string; resource: Patient}[];
       [index: string]: any
     }
-    response: { status: string },
   }
 }

@@ -3,9 +3,14 @@ import { FamilyMemberType } from '../store/FamilyMemberTypes';
 
 import * as actions from './type';
 
-type Action = (...args: any) => {type: keyof typeof actions, payload?: any};
+type Action = (...args: any) => { type: keyof typeof actions; payload?: any };
 
-export const autoCompletePatients: Action = (type: string, query: any, page: number, size: number) => ({
+export const autoCompletePatients: Action = (
+  type: string,
+  query: any,
+  page: number,
+  size: number,
+) => ({
   payload: {
     page: page || 1,
     query: query || null,
@@ -29,7 +34,11 @@ export const searchPatientsByQuery: Action = (query: any, page: number, size: nu
   type: actions.PATIENT_SEARCH_REQUESTED,
 });
 
-export const updateServiceRequestStatus: Action = (serviceRequestId: string, newStatus: string, note: string) => ({
+export const updateServiceRequestStatus: Action = (
+  serviceRequestId: string,
+  newStatus: string,
+  note: string,
+) => ({
   payload: {
     note,
     serviceRequestId,
@@ -50,21 +59,30 @@ export const changeSearchType: Action = (type: string) => ({
   type: actions.CHANGE_SEARCH_TYPE_REQUESTED,
 });
 
+type familyActionCb = ((isSuccess: boolean) => Promise<void> | void) | undefined;
+
 export const addParentToFamily: Action = (
-  parentId: string, parentType: FamilyMemberType, status: GroupMemberStatus,
+  parentId: string,
+  parentType: FamilyMemberType,
+  status: GroupMemberStatus,
+  callback: familyActionCb,
 ) => ({
-  payload: { parentId, parentType, status },
+  payload: { callback, parentId, parentType, status },
   type: actions.PATIENT_ADD_PARENT_REQUESTED,
 });
 
-export const removeParentToFamily: Action = (parentId: string) => ({
-  payload: { parentId },
+export const removeParentToFamily: Action = (parentId: string, callback: familyActionCb) => ({
+  payload: { callback, parentId },
   type: actions.PATIENT_REMOVE_PARENT_REQUESTED,
 });
 
-export const updateParentStatusInFamily: Action = (parentId: string, status: GroupMemberStatus) => ({
+export const updateParentStatusInFamily: Action = (
+  parentId: string,
+  status: GroupMemberStatus,
+) => ({
   payload: {
-    parentId, status,
+    parentId,
+    status,
   },
   type: actions.PATIENT_UPDATE_PARENT_STATUS_REQUESTED,
 });
