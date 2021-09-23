@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
+import { addParentToFamily } from 'actions/patient';
 import { AutoComplete, Form, message, Radio, RadioChangeEvent, Typography } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import Modal from 'antd/lib/modal/Modal';
+import api from 'helpers/api';
+import { parentTypeToGender } from 'helpers/fhir/familyMemberHelper';
+import { GroupMemberStatusCode } from 'helpers/fhir/patientHelper';
+import { PatientData } from 'helpers/search/types';
+import { State } from 'reducers';
+import { FamilyActionStatus } from 'reducers/patient';
 
 import { FamilyMemberType } from 'store/FamilyMemberTypes';
-
-import { addParentToFamily } from '../../../../../../actions/patient';
-import api from '../../../../../../helpers/api';
-import { parentTypeToGender } from '../../../../../../helpers/fhir/familyMemberHelper';
-import { GroupMemberStatusCode } from '../../../../../../helpers/fhir/patientHelper';
-import { PatientData } from '../../../../../../helpers/search/types';
-import { State } from '../../../../../../reducers';
-import { FamilyActionStatus } from '../../../../../../reducers/patient';
 
 interface Props {
   parentType: FamilyMemberType | null;

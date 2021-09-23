@@ -2,7 +2,7 @@ import {
   FamilyMember,
   FamilyMembersResponse,
   FamilyMemberType,
-} from '../../store/FamilyMemberTypes';
+} from 'store/FamilyMemberTypes';
 
 import { getRAMQValue } from './patientHelper';
 import { Extension, Patient } from './types';

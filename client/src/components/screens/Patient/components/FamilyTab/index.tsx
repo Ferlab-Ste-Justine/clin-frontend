@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import intl from 'react-intl-universal';
 import { useSelector } from 'react-redux';
 import { Button, Menu } from 'antd';
-import { isEmpty } from 'lodash';
-
 import {
   hasAtLeastOneFatherInMembers,
   hasAtLeastOneMotherInMembers,
   hasAtLeastOneOtherMember,
-} from '../../../../../helpers/fhir/familyMemberHelper';
-import { ParsedPatientData } from '../../../../../helpers/providers/types';
-import { State } from '../../../../../reducers';
-import { FamilyMemberType } from '../../../../../store/FamilyMemberTypes';
+} from 'helpers/fhir/familyMemberHelper';
+import { ParsedPatientData } from 'helpers/providers/types';
+import { isEmpty } from 'lodash';
+import { State } from 'reducers';
+
+import { FamilyMemberType } from 'store/FamilyMemberTypes';
+
 import PatientDetails from '../PatientDetails';
 
 import AddParentModal from './components/AddParentModal';

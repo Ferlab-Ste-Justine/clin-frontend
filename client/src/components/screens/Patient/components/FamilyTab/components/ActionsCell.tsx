@@ -4,9 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DeleteOutlined } from '@ant-design/icons';
 import { removeParentToFamily } from 'actions/patient';
 import { Button, message, Modal } from 'antd';
-
-import { State } from '../../../../../../reducers';
-import { FamilyActionStatus } from '../../../../../../reducers/patient';
+import { State } from 'reducers';
+import { FamilyActionStatus } from 'reducers/patient';
 
 type Props = {
   memberId: string;
