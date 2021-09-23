@@ -19,6 +19,7 @@ import StatusCell from './StatusCell';
 
 interface Props {
   addParentMenu: React.ReactElement;
+  canAddAtLeastOneParent: boolean;
 }
 
 interface DataType {
@@ -32,7 +33,7 @@ const sortProbandFirst = (members: FamilyMember[]) => members
   .slice()
   .sort((a, b) => +b.isProband - +a.isProband);
 
-const FamilyTable = ({ addParentMenu }: Props) => {
+const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.ReactElement => {
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
 
   const data: DataType[] = sortProbandFirst(familyMembers).map((fm, index: number) => ({
@@ -42,7 +43,6 @@ const FamilyTable = ({ addParentMenu }: Props) => {
 
   const columns = [
     {
-      title: intl.get('screen.patient.details.family.table.name'),
       dataIndex: 'member',
       render: (familyMember: FamilyMember) => {
         if (!familyMember) {
@@ -50,35 +50,35 @@ const FamilyTable = ({ addParentMenu }: Props) => {
         }
         return <NameCell familyMember={familyMember} />;
       },
+      title: intl.get('screen.patient.details.family.table.name'),
     },
     {
-      title: intl.get('screen.patient.details.family.table.ramq'),
       dataIndex: ['member', 'ramq'],
-      width: 180,
       render: renderExceptIfFetus,
+      title: intl.get('screen.patient.details.family.table.ramq'),
+      width: 180,
     },
     {
-      title: intl.get('screen.patient.details.family.table.birthDate'),
       dataIndex: ['member', 'birthDate'],
       render: renderExceptIfFetus,
+      title: intl.get('screen.patient.details.family.table.birthDate'),
       width: 180,
     },
     {
-      title: intl.get('screen.patient.details.family.table.sex'),
       dataIndex: ['member', 'gender'],
       render: (value: string, record: DataType) => (!value || isFetusOnly(record.member)
         ? '--'
         : intl.get(`screen.patient.details.family.table.sex.${value}`)),
+      title: intl.get('screen.patient.details.family.table.sex'),
       width: 200,
     },
     {
-      title: 'Position',
-      dataIndex: 'member',
       align: 'center',
+      dataIndex: 'member',
       render: (familyMember: FamilyMember) => <PositionCell familyMember={familyMember} />,
+      title: 'Position',
     },
     {
-      title: intl.get('screen.patient.details.family.table.status'),
       key: 'status',
       render: (value, record) => {
         if (record.member.isProband) {
@@ -86,16 +86,16 @@ const FamilyTable = ({ addParentMenu }: Props) => {
         }
         return (
           <StatusCell
-            memberId={record.member.id}
             memberCode={record.member.code}
+            memberId={record.member.id}
             updateParentStatusInFamily={updateParentStatusInFamily}
           />
         );
       },
+      title: intl.get('screen.patient.details.family.table.status'),
       width: 160,
     },
     {
-      title: intl.get('screen.patient.details.family.table.actions'),
       render: (value, record) => {
         if (record.member.isProband) {
           return '--';
@@ -105,20 +105,22 @@ const FamilyTable = ({ addParentMenu }: Props) => {
           <ActionsCell memberId={record.member.id} />
         );
       },
+      title: intl.get('screen.patient.details.family.table.actions'),
       width: 80,
     },
   ] as ColumnType<DataType>[];
 
   return (
     <Card
+      bordered={false}
       className="family-tab__details"
-      title={intl.get('screen.patient.details.family.title')}
       extra={(
         <Dropdown
+          disabled={!canAddAtLeastOneParent}
           overlay={addParentMenu}
+          overlayClassName="family-tab__add-parent"
           placement="bottomCenter"
           trigger={['click']}
-          overlayClassName="family-tab__add-parent"
         >
           <Button>
             { intl.get('screen.patient.details.family.addParent') }
@@ -126,7 +128,7 @@ const FamilyTable = ({ addParentMenu }: Props) => {
           </Button>
         </Dropdown>
       )}
-      bordered={false}
+      title={intl.get('screen.patient.details.family.title')}
     >
       <Table
         className="family-tab__details__table"

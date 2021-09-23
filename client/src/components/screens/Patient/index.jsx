@@ -35,8 +35,10 @@ class PatientScreen extends React.Component {
       selectedPrescriptionId: '',
     };
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
-    this.handleNavigationToPatientSearchScreen = this.handleNavigationToPatientSearchScreen.bind(this);
-    this.handleNavigationToPatientVariantScreen = this.handleNavigationToPatientVariantScreen.bind(this);
+    this.handleNavigationToPatientSearchScreen =
+      this.handleNavigationToPatientSearchScreen.bind(this);
+    this.handleNavigationToPatientVariantScreen =
+      this.handleNavigationToPatientVariantScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
     this.showModal = this.showModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -89,111 +91,112 @@ class PatientScreen extends React.Component {
   }
 
   render() {
-    const {
-      app, patient, currentActiveKey,
-    } = this.props;
+    const { app, currentActiveKey, patient } = this.props;
     const { showSubloadingAnimation } = app;
+
+    if (showSubloadingAnimation) {
+      return (
+        <Layout>
+          <div className="spinContainer">
+            <Spin spinning />
+          </div>
+        </Layout>
+      );
+    }
 
     const tabs = [
       {
+        content: <PrescriptionsTab />,
         name: 'prescriptions',
         title: (
           <span className="tabName">
             <MedicineBoxFilled />
-            { intl.get('screen.patient.tab.prescriptions') }
-          </span>),
-        content: <PrescriptionsTab />,
+            {intl.get('screen.patient.tab.prescriptions')}
+          </span>
+        ),
       },
       {
+        content: <FamilyTab />,
         name: 'family',
         title: (
           <span className="tabName">
-            <IconKit size={18} icon={ic_people} />
-            { intl.get('screen.patient.tab.family') }
-          </span>),
-        content: <FamilyTab />,
+            <IconKit icon={ic_people} size={18} />
+            {intl.get('screen.patient.tab.family')}
+          </span>
+        ),
       },
       {
+        content: <PatientVariantScreen />,
         name: 'variant',
         title: (
           <span className="tabName">
-            <IconKit size={18} icon={ic_widgets} />
+            <IconKit icon={ic_widgets} size={18} />
             Variants
           </span>
         ),
-        content: <PatientVariantScreen />,
       },
       {
+        content: <FilesTab />,
         name: 'files',
         title: (
           <span className="tabName">
-            <IconKit size={18} icon={ic_cloud_download} />
+            <IconKit icon={ic_cloud_download} size={18} />
             Fichiers
           </span>
         ),
-        content: <FilesTab />,
       },
     ];
 
     return (
       <Layout>
-        <Spin spinning={showSubloadingAnimation}>
-          { patient?.id && patient.id.length > 0
-          && (
-            <div className="patient-page">
-              <div className="page_headerStaticNoMargin">
-                <PatientHeader patient={patient} />
-              </div>
-              <Tabs
-                onChange={this.handleTabNavigation}
-                className="patient-page__tabs staticTabs"
-                activeKey={currentActiveKey}
-              >
-                {
-                  tabs.map((tab) => (
-                    <Tabs.TabPane
-                      key={tab.name}
-                      style={{ height: '100%' }}
-                      tab={tab.title}
-                    >
-                      { tab.content }
-                    </Tabs.TabPane>
-                  ))
-                }
-              </Tabs>
+        {patient?.id && patient.id.length > 0 && (
+          <div className="patient-page">
+            <div className="page_headerStaticNoMargin">
+              <PatientHeader patient={patient} />
             </div>
-          ) }
-        </Spin>
+            <Tabs
+              activeKey={currentActiveKey}
+              className="patient-page__tabs staticTabs"
+              onChange={this.handleTabNavigation}
+            >
+              {tabs.map((tab) => (
+                <Tabs.TabPane key={tab.name} style={{ height: '100%' }} tab={tab.title}>
+                  {tab.content}
+                </Tabs.TabPane>
+              ))}
+            </Tabs>
+          </div>
+        )}
       </Layout>
     );
   }
 }
 
 PatientScreen.propTypes = {
-  app: PropTypes.shape(appShape).isRequired,
-  router: PropTypes.shape({}).isRequired,
-  patient: PropTypes.shape({}).isRequired,
   actions: PropTypes.shape({}).isRequired,
+  app: PropTypes.shape(appShape).isRequired,
+  patient: PropTypes.shape({}).isRequired,
+  router: PropTypes.shape({}).isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  actions: bindActionCreators({
-    navigateToPatientScreen,
-    navigateToPatientVariantScreen,
-    navigateToPatientSearchScreen,
-    navigateToSubmissionWithPatient,
-    updateServiceRequestStatus,
-  }, dispatch),
+  actions: bindActionCreators(
+    {
+      navigateToPatientScreen,
+      navigateToPatientSearchScreen,
+      navigateToPatientVariantScreen,
+      navigateToSubmissionWithPatient,
+      updateServiceRequestStatus,
+    },
+    dispatch,
+  ),
 });
 
 const mapStateToProps = (state) => ({
   app: state.app,
+  currentActiveKey: state.patient.currentActiveKey,
   patient: state.patient.patient.parsed,
   prescriptions: state.patient.prescriptions?.map((prescription) => prescription.parsed) || [],
-  currentActiveKey: state.patient.currentActiveKey,
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(PatientScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(PatientScreen);

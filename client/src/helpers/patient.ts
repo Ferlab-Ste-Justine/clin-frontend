@@ -1,11 +1,9 @@
 import get from 'lodash/get';
+
+import { Extension } from './fhir/types';
 import api from './api';
-import { Extension, Identifier } from './fhir/types';
 
 const FAMILY_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
-
-export const findIdentifierByCode = (identifier: Identifier[], code: string) => identifier
-  .find((id) => get(id, 'type.coding[0].code') === code);
 
 export const isMrnUnique = async (mrnFile?: string, organization?: string, currentPatientId?: string) => {
   if (!mrnFile || !organization) {
@@ -18,7 +16,7 @@ export const isMrnUnique = async (mrnFile?: string, organization?: string, curre
   return isUnique;
 };
 
-export function getFamilyMembersFromPatientDataResponse(patientDataResponse: any) {
+export const getFamilyMembersFromPatientDataResponse = (patientDataResponse: any): any[] => {
   const extensions = get(patientDataResponse, 'payload.data.entry[0].resource.entry[0].resource.extension', []);
   const familyExt = extensions.find((ext: Extension) => ext.url === FAMILY_EXT_URL);
   const familyId = get(familyExt, 'valueReference.reference', '').split('/')[1];
