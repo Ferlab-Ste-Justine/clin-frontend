@@ -1,5 +1,38 @@
+@import 'containers/App/variables.scss';
+@import 'style/themes/clin/dist/_colors.scss';
+
 .files-tab{
     &__dropdownAction{
         margin-right: 8px;
     }
+
+    &__details {
+        height: 100%;
+    
+        &--empty{
+          margin-top: 80px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          height: 610px;
+    
+          svg {
+            color: $gray-5;
+          }
+          &__texts {
+            
+            &__title {
+              margin-top:24px;
+              color: $blue-10;
+              font-size: 24px;
+              line-height: 32px;
+              font-weight: 500;
+            }
+    
+            &__description {
+              margin-bottom: 35px;
+            }
+          }
+        }
+      }
 }
