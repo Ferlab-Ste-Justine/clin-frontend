@@ -106,10 +106,6 @@ const patientSubState = {
         },
         name: [{ family: 'Obama', given: ['Michelle'] }],
         resourceType: 'Patient',
-        text: {
-          div: '<div xmlns="http://www.w3.org/1999/xhtml"><div class="hapiHeaderText">Michelle <b>OBAMA </b></div><table class="hapiPropertyTable"><tbody><tr><td>Identifier</td><td>CHUM6CR</td></tr><tr><td>Date of birth</td><td><span>21 September 1954</span></td></tr></tbody></table></div>',
-          status: 'generated',
-        },
       },
       parsed: {
         birthDate: '1954-09-21',
