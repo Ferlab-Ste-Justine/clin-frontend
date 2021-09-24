@@ -47,7 +47,6 @@ export type PatientState = {
   observations?: Observations;
   canEdit?: boolean;
   openedPrescriptionId?: string;
-  parent?: FamilyMember;
   family?: FamilyMember[];
   currentActiveKey: 'prescriptions' | 'family' | 'variant' | 'files';
   familyActionStatus?: FamilyActionStatus;
@@ -92,11 +91,7 @@ const reducer = (state: PatientState = initialState, action: Action) =>
 
         draft.patient = patient;
 
-        const family = parseFamilyMember(action.payload.family, patient.original);
-
-        draft.family = family;
-        // eslint-disable-next-line prefer-destructuring
-        draft.parent = family[0];
+        draft.family = parseFamilyMember(action.payload.family, patient.original);
 
         draft.canEdit = action.payload.canEdit;
         draft.observations = {

@@ -131,6 +131,8 @@ const en = {
   'screen.patient.details.male': 'Male',
   'screen.patient.details.feminine': 'Feminine',
   'screen.patient.details.family': 'Family',
+  'screen.patient.details.family.table.relationship': 'Relationship',
+  'screen.patient.details.family.table.relationshipTip': 'Relationship to the proband',
   'screen.patient.details.ethnicity': 'Ethnicity',
   'screen.patient.details.consanguinity': 'Consanguinity',
   'screen.patient.details.familyType': 'Family type',

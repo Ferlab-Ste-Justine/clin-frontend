@@ -2,15 +2,13 @@ import React from 'react';
 import intl from 'react-intl-universal';
 import { useSelector } from 'react-redux';
 import { DownOutlined } from '@ant-design/icons';
-import {
-  Button, Card, Dropdown, Table,
-} from 'antd';
+import { updateParentStatusInFamily } from 'actions/patient';
+import { Button, Card, Dropdown, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
+import { isFetusOnly } from 'helpers/fhir/familyMemberHelper';
+import { State } from 'reducers';
 
-import { updateParentStatusInFamily } from '../../../../../../actions/patient';
-import { isFetusOnly } from '../../../../../../helpers/fhir/familyMemberHelper';
-import { State } from '../../../../../../reducers';
-import { FamilyMember } from '../../../../../../store/FamilyMemberTypes';
+import { FamilyMember } from 'store/FamilyMemberTypes';
 
 import ActionsCell from './ActionsCell';
 import NameCell from './NameCell';
@@ -27,11 +25,11 @@ interface DataType {
   member: FamilyMember;
 }
 
-const renderExceptIfFetus = (value: string, record: DataType) => !value || (isFetusOnly(record.member) ? '--' : value);
+const renderExceptIfFetus = (value: string, record: DataType) =>
+  !value || (isFetusOnly(record.member) ? '--' : value);
 
-const sortProbandFirst = (members: FamilyMember[]) => members
-  .slice()
-  .sort((a, b) => +b.isProband - +a.isProband);
+const sortProbandFirst = (members: FamilyMember[]) =>
+  members.slice().sort((a, b) => +b.isProband - +a.isProband);
 
 const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.ReactElement => {
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
@@ -66,9 +64,10 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
     },
     {
       dataIndex: ['member', 'gender'],
-      render: (value: string, record: DataType) => (!value || isFetusOnly(record.member)
-        ? '--'
-        : intl.get(`screen.patient.details.family.table.sex.${value}`)),
+      render: (value: string, record: DataType) =>
+        !value || isFetusOnly(record.member)
+          ? '--'
+          : intl.get(`screen.patient.details.family.table.sex.${value}`),
       title: intl.get('screen.patient.details.family.table.sex'),
       width: 200,
     },
@@ -76,7 +75,14 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
       align: 'center',
       dataIndex: 'member',
       render: (familyMember: FamilyMember) => <PositionCell familyMember={familyMember} />,
-      title: 'Position',
+      title: (
+        <Tooltip
+          overlayClassName="tooltip"
+          title={intl.get('screen.patient.details.family.table.relationshipTip')}
+        >
+          {intl.get('screen.patient.details.family.table.relationship')}
+        </Tooltip>
+      ),
     },
     {
       key: 'status',
@@ -101,9 +107,7 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
           return '--';
         }
 
-        return (
-          <ActionsCell memberId={record.member.id} />
-        );
+        return <ActionsCell memberId={record.member.id} />;
       },
       title: intl.get('screen.patient.details.family.table.actions'),
       width: 80,
@@ -114,7 +118,7 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
     <Card
       bordered={false}
       className="family-tab__details"
-      extra={(
+      extra={
         <Dropdown
           disabled={!canAddAtLeastOneParent}
           overlay={addParentMenu}
@@ -123,11 +127,11 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
           trigger={['click']}
         >
           <Button>
-            { intl.get('screen.patient.details.family.addParent') }
+            {intl.get('screen.patient.details.family.addParent')}
             <DownOutlined />
           </Button>
         </Dropdown>
-      )}
+      }
       title={intl.get('screen.patient.details.family.title')}
     >
       <Table

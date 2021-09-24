@@ -282,6 +282,8 @@ const fr = {
   'screen.patient.details.family.table.mother': 'Mère',
   'screen.patient.details.family.table.status': 'Statut',
   'screen.patient.details.family.table.actions': 'Actions',
+  'screen.patient.details.family.table.relationship': 'Relation',
+  'screen.patient.details.family.table.relationshipTip': 'Relation avec le proband',
   'screen.patient.details.family.modal.title.mth': 'Ajouter la mère',
   'screen.patient.details.family.modal.title.fth': 'Ajouter le père',
   'screen.patient.details.family.modal.add': 'Ajouter',
