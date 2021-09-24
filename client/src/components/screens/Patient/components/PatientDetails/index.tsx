@@ -53,8 +53,9 @@ interface Props {
   canEditPatient: boolean;
 }
 
-const PatientDetails: React.FC<Props> = ({ canEditPatient, patient }) => {
+const PatientDetails = ({ canEditPatient, patient }: Props): React.ReactElement => {
   const [isPatientEditionModalOpen, setIsPatientEditionModalOpen] = useState(false);
+
   const mrns = patient.mrn.map((mrn) => ({
     organization: mrn.hospital,
     value: mrn.number,
@@ -64,7 +65,7 @@ const PatientDetails: React.FC<Props> = ({ canEditPatient, patient }) => {
   return (
     <Card bordered={false} className="patient-section__card">
       <div className="patient-section">
-        <ProfileCard patient={patient} />
+        <ProfileCard />
 
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
           <DetailsRow title={intl.get('screen.patient.details.ramq')} value={patient.ramq} />

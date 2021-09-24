@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-import AppTest from '../../AppTest';
-import FamilyTab from '../../components/screens/Patient/components/FamilyTab';
+import AppTest from '../../../../../AppTest';
+import FamilyTab from './index';
 
 const patientSubState = {
   patient: {
