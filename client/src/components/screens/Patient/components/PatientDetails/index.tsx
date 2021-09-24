@@ -1,134 +1,64 @@
-import {
-  Card, Tag, Divider, Button, Typography,
-} from 'antd';
-import React, { CSSProperties, ReactNode, useState } from 'react';
+import React, { useState } from 'react';
 import intl from 'react-intl-universal';
-import IconKit from 'react-icons-kit';
-import {
-  ic_perm_contact_calendar,
-} from 'react-icons-kit/md';
 import { FormOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { ParsedPatientData } from '../../../../../helpers/providers/types';
+import { Button, Card } from 'antd';
+import { ParsedPatientData } from 'helpers/providers/types';
+
 import FamilyTag from '../PrescriptionsTab/components/FamilyTag';
-import { navigateToPatientScreen } from '../../../../../actions/router';
+
 import PatientEditModal from './components/PatientEdit';
-import { State } from '../../../../../reducers';
+import DetailsCol from './DetailsCol';
+import DetailsRow from './DetailsRow';
+import ProfileCard from './ProfileCard';
+
 import './styles.scss';
 
 const MAX_MRNS_DISPLAYED = 2;
 
-const ProfileCard = ({ patient }: { patient: ParsedPatientData }) => {
-  const parent = useSelector<State>((state) => state.patient.parent) as any;
-  const intlDetails = intl.get('screen.patient.details.mother').toLowerCase();
-  const dispatch = useDispatch();
-  return (
-    <div className="patient-section__name-block">
-      <IconKit size={56} icon={ic_perm_contact_calendar} style={{ color: '#DADADA' }} />
-      { patient.isFetus ? (
-        <>
-          <Typography.Title level={3} className="patientName">
-            { intl.get('screen.patient.details.fetus') }
-          </Typography.Title>
-          <Button
-            type="link"
-            className="link--underline"
-            onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
-          >
-            { `${parent?.lastName?.toUpperCase()} ${parent?.firstName} (${intlDetails})` }
-          </Button>
-        </>
-      ) : (
-        <>
-          <Typography.Title level={3} className="patientName">{ patient.lastName.toUpperCase() }</Typography.Title>
-          <Typography.Title level={4} className="patientName">{ patient.firstName }</Typography.Title>
-        </>
-      ) }
-      <div className="patient-section__name-block__tags">
-        <Tag color={patient.proband === 'Proband' ? 'red' : 'geekblue'}>{ patient.proband }</Tag>
-        {
-          patient.isFetus && (
-            <Tag color="purple">{ intl.get('screen.patient.details.fetus') }</Tag>
-          )
-        }
-      </div>
-    </div>
-
-  );
-};
-
 interface MrnValue {
-  value: string,
-  organization: string
+  value: string;
+  organization: string;
 }
 
 interface MultipleMrnProps {
   mrns: MrnValue[];
 }
 
-const MultipleMrn: React.FC<MultipleMrnProps> = ({ mrns }) => {
+const MultipleMrn = ({ mrns }: MultipleMrnProps) => {
   const [isShowingAll, setIsShowingAll] = useState(false);
 
   return (
     <div className="patient-section__col__details__row__info__multiple-mrn">
       <ul>
-        { mrns.map((value, index) => {
-          if (index > (MAX_MRNS_DISPLAYED - 1) && !isShowingAll) {
-            return null;
-          }
-          return (
-            <li key={value.value}>{ `${value.value} - ${value.organization}` }</li>
-          );
-        }).filter((e) => e) }
+        {mrns
+          .map((value, index) => {
+            if (index > MAX_MRNS_DISPLAYED - 1 && !isShowingAll) {
+              return null;
+            }
+            return <li key={value.value}>{`${value.value} - ${value.organization}`}</li>;
+          })
+          .filter((e) => e)}
       </ul>
-      {
-        mrns.length > MAX_MRNS_DISPLAYED
-          ? (
-            <Button
-              type="link"
-              onClick={() => setIsShowingAll((oldValue) => !oldValue)}
-            >
-              { intl.get(`screen.patient.details.${isShowingAll ? 'seeLess' : 'seeMore'}`) }
-            </Button>
-          ) : null
-      }
-
+      {mrns.length > MAX_MRNS_DISPLAYED ? (
+        <Button onClick={() => setIsShowingAll((oldValue) => !oldValue)} type="link">
+          {intl.get(`screen.patient.details.${isShowingAll ? 'seeLess' : 'seeMore'}`)}
+        </Button>
+      ) : null}
     </div>
   );
 };
-
-const DetailsRow: React.FC<{ title: string, value?: string | ReactNode }> = ({ title, value }) => (
-  <div className="patient-section__col__details__row">
-    <span className="patient-section__col__details__row__title">
-      { title }
-    </span>
-    <span className="patient-section__col__details__row__info">
-      { value || '--' }
-    </span>
-  </div>
-);
-
-const DetailsCol: React.FC<{ isLast?: boolean, align: 'center' | 'top' }> = ({ children, isLast = false, align }) => (
-  <div className="patient-section__col">
-    <div
-      className="patient-section__col__details"
-      style={{ '--details-col-justify': align } as CSSProperties}
-    >
-      { children }
-    </div>
-    { !isLast && <Divider type="vertical" /> }
-  </div>
-);
 
 interface Props {
   patient: ParsedPatientData;
   canEditPatient: boolean;
 }
 
-const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
+const PatientDetails: React.FC<Props> = ({ canEditPatient, patient }) => {
   const [isPatientEditionModalOpen, setIsPatientEditionModalOpen] = useState(false);
-  const mrns = patient.mrn
-    .map((mrn) => ({ value: mrn.number, organization: mrn.hospital })) as MrnValue[];
+  const mrns = patient.mrn.map((mrn) => ({
+    organization: mrn.hospital,
+    value: mrn.number,
+  })) as MrnValue[];
 
   const hasMultipleMrn = mrns.length >= MAX_MRNS_DISPLAYED;
   return (
@@ -138,7 +68,7 @@ const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
 
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
           <DetailsRow title={intl.get('screen.patient.details.ramq')} value={patient.ramq} />
-          { hasMultipleMrn ? (
+          {hasMultipleMrn ? (
             <DetailsRow
               title={intl.get('screen.patient.details.mrn')}
               value={<MultipleMrn mrns={mrns} />}
@@ -148,12 +78,16 @@ const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
               title={intl.get('screen.patient.details.mrn')}
               value={`${patient.mrn[0].number} | ${patient.mrn[0].hospital}`}
             />
-          ) }
+          )}
         </DetailsCol>
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
           <DetailsRow
             title={intl.get('screen.patient.details.gender')}
-            value={intl.get(`screen.patient.details.${patient.isFetus ? 'unknown' : patient.gender.toLowerCase()}`)}
+            value={intl.get(
+              `screen.patient.details.${
+                patient.isFetus ? 'unknown' : patient.gender.toLowerCase()
+              }`,
+            )}
           />
           <DetailsRow title={intl.get('screen.patient.details.dob')} value={patient.birthDate} />
         </DetailsCol>
@@ -161,21 +95,22 @@ const PatientDetails: React.FC<Props> = ({ patient, canEditPatient }) => {
           <DetailsRow title={intl.get('screen.patient.header.family')} value={patient.familyId} />
           <DetailsRow
             title={intl.get('screen.patient.details.familyType')}
-            value={
-              <FamilyTag type="solo" />
-            }
+            value={<FamilyTag type="solo" />}
           />
         </DetailsCol>
       </div>
       <Button
         className="patient-section__edit-button"
+        disabled={!canEditPatient}
         icon={<FormOutlined />}
         onClick={() => setIsPatientEditionModalOpen(true)}
-        disabled={!canEditPatient}
       >
-        { intl.get('screen.patient.details.edit') }
+        {intl.get('screen.patient.details.edit')}
       </Button>
-      <PatientEditModal isVisible={isPatientEditionModalOpen} onClose={() => setIsPatientEditionModalOpen(false)} />
+      <PatientEditModal
+        isVisible={isPatientEditionModalOpen}
+        onClose={() => setIsPatientEditionModalOpen(false)}
+      />
     </Card>
   );
 };

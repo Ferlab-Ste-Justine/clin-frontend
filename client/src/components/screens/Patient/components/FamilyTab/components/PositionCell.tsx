@@ -1,19 +1,19 @@
-import { Tag } from 'antd';
 import React from 'react';
 import intl from 'react-intl-universal';
-import { FamilyMember, FamilyMemberType } from '../../../../../../store/FamilyMemberTypes';
+import { Tag } from 'antd';
+import { isNaturalMotherOfFetus } from 'helpers/fhir/familyMemberHelper';
+
+import { FamilyMember, FamilyMemberType } from 'store/FamilyMemberTypes';
 
 type Props = {
-  familyMember: FamilyMember
-}
+  familyMember: FamilyMember;
+};
 
-type Dictionary = Record<string, string>
+type Dictionary = Record<string, string>;
 
 const translateRelationCode = (code: string, dictionary: Dictionary) => dictionary[code] || '--';
 
-const PositionCell = ({
-  familyMember,
-}: Props) => {
+const PositionCell = ({ familyMember }: Props): React.ReactElement => {
   const relationTranslations = {
     [FamilyMemberType.MOTHER]: intl.get('screen.patient.details.mother'),
     [FamilyMemberType.NATURAL_MOTHER_OF_FETUS]: intl.get('screen.patient.details.mother'),
@@ -21,10 +21,13 @@ const PositionCell = ({
   } as Dictionary;
 
   const { isProband } = familyMember;
-  const positionTextToProband = isProband
+
+  const shouldDisplayProband = isProband && !isNaturalMotherOfFetus(familyMember);
+  const positionTextToProband = shouldDisplayProband
     ? 'Proband'
     : translateRelationCode(familyMember.relationCode || '', relationTranslations);
-  return <Tag color={isProband ? 'red' : 'geekblue'}>{ positionTextToProband }</Tag>;
+
+  return <Tag color={shouldDisplayProband ? 'red' : 'geekblue'}>{positionTextToProband}</Tag>;
 };
 
 export default PositionCell;

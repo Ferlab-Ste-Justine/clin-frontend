@@ -1,8 +1,4 @@
-import {
-  FamilyMember,
-  FamilyMembersResponse,
-  FamilyMemberType,
-} from 'store/FamilyMemberTypes';
+import { FamilyMember, FamilyMembersResponse, FamilyMemberType } from 'store/FamilyMemberTypes';
 
 import { getRAMQValue } from './patientHelper';
 import { Extension, Patient } from './types';
@@ -82,6 +78,15 @@ const CODES_FOR_MOTHER = [
 
 export const isFetusOnly = (fm: FamilyMember): boolean =>
   !!fm && fm.isFetus && !!fm.relationCode && !CODES_FOR_MOTHER.includes(fm.relationCode);
+
+export const isNaturalMotherOfFetus = (fm: FamilyMember): boolean =>
+  !!fm && !!fm.relationCode && FamilyMemberType.NATURAL_MOTHER_OF_FETUS === fm.relationCode;
+
+
+export const findNaturalMotherOfFetus = (members: FamilyMember[]): FamilyMember | null =>
+  (members || []).find(
+    (fm) => isNaturalMotherOfFetus(fm),
+  ) || null;
 
 export const hasAtLeastOneMotherInMembers = (members: FamilyMember[]): boolean =>
   (members || []).some((fm) => fm.relationCode && CODES_FOR_MOTHER.includes(fm.relationCode));

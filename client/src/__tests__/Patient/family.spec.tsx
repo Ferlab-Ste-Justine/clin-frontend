@@ -41,10 +41,6 @@ const patientSubState = {
         relationCode: 'FTH',
       },
     ],
-    parent: {
-      firstName: '',
-      lastName: '',
-    },
     patient: {
       original: {
         identifier: [
