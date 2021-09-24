@@ -11,10 +11,9 @@ import { State } from 'reducers';
 
 import { FamilyMember } from 'store/FamilyMemberTypes';
 
-type Props = { patient: ParsedPatientData };
-
-const ProfileCard = ({ patient }: Props): React.ReactElement => {
+const ProfileCard = (): React.ReactElement => {
   const dispatch = useDispatch();
+  const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
 
   const familyMembers = useSelector<State>((state) => state.patient.family) as FamilyMember[];
   const motherOfFetus = findNaturalMotherOfFetus(familyMembers);
