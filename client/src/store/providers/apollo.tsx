@@ -7,7 +7,7 @@ import {
   NormalizedCacheObject,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-
+import { RptManager } from '../../helpers/keycloak-api/manager';
 import { GraphqlBackend, GraphqlProvider } from 'store/providers';
 
 const ARRANGER_API = process.env.REACT_APP_ARRANGER_API;
@@ -21,19 +21,24 @@ const arrangerLink = createHttpLink({
   uri: `${ARRANGER_API}${PROJECT_ID}/graphql`,
 });
 
-const getAuthLink = (userToken: string) => setContext((_, { headers }) => ({
-  headers: {
-    ...headers,
-    authorization: userToken ? `Bearer ${userToken}` : '',
-  },
-}));
+const getAuthLink = () => (
+  setContext((_, { headers }) => (
+    RptManager.readRpt().then(rptToken => (
+      {
+        headers: {
+          ...headers,
+          authorization: `Bearer ${rptToken.accessToken}`
+        },
+      }
+    ))
+)));
 
 const backendUrl = (backend: GraphqlBackend) => (
   backend === GraphqlBackend.FHIR ? fhirLink : arrangerLink
 );
 
-export default ({ children, backend = GraphqlBackend.FHIR, userToken }: GraphqlProvider): ReactElement => {
-  const header = getAuthLink(userToken);
+export default ({ children, backend = GraphqlBackend.FHIR }: GraphqlProvider): ReactElement => {
+  const header = getAuthLink();
 
   const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
     cache: new InMemoryCache({ addTypename: false }),

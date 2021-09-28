@@ -12,7 +12,6 @@ import {
   navigateToSubmissionWithPatient,
 } from 'actions/router';
 import { Spin, Tabs } from 'antd';
-import keycloak from 'keycloak';
 import PropTypes from 'prop-types';
 import { appShape } from 'reducers/app';
 import { bindActionCreators } from 'redux';
@@ -139,7 +138,7 @@ class PatientScreen extends React.Component {
       },
       {
         // FixMe
-        content: <ApolloProvider userToken={keycloak.token}><FilesTab /></ApolloProvider>,
+        content: <ApolloProvider><FilesTab /></ApolloProvider>,
         name: 'files',
         title: (
           <span className="tabName">
