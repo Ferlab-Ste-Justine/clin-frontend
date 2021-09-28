@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import AppTest from 'AppTest';
 
-import ProfileCard from './ProfileCard';
+import ProfileCard from '../ProfileCard';
 
 const patientSubState = {
   patient: {
