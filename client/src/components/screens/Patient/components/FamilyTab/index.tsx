@@ -30,7 +30,8 @@ const FamilyTab = (): React.ReactElement => {
   const [addParentType, setAddParentType] = useState<FamilyMemberType | null>(null);
 
   const patientId = patient.id;
-  const isPatientProband = patient.proband;
+
+  const isPatientProband = patient.proband?.toLowerCase() === 'proband';
 
   const hasMother = hasAtLeastOneMotherInMembers(familyMembers);
   const canAddMother = isPatientProband && !hasMother;
@@ -38,33 +39,21 @@ const FamilyTab = (): React.ReactElement => {
   const hasFather = hasAtLeastOneFatherInMembers(familyMembers);
   const canAddFather = isPatientProband && !hasFather;
 
-  const canAddAtLeastOneParent = !hasFather || !hasMother;
+  const canAddAtLeastOneParent = canAddMother || canAddFather;
 
   const menu = (
-    <Menu>
+    <Menu
+      disabled={!canAddAtLeastOneParent}
+      onClick={(e) => {
+        setAddParentType(e.key as FamilyMemberType);
+        setIsVisible(false);
+      }}
+    >
       <Menu.Item disabled={!canAddMother} key={FamilyMemberType.MOTHER}>
-        <Button
-          disabled={hasMother}
-          onClick={() => {
-            setAddParentType(FamilyMemberType.MOTHER);
-            setIsVisible(false);
-          }}
-          type="text"
-        >
-          {intl.get('screen.patient.details.family.mother')}
-        </Button>
+        {intl.get('screen.patient.details.family.mother')}
       </Menu.Item>
       <Menu.Item disabled={!canAddFather} key={FamilyMemberType.FATHER}>
-        <Button
-          disabled={hasFather}
-          onClick={() => {
-            setAddParentType(FamilyMemberType.FATHER);
-            setIsVisible(false);
-          }}
-          type="text"
-        >
-          {intl.get('screen.patient.details.family.father')}
-        </Button>
+        {intl.get('screen.patient.details.family.father')}
       </Menu.Item>
     </Menu>
   );
