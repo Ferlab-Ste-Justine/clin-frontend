@@ -26,7 +26,7 @@ interface DataType {
 }
 
 const renderExceptIfFetus = (value: string, record: DataType) =>
-  !value || (isFetusOnly(record.member) ? '--' : value);
+  !value || isFetusOnly(record.member) ? '--' : value;
 
 const sortProbandFirst = (members: FamilyMember[]) =>
   members.slice().sort((a, b) => +b.isProband - +a.isProband);
@@ -64,10 +64,8 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
     },
     {
       dataIndex: ['member', 'gender'],
-      render: (value: string, record: DataType) =>
-        !value || isFetusOnly(record.member)
-          ? '--'
-          : intl.get(`screen.patient.details.family.table.sex.${value}`),
+      render: (value: string) =>
+        intl.get(`screen.patient.details.family.table.sex.${value}`).defaultMessage('--'),
       title: intl.get('screen.patient.details.family.table.sex'),
       width: 200,
     },
