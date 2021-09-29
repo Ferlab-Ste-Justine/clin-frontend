@@ -26,7 +26,7 @@ const FilesTab = () => {
   const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
   const [isOpen, setIsOpenModal] = useState<boolean>(false);
   const [documentReference, setDocumentReference] = useState<string>('');
-  let filesResults = getFilesData({ patientId: patient.id })();
+  let filesResults = getFilesData({ patientId: patient.id });
 
   if (filesResults.loading) {
     if (!filesResults.results && previousData) {
