@@ -6,38 +6,38 @@ import {
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import PatientSearchScreen from '../../components/screens/PatientSearch';
 
 import AppTest from '../../AppTest';
+import PatientSearchScreen from '../../components/screens/PatientSearch';
 import { mockRptToken } from '../mocks';
 
 describe('PatientCreation', () => {
   const server = setupServer();
 
-  function setupValidPostmockResponse(isFetus: boolean = false) {
+  function setupValidPostmockResponse(isFetus = false) {
     const responseEntries = [{
       response: {
-        status: '201 Created',
-        location: 'Patient/51006/_history/1',
         etag: '1',
         lastModified: '2021-03-26T19:43:01.238+00:00',
+        location: 'Patient/51006/_history/1',
+        status: '201 Created',
       },
     }, {
       response: {
-        status: '201 Created',
-        location: 'Group/51007/_history/1',
         etag: '1',
         lastModified: '2021-03-26T19:43:01.238+00:00',
+        location: 'Group/51007/_history/1',
+        status: '201 Created',
       },
     }];
 
     if (isFetus) {
       responseEntries.push({
         response: {
-          status: '201 Created',
-          location: 'Patient/51007/_history/1',
           etag: '1',
           lastModified: '2021-03-30T20:55:13.309+00:00',
+          location: 'Patient/51007/_history/1',
+          status: '201 Created',
         },
       });
     }
@@ -46,14 +46,14 @@ describe('PatientCreation', () => {
       rest.post('https://fhir.qa.clin.ferlab.bio/fhir/', (req, res, ctx) => res(
         ctx.status(200),
         ctx.json({
-          resourceType: 'Bundle',
+          entry: responseEntries,
           id: 'f3d8da0f-da55-44fd-942a-6760543cec4b',
-          type: 'transaction-response',
           link: [{
             relation: 'self',
             url: 'https://fhir.qa.clin.ferlab.bio/fhir',
           }],
-          entry: responseEntries,
+          resourceType: 'Bundle',
+          type: 'transaction-response',
         }),
       )),
     );
@@ -74,17 +74,17 @@ describe('PatientCreation', () => {
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
-            resourceType: 'Bundle',
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            type: 'searchset',
-            total: 0,
             link: [{
               relation: 'self',
               url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=DABC01010101',
             }],
+            meta: {
+              lastUpdated: '2021-03-19T18:49:41.787+00:00',
+            },
+            resourceType: 'Bundle',
+            total: 0,
+            type: 'searchset',
           }),
         )),
       );
@@ -133,14 +133,14 @@ describe('PatientCreation', () => {
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
-            resourceType: 'Bundle',
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
+            link: [],
             meta: {
               lastUpdated: '2021-03-19T18:49:41.787+00:00',
             },
-            type: 'searchset',
+            resourceType: 'Bundle',
             total: 0,
-            link: [],
+            type: 'searchset',
           }),
         )),
       );
@@ -196,18 +196,8 @@ describe('PatientCreation', () => {
             entry = [{
               fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
               resource: {
-                resourceType: 'Patient',
-                id: '54382',
-                meta: {
-                  versionId: '2',
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  source: '#5987279aae2ec2ca',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                },
-                text: {
-                  status: 'generated',
-                  div: '',
-                },
+                active: true,
+                birthDate: '2021-03-30',
                 extension: [{
                   url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
                   valueBoolean: true,
@@ -220,44 +210,54 @@ describe('PatientCreation', () => {
                     reference: 'Group/38410',
                   },
                 }],
-                identifier: [{
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'MR',
-                      display: 'Medical record number',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: '010000',
-                  assigner: {
-                    reference: 'Organization/CUSM',
-                  },
-                }, {
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'JHN',
-                      display: 'Jurisdictional health number (Canada)',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: 'BETS00000001',
-                }],
-                active: true,
-                name: [{
-                  family: 'Smith',
-                  given: ['Beth'],
-                }],
                 gender: 'female',
-                birthDate: '2021-03-30',
                 generalPractitioner: [{
                   reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
                 }, {
                   reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
                 }],
+                id: '54382',
+                identifier: [{
+                  assigner: {
+                    reference: 'Organization/CUSM',
+                  },
+                  type: {
+                    coding: [{
+                      code: 'MR',
+                      display: 'Medical record number',
+                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                    }],
+                    text: 'Numéro du dossier médical',
+                  },
+                  value: '010000',
+                }, {
+                  type: {
+                    coding: [{
+                      code: 'JHN',
+                      display: 'Jurisdictional health number (Canada)',
+                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                    }],
+                    text: 'Numéro du dossier médical',
+                  },
+                  value: 'BETS00000001',
+                }],
                 managingOrganization: {
                   reference: 'Organization/CUSM',
+                },
+                meta: {
+                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
+                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
+                  versionId: '2',
+                  source: '#5987279aae2ec2ca',
+                },
+                name: [{
+                  family: 'Smith',
+                  given: ['Beth'],
+                }],
+                resourceType: 'Patient',
+                text: {
+                  div: '',
+                  status: 'generated',
                 },
               },
               search: {
@@ -269,15 +269,15 @@ describe('PatientCreation', () => {
           return res(
             ctx.status(200),
             ctx.json({
-              resourceType: 'Bundle',
+              entry,
               id: '2acbea67-8d49-477b-bbae-7acb18430780',
+              link: [],
               meta: {
                 lastUpdated: '2021-03-19T18:49:41.787+00:00',
               },
-              type: 'searchset',
+              resourceType: 'Bundle',
               total: 0,
-              link: [],
-              entry,
+              type: 'searchset',
             }),
           );
         }),
@@ -326,32 +326,10 @@ describe('PatientCreation', () => {
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
-            resourceType: 'Bundle',
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            type: 'searchset',
-            total: 0,
-            link: [{
-              relation: 'self',
-              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
-            }],
             entry: [{
               fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
               resource: {
-                resourceType: 'Patient',
                 id: '54382',
-                meta: {
-                  versionId: '2',
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  source: '#5987279aae2ec2ca',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                },
-                text: {
-                  status: 'generated',
-                  div: '',
-                },
                 extension: [{
                   url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
                   valueBoolean: true,
@@ -363,6 +341,25 @@ describe('PatientCreation', () => {
                   valueReference: {
                     reference: 'Group/38410',
                   },
+                }],
+                meta: {
+                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
+                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
+                  versionId: '2',
+                  source: '#5987279aae2ec2ca',
+                },
+                active: true,
+                resourceType: 'Patient',
+                gender: 'female',
+                birthDate: '2021-03-30',
+                text: {
+                  status: 'generated',
+                  div: '',
+                },
+                generalPractitioner: [{
+                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
+                }, {
+                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
                 }],
                 identifier: [{
                   type: {
@@ -388,26 +385,29 @@ describe('PatientCreation', () => {
                   },
                   value: 'BETS00000001',
                 }],
-                active: true,
+                managingOrganization: {
+                  reference: 'Organization/CUSM',
+                },
                 name: [{
                   family: 'Smith',
                   given: ['Beth'],
                 }],
-                gender: 'female',
-                birthDate: '2021-03-30',
-                generalPractitioner: [{
-                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
-                }, {
-                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
-                }],
-                managingOrganization: {
-                  reference: 'Organization/CUSM',
-                },
               },
               search: {
                 mode: 'match',
               },
             }],
+            id: '2acbea67-8d49-477b-bbae-7acb18430780',
+            link: [{
+              relation: 'self',
+              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
+            }],
+            meta: {
+              lastUpdated: '2021-03-19T18:49:41.787+00:00',
+            },
+            resourceType: 'Bundle',
+            total: 0,
+            type: 'searchset',
           }),
         )),
       );
@@ -438,18 +438,8 @@ describe('PatientCreation', () => {
             entry = [{
               fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
               resource: {
-                resourceType: 'Patient',
-                id: '54382',
-                meta: {
-                  versionId: '2',
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  source: '#5987279aae2ec2ca',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                },
-                text: {
-                  status: 'generated',
-                  div: '',
-                },
+                active: true,
+                birthDate: '2021-03-30',
                 extension: [{
                   url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
                   valueBoolean: true,
@@ -462,44 +452,54 @@ describe('PatientCreation', () => {
                     reference: 'Group/38410',
                   },
                 }],
-                identifier: [{
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'MR',
-                      display: 'Medical record number',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: '010000',
-                  assigner: {
-                    reference: 'Organization/CUSM',
-                  },
-                }, {
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'JHN',
-                      display: 'Jurisdictional health number (Canada)',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: 'BETS00000001',
-                }],
-                active: true,
-                name: [{
-                  family: 'Smith',
-                  given: ['Beth'],
-                }],
                 gender: 'female',
-                birthDate: '2021-03-30',
                 generalPractitioner: [{
                   reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
                 }, {
                   reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
                 }],
+                id: '54382',
+                identifier: [{
+                  assigner: {
+                    reference: 'Organization/CUSM',
+                  },
+                  type: {
+                    coding: [{
+                      code: 'MR',
+                      display: 'Medical record number',
+                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                    }],
+                    text: 'Numéro du dossier médical',
+                  },
+                  value: '010000',
+                }, {
+                  type: {
+                    coding: [{
+                      code: 'JHN',
+                      display: 'Jurisdictional health number (Canada)',
+                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
+                    }],
+                    text: 'Numéro du dossier médical',
+                  },
+                  value: 'BETS00000001',
+                }],
                 managingOrganization: {
                   reference: 'Organization/CUSM',
+                },
+                meta: {
+                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
+                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
+                  versionId: '2',
+                  source: '#5987279aae2ec2ca',
+                },
+                name: [{
+                  family: 'Smith',
+                  given: ['Beth'],
+                }],
+                resourceType: 'Patient',
+                text: {
+                  div: '',
+                  status: 'generated',
                 },
               },
               search: {
@@ -510,15 +510,15 @@ describe('PatientCreation', () => {
           return res(
             ctx.status(200),
             ctx.json({
-              resourceType: 'Bundle',
+              entry,
               id: '2acbea67-8d49-477b-bbae-7acb18430780',
+              link: [],
               meta: {
                 lastUpdated: '2021-03-19T18:49:41.787+00:00',
               },
-              type: 'searchset',
+              resourceType: 'Bundle',
               total: 0,
-              link: [],
-              entry,
+              type: 'searchset',
             }),
           );
         }),
@@ -560,32 +560,10 @@ describe('PatientCreation', () => {
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
-            resourceType: 'Bundle',
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            type: 'searchset',
-            total: 0,
-            link: [{
-              relation: 'self',
-              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
-            }],
             entry: [{
               fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
               resource: {
-                resourceType: 'Patient',
                 id: '54382',
-                meta: {
-                  versionId: '2',
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  source: '#5987279aae2ec2ca',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                },
-                text: {
-                  status: 'generated',
-                  div: '',
-                },
                 extension: [{
                   url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
                   valueBoolean: true,
@@ -597,6 +575,25 @@ describe('PatientCreation', () => {
                   valueReference: {
                     reference: 'Group/38410',
                   },
+                }],
+                meta: {
+                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
+                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
+                  versionId: '2',
+                  source: '#5987279aae2ec2ca',
+                },
+                active: true,
+                resourceType: 'Patient',
+                gender: 'female',
+                birthDate: '2021-03-30',
+                text: {
+                  status: 'generated',
+                  div: '',
+                },
+                generalPractitioner: [{
+                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
+                }, {
+                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
                 }],
                 identifier: [{
                   type: {
@@ -622,26 +619,29 @@ describe('PatientCreation', () => {
                   },
                   value: 'BETS00000001',
                 }],
-                active: true,
+                managingOrganization: {
+                  reference: 'Organization/CUSM',
+                },
                 name: [{
                   family: 'Smith',
                   given: ['Beth'],
                 }],
-                gender: 'female',
-                birthDate: '2021-03-30',
-                generalPractitioner: [{
-                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
-                }, {
-                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
-                }],
-                managingOrganization: {
-                  reference: 'Organization/CUSM',
-                },
               },
               search: {
                 mode: 'match',
               },
             }],
+            id: '2acbea67-8d49-477b-bbae-7acb18430780',
+            link: [{
+              relation: 'self',
+              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
+            }],
+            meta: {
+              lastUpdated: '2021-03-19T18:49:41.787+00:00',
+            },
+            resourceType: 'Bundle',
+            total: 0,
+            type: 'searchset',
           }),
         )),
       );
@@ -674,17 +674,17 @@ describe('PatientCreation', () => {
         rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
-            resourceType: 'Bundle',
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            type: 'searchset',
-            total: 0,
             link: [{
               relation: 'self',
               url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
             }],
+            meta: {
+              lastUpdated: '2021-03-19T18:49:41.787+00:00',
+            },
+            resourceType: 'Bundle',
+            total: 0,
+            type: 'searchset',
           }),
         )),
       );
@@ -728,17 +728,17 @@ describe('PatientCreation', () => {
       rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
         ctx.status(200),
         ctx.json({
-          resourceType: 'Bundle',
           id: '2acbea67-8d49-477b-bbae-7acb18430780',
-          meta: {
-            lastUpdated: '2021-03-19T18:49:41.787+00:00',
-          },
-          type: 'searchset',
-          total: 0,
           link: [{
             relation: 'self',
             url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=DABC01010101',
           }],
+          meta: {
+            lastUpdated: '2021-03-19T18:49:41.787+00:00',
+          },
+          resourceType: 'Bundle',
+          total: 0,
+          type: 'searchset',
         }),
       )),
     );

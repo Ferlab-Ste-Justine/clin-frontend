@@ -6,7 +6,7 @@ export type QueryVariable = {
   patientId: string;
 };
 
-export const getFilesData = (variables: QueryVariable) => () => {
+export const getFilesData = (variables: QueryVariable) => {
   const {  loading, result, } = useLazyResultQuery<any>(FILES_QUERY(variables.patientId), {
     variables,
   });

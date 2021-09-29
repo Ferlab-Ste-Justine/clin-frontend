@@ -1,46 +1,45 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import {
   render, screen, waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
-import { setupServer } from 'msw/node';
 import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+
 import AppTest from '../../AppTest';
 import PatientSubmission from '../../components/screens/PatientSubmission';
 import { mockRptToken } from '../mocks';
 
-function buildHPORequest() {
-  return rest.get(
+const buildHPORequest = () => rest.get(
     'https://hpo.qa.clin.ferlab.bio/hpo/descendants',
     (req, res, ctx) => res(ctx.status(200), ctx.json({
-      timestamp: 1623252338496,
-      message: 'Ok',
       data: {
-        total: 1,
         hits: [
           {
-            _index: 'hpo',
-            _type: '_doc',
             _id: '-ID',
+            _index: 'hpo',
             _score: 9.455486,
             _source: {
-              hpo_id: 'HP:0012373',
-              name: 'Abnormal eye physiology',
-              parents: ['Abnormality of the eye (HP:0000478)'],
-              is_leaf: false,
               compact_ancestors: [
                 { hpo_id: 'HP:0000478', name: 'Abnormality of the eye' },
                 { hpo_id: 'HP:0000118', name: 'Phenotypic abnormality' },
                 { hpo_id: 'HP:0000001', name: 'All' },
               ],
+              hpo_id: 'HP:0012373',
+              is_leaf: false,
+              name: 'Abnormal eye physiology',
+              parents: ['Abnormality of the eye (HP:0000478)'],
             },
+            _type: '_doc',
           },
         ],
+        total: 1,
       },
+      message: 'Ok',
+      timestamp: 1623252338496,
     })),
   );
-}
 
 describe('PrescriptionCreation', () => {
   const server = setupServer();
