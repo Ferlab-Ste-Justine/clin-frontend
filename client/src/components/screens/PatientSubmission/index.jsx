@@ -1,58 +1,55 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import PropTypes from 'prop-types';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import {
-  Button, Card, Form, Steps, Typography, Col, Row, Tooltip, Divider, Alert,
-} from 'antd';
-import find from 'lodash/find';
-import has from 'lodash/has';
-import debounce from 'lodash/debounce';
-import get from 'lodash/get';
-import { WarningOutlined, SaveOutlined, LeftOutlined } from '@ant-design/icons';
-
-import { navigateToPatientSearchScreen, navigateToPatientScreen } from '../../../actions/router';
+import { LeftOutlined,WarningOutlined } from '@ant-design/icons';
+import { updatePatientPractitioners } from 'actions/patientCreation';
 import {
   assignServiceRequestPractitioner,
   assignServiceRequestResident,
-  savePatientSubmission,
-  savePatientLocal,
-  saveObservations,
-  saveServiceRequest,
   saveLocalCgh,
-  saveLocalSummary,
   saveLocalIndic,
-  updateConsentments,
   saveLocalPractitioner,
   saveLocalResident,
-} from '../../../actions/patientSubmission';
-import ClinicalInformation from './components/ClinicalInformation';
-import SecondPage from './components/SecondPage';
-import Api from '../../../helpers/api';
-import ConfirmCancelModal from './components/ConfirmCancelModal';
-
-import './style.scss';
-
+  saveLocalSummary,
+  saveObservations,
+  savePatientLocal,
+  savePatientSubmission,
+  saveServiceRequest,
+  updateConsentments,
+} from 'actions/patientSubmission';
+import { createRequest } from 'actions/prescriptions';
+import { navigateToPatientScreen,navigateToPatientSearchScreen } from 'actions/router';
+import {
+Alert,
+  Button, Card, Col, Divider, Form, Row, Steps, Typography, } from 'antd';
+import { ClinicalImpressionBuilder } from 'helpers/fhir/builder/ClinicalImpressionBuilder';
+import { FamilyMemberHistoryBuilder } from 'helpers/fhir/builder/FMHBuilder';
+import { ObservationBuilder } from 'helpers/fhir/builder/ObservationBuilder.ts';
+import { ServiceRequestBuilder } from 'helpers/fhir/builder/ServiceRequestBuilder';
 import {
   cghDisplay,
   createPractitionerResource,
   genPractitionerKey,
-  getTestCoding,
-  hpoOnsetValues,
-  hpoInterpretationValues,
   getFamilyRelationshipDisplayForCode,
-} from '../../../helpers/fhir/fhir';
-import { ObservationBuilder } from '../../../helpers/fhir/builder/ObservationBuilder.ts';
-import Layout from '../../Layout';
-import { ServiceRequestBuilder } from '../../../helpers/fhir/builder/ServiceRequestBuilder';
-import { ClinicalImpressionBuilder } from '../../../helpers/fhir/builder/ClinicalImpressionBuilder';
-import { createRequest } from '../../../actions/prescriptions';
-import { updatePatientPractitioners } from '../../../actions/patientCreation';
-import { FamilyMemberHistoryBuilder } from '../../../helpers/fhir/builder/FMHBuilder';
+  getTestCoding,
+  hpoInterpretationValues,
+  hpoOnsetValues,
+} from 'helpers/fhir/fhir';
+import debounce from 'lodash/debounce';
+import find from 'lodash/find';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import { bindActionCreators } from 'redux';
+
+import Layout from 'components/Layout';
+
+import ConfirmCancelModal from './components/ConfirmCancelModal';
+import SecondPage from './components/SecondPage';
+import ClinicalInformation from './components/ClinicalInformation';
+
+import './style.scss';
 
 const { Step } = Steps;
 
@@ -65,21 +62,20 @@ function PatientSubmissionScreen(props) {
 
   const [state, setState] = React.useState({
     currentPageIndex: 0,
-    practitionerOptions: [],
-    valid: false,
+    firstPageFields: {},
+    fmhResources: get(props, 'observations.fmh'),
+    hpoResources: get(props, 'observations.hpos'),
     isCancelConfirmVisible: false,
+    practitionerOptions: [],
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     selectedResident: get(props, 'localStore.residentId', undefined),
-    firstPageFields: {},
-    hpoResources: get(props, 'observations.hpos'),
-    fmhResources: get(props, 'observations.fmh'),
     submitFailed: false,
+    valid: false,
   });
 
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
 
   const canGoNextPage = (currentPage) => {
-    const { observations } = props;
     const { localStore } = props;
     const values = form.getFieldsValue();
     let hasError = null;
@@ -234,8 +230,8 @@ function PatientSubmissionScreen(props) {
     if (cghInterpretationValue === 'realized') {
       builder.withInterpretation({
         coding: [{
-          display: cghDisplay(cghResult),
           code: cghResult,
+          display: cghDisplay(cghResult),
         }],
       });
     }
@@ -291,8 +287,8 @@ function PatientSubmissionScreen(props) {
       .withId(hpo.id)
       .withInterpretation({
         coding: [{
-          display: hpoInterpretationValues().find((interpretation) => interpretation.value === hpo.interpretation).display,
           code: hpo.interpretation,
+          display: hpoInterpretationValues().find((interpretation) => interpretation.value === hpo.interpretation).display,
         }],
       })
       .withValue(hpo.code, hpo.display)
@@ -340,19 +336,19 @@ function PatientSubmissionScreen(props) {
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
-        actions, userRole, currentPatient, userPractitioner,
+        actions, currentPatient, userPractitioner, userRole,
       } = props;
 
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
       const { status } = localStore;
 
       const batch = {
-        serviceRequests: [],
         clinicalImpressions: [],
-        observations: [],
-        hpos: [],
         fmhs: [],
+        hpos: [],
         length: 0,
+        observations: [],
+        serviceRequests: [],
         submitted,
         update: get(localStore, 'serviceRequest.id') != null,
       };
@@ -442,7 +438,6 @@ function PatientSubmissionScreen(props) {
 
   const handlePractitionerOptionSelected = (practitionerSelected) => {
     const { actions } = props;
-    const { practitionerOptions } = state;
 
     if (practitionerSelected != null) {
       const practitionerText = genPractitionerKey(practitionerSelected);
@@ -494,12 +489,12 @@ function PatientSubmissionScreen(props) {
 
     setState({
       ...state,
-      fmhResources: buildFmhsFromValues(firstPageFields, currentPatient),
       currentPageIndex: pageIndex,
       firstPageFields: {
         ...firstPageFields,
         ...form.getFieldsValue(),
       },
+      fmhResources: buildFmhsFromValues(firstPageFields, currentPatient),
     });
 
     debounce(validate, 500)();
@@ -508,9 +503,9 @@ function PatientSubmissionScreen(props) {
   const handleCancel = () => {
     const { actions, patient } = props;
     actions.navigateToPatientScreen(patient.id, {
-      tab: 'prescriptions',
-      reload: true,
       openedPrescriptionId: get(localStore, 'serviceRequest.id'),
+      reload: true,
+      tab: 'prescriptions',
     });
   };
 
@@ -569,12 +564,11 @@ function PatientSubmissionScreen(props) {
     }
   };
 
-  const { actions } = props;
   const {
-    patient, clinicalImpression, serviceRequest,
+    clinicalImpression, patient,
   } = props;
   const {
-    currentPageIndex, hpoResources, fmhResources, valid, submitFailed,
+    currentPageIndex, fmhResources, hpoResources, submitFailed, valid,
   } = state;
 
   const initialPractitionerValue = get(localStore, 'practitioner', '');
@@ -582,42 +576,42 @@ function PatientSubmissionScreen(props) {
 
   const pages = [
     {
-      title: intl.get('screen.clinicalSubmission.clinicalInformation'),
       content: (
         <ClinicalInformation
-          parentForm={this}
-          form={form}
-          patient={patient}
           clinicalImpression={clinicalImpression}
-          onChange={onChange}
-          validate={validate}
+          fmhResources={fmhResources}
+          form={form}
           hpoResources={hpoResources}
+          onChange={onChange}
           onHpoSelected={onHpoSelected}
           onHposUpdated={onHposUpdated}
-          fmhResources={fmhResources}
+          parentForm={this}
+          patient={patient}
           submitFailed={submitFailed}
+          validate={validate}
         />
       ),
-      name: 'ClinicalInformation',
-      values: {},
       isComplete: () => true,
+      name: 'ClinicalInformation',
+      title: intl.get('screen.clinicalSubmission.clinicalInformation'),
+      values: {},
     },
     {
-      title: intl.get('screen.clinicalSubmission.approval'),
       content: (
         <SecondPage
-          form={form}
           doctorOptions={{
-            optionSelected: handlePractitionerOptionSelected,
             initialValue: initialPractitionerValue,
+            optionSelected: handlePractitionerOptionSelected,
           }}
+          form={form}
           residentOptions={{
-            optionSelected: handleResidentOptionSelected,
             initialValue: initialResidentValue,
+            optionSelected: handleResidentOptionSelected,
           }}
         />
       ),
       name: 'Approval',
+      title: intl.get('screen.clinicalSubmission.approval'),
       values: {},
     },
   ];
@@ -633,7 +627,7 @@ function PatientSubmissionScreen(props) {
   }
 
   const onFailedSubmit = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ behavior: 'smooth', top: 0 });
     setState((currentState) => ({
       ...currentState,
       submitFailed: true,
@@ -649,7 +643,7 @@ function PatientSubmissionScreen(props) {
                 className="header__content--static__primary"
               >
                 { `${intl.get('form.patientSubmission.form.title')}` }
-                <Divider type="vertical" className="patientSubmission__header__divider" />
+                <Divider className="patientSubmission__header__divider" type="vertical" />
                 { ` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}`
               + ` ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}` }
                 { isFetus(patient) ? ` (${intl.get('screen.patient.creation.fetus')})` : '' }
@@ -661,8 +655,8 @@ function PatientSubmissionScreen(props) {
           <Col>
 
             <Button
-              onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
               danger
+              onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
               type="text"
             >
               { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
@@ -673,13 +667,13 @@ function PatientSubmissionScreen(props) {
           { submitFailed
             ? (
               <Alert
-                data-testid="alert"
-                message={intl.get('form.patientSubmission.form.alert.title')}
-                description={intl.get('form.patientSubmission.form.alert.description')}
-                type="error"
                 className="patientSubmission__form__alert"
+                data-testid="alert"
+                description={intl.get('form.patientSubmission.form.alert.description')}
                 icon={<WarningOutlined />}
+                message={intl.get('form.patientSubmission.form.alert.title')}
                 showIcon
+                type="error"
               />
             ) : null }
           <Card bordered={false} className="step">
@@ -690,9 +684,9 @@ function PatientSubmissionScreen(props) {
 
           <Form
             form={form}
+            onChange={onChange}
             onFinish={() => onFormFinish(isOnLastPage)}
             onFinishFailed={onFailedSubmit}
-            onChange={onChange}
           >
             { pageContent }
             <Card className="patientSubmission__form__footer">
@@ -718,8 +712,8 @@ function PatientSubmissionScreen(props) {
                 </Col>
                 <Col>
                   <Button
-                    onClick={onCancelClick}
                     danger
+                    onClick={onCancelClick}
                     type="text"
                   >
                     { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
@@ -731,12 +725,12 @@ function PatientSubmissionScreen(props) {
         </div>
       </>
       <ConfirmCancelModal
-        open={state.isCancelConfirmVisible}
         onClose={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: false }))}
         onQuit={() => handleCancel()}
         onSaveAndQuit={() => {
           saveSubmission();
         }}
+        open={state.isCancelConfirmVisible}
       />
     </Layout>
   );
@@ -744,40 +738,40 @@ function PatientSubmissionScreen(props) {
 
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
-    navigateToPatientSearchScreen,
-    navigateToPatientScreen,
-    savePatientSubmission,
-    savePatientLocal,
     assignServiceRequestPractitioner,
     assignServiceRequestResident,
-    saveObservations,
-    saveServiceRequest,
+    createRequest,
+    navigateToPatientScreen,
+    navigateToPatientSearchScreen,
     saveLocalCgh,
-    saveLocalSummary,
     saveLocalIndic,
-    updateConsentments,
     saveLocalPractitioner,
     saveLocalResident,
-    createRequest,
+    saveLocalSummary,
+    saveObservations,
+    savePatientLocal,
+    savePatientSubmission,
+    saveServiceRequest,
+    updateConsentments,
     updatePatientPractitioners,
   }, dispatch),
 });
 
 const mapStateToProps = (state) => ({
   app: state.app,
-  router: state.router,
-  serviceRequest: state.patientSubmission.serviceRequest,
-  patient: state.patientSubmission.patient,
-  groupId: state.patientSubmission.groupId,
   clinicalImpression: state.patientSubmission.clinicalImpression,
-  observations: state.patientSubmission.observations,
-  deleted: state.patientSubmission.deleted,
-  practitionerId: state.patientSubmission.practitionerId,
-  search: state.search,
-  localStore: state.patientSubmission.local,
   currentPatient: state.patientSubmission.patient,
-  userRole: state.user.practitionerData.practitionerRole,
+  deleted: state.patientSubmission.deleted,
+  groupId: state.patientSubmission.groupId,
+  localStore: state.patientSubmission.local,
+  observations: state.patientSubmission.observations,
+  patient: state.patientSubmission.patient,
+  practitionerId: state.patientSubmission.practitionerId,
+  router: state.router,
+  search: state.search,
+  serviceRequest: state.patientSubmission.serviceRequest,
   userPractitioner: state.user.practitionerData.practitioner,
+  userRole: state.user.practitionerData.practitionerRole,
 });
 
 export default connect(

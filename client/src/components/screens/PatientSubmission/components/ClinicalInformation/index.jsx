@@ -1,34 +1,10 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import {
-  AutoComplete, Button, Card, Checkbox, Col, Form, Input, Popconfirm, Row, Select, Typography,
-} from 'antd';
 import IconKit from 'react-icons-kit';
 import { ic_help, ic_visibility, ic_visibility_off } from 'react-icons-kit/md';
-
 import intl from 'react-intl-universal';
-
-import isEmpty from 'lodash/isEmpty';
-import get from 'lodash/get';
-import map from 'lodash/map';
-import toArray from 'lodash/values';
-import findIndex from 'lodash/findIndex';
-import ErrorText from './components/ErrorText';
-
-import {
-  getHPOCode,
-  getHPODisplay,
-  getHPOInterpretationCode,
-  getHPOOnsetCode,
-  getResourceId,
-  getTestCoding,
-  hpoInterpretationValues,
-  hpoOnsetValues,
-} from '../../../../../helpers/fhir/fhir';
-
+import { connect } from 'react-redux';
 import {
   addEmptyFamilyHistory,
   addFamilyHistoryResource,
@@ -39,19 +15,39 @@ import {
   updateHpoAgeOnSet,
   updateHpoNote,
   updateHpoObservation,
-} from '../../../../../actions/patientSubmission';
+} from 'actions/patientSubmission';
+import {
+  AutoComplete, Button, Card, Checkbox, Col, Form, Input, Popconfirm, Row, Select, Typography,
+} from 'antd';
+import Api from 'helpers/api';
+import { ObservationBuilder } from 'helpers/fhir/builder/ObservationBuilder.ts';
+import {
+  getHPOCode,
+  getHPODisplay,
+  getHPOInterpretationCode,
+  getHPOOnsetCode,
+  getResourceId,
+  getTestCoding,
+  hpoInterpretationValues,
+  hpoOnsetValues,
+} from 'helpers/fhir/fhir';
+import findIndex from 'lodash/findIndex';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import map from 'lodash/map';
+import toArray from 'lodash/values';
+import { bindActionCreators } from 'redux';
 
-import Api from '../../../../../helpers/api';
-import MrnItem from './components/MrnItem';
-import InvestigationSection from './components/InvestigationSection';
+import ErrorText from './components/ErrorText';
 import FamilyStorySection from './components/FamilyStorySection';
-import { ObservationBuilder } from '../../../../../helpers/fhir/builder/ObservationBuilder.ts';
+import InvestigationSection from './components/InvestigationSection';
+import MrnItem from './components/MrnItem';
 import OntologyTree from './components/OntologyTree';
 
 const interpretationIcon = {
-  POS: ic_visibility,
-  NEG: ic_visibility_off,
   IND: ic_help,
+  NEG: ic_visibility_off,
+  POS: ic_visibility,
 };
 
 const ROOT_PHENOTYPE = 'Phenotypic abnormality (HP:0000118)';
@@ -59,17 +55,17 @@ const ROOT_PHENOTYPE = 'Phenotypic abnormality (HP:0000118)';
 const intlPrefixKey = 'form.patientSubmission';
 
 const HpoHiddenFields = ({
-  hpoResource,
   hpoIndex,
+  hpoResource,
 }) => (
   <div>
-    <Form.Item name={['hpos', hpoIndex, 'id']} initialValue={getResourceId(hpoResource)} className="hidden-form">
+    <Form.Item className="hidden-form" initialValue={getResourceId(hpoResource)} name={['hpos', hpoIndex, 'id']}>
       <Input size="small" type="hidden" />
     </Form.Item>
-    <Form.Item name={['hpos', hpoIndex, 'code']} initialValue={getHPOCode(hpoResource)} className="hidden-form">
+    <Form.Item className="hidden-form" initialValue={getHPOCode(hpoResource)} name={['hpos', hpoIndex, 'code']}>
       <Input size="small" type="hidden" />
     </Form.Item>
-    <Form.Item name={['hpos', hpoIndex, 'display']} initialValue={getHPODisplay(hpoResource)} className="hidden-form">
+    <Form.Item className="hidden-form" initialValue={getHPODisplay(hpoResource)} name={['hpos', hpoIndex, 'display']}>
       <Input size="small" type="hidden" />
     </Form.Item>
   </div>
@@ -81,9 +77,9 @@ class ClinicalInformation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      hpoInterpretation: [],
       hpoOptions: [],
       treeData: [],
-      hpoInterpretation: [],
     };
 
     this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
@@ -111,13 +107,15 @@ class ClinicalInformation extends React.Component {
       });
   }
 
+
+
   phenotype({
-    hpoResource,
+    deleteHpo,
     form,
     hpoIndex,
-    deleteHpo,
+    hpoResource,
   }) {
-    const { Option, OptGroup } = Select;
+    const { OptGroup, Option } = Select;
 
     const defaultValue = () => {
       if (hpoResource.note != null && hpoResource.note.length > 0) {
@@ -151,42 +149,42 @@ class ClinicalInformation extends React.Component {
     };
 
     return (
-      <div key={hpoResource.valueCodeableConcept.coding[0].code} className="phenotypeBlock">
+      <div className="phenotypeBlock" key={hpoResource.valueCodeableConcept.coding[0].code}>
         <div className="phenotypeFirstLine">
           <div className="leftBlock">
             <span className="hpoTitle">{ getHPODisplay(hpoResource) }</span>
             <Popconfirm
+              cancelText={intl.get(`${intlPrefixKey}.form.hpo.confirm.no`)}
+              okText={intl.get(`${intlPrefixKey}.form.hpo.confirm.yes`)}
+              onConfirm={() => deleteHpo(getHPOCode(hpoResource))}
               placement="top"
               title={intl.get(`${intlPrefixKey}.form.hpo.confirm.text`)}
-              onConfirm={() => deleteHpo(getHPOCode(hpoResource))}
-              okText={intl.get(`${intlPrefixKey}.form.hpo.confirm.yes`)}
-              cancelText={intl.get(`${intlPrefixKey}.form.hpo.confirm.no`)}
             >
               <Button
-                type="link"
                 className="button--borderless deleteButton"
+                type="link"
               >
                 { intl.get(`${intlPrefixKey}.clinicalInformation.delete`) }
               </Button>
             </Popconfirm>
           </div>
-          <HpoHiddenFields hpoResource={hpoResource} form={form} hpoIndex={hpoIndex} deleteHpo={deleteHpo} />
+          <HpoHiddenFields deleteHpo={deleteHpo} form={form} hpoIndex={hpoIndex} hpoResource={hpoResource} />
           <div className="rightBlock">
             <Form.Item
-              name={['hpos', hpoIndex, 'interpretation']}
               initialValue={getHPOInterpretationCode(hpoResource)}
+              name={['hpos', hpoIndex, 'interpretation']}
               rules={[{
-                required: true,
                 message: <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.requiredField`)} />,
+                required: true,
               }]}
             >
               <Select
                 className="select selectObserved"
+                defaultValue={getHPOInterpretationCode(hpoResource)}
+                dropdownClassName="selectDropdown"
+                onChange={onChangeInterpretation}
                 placeholder={intl.get(`${intlPrefixKey}.form.hpo.interpretation`)}
                 size="small"
-                dropdownClassName="selectDropdown"
-                defaultValue={getHPOInterpretationCode(hpoResource)}
-                onChange={onChangeInterpretation}
               >
                 { hpoInterpretationValues().map((interpretation, index) => (
                   <Select.Option
@@ -195,8 +193,8 @@ class ClinicalInformation extends React.Component {
                   >
                     <IconKit
                       className={`${interpretation.iconClass} icon`}
-                      size={14}
                       icon={interpretationIcon[interpretation.value]}
+                      size={14}
                     />
                     { interpretation.display }
                   </Select.Option>
@@ -204,23 +202,23 @@ class ClinicalInformation extends React.Component {
               </Select>
             </Form.Item>
             <Form.Item
-              name={['hpos', hpoIndex, 'onset']}
               initialValue={getHPOOnsetCode(hpoResource)}
+              name={['hpos', hpoIndex, 'onset']}
             >
               <Select
                 className="select selectAge"
-                size="small"
-                placeholder={intl.get(`${intlPrefixKey}.form.hpo.ageAtOnset`)}
-                dropdownClassName="selectDropdown"
                 defaultValue={getHPOOnsetCode(hpoResource)}
-                onChange={onChange}
                 disabled={!hpoInterpretation.includes(getHPODisplay(hpoResource))}
+                dropdownClassName="selectDropdown"
+                onChange={onChange}
+                placeholder={intl.get(`${intlPrefixKey}.form.hpo.ageAtOnset`)}
+                size="small"
               >
                 {
                   hpoOnsetValues.map((group, gIndex) => (
-                    <OptGroup label={group.groupLabel} key={`onsetGroup_${gIndex}`}>
+                    <OptGroup key={`onsetGroup_${gIndex}`} label={group.groupLabel}>
                       { group.options.map((o, oIndex) => (
-                        <Option value={o.code} key={`onsetOption_${oIndex}`}>{ o.display }</Option>
+                        <Option key={`${gIndex}_onsetOption_${oIndex}`} value={o.code}>{ o.display }</Option>
                       )) }
                     </OptGroup>
                   ))
@@ -230,8 +228,8 @@ class ClinicalInformation extends React.Component {
           </div>
         </div>
         <div className="phenotypeSecondLine" key={`input-${hpoIndex}`}>
-          <Form.Item name={['hpos', hpoIndex, 'note']} initialValue={defaultValue()}>
-            <Input placeholder="Ajouter une note…" value={defaultValue()} size="small" className="input hpoNote" />
+          <Form.Item initialValue={defaultValue()} name={['hpos', hpoIndex, 'note']}>
+            <Input className="input hpoNote" placeholder="Ajouter une note…" size="small" value={defaultValue()} />
           </Form.Item>
         </div>
       </div>
@@ -254,11 +252,11 @@ class ClinicalInformation extends React.Component {
   }
 
   deleteFamilyHistory({ code }) {
-    const { form, actions } = this.props;
+    const { actions, form } = this.props;
     const values = form.getFieldsValue();
     const {
-      familyRelationshipIds,
       familyRelationshipCodes,
+      familyRelationshipIds,
       familyRelationshipNotes,
     } = values;
 
@@ -319,7 +317,7 @@ class ClinicalInformation extends React.Component {
 
   handleHpoNodesChecked(_e, info) {
     const { treeData } = this.state;
-    const { onHposUpdated, form, hpoResources } = this.props;
+    const { form, hpoResources, onHposUpdated } = this.props;
 
     const { hpos } = form.getFieldsValue();
     const checkedNodes = info.checkedNodes.map((n) => ({ code: n.key, display: n.title }));
@@ -360,7 +358,7 @@ class ClinicalInformation extends React.Component {
 
   handleHpoDeleted(hpoId) {
     const {
-      form, onChange, onHposUpdated, hpoResources,
+      form, hpoResources, onChange, onHposUpdated,
     } = this.props;
     const values = form.getFieldsValue();
     const result = hpoResources.filter((hpo) => get(hpo, 'valueCodeableConcept.coding[0].code') !== hpoId);
@@ -381,7 +379,7 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      form, observations, localStore, onChange, hpoResources, fmhResources, validate, submitFailed,
+      fmhResources, form, hpoResources, localStore, observations, onChange, submitFailed, validate,
     } = this.props;
 
     const { TextArea } = Input;
@@ -434,24 +432,24 @@ class ClinicalInformation extends React.Component {
     return (
       <div className="clinical-information">
         <Card
-          title={intl.get(`${intlPrefixKey}.clinicalInformation.medicalFile`)}
-          className="staticCard patientContent"
           bordered={false}
+          className="staticCard patientContent"
+          title={intl.get(`${intlPrefixKey}.clinicalInformation.medicalFile`)}
         >
           <Form.Item label={intl.get(`${intlPrefixKey}.clinicalInformation.file`)}>
             <MrnItem form={form} onChange={() => onChange()} />
           </Form.Item>
         </Card>
         <Card
-          title={intl.get(`${intlPrefixKey}.clinicalInformation.analysis`)}
-          className="staticCard patientContent clinical-information__analysis"
           bordered={false}
+          className="staticCard patientContent clinical-information__analysis"
+          title={intl.get(`${intlPrefixKey}.clinicalInformation.analysis`)}
         >
 
           <Form.Item
-            name="cghId"
-            initialValue={cghId}
             className="hidden-form"
+            initialValue={cghId}
+            name="cghId"
           >
             <Input size="small" type="hidden" />
           </Form.Item>
@@ -462,8 +460,8 @@ class ClinicalInformation extends React.Component {
               label={intl.get(`${intlPrefixKey}.clinicalInformation.analysis.selection`)}
               name="analysis.tests"
               rules={[{
-                required: true,
                 message: <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.analyse`)} />,
+                required: true,
               }]}
             >
               <Checkbox.Group
@@ -481,12 +479,12 @@ class ClinicalInformation extends React.Component {
           { isEditMode
           && (
             <Form.Item
+              initialValue={[initialAnalysisValue]}
               label={intl.get(`${intlPrefixKey}.clinicalInformation.analysis.selection`)}
               name="analysis.tests"
-              initialValue={[initialAnalysisValue]}
               rules={[{
-                required: true,
                 message: <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.mrn`)} />,
+                required: true,
               }]}
             >
               <Checkbox.Group
@@ -511,16 +509,16 @@ class ClinicalInformation extends React.Component {
           ) }
 
           <Form.Item
+            initialValue={initialAnalysisNote}
             label={intl.get(`${intlPrefixKey}.clinicalInformation.analysis.comments`)}
             name="analysis.comments"
-            initialValue={initialAnalysisNote}
           >
             <Row gutter={8}>
               <Col span={17}>
                 <TextArea
+                  defaultValue={initialAnalysisNote}
                   placeholder={intl.get(`${intlPrefixKey}.clinicalInformation.analysis.comments.placeholder`)}
                   rows={4}
-                  defaultValue={initialAnalysisNote}
                 />
               </Col>
               <Col>
@@ -533,9 +531,9 @@ class ClinicalInformation extends React.Component {
         </Card>
 
         <Card
-          title={intl.get(`${intlPrefixKey}.clinicalInformation.investigation`)}
           bordered={false}
           className="staticCard patientContent clinical-information__investigation"
+          title={intl.get(`${intlPrefixKey}.clinicalInformation.investigation`)}
         >
           <InvestigationSection
             interpretation={initialInterpretation}
@@ -544,36 +542,36 @@ class ClinicalInformation extends React.Component {
           />
         </Card>
         <Card
-          title={intl.get('screen.patient.header.familyHistory')}
           bordered={false}
           className="staticCard patientContent"
+          title={intl.get('screen.patient.header.familyHistory')}
         >
           <FamilyStorySection familyHistoryResources={fmhResources} />
         </Card>
-        <Card title="Signes cliniques" bordered={false} className="staticCard patientContent">
+        <Card bordered={false} className="staticCard patientContent" title="Signes cliniques">
           <div className="separator">
             <div className="cardSeparator">
               <Form.Item
                 name="hposTree"
                 rules={[{
-                  required: true,
                   message: <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.hposTree`)} />,
+                  required: true,
                 }]}
               >
                 <div className={submitFailed ? 'treeError hposTree' : 'hposTree'}>
                   <Form.Item className="searchInput searchInputFull">
                     <AutoComplete
                       className="searchInput"
-                      placeholder={intl.get(`${intlPrefixKey}.clinicalInformation.searchClinicalSign`)}
                       dataSource={hpoOptionsLabels}
-                      onSelect={this.handleHpoOptionSelected}
                       onChange={this.handleHpoSearchTermChanged}
+                      onSelect={this.handleHpoOptionSelected}
+                      placeholder={intl.get(`${intlPrefixKey}.clinicalInformation.searchClinicalSign`)}
                     />
 
                   </Form.Item>
                   <OntologyTree
-                    loadData={this.onLoadHpoChildren}
                     checkedKeys={hpoCodes}
+                    loadData={this.onLoadHpoChildren}
                     onCheck={this.handleHpoNodesChecked}
                     treeData={treeData}
                   />
@@ -585,10 +583,10 @@ class ClinicalInformation extends React.Component {
               hpoResources.length === 0
                 ? <p>{ intl.get(`${intlPrefixKey}.clinicalInformation.validation.clinicalSign`) }</p>
                 : hpoResources.map((hpoResource, hpoIndex) => this.phenotype({
-                  hpoResource,
+                  deleteHpo: this.handleHpoDeleted,
                   form,
                   hpoIndex,
-                  deleteHpo: this.handleHpoDeleted,
+                  hpoResource,
                 }))
             }
             </div>
@@ -596,30 +594,30 @@ class ClinicalInformation extends React.Component {
 
         </Card>
         <Card
-          title={intl.get(`${intlPrefixKey}.clinicalInformation.indications`)}
           bordered={false}
           className="staticCard patientContent"
+          title={intl.get(`${intlPrefixKey}.clinicalInformation.indications`)}
         >
           <Form.Item
+            initialValue={initialIndicNote}
             label={intl.get(`${intlPrefixKey}.clinicalInformation.diagnosticHypothesis`)}
             name="indication"
-            initialValue={initialIndicNote}
             rules={[
               {
-                required: true,
                 message: (
                   <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.diagnosticHypothesis`)} />
                 ),
+                required: true,
               },
               {
-                whitespace: true,
                 message: intl.get(`${intlPrefixKey}.clinicalInformation.validation.noSpace`),
+                whitespace: true,
               },
             ]}
           >
             <TextArea
-              placeholder={intl.get(`${intlPrefixKey}.clinicalInformation.hypothesis.placeholder`)}
               className="input note"
+              placeholder={intl.get(`${intlPrefixKey}.clinicalInformation.hypothesis.placeholder`)}
               rows={4}
             />
           </Form.Item>
@@ -631,23 +629,23 @@ class ClinicalInformation extends React.Component {
 
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
-    addHpoResource,
-    setHpoResourceDeletionFlag,
-    setFamilyRelationshipResourceDeletionFlag,
-    addFamilyHistoryResource,
     addEmptyFamilyHistory,
+    addFamilyHistoryResource,
+    addHpoResource,
+    setFamilyRelationshipResourceDeletionFlag,
+    setHpoResourceDeletionFlag,
+    updateFMHNote,
+    updateHpoAgeOnSet,
     updateHpoNote,
     updateHpoObservation,
-    updateHpoAgeOnSet,
-    updateFMHNote,
   }, dispatch),
 });
 
 const mapStateToProps = (state) => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
+  localStore: state.patientSubmission.local,
   observations: state.patientSubmission.observations,
   serviceRequest: state.patientSubmission.serviceRequest,
-  localStore: state.patientSubmission.local,
 });
 
 export default connect(
