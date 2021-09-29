@@ -83,15 +83,18 @@ function* selectDefaultStatement() {
 }
 
 function* getStatements() {
-  try {
-    const statementResponse = yield Api.getStatements();
-    if (statementResponse.error) {
-      throw new ApiError(statementResponse.error);
-    }
+  const { statementsFetched } = yield select((state) => state.variant);
+  if (!statementsFetched) {
+    try {
+      const statementResponse = yield Api.getStatements();
+      if (statementResponse.error) {
+        throw new ApiError(statementResponse.error);
+      }
 
-    yield put({ type: actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
-  } catch (e) {
-    yield put({ type: actionTypes.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
+      yield put({ type: actionTypes.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED, payload: statementResponse.payload.data });
+    } catch (e) {
+      yield put({ type: actionTypes.PATIENT_VARIANT_GET_STATEMENTS_FAILED, payload: e });
+    }
   }
 }
 
