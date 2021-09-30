@@ -5,6 +5,7 @@ import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 import { getExtension } from '../helpers/fhir/builder/Utils';
+import { isAlreadyProband, makeExtensionProband } from '../helpers/fhir/patientHelper';
 import { getFamilyMembersFromPatientDataResponse } from '../helpers/patient';
 import { FamilyActionStatus } from '../reducers/patient';
 
@@ -303,6 +304,7 @@ function* removeParent(action) {
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, newGroupResponse.payload.data.id);
     yield Api.deletePatientFromGroup(patientParsed.familyId, parentId);
+    yield makePatientProbandIfNeeded(parentId);
 
     isSuccess = true;
     yield put({
@@ -344,11 +346,30 @@ function* getFileURL(action) {
     if (fileURL.error) {
       throw new ApiError(fileURL.error);
     }
-    window.open(fileURL.payload.data.url , '_blank');
+    window.open(fileURL.payload.data.url, '_blank');
     yield put({ payload: { uid: fileURL }, type: actions.PATIENT_FILE_URL_SUCCEEDED });
   } catch (e) {
     yield put({ payload: e, type: actions.PATIENT_FILE_URL_FAILED });
   }
+}
+
+function* makePatientProbandIfNeeded(id) {
+  const rawResponse = yield Api.getPatientDataById(id);
+  if (rawResponse.error) {
+    throw new ApiError(rawResponse.error);
+  }
+  const patientResource = rawResponse?.payload?.data?.entry[0]?.resource?.entry[0]?.resource;
+
+  const extensions = patientResource.extension;
+  if (isAlreadyProband(extensions)) {
+    return;
+  }
+
+  const updatedPatientToCommit = {
+    ...patientResource,
+    extension: makeExtensionProband(extensions),
+  };
+  yield updatePatient(updatedPatientToCommit);
 }
 
 function* watchAddParent() {

@@ -4,7 +4,10 @@ import moment from 'moment';
 import { isValidRamq } from './api/PatientChecker';
 import { Extension, Patient } from './types';
 
-const EXTENSION_GROUP_MEMBER_STATUS = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/group-member-status';
+const EXTENSION_GROUP_MEMBER_STATUS =
+  'http://fhir.cqgc.ferlab.bio/StructureDefinition/group-member-status';
+
+const EXTENSION_IS_PROBAND = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
 
 export function getRAMQValue(patient: Patient): string | undefined {
   return patient.identifier.find((id) => get(id, 'type.coding[0].code', '') === 'JHN')?.value;
@@ -15,16 +18,20 @@ export function formatRamq(value: string): string {
   return newValue
     .replace(/\s/g, '')
     .split('')
-    .reduce((acc, char, index) => ((char !== ' ' && [3, 7]
-      .includes(index)) ? `${acc}${char} ` : `${acc}${char}`), '').trimEnd();
+    .reduce(
+      (acc, char, index) =>
+        char !== ' ' && [3, 7].includes(index) ? `${acc}${char} ` : `${acc}${char}`,
+      '',
+    )
+    .trimEnd();
 }
 
 export type RamqDetails = {
-  startFirstname?: string
-  startLastname?: string
-  sex?: 'male' | 'female'
-  birthDate?: Date
-}
+  startFirstname?: string;
+  startLastname?: string;
+  sex?: 'male' | 'female';
+  birthDate?: Date;
+};
 
 export function getDetailsFromRamq(ramq: string): RamqDetails | null {
   if (!isValidRamq(ramq)) {
@@ -40,8 +47,11 @@ export function getDetailsFromRamq(ramq: string): RamqDetails | null {
   }
 
   const isFemale = monthValue >= 51;
-  const birthDateYearPrefix = moment().year() > Number.parseInt(`${20}${yearValue}`, 10) ? '20' : '19';
-  const birthDateString = `${birthDateYearPrefix}${yearValue}/${isFemale ? monthValue - 50 : monthValue}/${dayValue} 00:00`;
+  const birthDateYearPrefix =
+    moment().year() > Number.parseInt(`${20}${yearValue}`, 10) ? '20' : '19';
+  const birthDateString = `${birthDateYearPrefix}${yearValue}/${
+    isFemale ? monthValue - 50 : monthValue
+  }/${dayValue} 00:00`;
   const birthDate = moment(birthDateString, 'YYYY/M/D').toDate();
 
   return {
@@ -55,7 +65,10 @@ export function getDetailsFromRamq(ramq: string): RamqDetails | null {
 export type GroupMemberStatus = 'Affected' | 'Unaffected' | 'Unknown';
 export type GroupMemberStatusCode = 'AFF' | 'UNF' | 'UNK';
 
-export const groupStatusObject = (code: GroupMemberStatusCode, display: GroupMemberStatus): Extension => ({
+export const groupStatusObject = (
+  code: GroupMemberStatusCode,
+  display: GroupMemberStatus,
+): Extension => ({
   url: EXTENSION_GROUP_MEMBER_STATUS,
   valueCoding: {
     code,
@@ -76,3 +89,11 @@ export const generateGroupStatus = (status: GroupMemberStatusCode): Extension =>
       throw new Error(`Unknown group member status [${status}]`);
   }
 };
+
+export const isAlreadyProband = (extensions: Extension[]): boolean =>
+  (extensions || []).some((ext) => ext.url === EXTENSION_IS_PROBAND && ext.valueBoolean);
+
+export const makeExtensionProband = (extensions: Extension[]): Extension[] =>
+  (extensions || []).map((ext) =>
+    ext.url === EXTENSION_IS_PROBAND ? { ...ext, valueBoolean: true } : { ...ext },
+  );
