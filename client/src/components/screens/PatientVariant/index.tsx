@@ -101,7 +101,7 @@ const PatientVariantScreen = () => {
             className="variant-repo__query-builder"
             showHeader={true}
             headerTitle="Variant Query"
-            showHeaderTools={true}
+            showHeaderTools={false}
             cacheKey="patient-variant-repo"
             enableCombine={false}
             currentQuery={filters?.content?.length ? filters : {}}

@@ -8,8 +8,8 @@ specifiers:
   '@blueprintjs/core': 3.32.0
   '@blueprintjs/table': 3.7.1
   '@clarketm/saga-monitor': ^2.0.1
-  '@ferlab/style': ^1.8.6
-  '@ferlab/ui': ^1.9.3
+  '@ferlab/style': ^1.9.1
+  '@ferlab/ui': ^2.0.1
   '@hapi/joi': ^15.1.0
   '@hot-loader/react-dom': ^17.0.0
   '@pmmmwh/react-refresh-webpack-plugin': 0.4.2
@@ -156,8 +156,8 @@ dependencies:
   '@blueprintjs/core': 3.32.0_react-dom@17.0.1+react@17.0.1
   '@blueprintjs/table': 3.7.1_react-dom@17.0.1+react@17.0.1
   '@clarketm/saga-monitor': 2.0.1_redux-saga@1.1.3
-  '@ferlab/style': 1.8.6_7e0c332152494bebdab5f30e5ba73f94
-  '@ferlab/ui': 1.9.9_5fc0280014cf3c9c2ffc57b17ecd7c3f
+  '@ferlab/style': 1.9.1_7e0c332152494bebdab5f30e5ba73f94
+  '@ferlab/ui': 2.0.1_a5b3b9fbf83115e8206d1d013851fdcb
   '@hapi/joi': 15.1.1
   '@hot-loader/react-dom': 17.0.1_react@17.0.1
   '@pmmmwh/react-refresh-webpack-plugin': 0.4.2_d00fcc46a48175a4e289da7534b00e9a
@@ -1937,8 +1937,8 @@ packages:
       - supports-color
     dev: true
 
-  /@ferlab/style/1.8.6_7e0c332152494bebdab5f30e5ba73f94:
-    resolution: {integrity: sha512-j/2nfS0SlimcJJdPV3L5n2Qb2Dn14FY6C215YV5x73hD7WX5sDzWn27xz5o4KmmAHeM5A33q8QfRcQa/AJS0hw==}
+  /@ferlab/style/1.9.1_7e0c332152494bebdab5f30e5ba73f94:
+    resolution: {integrity: sha512-/EujEKif944nYvlhskKeo5RT+Glb2sd9pR/FffJSanqKjhPdmBS0uCW3ANNFEtyoRNzR8AuJusnJ9I1ZKHuq3Q==}
     hasBin: true
     peerDependencies:
       antd: ^4.12.3
@@ -1954,14 +1954,14 @@ packages:
       react-router-dom: 5.2.0_react@17.0.1
     dev: false
 
-  /@ferlab/ui/1.9.9_5fc0280014cf3c9c2ffc57b17ecd7c3f:
-    resolution: {integrity: sha512-uBsCbVKe8Ji8crKI8Z/X1/L6BMaUsq+3OxumByAsMtrGfZWMK3kSK9wo3oy35e3VP8gq0v58ZDLhWRl6RV9rbQ==}
+  /@ferlab/ui/2.0.1_a5b3b9fbf83115e8206d1d013851fdcb:
+    resolution: {integrity: sha512-n/dgFucs5ah/D4+3sU7bYU3RW62GZ+nhT0IWE/RPCOPpsKYD8gQHjKa6wewF1akwEV4aEMzgmw2Z8CfIWsirOA==}
     peerDependencies:
-      '@ferlab/style': ^1.9.0
+      '@ferlab/style': ^1.9.1
       antd: ^4.2.0
       react: '>=16.0.0'
     dependencies:
-      '@ferlab/style': 1.8.6_7e0c332152494bebdab5f30e5ba73f94
+      '@ferlab/style': 1.9.1_7e0c332152494bebdab5f30e5ba73f94
       antd: 4.16.13_react-dom@17.0.1+react@17.0.1
       classnames: 2.2.6
       history: 4.10.1
@@ -9926,6 +9926,7 @@ packages:
     resolution: {integrity: sha512-6R9fqJ5Zcmf+uYaFgdIHmLwNldn5HbK8L5ybn7Uz+ylX/rnOsSp1AHcvQSrCaFN+qNM1wpymHqD7mVasEOlHGQ==}
     engines: {node: '>= 4.4.x'}
     hasBin: true
+    requiresBuild: true
     dependencies:
       debug: 3.2.7
       iconv-lite: 0.4.24

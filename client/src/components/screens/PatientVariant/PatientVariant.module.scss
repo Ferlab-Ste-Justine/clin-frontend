@@ -3,8 +3,12 @@
   flex-direction: row;
 
   .patientVariantSidebar {
-    ul {
-      font-weight: 500 !important;
+    :global([role='menuitem']) {
+      color: white;
+    }
+
+    * {
+      outline: none;
     }
   }
 
@@ -12,9 +16,9 @@
     background-color: white;
     margin-top: 24px;
     border-radius: 2px;
-    border: 1px solid #D8E1EB;
+    border: 1px solid #d8e1eb;
   }
-  
+
   .tableContainer > * {
     margin: 24px;
   }
