@@ -84,11 +84,9 @@ const PatientDetails = ({ canEditPatient, patient }: Props): React.ReactElement 
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'}>
           <DetailsRow
             title={intl.get('screen.patient.details.gender')}
-            value={intl.get(
-              `screen.patient.details.${
-                patient.isFetus ? 'unknown' : patient.gender.toLowerCase()
-              }`,
-            )}
+            value={intl
+              .get(`screen.patient.details.${patient?.gender?.toLowerCase()}`)
+              .defaultMessage('--')}
           />
           <DetailsRow title={intl.get('screen.patient.details.dob')} value={patient.birthDate} />
         </DetailsCol>
