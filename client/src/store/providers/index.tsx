@@ -13,13 +13,12 @@ type ClinGraphqlProvider = {
 
 export interface IProvider {
   children: React.ReactNode;
-  userToken: string;
 }
 
 export type GraphqlProvider = IProvider & ClinGraphqlProvider;
 
-const Provider = ({ children, userToken }: IProvider): React.ReactElement => (
-  <ApolloProvider userToken={userToken}>{ children }</ApolloProvider>
+const Provider = ({ children }: IProvider): React.ReactElement => (
+  <ApolloProvider>{ children }</ApolloProvider>
 );
 
 export default Provider;

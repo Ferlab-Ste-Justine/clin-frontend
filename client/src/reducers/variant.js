@@ -35,6 +35,9 @@ export const initialVariantState = {
   results: {},
   facets: {},
   statements: {},
+  statementsFetched: false,
+  statementsFetching: false,
+  statementsError: null,
   activeStatementId: null,
   defaultStatement: null,
   activeStatementTotals: {},
@@ -236,6 +239,10 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
       draft.draftQueries = lastVersion.draftQueries;
       draft.activeQuery = lastVersion.activeQuery;
       break;
+    
+    case actions.PATIENT_VARIANT_GET_STATEMENTS_REQUESTED:
+      draft.statementsFetching = true
+      break;
 
     case actions.PATIENT_VARIANT_GET_STATEMENTS_SUCCEEDED:
       // @NOTE Normalize and update with retrieved statements
@@ -272,6 +279,16 @@ const variantReducer = (state = ({ ...initialVariantState }), action) => produce
         draft.draftQueries = draft.statements[activeStatementId].queries;
         draft.draftHistory = [];
       }
+
+      draft.statementsFetched = true
+      draft.statementsFetching = false
+      draft.statementsError = null
+
+      break;
+    
+    case actions.PATIENT_VARIANT_GET_STATEMENTS_FAILED:
+      draft.statementsError = action.payload
+      draft.statementsFetching = false
       break;
 
     case actions.PATIENT_VARIANT_SELECT_STATEMENT_SUCCEEDED:

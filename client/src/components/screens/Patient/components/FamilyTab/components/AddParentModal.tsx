@@ -1,72 +1,63 @@
-import {
-  AutoComplete, Form, Radio, RadioChangeEvent, Typography,
-} from 'antd';
-import { useForm } from 'antd/lib/form/Form';
-import Modal from 'antd/lib/modal/Modal';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
-import { addParentToFamily } from '../../../../../../actions/patient';
-import api from '../../../../../../helpers/api';
-import { GroupMemberStatusCode } from '../../../../../../helpers/fhir/patientHelper';
-import { FamilyMemberType } from '../../../../../../helpers/providers/types';
-import { PatientData } from '../../../../../../helpers/search/types';
-import { State } from '../../../../../../reducers';
+import { addParentToFamily } from 'actions/patient';
+import { AutoComplete, Form, message, Radio, RadioChangeEvent, Typography } from 'antd';
+import { useForm } from 'antd/lib/form/Form';
+import Modal from 'antd/lib/modal/Modal';
+import api from 'helpers/api';
+import { parentTypeToGender } from 'helpers/fhir/familyMemberHelper';
+import { GroupMemberStatusCode } from 'helpers/fhir/patientHelper';
+import { PatientData } from 'helpers/search/types';
+import { State } from 'reducers';
+import { FamilyActionStatus } from 'reducers/patient';
+
+import { FamilyMemberType } from 'store/FamilyMemberTypes';
 
 interface Props {
-  parentType: FamilyMemberType | null
-  onClose: () => void
+  parentType: FamilyMemberType | null;
+  onClose: () => void;
 }
 
 interface SearchResult {
-  id: string
-  lastName: string
-  firstName: string
+  id: string;
+  lastName: string;
+  firstName: string;
   ramq: string;
 }
 
-const getGenderByType = (type: FamilyMemberType) => {
-  switch (type) {
-    case FamilyMemberType.FATHER:
-      return 'Male';
-    case FamilyMemberType.MOTHER:
-      return 'Female';
-    default:
-      throw new Error(`Type [${type}] not supported yet.`);
-  }
-};
-
-const AddParentModal: React.FC<Props> = ({
-  parentType,
-  onClose,
-}) => {
+const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
   const dispatch = useDispatch();
   const [form] = useForm();
   const [searchResult, setSearchResult] = useState<SearchResult[] | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<PatientData | null>(null);
-  const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | undefined>(undefined);
+  const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | undefined>(
+    undefined,
+  );
   const family = useSelector((state: State) => state.patient.family);
+  const familyActionStatus = useSelector((state: State) => state.patient.familyActionStatus);
   const familyMemberIds = family?.map((member) => member.id);
-  const searchRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!!parentType && searchRef != null && searchRef.current != null) {
-      setTimeout(() => { searchRef.current?.focus(); }, 50);
-    }
-  }, [parentType]);
 
   async function search(searchTerm: string) {
-    const response: any = await api.getPatientsByAutoComplete('complete', searchTerm, 1, 5, getGenderByType(parentType!));
+    const response: any = await api.getPatientsByAutoComplete(
+      'complete',
+      searchTerm,
+      1,
+      5,
+      parentTypeToGender[parentType!]
+    );
     if (response.payload?.data) {
-      setSearchResult(response.payload.data.data.hits
+      setSearchResult(
+        response.payload.data.data.hits
 
-        .filter((hit: any) => !familyMemberIds?.includes(hit._id) && !hit._source.fetus)
-        .map((hit: any) => ({
-          id: hit._id,
-          lastName: hit._source.lastName,
-          firstName: hit._source.firstName,
-          ramq: hit._source.ramq,
-        })));
+          .filter((hit: any) => !familyMemberIds?.includes(hit._id) && !hit._source.fetus)
+          .map((hit: any) => ({
+            firstName: hit._source.firstName,
+            id: hit._id,
+            lastName: hit._source.lastName,
+            ramq: hit._source.ramq,
+          })),
+      );
     } else {
       setSearchResult([]);
     }
@@ -81,16 +72,27 @@ const AddParentModal: React.FC<Props> = ({
     setSearchResult(null);
     setSelectedPatient(null);
     setAffectedStatus(undefined);
-    form.setFields([{
-      name: 'patientSearch',
-      value: '',
-    }]);
+    form.setFields([
+      {
+        name: 'patientSearch',
+        value: '',
+      },
+    ]);
+  };
+
+  const cleanUpBeforeClosing = () => {
+    resetValues();
+    onClose();
   };
 
   async function onSubmit() {
-    dispatch(addParentToFamily(selectedPatient?.id, parentType, affectedStatus!));
-    resetValues();
-    onClose();
+    const callback = (isSuccess: boolean) => {
+      isSuccess
+        ? message.success(intl.get('screen.patient.details.family.add.success'))
+        : message.error(intl.get('screen.patient.details.family.add.error'));
+      cleanUpBeforeClosing();
+    };
+    dispatch(addParentToFamily(selectedPatient?.id, parentType, affectedStatus!, callback));
   }
 
   const updateStatus = (event: RadioChangeEvent) => {
@@ -98,103 +100,107 @@ const AddParentModal: React.FC<Props> = ({
   };
 
   const onCancel = () => {
-    resetValues();
-    onClose();
+    cleanUpBeforeClosing();
   };
+
+  const isAddingParentInProgress = familyActionStatus === FamilyActionStatus.addMemberInProgress;
+  const shouldDisableOkButton = !selectedPatient || !affectedStatus || isAddingParentInProgress;
 
   return (
     <Modal
-      visible={!!parentType}
-      title={parentType ? intl.get(`screen.patient.details.family.modal.title.${parentType.toLowerCase()}`) : ''}
-      className="family-tab__details__add-parent__modal"
-      okText={intl.get('screen.patient.details.family.modal.add')}
+      cancelButtonProps={{ disabled: isAddingParentInProgress }}
       cancelText={intl.get('screen.patient.details.family.modal.cancel')}
-      okButtonProps={{ disabled: !selectedPatient || !affectedStatus }}
+      className="family-tab__details__add-parent__modal"
+      okButtonProps={{ disabled: shouldDisableOkButton, loading: isAddingParentInProgress }}
+      okText={intl.get('screen.patient.details.family.modal.add')}
       onCancel={onCancel}
       onOk={() => form.submit()}
+      title={
+        parentType
+          ? intl.get(`screen.patient.details.family.modal.title.${parentType.toLowerCase()}`)
+          : ''
+      }
+      visible={!!parentType}
     >
       <Form
-        form={form}
         className="family-tab__details__add-parent__modal__form"
+        form={form}
         onFinish={onSubmit}
       >
         <Form.Item
+          className="family-tab__details__add-parent__modal__form__search"
+          label={intl.get('screen.patient.details.family.modal.search.label')}
           labelCol={{ span: 24 }}
           name="patientSearch"
-          label={intl.get('screen.patient.details.family.modal.search.label')}
-          className="family-tab__details__add-parent__modal__form__search"
         >
           <AutoComplete
-            placeholder={intl.get('screen.patient.details.family.modal.search.placeholder')}
-            notFoundContent={searchResult != null && intl.get('screen.patient.details.family.modal.search.empty')}
             allowClear
-            ref={searchRef}
+            autoFocus
+            notFoundContent={
+              searchResult != null && intl.get('screen.patient.details.family.modal.search.empty')
+            }
             onSearch={search}
+            onSelect={onSelectPatient}
             options={searchResult?.map((sr) => ({
               key: sr.id,
-              value: `${sr.lastName.toUpperCase()} ${sr.firstName}`,
               label: (
                 <div>
                   <Typography className="family-tab__details__add-parent__modal__form__search__result__name">
-                    { `${sr.lastName.toUpperCase()} ${sr.firstName}` }
+                    {`${sr.lastName.toUpperCase()} ${sr.firstName}`}
                   </Typography>
                   <Typography className="family-tab__details__add-parent__modal__form__search__result__ramq">
-                    { sr.ramq }
+                    {sr.ramq}
                   </Typography>
                 </div>
               ),
+              value: `${sr.lastName.toUpperCase()} ${sr.firstName}`,
             }))}
-            onSelect={onSelectPatient}
+            placeholder={intl.get('screen.patient.details.family.modal.search.placeholder')}
           />
         </Form.Item>
-        { !!selectedPatient && (
+        {!!selectedPatient && (
           <>
             <div className="family-tab__details__add-parent__modal__patient-card">
               <div className="family-tab__details__add-parent__modal__patient-card__info">
                 <span className="family-tab__details__add-parent__modal__patient-card__info__name">
-                  { `${selectedPatient.lastName.toUpperCase()} ${selectedPatient.firstName}` }
+                  {`${selectedPatient.lastName.toUpperCase()} ${selectedPatient.firstName}`}
                 </span>
               </div>
               <dl>
-                <dt>
-                  { intl.get('screen.patient.details.family.modal.ramq') }
-                </dt>
-                <dd>{ selectedPatient.ramq }</dd>
-                <dt>
-                  { intl.get('screen.patient.details.family.modal.birthDate') }
-                </dt>
-                <dd>{ selectedPatient.birthDate || '--' }</dd>
-                { !!selectedPatient.mrn && (
+                <dt>{intl.get('screen.patient.details.family.modal.ramq')}</dt>
+                <dd>{selectedPatient.ramq}</dd>
+                <dt>{intl.get('screen.patient.details.family.modal.birthDate')}</dt>
+                <dd>{selectedPatient.birthDate || '--'}</dd>
+                {!!selectedPatient.mrn && (
                   <>
-                    <dt>
-                      { intl.get('screen.patient.details.family.modal.file') }
-                    </dt>
-                    <dd>{ `${selectedPatient.mrn[0]} | ${selectedPatient.organization.id.split('/')[1]}` }</dd>
+                    <dt>{intl.get('screen.patient.details.family.modal.file')}</dt>
+                    <dd>{`${selectedPatient.mrn[0]} | ${
+                      selectedPatient.organization.id.split('/')[1]
+                    }`}</dd>
                   </>
-                ) }
+                )}
               </dl>
             </div>
             <Form.Item
-              labelCol={{ span: 24 }}
-              label={intl.get('screen.patient.details.family.modal.status.label')}
               className="family-tab__details__add-parent__modal__form__status"
+              label={intl.get('screen.patient.details.family.modal.status.label')}
+              labelCol={{ span: 24 }}
             >
               <Radio.Group onChange={updateStatus}>
                 <Radio value="UNF">
-                  { intl.get('screen.patient.details.family.modal.status.no') }
+                  {intl.get('screen.patient.details.family.modal.status.no')}
                 </Radio>
                 <Radio value="AFF">
-                  { intl.get('screen.patient.details.family.modal.status.yes') }
+                  {intl.get('screen.patient.details.family.modal.status.yes')}
                 </Radio>
                 <Radio value="UNK">
-                  { intl.get('screen.patient.details.family.modal.status.unknown') }
+                  {intl.get('screen.patient.details.family.modal.status.unknown')}
                 </Radio>
               </Radio.Group>
             </Form.Item>
           </>
-        ) }
+        )}
       </Form>
-
     </Modal>
   );
 };

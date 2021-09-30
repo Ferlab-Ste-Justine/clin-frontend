@@ -28,11 +28,11 @@ import Summary from './Prescription/Summary';
 import DetailsRow from './Prescription/DetailsRow';
 import FamilyHistory from './Prescription/FamilyHistory';
 import ClinicalSigns from './Prescription/ClinicalSigns';
-import { Observations } from '../../../../../../reducers/patient';
 import StatusLegend from './StatusLegend';
 import statusColors from '../../../../../../style/statusColors';
 import { PatientRequestCreationStatus } from '../../../../../../reducers/prescriptions';
 import { resetStatus } from '../../../../../../actions/prescriptions';
+import { Observations } from '../../../../../../store/ObservationTypes';
 
 const DEFAULT_VALUE = '--';
 
@@ -117,8 +117,8 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
   }, []);
 
   const practitionerPopOverText = (info: any) => {
-    const phonePart = info.phone.split(' ');
-    const phone = `(${phonePart[0]}) ${phonePart[1]}- ${phonePart[2]} `;
+    const phonePart = info.phone ? info.phone.split(' ') : [];
+    const phone = phonePart.length === 3 ? `(${phonePart[0]}) ${phonePart[1]}-${phonePart[2]}` : info.phone;
     return (
       <Card title={intl.get('screen.patient.details.practitioner')} bordered={false}>
         <p><span className="popOverName">{ info.formattedName }</span>  | { info.mrn }</p>
@@ -220,7 +220,10 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                         <Button
                           className={`button--borderless ${!isDraft ? 'button--disabled' : ''}`}
                           icon={<DeleteOutlined />}
-                          onClick={() => alert('Feature not yey implemented')}
+                          onClick={() => {
+                            /* eslint-disable-next-line no-alert */
+                            alert('Feature not yey implemented');
+                          }}
                           disabled={!isDraft}
                         >
                           { intl.get('screen.patient.details.prescription.delete') }
@@ -230,7 +233,10 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                         <Button
                           className="button--borderless"
                           icon={<PrinterOutlined />}
-                          onClick={() => alert('Feature not yet implemented')}
+                          onClick={() => {
+                            /* eslint-disable-next-line no-alert */
+                            alert('Feature not yey implemented');
+                          }}
                         >
                           { intl.get('screen.patient.details.prescription.print') }
                         </Button>

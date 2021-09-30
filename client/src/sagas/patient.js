@@ -1,13 +1,12 @@
-import {
-  all, put, debounce, takeLatest, select,
-} from 'redux-saga/effects';
 import get from 'lodash/get';
+import { all, debounce, put, select, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
-import { getExtension } from '../helpers/fhir/builder/Utils';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
+import { getExtension } from '../helpers/fhir/builder/Utils';
 import { getFamilyMembersFromPatientDataResponse } from '../helpers/patient';
+import { FamilyActionStatus } from '../reducers/patient';
 
 const getIdsFromPatient = (data) => {
   const patient = get(data, 'entry[0].resource.entry[0].resource');
@@ -17,7 +16,10 @@ const getIdsFromPatient = (data) => {
   }
   const ids = [patient.id];
 
-  const extension = getExtension(patient, 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation');
+  const extension = getExtension(
+    patient,
+    'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
+  );
   const externalReference = get(extension, 'extension[0].valueReference.reference');
 
   if (externalReference != null) {
@@ -27,55 +29,58 @@ const getIdsFromPatient = (data) => {
   return ids;
 };
 
-const getFamily = async (patientDataResponse, mainPatientId) => {
-  // Remove "mainPatientId" since we already have all of their details and we don't want to fetch it in double
-  const otherFamilyMemberIds = getFamilyMembersFromPatientDataResponse(patientDataResponse)
-    .filter((member) => !member.entity.reference.includes(mainPatientId))
-    .map((member) => ({
-      id: member.entity.reference.split('/')[1],
-      statusCode: get(member, 'extension[0].valueCoding.code', 'UNK'),
-    }));
+const getFamily = async (patientDataResponse) => {
+  const familyMemberIds = getFamilyMembersFromPatientDataResponse(patientDataResponse).map(
+    (member) => member.entity.reference.split('/')[1],
+  );
 
-  if (otherFamilyMemberIds.length === 0) {
+  if (familyMemberIds.length === 0) {
     return null;
   }
-  const response = await Api.getPatientDataByIds(otherFamilyMemberIds.map((member) => member.id), false);
+  const response = await Api.getPatientDataByIds(familyMemberIds, false);
 
-  return get(response, 'payload.data.entry', []).map((entry, index) => ({
-    entry,
-    statusCode: otherFamilyMemberIds[index].statusCode,
+  return get(response, 'payload.data.entry', []).map((entry) => ({
+    entry: {
+      resource: entry.resource,
+    },
   }));
 };
 
 function* updateParentGroup(parentId, newGroupId) {
-  const [patientDataResponse, groupDataResponse] = yield Promise.all([
-    Api.getPatientDataById(parentId),
-    Api.getGroupByMemberId(parentId),
-  ]);
-  const parentPatientData = get(patientDataResponse, 'payload.data.entry[0].resource.entry[0].resource');
+  const patientDataResponse = yield Api.getPatientDataById(parentId);
 
-  const parentGroupData = get(groupDataResponse, 'payload.data.entry[0].resource');
+  const parentPatientData = get(
+    patientDataResponse,
+    'payload.data.entry[0].resource.entry[0].resource',
+  );
   if (parentPatientData == null) {
     throw new Error(`updateParentGroup:: Did not find a patient with id [${parentId}]`);
   }
+
+  const groupDataResponse = yield Api.getGroupByMemberId(parentId);
+  const parentGroupData = get(groupDataResponse, 'payload.data.entry[0].resource');
 
   const patients = [];
   if (parentGroupData != null) {
     const membersResponse = yield Api.getGroupMembers(parentGroupData);
     const entries = get(membersResponse, 'payload.data.entry', []);
-    entries.filter((entry) => entry.resource != null).forEach((entry) => patients.push(entry.resource));
+    entries
+      .filter((entry) => entry.resource != null)
+      .forEach((entry) => patients.push(entry.resource));
   } else {
     patients.push(parentPatientData);
   }
 
-  return Api.updatePatientsGroup(patients, newGroupId);
+  return yield Api.updatePatientsGroup(patients, newGroupId);
 }
 
 function* fetch(action) {
   try {
     const patientDataResponse = yield Api.getPatientDataById(action.payload.uid);
     if (patientDataResponse.error) {
-      throw new ApiError(patientDataResponse.error);
+      const error = new ApiError(patientDataResponse.error);
+      yield put({ payload: error, type: actions.PATIENT_FETCH_FAILED });
+      return;
     }
 
     const [familyResponse, practitionersDataResponse, canEditResponse] = yield Promise.all([
@@ -85,17 +90,17 @@ function* fetch(action) {
     ]);
 
     yield put({
-      type: actions.PATIENT_FETCH_SUCCEEDED,
       payload: {
-        patientData: patientDataResponse.payload.data,
-        practitionersData: practitionersDataResponse.payload?.data,
         canEdit: canEditResponse.payload.data.data.result,
         family: familyResponse,
+        patientData: patientDataResponse.payload.data,
+        practitionersData: practitionersDataResponse.payload?.data,
       },
+      type: actions.PATIENT_FETCH_SUCCEEDED,
     });
   } catch (e) {
     console.error('patient.fetch', e);
-    yield put({ type: actions.PATIENT_FETCH_FAILED, payload: e });
+    yield put({ payload: e, type: actions.PATIENT_FETCH_FAILED });
   }
 }
 
@@ -113,7 +118,7 @@ function* autoComplete(action) {
         },
       };
 
-      yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: emptyPayload });
+      yield put({ payload: emptyPayload, type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED });
       return;
     }
 
@@ -128,15 +133,15 @@ function* autoComplete(action) {
       throw new ApiError(response.error);
     }
     if (!isAutocomplete) {
-      yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
+      yield put({ payload: response.payload, type: actions.PATIENT_SEARCH_SUCCEEDED });
     } else {
-      yield put({ type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED, payload: response.payload });
+      yield put({ payload: response.payload, type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED });
     }
   } catch (e) {
     if (!isAutocomplete) {
       yield put({ type: actions.PATIENT_SEARCH_FAILED });
     } else {
-      yield put({ type: actions.PATIENT_AUTOCOMPLETE_FAILED, payload: e });
+      yield put({ payload: e, type: actions.PATIENT_AUTOCOMPLETE_FAILED });
     }
   }
 }
@@ -158,93 +163,127 @@ function* search(action) {
     if (response.error) {
       throw new ApiError(response.error);
     }
-    yield put({ type: actions.PATIENT_SEARCH_SUCCEEDED, payload: response.payload });
+    yield put({ payload: response.payload, type: actions.PATIENT_SEARCH_SUCCEEDED });
   } catch (e) {
-    yield put({ type: actions.PATIENT_SEARCH_FAILED, payload: e });
+    yield put({ payload: e, type: actions.PATIENT_SEARCH_FAILED });
   }
 }
 
 function* prescriptionChangeStatus(action) {
   try {
-    const serviceRequestToUpdate = yield select((state) => state.patient.prescriptions.find(
-      (prescription) => prescription.original.id === action.payload.serviceRequestId,
-    ));
+    const serviceRequestToUpdate = yield select((state) =>
+      state.patient.prescriptions.find(
+        (prescription) => prescription.original.id === action.payload.serviceRequestId,
+      ),
+    );
 
     const user = yield select((state) => state.user);
     const patient = yield select((state) => state.patient.patient.original);
 
     const result = yield Api.updateServiceRequestStatus(
-      user, serviceRequestToUpdate.original, action.payload.status, action.payload.note,
+      user,
+      serviceRequestToUpdate.original,
+      action.payload.status,
+      action.payload.note,
     );
 
     yield put({
-      type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED,
       payload: {
         serviceRequestId: result.payload.data.id,
         status: result.payload.data.status,
       },
+      type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_SUCCEEDED,
     });
-    yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED, payload: { uid: patient.id, reload: true } });
+    yield put({
+      payload: { reload: true, uid: patient.id },
+      type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
+    });
   } catch (e) {
-    yield put({ type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_FAILED, payload: e });
+    yield put({
+      payload: e,
+      type: actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_FAILED,
+    });
   }
 }
 
 function* addParent(action) {
+  yield put({
+    payload: FamilyActionStatus.addMemberInProgress,
+    type: actions.PATIENT_ADD_PARENT_ACTION_STATUS,
+  });
+  const { callback, parentId, parentType, status } = action.payload;
+  const parsedPatient = yield select((state) => state.patient.patient.parsed);
+  const originalPatient = yield select((state) => state.patient.patient.original);
+  let isSuccess = false;
   try {
-    const { parentId, parentType, status } = action.payload;
-    const parsedPatient = yield select((state) => state.patient.patient.parsed);
-    const originalPatient = yield select((state) => state.patient.patient.original);
+    const patientToUpdate = { ...originalPatient };
 
-    const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
-
-    patientToUpdate.extension.push({
-      url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
-      extension: [
-        {
-          url: 'subject',
-          valueReference: { reference: `Patient/${parentId}` },
-        },
-        {
-          url: 'relation',
-          valueCodeableConcept: {
-            coding: [{
-              system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
-              code: parentType,
-            }],
+    patientToUpdate.extension = [
+      ...patientToUpdate.extension,
+      {
+        extension: [
+          {
+            url: 'subject',
+            valueReference: { reference: `Patient/${parentId}` },
           },
-        },
-      ],
-    });
+          {
+            url: 'relation',
+            valueCodeableConcept: {
+              coding: [
+                {
+                  code: parentType,
+                  system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
+                },
+              ],
+            },
+          },
+        ],
+        url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
+      },
+    ];
 
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, parsedPatient.familyId);
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
 
-    yield put({ type: actions.PATIENT_ADD_PARENT_SUCCEEDED, payload: { uid: parsedPatient.id } });
+    isSuccess = true;
+    yield put({ payload: { uid: parsedPatient.id }, type: actions.PATIENT_ADD_PARENT_SUCCEEDED });
   } catch (e) {
     console.error('addParent', e);
-    yield put({ type: actions.PATIENT_ADD_PARENT_FAILED, payload: e });
+  } finally {
+    if (callback) {
+      yield callback(isSuccess);
+    }
+    yield put({ payload: null, type: actions.PATIENT_ADD_PARENT_ACTION_STATUS });
   }
 }
 
 function* removeParent(action) {
+  const { callback, parentId } = action.payload;
+
+  yield put({
+    payload: FamilyActionStatus.removeMemberInProgress,
+    type: actions.PATIENT_REMOVE_PARENT_ACTION_STATUS,
+  });
+  let isSuccess = false;
   try {
-    const { parentId } = action.payload;
     const patientParsed = yield select((state) => state.patient.patient.parsed);
     const originalPatient = yield select((state) => state.patient.patient.original);
 
     const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
 
-    const extToDeleteIndex = patientToUpdate.extension.findIndex(
-      (ext) => ((ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation')
-        ? ext.extension.find((extension) => extension.url === 'subject')?.valueReference.reference.indexOf(parentId) != null
-        : false
-      ),
+    const extToDeleteIndex = patientToUpdate.extension.findIndex((ext) =>
+      ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation'
+        ? ext.extension
+            .find((extension) => extension.url === 'subject')
+            ?.valueReference.reference.indexOf(parentId) != null
+        : false,
     );
 
     if (extToDeleteIndex !== -1) {
-      const relationExt = patientToUpdate.extension[extToDeleteIndex].extension.find((ext) => ext.url === 'relation');
+      const relationExt = patientToUpdate.extension[extToDeleteIndex].extension.find(
+        (ext) => ext.url === 'relation',
+      );
       const relation = get(relationExt, 'valueCodeableConcept.coding[0].code');
 
       if (relation != null) {
@@ -265,10 +304,19 @@ function* removeParent(action) {
     yield updateParentGroup(parentId, newGroupResponse.payload.data.id);
     yield Api.deletePatientFromGroup(patientParsed.familyId, parentId);
 
-    yield put({ type: actions.PATIENT_REMOVE_PARENT_SUCCEEDED, payload: { uid: patientParsed.id } });
+    isSuccess = true;
+    yield put({
+      payload: { uid: patientParsed.id },
+      type: actions.PATIENT_REMOVE_PARENT_SUCCEEDED,
+    });
   } catch (e) {
     console.error('removeParent', e);
-    yield put({ type: actions.PATIENT_REMOVE_PARENT_FAILED, payload: e });
+    yield put({ payload: e, type: actions.PATIENT_REMOVE_PARENT_FAILED });
+  } finally {
+    if (callback) {
+      yield callback(isSuccess);
+    }
+    yield put({ payload: null, type: actions.PATIENT_REMOVE_PARENT_ACTION_STATUS });
   }
 }
 
@@ -279,10 +327,13 @@ function* updateParentStatus(action) {
 
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
 
-    yield put({ type: actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED, payload: { parentId, status } });
+    yield put({
+      payload: { parentId, status },
+      type: actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED,
+    });
   } catch (error) {
     console.error('updateParentStatus', error);
-    yield put({ type: actions.PATIENT_UPDATE_PARENT_STATUS_FAILED, payload: error });
+    yield put({ payload: error, type: actions.PATIENT_UPDATE_PARENT_STATUS_FAILED });
   }
 }
 
@@ -293,9 +344,10 @@ function* getFileURL(action) {
     if (fileURL.error) {
       throw new ApiError(fileURL.error);
     }
-    yield put({ type: actions.PATIENT_FILE_URL_SUCCEEDED, payload: { uid: fileURL } });
+    window.open(fileURL.payload.data.url , '_blank');
+    yield put({ payload: { uid: fileURL }, type: actions.PATIENT_FILE_URL_SUCCEEDED });
   } catch (e) {
-    yield put({ type: actions.PATIENT_FILE_URL_FAILED, payload: e });
+    yield put({ payload: e, type: actions.PATIENT_FILE_URL_FAILED });
   }
 }
 
@@ -312,11 +364,14 @@ function* watchRemoveParent() {
 }
 
 function* watchPatientFetch() {
-  yield takeLatest([
-    actions.PATIENT_FETCH_REQUESTED,
-    actions.PATIENT_ADD_PARENT_SUCCEEDED,
-    actions.PATIENT_REMOVE_PARENT_SUCCEEDED,
-  ], fetch);
+  yield takeLatest(
+    [
+      actions.PATIENT_FETCH_REQUESTED,
+      actions.PATIENT_ADD_PARENT_SUCCEEDED,
+      actions.PATIENT_REMOVE_PARENT_SUCCEEDED,
+    ],
+    fetch,
+  );
 }
 
 function* debouncePatientAutoComplete() {
@@ -324,14 +379,17 @@ function* debouncePatientAutoComplete() {
 }
 
 function* watchPatientSearch() {
-  yield takeLatest([
-    actions.PATIENT_SEARCH_REQUESTED,
-    actions.CHANGE_SEARCH_TYPE_REQUESTED,
-  ], search);
+  yield takeLatest(
+    [actions.PATIENT_SEARCH_REQUESTED, actions.CHANGE_SEARCH_TYPE_REQUESTED],
+    search,
+  );
 }
 
 function* watchPrescriptionChangeStatus() {
-  yield takeLatest(actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED, prescriptionChangeStatus);
+  yield takeLatest(
+    actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED,
+    prescriptionChangeStatus,
+  );
 }
 
 function* watchFile() {

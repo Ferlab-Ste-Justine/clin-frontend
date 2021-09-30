@@ -47,20 +47,20 @@ export type PatientInformation = {
 }
 
 export type PatientNanuqInformation = {
-      type_echantillon: string;
-      tissue_source: string;
-      type_specimen: string;
-      nom_patient: string;
-      prenom_patient: string;
-      patient_id: string;
-      service_request_id: string;
-      dossier_medical: string;
-      institution: string;
-      DDN: string;
-      sexe: string;
-      family_id: string;
-      position: string;
-      isActive: boolean;
+    type_echantillon: string;
+    tissue_source: string;
+    type_specimen: string;
+    nom_patient: string;
+    prenom_patient: string;
+    patient_id: string;
+    service_request_id: string;
+    dossier_medical: string;
+    institution: string;
+    DDN: string;
+    sexe: string;
+    family_id: string;
+    position: string;
+    isActive: boolean;
 }
 
 export type FamilyGroupInfo = {
@@ -95,34 +95,49 @@ export type DocumentReferenceContent = {
     format: string;
 }
 
-export type SpecimenContent = {
-    external_id: string;
-    organization: {
-        id: string;
-        alias: string[];
-        name: string;
-    }
-}
-export type DocumentReferenceResponse = {
-    resource: {
-        id: string;
-        type: string;
-        content: DocumentReferenceContent[];
-        specimen: SpecimenContent[];
-    }
-}
 export type TaskResponse = {
     id: string;
-    // Resource should be renamed to serviceRequest [if possible]
-    resource: {
-        id: string; // Also has history
+    focus: {
+        reference: string;
     }
     runDate: string[];
-    output: DocumentReferenceResponse;
 }
-export type PatientResponse ={
-    tasks: TaskResponse[];
+export type PatientResponse = {
+    id: string;
+    type: string;
+    aliquot: AliquotContent;
+    content: {
+        attachment: DocumentReferenceContent;
+        format: string;
+    }[];
+    task: TaskResponse;
 }
-export type FileResponse = {
-    Patient: PatientResponse;
+
+export type AliquotContent = {
+    id: string[]
+    resource: [
+        {
+            external_id: string;
+            organization: {
+                reference: string;
+                resource: {
+                    name: string;
+                }
+            }
+            sample: [
+                {
+                reference: string
+                resource: {
+                    external_id: string;
+                    organization: {
+                        reference: string;
+                        resource: {
+                            name: string;
+                        }
+                    }
+                }
+            }
+        ]
+        }
+    ]
 }
