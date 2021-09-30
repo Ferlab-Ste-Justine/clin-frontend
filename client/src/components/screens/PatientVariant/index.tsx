@@ -2,7 +2,6 @@
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { Layout } from 'antd';
 import intl from 'react-intl-universal';
 import SidebarMenu, { ISidebarMenuItem } from '@ferlab/ui/core/components/sidebarMenu';
 import { useFilters } from '@ferlab/ui/core/data/filters/utils';
@@ -16,6 +15,11 @@ import DiseaseIcon from '../../icons/DiseaseIcon';
 import FrequencyIcon from '../../icons/FrequencyIcon';
 import OccurenceIcon from '../../icons/OccurenceIcon';
 import VariantTableContainer from './VariantTableContainer';
+import VariantFilter from './components/filters/VariantFilters';
+import GeneFilters from './components/filters/GeneFilters';
+import MetricFilters from './components/filters/MetricFilters';
+import FrequencyFilter from './components/filters/FrequencyFilter';
+import ImpactFilters from './components/filters/ImpactFilters';
 
 import styles from './PatientVariant.module.scss';
 
@@ -64,31 +68,31 @@ const PatientVariantScreen = () => {
       key: '1',
       title: intl.get('screen.patientvariant.category_variant'),
       icon: <LineStyleIcon />,
-      panelContent: <>Variants Filters</>,
+      panelContent: <VariantFilter />,
     },
     {
       key: '2',
       title: intl.get('screen.patientvariant.category_genomic'),
       icon: <GeneIcon />,
-      panelContent: <>Genes Filters</>,
+      panelContent: <GeneFilters />,
     },
     {
       key: '3',
       title: intl.get('screen.patientvariant.category_impacts'),
       icon: <DiseaseIcon />,
-      panelContent: <>Impacts Filters</>,
+      panelContent: <ImpactFilters />,
     },
     {
       key: '4',
       title: intl.get('screen.patientvariant.category_cohort'),
       icon: <FrequencyIcon />,
-      panelContent: <>Frequency Filters</>,
+      panelContent: <FrequencyFilter />,
     },
     {
       key: '5',
       title: intl.get('screen.patientvariant.category_metric'),
       icon: <OccurenceIcon />,
-      panelContent: <>Metriques</>,
+      panelContent: <MetricFilters />,
     },
   ];
 
