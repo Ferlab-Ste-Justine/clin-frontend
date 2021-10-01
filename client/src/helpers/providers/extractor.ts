@@ -5,7 +5,7 @@ import {
 } from '../fhir/types';
 import { PractitionerData } from './types';
 
-type BundleType = 'Patient' | 'ServiceRequest' | 'ClinicalImpression' | 'FamilyGroup';
+type BundleType = 'Patient' | 'ServiceRequest' | 'ClinicalImpression' | 'FamilyGroup' | 'PractitionerRole' | 'Organization';
 
 type PractitionersData = {
   entry?: { resource: { entry?: { resource: any }[] } }[];
@@ -52,20 +52,18 @@ export class DataExtractor {
   }
 
   public getPractitionerMetaData(id: string): PractitionerMetaData | undefined {
-    if (this.data.practitionersData.entry == null) {
-      return undefined;
-    }
-    for (let i = 0; i < this.data.practitionersData.entry.length; i += 1) {
-      if (this.data.practitionersData.entry[i].resource.entry == null) {
-        continue;
-      }
+    if (this.data.practitionersData.entry) {
+      for (let i = 0; i < this.data.practitionersData.entry.length; i += 1) {
 
-      if (has(this.data.practitionersData.entry[i], 'resource.entry[1]')) {
-        const { resource } = this.data.practitionersData.entry[i].resource.entry![1];
-        if (id.indexOf(resource.id) !== -1) {
+        const resource = get(this.data, `practitionersData.entry[${i}].resource`, {})
+
+        const practitioner = this.maybeExtractResource<Practitioner>(resource, 'Practitioner')
+        const organization = this.maybeExtractResource<Organization>(resource, 'Organization')
+
+        if (practitioner && practitioner.id === id) {
           return {
-            organization: get(this.data.practitionersData.entry[i], 'resource.entry[2]', null),
-            practitioner: resource as Practitioner,
+            organization: organization,
+            practitioner: practitioner,
           };
         }
       }
@@ -74,25 +72,28 @@ export class DataExtractor {
   }
 
   public getPractitionerRoleMetaData(id: string): PractitionerMetaData | undefined {
-    if (this.data.practitionersData.entry == null) {
-      return undefined;
-    }
-    for (let i = 0; i < this.data.practitionersData.entry.length; i += 1) {
-      if (this.data.practitionersData.entry[i].resource.entry == null) {
-        continue;
-      }
+    if (this.data.practitionersData.entry) {
+      for (let i = 0; i < this.data.practitionersData.entry.length; i += 1) {
 
-      if (has(this.data.practitionersData.entry[i], 'resource.entry[0]')) {
-        const { resource } = this.data.practitionersData.entry[i].resource.entry![0];
-        if (resource.practitioner.reference.indexOf(id) !== -1) {
+        const resource = get(this.data, `practitionersData.entry[${i}].resource`, {})
+
+        const practitionerRole = this.maybeExtractResource<PractitionerRole>(resource, 'PractitionerRole')
+        const organization = this.maybeExtractResource<Organization>(resource, 'Organization')
+
+        if (practitionerRole && this.extractId(get(practitionerRole, 'practitioner.reference')) === id) {
           return {
-            role: resource,
-            organization: get(this.data.practitionersData.entry[i], 'resource.entry[2]', null),
+            role: practitionerRole,
+            organization: organization,
           };
         }
       }
     }
     return undefined;
+  }
+
+  public extractId(reference?: string): string | undefined {
+    const parts = reference ? reference.split('/') : []
+    return parts.length === 2 ? parts[1] : undefined;
   }
 
   public maybeExtractResource<T>(data: any, resourceType: ResourceType): T | undefined {
@@ -141,7 +142,11 @@ export class DataExtractor {
       return PRACTITIONER_NOT_FOUND;
     }
 
-    const id = reference.split('/')[1];
+    const id = this.extractId(reference)
+    if (!id) {
+      return PRACTITIONER_NOT_FOUND;
+    }
+
     const practitioners = this.extractResources<PractitionerRole>(bundle, 'PractitionerRole');
     const practitionerRole = practitioners.find((pract) => pract.id === id);
     if (practitionerRole == null) {
@@ -159,7 +164,7 @@ export class DataExtractor {
     const suffix = get(practMetadata.practitioner, ['name', '0', 'suffix', '0'], '');
 
     return {
-      organization: get(practMetadata, 'organization.resource.name', 'N/A'),
+      organization: get(practMetadata, 'organization.name', 'N/A'),
       mrn: get(practitionerRole, 'identifier[0].value', 'N/A'),
       firstName,
       lastName,
@@ -176,7 +181,11 @@ export class DataExtractor {
       return PRACTITIONER_NOT_FOUND;
     }
 
-    const id = reference.split('/')[1];
+    const id = this.extractId(reference)
+    if (!id) {
+      return PRACTITIONER_NOT_FOUND;
+    }
+
     const practitioners = this.extractResources<Practitioner>(bundle, 'Practitioner');
     const practitioner = practitioners.find((pract) => pract.id === id);
     if (practitioner == null) {
@@ -194,7 +203,7 @@ export class DataExtractor {
     const suffix = get(practitioner, ['name', '0', 'suffix', '0'], '');
 
     return {
-      organization: get(practMetadata, 'organization.resource.name', 'N/A'),
+      organization: get(practMetadata, 'organization.name', 'N/A'),
       mrn: get(practitioner, 'identifier[0].value', 'N/A'),
       firstName,
       lastName,
