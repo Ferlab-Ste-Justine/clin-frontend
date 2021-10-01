@@ -60,13 +60,11 @@ export class DataExtractor {
         const practitioner = this.maybeExtractResource<Practitioner>(resource, 'Practitioner')
         const organization = this.maybeExtractResource<Organization>(resource, 'Organization')
 
-        if (practitioner) {
-          if (practitioner.id === id) {
-            return {
-              organization: organization,
-              practitioner: practitioner,
-            };
-          }
+        if (practitioner && practitioner.id === id) {
+          return {
+            organization: organization,
+            practitioner: practitioner,
+          };
         }
       }
     }
@@ -82,13 +80,11 @@ export class DataExtractor {
         const practitionerRole = this.maybeExtractResource<PractitionerRole>(resource, 'PractitionerRole')
         const organization = this.maybeExtractResource<Organization>(resource, 'Organization')
 
-        if (practitionerRole) {
-          if (this.extractId(get(practitionerRole, 'practitioner.reference')) === id) {
-            return {
-              role: practitionerRole,
-              organization: organization,
-            };
-          }
+        if (practitionerRole && this.extractId(get(practitionerRole, 'practitioner.reference')) === id) {
+          return {
+            role: practitionerRole,
+            organization: organization,
+          };
         }
       }
     }

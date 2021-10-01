@@ -3,7 +3,7 @@ import * as mocks from './extractor.mocks'
 
 describe('DataExtractor', () => {
 
-  test('extractId', () => {
+  test('extractId - should handle id extraction adequately', () => {
     const extractor = new DataExtractor(mocks.emptyData)
     expect(extractor.extractId(undefined)).toEqual(undefined)
     expect(extractor.extractId('foo')).toEqual(undefined)
@@ -11,7 +11,7 @@ describe('DataExtractor', () => {
     expect(extractor.extractId('foo/bar')).toEqual('bar')
   })
 
-  test('getPractitionerMetaData - nominal', () => {
+  test('getPractitionerMetaData - should find practitioner by id', () => {
     const extractor = new DataExtractor(mocks.mockData)
     const result = extractor.getPractitionerMetaData("1")
     expect(result).toEqual({
@@ -20,7 +20,7 @@ describe('DataExtractor', () => {
     })
   })
 
-  test('getPractitionerMetaData - missing data', () => {
+  test('getPractitionerMetaData - should allow missing organization', () => {
     const extractor = new DataExtractor(mocks.mockData)
     const result = extractor.getPractitionerMetaData("2")
     expect(result).toEqual({
@@ -29,13 +29,13 @@ describe('DataExtractor', () => {
     })
   })
 
-  test('getPractitionerMetaData - not found', () => {
+  test('getPractitionerMetaData - should return undefined if id not found', () => {
     const extractor = new DataExtractor(mocks.mockData)
     const result = extractor.getPractitionerMetaData("0")
     expect(result).toEqual(undefined)
   })
 
-  test('getPractitionerRoleMetaData - nominal', () => {
+  test('getPractitionerRoleMetaData - should find practitioner by id', () => {
     const extractor = new DataExtractor(mocks.mockData)
     const result = extractor.getPractitionerRoleMetaData("1")
     expect(result).toEqual({
@@ -44,7 +44,7 @@ describe('DataExtractor', () => {
     })
   })
 
-  test('getPractitionerRoleMetaData - missing data', () => {
+  test('getPractitionerRoleMetaData - should allow missing organization', () => {
     const extractor = new DataExtractor(mocks.mockData)
     const result = extractor.getPractitionerRoleMetaData("2")
     expect(result).toEqual({
@@ -53,7 +53,7 @@ describe('DataExtractor', () => {
     })
   })
 
-  test('getPractitionerRoleMetaData - not found', () => {
+  test('getPractitionerRoleMetaData - should return undefined if id not found', () => {
     const extractor = new DataExtractor(mocks.mockData)
     const result = extractor.getPractitionerRoleMetaData("0")
     expect(result).toEqual(undefined)
