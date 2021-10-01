@@ -1,8 +1,9 @@
-import { PrescriptionData, PatientNanuqInformation } from '../search/types';
+import { PatientNanuqInformation,PrescriptionData } from '../search/types';
+
 import { generateExport } from './nanuq';
 import {
-  INVALID_TYPE_VALUE, VALID_VALUE_ONE_PATIENT, VALID_VALUE_MULTIPLE_PATIENT,
-} from './nanuq.mocks';
+  INVALID_TYPE_VALUE, VALID_VALUE_MULTIPLE_PATIENT,
+VALID_VALUE_ONE_PATIENT, } from './nanuq.mocks';
 
 describe('Helpers: Nanuq', () => {
   describe('should throw an error when', () => {
@@ -44,54 +45,53 @@ describe('Helpers: Nanuq', () => {
     test('with one patient selected', () => {
       const result = generateExport(VALID_VALUE_ONE_PATIENT);
       expect(result.patients).toEqual([{
-        type_echantillon: 'ADN',
-        tissue_source: 'Sang',
-        type_specimen: 'Normal',
-        nom_patient: 'LEGAULT',
-        prenom_patient: 'Suzanne',
-        patient_id: '19818',
-        service_request_id: '19798',
-        dossier_medical: '908776665654',
-        institution: "Centre hospitalier de l'Université de Montréal",
         DDN: '03/02/2000',
-        sexe: 'female',
+        dossier_medical: '908776665654',
         family_id: '19819',
+        institution: "Centre hospitalier de l'Université de Montréal",
+        nom_patient: 'Legault',
+        patient_id: '19818',
         position: 'Proband',
+        prenom_patient: 'Suzanne',
+        service_request_id: '19798',
+        sexe: 'female',
+        tissue_source: 'Sang',
+        type_echantillon: 'ADN',
+        type_specimen: 'Normal',
       }]);
     });
 
     test('with multiple patients selected', () => {
       const result = generateExport(VALID_VALUE_MULTIPLE_PATIENT);
-      console.log('result', result);
       expect(result.patients).toEqual([{
-        type_echantillon: 'ADN',
-        tissue_source: 'Sang',
-        type_specimen: 'Normal',
-        nom_patient: 'LEGAULT',
-        prenom_patient: 'Suzanne',
-        patient_id: '19818',
-        service_request_id: '19798',
-        dossier_medical: '908776665654',
-        institution: "Centre hospitalier de l'Université de Montréal",
         DDN: '03/02/2000',
-        sexe: 'female',
+        dossier_medical: '908776665654',
         family_id: '19819',
+        institution: "Centre hospitalier de l'Université de Montréal",
+        nom_patient: 'Legault',
+        patient_id: '19818',
         position: 'Proband',
+        prenom_patient: 'Suzanne',
+        service_request_id: '19798',
+        sexe: 'female',
+        tissue_source: 'Sang',
+        type_echantillon: 'ADN',
+        type_specimen: 'Normal',
       },
       {
-        type_echantillon: 'ADN',
-        tissue_source: 'Sang',
-        type_specimen: 'Normal',
-        nom_patient: 'Smith',
-        prenom_patient: 'Morty',
-        patient_id: 'PA2',
-        service_request_id: 'SR2',
-        dossier_medical: 'MRN0001',
-        institution: 'CHUSJ',
         DDN: '05/10/2006',
-        sexe: 'male',
+        dossier_medical: 'MRN0001',
         family_id: 'FA1',
+        institution: 'CHUSJ',
+        nom_patient: 'Smith',
+        patient_id: 'PA2',
         position: 'Proband',
+        prenom_patient: 'Morty',
+        service_request_id: 'SR2',
+        sexe: 'male',
+        tissue_source: 'Sang',
+        type_echantillon: 'ADN',
+        type_specimen: 'Normal',
       },
       ]);
     });

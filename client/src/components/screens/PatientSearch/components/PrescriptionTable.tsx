@@ -1,18 +1,18 @@
-import {
-  Button, Checkbox,
-} from 'antd';
 import React, { useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
+import { navigateToPatientScreen } from 'actions/router';
+import {
+  Button, Checkbox,
+} from 'antd';
+import { PatientNanuqInformation,PrescriptionData } from 'helpers/search/types';
 import { cloneDeep, find, findIndex } from 'lodash';
 import moment from 'moment';
 
-import { createCellRenderer } from '../../../Table/index';
-import HeaderCustomCell from '../../../Table/HeaderCustomCell';
-import { navigateToPatientScreen } from '../../../../actions/router';
-import { PrescriptionData, PatientNanuqInformation } from '../../../../helpers/search/types';
+import HeaderCustomCell from 'components/Table/HeaderCustomCell';
+import { createCellRenderer } from 'components/Table/index';
+import InteractiveTable from 'components/Table/InteractiveTable';
 
-import InteractiveTable from '../../../Table/InteractiveTable';
 import PrescriptionTableHeader from './PrescriptionHeader';
 
 interface Props {
@@ -30,21 +30,20 @@ interface Props {
   page: number
   autocompleteResults: any
 }
-
-const PrescriptionTable: React.FC<Props> = ({
-  searchProps,
-  defaultVisibleColumns,
-  defaultColumnsOrder,
-  pageChangeCallback,
-  pageSizeChangeCallback,
-  isLoading,
-  columnsUpdated,
+const PrescriptionTable = ({
+  autocompleteResults,
   columnsOrderUpdated,
   columnsReset,
+  columnsUpdated,
+  defaultColumnsOrder,
+  defaultVisibleColumns,
+  isLoading,
   page,
+  pageChangeCallback,
+  pageSizeChangeCallback,
+  searchProps,
   size,
-  autocompleteResults,
-}) => {
+}: Props) => {
   const [selectedPatients, setselectedPatients] = useState([] as PatientNanuqInformation[]);
   const { patient } = searchProps;
   const dispatch = useDispatch();
@@ -61,9 +60,9 @@ const PrescriptionTable: React.FC<Props> = ({
 
   const handleGoToPatientScreen: any = (patientId: string, requestId: string | null = null) => {
     dispatch(navigateToPatientScreen(patientId, {
-      tab: 'prescriptions',
-      reload: null,
       openedPrescriptionId: requestId,
+      reload: null,
+      tab: 'prescriptions',
     }));
   };
 
@@ -71,33 +70,33 @@ const PrescriptionTable: React.FC<Props> = ({
   if (results) {
     results.forEach((result: PrescriptionData) => {
       const value: any = {
-        status: getStatusLabel(result),
-        id: result.patientInfo.id,
-        mrn: result.mrn ? result.mrn : '--',
-        ramq: result.patientInfo.ramq,
-        organization: result.patientInfo.organization.id.split('/')[1],
-        firstName: result.patientInfo.firstName,
-        lastName: result.patientInfo.lastName.toUpperCase(),
-        gender: intl.get(`screen.patientsearch.${result.patientInfo.gender.toLowerCase()}`),
         birthDate: result.patientInfo.birthDate,
-        familyId: result.familyInfo.id,
-        familyComposition: result.familyInfo.type,
-        familyType: result.familyInfo.type,
-        ethnicity: result.ethnicity,
         bloodRelationship: (result.bloodRelationship == null)
           ? '--'
           : result.bloodRelationship
             ? intl.get('screen.patientsearch.bloodRelationship.yes')
             : intl.get('screen.patientsearch.bloodRelationship.no'),
-        proband: 'Proband',
+        ethnicity: result.ethnicity,
+        familyComposition: result.familyInfo.type,
+        familyId: result.familyInfo.id,
+        familyType: result.familyInfo.type,
+        fetus: result.patientInfo.fetus,
+        firstName: result.patientInfo.firstName,
+        gender: intl.get(`screen.patientsearch.${result.patientInfo.gender.toLowerCase()}`),
+        id: result.patientInfo.id,
+        lastName: result.patientInfo.lastName.toUpperCase(),
+        mrn: result.mrn ? result.mrn : '--',
+        organization: result.patientInfo.organization.id.split('/')[1],
         position: result.patientInfo.position,
         practitioner: result.practitioner.id.startsWith('PA')
           ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}`
           : 'FERRETTI, Vincent',
-        request: result.id,
-        test: result.test,
         prescription: result.authoredOn,
-        fetus: result.patientInfo.fetus,
+        proband: 'Proband',
+        ramq: result.patientInfo.ramq,
+        request: result.id,
+        status: getStatusLabel(result),
+        test: result.test,
       };
 
       Object.keys(value).forEach((key) => {
@@ -111,61 +110,6 @@ const PrescriptionTable: React.FC<Props> = ({
 
   const columnPreset = [
     {
-      key: 'selectKey',
-      label: 'screen.patientsearch.table.select',
-      renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data: any) => {
-          const id: string = !data.request.includes('--') ? data.request : data.id;
-
-          const getGender = () => {
-            switch (data.gender) {
-              case 'Homme' || 'Male':
-                return 'male';
-              case 'Femme' || 'Female':
-                return 'female';
-              default:
-                return 'unknown';
-            }
-          };
-
-          const patientInfo: PatientNanuqInformation = {
-            type_echantillon: 'ADN',
-            tissue_source: 'Sang',
-            type_specimen: 'Normal',
-            nom_patient: data.lastName,
-            prenom_patient: data.firstName,
-            patient_id: data.id,
-            service_request_id: data.request,
-            dossier_medical: data.mrn ? data.mrn : '--',
-            institution: data.organization,
-            DDN: moment(data.birthDate).format('DD/MM/yyyy'),
-            sexe: getGender(),
-            family_id: data.familyId,
-            position: data.position,
-            isActive: !!(data.status === 'active' || data.status === 'Approuvée'),
-          };
-          const isSelected = find(selectedPatients, { service_request_id: data.request });
-          return (
-            <Checkbox
-              className="checkbox"
-              id={id}
-              onChange={() => {
-                const oldSelectedPatients: PatientNanuqInformation[] = cloneDeep(selectedPatients);
-                if (isSelected) {
-                  if (id) {
-                    const valueIndex = findIndex(oldSelectedPatients, { service_request_id: id });
-                    oldSelectedPatients.splice(valueIndex, 1);
-                    setselectedPatients([...oldSelectedPatients]);
-                  }
-                } else {
-                  setselectedPatients([...oldSelectedPatients, patientInfo]);
-                }
-              }}
-              checked={!!isSelected}
-            />
-          );
-        },
-      }),
       columnWidth: 50,
       headerRenderer: () => {
         const isAllSelected = results.length === selectedPatients.length;
@@ -188,6 +132,63 @@ const PrescriptionTable: React.FC<Props> = ({
           </HeaderCustomCell>
         );
       },
+      key: 'selectKey',
+      label: 'screen.patientsearch.table.select',
+      renderer: createCellRenderer('custom', (() => output), {
+        renderer: (data: any) => {
+          const id: string = !data.request.includes('--') ? data.request : data.id;
+
+          const getGender = () => {
+            switch (data.gender) {
+              case 'Homme' || 'Male':
+                return 'male';
+              case 'Femme' || 'Female':
+                return 'female';
+              default:
+                return 'unknown';
+            }
+          };
+
+          const getLastName = (name: string) =>name.charAt(0).toUpperCase()+name.substr(1).toLowerCase()
+
+          const patientInfo: PatientNanuqInformation = {
+            DDN: moment(data.birthDate).format('DD/MM/yyyy'),
+            dossier_medical: data.mrn ? data.mrn : '--',
+            family_id: data.familyId,
+            institution: data.organization,
+            isActive: !!(data.status === 'active' || data.status === 'Approuvée'),
+            nom_patient:getLastName(data.lastName),
+            patient_id: data.id,
+            position: data.position,
+            prenom_patient: data.firstName,
+            service_request_id: data.request,
+            sexe: getGender(),
+            tissue_source: 'Sang',
+            type_echantillon: 'ADN',
+            type_specimen: 'Normal',
+          };
+          const isSelected = find(selectedPatients, { service_request_id: data.request });
+          return (
+            <Checkbox
+              checked={!!isSelected}
+              className="checkbox"
+              id={id}
+              onChange={() => {
+                const oldSelectedPatients: PatientNanuqInformation[] = cloneDeep(selectedPatients);
+                if (isSelected) {
+                  if (id) {
+                    const valueIndex = findIndex(oldSelectedPatients, { service_request_id: id });
+                    oldSelectedPatients.splice(valueIndex, 1);
+                    setselectedPatients([...oldSelectedPatients]);
+                  }
+                } else {
+                  setselectedPatients([...oldSelectedPatients, patientInfo]);
+                }
+              }}
+            />
+          );
+        },
+      }),
     },
     {
       key: 'status',
@@ -223,9 +224,9 @@ const PrescriptionTable: React.FC<Props> = ({
       renderer: createCellRenderer('custom', () => output, {
         renderer: (presetData: any) => (
           <Button
-            onClick={() => handleGoToPatientScreen(presetData.id, presetData.request)}
-            data-id={presetData.request}
             className="button link--underline"
+            data-id={presetData.request}
+            onClick={() => handleGoToPatientScreen(presetData.id, presetData.request)}
           >
             { presetData.request }
           </Button>
@@ -258,9 +259,9 @@ const PrescriptionTable: React.FC<Props> = ({
       renderer: createCellRenderer('custom', (() => output), {
         renderer: (data: any) => (
           <Button
-            onClick={() => handleGoToPatientScreen(data.id)}
-            data-id={data.request}
             className="button link--underline"
+            data-id={data.request}
+            onClick={() => handleGoToPatientScreen(data.id)}
           >
             { data.id }
           </Button>
@@ -283,34 +284,34 @@ const PrescriptionTable: React.FC<Props> = ({
     <div className="bp3-table-header">
       <div className="bp3-table-column-name">
         <InteractiveTable
-          key="patient-interactive-table"
-          size={size}
-          page={page}
-          isReorderable={false}
-          isSelectable={false}
-          total={autocompleteResults ? autocompleteResults.total : patient.total}
-          totalLength={output.length}
-          defaultVisibleColumns={defaultVisibleColumns}
-          defaultColumnsOrder={defaultColumnsOrder}
-          schema={columnPreset}
-          pageChangeCallback={pageChangeCallback}
-          pageSizeChangeCallback={pageSizeChangeCallback}
-          numFrozenColumns={2}
-          isLoading={isLoading}
-          rowHeights={Array(patient.pageSize).fill(36)}
-          columnsUpdated={columnsUpdated}
           columnsOrderUpdated={columnsOrderUpdated}
           columnsReset={columnsReset}
-          enableRowHeader={false}
-          isExportable={false}
+          columnsUpdated={columnsUpdated}
           customHeader={(
             <PrescriptionTableHeader
               page={page}
+              selectedPatients={selectedPatients}
               size={size}
               total={autocompleteResults ? autocompleteResults.total : patient.total}
-              selectedPatients={selectedPatients}
             />
           )}
+          defaultColumnsOrder={defaultColumnsOrder}
+          defaultVisibleColumns={defaultVisibleColumns}
+          enableRowHeader={false}
+          isExportable={false}
+          isLoading={isLoading}
+          isReorderable={false}
+          isSelectable={false}
+          key="patient-interactive-table"
+          numFrozenColumns={2}
+          page={page}
+          pageChangeCallback={pageChangeCallback}
+          pageSizeChangeCallback={pageSizeChangeCallback}
+          rowHeights={Array(patient.pageSize).fill(36)}
+          schema={columnPreset}
+          size={size}
+          total={autocompleteResults ? autocompleteResults.total : patient.total}
+          totalLength={output.length}
         />
       </div>
     </div>
