@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import intl from 'react-intl-universal';
 import { useSelector } from 'react-redux';
-import { Button, Menu } from 'antd';
+import { Menu } from 'antd';
 import {
   hasAtLeastOneFatherInMembers,
   hasAtLeastOneMotherInMembers,
   hasAtLeastOneOtherMember,
 } from 'helpers/fhir/familyMemberHelper';
+import { isParsedPatientProband } from 'helpers/patient';
 import { ParsedPatientData } from 'helpers/providers/types';
 import { isEmpty } from 'lodash';
 import { State } from 'reducers';
@@ -31,7 +32,7 @@ const FamilyTab = (): React.ReactElement => {
 
   const patientId = patient.id;
 
-  const isPatientProband = patient.proband?.toLowerCase() === 'proband';
+  const isPatientProband = isParsedPatientProband(patient);
 
   const hasMother = hasAtLeastOneMotherInMembers(familyMembers);
   const canAddMother = isPatientProband && !hasMother;
@@ -64,7 +65,11 @@ const FamilyTab = (): React.ReactElement => {
       {isEmpty(familyMembers) || !hasAtLeastOneOtherMember(patientId, familyMembers) ? (
         <EmptyCard addParentMenu={menu} isVisible={isVisible} setIsVisible={setIsVisible} />
       ) : (
-        <FamilyTable addParentMenu={menu} canAddAtLeastOneParent={canAddAtLeastOneParent} />
+        <FamilyTable
+          addParentMenu={menu}
+          canAddAtLeastOneParent={canAddAtLeastOneParent}
+          showActions={isPatientProband}
+        />
       )}
       <AddParentModal
         onClose={() => {
