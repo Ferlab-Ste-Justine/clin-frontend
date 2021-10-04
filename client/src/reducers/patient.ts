@@ -1,25 +1,28 @@
 import intl from 'react-intl-universal';
 import { message } from 'antd';
-import { produce } from 'immer';
-import get from 'lodash/get';
-
-import * as actions from '../actions/type';
-import { parseFamilyMember } from '../helpers/fhir/familyMemberHelper';
-import { getObservations } from '../helpers/fhir/ObservationHelper';
-import { getRAMQValue } from '../helpers/fhir/patientHelper';
+import {
+  addNewMemberStatusToFamilyMember,
+  parseFamilyMember,
+} from 'helpers/fhir/familyMemberHelper';
+import { getObservations } from 'helpers/fhir/ObservationHelper';
+import { getRAMQValue } from 'helpers/fhir/patientHelper';
 import {
   ClinicalImpression,
   FamilyMemberHistory,
   Observation,
   Patient,
   ServiceRequest,
-} from '../helpers/fhir/types';
-import { ClinicalImpressionProvider } from '../helpers/providers/clinical-impression/index';
-import { FMHProvider } from '../helpers/providers/fmh/index';
-import { HPOProvider } from '../helpers/providers/hpos/index';
-import { PatientProvider } from '../helpers/providers/patient/index';
-import { ProviderChain, Record } from '../helpers/providers/providers';
-import { ServiceRequestProvider } from '../helpers/providers/service-request/index';
+} from 'helpers/fhir/types';
+import { ClinicalImpressionProvider } from 'helpers/providers/clinical-impression';
+import { FMHProvider } from 'helpers/providers/fmh';
+import { HPOProvider } from 'helpers/providers/hpos';
+import { PatientProvider } from 'helpers/providers/patient';
+import { ProviderChain, Record } from 'helpers/providers/providers';
+import { ServiceRequestProvider } from 'helpers/providers/service-request';
+import { produce } from 'immer';
+import get from 'lodash/get';
+
+import * as actions from '../actions/type';
 import {
   ClinicalObservation,
   ConsultationSummary,
@@ -29,6 +32,10 @@ import {
 } from '../helpers/providers/types';
 import { FamilyMember } from '../store/FamilyMemberTypes';
 import { Observations } from '../store/ObservationTypes';
+
+const addParentId = (originalIds: string[], idToAdd: string) => [...originalIds, idToAdd];
+const removeParentId = (originalIds: string[], idToRemove: string) =>
+  originalIds.filter((id) => id !== idToRemove);
 
 type PrescriptionRecord = Record<ServiceRequest, Prescription>;
 
@@ -50,6 +57,7 @@ export type PatientState = {
   family?: FamilyMember[];
   currentActiveKey: 'prescriptions' | 'family' | 'variant' | 'files';
   familyActionStatus?: FamilyActionStatus;
+  idsOfParentUpdatingStatuses: string[];
 };
 
 type Action = {
@@ -62,6 +70,7 @@ const initialState: PatientState = {
   currentActiveKey: 'prescriptions',
   fmhs: [],
   hpos: [],
+  idsOfParentUpdatingStatuses: [],
   observations: {},
   patient: {
     original: {},
@@ -156,29 +165,28 @@ const reducer = (state: PatientState = initialState, action: Action) =>
           }));
         break;
       }
-      case actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED: {
-        const { parentId, status } = action.payload;
-        if (!draft.family) {
-          console.error('Received a familly update action without family');
-          message.error(intl.get('screen.patient.details.family.update.error'));
-          break;
-        }
-        const familyMemberIndex = draft.family.findIndex((fm) => fm.id === parentId);
-        if (familyMemberIndex >= 0) {
-          draft.family[familyMemberIndex].code = status;
-          message.success(intl.get('screen.patient.details.family.update.success'));
-        } else {
-          console.error(
-            `Received a familly update action for a non-existant family member id [${parentId}]`,
-          );
-          message.error(intl.get('screen.patient.details.family.update.error'));
-        }
+      case actions.PATIENT_UPDATE_PARENT_STATUS_REQUESTED: {
+        const { parentId } = action.payload;
+        draft.idsOfParentUpdatingStatuses = addParentId(
+          draft.idsOfParentUpdatingStatuses,
+          parentId,
+        );
         break;
       }
       case actions.PATIENT_UPDATE_PARENT_STATUS_FAILED:
-        console.error('Failed to update the parent status', action.payload.error);
-        message.error(intl.get('screen.patient.details.family.update.error'));
+      case actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED: {
+        const { parentId, status } = action.payload;
+        draft.idsOfParentUpdatingStatuses = removeParentId(
+          draft.idsOfParentUpdatingStatuses,
+          parentId,
+        );
+        draft.family = addNewMemberStatusToFamilyMember({
+          memberIdToUpdate: parentId,
+          members: (draft.family as FamilyMember[]),
+          newStatus: status,
+        });
         break;
+      }
       case actions.PATIENT_SET_CURRENT_ACTIVE_KEY:
         if (action.payload.activeKey != null && action.payload.activeKey.length > 0) {
           draft.currentActiveKey = action.payload.activeKey;

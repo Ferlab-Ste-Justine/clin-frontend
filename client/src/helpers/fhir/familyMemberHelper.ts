@@ -1,6 +1,6 @@
 import { FamilyMember, FamilyMembersResponse, FamilyMemberType } from 'store/FamilyMemberTypes';
 
-import { getRAMQValue } from './patientHelper';
+import { getRAMQValue, GroupMemberStatusCode } from './patientHelper';
 import { Extension, Patient } from './types';
 
 const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
@@ -59,6 +59,7 @@ export const parseFamilyMember = (
     const familyPatientId = mainEntry?.resource?.id || '';
     return {
       birthDate: mainEntry?.resource?.birthDate || '',
+      code: rawFamilyMember.entry?.groupMemberStatusCode,
       firstName: mainEntry?.resource?.name[0]?.given[0] || '',
       gender: mainEntry?.resource?.gender || '',
       id: familyPatientId,
@@ -82,11 +83,8 @@ export const isFetusOnly = (fm: FamilyMember): boolean =>
 export const isNaturalMotherOfFetus = (fm: FamilyMember): boolean =>
   !!fm && !!fm.relationCode && FamilyMemberType.NATURAL_MOTHER_OF_FETUS === fm.relationCode;
 
-
 export const findNaturalMotherOfFetus = (members: FamilyMember[]): FamilyMember | null =>
-  (members || []).find(
-    (fm) => isNaturalMotherOfFetus(fm),
-  ) || null;
+  (members || []).find((fm) => isNaturalMotherOfFetus(fm)) || null;
 
 export const hasAtLeastOneMotherInMembers = (members: FamilyMember[]): boolean =>
   (members || []).some((fm) => fm.relationCode && CODES_FOR_MOTHER.includes(fm.relationCode));
@@ -101,3 +99,16 @@ export const parentTypeToGender = {
 
 export const hasAtLeastOneOtherMember = (patientId: string, members: FamilyMember[]): boolean =>
   (members || []).some((member) => member.id !== patientId);
+
+export const addNewMemberStatusToFamilyMember = ({
+  memberIdToUpdate,
+  members,
+  newStatus,
+}: {
+  members: FamilyMember[];
+  newStatus: GroupMemberStatusCode;
+  memberIdToUpdate: string;
+}): FamilyMember[] =>
+  (members || []).map((member) =>
+    member.id === memberIdToUpdate ? { ...member, code: newStatus } : { ...member },
+  );
