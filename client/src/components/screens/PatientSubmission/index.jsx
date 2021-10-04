@@ -22,8 +22,7 @@ import {
 import { createRequest } from 'actions/prescriptions';
 import { navigateToPatientScreen,navigateToPatientSearchScreen } from 'actions/router';
 import {
-Alert,
-  Button, Card, Col, Divider, Form, Row, Steps, Typography, } from 'antd';
+  Alert,Button, Card, Col, Divider, Form, Row, Spin,Steps, Typography,  } from 'antd';
 import { ClinicalImpressionBuilder } from 'helpers/fhir/builder/ClinicalImpressionBuilder';
 import { FamilyMemberHistoryBuilder } from 'helpers/fhir/builder/FMHBuilder';
 import { ObservationBuilder } from 'helpers/fhir/builder/ObservationBuilder.ts';
@@ -45,9 +44,9 @@ import { bindActionCreators } from 'redux';
 
 import Layout from 'components/Layout';
 
+import ClinicalInformation from './components/ClinicalInformation';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
 import SecondPage from './components/SecondPage';
-import ClinicalInformation from './components/ClinicalInformation';
 
 import './style.scss';
 
@@ -66,6 +65,7 @@ function PatientSubmissionScreen(props) {
     fmhResources: get(props, 'observations.fmh'),
     hpoResources: get(props, 'observations.hpos'),
     isCancelConfirmVisible: false,
+    isSubmitting: false,
     practitionerOptions: [],
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     selectedResident: get(props, 'localStore.residentId', undefined),
@@ -510,11 +510,15 @@ function PatientSubmissionScreen(props) {
   };
 
   const onFormFinish = (isOnLastPage) => {
-    if (isOnLastPage) {
-      saveSubmission(true);
-    } else {
-      next();
-    }
+      if (isOnLastPage) {
+        setState({
+          ...state,
+          isSubmitting: true,
+        });
+        saveSubmission(true);
+      } else {
+        next();
+      }
   };
 
   const onHpoSelected = (code, display) => {
@@ -568,7 +572,7 @@ function PatientSubmissionScreen(props) {
     clinicalImpression, patient,
   } = props;
   const {
-    currentPageIndex, fmhResources, hpoResources, submitFailed, valid,
+    currentPageIndex, fmhResources, hpoResources, isSubmitting, submitFailed, valid,
   } = state;
 
   const initialPractitionerValue = get(localStore, 'practitioner', '');
@@ -688,8 +692,10 @@ function PatientSubmissionScreen(props) {
             onFinish={() => onFormFinish(isOnLastPage)}
             onFinishFailed={onFailedSubmit}
           >
-            { pageContent }
-            <Card className="patientSubmission__form__footer">
+            {
+              isSubmitting ? <Spin>{pageContent}</Spin> : pageContent
+            }
+            <Card className="patientSubmission__form__footer">            
               <Row gutter={8}>
                 { !isFirstPage() && (
                   <Col>
@@ -700,6 +706,7 @@ function PatientSubmissionScreen(props) {
                 ) }
                 <Col>
                   <Button
+                    disabled={isSubmitting}
                     htmlType="submit"
                     type="primary"
                   >
