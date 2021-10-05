@@ -1,4 +1,5 @@
 import intl from 'react-intl-universal';
+import * as actions from 'actions/type';
 import { message } from 'antd';
 import {
   addNewMemberStatusToFamilyMember,
@@ -22,7 +23,9 @@ import { ServiceRequestProvider } from 'helpers/providers/service-request';
 import { produce } from 'immer';
 import get from 'lodash/get';
 
-import * as actions from '../actions/type';
+import { FamilyMember } from 'store/FamilyMemberTypes';
+import { Observations } from 'store/ObservationTypes';
+
 import {
   ClinicalObservation,
   ConsultationSummary,
@@ -30,8 +33,6 @@ import {
   ParsedPatientData,
   Prescription,
 } from '../helpers/providers/types';
-import { FamilyMember } from '../store/FamilyMemberTypes';
-import { Observations } from '../store/ObservationTypes';
 
 const addParentId = (originalIds: string[], idToAdd: string) => [...originalIds, idToAdd];
 const removeParentId = (originalIds: string[], idToRemove: string) =>
@@ -182,7 +183,7 @@ const reducer = (state: PatientState = initialState, action: Action) =>
         );
         draft.family = addNewMemberStatusToFamilyMember({
           memberIdToUpdate: parentId,
-          members: (draft.family as FamilyMember[]),
+          members: draft.family as FamilyMember[],
           newStatus: status,
         });
         break;

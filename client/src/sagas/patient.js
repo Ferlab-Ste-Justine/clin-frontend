@@ -30,31 +30,28 @@ const getIdsFromPatient = (data) => {
   return ids;
 };
 
-const buildPtIdToGrMemStatusCode = (rawResponse) => {
-  if (!rawResponse || rawResponse.length === 0) {
-    return {};
-  }
-  return rawResponse.reduce((accumulator, entityAndExtension) => {
-    const ref = entityAndExtension?.entity?.reference || '';
-    const splitRef = ref.split('/');
-    const indexOfId = 1;
-    const id = splitRef[indexOfId];
-    if (!id) {
-      return accumulator;
-    }
-    const memberStatusExtension = (entityAndExtension?.extension || []).find((ext) =>
-      (ext?.url || '').endsWith('/group-member-status'),
-    );
-    const code = memberStatusExtension?.valueCoding?.code;
-    if (!code) {
-      return accumulator;
-    }
-    return {
-      ...accumulator,
-      [id]: code,
-    };
-  }, {});
-};
+const buildPtIdToGrMemStatusCode = (rawResponse) =>
+  !rawResponse || rawResponse.length === 0
+    ? {}
+    : rawResponse.reduce((accumulator, entityAndExtension) => {
+        const ref = entityAndExtension?.entity?.reference || '';
+        const splitRef = ref.split('/');
+        const indexOfId = 1;
+        const id = splitRef[indexOfId];
+        if (!id) {
+          return accumulator;
+        }
+        const code = (entityAndExtension?.extension || []).find((ext) =>
+          (ext?.url || '').endsWith('/group-member-status'),
+        )?.valueCoding?.code;
+        if (!code) {
+          return accumulator;
+        }
+        return {
+          ...accumulator,
+          [id]: code,
+        };
+      }, {});
 
 const getFamily = async (patientDataResponse) => {
   const familyMembersFromPatientResponse =
