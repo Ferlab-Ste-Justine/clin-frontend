@@ -30,21 +30,54 @@ const getIdsFromPatient = (data) => {
   return ids;
 };
 
+const buildPtIdToGrMemStatusCode = (rawResponse) =>
+  !rawResponse || rawResponse.length === 0
+    ? {}
+    : rawResponse.reduce((accumulator, entityAndExtension) => {
+        const ref = entityAndExtension?.entity?.reference || '';
+        const splitRef = ref.split('/');
+        const indexOfId = 1;
+        const id = splitRef[indexOfId];
+        if (!id) {
+          return accumulator;
+        }
+        const code = (entityAndExtension?.extension || []).find((ext) =>
+          (ext?.url || '').endsWith('/group-member-status'),
+        )?.valueCoding?.code;
+        if (!code) {
+          return accumulator;
+        }
+        return {
+          ...accumulator,
+          [id]: code,
+        };
+      }, {});
+
 const getFamily = async (patientDataResponse) => {
-  const familyMemberIds = getFamilyMembersFromPatientDataResponse(patientDataResponse).map(
+  const familyMembersFromPatientResponse =
+    getFamilyMembersFromPatientDataResponse(patientDataResponse);
+
+  const familyMemberIds = familyMembersFromPatientResponse.map(
     (member) => member.entity.reference.split('/')[1],
   );
 
   if (familyMemberIds.length === 0) {
     return null;
   }
+
+  const ptIdToGrMemStatusCode = buildPtIdToGrMemStatusCode(familyMembersFromPatientResponse);
+
   const response = await Api.getPatientDataByIds(familyMemberIds, false);
 
-  return get(response, 'payload.data.entry', []).map((entry) => ({
-    entry: {
-      resource: entry.resource,
-    },
-  }));
+  return get(response, 'payload.data.entry', []).map((entry) => {
+    const guessedPatientId = entry?.resource?.entry[0]?.resource?.id;
+    return {
+      entry: {
+        groupMemberStatusCode: ptIdToGrMemStatusCode[guessedPatientId],
+        resource: entry.resource,
+      },
+    };
+  });
 };
 
 function* updateParentGroup(parentId, newGroupId) {
@@ -323,19 +356,17 @@ function* removeParent(action) {
 }
 
 function* updateParentStatus(action) {
+  const { parentId, status } = action.payload;
   try {
-    const { parentId, status } = action.payload;
     const parsedPatient = yield select((state) => state.patient.patient.parsed);
-
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
-
     yield put({
       payload: { parentId, status },
       type: actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED,
     });
   } catch (error) {
     console.error('updateParentStatus', error);
-    yield put({ payload: error, type: actions.PATIENT_UPDATE_PARENT_STATUS_FAILED });
+    yield put({ payload: { error, parentId }, type: actions.PATIENT_UPDATE_PARENT_STATUS_FAILED });
   }
 }
 

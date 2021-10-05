@@ -2,7 +2,6 @@ import React from 'react';
 import intl from 'react-intl-universal';
 import { useSelector } from 'react-redux';
 import { DownOutlined } from '@ant-design/icons';
-import { updateParentStatusInFamily } from 'actions/patient';
 import { Button, Card, Dropdown, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { isFetusOnly } from 'helpers/fhir/familyMemberHelper';
@@ -92,13 +91,7 @@ const FamilyTable = ({
         if (record.member.isProband) {
           return '--';
         }
-        return (
-          <StatusCell
-            memberCode={record.member.code}
-            memberId={record.member.id}
-            updateParentStatusInFamily={updateParentStatusInFamily}
-          />
-        );
+        return <StatusCell memberCode={record.member.code} memberId={record.member.id} />;
       },
       title: intl.get('screen.patient.details.family.table.status'),
       width: 160,

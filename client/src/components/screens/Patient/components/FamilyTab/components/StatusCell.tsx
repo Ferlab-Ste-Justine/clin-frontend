@@ -1,37 +1,44 @@
-import { Select } from 'antd';
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import intl from 'react-intl-universal';
-import { Action } from 'redux';
-import { GroupMemberStatusCode } from '../../../../../../helpers/fhir/patientHelper';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateParentStatusInFamily } from 'actions/patient';
+import { Select } from 'antd';
+import { GroupMemberStatusCode } from 'helpers/fhir/patientHelper';
+import { State } from 'reducers';
+
+import { GroupMemberStatusCodes } from 'store/GroupTypes';
 
 type Props = {
   memberCode: GroupMemberStatusCode;
-  updateParentStatusInFamily: (id: string, status: GroupMemberStatusCode) => Action
   memberId: string;
-}
+};
 
-const StatusCell = ({
-  memberId, memberCode, updateParentStatusInFamily,
-}: Props) => {
+const StatusCell = ({ memberCode, memberId }: Props): React.ReactElement => {
   const dispatch = useDispatch();
+  const idsOfParentUpdatingStatuses = useSelector(
+    (state: State) => state.patient.idsOfParentUpdatingStatuses,
+  );
+
+  const isUpdatingStatus = idsOfParentUpdatingStatuses.includes(memberId);
 
   return (
     <Select
       className="family-tab__details__table__status"
-      value={memberCode}
+      defaultValue={memberCode}
+      disabled={isUpdatingStatus}
+      loading={isUpdatingStatus}
       onChange={(newStatus) => {
         dispatch(updateParentStatusInFamily(memberId, newStatus));
       }}
     >
-      <Select.Option value="UNF">
-        { intl.get('screen.patient.details.family.modal.status.no') }
+      <Select.Option value={GroupMemberStatusCodes.unaffected}>
+        {intl.get('screen.patient.details.family.modal.status.no')}
       </Select.Option>
-      <Select.Option value="AFF">
-        { intl.get('screen.patient.details.family.modal.status.yes') }
+      <Select.Option value={GroupMemberStatusCodes.affected}>
+        {intl.get('screen.patient.details.family.modal.status.yes')}
       </Select.Option>
-      <Select.Option value="UNK">
-        { intl.get('screen.patient.details.family.modal.status.unknown') }
+      <Select.Option value={GroupMemberStatusCodes.unknown}>
+        {intl.get('screen.patient.details.family.modal.status.unknown')}
       </Select.Option>
     </Select>
   );

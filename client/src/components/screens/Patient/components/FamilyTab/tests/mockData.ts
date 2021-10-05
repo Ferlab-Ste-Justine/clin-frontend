@@ -35,6 +35,7 @@ export const patientProbandSubState = {
         relationCode: 'FTH',
       },
     ],
+    idsOfParentUpdatingStatuses: [],
     patient: {
       original: {
         identifier: [
@@ -116,6 +117,7 @@ export const patientNotProbandSubState = {
         relationCode: 'FTH',
       },
     ],
+    idsOfParentUpdatingStatuses: [],
     patient: {
       original: {
         active: true,

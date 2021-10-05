@@ -18,17 +18,18 @@ export type FamilyMember = {
   ramq?: string;
   birthDate?: string;
   gender?: 'male' | 'female';
-  code: GroupMemberStatusCode
-  relationCode?: string
+  code: GroupMemberStatusCode;
+  relationCode?: string;
   isFetus: boolean;
-}
+};
 
 export type FamilyMembersResponse = {
   entry: {
     resource: {
       id: string;
-      entry: {fullUrl: string; resource: Patient}[];
-      [index: string]: any
-    }
-  }
-}
+      entry: { fullUrl: string; resource: Patient }[];
+      [index: string]: any;
+    };
+    groupMemberStatusCode?: GroupMemberStatusCode;
+  };
+};
