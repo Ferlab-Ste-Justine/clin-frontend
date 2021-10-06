@@ -1,5 +1,6 @@
 import get from 'lodash/get';
 import set from 'lodash/set';
+
 import httpClient from '../../http-client';
 import { BundleBuilder } from '../builder/BundleBuilder';
 import { FamilyGroupBuilder, FamilyStructure } from '../builder/FamilyGroupBuilder';
@@ -37,10 +38,10 @@ export const createPatient = async (patient: Patient): Promise<CreatePatientResp
 
   const members = get(bundle, 'entry[1].resource.member', []);
   members.push({
-    extension: [generateGroupStatus('AFF')],
     entity: {
       reference: get(bundle, 'entry[0].fullUrl'),
     },
+    extension: [generateGroupStatus('AFF')],
   });
 
   patient.extension.push({
@@ -63,8 +64,8 @@ export const createPatient = async (patient: Patient): Promise<CreatePatientResp
   }];
 
   return {
-    patient: p,
     familyGroup: fg,
+    patient: p,
   };
 };
 
@@ -82,6 +83,7 @@ export const createPatientFetus = async (patient: Patient): Promise<CreatePatien
   patientFetus.extension.find((ext) => ext.url === EXTENSION_IS_PROBAND)!.valueBoolean = true;
   patientFetus.extension.find((ext) => ext.url === EXTENSION_IS_FETUS)!.valueBoolean = true;
 
+  patientParent.extension.find((ext) => ext.url === EXTENSION_IS_PROBAND)!.valueBoolean = false;
   patientParent.gender = FEMALE_GENDER;
 
   const familyGroup = new FamilyGroupBuilder()
@@ -108,7 +110,6 @@ export const createPatientFetus = async (patient: Patient): Promise<CreatePatien
 
   // Adds reference to the fetus
   get(bundle, 'entry[0].resource.extension').push({
-    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
     extension: [
       {
         url: 'subject',
@@ -127,11 +128,11 @@ export const createPatientFetus = async (patient: Patient): Promise<CreatePatien
         },
       },
     ],
+    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
   });
 
   // Adds reference to the parent
   get(bundle, 'entry[1].resource.extension').push({
-    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
     extension: [
       {
         url: 'subject',
@@ -150,6 +151,7 @@ export const createPatientFetus = async (patient: Patient): Promise<CreatePatien
         },
       },
     ],
+    url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
   });
 
   if (isNewPatient) {
@@ -170,16 +172,16 @@ export const createPatientFetus = async (patient: Patient): Promise<CreatePatien
 
   set(bundle, 'entry[2].resource.member', [
     {
-      extension: [generateGroupStatus('UNF')],
       entity: {
         reference: get(bundle, 'entry[0].fullUrl'),
       },
+      extension: [generateGroupStatus('UNF')],
     },
     {
-      extension: [generateGroupStatus('AFF')],
       entity: {
         reference: get(bundle, 'entry[1].fullUrl'),
       },
+      extension: [generateGroupStatus('AFF')],
     },
   ]);
   const response = await httpClient.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}/?id=${bundleId}`, bundle);
@@ -201,8 +203,8 @@ export const createPatientFetus = async (patient: Patient): Promise<CreatePatien
   }];
 
   return {
+    familyGroup: fg,
     patient: p,
     patientFetus: pf,
-    familyGroup: fg,
   };
 };
