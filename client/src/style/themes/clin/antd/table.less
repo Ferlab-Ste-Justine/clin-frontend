@@ -1,0 +1,35 @@
+// Table
+@table-row-hover-bg: @blue-1;
+@table-selected-row-bg: @gray-2;
+@table-body-sort-bg: @gray-2;
+@table-expanded-row-bg: @gray-2;
+@table-header-bg: @blue-4;
+@table-header-color: @gray-9;
+@table-header-bg-sm: @gray-2;
+.@{table-prefix-cls} {
+  &-thead {
+    > tr {
+      > th {
+        background-color: @blue-4;
+        height: 40px;
+        padding: 0px 16px;
+      }
+    }
+  }
+  &-tbody {
+    > tr {
+      > td {
+        height: 40px;
+        padding: 0px 16px;
+        border: none;
+      }
+    }
+    > tr:nth-child(odd) {
+      background-color: @blue-2;
+    }
+  }
+}
+
+.ant-table {
+  font-size: 14px;
+}
