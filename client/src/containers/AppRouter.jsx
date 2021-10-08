@@ -10,6 +10,7 @@ import { getUserIdentity, getUserProfile, updateAuthPermissions } from '../actio
 import AccessDenied from '../components/screens/AccessDenied';
 import PatientScreen from '../components/screens/Patient';
 import PatientSearchScreen from '../components/screens/PatientSearch';
+import PatientsPrescriptionsSearch from '../components/screens/PatientsPrescriptionsSearch';
 import PatientSubmissionScreen from '../components/screens/PatientSubmission';
 import PatientVariantScreen from '../components/screens/PatientVariant';
 import VariantDetailsScreen from '../components/screens/VariantDetails';
@@ -69,7 +70,7 @@ const AppRouter = ({ history }) => {
           roles={[]}
         />
         <AuthRoute
-          Component={PatientSearchScreen}
+          Component={PatientsPrescriptionsSearch}
           exact
           key="route-patient-search"
           path={Routes.PatientSearchArranger}

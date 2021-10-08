@@ -1,15 +1,17 @@
-import shortid from 'shortid';
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import intl from 'react-intl-universal';
 import {
-  Table, Cell, RenderMode, Column, Utils, SelectionModes, ColumnHeaderCell,
+Cell, Column, ColumnHeaderCell,
+RenderMode,  SelectionModes, Table, Utils,
 } from '@blueprintjs/table';
 
 import {
-  Badge, Button, Typography, Checkbox, Tooltip,
-} from 'antd';
+  Badge, Button, Checkbox, Tooltip,
+Typography, } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
+import PropTypes from 'prop-types';
+import shortid from 'shortid';
+
 import './style.scss';
 // import { relativeTimeThreshold } from 'moment';
 
