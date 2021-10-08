@@ -911,6 +911,8 @@ const fr = {
   'form.patientSubmission.clinicalInformation.indications': 'Indications',
   'form.patientSubmission.clinicalInformation.diagnosticHypothesis': 'Hypothèse(s) de diagnostic',
   'form.patientSubmission.clinicalInformation.validation.mrn': 'Renseignez le numéro de dossier',
+  'form.patientSubmission.clinicalInformation.validation.mrn.exists': 'Le numéro de dossier existe déjà pour cet hôpital',
+  'form.patientSubmission.clinicalInformation.validation.mrn.isUnique.error': 'Une erreur est survenue. Impossible de valider l\'unicité du mrn',
   'form.patientSubmission.clinicalInformation.validation.requiredField': 'Ce champs est requis',
   'form.patientSubmission.clinicalInformation.validation.diagnosticHypothesis': 'Vous devez entrer une hypothèse de diagnostique',
   'form.patientSubmission.clinicalInformation.validation.hposTree': 'Reseignez au moins un signe clinique',
