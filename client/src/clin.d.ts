@@ -6,6 +6,8 @@ interface ClinData {
     metaServiceApiUrl: string,
     fhirBaseUrl: string,
     hpoBaseUrl: string,
+    arrangerBaseUrl: string,
+    arrangerProjectId: string,
     translate?: boolean,
     defaultUsername: string,
     defaultPassword: string,
@@ -29,6 +31,8 @@ export declare global {
             REACT_APP_META_SERVICE_URL: string
             REACT_APP_FHIR_SERVICE_URL: string
             REACT_APP_HPO_SERVICE_URL: string
+            REACT_APP_ARRANGER_API: string
+            REACT_APP_ARRANGER_PROJECT_ID: string
             REACT_APP_DEFAULT_USERNAME: string
             REACT_APP_DEFAULT_PASSWORD: string
             REACT_APP_FHIR_ES_PATIENT_BUNDLE_ID: string

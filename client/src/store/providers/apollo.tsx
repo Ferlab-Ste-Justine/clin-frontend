@@ -10,11 +10,11 @@ import { setContext } from '@apollo/client/link/context';
 import { RptManager } from '../../helpers/keycloak-api/manager';
 import { GraphqlBackend, GraphqlProvider } from 'store/providers';
 
-const ARRANGER_API = process.env.REACT_APP_ARRANGER_API;
-const PROJECT_ID = process.env.REACT_APP_ARRANGER_PROJECT_ID;
+const ARRANGER_API = window.CLIN.arrangerBaseUrl;
+const PROJECT_ID = window.CLIN.arrangerProjectId;
 
 const fhirLink = createHttpLink({
-  uri: `${process.env.REACT_APP_FHIR_SERVICE_URL}/$graphql`,
+  uri: `${window.CLIN.fhirBaseUrl}/$graphql`,
 });
 
 const arrangerLink = createHttpLink({
