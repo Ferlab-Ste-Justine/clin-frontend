@@ -2,7 +2,6 @@ import React from 'react';
 import intl from 'react-intl-universal';
 import { useSelector } from 'react-redux';
 import { DownOutlined } from '@ant-design/icons';
-import { updateParentStatusInFamily } from 'actions/patient';
 import { Button, Card, Dropdown, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import { isFetusOnly } from 'helpers/fhir/familyMemberHelper';
@@ -18,6 +17,7 @@ import StatusCell from './StatusCell';
 interface Props {
   addParentMenu: React.ReactElement;
   canAddAtLeastOneParent: boolean;
+  showActions: boolean;
 }
 
 interface DataType {
@@ -26,12 +26,16 @@ interface DataType {
 }
 
 const renderExceptIfFetus = (value: string, record: DataType) =>
-  !value || (isFetusOnly(record.member) ? '--' : value);
+  !value || isFetusOnly(record.member) ? '--' : value;
 
 const sortProbandFirst = (members: FamilyMember[]) =>
   members.slice().sort((a, b) => +b.isProband - +a.isProband);
 
-const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.ReactElement => {
+const FamilyTable = ({
+  addParentMenu,
+  canAddAtLeastOneParent,
+  showActions,
+}: Props): React.ReactElement => {
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
 
   const data: DataType[] = sortProbandFirst(familyMembers).map((fm, index: number) => ({
@@ -64,15 +68,12 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
     },
     {
       dataIndex: ['member', 'gender'],
-      render: (value: string, record: DataType) =>
-        !value || isFetusOnly(record.member)
-          ? '--'
-          : intl.get(`screen.patient.details.family.table.sex.${value}`),
+      render: (value: string) =>
+        intl.get(`screen.patient.details.family.table.sex.${value}`).defaultMessage('--'),
       title: intl.get('screen.patient.details.family.table.sex'),
       width: 200,
     },
     {
-      align: 'center',
       dataIndex: 'member',
       render: (familyMember: FamilyMember) => <PositionCell familyMember={familyMember} />,
       title: (
@@ -86,51 +87,47 @@ const FamilyTable = ({ addParentMenu, canAddAtLeastOneParent }: Props): React.Re
     },
     {
       key: 'status',
-      render: (value, record) => {
+      render: (_: string, record: DataType) => {
         if (record.member.isProband) {
           return '--';
         }
-        return (
-          <StatusCell
-            memberCode={record.member.code}
-            memberId={record.member.id}
-            updateParentStatusInFamily={updateParentStatusInFamily}
-          />
-        );
+        return <StatusCell memberCode={record.member.code} memberId={record.member.id} />;
       },
       title: intl.get('screen.patient.details.family.table.status'),
       width: 160,
     },
-    {
-      render: (value, record) => {
-        if (record.member.isProband) {
-          return '--';
-        }
-
-        return <ActionsCell memberId={record.member.id} />;
-      },
-      title: intl.get('screen.patient.details.family.table.actions'),
-      width: 80,
-    },
-  ] as ColumnType<DataType>[];
+  ].concat(
+    showActions
+      ? [
+          {
+            key: 'actions',
+            render: (_, record: DataType) => <ActionsCell memberId={record.member.id} />,
+            title: intl.get('screen.patient.details.family.table.actions'),
+            width: 80,
+          },
+        ]
+      : [],
+  ) as ColumnType<DataType>[];
 
   return (
     <Card
       bordered={false}
       className="family-tab__details"
       extra={
-        <Dropdown
-          disabled={!canAddAtLeastOneParent}
-          overlay={addParentMenu}
-          overlayClassName="family-tab__add-parent"
-          placement="bottomCenter"
-          trigger={['click']}
-        >
-          <Button>
-            {intl.get('screen.patient.details.family.addParent')}
-            <DownOutlined />
-          </Button>
-        </Dropdown>
+        showActions ? (
+          <Dropdown
+            disabled={!canAddAtLeastOneParent}
+            overlay={addParentMenu}
+            overlayClassName="family-tab__add-parent"
+            placement="bottomCenter"
+            trigger={['click']}
+          >
+            <Button>
+              {intl.get('screen.patient.details.family.addParent')}
+              <DownOutlined />
+            </Button>
+          </Dropdown>
+        ) : null
       }
       title={intl.get('screen.patient.details.family.title')}
     >

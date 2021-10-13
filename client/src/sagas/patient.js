@@ -5,6 +5,7 @@ import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 import { getExtension } from '../helpers/fhir/builder/Utils';
+import { isAlreadyProband, makeExtensionProband } from '../helpers/fhir/patientHelper';
 import { getFamilyMembersFromPatientDataResponse } from '../helpers/patient';
 import { FamilyActionStatus } from '../reducers/patient';
 
@@ -29,21 +30,54 @@ const getIdsFromPatient = (data) => {
   return ids;
 };
 
+const buildPtIdToGrMemStatusCode = (rawResponse) =>
+  !rawResponse || rawResponse.length === 0
+    ? {}
+    : rawResponse.reduce((accumulator, entityAndExtension) => {
+        const ref = entityAndExtension?.entity?.reference || '';
+        const splitRef = ref.split('/');
+        const indexOfId = 1;
+        const id = splitRef[indexOfId];
+        if (!id) {
+          return accumulator;
+        }
+        const code = (entityAndExtension?.extension || []).find((ext) =>
+          (ext?.url || '').endsWith('/group-member-status'),
+        )?.valueCoding?.code;
+        if (!code) {
+          return accumulator;
+        }
+        return {
+          ...accumulator,
+          [id]: code,
+        };
+      }, {});
+
 const getFamily = async (patientDataResponse) => {
-  const familyMemberIds = getFamilyMembersFromPatientDataResponse(patientDataResponse).map(
+  const familyMembersFromPatientResponse =
+    getFamilyMembersFromPatientDataResponse(patientDataResponse);
+
+  const familyMemberIds = familyMembersFromPatientResponse.map(
     (member) => member.entity.reference.split('/')[1],
   );
 
   if (familyMemberIds.length === 0) {
     return null;
   }
+
+  const ptIdToGrMemStatusCode = buildPtIdToGrMemStatusCode(familyMembersFromPatientResponse);
+
   const response = await Api.getPatientDataByIds(familyMemberIds, false);
 
-  return get(response, 'payload.data.entry', []).map((entry) => ({
-    entry: {
-      resource: entry.resource,
-    },
-  }));
+  return get(response, 'payload.data.entry', []).map((entry) => {
+    const guessedPatientId = entry?.resource?.entry[0]?.resource?.id;
+    return {
+      entry: {
+        groupMemberStatusCode: ptIdToGrMemStatusCode[guessedPatientId],
+        resource: entry.resource,
+      },
+    };
+  });
 };
 
 function* updateParentGroup(parentId, newGroupId) {
@@ -303,6 +337,7 @@ function* removeParent(action) {
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, newGroupResponse.payload.data.id);
     yield Api.deletePatientFromGroup(patientParsed.familyId, parentId);
+    yield makePatientProbandIfNeeded(parentId);
 
     isSuccess = true;
     yield put({
@@ -321,19 +356,17 @@ function* removeParent(action) {
 }
 
 function* updateParentStatus(action) {
+  const { parentId, status } = action.payload;
   try {
-    const { parentId, status } = action.payload;
     const parsedPatient = yield select((state) => state.patient.patient.parsed);
-
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
-
     yield put({
       payload: { parentId, status },
       type: actions.PATIENT_UPDATE_PARENT_STATUS_SUCCEEDED,
     });
   } catch (error) {
     console.error('updateParentStatus', error);
-    yield put({ payload: error, type: actions.PATIENT_UPDATE_PARENT_STATUS_FAILED });
+    yield put({ payload: { error, parentId }, type: actions.PATIENT_UPDATE_PARENT_STATUS_FAILED });
   }
 }
 
@@ -344,11 +377,30 @@ function* getFileURL(action) {
     if (fileURL.error) {
       throw new ApiError(fileURL.error);
     }
-    window.open(fileURL.payload.data.url , '_blank');
+    window.open(fileURL.payload.data.url, '_blank');
     yield put({ payload: { uid: fileURL }, type: actions.PATIENT_FILE_URL_SUCCEEDED });
   } catch (e) {
     yield put({ payload: e, type: actions.PATIENT_FILE_URL_FAILED });
   }
+}
+
+function* makePatientProbandIfNeeded(id) {
+  const rawResponse = yield Api.getPatientDataById(id);
+  if (rawResponse.error) {
+    throw new ApiError(rawResponse.error);
+  }
+  const patientResource = rawResponse?.payload?.data?.entry[0]?.resource?.entry[0]?.resource;
+
+  const extensions = patientResource.extension;
+  if (isAlreadyProband(extensions)) {
+    return;
+  }
+
+  const updatedPatientToCommit = {
+    ...patientResource,
+    extension: makeExtensionProband(extensions),
+  };
+  yield updatePatient(updatedPatientToCommit);
 }
 
 function* watchAddParent() {

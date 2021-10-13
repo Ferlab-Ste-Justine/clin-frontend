@@ -1,12 +1,13 @@
-import {
-  Button, Row, Typography, Col, Divider,
-} from 'antd';
-import { FileTextOutlined } from '@ant-design/icons';
 import React from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
-import { generateNanuqReport } from '../../../../actions/nanuq';
-import { PatientNanuqInformation } from '../../../../helpers/search/types';
+import { FileTextOutlined } from '@ant-design/icons';
+import { generateNanuqReport } from 'actions/nanuq';
+import {
+  Button, Col, Divider, Row, Typography, 
+} from 'antd';
+import { PatientNanuqInformation } from 'helpers/search/types';
+
 import { TableItemsCount } from './TableItemsCount';
 
 interface Props {
@@ -16,12 +17,12 @@ interface Props {
   selectedPatients: PatientNanuqInformation[]
 }
 
-const PrescriptionTableHeader: React.FC<Props> = ({
+const PrescriptionTableHeader = ({
   page,
+  selectedPatients,
   size,
   total,
-  selectedPatients,
-}) => {
+}: Props) => {
   const dispatch = useDispatch();
   return (
     <Row align="middle" gutter={32}>
@@ -39,12 +40,12 @@ const PrescriptionTableHeader: React.FC<Props> = ({
           </Col>
         </>
       ) }
-      <Col flex={1} className="patientSearch__table__header__nanuq">
+      <Col className="patientSearch__table__header__nanuq" flex={1}>
         <Button
           disabled={selectedPatients.length === 0}
-          type="link"
-          onClick={() => dispatch(generateNanuqReport(selectedPatients))}
           icon={<FileTextOutlined />}
+          onClick={() => dispatch(generateNanuqReport(selectedPatients))}
+          type="link"
         >
           { intl.get('screen.patientsearch.table.nanuq') }
         </Button>

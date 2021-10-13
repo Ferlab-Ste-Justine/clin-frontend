@@ -28,6 +28,7 @@ const ActionsCell = ({ memberId }: Props): React.ReactElement => {
         aria-label={intl.get('screen.patient.details.family.removeParent')}
         className="button--borderless"
         disabled={isRemovingParentInProgress}
+        icon={<DeleteOutlined />}
         loading={isRemovingParentInProgress}
         onClick={() => {
           Modal.confirm({
@@ -40,9 +41,7 @@ const ActionsCell = ({ memberId }: Props): React.ReactElement => {
             title: intl.get('screen.patient.details.family.remove.confirm.title'),
           });
         }}
-      >
-        <DeleteOutlined />
-      </Button>
+      />
     </div>
   );
 };
