@@ -8,8 +8,8 @@ specifiers:
   '@blueprintjs/core': 3.32.0
   '@blueprintjs/table': 3.7.1
   '@clarketm/saga-monitor': ^2.0.1
-  '@ferlab/style': ^1.9.1
-  '@ferlab/ui': ^2.0.1
+  '@ferlab/style': ^1.9.2
+  '@ferlab/ui': ^2.0.4
   '@hapi/joi': ^15.1.0
   '@hot-loader/react-dom': ^17.0.0
   '@pmmmwh/react-refresh-webpack-plugin': 0.4.2
@@ -156,8 +156,8 @@ dependencies:
   '@blueprintjs/core': 3.32.0_react-dom@17.0.1+react@17.0.1
   '@blueprintjs/table': 3.7.1_react-dom@17.0.1+react@17.0.1
   '@clarketm/saga-monitor': 2.0.1_redux-saga@1.1.3
-  '@ferlab/style': 1.9.1_7e0c332152494bebdab5f30e5ba73f94
-  '@ferlab/ui': 2.0.1_a5b3b9fbf83115e8206d1d013851fdcb
+  '@ferlab/style': 1.9.2_7e0c332152494bebdab5f30e5ba73f94
+  '@ferlab/ui': 2.0.4_16353d8ba60f541c6c22c0ccc45061de
   '@hapi/joi': 15.1.1
   '@hot-loader/react-dom': 17.0.1_react@17.0.1
   '@pmmmwh/react-refresh-webpack-plugin': 0.4.2_d00fcc46a48175a4e289da7534b00e9a
@@ -1937,8 +1937,8 @@ packages:
       - supports-color
     dev: true
 
-  /@ferlab/style/1.9.1_7e0c332152494bebdab5f30e5ba73f94:
-    resolution: {integrity: sha512-/EujEKif944nYvlhskKeo5RT+Glb2sd9pR/FffJSanqKjhPdmBS0uCW3ANNFEtyoRNzR8AuJusnJ9I1ZKHuq3Q==}
+  /@ferlab/style/1.9.2_7e0c332152494bebdab5f30e5ba73f94:
+    resolution: {integrity: sha512-zuaoBd6Rwp/ty/ctplMtDs4n5sCIECtegsRVCfh2kK2qriQpwQnMhCEbQuY5EUZ3e5xGEMMUPOVIpNukKJ84ZQ==}
     hasBin: true
     peerDependencies:
       antd: ^4.12.3
@@ -1948,28 +1948,28 @@ packages:
       antd: 4.16.13_react-dom@17.0.1+react@17.0.1
       command-line-args: 5.2.0
       cross-spawn: 7.0.3
-      less: 4.1.1
+      less: 4.1.2
       less2sass: 1.0.3
       react: 17.0.1
       react-router-dom: 5.2.0_react@17.0.1
     dev: false
 
-  /@ferlab/ui/2.0.1_a5b3b9fbf83115e8206d1d013851fdcb:
-    resolution: {integrity: sha512-n/dgFucs5ah/D4+3sU7bYU3RW62GZ+nhT0IWE/RPCOPpsKYD8gQHjKa6wewF1akwEV4aEMzgmw2Z8CfIWsirOA==}
+  /@ferlab/ui/2.0.4_16353d8ba60f541c6c22c0ccc45061de:
+    resolution: {integrity: sha512-T3RSzc3u7IHkLQ4ZFrxibfeBnRLFC4fA2kwWCm7AuKuvu1niM00Bwm/RGPxD5R7OP2rrDH6nK7+lNk8LBpmW5g==}
     peerDependencies:
-      '@ferlab/style': ^1.9.1
+      '@ferlab/style': ^1.9.2
       antd: ^4.2.0
       react: '>=16.0.0'
     dependencies:
-      '@ferlab/style': 1.9.1_7e0c332152494bebdab5f30e5ba73f94
+      '@ferlab/style': 1.9.2_7e0c332152494bebdab5f30e5ba73f94
       antd: 4.16.13_react-dom@17.0.1+react@17.0.1
       classnames: 2.2.6
       history: 4.10.1
       query-string: 7.0.1
       react: 17.0.1
-      react-icons: 4.2.0_react@17.0.1
+      react-icons: 4.3.1_react@17.0.1
       uuid: 8.3.2
-      xss: 1.0.9
+      xss: 1.0.10
     dev: false
 
   /@formatjs/intl-unified-numberformat/3.3.7:
@@ -2934,6 +2934,7 @@ packages:
 
   /@types/yauzl/2.9.2:
     resolution: {integrity: sha512-8uALY5LTvSuHgloDVUvWP3pIauILm+8/0pDMokuDYIoNsOkSwd5AiHBTSEJjKTDcZr5z8UpgOWZkxBF4iJftoA==}
+    requiresBuild: true
     dependencies:
       '@types/node': 14.17.11
     optional: true
@@ -4756,6 +4757,7 @@ packages:
   /colors/1.4.0:
     resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
     engines: {node: '>=0.1.90'}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -7090,12 +7092,14 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     deprecated: '"Please update to latest v2.3 or v2.2"'
+    requiresBuild: true
     optional: true
 
   /fsevents/2.2.1:
     resolution: {integrity: sha512-bTLYHSeC0UH/EFXS9KqWnXuOl/wHK5Z/d+ghd5AsFMYN7wIGkUCOJyzy88+wJKkZPGON8u4Z9f6U4FdgURE9qA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -7704,6 +7708,7 @@ packages:
     resolution: {integrity: sha1-Cd/Uq50g4p6xw+gLiZA3jfnjy5w=}
     engines: {node: '>=0.10.0'}
     hasBin: true
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -9170,14 +9175,14 @@ packages:
       source-map: 0.6.1
     dev: false
 
-  /less/4.1.1:
-    resolution: {integrity: sha512-w09o8tZFPThBscl5d0Ggp3RcrKIouBoQscnOMgFH3n5V3kN/CXGHNfCkRPtxJk6nKryDXaV9aHLK55RXuH4sAw==}
+  /less/4.1.2:
+    resolution: {integrity: sha512-EoQp/Et7OSOVu0aJknJOtlXZsnr8XE8KwuzTHOLeVSEx8pVWUICc8Q0VYRHgzyjX78nMEyC/oztWFbgyhtNfDA==}
     engines: {node: '>=6'}
     hasBin: true
     dependencies:
       copy-anything: 2.0.3
       parse-node-version: 1.0.1
-      tslib: 1.14.1
+      tslib: 2.3.1
     optionalDependencies:
       errno: 0.1.7
       graceful-fs: 4.2.4
@@ -9906,6 +9911,7 @@ packages:
 
   /native-request/1.0.8:
     resolution: {integrity: sha512-vU2JojJVelUGp6jRcLwToPoWGxSx23z/0iX+I77J3Ht17rf2INGjrhOoQnjVo60nQd8wVsgzKkPfRXBiVdD2ag==}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -10036,6 +10042,7 @@ packages:
 
   /node-notifier/8.0.0:
     resolution: {integrity: sha512-46z7DUmcjoYdaWyXouuFNNfUo6eFa94t23c53c+lG/9Cvauk4a98rAUp9672X5dxGdQmLpPzTxzu8f/OeEPaFA==}
+    requiresBuild: true
     dependencies:
       growly: 1.3.0
       is-wsl: 2.2.0
@@ -12307,8 +12314,8 @@ packages:
       react: 17.0.1
     dev: false
 
-  /react-icons/4.2.0_react@17.0.1:
-    resolution: {integrity: sha512-rmzEDFt+AVXRzD7zDE21gcxyBizD/3NqjbX6cmViAgdqfJ2UiLer8927/QhhrXQV7dEj/1EGuOTPp7JnLYVJKQ==}
+  /react-icons/4.3.1_react@17.0.1:
+    resolution: {integrity: sha512-cB10MXLTs3gVuXimblAdI71jrJx8njrJZmNMEMC+sQu5B/BIOmlsAjskdqpn81y8UBVEGuHODd7/ci5DvoSzTQ==}
     peerDependencies:
       react: '*'
     dependencies:
@@ -14738,6 +14745,7 @@ packages:
 
   /watchpack-chokidar2/2.0.1:
     resolution: {integrity: sha512-nCFfBIPKr5Sh61s4LPpy1Wtfi0HE8isJ3d2Yb5/Ppw2P2B/3eVSEBjKfN0fmHJSK14+31KwMKmcrzs2GM4P0Ww==}
+    requiresBuild: true
     dependencies:
       chokidar: 2.1.8
     dev: false
@@ -15218,8 +15226,8 @@ packages:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
     dev: false
 
-  /xss/1.0.9:
-    resolution: {integrity: sha512-2t7FahYnGJys6DpHLhajusId7R0Pm2yTmuL0GV9+mV0ZlaLSnb2toBmppATfg5sWIhZQGlsTLoecSzya+l4EAQ==}
+  /xss/1.0.10:
+    resolution: {integrity: sha512-qmoqrRksmzqSKvgqzN0055UFWY7OKx1/9JWeRswwEVX9fCG5jcYRxa/A2DHcmZX6VJvjzHRQ2STeeVcQkrmLSw==}
     engines: {node: '>= 0.10.0'}
     hasBin: true
     dependencies:

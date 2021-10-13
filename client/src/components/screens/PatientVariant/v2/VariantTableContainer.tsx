@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 
-import '../../../../../node_modules/@ant-design/pro-table/dist/table.css';
+import '../../../../../../node_modules/@ant-design/pro-table/dist/table.css';
 import style from './VariantTableContainer.module.scss';
 
 const DEFAULT_PAGE_NUM = 1;

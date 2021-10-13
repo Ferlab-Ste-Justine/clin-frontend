@@ -15,21 +15,21 @@ import isNil from 'lodash/isNil';
 import {
   Badge, Button, Card, Checkbox, Col, notification, Row, Tabs,
 } from 'antd';
-import { LinesBuilder } from '../../../helpers/excel/LinesBuilder';
+import { LinesBuilder } from '../../../../helpers/excel/LinesBuilder';
 
-import HeaderCellWithTooltip from '../../Table/HeaderCellWithTooltip';
-import HeaderCustomCell from '../../Table/HeaderCustomCell';
+import HeaderCellWithTooltip from '../../../Table/HeaderCellWithTooltip';
+import HeaderCustomCell from '../../../Table/HeaderCustomCell';
 
-import { createCellRenderer } from '../../Table/index';
-import InteractiveTable from '../../Table/InteractiveTable';
-import VariantNavigation from './components/VariantNavigation';
-import Autocompleter, { tokenizeObjectByKeys } from '../../../helpers/autocompleter';
-import exportToExcel from '../../../helpers/excel/export';
-import EmptyCard from './components/EmptyCard';
+import { createCellRenderer } from '../../../Table/index';
+import InteractiveTable from '../../../Table/InteractiveTable';
+import VariantNavigation from '../components/VariantNavigation';
+import Autocompleter, { tokenizeObjectByKeys } from '../../../../helpers/autocompleter';
+import exportToExcel from '../../../../helpers/excel/export';
+import EmptyCard from '../components/EmptyCard';
 
-import { appShape } from '../../../reducers/app';
-import { variantShape } from '../../../reducers/variant';
-import Statement from '../../Query/Statement';
+import { appShape } from '../../../../reducers/app';
+import { variantShape } from '../../../../reducers/variant';
+import Statement from '../../../Query/Statement';
 import {
   commitHistory,
   countVariants,
@@ -53,13 +53,13 @@ import {
   resetColumns,
   updateVariantColumns,
   updateVariantColumnsOrder,
-} from '../../../actions/variant';
-import { updateUserProfile } from '../../../actions/user';
-import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../actions/router';
+} from '../../../../actions/variant';
+import { updateUserProfile } from '../../../../actions/user';
+import { navigateToPatientScreen, navigateToVariantDetailsScreen } from '../../../../actions/router';
 
 import './style.scss';
 import style from './style.module.scss';
-import { userShape } from '../../../reducers/user';
+import { userShape } from '../../../../reducers/user';
 
 const VARIANT_TAB = 'VARIANTS';
 const GENE_TAB = 'GENES';
