@@ -7,14 +7,16 @@ import {
   NormalizedCacheObject,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import get from 'lodash/get'
 import { RptManager } from '../../helpers/keycloak-api/manager';
 import { GraphqlBackend, GraphqlProvider } from 'store/providers';
 
-const ARRANGER_API = window.CLIN.arrangerBaseUrl;
-const PROJECT_ID = window.CLIN.arrangerProjectId;
+const ARRANGER_API = get(window, 'CLIN.arrangerBaseUrl', process.env.REACT_APP_ARRANGER_API)
+const PROJECT_ID = get(window, 'CLIN.arrangerProjectId', process.env.REACT_APP_ARRANGER_PROJECT_ID)
+const FHIR_API = get(window, 'CLIN.fhirBaseUrl', process.env.REACT_APP_FHIR_SERVICE_URL)
 
 const fhirLink = createHttpLink({
-  uri: `${window.CLIN.fhirBaseUrl}/$graphql`,
+  uri: `${FHIR_API}/$graphql`,
 });
 
 const arrangerLink = createHttpLink({
