@@ -20,9 +20,9 @@ interface Props {
   onChange: () => void;
 }
 
-const getMrnValue = (identifier: Identifier | undefined): string | undefined => {
-  if (identifier == null) {
-    return undefined;
+const getMrnValue = (identifier: Identifier | null): string | undefined => {
+  if (!identifier) {
+    return;
   }
   return `${identifier.value}|${identifier.assigner!.reference.split('/')[1]}`;
 };
@@ -39,13 +39,13 @@ const MrnItem = ({ form, onChange }: Props): React.ReactElement => {
     (state) => state.patientSubmission.serviceRequest,
   ) as any;
 
-  const [defaultSelectedMrn, setDefaultSelectedMrn] = useState<Identifier | undefined>(
+  const [defaultSelectedMrn, setDefaultSelectedMrn] = useState<Identifier | null>(
     serviceRequest.identifier?.find((id: Identifier) => get(id, 'type.coding[0].code') === 'MR'),
   );
 
   const onCreationMode = () => {
     setMode(Mode.CREATION);
-    setDefaultSelectedMrn(undefined);
+    setDefaultSelectedMrn(null);
   };
 
   return mode === Mode.CREATION ? (
@@ -54,7 +54,7 @@ const MrnItem = ({ form, onChange }: Props): React.ReactElement => {
       onChange={onChange}
       patientId={patient.id as string}
       setSelectMode={() => setMode(Mode.SELECT)}
-      unsetSelectedMrn={() => setDefaultSelectedMrn(undefined)}
+      unsetSelectedMrn={() => setDefaultSelectedMrn(null)}
     />
   ) : (
     <>
