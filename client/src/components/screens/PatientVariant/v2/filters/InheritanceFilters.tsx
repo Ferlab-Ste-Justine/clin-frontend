@@ -9,8 +9,8 @@ type OwnProps = {
 
 const INPUT_FILTER_LIST = [];
 
-const MetricFilter = ({ mappingResults }: OwnProps) => {
-  return <>Metric Filters</>;
+const InheritanceFilters = ({ mappingResults }: OwnProps) => {
+  return <>Inheritance Filters</>;
 };
 
-export default MetricFilter;
+export default InheritanceFilters;

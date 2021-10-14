@@ -15,19 +15,68 @@ import DiseaseIcon from 'components/icons/DiseaseIcon';
 import FrequencyIcon from 'components/icons/FrequencyIcon';
 import OccurenceIcon from 'components/icons/OccurenceIcon';
 import VariantTableContainer from './VariantTableContainer';
-import VariantFilter from './filters/VariantFilters';
+import VariantFilters from './filters/VariantFilters';
 import GeneFilters from './filters/GeneFilters';
 import MetricFilters from './filters/MetricFilters';
-import FrequencyFilter from './filters/FrequencyFilter';
-import ImpactFilters from './filters/ImpactFilters';
+import FrequencyFilters from './filters/FrequencyFilter';
+import PathogenicityFilters from './filters/PathogenicityFilters';
+import InheritanceFilters from './filters/InheritanceFilters';
+import { MappingResults, useGetExtendedMappings } from 'store/graphql/utils/actions';
+import { ExtendedMapping } from 'components/Utils/utils';
 
 import styles from './PatientVariant.module.scss';
 
 const DEFAULT_PAGE_NUM = 1;
 
+enum FilterTypes {
+  Variant,
+  Gene,
+  Pathogenicity,
+  Frequency,
+  Inheritance,
+  Metric,
+}
+
+const filtersContainer = (mappingResults: MappingResults, type: FilterTypes): React.ReactNode => {
+  switch (type) {
+    case FilterTypes.Variant:
+      return <VariantFilters mappingResults={mappingResults} />;
+    case FilterTypes.Gene:
+      return <GeneFilters mappingResults={mappingResults} />;
+    case FilterTypes.Pathogenicity:
+      return <PathogenicityFilters mappingResults={mappingResults} />;
+    case FilterTypes.Frequency:
+      return <FrequencyFilters mappingResults={mappingResults} />;
+    case FilterTypes.Inheritance:
+      return <InheritanceFilters mappingResults={mappingResults} />;
+    case FilterTypes.Metric:
+      return <MetricFilters mappingResults={mappingResults} />;
+    default:
+      return <div />;
+  }
+};
+
 const PatientVariantScreen = () => {
   const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const { filters } = useFilters();
+  const variantMappingResults = {
+    loadingMapping: false,
+    extendedMapping: [
+      {
+        active: false,
+        displayName: '',
+        isArray: false,
+        type: '',
+        field: '',
+      },
+    ],
+  }; //useGetExtendedMappings('variants');
+  const results = {
+    loading: false,
+    total: 0,
+  };
+  const { total } = results;
+
   const dictionary: IDictionary = {
     query: {
       combine: {
@@ -35,7 +84,15 @@ const PatientVariantScreen = () => {
         or: intl.get('querybuilder.query.combine.or'),
       },
       noQuery: intl.get('querybuilder.query.noQuery'),
-      facet: (field: string) => field,
+      facet: (key: string) => {
+        if (key == 'locus') return 'Variant';
+        return (
+          variantMappingResults?.extendedMapping?.find(
+            (mapping: ExtendedMapping) => key === mapping.field,
+          )?.displayName || key
+        );
+      },
+      facetValueMapping: {},
     },
     actions: {
       new: intl.get('querybuilder.actions.new'),
@@ -57,42 +114,43 @@ const PatientVariantScreen = () => {
       },
     },
   };
-  const results = {
-    loading: false,
-    total: 0,
-  };
-  const { total } = results;
 
   const menuItems: ISidebarMenuItem[] = [
     {
       key: '1',
       title: intl.get('screen.patientvariant.category_variant'),
       icon: <LineStyleIcon />,
-      panelContent: <VariantFilter />,
+      panelContent: filtersContainer(variantMappingResults, FilterTypes.Variant),
     },
     {
       key: '2',
       title: intl.get('screen.patientvariant.category_genomic'),
       icon: <GeneIcon />,
-      panelContent: <GeneFilters />,
+      panelContent: filtersContainer(variantMappingResults, FilterTypes.Gene),
     },
     {
       key: '3',
-      title: intl.get('screen.patientvariant.category_impacts'),
+      title: intl.get('screen.patientvariant.category_inheritance'),
       icon: <DiseaseIcon />,
-      panelContent: <ImpactFilters />,
+      panelContent: filtersContainer(variantMappingResults, FilterTypes.Inheritance),
     },
     {
       key: '4',
       title: intl.get('screen.patientvariant.category_cohort'),
       icon: <FrequencyIcon />,
-      panelContent: <FrequencyFilter />,
+      panelContent: filtersContainer(variantMappingResults, FilterTypes.Frequency),
     },
     {
       key: '5',
       title: intl.get('screen.patientvariant.category_metric'),
       icon: <OccurenceIcon />,
-      panelContent: <MetricFilters />,
+      panelContent: filtersContainer(variantMappingResults, FilterTypes.Metric),
+    },
+    {
+      key: '6',
+      title: intl.get('screen.patientvariant.category_pathogenicity'),
+      icon: <DiseaseIcon />,
+      panelContent: filtersContainer(variantMappingResults, FilterTypes.Pathogenicity),
     },
   ];
 

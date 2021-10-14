@@ -5,6 +5,7 @@ import {
   QueryHookOptions,
   TypedDocumentNode,
   useQuery,
+  gql
 } from '@apollo/client';
 
 export enum Hits {
@@ -30,3 +31,24 @@ export const useLazyResultQuery = <TData = any, TVariables = OperationVariables>
   const result = data ? data : previousData;
   return { error, loading, result };
 };
+
+export const buildVariantIdSqon = (id: string) => ({
+  op: 'and',
+  content: [
+    {
+      op: 'in',
+      content: {
+        field: 'hash',
+        value: id,
+      },
+    },
+  ],
+});
+
+export const INDEX_EXTENDED_MAPPING = (index: string) => gql`
+  query ExtendedMapping {
+    ${index} {
+      extended
+    }
+  }
+`

@@ -127,7 +127,7 @@ class PatientScreen extends React.Component {
         ),
       },
       {
-        content: <PatientVariantScreen />,
+        content: <ApolloProvider><PatientVariantScreen /></ApolloProvider>,
         name: 'variant',
         title: (
           <span className="tabName">
