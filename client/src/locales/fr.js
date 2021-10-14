@@ -227,7 +227,6 @@ const fr = {
   'screen.patient.details.prescription.tests': 'Analyse',
   'screen.patient.details.prescription.comments': 'Commentaire général',
   'screen.patient.details.prescriptions.none.title': 'Aucune prescription pour ce patient',
-  'screen.patient.details.prescriptions.none.description': 'Complétez le formulaire de demande de séquençage afin de créer une prescription.',
   'screen.patient.details.prescriptions.none.create': 'Créer une prescription',
   'screen.patient.details.prescriptions.summary.title': 'Résumé',
   'screen.patient.details.prescriptions.summary.empty': 'Aucun renseignement saisie',
