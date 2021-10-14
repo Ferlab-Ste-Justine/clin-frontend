@@ -1,4 +1,5 @@
 import intl from 'react-intl-universal';
+import { AnalysisCodeToIntlKeyText,AnalysisTestCodes } from 'helpers/fhir/types';
 import get from 'lodash/get';
 
 const OBSERVATION_CGH_CODE = 'CGH';
@@ -16,115 +17,52 @@ const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
 const HL7_CODE_SYSTEM_URL = '';
 
 const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
-export const getTestCoding = (name) => {
-  switch (name) {
-    case 'adultCancerPredisposition':
-    case 'PCA':
+export const getTestCoding = (code) => {
+  switch (code) {
+    case AnalysisTestCodes.PG:
       return {
-        code: 'PCA',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.adultCancerPredisposition'),
+        code: AnalysisTestCodes.PG,
+        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.PG],
         system: SERVICE_REQUEST_CODE_SYSTEM,
       };
-    case 'kidTumorPredisposition':
-    case 'PTSE':
+    case AnalysisTestCodes.DYST:
       return {
-        code: 'PTSE',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidTumorPredisposition'),
+        code: AnalysisTestCodes.DYST,
+        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.DYST],
         system: SERVICE_REQUEST_CODE_SYSTEM,
       };
-    case 'kidHematopathiesPredisposition':
-    case 'PHME':
+    case AnalysisTestCodes.RHAB:
       return {
-        code: 'PHME',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.kidHematopathiesPredisposition'),
+        code: AnalysisTestCodes.RHAB,
+        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.RHAB],
         system: SERVICE_REQUEST_CODE_SYSTEM,
       };
-    case 'ehlersDanlos':
-    case 'SED':
+    case AnalysisTestCodes.MYOP:
       return {
-        code: 'SED',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.ehlersDanlos'),
+        code: AnalysisTestCodes.MYOP,
+        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.MYOP],
         system: SERVICE_REQUEST_CODE_SYSTEM,
       };
-    case 'polymalformatifs':
-    case 'SP':
+    case AnalysisTestCodes.MYAS:
       return {
-        code: 'SP',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.polymalformatifs'),
+        code: AnalysisTestCodes.MYAS,
+        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.MYAS],
         system: SERVICE_REQUEST_CODE_SYSTEM,
       };
-    case 'muscle':
-    case 'MM':
+    case AnalysisTestCodes.HYP:
       return {
-        code: 'MM',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.muscle'),
+        code: AnalysisTestCodes.HYP,
+        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.HYP],
         system: SERVICE_REQUEST_CODE_SYSTEM,
       };
-    case 'amyotrophicLateralSclerosis':
-    case 'SLA':
+    case AnalysisTestCodes.DI:
       return {
-        code: 'SLA',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.amyotrophicLateralSclerosis'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'retinopathies':
-    case 'RET':
-      return {
-        code: 'RET',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.retinopathies'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'deafness':
-    case 'SUR':
-      return {
-        code: 'SUR',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.deafness'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'intellecualDisability':
-    case 'DI':
-      return {
-        code: 'DI',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.intellecualDisability'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'nuclearMitochondrialGenes':
-    case 'GMN':
-      return {
-        code: 'GMN',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.nuclearMitochondrialGenes'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'rasopathies':
-    case 'RAS':
-      return {
-        code: 'RAS',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.rasopathies'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'cardiomyopathies':
-    case 'CAR':
-      return {
-        code: 'CAR',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.cardiomyopathies'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'hereditaryArrhythmias':
-    case 'AH':
-      return {
-        code: 'AH',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.hereditaryArrhythmias'),
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case 'aortopathies':
-    case 'AOR':
-      return {
-        code: 'AOR',
-        display: intl.get('form.patientSubmission.clinicalInformation.analysis.options.aortopathies'),
+        code: AnalysisTestCodes.DI,
+        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.DI],
         system: SERVICE_REQUEST_CODE_SYSTEM,
       };
     default:
-      throw new Error(`Invalid test name [${name}]`);
+      null
   }
 };
 
@@ -190,14 +128,14 @@ export const getIndicationId = (indication) => {
 // TODO: translate/intl
 export const CGH_CODES = {
   A: 'A',
-  N: 'N',
   IND: 'IND',
+  N: 'N',
 };
 export const CGH_VALUES = () => (
   [
-    { value: CGH_CODES.A, display: 'Anormal' },
-    { value: CGH_CODES.N, display: 'Normal' },
-    { value: CGH_CODES.IND, display: 'Indéterminé' },
+    { display: 'Anormal', value: CGH_CODES.A },
+    { display: 'Normal', value: CGH_CODES.N },
+    { display: 'Indéterminé', value: CGH_CODES.IND },
   ]
 );
 
@@ -211,15 +149,15 @@ export const cghDisplay = (code) => {
 };
 
 export const createBundle = () => ({
+  entry: [],
   resourceType: RESOURCE_TYPE_BUNDLE,
   type: 'transaction',
-  entry: [],
 });
 
 export const createRequest = (resource) => {
   const {
-    resourceType,
     id,
+    resourceType,
     toDelete,
   } = resource;
 
@@ -234,33 +172,26 @@ export const createRequest = (resource) => {
 };
 
 export const createClinicalImpressionResource = ({
-  id, status, age, date, assessor,
+  age, assessor, date, id, status,
 }) => {
   const resource = {
-    resourceType: RESOURCE_TYPE_CLINICAL_IMPRESSION,
-    id,
-    meta: {
-      profile: [
-        `${FERLAB_BASE_URL}/StructureDefinition/cqdg-clinical-impression`,
-      ],
-    },
+    assessor: { reference: assessor },
+    date,
+    description: 'This source refers to the consultation with the doctor',
 
     extension: [
       {
         url: `${FERLAB_BASE_URL}/StructureDefinition/age-at-event`,
         valueAge: {
-          value: age,
-          unit: 'days',
-          system: 'http://unitsofmeasure.org',
           code: 'd',
+          system: 'http://unitsofmeasure.org',
+          unit: 'days',
+          value: age,
         },
       },
     ],
 
-    status,
-    description: 'This source refers to the consultation with the doctor',
-    date,
-    assessor: { reference: assessor },
+    id,
     investigation: [
       {
         code: {
@@ -269,6 +200,13 @@ export const createClinicalImpressionResource = ({
         item: [],
       },
     ],
+    meta: {
+      profile: [
+        `${FERLAB_BASE_URL}/StructureDefinition/cqdg-clinical-impression`,
+      ],
+    },
+    resourceType: RESOURCE_TYPE_CLINICAL_IMPRESSION,
+    status,
   };
 
   return resource;
@@ -277,21 +215,13 @@ export const createClinicalImpressionResource = ({
 export const createCGHResource = ({
   id, interpretation, note,
 }) => ({
-  resourceType: RESOURCE_TYPE_OBSERVATION,
-  id,
-  meta: {
-    profile: [
-      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
-    ],
-  },
-  status: 'final',
   category: [
     {
       coding: [
         {
-          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
           code: 'laboratory',
           display: 'Laboratory',
+          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
         },
       ],
     },
@@ -299,12 +229,13 @@ export const createCGHResource = ({
   code: {
     coding: [
       {
-        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
         code: 'CGH',
         display: 'cgh',
+        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
       },
     ],
   },
+  id,
   interpretation: [
     {
       coding: [
@@ -312,29 +243,28 @@ export const createCGHResource = ({
       ],
     },
   ],
-  note: [
-    {
-      text: note,
-    },
-  ],
-});
-
-export const createIndicationResource = ({ id, note }) => ({
-  resourceType: RESOURCE_TYPE_OBSERVATION,
-  id,
   meta: {
     profile: [
       `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
     ],
   },
+  note: [
+    {
+      text: note,
+    },
+  ],
+  resourceType: RESOURCE_TYPE_OBSERVATION,
   status: 'final',
+});
+
+export const createIndicationResource = ({ id, note }) => ({
   category: [
     {
       coding: [
         {
-          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
           code: 'exam',
           display: 'Exam',
+          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
         },
       ],
     },
@@ -342,10 +272,16 @@ export const createIndicationResource = ({ id, note }) => ({
   code: {
     coding: [
       {
-        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
         code: 'INDIC',
         display: 'indications',
+        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
       },
+    ],
+  },
+  id,
+  meta: {
+    profile: [
+      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
     ],
   },
   note: [
@@ -353,41 +289,41 @@ export const createIndicationResource = ({ id, note }) => ({
       text: note,
     },
   ],
+  resourceType: RESOURCE_TYPE_OBSERVATION,
+  status: 'final',
 });
 
 export const createPractitionerResource = ({
-  id,
   family,
   given,
+  id,
   license,
 }) => (
   {
     id,
-    resourceType: RESOURCE_TYPE_PRACTITIONER,
+    identifier: [
+      {
+        type: {
+          coding: [
+            {
+              code: 'MD',
+              display: 'Medical License number',
+              system: `${HL7_CODE_SYSTEM_URL}/v2-0203`,
+            },
+          ],
+          text: 'Numero de License Médicale du Québec',
+        },
+        use: 'official',
+        value: license,
+      },
+    ],
     meta: {
       profile: [
         'http://hl7.org/fhir/StructureDefinition/Practitioner',
       ],
     },
-    identifier: [
-      {
-        use: 'official',
-        type: {
-          coding: [
-            {
-              system: `${HL7_CODE_SYSTEM_URL}/v2-0203`,
-              code: 'MD',
-              display: 'Medical License number',
-            },
-          ],
-          text: 'Numero de License Médicale du Québec',
-        },
-        value: license,
-      },
-    ],
     name: [
       {
-        use: 'official',
         family,
         given: [
           given,
@@ -395,8 +331,10 @@ export const createPractitionerResource = ({
         prefix: [
           'Dr.',
         ],
+        use: 'official',
       },
     ],
+    resourceType: RESOURCE_TYPE_PRACTITIONER,
   }
 );
 
@@ -411,18 +349,15 @@ const buildPatientEntry = (id, withIncludes = true) => (
 
 export const createGetMultiplePatientDataBundle = (ids, withIncludes = true) => (
   {
-    resourceType: 'Bundle',
-    id: 'bundle-request-patients-data',
-    type: 'batch',
     entry: ids.map((id) => buildPatientEntry(id, withIncludes)),
+    id: 'bundle-request-patients-data',
+    resourceType: 'Bundle',
+    type: 'batch',
   }
 );
 
 export const createGetPatientDataBundle = (id, withIncludes = true) => (
   {
-    resourceType: 'Bundle',
-    id: 'bundle-request-patient-data',
-    type: 'batch',
     entry: [
       buildPatientEntry(id, withIncludes),
       {
@@ -445,6 +380,9 @@ export const createGetPatientDataBundle = (id, withIncludes = true) => (
         },
       },
     ],
+    id: 'bundle-request-patient-data',
+    resourceType: 'Bundle',
+    type: 'batch',
   }
 );
 
@@ -465,10 +403,10 @@ export const createGetPractitionersDataBundle = (data) => {
     }
   });
   const output = {
-    resourceType: 'Bundle',
-    id: 'bundle-request-practitioner-data',
-    type: 'batch',
     entry: [],
+    id: 'bundle-request-practitioner-data',
+    resourceType: 'Bundle',
+    type: 'batch',
   };
 
   practitionerRoleIds.forEach((id) => {
@@ -497,18 +435,20 @@ export const createGetPractitionersDataBundle = (data) => {
 };
 
 export const createFamilyHistoryMemberResource = ({
-  id, code, display, note, toDelete,
+  code, display, id, note, toDelete,
 }) => (
   {
-    resourceType: RESOURCE_TYPE_FAMILY_HISTORY,
     id,
-    toDelete,
     meta: {
       profile: [
         `${FERLAB_BASE_URL}/StructureDefinition/cqgc-fmh`,
       ],
     },
-    status: 'completed',
+    note: [
+      {
+        text: note,
+      },
+    ],
     patient: {
       reference: 'Patient/pt-001',
     },
@@ -520,11 +460,9 @@ export const createFamilyHistoryMemberResource = ({
         },
       ],
     },
-    note: [
-      {
-        text: note,
-      },
-    ],
+    resourceType: RESOURCE_TYPE_FAMILY_HISTORY,
+    status: 'completed',
+    toDelete,
   }
 );
 
@@ -567,14 +505,26 @@ export const getFamilyRelationshipNote = (resource) => {
 };
 
 export const createHPOResource = ({
-  id, toDelete, hpoCode, onset, category, interpretation, note,
+  category, hpoCode, id, interpretation, note, onset, toDelete,
 }) => ({
-  resourceType: RESOURCE_TYPE_OBSERVATION,
-  id,
-  toDelete,
-  meta: {
-    profile: [
-      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
+  category: [
+    {
+      coding: [
+        {
+          code: 'exam',
+          display: 'Exam',
+          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
+        },
+      ],
+    },
+  ],
+  code: {
+    coding: [
+      {
+        code: 'PHENO',
+        display: 'phenotype',
+        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
+      },
     ],
   },
   extension: [
@@ -587,35 +537,7 @@ export const createHPOResource = ({
       valueCoding: category,
     },
   ],
-  status: 'final',
-  category: [
-    {
-      coding: [
-        {
-          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
-          code: 'exam',
-          display: 'Exam',
-        },
-      ],
-    },
-  ],
-  code: {
-    coding: [
-      {
-        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
-        code: 'PHENO',
-        display: 'phenotype',
-      },
-    ],
-  },
-  valueCodeableConcept: {
-    coding: [
-      {
-        system: 'http://purl.obolibrary.org/obo/hp.owl',
-        ...hpoCode,
-      },
-    ],
-  },
+  id,
   interpretation: [
     {
       coding: [
@@ -627,11 +549,27 @@ export const createHPOResource = ({
       text: 'Observé',
     },
   ],
+  meta: {
+    profile: [
+      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
+    ],
+  },
   note: [
     {
       text: note,
     },
   ],
+  resourceType: RESOURCE_TYPE_OBSERVATION,
+  status: 'final',
+  toDelete,
+  valueCodeableConcept: {
+    coding: [
+      {
+        system: 'http://purl.obolibrary.org/obo/hp.owl',
+        ...hpoCode,
+      },
+    ],
+  },
 });
 
 export const getResourceId = (resource) => {
@@ -676,19 +614,19 @@ export const getHPOInterpretationDisplay = (resource) => {
 
 export const hpoInterpretationValues = () => [
   {
+    display: 'Observé',
     iconClass: 'observedIcon',
     value: 'POS',
-    display: 'Observé',
   },
   {
+    display: 'Non-observé',
     iconClass: 'notObservedIcon',
     value: 'NEG',
-    display: 'Non-observé',
   },
   {
+    display: 'Inconnu',
     iconClass: 'unknownIcon',
     value: 'IND',
-    display: 'Inconnu',
   },
 ];
 
@@ -714,18 +652,18 @@ export const hpoOnsetValues = [
     options: [
       {
         code: 'HP:0003593',
-        value: 'Infantile onset',
         display: 'Infantile',
+        value: 'Infantile onset',
       },
       {
         code: 'HP:0011463',
-        value: 'Childhood onset',
         display: 'Childhood',
+        value: 'Childhood onset',
       },
       {
         code: 'HP:0003621',
-        value: 'Juvenile onset',
         display: 'Juvenile',
+        value: 'Juvenile onset',
       },
     ],
   },
@@ -734,18 +672,18 @@ export const hpoOnsetValues = [
     options: [
       {
         code: 'HP:0011462',
-        value: 'YoungAdult onset',
         display: 'Young adult',
+        value: 'YoungAdult onset',
       },
       {
         code: 'HP:0003596',
-        value: 'MiddleAge onset',
         display: 'Middle age',
+        value: 'MiddleAge onset',
       },
       {
         code: 'HP:0003584',
-        value: 'Late onset',
         display: 'Late',
+        value: 'Late onset',
       },
     ],
   },
@@ -754,13 +692,13 @@ export const hpoOnsetValues = [
     options: [
       {
         code: 'HP:0011460',
-        value: 'Embryonal onset',
         display: 'Embryonal',
+        value: 'Embryonal onset',
       },
       {
         code: 'HP:0011461',
-        value: 'Fetal onset',
         display: 'Fetal',
+        value: 'Fetal onset',
       },
     ],
   },
@@ -769,8 +707,8 @@ export const hpoOnsetValues = [
     options: [
       {
         code: 'HP:0003623',
-        value: 'Neonatal onset',
         display: 'Neonatal',
+        value: 'Neonatal onset',
       },
     ],
   },
@@ -779,8 +717,8 @@ export const hpoOnsetValues = [
     options: [
       {
         code: 'HP:0003577',
-        value: 'Congenital onset',
         display: 'Congenital',
+        value: 'Congenital onset',
       },
     ],
   },
@@ -806,101 +744,101 @@ export const getHPOOnsetDisplayFromCode = (code) => {
 };
 
 export const getFamilyRelationshipValues = () => ({
-  father: {
-    value: 'FTH',
-    label: intl.get('form.patientSubmission.form.father'),
-  },
-  mother: {
-    value: 'MTH',
-    label: intl.get('form.patientSubmission.form.mother'),
-  },
   brother: {
-    value: 'BRO',
     label: intl.get('form.patientSubmission.form.brother'),
-  },
-  sister: {
-    value: 'SIS',
-    label: intl.get('form.patientSubmission.form.sister'),
-  },
-  halfBrother: {
-    value: 'HBRO',
-    label: intl.get('form.patientSubmission.form.halfBrother'),
-  },
-  halfSister: {
-    value: 'HSIS',
-    label: intl.get('form.patientSubmission.form.halfSister'),
-  },
-  identicalTwin: {
-    value: 'ITWIN',
-    label: intl.get('form.patientSubmission.form.identicalTwin'),
-  },
-  fraternalTwin: {
-    value: 'FTWIN',
-    label: intl.get('form.patientSubmission.form.fraternalTwin'),
+    value: 'BRO',
   },
   daughter: {
-    value: 'DAUC',
     label: intl.get('form.patientSubmission.form.daughter'),
+    value: 'DAUC',
   },
-  son: {
-    value: 'SONC',
-    label: intl.get('form.patientSubmission.form.son'),
+  father: {
+    label: intl.get('form.patientSubmission.form.father'),
+    value: 'FTH',
+  },
+  fraternalTwin: {
+    label: intl.get('form.patientSubmission.form.fraternalTwin'),
+    value: 'FTWIN',
+  },
+  halfBrother: {
+    label: intl.get('form.patientSubmission.form.halfBrother'),
+    value: 'HBRO',
+  },
+  halfSister: {
+    label: intl.get('form.patientSubmission.form.halfSister'),
+    value: 'HSIS',
+  },
+  identicalTwin: {
+    label: intl.get('form.patientSubmission.form.identicalTwin'),
+    value: 'ITWIN',
   },
   maternalAunt: {
-    value: 'MAUNT',
     label: intl.get('form.patientSubmission.form.maternalAunt'),
-  },
-  paternalAunt: {
-    value: 'PAUNT',
-    label: intl.get('form.patientSubmission.form.paternalAunt'),
-  },
-  maternalUncle: {
-    value: 'MUNCLE',
-    label: intl.get('form.patientSubmission.form.maternalUncle'),
-  },
-  paternalUncle: {
-    value: 'PUNCHE',
-    label: intl.get('form.patientSubmission.form.paternalUncle'),
+    value: 'MAUNT',
   },
   maternalCousin: {
-    value: 'MCOUSIN',
     label: intl.get('form.patientSubmission.form.maternalCousin'),
-  },
-  paternalCousin: {
-    value: 'PCOUSIN',
-    label: intl.get('form.patientSubmission.form.paternalCousin'),
+    value: 'MCOUSIN',
   },
   maternalGrandfather: {
-    value: 'MGRFTH',
     label: intl.get('form.patientSubmission.form.maternalGrandfather'),
-  },
-  paternalGrandfather: {
-    value: 'PGRFTH',
-    label: intl.get('form.patientSubmission.form.paternalGrandfather'),
+    value: 'MGRFTH',
   },
   maternalGrandmother: {
-    value: 'MGRMTH',
     label: intl.get('form.patientSubmission.form.maternalGrandmother'),
-  },
-  paternalGrandmother: {
-    value: 'PGRMTH',
-    label: intl.get('form.patientSubmission.form.paternalGrandmother'),
-  },
-  nephew: {
-    value: 'NEPHEW',
-    label: intl.get('form.patientSubmission.form.nephew'),
-  },
-  niece: {
-    value: 'NIECE',
-    label: intl.get('form.patientSubmission.form.niece'),
+    value: 'MGRMTH',
   },
   maternalMember: {
-    value: 'MATMEM',
     label: intl.get('form.patientSubmission.form.maternalMember'),
+    value: 'MATMEM',
+  },
+  maternalUncle: {
+    label: intl.get('form.patientSubmission.form.maternalUncle'),
+    value: 'MUNCLE',
+  },
+  mother: {
+    label: intl.get('form.patientSubmission.form.mother'),
+    value: 'MTH',
+  },
+  nephew: {
+    label: intl.get('form.patientSubmission.form.nephew'),
+    value: 'NEPHEW',
+  },
+  niece: {
+    label: intl.get('form.patientSubmission.form.niece'),
+    value: 'NIECE',
+  },
+  paternalAunt: {
+    label: intl.get('form.patientSubmission.form.paternalAunt'),
+    value: 'PAUNT',
+  },
+  paternalCousin: {
+    label: intl.get('form.patientSubmission.form.paternalCousin'),
+    value: 'PCOUSIN',
+  },
+  paternalGrandfather: {
+    label: intl.get('form.patientSubmission.form.paternalGrandfather'),
+    value: 'PGRFTH',
+  },
+  paternalGrandmother: {
+    label: intl.get('form.patientSubmission.form.paternalGrandmother'),
+    value: 'PGRMTH',
   },
   paternalMember: {
-    value: 'PATMEM',
     label: intl.get('form.patientSubmission.form.paternalMember'),
+    value: 'PATMEM',
+  },
+  paternalUncle: {
+    label: intl.get('form.patientSubmission.form.paternalUncle'),
+    value: 'PUNCHE',
+  },
+  sister: {
+    label: intl.get('form.patientSubmission.form.sister'),
+    value: 'SIS',
+  },
+  son: {
+    label: intl.get('form.patientSubmission.form.son'),
+    value: 'SONC',
   },
 });
 
@@ -913,7 +851,7 @@ export const getFamilyRelationshipDisplayForCode = (code) => {
 };
 
 export const STATE_CLINICAL_IMPRESSION = {
-  IN_PROGRESS: 'in-progress',
   COMPLETED: 'completed',
   ENTERED_IN_ERROR: 'entered-in-error',
+  IN_PROGRESS: 'in-progress',
 };

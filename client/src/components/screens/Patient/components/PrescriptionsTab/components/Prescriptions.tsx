@@ -343,7 +343,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                     { consultation[index] != null ? consultation[index].practitioner.organization : DEFAULT_VALUE }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
-                    { prescription.test || DEFAULT_VALUE }
+                    { intl.get(prescription.test) || DEFAULT_VALUE }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
                     { prescription.note || DEFAULT_VALUE }
