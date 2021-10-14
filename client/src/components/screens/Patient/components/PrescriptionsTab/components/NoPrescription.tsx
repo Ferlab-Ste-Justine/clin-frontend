@@ -1,7 +1,7 @@
 import React from 'react';
-import { InfoCircleFilled, MedicineBoxOutlined } from '@ant-design/icons';
-import { Card, Button, Typography } from 'antd';
 import intl from 'react-intl-universal';
+import { InfoCircleFilled, MedicineBoxOutlined } from '@ant-design/icons';
+import { Button, Card, Typography } from 'antd';
 
 interface Props {
   onCreatePrescription: () => void
@@ -18,14 +18,11 @@ const NoPrescription: React.FC<Props> = ({ onCreatePrescription }) => (
           { intl.get('screen.patient.details.prescriptions.none.title') }
         </Typography.Title>
       </span>
-      <p className="prescriptions-tab__prescriptions-section__empty__description">
-        { intl.get('screen.patient.details.prescriptions.none.description') }
-      </p>
       <span className="prescriptions-tab__prescriptions-section__empty__button">
         <Button
-          type="primary"
-          onClick={onCreatePrescription}
           icon={<MedicineBoxOutlined />}
+          onClick={onCreatePrescription}
+          type="primary"
         >
           { intl.get('screen.patient.details.prescriptions.none.create') }
         </Button>
