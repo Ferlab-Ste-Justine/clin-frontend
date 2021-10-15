@@ -87,7 +87,7 @@ const SearchBar = ({ filters, options }: OwnProps) => {
     options,
     placeholder: 'KF-DSD, Neuroblastoma…',
 
-    tagRender: ({ value }: any) => (
+    tagRender: ({ value }: Record<string, any>) => (
       <Tag className={styles.tagSearchBar} closable key={value} onClose={() => handleClose(value)}>
         {codeFromKey(value)}
       </Tag>

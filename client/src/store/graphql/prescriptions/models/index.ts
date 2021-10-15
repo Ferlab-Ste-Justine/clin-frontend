@@ -1,10 +1,24 @@
+export interface GqlData {
+  cid: string;
+  code: string;
+  name: string;
+  status: string;
+}
 
-export type Results = {
-  data: GQLData | null;
-  loading: boolean;
+export type AggregationBuckets = {
+  buckets: [
+    {
+      key: string;
+      doc_count: number;
+    },
+  ];
+  stats: string;
 };
 
-export interface GQLData {
-  hits: any; //TODO refine type?
-  aggregations: any; //TODO refine type?
+export type Aggregations = Record<string, AggregationBuckets>
+export interface GqlResults {
+  data: GqlData[];
+  aggregations: Aggregations;
+  loading: boolean;
+  total: number;
 }

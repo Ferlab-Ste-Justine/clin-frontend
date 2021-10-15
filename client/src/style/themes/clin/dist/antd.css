@@ -5353,7 +5353,7 @@ a.ant-btn-sm {
 }
 .ant-collapse > .ant-collapse-item > .ant-collapse-header {
   position: relative;
-  padding: 12px 16px;
+  padding: 5px;
   color: #125a90;
   line-height: 1.5715;
   cursor: pointer;
@@ -5402,7 +5402,7 @@ a.ant-btn-sm {
   padding-left: 12px;
 }
 .ant-collapse-icon-position-right > .ant-collapse-item > .ant-collapse-header {
-  padding: 12px 16px;
+  padding: 5px;
   padding-right: 40px;
 }
 .ant-collapse-icon-position-right > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
@@ -5469,7 +5469,7 @@ a.ant-btn-sm {
   direction: rtl;
 }
 .ant-collapse-rtl .ant-collapse > .ant-collapse-item > .ant-collapse-header {
-  padding: 12px 16px;
+  padding: 5px;
   padding-right: 40px;
 }
 .ant-collapse-rtl.ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow svg {
@@ -25057,6 +25057,24 @@ div.ant-typography-edit-content.ant-typography-rtl {
 }
 .ant-table {
   font-size: 14px;
+}
+.ant-collapse > .ant-collapse-item {
+  border: none !important;
+}
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  display: flex;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
+.ant-collapse > .ant-collapse-item > .ant-collapse-header > :nth-child(2) {
+  flex-grow: 1;
+}
+.ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
+  color: #8a8da8;
+}
+.ant-checkbox {
+  top: 0;
 }
 .ant-btn-link {
   color: #1d8bc6;

@@ -12,6 +12,7 @@ import ContentContainer from './ContentContainer';
 import Sidebar from './SidebarPrescription';
 
 import styles from './SearchPrescription.module.scss';
+const { Title } = Typography;
 
 export const MAX_NUMBER_RESULTS = 1000;
 
@@ -19,7 +20,6 @@ const PrescriptionSearch = (): React.ReactElement => {
   const { filters: sqonFilters } = useFilters();
   const allSqons = getQueryBuilderCache('prescription-repo').state;
   const [currentPage, setCurrentPage] = useState(1);
-  const { Title } = Typography;
 
   const results = usePrescription({
     first: MAX_NUMBER_RESULTS,

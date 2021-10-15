@@ -5,20 +5,22 @@ import { State } from 'reducers';
 import { PrescriptionState } from 'reducers/prescriptionsGraphql';
 
 import { TableItemsCount } from 'components/screens/PatientSearch/components/TableItemsCount';
-import { Results } from 'store/graphql/prescriptions/models';
-import { hydratePrescriptions } from 'store/graphql/prescriptions/models/Prescription';
+import { GqlResults } from 'store/graphql/prescriptions/models';
 
 import { prescriptionsColumns } from './prescriptionColumns';
 
 import styles from './index.module.scss';
 
-type Props =  { results: Results, total: number, pagination: TablePaginationConfig };
+type Props =  {
+  results: GqlResults,
+  total: number,
+  pagination: TablePaginationConfig
+};
 
 const ITEM_PER_PAGE = 25;
 
 const PrescriptionTable = ({ pagination, results, total }: Props): React.ReactElement => {
   const prescriptionState: PrescriptionState = useSelector((state: State) => state.prescriptionsGraphql);
-  const tableData = hydratePrescriptions(results);
   const columns = prescriptionsColumns(prescriptionState.sqons);
 
   return (
@@ -32,7 +34,7 @@ const PrescriptionTable = ({ pagination, results, total }: Props): React.ReactEl
       <Table
         className={styles.table}
         columns={columns}
-        dataSource={tableData || []}
+        dataSource={results.data || []}
         pagination={{
           ...pagination,
           pageSize: ITEM_PER_PAGE,

@@ -2,7 +2,6 @@ import React from 'react';
 import intl from 'react-intl-universal';
 import { Link } from 'react-router-dom';
 import { ISyntheticSqon } from '@ferlab/ui/core/data/sqon/types';
-import { addToSqons } from '@ferlab/ui/core/data/sqon/utils';
 import { Badge, Button } from 'antd';
 
 import './tableColumn.scss';

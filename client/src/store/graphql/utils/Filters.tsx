@@ -1,4 +1,5 @@
 import React from 'react';
+import intl from 'react-intl-universal';
 import FilterContainer from '@ferlab/ui/core/components/filters/FilterContainer';
 import FilterSelector from '@ferlab/ui/core/components/filters/FilterSelector';
 import { IFilter, IFilterGroup } from '@ferlab/ui/core/components/filters/types';
@@ -12,7 +13,7 @@ import * as H from 'history';
 
 import { ExtendedMappingResults } from 'store/graphql/prescriptions/actions';
 
-import { GQLData, Results } from '../prescriptions/models';
+import { Aggregations, GqlResults } from '../prescriptions/models';
 
 export interface RangeAggs {
   stats: {
@@ -43,26 +44,24 @@ export type ExtendedMapping = {
   rangeStep?: number;
 };
 
-//TODO investigate: should only be called once per tab.
 export const generateFilters = (
   history:  H.History<any>,
-  results: Results,
+  results: GqlResults,
   extendedMapping: ExtendedMappingResults,
   className = '',
   showSearchInput = false,
   useFilterSelector = false,
 ): React.ReactElement[] =>
-  Object.keys(results.data?.aggregations || []).map((key) => {
+  Object.keys(results.aggregations || []).map((key) => {
     const found = (extendedMapping?.data || []).find(
       (f: any) => f.field === underscoreToDot(key),
     );
 
-    const filterGroup = getFilterGroup(found, results.data?.aggregations[key], []);
-    const filters = getFilters(results.data, key);
+    const filterGroup = getFilterGroup(found, results.aggregations[key], []);
+    const filters = getFilters(results.aggregations, key);
     const selectedFilters = getSelectedFilters(filters, filterGroup);
     const FilterComponent = useFilterSelector ? FilterSelector : FilterContainer;
 
-    // TODO: move to ferlab component
     return (
       <div className={className} key={key}>
         <FilterComponent
@@ -79,24 +78,27 @@ export const generateFilters = (
     );
   });
 
-const getFilters = (data: GQLData | null, key: string): IFilter[] => {
-  if (!data || !key) return [];
-
-  if (isTermAgg(data.aggregations[key])) {
-    return data.aggregations[key!].buckets.map((f: any) => ({
-      data: {
-        count: f.doc_count,
-        key: keyEnhanceBooleanOnly(f.key),
-      },
-      id: f.key,
-      name: keyEnhance(f.key),
-    }));
-  } else if (data.aggregations[key]?.stats) {
+const getFilters = (aggregations: Aggregations | null, key: string): IFilter[] => {
+  if (!aggregations || !key) return [];
+  if (isTermAgg(aggregations[key])) {
+    return  aggregations[key!].buckets.map((f: any) => {
+      const translatedKey = intl.get(`filters.${keyEnhance(f.key)}`);
+      const name = translatedKey ? translatedKey : f.key;
+      return {
+        data: {
+          count: f.doc_count,
+          key: keyEnhanceBooleanOnly(f.key),
+        },
+        id: f.key,
+        name: name
+      };
+    });
+  } else if (aggregations[key]?.stats) {
     return [
       {
         data: { max: 1, min: 0 },
         id: key,
-        name: keyEnhance(key),
+        name: intl.get(`filters.${keyEnhance(key)}`),
       },
     ];
   }
