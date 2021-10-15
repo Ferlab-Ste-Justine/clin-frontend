@@ -15,7 +15,7 @@ import { AutoComplete, Input, TablePaginationConfig } from 'antd';
 
 import PatientCreation from 'components/screens/PatientCreation';
 import { ExtendedMappingResults } from 'store/graphql/prescriptions/actions';
-import { Results } from 'store/graphql/prescriptions/models';
+import { GqlResults } from 'store/graphql/prescriptions/models';
 import { ExtendedMapping } from 'store/graphql/utils/Filters';
 
 import PrescriptionsTable from './table';
@@ -23,7 +23,7 @@ import PrescriptionsTable from './table';
 import styles from './ContentContainer.module.scss';
 
 export type PrescriptionResultsContainerProps = {
-  results: Results;
+  results: GqlResults;
   extendedMapping: ExtendedMappingResults;
   filters: ISyntheticSqon;
   pagination: TablePaginationConfig;
@@ -35,7 +35,7 @@ const ContentContainer = ({
   pagination,
   results
 }: PrescriptionResultsContainerProps): React.ReactElement => {
-  const total = results?.data?.hits?.total || 0;
+  const total = results.total || 0;
   const history = useHistory();
   const dispatch = useDispatch()
   const dictionary: IDictionary = {
@@ -52,17 +52,16 @@ const ContentContainer = ({
         <AutoComplete
           allowClear
           autoFocus
-          className="autocomplete"
+          className={styles.autoComplete}
           defaultActiveFirstOption={false}
           onChange={() => {
             dispatch(autoCompletePatients('partial', null, 1, 25));
           }}
           options={
-            results.data?.hits.edges.map(
-              (v:any) => ({ label: v.node.cid, value: v.node.status })
+            results.data.map(
+              (v) => ({ label: v.cid, value: v.status })
             )
           }
-          style={{ width: '100%' }}
         >
           <Input
             placeholder={intl.get('screen.patientsearch.placeholder')}

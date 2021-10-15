@@ -4,15 +4,14 @@ import { ISqonGroupFilter } from '@ferlab/ui/core/data/sqon/types';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 
 import { ExtendedMappingResults } from 'store/graphql/prescriptions/actions';
-import { Results } from 'store/graphql/prescriptions/models';
+import { GqlResults } from 'store/graphql/prescriptions/models';
 
 import SidebarFilters from './SidebarFilters';
 
 import styles from './Sidebar.module.scss';
 
-
 export type SidebarData = {
-  results: Results;
+  results: GqlResults;
   extendedMapping: ExtendedMappingResults;
 };
 

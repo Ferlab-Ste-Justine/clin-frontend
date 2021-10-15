@@ -5,8 +5,8 @@ import { InfoCircleOutlined, ReadOutlined } from '@ant-design/icons';
 import { ISqonGroupFilter } from '@ferlab/ui/core/data/sqon/types';
 import { Col, Row, Tooltip } from 'antd';
 
-import { ExtendedMappingResults, usePrescriptionSearch } from 'store/graphql/prescriptions/actions';
-import { Results } from 'store/graphql/prescriptions/models';
+import { ExtendedMappingResults, usePrescription } from 'store/graphql/prescriptions/actions';
+import { GqlResults } from 'store/graphql/prescriptions/models';
 import { generateFilters } from 'store/graphql/utils/Filters';
 
 import SearchBar from './SearchBar';
@@ -16,7 +16,7 @@ import style from './SidebarFilter.module.scss';
 
 export type SidebarFilterProps = {
   filters: ISqonGroupFilter;
-  results: Results;
+  results: GqlResults;
   extendedMapping: ExtendedMappingResults;
 };
 
@@ -35,18 +35,17 @@ const SidebarFilters = ({
   filters,
   results
 }: SidebarFilterProps): React.ReactElement => {
-  const data = results;
   const options: ItemProps[] = [];
   const history = useHistory();
 
-  const prescriptions = usePrescriptionSearch({
+  const prescriptions = usePrescription({
     first: MAX_NUMBER_RESULTS,
     offset: 0,
     sqon: sqon,
   });
 
   if (prescriptions && prescriptions.data) {
-    prescriptions.data.hits.edges.forEach((n: any) =>
+    results.data.forEach((n) =>
       options.push({
         label: (
           <>
@@ -55,13 +54,13 @@ const SidebarFilters = ({
                 <ReadOutlined />
               </Col>
               <Col span={22}>
-                <div className={style.searchDropdownCode}>{n.node.code}</div>
-                <div className={style.searchDropdownName}>{n.node.name}</div>
+                <div className={style.searchDropdownCode}>{n.code}</div>
+                <div className={style.searchDropdownName}>{n.name}</div>
               </Col>
             </Row>
           </>
         ),
-        value: `${n.node.code}|${n.node.name}`,
+        value: `${n.code}|${n.name}`,
       }),
     );
   }
@@ -81,7 +80,7 @@ const SidebarFilters = ({
         </Row>
         {options.length ? <SearchBar filters={filters} options={options} /> : <div />}
       </div>
-      {generateFilters(history, data, extendedMapping)}
+      {generateFilters(history, results, extendedMapping)}
     </>
   );
 };

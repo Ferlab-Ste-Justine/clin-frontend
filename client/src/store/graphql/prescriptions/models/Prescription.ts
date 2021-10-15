@@ -1,9 +1,21 @@
-import { HitsResultsDataCategory } from '../actions';
+import { GqlData } from '.';
 
-import { Results } from '.';
+export type DataCategory = {
+  data_category: string;
+  count: number;
+};
 
-export type PrescriptionsResult = {
-  kf_id: string;
+type HitsResultsDataCategory = {
+  hits: {
+    edges: [
+      {
+        node: DataCategory;
+      },
+    ];
+  };
+};
+export interface PrescriptionsResult extends GqlData {
+  cid: string;
   name: string;
   domain: string[];
   score: string;
@@ -14,17 +26,6 @@ export type PrescriptionsResult = {
   data_access_authority: string;
   external_id: string;
 };
-
-export type DataCategory = {
-  data_category: string;
-  count: number;
-};
-
-export const hydratePrescriptions = (results: Results): PrescriptionsResult[] =>
-  results.data?.hits.edges.map((edge: any) => ({
-      ...edge.node,
-      key: edge.node.cid
-    }));
 
 export const fields = [
   'status',

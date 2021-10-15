@@ -1,16 +1,19 @@
-import { DataCategory, PrescriptionsResult } from 'store/graphql/prescriptions/models/Prescription';
+import { PrescriptionsResult } from 'store/graphql/prescriptions/models/Prescription';
 import { ExtendedMapping } from 'store/graphql/utils/Filters';
 import { useLazyResultQuery } from 'store/graphql/utils/query';
 
-import { INDEX_EXTENDED_MAPPING, PRESCRIPTIONS_QUERY, PRESCRIPTIONS_SEARCH_QUERY } from './queries';
+import { AggregationBuckets, GqlResults } from './models';
+import { INDEX_EXTENDED_MAPPING, PRESCRIPTIONS_QUERY } from './queries';
 
-type AggregationBuckets = {
-  buckets: [
-    {
-      key: string;
-      doc_count: number;
-    },
-  ];
+
+type ArrangerHits = {
+  node: PrescriptionsResult;
+};
+
+export type QueryVariable = {
+  sqon: any;
+  first: number; // number of element to fetch
+  offset: number; // start from offset number of elements
 };
 
 type AggregationResults = {
@@ -20,67 +23,34 @@ type AggregationResults = {
   program: AggregationBuckets;
 };
 
-type HitsResults = {
-  edges: [
-    {
-      node: PrescriptionsResult;
-    },
-  ];
+export interface PrescriptionsResults extends GqlResults {
+  data: PrescriptionsResult[];
+  aggregations: AggregationResults;
+  loading: boolean;
   total: number;
 };
 
-export type HitsResultsDataCategory = {
-  hits: {
-    edges: [
-      {
-        node: DataCategory;
-      },
-    ];
-  };
-};
-
-type PrescriptionsPageData = {
-  aggregations: AggregationResults;
-  hits: HitsResults;
-};
-
-export type ExtendedMappingResults = {
-  loading: boolean;
-  data: ExtendedMapping[];
-};
-
-export type PrescriptionsResults = {
-  data: PrescriptionsPageData | null;
-  loading: boolean;
-};
-
-
-export type QueryVariable = {
-  sqon: any;
-  first: number; // number of element to fetch
-  offset: number; // start from offset number of elements
-};
+const hydratePrescriptions = (results: ArrangerHits[]): PrescriptionsResult[] =>
+  results.map((edge: any) => ({
+      ...edge.node,
+      key: edge.node.cid
+    }));
 
 export const usePrescription = (variables: QueryVariable): PrescriptionsResults => {
   const { loading, result } = useLazyResultQuery<any>(PRESCRIPTIONS_QUERY, {
     variables: variables,
   });
-
   return {
-    data: result?.Prescriptions || null,
+    aggregations: result?.Prescriptions.aggregations,
+    data: hydratePrescriptions(result?.Prescriptions.hits.edges || []),
     loading,
+    total: result?.Prescriptions.hits.total
   };
 };
 
-export const usePrescriptionSearch = (variables: QueryVariable): PrescriptionsResults => {
-  const { loading, result } = useLazyResultQuery<any>(PRESCRIPTIONS_SEARCH_QUERY, {
-    variables: variables,
-  });
-
-  return {
-    data: result?.Prescriptions || null,
-    loading,
-  };
+export type ExtendedMappingResults = {
+  loading: boolean;
+  data: ExtendedMapping[];
 };
 
 export const usePrescriptionMapping = (): ExtendedMappingResults => {
