@@ -12,7 +12,7 @@ import {
 function* navigateToVariantDetailsScreen(action) {
   try {
     const { tab, uid } = action.payload;
-    let url = Routes.getPatientPath(uid);
+    let url = Routes.getVariantPath(uid);
     if (tab) { url += `/#${tab}`; }
 
     yield put(push(url));
