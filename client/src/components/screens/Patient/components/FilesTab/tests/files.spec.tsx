@@ -4,7 +4,7 @@ import AppTest from 'AppTest';
 
 import FilesTab from 'components/screens/Patient/components/FilesTab';
 import { manyFilesData } from 'components/screens/Patient/components/FilesTab/tests/mockData';
-import {getFilesData} from 'store/graphql/files/actions'
+import {useFilesData} from 'store/graphql/files/actions'
 import ApolloProvider from 'store/providers/apollo';
 
 
@@ -22,7 +22,7 @@ describe('PatientFiles', () => {
 
   beforeEach(() => {
     console.error = jest.fn();
-    (getFilesData as jest.Mock).mockReset();
+    (useFilesData as jest.Mock).mockReset();
   });
 
   afterEach(() => {
@@ -32,7 +32,7 @@ describe('PatientFiles', () => {
   test('shoud show empty page when no file', async () => {
 
 
-    (getFilesData as jest.Mock).mockImplementation(() =>
+    (useFilesData as jest.Mock).mockImplementation(() =>
       ({ loading: false, results: {"id": "Patient/QA-PA-00002/_history/4"}})
     );
 
@@ -44,7 +44,7 @@ describe('PatientFiles', () => {
 
   test('should display a table with all files', async () => {
 
-    (getFilesData as jest.Mock).mockImplementation(() =>(manyFilesData));
+    (useFilesData as jest.Mock).mockImplementation(() =>(manyFilesData));
 
     render(
       renderComponents
