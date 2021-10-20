@@ -3,8 +3,7 @@ import get from 'lodash/get';
 import { Extension } from './fhir/types';
 import { ParsedPatientData } from './providers/types';
 import api from './api';
-
-const FAMILY_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
+import { FAMILY_RELATION_EXT_URL, FAMILY_EXT_URL } from '../store/urls';
 
 export const isMrnUnique = async (
   mrnFile?: string,
@@ -44,3 +43,22 @@ export const getFamilyMembersFromPatientDataResponse = (patientDataResponse: any
 
 export const isParsedPatientProband = (patient: ParsedPatientData): boolean =>
   !!patient && patient.proband?.toLowerCase() === 'proband';
+
+export const removeSpecificFamilyRelation = (
+  familyRelationId: string,
+  patientExtension: Extension[],
+): Extension[] => {
+  if (!familyRelationId || !patientExtension?.length) {
+    return [];
+  }
+  return patientExtension.reduce<Extension[]>((accumulator, ext) => {
+    if (ext.url === FAMILY_RELATION_EXT_URL) {
+      const relation = ext.extension?.find((ext) => ext.url === 'subject');
+      const patientIdWithPrefix = relation?.valueReference?.reference;
+      if (patientIdWithPrefix && patientIdWithPrefix.includes('/' + familyRelationId)) {
+        return [...accumulator];
+      }
+    }
+    return [...accumulator, { ...ext }];
+  }, []);
+};

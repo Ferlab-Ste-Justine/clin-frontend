@@ -6,7 +6,10 @@ import Api, { ApiError } from '../helpers/api';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 import { getExtension } from '../helpers/fhir/builder/Utils';
 import { isAlreadyProband, makeExtensionProband } from '../helpers/fhir/patientHelper';
-import { getFamilyMembersFromPatientDataResponse } from '../helpers/patient';
+import {
+  getFamilyMembersFromPatientDataResponse,
+  removeSpecificFamilyRelation,
+} from '../helpers/patient';
 import { FamilyActionStatus } from '../reducers/patient';
 
 const getIdsFromPatient = (data) => {
@@ -306,33 +309,8 @@ function* removeParent(action) {
 
     const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
 
-    const extToDeleteIndex = patientToUpdate.extension.findIndex((ext) =>
-      ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation'
-        ? ext.extension
-            .find((extension) => extension.url === 'subject')
-            ?.valueReference.reference.indexOf(parentId) != null
-        : false,
-    );
-
-    if (extToDeleteIndex !== -1) {
-      const relationExt = patientToUpdate.extension[extToDeleteIndex].extension.find(
-        (ext) => ext.url === 'relation',
-      );
-      const relation = get(relationExt, 'valueCodeableConcept.coding[0].code');
-
-      if (relation != null) {
-        patientToUpdate.extension = patientToUpdate.extension.filter((ext) => {
-          if (ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation') {
-            const extRelation = ext.extension.find((extension) => extension.url === 'relation');
-            return get(extRelation, 'valueCodeableConcept.coding[0].code') !== relation;
-          }
-          return true;
-        });
-      } else {
-        patientToUpdate.extension.splice(extToDeleteIndex, 1);
-      }
-    }
-
+    const patientToUpdateExtension = patientToUpdate.extension;
+    patientToUpdate.extension = removeSpecificFamilyRelation(parentId, patientToUpdateExtension);
     const newGroupResponse = yield Api.createGroup(parentId);
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, newGroupResponse.payload.data.id);
