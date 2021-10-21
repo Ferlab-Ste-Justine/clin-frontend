@@ -46,6 +46,7 @@ export const initialPatientSubmissionState = {
     eth: {},
     cons: {},
     consents: [],
+    supervisor: {},
     practitioner: '',
     resident: '',
     requesterId: null,
@@ -184,6 +185,9 @@ const patientSubmissionReducer = (
       break;
     case actions.PATIENT_SUBMISSION_LOCAL_PRACTITIONER:
       draft.local.practitioner = action.payload.practitioner;
+      break;
+    case actions.PATIENT_SUBMISSION_LOCAL_SUPERVISOR:
+      draft.local.supervisor = action.payload.supervisor;
       break;
     case actions.PATIENT_SUBMISSION_LOCAL_RESIDENT:
       draft.local.resident = action.payload.resident;

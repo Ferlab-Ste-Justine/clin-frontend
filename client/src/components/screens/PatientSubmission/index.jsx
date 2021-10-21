@@ -10,6 +10,7 @@ import {
   assignServiceRequestResident,
   saveLocalCgh,
   saveLocalIndic,
+  saveLocalSupervisor,
   saveLocalPractitioner,
   saveLocalResident,
   saveLocalSummary,
@@ -70,11 +71,25 @@ function PatientSubmissionScreen(props) {
     isSubmissionVisible: false,
     isSubmitting: false,
     practitionerOptions: [],
+    selectedSupervisor: get(props, 'localStore.supervisor', undefined),
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     selectedResident: get(props, 'localStore.residentId', undefined),
     submitFailed: false,
     valid: false,
   });
+
+  React.useEffect(() => {
+    validate();
+  });
+
+  React.useEffect(() => {
+    if (state.isSubmitting) {
+      saveSubmission(true)
+    }
+    return () => {
+      setState({...state, isSubmitting: false})
+    }
+  }, [state.isSubmitting])
 
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
 
@@ -151,12 +166,12 @@ function PatientSubmissionScreen(props) {
         };
 
         if (checkTest()
-            && checkHpo()
-            && checkCghInterpretationValue()
-            && checkFamilyHistory()
-            && values.indication
-            && checkMRN()
-            && !hasError
+          && checkHpo()
+          && checkCghInterpretationValue()
+          && checkFamilyHistory()
+          && values.indication
+          && checkMRN()
+          && !hasError
         ) {
           return false;
         }
@@ -168,9 +183,9 @@ function PatientSubmissionScreen(props) {
           return true;
         }
         const isResidentValid = values.prescribingDoctorType === 'doctor'
-         || (
-           values.prescribingDoctorType === 'resident' && localStore.resident != null && localStore.resident.length > 0
-         );
+          || (
+            values.prescribingDoctorType === 'resident' && localStore.resident != null && localStore.resident.length > 0
+          );
 
         if (localStore.practitioner != null && localStore.practitioner.length > 0 && isResidentValid) {
           return false;
@@ -207,9 +222,6 @@ function PatientSubmissionScreen(props) {
     validate();
   };
 
-  React.useEffect(() => {
-    validate();
-  });
   const { localStore } = props;
 
   const createCGHResourceList = (content, patientId) => {
@@ -344,6 +356,7 @@ function PatientSubmissionScreen(props) {
 
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
       const { status } = localStore;
+      const { selectedSupervisor } = state;
 
       const batch = {
         clinicalImpressions: [],
@@ -356,7 +369,7 @@ function PatientSubmissionScreen(props) {
         update: get(localStore, 'serviceRequest.id') != null,
       };
 
-      const allAnalysis = content['analysis.tests'].filter((item) => item != null);
+      const allAnalysis = content['analysis.tests']?.filter((item) => item != null);
       batch.length = get(allAnalysis, 'length', 0);
 
       if (batch.length === 0) {
@@ -379,6 +392,7 @@ function PatientSubmissionScreen(props) {
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
           .withSubmitted(submitted, userPractitioner.id, status)
+          .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
           .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
           .withNote(content['analysis.comments'])
           .build());
@@ -439,6 +453,17 @@ function PatientSubmissionScreen(props) {
     return currentPageIndex === 0;
   };
 
+  const handleSupervisorSelected = (supervisorSelected) => {
+    const { actions } = props;
+    if (supervisorSelected) {
+      actions.saveLocalSupervisor(supervisorSelected);
+      setState((currentState) => ({
+        ...currentState,
+        selectedSupervisor: supervisorSelected,
+      }));
+    }
+  };
+
   const handlePractitionerOptionSelected = (practitionerSelected) => {
     const { actions } = props;
 
@@ -459,8 +484,6 @@ function PatientSubmissionScreen(props) {
     const { actions } = props;
 
     if (residentSelected != null) {
-
-      console.log("foo-resident", residentSelected.id)
       
       const practitionerText = genPractitionerKey(residentSelected);
       actions.saveLocalResident(practitionerText);
@@ -516,21 +539,20 @@ function PatientSubmissionScreen(props) {
   };
 
   const onFormFinish = (isOnLastPage) => {
-      /*if (isOnLastPage) {
-        setState({
-          ...state,
-          isSubmitting: true,
-        });
-        saveSubmission(true);
-      } else {
-        next();
-      }*/
-      setState({...state, isSubmissionVisible: true})
+    /*if (isOnLastPage) {
+      setState({
+        ...state,
+        isSubmitting: true,
+      });
+      saveSubmission(true);
+    } else {
+      next();
+    }*/
+    setState({ ...state, isSubmissionVisible: true })
   };
 
   const handleSubmission = () => {
-    setState({...state, isSubmissionVisible: false, isSubmitting: true})
-    saveSubmission(true);
+    setState((currentState) => ({ ...currentState, isSubmissionVisible: false, isSubmitting: true }));
   }
 
   const onHpoSelected = (code, display) => {
@@ -590,7 +612,6 @@ function PatientSubmissionScreen(props) {
   const initialPractitionerValue = get(localStore, 'practitioner', '');
   const initialResidentValue = get(localStore, 'resident', '');
   const userRole = findPractitionerRoleByOrganizationRef(userRoles, form.getFieldValue('organization'))
-  console.log("foo-role", userRole)
 
   const pages = [
     {
@@ -737,8 +758,7 @@ function PatientSubmissionScreen(props) {
         onSubmit={() => handleSubmission()}
         open={state.isSubmissionVisible}
         doctorOptions={{
-          initialValue: initialPractitionerValue,
-          optionSelected: handleResidentOptionSelected,
+          optionSelected: handleSupervisorSelected,
         }}
       />
       <ConfirmCancelModal
@@ -762,6 +782,7 @@ const mapDispatchToProps = (dispatch) => ({
     navigateToPatientSearchScreen,
     saveLocalCgh,
     saveLocalIndic,
+    saveLocalSupervisor,
     saveLocalPractitioner,
     saveLocalResident,
     saveLocalSummary,

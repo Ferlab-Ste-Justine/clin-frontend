@@ -5,6 +5,7 @@ import {
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const EXTENSION_RESIDENT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident';
+const EXTENSION_RESIDENT_SUPERVISOR = "http://fhir.cqgc.ferlab.bio/StructureDefinition/resident-supervisor";
 
 const defaultSR = (): Partial<ServiceRequest> => ({
   resourceType: 'ServiceRequest',
@@ -66,6 +67,25 @@ export class ServiceRequestBuilder {
               reference: `Organization/${organization}`,
             },
           }];
+      }
+      return this;
+    }
+  
+    public withSupervisor(id?: string) {
+      if (id != null) {
+        const ext = getExtension(this.serviceRequest, EXTENSION_RESIDENT_SUPERVISOR);
+        if (ext) {
+          ext.valueReference = {
+            reference: `Practitioner/${id}`,
+          };
+        } else {
+          this.serviceRequest.extension?.push({
+            url: EXTENSION_RESIDENT_SUPERVISOR,
+            valueReference: {
+              reference: `Practitioner/${id}`,
+            },
+          });
+        }
       }
       return this;
     }

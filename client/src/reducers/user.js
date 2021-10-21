@@ -57,7 +57,6 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.practitionerData.practitionerRoles = action.payload.practitionerData.practitionerRoles;
       draft.practitionerData.practitionerRole = head(action.payload.practitionerData.practitionerRoles); // TODO retro-compatibility to be removed
       draft.practitionerData.practitioner = action.payload.practitionerData.practitioner;
-      console.log("foo4", draft.practitionerData.practitionerRoles, draft.practitionerData.practitionerRole, draft.practitionerData.practitioner)
       break;
 
     case actions.USER_PROFILE_UPDATE_SUCCEEDED:

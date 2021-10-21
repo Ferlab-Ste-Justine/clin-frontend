@@ -14,8 +14,6 @@ export const getUserPractitionerData = async (response: AxiosResponse): Promise<
     `${window.CLIN.fhirBaseUrl}/PractitionerRole?practitioner=${practitionerId}&_include=PractitionerRole:practitioner`,
   );
 
-  console.log("foo1", result)
-
   if ((<any>result).error != null) {
     return Promise.reject();
   }

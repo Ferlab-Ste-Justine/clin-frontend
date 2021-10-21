@@ -16,8 +16,7 @@ interface Props {
   open: boolean;
   role: PractitionerRole;
   doctorOptions: {
-    optionSelected: (value: PractitionerData | null) => void;
-    initialValue: string;
+    optionSelected: (value: PractitionerData | undefined) => void;
   };
   onSubmit: () => void;
   onClose: () => void;
@@ -29,8 +28,6 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
   const [supervisor, setSupervisor] = useState<PractitionerData>();
   const [doctors, setDoctors] = useState<PractitionerData[]>([]);
 
-  console.log('foomodal', role, isResident);
-
   const searchTermChanged = async (term: string) => {
     setDoctors(await searchPractitioner(term));
   };
@@ -41,10 +38,8 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
   const handleSubmit = () => {
     if (requireFormValidation) {
       form.validateFields().then((_) => {
-        if (supervisor) {
-          doctorOptions.optionSelected(supervisor);
-          onSubmit();
-        }
+        doctorOptions.optionSelected(supervisor);
+        onSubmit();
       });
     } else {
       onSubmit();
@@ -97,7 +92,6 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
               >
                 <AutoComplete
                   allowClear
-                  defaultValue={doctorOptions.initialValue}
                   options={doctors.map(mapPractitionerToOption)}
                   onSelect={(selectedValue: string) => {
                     const practitionerSelected = doctors.find(

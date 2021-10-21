@@ -101,7 +101,6 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
   const [startingIndex] = useState(getPrescriptionKey(prescriptions, openedPrescriptionId));
 
   const consultation = patientState.consultation!.map((cons) => cons.parsed);
-  console.log("foo-consulation", patientState.consultation)
   const familyHistories = patientState.fmhs!.map((fmh) => fmh.parsed);
   const hpos = patientState.hpos!.map((hpo) => hpo.parsed);
   const patient = patientState.patient.parsed;

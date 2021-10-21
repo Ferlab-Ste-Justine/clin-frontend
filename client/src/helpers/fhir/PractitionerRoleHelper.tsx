@@ -11,7 +11,6 @@ const buildOrganizationRef = (organizationRef: string) => {
 
 export const findPractitionerRoleByOrganizationRef = (roles: PractitionerRole[], organizationRef: string): PractitionerRole | undefined => {
   const ref = buildOrganizationRef(organizationRef);
-  console.log("fooroles", roles, ref)
   return roles && organizationRef ? roles.find((role) => role.organization.reference === ref) : undefined
 }
 

@@ -81,7 +81,6 @@ export class DataExtractor {
         const organization = this.maybeExtractResource<Organization>(resource, 'Organization')
 
         if (practitionerRole && this.extractId(get(practitionerRole, 'practitioner.reference')) === id) {
-          console.log("foo2", practitionerRole)
           return {
             role: practitionerRole,
             organization: organization,
