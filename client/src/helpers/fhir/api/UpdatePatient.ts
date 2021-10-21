@@ -40,6 +40,8 @@ export const updatePatientPractitioners = async (
       `${window.CLIN.fhirBaseUrl}/PractitionerRole?practitioner=${getReferenceId(serviceRequest.requester)}`,
     );
 
+    console.log("foo3", response)
+
     updatedPatient.generalPractitioner = [
       ...updatedPatient.generalPractitioner,
       getPractitionerRoleReference(response.data.entry[0].resource.id),

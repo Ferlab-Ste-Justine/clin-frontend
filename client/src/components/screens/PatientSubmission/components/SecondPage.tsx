@@ -15,7 +15,7 @@ interface Props {
   }
 }
 
-async function searchPractitioner(term: string): Promise<PractitionerData[]> {
+export async function searchPractitioner(term: string): Promise<PractitionerData[]> {
   if (!term) {
     return [];
   }

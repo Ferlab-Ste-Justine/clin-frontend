@@ -184,6 +184,7 @@ interface Props {
 const PatientEditModal: React.FC<Props> = ({ isVisible, onClose }) => {
   const dispatch = useDispatch();
   const userRole = useSelector((state: State) => state.user.practitionerData.practitionerRole);
+  console.log("fooedit", userRole)
   const submissionStatus = useSelector((state: State) => state.patientEdition.status);
   const [form] = useForm();
   const patient = useSelector((state: State) => state.patient.patient.original);

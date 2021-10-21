@@ -27,6 +27,7 @@ import { ClinicalImpressionBuilder } from 'helpers/fhir/builder/ClinicalImpressi
 import { FamilyMemberHistoryBuilder } from 'helpers/fhir/builder/FMHBuilder';
 import { ObservationBuilder } from 'helpers/fhir/builder/ObservationBuilder.ts';
 import { ServiceRequestBuilder } from 'helpers/fhir/builder/ServiceRequestBuilder';
+import { findPractitionerRoleByOrganizationRef } from '../../../helpers/fhir/PractitionerRoleHelper';
 import {
   cghDisplay,
   createPractitionerResource,
@@ -46,6 +47,7 @@ import Layout from 'components/Layout';
 
 import ClinicalInformation from './components/ClinicalInformation';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
+import SubmissionModal from './components/SubmissionModal';
 import SecondPage from './components/SecondPage';
 
 import './style.scss';
@@ -65,6 +67,7 @@ function PatientSubmissionScreen(props) {
     fmhResources: get(props, 'observations.fmh'),
     hpoResources: get(props, 'observations.hpos'),
     isCancelConfirmVisible: false,
+    isSubmissionVisible: false,
     isSubmitting: false,
     practitionerOptions: [],
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
@@ -336,7 +339,7 @@ function PatientSubmissionScreen(props) {
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
-        actions, currentPatient, userPractitioner, userRole,
+        actions, currentPatient, userPractitioner, userRoles,
       } = props;
 
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
@@ -372,7 +375,7 @@ function PatientSubmissionScreen(props) {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withId(get(localStore, 'serviceRequest.id'))
           .withMrn(fullMRN[0], fullMRN[1])
-          .withRequester(state.selectedPractitioner)
+          .withRequester(userPractitioner.id)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
           .withSubmitted(submitted, userPractitioner.id, status)
@@ -456,6 +459,9 @@ function PatientSubmissionScreen(props) {
     const { actions } = props;
 
     if (residentSelected != null) {
+
+      console.log("foo-resident", residentSelected.id)
+      
       const practitionerText = genPractitionerKey(residentSelected);
       actions.saveLocalResident(practitionerText);
       const resource = createPractitionerResource(residentSelected);
@@ -510,7 +516,7 @@ function PatientSubmissionScreen(props) {
   };
 
   const onFormFinish = (isOnLastPage) => {
-      if (isOnLastPage) {
+      /*if (isOnLastPage) {
         setState({
           ...state,
           isSubmitting: true,
@@ -518,8 +524,14 @@ function PatientSubmissionScreen(props) {
         saveSubmission(true);
       } else {
         next();
-      }
+      }*/
+      setState({...state, isSubmissionVisible: true})
   };
+
+  const handleSubmission = () => {
+    setState({...state, isSubmissionVisible: false, isSubmitting: true})
+    saveSubmission(true);
+  }
 
   const onHpoSelected = (code, display) => {
     const { hpoResources } = state;
@@ -569,7 +581,7 @@ function PatientSubmissionScreen(props) {
   };
 
   const {
-    clinicalImpression, patient,
+    clinicalImpression, patient, userRoles,
   } = props;
   const {
     currentPageIndex, fmhResources, hpoResources, isSubmitting, submitFailed, valid,
@@ -577,6 +589,8 @@ function PatientSubmissionScreen(props) {
 
   const initialPractitionerValue = get(localStore, 'practitioner', '');
   const initialResidentValue = get(localStore, 'resident', '');
+  const userRole = findPractitionerRoleByOrganizationRef(userRoles, form.getFieldValue('organization'))
+  console.log("foo-role", userRole)
 
   const pages = [
     {
@@ -680,11 +694,6 @@ function PatientSubmissionScreen(props) {
                 type="error"
               />
             ) : null }
-          <Card bordered={false} className="step">
-            <Steps current={currentPageIndex}>
-              { pages.map((item) => <Step key={item.title} title={item.title} />) }
-            </Steps>
-          </Card>
 
           <Form
             form={form}
@@ -697,13 +706,6 @@ function PatientSubmissionScreen(props) {
             }
             <Card className="patientSubmission__form__footer">            
               <Row gutter={8}>
-                { !isFirstPage() && (
-                  <Col>
-                    <Button icon={<LeftOutlined />} onClick={previous}>
-                      { intl.get('screen.clinicalSubmission.previousButtonTitle') }
-                    </Button>
-                  </Col>
-                ) }
                 <Col>
                   <Button
                     disabled={isSubmitting}
@@ -711,9 +713,7 @@ function PatientSubmissionScreen(props) {
                     type="primary"
                   >
                     {
-                      isOnLastPage
-                        ? intl.get('form.patientSubmission.form.submit')
-                        : intl.get('screen.clinicalSubmission.nextButtonTitle')
+                      intl.get('form.patientSubmission.form.submit')
                     }
                   </Button>
                 </Col>
@@ -731,6 +731,16 @@ function PatientSubmissionScreen(props) {
           </Form>
         </div>
       </>
+      <SubmissionModal
+        onClose={() => setState((prevState) => ({ ...prevState, isSubmissionVisible: false }))}
+        role={userRole}
+        onSubmit={() => handleSubmission()}
+        open={state.isSubmissionVisible}
+        doctorOptions={{
+          initialValue: initialPractitionerValue,
+          optionSelected: handleResidentOptionSelected,
+        }}
+      />
       <ConfirmCancelModal
         onClose={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: false }))}
         onQuit={() => handleCancel()}
@@ -778,7 +788,7 @@ const mapStateToProps = (state) => ({
   search: state.search,
   serviceRequest: state.patientSubmission.serviceRequest,
   userPractitioner: state.user.practitionerData.practitioner,
-  userRole: state.user.practitionerData.practitionerRole,
+  userRoles: state.user.practitionerData.practitionerRoles,
 });
 
 export default connect(

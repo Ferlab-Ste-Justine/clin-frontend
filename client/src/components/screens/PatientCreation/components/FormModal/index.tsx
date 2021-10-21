@@ -151,6 +151,7 @@ const extractMrnData = (patient: Patient): MrnData | undefined => {
 const FormModal: React.FC<Props> = ({
   open, onClose, onCreated, onError, onExistingPatient, userRole, actions, patient, ramqChecked, patientCreationStatus,
 }) => {
+  console.log("foocreation", userRole)
   const [isCreating, setIsCreating] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFetusType, setIsFetusType] = useState(false);
