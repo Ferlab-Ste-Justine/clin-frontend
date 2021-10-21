@@ -20,7 +20,7 @@ const fhirLink = createHttpLink({
 });
 
 const arrangerLink = createHttpLink({
-  uri: `${ARRANGER_API}${PROJECT_ID}/graphql`,
+  uri: `${ARRANGER_API}/${PROJECT_ID}/graphql`,
 });
 
 const getAuthLink = () => (

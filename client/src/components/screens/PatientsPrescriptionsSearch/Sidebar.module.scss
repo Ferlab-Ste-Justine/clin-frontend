@@ -1,0 +1,68 @@
+@import 'style/themes/clin/_colors.scss';
+
+.siderWrapper {
+  overflow-y: auto;
+}
+
+.sider {
+  border-right: thin solid $gray-4;
+  min-width: 320px;
+  width: 420px;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+
+  &[data-collapsed='true'] {
+    min-width: 50px;
+    max-width: 50px;
+    width: 50px;
+  }
+}
+
+.siderContainer {
+  margin-right: 16px;
+  overflow-y: hidden;
+  max-height: 100%;
+  height: calc(100% - 18px);
+
+  &:first-child > span {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  & > .scrollView {
+    margin-top: 28px;
+    padding-bottom: 14px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    & > :not(:first-child) > div {
+      margin-top: 16px;
+    }
+  }
+
+  & :global(.ant-card) {
+    background-color: transparent;
+    border: none;
+    height: 100%;
+    min-height: auto;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  & :global(.ant-card.core-grid-card) :global(.ant-card-head),
+  :global(.ant-card-body) {
+    margin: 0;
+  }
+
+  & :global(.ant-card.core-grid-card) :global(.ant-card-body) {
+    margin: 0;
+    height: 40px;
+  }
+
+  & :global(.ant-collapse),
+  :global(.ant-collapse-item) {
+    background-color: $gray-1;
+    border: none;
+  }
+}

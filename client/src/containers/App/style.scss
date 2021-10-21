@@ -726,21 +726,6 @@ table{
   vertical-align: baseline;
 }
 
-//Collapse
-.ant-collapse-item{
-  border: none !important;
-}
-.ant-collapse-item-active{
-  .ant-collapse-header{
-    border-bottom: 1px solid $gray-5;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-  }
-}
-.ant-collapse-content-box{
-  padding: 24px !important;
-}
 //Tag
 [class="ant-tag"] {
   border: 1px solid $gray-4;

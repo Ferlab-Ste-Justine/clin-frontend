@@ -4238,7 +4238,7 @@ a.ant-btn-sm {
   list-style: none;
   font-feature-settings: 'tnum';
   position: relative;
-  background: #fff;
+  background: #ffffff;
   border-radius: 2px;
 }
 .ant-card-rtl {
@@ -5353,7 +5353,7 @@ a.ant-btn-sm {
 }
 .ant-collapse > .ant-collapse-item > .ant-collapse-header {
   position: relative;
-  padding: 12px 16px;
+  padding: 5px;
   color: #125a90;
   line-height: 1.5715;
   cursor: pointer;
@@ -5402,7 +5402,7 @@ a.ant-btn-sm {
   padding-left: 12px;
 }
 .ant-collapse-icon-position-right > .ant-collapse-item > .ant-collapse-header {
-  padding: 12px 16px;
+  padding: 5px;
   padding-right: 40px;
 }
 .ant-collapse-icon-position-right > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
@@ -5469,7 +5469,7 @@ a.ant-btn-sm {
   direction: rtl;
 }
 .ant-collapse-rtl .ant-collapse > .ant-collapse-item > .ant-collapse-header {
-  padding: 12px 16px;
+  padding: 5px;
   padding-right: 40px;
 }
 .ant-collapse-rtl.ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow svg {
@@ -20931,7 +20931,7 @@ span.ant-radio + * {
   border-top: 0;
 }
 .ant-table-cell-scrollbar {
-  box-shadow: 0 1px 0 1px #f8fafc;
+  box-shadow: 0 1px 0 1px #e3ebf2;
 }
 .ant-table-wrapper {
   clear: both;
@@ -21018,7 +21018,7 @@ span.ant-radio + * {
   color: #233750;
   font-weight: 500;
   text-align: left;
-  background: #f8fafc;
+  background: #e3ebf2;
   border-bottom: 1px solid #e1e8ef;
   transition: background 0.3s ease;
 }
@@ -22902,7 +22902,7 @@ tr.ant-table-expanded-row .ant-descriptions-view table {
   min-width: 40px;
 }
 .ant-transfer-customize-list .ant-table-wrapper .ant-table-small > .ant-table-content > .ant-table-body > table > .ant-table-thead > tr > th {
-  background: #f8fafc;
+  background: #e3ebf2;
 }
 .ant-transfer-customize-list .ant-table-wrapper .ant-table-small > .ant-table-content .ant-table-row:last-child td {
   border-bottom: 1px solid #e1e8ef;
@@ -25026,21 +25026,55 @@ div.ant-typography-edit-content.ant-typography-rtl {
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmSU5fBBc9.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/roboto/v29/KFOlCnqEu92Fr1MmSU5fBBc9.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxP.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/roboto/v29/KFOmCnqEu92Fr1Mu4mxP.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9fBBc9.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/roboto/v29/KFOlCnqEu92Fr1MmEU9fBBc9.ttf) format('truetype');
+}
+.ant-table-thead > tr > th {
+  background-color: #e3ebf2;
+  height: 40px;
+  padding: 0px 16px;
+}
+.ant-table-tbody > tr > td {
+  height: 40px;
+  padding: 0px 16px;
+  border: none;
+}
+.ant-table-tbody > tr:nth-child(odd) {
+  background-color: #f6f9fb;
+}
+.ant-table {
+  font-size: 14px;
+}
+.ant-collapse > .ant-collapse-item {
+  border: none !important;
+}
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  display: flex;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
+.ant-collapse > .ant-collapse-item > .ant-collapse-header > :nth-child(2) {
+  flex-grow: 1;
+}
+.ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
+  color: #8a8da8;
+}
+.ant-checkbox {
+  top: 0;
 }
 .ant-btn-link {
   color: #1d8bc6;
@@ -25062,7 +25096,4 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .ant-form-item-extra {
   font-size: 12px;
   margin-top: 2px;
-}
-.ant-table {
-  font-size: 14px;
 }

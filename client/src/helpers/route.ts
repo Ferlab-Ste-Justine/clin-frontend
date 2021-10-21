@@ -7,7 +7,7 @@ export class Routes {
   static MainSearch = `${ROOT}search`;
   static Patient = `${ROOT}${ROUTE_PATIENT}`;
   static PatientSearch = `${ROOT}${ROUTE_PATIENT}/${ROUTE_PATIENT_SEARCH}`;
-  static PatientSearchArranger = `${Routes.PatientSearch}_arranger`;
+  static PatientSearchArranger = `${Routes.PatientSearch}/graphql`;
   static PatientVariants = `${ROOT}${ROUTE_PATIENT}/:uid/variant`;
   static Root = `${ROOT}`;
   static Submission = `${ROOT}submission`;

@@ -1,0 +1,50 @@
+@import '~@ferlab/style/themes/default/theme.template';
+@import 'colors';
+
+$query-builder-bg: $gray-1;
+$query-builder-border-color: $gray-4;
+$query-builder-padding: 2.4rem;
+
+$query-bar-bg: $gray-3;
+$query-bar-bg-active: #e1f1f4;
+$query-bar-border-color: $gray-4;
+$query-bar-border-color-active: #c3e3e9;
+$query-bar-padding: 0.7rem 1.2rem;
+
+$query-bar-identifier: $gray-7;
+
+$query-pill-bg: $gray-5;
+
+$query-pill-button-hover-color: $query-default-action-hover-color;
+$query-pill-button-focus-color: $query-default-action-focus-color;
+
+$query-values-bg: $white;
+$query-values-button-hover-color: $query-default-action-hover-color;
+$query-values-button-focus-color: $query-default-action-focus-color;
+
+$query-combiner-button-hover-color: $query-default-action-hover-color;
+$query-combiner-button-focus-color: $query-default-action-focus-color;
+
+// SidebarMenu
+$sidebar-menu-width: 220px;
+$sidebar-menu-collapsed-width: 50px;
+$sidebar-menu-background-color: $cyan-7;
+$sidebar-menu-toggle-icon-size: 21px;
+
+$sidebar-menu-item-icon-size: 24px;
+$sidebar-menu-item-height: 50px;
+$sidebar-menu-item-text-color: $gray-1;
+$sidebar-menu-item-active-color: $gray-1;
+$sidebar-menu-item-hover-color: $gray-1;
+$sidebar-menu-item-hover-opacity: 0.8;
+
+$sidebar-content-panel-padding: 16px;
+$sidebar-content-panel-width: 320px;
+$sidebar-content-panel-close-icon-color: $cyan-7;
+$sidebar-content-panel-right-border: 1px solid $gray-5;
+$sidebar-content-panel-background-color: transparent;
+
+// Filters
+$filter-actions-border-color: $gray-4;
+$filter-actions-disabled-border-color: $gray-5;
+$filter-actions-disabled-background-color: $gray-3;
