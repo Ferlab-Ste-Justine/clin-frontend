@@ -1,9 +1,10 @@
 import get from 'lodash/get';
 
+import { ExtensionUrls } from 'store/urls';
+
 import { Extension } from './fhir/types';
 import { ParsedPatientData } from './providers/types';
 import api from './api';
-import { FAMILY_RELATION_EXT_URL, FAMILY_EXT_URL } from '../store/urls';
 
 export const isMrnUnique = async (
   mrnFile?: string,
@@ -28,7 +29,7 @@ export const getFamilyMembersFromPatientDataResponse = (patientDataResponse: any
     'payload.data.entry[0].resource.entry[0].resource.extension',
     [],
   );
-  const familyExt = extensions.find((ext: Extension) => ext.url === FAMILY_EXT_URL);
+  const familyExt = extensions.find((ext: Extension) => ext.url === ExtensionUrls.FamilyId);
   const familyId = get(familyExt, 'valueReference.reference', '').split('/')[1];
   const groupIndex = get(patientDataResponse, 'payload.data.entry[1].resource.entry', []).findIndex(
     (entry: any) => entry.fullUrl.includes(familyId),
@@ -52,7 +53,7 @@ export const removeSpecificFamilyRelation = (
     return [];
   }
   return patientExtension.reduce<Extension[]>((accumulator, ext) => {
-    if (ext.url === FAMILY_RELATION_EXT_URL) {
+    if (ext.url === ExtensionUrls.FamilyRelation) {
       const relation = ext.extension?.find((ext) => ext.url === 'subject');
       const patientIdWithPrefix = relation?.valueReference?.reference;
       if (patientIdWithPrefix && patientIdWithPrefix.includes('/' + familyRelationId)) {

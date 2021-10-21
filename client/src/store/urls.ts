@@ -1,3 +1,4 @@
-//TODO enums
-export const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
-export const FAMILY_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id';
+export enum ExtensionUrls {
+  FamilyRelation = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation',
+  FamilyId = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id'
+}

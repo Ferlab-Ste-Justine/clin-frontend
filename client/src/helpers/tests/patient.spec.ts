@@ -9,7 +9,7 @@ describe('Patient Helpers', () => {
       const rubbishId = '911';
       const extensionAfter = removeSpecificFamilyRelation(rubbishId, extensionWithFatherAndMother);
       expect(extensionWithFatherAndMother).toEqual(extensionAfter);
-      //make sure would output is not original
+      //make sure that output ref is different from input ref
       expect(Object.is(extensionWithFatherAndMother, extensionAfter)).toBeFalsy();
     });
     test('should return a new extension without the family relation while preserving the rest of the content', () => {
@@ -43,7 +43,7 @@ describe('Patient Helpers', () => {
         extensionWithFatherAndMother,
       );
       expect(extensionAfter).toEqual(expect.not.arrayContaining(fatherFamilyRelation));
-      //make sure would output is not original
+      //make sure that output ref is different from input ref
       expect(Object.is(extensionWithFatherAndMother, [])).toBeFalsy();
     });
   });
