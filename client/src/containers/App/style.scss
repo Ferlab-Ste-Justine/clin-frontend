@@ -346,8 +346,9 @@ div.ant-card {
         padding: 12px 0;
         transition: none !important;
         &:hover{
-          i{
-            color: $blue-7;
+          .tabName, i, .anticon > svg{
+            color: $blue-8;
+            fill: $blue-8;
           }
         }
         .tabName{
@@ -360,16 +361,19 @@ div.ant-card {
           margin-top:-2px;
           color: $gray-6;
         }
-
+        .anticon > svg {
+          fill: $gray-6;
+        }
       }
       .ant-tabs-tab-active{
-        .tabName, i{
-          color: $blue-8;
+        .tabName, i, .anticon > svg{
+          color: $blue-9;
+          fill: $blue-9;
         }
       }
       .ant-tabs-tab-disabled{
         &:hover{
-          i{
+          i, .anticon > svg{
             color: $gray-6 !important;
           }
         }

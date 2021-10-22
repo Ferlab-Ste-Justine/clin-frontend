@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: row;
 
+  .filterLoader {
+    padding: 24px;
+  }
+
   .patientVariantSidebar {
     :global([role='menuitem']) {
       color: white;

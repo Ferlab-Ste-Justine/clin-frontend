@@ -26,6 +26,7 @@ import { ExtendedMapping } from 'components/Utils/utils';
 import { VARIANT_INDEX } from 'components/screens/PatientVariant/v2/constants';
 
 import styles from './PatientVariant.module.scss';
+import { Spin } from 'antd';
 
 const DEFAULT_PAGE_NUM = 1;
 
@@ -39,6 +40,10 @@ enum FilterTypes {
 }
 
 const filtersContainer = (mappingResults: MappingResults, type: FilterTypes): React.ReactNode => {
+  if (mappingResults.loadingMapping) {
+    return <Spin className={styles.filterLoader} spinning />;
+  }
+
   switch (type) {
     case FilterTypes.Variant:
       return <VariantFilters mappingResults={mappingResults} />;
@@ -61,8 +66,6 @@ const PatientVariantScreen = () => {
   const { filters } = useFilters();
   const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const variantMappingResults = useGetExtendedMappings(VARIANT_INDEX);
-
-  console.log(variantMappingResults)
 
   const results = {
     loading: false,
@@ -152,6 +155,7 @@ const PatientVariantScreen = () => {
       <SidebarMenu className={styles.patientVariantSidebar} menuItems={menuItems} />
       <ScrollView className={styles.scrollContent}>
         <StackLayout vertical className={styles.pageContainer}>
+          <VariantPageContainer mappingResults={variantMappingResults} />
         </StackLayout>
       </ScrollView>
     </div>
