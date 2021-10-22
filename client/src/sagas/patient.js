@@ -5,12 +5,14 @@ import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 import { getExtension } from '../helpers/fhir/builder/Utils';
+import { EXTENSION_RESIDENT_SUPERVISOR } from '../helpers/fhir/builder/ServiceRequestBuilder'
 import { isAlreadyProband, makeExtensionProband } from '../helpers/fhir/patientHelper';
 import {
   getFamilyMembersFromPatientDataResponse,
   removeSpecificFamilyRelation,
 } from '../helpers/patient';
 import { FamilyActionStatus } from '../reducers/patient';
+import { DataExtractor } from '../helpers/providers/extractor';
 
 const getIdsFromPatient = (data) => {
   const patient = get(data, 'entry[0].resource.entry[0].resource');
@@ -32,6 +34,23 @@ const getIdsFromPatient = (data) => {
 
   return ids;
 };
+
+const getSupervisorIdsFromPatient = (data) => {
+  try {
+    const dataExtractor = new DataExtractor({ patientData: data });
+    const serviceRequests = dataExtractor.extractBundle('ServiceRequest').entry.map((e) => e.resource);
+    const ids = [... new Set(serviceRequests
+      .flatMap(sr => {
+        const ext = dataExtractor.getExtension(sr, EXTENSION_RESIDENT_SUPERVISOR)
+        const ref = get(ext, 'valueReference.reference')
+        return ref ? ref.split('/')[1] : []
+      }))]
+    return ids
+  } catch (e) {
+    console.warn('Failed to extract supervisors from patient', e)
+    return []
+  }
+}
 
 const buildPtIdToGrMemStatusCode = (rawResponse) =>
   !rawResponse || rawResponse.length === 0
@@ -120,10 +139,11 @@ function* fetch(action) {
       return;
     }
 
-    const [familyResponse, practitionersDataResponse, canEditResponse] = yield Promise.all([
+    const [familyResponse, practitionersDataResponse, canEditResponse, supervisorsResponse] = yield Promise.all([
       getFamily(patientDataResponse, action.payload.uid),
       Api.getPractitionersData(patientDataResponse.payload.data),
       Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data)),
+      Api.getPractitionerByIds(getSupervisorIdsFromPatient(patientDataResponse.payload.data))
     ]);
 
     yield put({
@@ -132,6 +152,7 @@ function* fetch(action) {
         family: familyResponse,
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDataResponse.payload?.data,
+        supervisors: supervisorsResponse.payload?.data
       },
       type: actions.PATIENT_FETCH_SUCCEEDED,
     });

@@ -92,7 +92,7 @@ const reducer = (state: PatientState = initialState, action: Action) =>
         const providerChain = new ProviderChain(action.payload);
         providerChain
           .add(new PatientProvider('patient'))
-          .add(new ServiceRequestProvider('prescriptions'))
+          .add(new ServiceRequestProvider('prescriptions', action.payload.supervisors))
           .add(new ClinicalImpressionProvider('consultation'))
           .add(new HPOProvider('hpos'))
           .add(new FMHProvider('fmhs'));

@@ -314,16 +314,6 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                   <DetailsRow label={intl.get('screen.patient.details.prescription.submissionDate')}>
                     { prescription.date ? moment(prescription.date).format('YYYY-MM-DD') : DEFAULT_VALUE }
                   </DetailsRow>
-                  <DetailsRow label={intl.get('screen.patient.details.prescription.submittedBy')}>
-                    { consultation[index] != null ? (
-                      <span className="prescriptions-tab__prescriptions-section__more-info">
-                        {
-                          formatName(consultation[index].practitioner.lastName,
-                            consultation[index].practitioner.firstName)
-                        }
-                      </span>
-                    ) : DEFAULT_VALUE }
-                  </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
                     { prescription.requester != null && prescription.requester.formattedName !== 'N/A' ? (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
@@ -337,7 +327,13 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                           <InfoCircleOutlined />
                         </Popover>
                       </span>
-                    ) : DEFAULT_VALUE }
+                    ) : DEFAULT_VALUE}
+                     { prescription.supervisor && (
+                      <span className="prescriptions-tab__prescriptions-section__more-info">
+                       <Divider type="vertical" />
+                        {formatName(prescription.supervisor.lastName, prescription.supervisor.firstName) }
+                      </span>
+                    )}
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.hospital')}>
                     { consultation[index] != null ? consultation[index].practitioner.organization : DEFAULT_VALUE }
