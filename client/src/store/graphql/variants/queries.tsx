@@ -5,96 +5,13 @@ import { dotToUnderscore, underscoreToDot } from '@ferlab/ui/core/data/arranger/
 import { MappingResults } from 'store/graphql/utils/actions';
 
 export const VARIANT_QUERY = gql`
-  query VariantInformation(
-    $sqon: JSON
-    $pageSize: Int
-    $offset: Int
-    $sort: [Sort]
-    $studiesSize: Int
-  ) {
-    variants {
+  query VariantInformation($sqon: JSON, $pageSize: Int, $offset: Int, $sort: [Sort]) {
+    Variants {
       hits(filters: $sqon, first: $pageSize, offset: $offset, sort: $sort) {
         total
         edges {
           node {
             id
-            hgvsg
-            hash
-            locus
-            variant_class
-            clinvar {
-              clinvar_id
-              clin_sig
-            }
-            rsnumber
-            participant_number
-            participant_frequency
-            participant_total_number
-            consequences {
-              hits {
-                edges {
-                  node {
-                    symbol
-                    canonical
-                    vep_impact
-                    symbol
-                    consequences
-                    aa_change
-                    impact_score
-                  }
-                }
-              }
-            }
-            frequencies {
-              internal {
-                lower_bound_kf {
-                  homozygotes
-                  af
-                  an
-                  ac
-                  heterozygotes
-                }
-                upper_bound_kf {
-                  homozygotes
-                  af
-                  an
-                  ac
-                  heterozygotes
-                }
-              }
-            }
-            studies {
-              hits {
-                edges {
-                  node {
-                    study_id
-                    participant_ids
-                    participant_number
-                  }
-                }
-                total
-              }
-            }
-            genes {
-              hits {
-                edges {
-                  node {
-                    symbol
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    studies {
-      hits(first: $studiesSize) {
-        edges {
-          node {
-            id
-            code
-            domain
           }
         }
       }
@@ -104,7 +21,7 @@ export const VARIANT_QUERY = gql`
 
 export const TAB_FREQUENCIES_QUERY = gql`
   query GetFrequenciesTabVariant($sqon: JSON, $studiesSize: Int) {
-    variants {
+    Variants {
       hits(filters: $sqon) {
         edges {
           node {
@@ -209,7 +126,7 @@ export const TAB_FREQUENCIES_QUERY = gql`
 
 export const TAB_SUMMARY_QUERY = gql`
   query GetSummaryTabVariant($sqon: JSON) {
-    variants {
+    Variants {
       hits(filters: $sqon) {
         total
         edges {
@@ -307,7 +224,7 @@ export const TAB_SUMMARY_QUERY = gql`
 
 export const TAB_CLINICAL_QUERY = gql`
   query GetClinicalTabVariant($sqon: JSON) {
-    variants {
+    Variants {
       hits(filters: $sqon) {
         edges {
           node {
@@ -412,7 +329,7 @@ export const VARIANT_AGGREGATION_QUERY = (aggList: string[], mappingResults: Map
 
   return gql`
       query VariantInformation($sqon: JSON) {
-        variants {
+        Variants {
            aggregations (filters: $sqon, include_missing:false){
             ${generateAggregations(extendedMappingsFields)}
           }

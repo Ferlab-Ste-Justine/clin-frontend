@@ -1,9 +1,10 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import QueryBuilder from '@ferlab/ui/core/components/QueryBuilder';
 import { IDictionary } from '@ferlab/ui/core/components/QueryBuilder/types';
 import { getQueryBuilderCache, useFilters } from '@ferlab/ui/core/data/filters/utils';
 import { resolveSyntheticSqon } from '@ferlab/ui/core/data/sqon/utils';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
+import intl from 'react-intl-universal';
 
 import { ExtendedMapping } from 'components/Utils/utils';
 import history from 'services/history';
@@ -20,6 +21,7 @@ import { VARIANT_INDEX, VARIANT_REPO_CACHE_KEY } from './constants';
 import VariantTableContainer from './VariantTableContainer';
 
 import styles from './VariantPageContainer.module.scss';
+import { useParams } from 'react-router';
 
 export type VariantPageContainerData = {
   mappingResults: MappingResults;
@@ -62,7 +64,7 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
         //{ field: 'max_impact_score', order: 'desc' },
         { field: 'hgvsg', order: 'asc' },
       ],
-      studiesSize: DEFAULT_STUDIES_SIZE,
+      //studiesSize: DEFAULT_STUDIES_SIZE,
     },
     VARIANT_QUERY,
     VARIANT_INDEX,
@@ -71,10 +73,15 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
   //  undefined,
   //);
 
-  const total = results.data?.variants.hits.total || 0;
+  const total = results.data?.Variants.hits.total || 0;
 
   const dictionary: IDictionary = {
     query: {
+      combine: {
+        and: intl.get('querybuilder.query.combine.and'),
+        or: intl.get('querybuilder.query.combine.or'),
+      },
+      noQuery: intl.get('querybuilder.query.noQuery'),
       facet: (key) => {
         if (key == 'locus') return 'Variant';
 
@@ -84,6 +91,25 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
         );
       },
       //facetValueMapping: fieldMappings,
+    },
+    actions: {
+      new: intl.get('querybuilder.actions.new'),
+      addQuery: intl.get('querybuilder.actions.addQuery'),
+      combine: intl.get('querybuilder.actions.combine'),
+      labels: intl.get('querybuilder.actions.labels'),
+      changeOperatorTo: intl.get('querybuilder.actions.changeOperatorTo'),
+      delete: {
+        title: intl.get('querybuilder.actions.delete.title'),
+        cancel: intl.get('querybuilder.actions.delete.cancel'),
+        confirm: intl.get('querybuilder.actions.delete.confirm'),
+      },
+      clear: {
+        title: intl.get('querybuilder.actions.clear.title'),
+        cancel: intl.get('querybuilder.actions.clear.cancel'),
+        confirm: intl.get('querybuilder.actions.clear.confirm'),
+        buttonTitle: intl.get('querybuilder.actions.clear.buttonTitle'),
+        description: intl.get('querybuilder.actions.clear.description'),
+      },
     },
   };
 
@@ -102,15 +128,13 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
         total={total}
         dictionary={dictionary}
       />
-      <StackLayout vertical className={styles.tableContainer}>
-        <VariantTableContainer
-          results={results}
-          filters={filters}
-          setCurrentPageCb={setCurrentPageNum}
-          currentPageSize={currentPageSize}
-          setcurrentPageSize={setcurrentPageSize}
-        />
-      </StackLayout>
+      <VariantTableContainer
+        results={results}
+        filters={filters}
+        setCurrentPageCb={setCurrentPageNum}
+        currentPageSize={currentPageSize}
+        setcurrentPageSize={setcurrentPageSize}
+      />
     </StackLayout>
   );
 };

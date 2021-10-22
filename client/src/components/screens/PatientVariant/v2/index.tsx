@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-boolean-value */
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React from 'react';
 import intl from 'react-intl-universal';
 import SidebarMenu, { ISidebarMenuItem } from '@ferlab/ui/core/components/sidebarMenu';
-import { useFilters } from '@ferlab/ui/core/data/filters/utils';
-import QueryBuilder from '@ferlab/ui/core/components/QueryBuilder';
-import { IDictionary } from '@ferlab/ui/core/components/QueryBuilder/types';
 import ScrollView from '@ferlab/ui/core/layout/ScrollView';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 import LineStyleIcon from 'components/icons/LineStyleIcon';
@@ -22,7 +19,6 @@ import FrequencyFilters from './filters/FrequencyFilter';
 import PathogenicityFilters from './filters/PathogenicityFilters';
 import InheritanceFilters from './filters/InheritanceFilters';
 import { MappingResults, useGetExtendedMappings } from 'store/graphql/utils/actions';
-import { ExtendedMapping } from 'components/Utils/utils';
 import { VARIANT_INDEX } from 'components/screens/PatientVariant/v2/constants';
 
 import styles from './PatientVariant.module.scss';
@@ -63,53 +59,7 @@ const filtersContainer = (mappingResults: MappingResults, type: FilterTypes): Re
 };
 
 const PatientVariantScreen = () => {
-  const { filters } = useFilters();
-  const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const variantMappingResults = useGetExtendedMappings(VARIANT_INDEX);
-
-  const results = {
-    loading: false,
-    total: 0,
-  };
-  const { total } = results;
-
-  const dictionary: IDictionary = {
-    query: {
-      combine: {
-        and: intl.get('querybuilder.query.combine.and'),
-        or: intl.get('querybuilder.query.combine.or'),
-      },
-      noQuery: intl.get('querybuilder.query.noQuery'),
-      facet: (key: string) => {
-        if (key == 'locus') return 'Variant';
-        return (
-          variantMappingResults?.extendedMapping?.find(
-            (mapping: ExtendedMapping) => key === mapping.field,
-          )?.displayName || key
-        );
-      },
-      facetValueMapping: {},
-    },
-    actions: {
-      new: intl.get('querybuilder.actions.new'),
-      addQuery: intl.get('querybuilder.actions.addQuery'),
-      combine: intl.get('querybuilder.actions.combine'),
-      labels: intl.get('querybuilder.actions.labels'),
-      changeOperatorTo: intl.get('querybuilder.actions.changeOperatorTo'),
-      delete: {
-        title: intl.get('querybuilder.actions.delete.title'),
-        cancel: intl.get('querybuilder.actions.delete.cancel'),
-        confirm: intl.get('querybuilder.actions.delete.confirm'),
-      },
-      clear: {
-        title: intl.get('querybuilder.actions.clear.title'),
-        cancel: intl.get('querybuilder.actions.clear.cancel'),
-        confirm: intl.get('querybuilder.actions.clear.confirm'),
-        buttonTitle: intl.get('querybuilder.actions.clear.buttonTitle'),
-        description: intl.get('querybuilder.actions.clear.description'),
-      },
-    },
-  };
 
   const menuItems: ISidebarMenuItem[] = [
     {
