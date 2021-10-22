@@ -1,0 +1,30 @@
+@import 'style/themes/clin/_colors.scss';
+@import 'style/themes/clin/_layout.scss';
+
+.containerLayout {
+  & > * {
+    margin-bottom: 24px;
+  }
+}
+
+.tableContainer {
+  background-color: $card-background;
+  margin-top: $default-padding;
+}
+
+.tableContainer > * {
+  margin: $default-padding;
+}
+
+.queryBuilderIcon {
+  height: 18px;
+  vertical-align: middle;
+  path {
+    fill: $body-1;
+  }
+}
+
+.autoComplete {
+  margin-right: 24px;
+  width: 100%;
+}

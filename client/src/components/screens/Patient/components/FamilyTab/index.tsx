@@ -31,7 +31,6 @@ const FamilyTab = (): React.ReactElement => {
   const [addParentType, setAddParentType] = useState<FamilyMemberType | null>(null);
 
   const patientId = patient.id;
-
   const isPatientProband = isParsedPatientProband(patient);
 
   const hasMother = hasAtLeastOneMotherInMembers(familyMembers);
@@ -67,8 +66,8 @@ const FamilyTab = (): React.ReactElement => {
       ) : (
         <FamilyTable
           addParentMenu={menu}
+          allowActions={isPatientProband}
           canAddAtLeastOneParent={canAddAtLeastOneParent}
-          showActions={isPatientProband}
         />
       )}
       <AddParentModal

@@ -1,4 +1,5 @@
 @import '~@ferlab/style/themes/default/theme.template';
+@import 'colors';
 
 
 // Query Builder
@@ -52,3 +53,8 @@ $sidebar-content-panel-close-icon-color: #006AA3;
 $sidebar-content-panel-right-border: 1px solid #d7d8db;
 $sidebar-content-panel-background-color: transparent;
 $sidebar-content-panel-close-icon-width: 16px;
+
+// Filters
+$filter-actions-border-color: $gray-4;
+$filter-actions-disabled-border-color: $gray-5;
+$filter-actions-disabled-background-color: $gray-3;

@@ -17,7 +17,7 @@ import StatusCell from './StatusCell';
 interface Props {
   addParentMenu: React.ReactElement;
   canAddAtLeastOneParent: boolean;
-  showActions: boolean;
+  allowActions: boolean;
 }
 
 interface DataType {
@@ -33,8 +33,8 @@ const sortProbandFirst = (members: FamilyMember[]) =>
 
 const FamilyTable = ({
   addParentMenu,
+  allowActions,
   canAddAtLeastOneParent,
-  showActions,
 }: Props): React.ReactElement => {
   const familyMembers = useSelector((state: State) => state.patient.family) || [];
 
@@ -97,11 +97,11 @@ const FamilyTable = ({
       width: 160,
     },
   ].concat(
-    showActions
+    allowActions
       ? [
           {
             key: 'actions',
-            render: (_, record: DataType) => <ActionsCell memberId={record.member.id} />,
+            render: (_, record: DataType) => <ActionsCell member={record.member} />,
             title: intl.get('screen.patient.details.family.table.actions'),
             width: 80,
           },
@@ -114,7 +114,7 @@ const FamilyTable = ({
       bordered={false}
       className="family-tab__details"
       extra={
-        showActions ? (
+        allowActions ? (
           <Dropdown
             disabled={!canAddAtLeastOneParent}
             overlay={addParentMenu}

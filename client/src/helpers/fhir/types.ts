@@ -277,3 +277,32 @@ export interface Group {
   extension: Extension[];
   member: Member[];
 }
+
+export enum AnalysisTestCodes {
+  PG= 'MM-PG',
+  DYST = 'MM-DYST',
+  RHAB= 'MM-RHAB',
+  MYOP = 'MM-MYOP',
+  MYAS = 'MM-MYAS',
+  HYP = 'MM-HYP',
+  DI = 'DI',
+}
+
+export const AnalysisCodeToIntlKeyText = {
+  [AnalysisTestCodes.PG]: 'form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires',
+  [AnalysisTestCodes.DYST]: 'form.patientSubmission.clinicalInformation.analysis.options.dystrophiesMusculaires',
+  [AnalysisTestCodes.RHAB]: 'form.patientSubmission.clinicalInformation.analysis.options.rhabdomyolyse',
+  [AnalysisTestCodes.MYOP]: 'form.patientSubmission.clinicalInformation.analysis.options.myopathiesCongenitales',
+  [AnalysisTestCodes.MYAS]: 'form.patientSubmission.clinicalInformation.analysis.options.myastheniasCongenitales',
+  [AnalysisTestCodes.HYP]: 'form.patientSubmission.clinicalInformation.analysis.options.hyperthermieMaligne',
+  [AnalysisTestCodes.DI]: 'form.patientSubmission.clinicalInformation.analysis.options.deficienceIntellectuelle',
+}
+
+export enum PrescriptionStatus {
+  draft= 'draft',
+  hold = 'on-hold',
+  active= 'active',
+  completed = 'completed',
+  revoked = 'revoked',
+  incomplete = 'incomplete',
+}

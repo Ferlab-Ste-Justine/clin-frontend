@@ -31,6 +31,7 @@ import {
   hpoInterpretationValues,
   hpoOnsetValues,
 } from 'helpers/fhir/fhir';
+import { AnalysisTestCodes, PrescriptionStatus } from 'helpers/fhir/types';
 import findIndex from 'lodash/findIndex';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
@@ -89,6 +90,8 @@ class ClinicalInformation extends React.Component {
     this.handleHpoNodesChecked = this.handleHpoNodesChecked.bind(this);
     this.hpoSelected = this.hpoSelected.bind(this);
     this.isAddDisabled = this.isAddDisabled.bind(this);
+    this.isStatusIncomplete = this.isStatusIncomplete.bind(this);
+    this.givenCodeIsTheOnlyOneSelected = this.givenCodeIsTheOnlyOneSelected.bind(this);
   }
 
   componentDidUpdate() {
@@ -372,6 +375,18 @@ class ClinicalInformation extends React.Component {
     onChange();
   }
 
+  isStatusIncomplete() {
+    const { localStore } = this.props
+    return get(localStore, 'serviceRequest.status') === PrescriptionStatus.incomplete
+  }
+  givenCodeIsTheOnlyOneSelected(code) {
+    const { form } = this.props
+    const selectedAnalysisTests = (form.getFieldValue('analysis.tests') || []).filter((test) => test);
+    const hasOnlyOneSelectedTest = selectedAnalysisTests.length === 1;
+    const codeIsSelected =selectedAnalysisTests.some((test) => test === code);
+    return (hasOnlyOneSelectedTest && codeIsSelected)
+  }
+
   render() {
     const {
       hpoOptions, treeData,
@@ -389,30 +404,9 @@ class ClinicalInformation extends React.Component {
       cghId = observations.cgh.id;
     }
 
-    const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);
+    const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);  
 
-    const analysisTestNames = [
-      'adultCancerPredisposition',
-      'muscle',
-      'nuclearMitochondrialGenes',
-
-      'kidTumorPredisposition',
-      'amyotrophicLateralSclerosis',
-      'rasopathies',
-
-      'kidHematopathiesPredisposition',
-      'retinopathies',
-      'cardiomyopathies',
-
-      'ehlersDanlos',
-      'deafness',
-      'hereditaryArrhythmias',
-
-      'polymalformatifs',
-      'intellecualDisability',
-      'aortopathies',
-    ];
-    const analysisTestOptions = analysisTestNames.map((testName) => getTestCoding(testName));
+    const AnalysisTestCodesValues = Object.values(AnalysisTestCodes)
 
     const initialAnalysisValue = get(localStore, 'serviceRequest.code', undefined);
     let initialAnalysisNote = get(localStore, 'serviceRequest.note', undefined);
@@ -423,7 +417,6 @@ class ClinicalInformation extends React.Component {
 
     const isEditMode = initialAnalysisValue != null;
 
-    const formTests = (form.getFieldValue('analysis.tests') || []).filter((test) => test != null);
     if (form.getFieldValue('analysis.comments')) {
       initialAnalysisNote = initialAnalysisNote !== form.getFieldValue('analysis.comments')
         ? form.getFieldValue('analysis.comments')
@@ -467,12 +460,18 @@ class ClinicalInformation extends React.Component {
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
               >
-                { analysisTestOptions.map((option) => (
-                  <Checkbox
-                    value={option.code}
-                  >{ option.display }
-                  </Checkbox>
-                )) }
+                { 
+                  AnalysisTestCodesValues.map((code) => {
+                    const option = getTestCoding(code)
+                    return(
+                      <Checkbox
+                        key={option.code}
+                        value={option.code}
+                      >{ intl.get(option.display) }
+                      </Checkbox>
+                    )
+                  }) 
+                }
               </Checkbox.Group>
             </Form.Item>
           ) }
@@ -494,16 +493,22 @@ class ClinicalInformation extends React.Component {
                   validate();
                 }}
               >
-                { analysisTestOptions.map((option) => (
-                  <Checkbox
-                    disabled={
-                      get(localStore, 'serviceRequest.status') === 'incomplete'
-                      || (formTests.length === 1 && formTests.find((test) => test === option.code) == null)
-                    }
-                    value={option.code}
-                  >{ option.display }
-                  </Checkbox>
-                )) }
+                { 
+                  AnalysisTestCodesValues.map((code) => {
+                    const option = getTestCoding(code)
+                    return(
+                      <Checkbox
+                        disabled={
+                          this.isStatusIncomplete() || this.givenCodeIsTheOnlyOneSelected(option.code)
+                        }
+                        key={option.code}
+                        value={option.code}
+                      >
+                        { intl.get(option.display) }
+                      </Checkbox>
+                    )
+                  }) 
+                }
               </Checkbox.Group>
             </Form.Item>
           ) }

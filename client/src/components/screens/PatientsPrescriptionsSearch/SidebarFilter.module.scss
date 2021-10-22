@@ -1,0 +1,20 @@
+@import 'style/themes/clin/_colors.scss';
+
+.searchTitle {
+  color: $body-1;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.searchIconsDisabled {
+  color: $body-3;
+}
+
+.searchDropdownCode {
+  font-size: 1.4rem;
+  color: $body-1;
+}
+
+.searchDropdownName {
+  font-size: 1.2rem;
+  color: $body-2;
+}

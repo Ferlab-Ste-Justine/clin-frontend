@@ -7,6 +7,8 @@ import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
+import fr from 'locales/fr'
+
 import AppTest from '../../AppTest';
 import PatientSubmission from '../../components/screens/PatientSubmission';
 import { mockRptToken } from '../mocks';
@@ -99,7 +101,7 @@ describe('PrescriptionCreation', () => {
       const mrnOptions = screen.getByTestId('mrn-organization-submission');
       act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
 
-      const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
+      const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
       act(() => userEvent.click(prescriptionTestLabel, {}));
 
       await waitFor(() => screen);
@@ -131,7 +133,7 @@ describe('PrescriptionCreation', () => {
       const mrnOptions = screen.getByTestId('mrn-organization-submission');
       act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
 
-      const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
+      const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
       act(() => userEvent.click(prescriptionTestLabel, {}));
 
       const familyHealth = screen.getByTestId('familyHealth');
@@ -163,7 +165,7 @@ describe('PrescriptionCreation', () => {
     const mrnOptions = screen.getByTestId('mrn-organization-submission');
     act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
 
-    const prescriptionTestLabel = screen.getByText("Prédisposition aux cancers chez l'adulte");
+    const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
     act(() => userEvent.click(prescriptionTestLabel, {}));
 
     const familyHealth = screen.getByTestId('familyHealth');

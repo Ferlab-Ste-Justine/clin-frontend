@@ -1,0 +1,11 @@
+@import 'style/themes/clin/_colors.scss';
+
+.story-table-code {
+    color: $primary-color;
+    text-decoration: underline;
+}
+
+.story-table-code:hover {
+    color: $primary-color;
+    text-decoration: none;
+}

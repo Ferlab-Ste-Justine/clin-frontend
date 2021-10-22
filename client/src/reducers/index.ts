@@ -1,29 +1,31 @@
-import { combineReducers } from 'redux';
 import { connectRouter } from 'connected-react-router';
+import { combineReducers } from 'redux';
 
 import appReducer from './app';
 import patientReducer, { PatientState } from './patient';
+import patientCreation, { PatientCreationState } from './patientCreation';
+import patientEditionReducer, { PatientEditionState } from './patientEdition';
+import patientSubmissionReducer from './patientSubmission';
+import prescriptions, { PatientRequestCreationState } from './prescriptions';
+import prescriptionsGraphql, { PrescriptionState } from './prescriptionsGraphql';
 import searchReducer from './search';
 import userReducer from './user';
 import variantReducer from './variant';
 import variantDetailsReducer from './variantDetails';
-import patientSubmissionReducer from './patientSubmission';
-import patientCreation, { PatientCreationState } from './patientCreation';
-import prescriptions, { PatientRequestCreationState } from './prescriptions';
-import patientEditionReducer, { PatientEditionState } from './patientEdition';
 
 const rootReducer = (history: any) => combineReducers({
-  router: connectRouter(history),
   app: appReducer,
-  user: userReducer,
   patient: patientReducer,
+  patientCreation,
+  patientEdition: patientEditionReducer,
+  patientSubmission: patientSubmissionReducer,
+  prescriptions,
+  prescriptionsGraphql,
+  router: connectRouter(history),
   search: searchReducer,
+  user: userReducer,
   variant: variantReducer,
   variantDetails: variantDetailsReducer,
-  patientSubmission: patientSubmissionReducer,
-  patientEdition: patientEditionReducer,
-  patientCreation,
-  prescriptions,
 });
 
 export default rootReducer;
@@ -39,5 +41,6 @@ export type State = {
   patientSubmission: any,
   patientCreation: PatientCreationState,
   patientEdition: PatientEditionState,
-  prescriptions: PatientRequestCreationState
+  prescriptions: PatientRequestCreationState,
+  prescriptionsGraphql: PrescriptionState
 }

@@ -9,7 +9,7 @@ specifiers:
   '@blueprintjs/table': 3.7.1
   '@clarketm/saga-monitor': ^2.0.1
   '@ferlab/style': ^1.9.2
-  '@ferlab/ui': ^2.0.4
+  '@ferlab/ui': ^2.1.0
   '@hapi/joi': ^15.1.0
   '@hot-loader/react-dom': ^17.0.0
   '@pmmmwh/react-refresh-webpack-plugin': 0.4.2
@@ -157,7 +157,7 @@ dependencies:
   '@blueprintjs/table': 3.7.1_react-dom@17.0.1+react@17.0.1
   '@clarketm/saga-monitor': 2.0.1_redux-saga@1.1.3
   '@ferlab/style': 1.9.2_7e0c332152494bebdab5f30e5ba73f94
-  '@ferlab/ui': 2.0.4_16353d8ba60f541c6c22c0ccc45061de
+  '@ferlab/ui': 2.1.0_16353d8ba60f541c6c22c0ccc45061de
   '@hapi/joi': 15.1.1
   '@hot-loader/react-dom': 17.0.1_react@17.0.1
   '@pmmmwh/react-refresh-webpack-plugin': 0.4.2_d00fcc46a48175a4e289da7534b00e9a
@@ -1954,8 +1954,8 @@ packages:
       react-router-dom: 5.2.0_react@17.0.1
     dev: false
 
-  /@ferlab/ui/2.0.4_16353d8ba60f541c6c22c0ccc45061de:
-    resolution: {integrity: sha512-T3RSzc3u7IHkLQ4ZFrxibfeBnRLFC4fA2kwWCm7AuKuvu1niM00Bwm/RGPxD5R7OP2rrDH6nK7+lNk8LBpmW5g==}
+  /@ferlab/ui/2.1.0_16353d8ba60f541c6c22c0ccc45061de:
+    resolution: {integrity: sha512-S53Wa8rk7rxaAicfNV4M9DU3+l2BEJqTopXD4v3lgOcr/o/2gwKgdct5rfgkg12rBY5iXskkKW/V7HpVoZ+kSg==}
     peerDependencies:
       '@ferlab/style': ^1.9.2
       antd: ^4.2.0

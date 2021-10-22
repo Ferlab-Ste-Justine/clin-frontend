@@ -1,0 +1,23 @@
+@collapse-header-padding: 5px;
+@collapse-header-bg: @gray-1;
+
+.@{collapse-prefix-cls} {
+  & > &-item {
+    border: none !important;
+
+    > .@{collapse-prefix-cls}-header {
+      display: flex;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 24px;
+
+      > :nth-child(2) {
+        flex-grow: 1;
+      }
+
+      .@{collapse-prefix-cls}-arrow {
+        color: @body-3;
+      }
+    }
+  }
+}

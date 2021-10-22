@@ -1,18 +1,10 @@
 @import "../../../../../node_modules/antd/dist/antd.less";
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap");
 @import "./colors.less";
+@import "./antd/table.less";
+@import "./antd/collapse.less";
+@import "./antd/checkbox.less";
 
-@preset-colors: pink, magenta, red, volcano, orange, yellow, gold, cyan, lime, green, blue, geekblue, purple;
-
-// Colors
-@primary-color: @blue-8;
-@info-color: @blue-6;
-@success-color: @green-6;
-@processing-color: @blue-6;
-@error-color: @red-8;
-@highlight-color: @magenta-6;
-@normal-color: @gray-5;
-@border-color-split: @gray-4;
 
 // Text colors
 @font-family: "Roboto", BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
@@ -164,17 +156,7 @@
 @menu-dark-submenu-bg: #001529;
 @menu-dark-item-active-bg: @blue-6;
 
-// Table
-@table-row-hover-bg: @blue-1;
-@table-selected-row-bg: @gray-2;
-@table-body-sort-bg: @gray-2;
-@table-expanded-row-bg: @gray-2;
-@table-header-bg: @gray-2;
-@table-header-color: @gray-9;
-@table-header-bg-sm: @gray-2;
-.ant-table {
-  font-size: 14px;
-}
+
 
 // Badge
 @badge-dot-size: 8px;
@@ -223,6 +205,3 @@
 
 // Motion
 @wave-animation-width: 0px;
-
-//Collapse
-@collapse-header-bg: @gray-1;
