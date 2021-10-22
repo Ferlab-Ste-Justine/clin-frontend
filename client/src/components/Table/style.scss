@@ -2,7 +2,6 @@
 @import '~@blueprintjs/table/lib/css/table.css';
 @import '~@blueprintjs/core/lib/css/blueprint.css';
 
-
 .bp3-table-container, .bp3-table-cell, .bp3-table-row-headers .bp3-table-header, .bp3-table-menu, .bp3-table-column-headers .bp3-table-header{
   box-shadow:none !important;
 }
@@ -12,7 +11,7 @@
   border-right: 1px solid #CDDDE8;
 }
 .bp3-table-column-header-cell{
-  background-color: #e3ebf2 ;
+  background-color: #f1f5f9 ;
 }
 
 .bp3-table-row-headers{
@@ -116,7 +115,7 @@
 }
 
 .bp3-table-cell-ledger-odd{
-  background-color: #F6F9FB;
+  background-color: #f8fafc;
 }
 
 .bp3-table-cell-ghost.bp3-table-cell-ledger-even {
