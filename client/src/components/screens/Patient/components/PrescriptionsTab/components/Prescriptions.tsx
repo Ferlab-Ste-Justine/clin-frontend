@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import get from 'lodash/get';
 import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
-import { FamilyObservation, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
+import { FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
 import Badge from '../../../../../Badge';
 import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
@@ -129,7 +129,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
     );
   };
 
-  const formatName = (lastName: string, firstName: string) => `${lastName.toUpperCase()} ${firstName}`;
+  const formatName = (practitioner: PractitionerData, supervisor?: PractitionerData) => `${practitioner.lastName.toUpperCase()} ${practitioner.firstName} - ${practitioner.mrn} ${supervisor ? intl.get('screen.patient.details.resident'): ''}`;
   const openEditPrescription = (id: string) => {
     dispatch(editPrescription(id));
   };
@@ -317,7 +317,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                   <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
                     { prescription.requester != null && prescription.requester.formattedName !== 'N/A' ? (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
-                        { formatName(prescription.requester.lastName, prescription.requester.firstName) }
+                        { formatName(prescription.requester, prescription.supervisor) }
                         <Popover
                           overlayClassName="practitionerInfo"
                           placement="topRight"
@@ -331,7 +331,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                      { prescription.supervisor && (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
                        <Divider type="vertical" />
-                        {formatName(prescription.supervisor.lastName, prescription.supervisor.firstName) }
+                        {formatName(prescription.supervisor) }
                       </span>
                     )}
                   </DetailsRow>

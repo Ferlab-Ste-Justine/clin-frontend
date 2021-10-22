@@ -46,6 +46,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       return e.resource.entry[0].resource.id === id ? e.resource.entry[0].resource : []
     })[0] : undefined;
     return practitioner ? {
+      mrn: get(practitioner, 'identifier[0].value', 'N/A'),
       lastName: get(practitioner, ['name', '0', 'family'], ''),
       firstName: get(practitioner, ['name', '0', 'given', '0'], ''),
     } as PractitionerData : undefined;
