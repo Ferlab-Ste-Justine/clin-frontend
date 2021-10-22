@@ -17,6 +17,7 @@ interface Props {
   role: PractitionerRole;
   doctorOptions: {
     optionSelected: (value: PractitionerData | undefined) => void;
+    initialValue: PractitionerData;
   };
   onSubmit: () => void;
   onClose: () => void;
@@ -33,12 +34,11 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
   };
 
   const requireFormValidation = isResident;
-  const isFormValid = () => !requireFormValidation || supervisor !== undefined;
+  const isSubmitAllowed = !requireFormValidation || supervisor !== undefined;
 
   const handleSubmit = () => {
     if (requireFormValidation) {
       form.validateFields().then((_) => {
-        doctorOptions.optionSelected(supervisor);
         onSubmit();
       });
     } else {
@@ -46,6 +46,14 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
     }
   };
 
+  const handleSupervisor = (value?: PractitionerData) => {
+    setSupervisor(value);
+    doctorOptions.optionSelected(value);
+  }
+
+  const buildSupervisorInitialValue = () => 
+    doctorOptions.initialValue ? buildPractitionerValue(doctorOptions.initialValue): ''
+  
   return (
     <Modal
       afterClose={onClose}
@@ -60,7 +68,7 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
             </Button>
           </Col>
           <Col>
-            <Button type="primary" onClick={handleSubmit} disabled={!isFormValid()}>
+            <Button type="primary" onClick={handleSubmit} disabled={!isSubmitAllowed}>
               {intl.get('form.patientSubmission.submissionModal.actions.submit')}
             </Button>
           </Col>
@@ -92,18 +100,19 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
               >
                 <AutoComplete
                   allowClear
+                  defaultValue={buildSupervisorInitialValue()}
                   options={doctors.map(mapPractitionerToOption)}
                   onSelect={(selectedValue: string) => {
                     const practitionerSelected = doctors.find(
                       (r) => buildPractitionerValue(r) === selectedValue,
                     );
                     if (practitionerSelected != null) {
-                      setSupervisor(practitionerSelected);
+                      handleSupervisor(practitionerSelected)
                     }
                   }}
                   onSearch={(value: string) => {
                     if (value === '') {
-                      setSupervisor(undefined);
+                      handleSupervisor(undefined)
                     }
                     searchTermChanged(value);
                   }}

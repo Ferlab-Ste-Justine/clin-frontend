@@ -82,15 +82,6 @@ function PatientSubmissionScreen(props) {
     validate();
   });
 
-  React.useEffect(() => {
-    if (state.isSubmitting) {
-      saveSubmission(true)
-    }
-    return () => {
-      setState({...state, isSubmitting: false})
-    }
-  }, [state.isSubmitting])
-
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
 
   const canGoNextPage = (currentPage) => {
@@ -372,7 +363,8 @@ function PatientSubmissionScreen(props) {
       const allAnalysis = content['analysis.tests']?.filter((item) => item != null);
       batch.length = get(allAnalysis, 'length', 0);
 
-      if (batch.length === 0) {
+      if (batch.length === 0 || !userRole) {
+        setState((currentState) => ({ ...currentState, isSubmitting: false }));
         return;
       }
 
@@ -384,6 +376,7 @@ function PatientSubmissionScreen(props) {
         fullMRN[0] = mrn;
         fullMRN[1] = organization;
       }
+
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withId(get(localStore, 'serviceRequest.id'))
@@ -553,6 +546,7 @@ function PatientSubmissionScreen(props) {
 
   const handleSubmission = () => {
     setState((currentState) => ({ ...currentState, isSubmissionVisible: false, isSubmitting: true }));
+    saveSubmission(true)
   }
 
   const onHpoSelected = (code, display) => {
@@ -758,6 +752,7 @@ function PatientSubmissionScreen(props) {
         onSubmit={() => handleSubmission()}
         open={state.isSubmissionVisible}
         doctorOptions={{
+          initialValue: state.selectedSupervisor,
           optionSelected: handleSupervisorSelected,
         }}
       />
