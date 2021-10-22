@@ -96,7 +96,7 @@ export interface GQLData<T extends Aggs = any> {
   };
 }
 
-const getFilters = (data: GQLData | null, key: string, type: string) => {
+export const getFilters = (data: GQLData | null, key: string, type: string) => {
   if (!data || !key) return [];
 
   if (isTermAgg(data.aggregations[key])) {
@@ -122,7 +122,7 @@ const getFilters = (data: GQLData | null, key: string, type: string) => {
   return [];
 };
 
-const getFilterGroup = (
+export const getFilterGroup = (
   extendedMapping: ExtendedMapping | undefined,
   aggregation: Aggs,
   rangeTypes: string[],

@@ -36,7 +36,7 @@ $sidebar-menu-toggle-icon-size: 21px;
 $sidebar-menu-item-icon-size: 24px;
 $sidebar-menu-item-height: 50px;
 $sidebar-menu-item-text-color: #fff;
-$sidebar-menu-item-active-background-color: #006AA3;
+$sidebar-menu-item-active-background-color: $blue-8;
 $sidebar-menu-item-active-color: #fff;
 $sidebar-menu-item-hover-color: #fff;
 $sidebar-menu-item-hover-opacity: 0.8;
@@ -49,12 +49,13 @@ $sidebar-quick-filter-input-text-color: #364A63;
 
 $sidebar-content-panel-padding: 16px;
 $sidebar-content-panel-width: 320px;
-$sidebar-content-panel-close-icon-color: #006AA3;
+$sidebar-content-panel-close-icon-color: $blue-8;
 $sidebar-content-panel-right-border: 1px solid #d7d8db;
 $sidebar-content-panel-background-color: transparent;
 $sidebar-content-panel-close-icon-width: 16px;
 
 // Filters
+$filter-input-label-color: $body-1;
 $filter-actions-border-color: $gray-4;
 $filter-actions-disabled-border-color: $gray-5;
 $filter-actions-disabled-background-color: $gray-3;

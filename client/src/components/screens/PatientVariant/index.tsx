@@ -10,7 +10,7 @@ function useQuery() {
 const index = (props: any) => {
   const query = useQuery();
 
-  if (query.get('v') == '2') {
+  if (true) {
     return <VariantPageV2 {...props} />;
   } else {
     return <VariantPageV1 {...props} />;

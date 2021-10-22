@@ -14,7 +14,7 @@ import GeneIcon from 'components/icons/GeneIcon';
 import DiseaseIcon from 'components/icons/DiseaseIcon';
 import FrequencyIcon from 'components/icons/FrequencyIcon';
 import OccurenceIcon from 'components/icons/OccurenceIcon';
-import VariantTableContainer from './VariantTableContainer';
+import VariantPageContainer from './VariantPageContainer';
 import VariantFilters from './filters/VariantFilters';
 import GeneFilters from './filters/GeneFilters';
 import MetricFilters from './filters/MetricFilters';
@@ -23,6 +23,7 @@ import PathogenicityFilters from './filters/PathogenicityFilters';
 import InheritanceFilters from './filters/InheritanceFilters';
 import { MappingResults, useGetExtendedMappings } from 'store/graphql/utils/actions';
 import { ExtendedMapping } from 'components/Utils/utils';
+import { VARIANT_INDEX } from 'components/screens/PatientVariant/v2/constants';
 
 import styles from './PatientVariant.module.scss';
 
@@ -57,20 +58,12 @@ const filtersContainer = (mappingResults: MappingResults, type: FilterTypes): Re
 };
 
 const PatientVariantScreen = () => {
-  const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const { filters } = useFilters();
-  const variantMappingResults = {
-    loadingMapping: false,
-    extendedMapping: [
-      {
-        active: false,
-        displayName: '',
-        isArray: false,
-        type: '',
-        field: '',
-      },
-    ],
-  }; //useGetExtendedMappings('variants');
+  const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
+  const variantMappingResults = useGetExtendedMappings(VARIANT_INDEX);
+
+  console.log(variantMappingResults)
+
   const results = {
     loading: false,
     total: 0,
@@ -159,19 +152,6 @@ const PatientVariantScreen = () => {
       <SidebarMenu className={styles.patientVariantSidebar} menuItems={menuItems} />
       <ScrollView className={styles.scrollContent}>
         <StackLayout vertical className={styles.pageContainer}>
-          <QueryBuilder
-            className="variant-repo__query-builder"
-            showHeader={true}
-            headerTitle="Variant Query"
-            showHeaderTools={false}
-            cacheKey="patient-variant-repo"
-            enableCombine={false}
-            currentQuery={filters?.content?.length ? filters : {}}
-            loading={results.loading}
-            total={total}
-            dictionary={dictionary}
-          />
-          <VariantTableContainer setCurrentPageCb={setCurrentPageNum} />
         </StackLayout>
       </ScrollView>
     </div>

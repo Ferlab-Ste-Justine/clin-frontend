@@ -927,6 +927,8 @@ const fr = {
   'screen.patientvariant.statement.tooltip.deleteSelection': 'Supprimer la sélection',
   'screen.patientvariant.statement.tooltip.uncheck': 'Décocher',
   'screen.patientvariant.statement.tooltip.undo': 'Annuler',
+  'screen.patientvariant.filter.collapse.all': 'Tout fermer',
+  'screen.patientvariant.filter.expand.all': 'Tout ouvrir',
   'screen.variantDetails.clinicalAssociationsTab.clinVar': 'ClinVar',
   'screen.variantDetails.clinicalAssociationsTab.ClinVarID': 'Identifiant clinvar',
   'screen.variantDetails.clinicalAssociationsTab.condition': 'Condition',

@@ -756,6 +756,8 @@ const en = {
   'screen.patientvariant.statement.tooltip.deleteSelection': 'Delete Selection',
   'screen.patientvariant.statement.tooltip.uncheck': 'Uncheck',
   'screen.patientvariant.statement.tooltip.undo': 'Undo',
+  'screen.patientvariant.filter.collapse.all': 'Collapse all',
+  'screen.patientvariant.filter.expand.all': 'Expand all',
   'screen.variantDetails.clinicalAssociationsTab.clinVar': 'ClinVar',
   'screen.variantDetails.clinicalAssociationsTab.ClinVarID': 'Clin Var ID',
   'screen.variantDetails.clinicalAssociationsTab.condition': 'Condition',

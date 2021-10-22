@@ -6,6 +6,8 @@
 import React, { useState } from 'react';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
+import { ISyntheticSqon } from '@ferlab/ui/core/data/sqon/types';
+import { VariantPageResults } from './VariantPageContainer';
 
 import '../../../../../../node_modules/@ant-design/pro-table/dist/table.css';
 import style from './VariantTableContainer.module.scss';
@@ -14,7 +16,11 @@ const DEFAULT_PAGE_NUM = 1;
 const DEFAULT_PAGE_SIZE = 10;
 
 type OwnProps = {
+  results: VariantPageResults;
+  filters: ISyntheticSqon;
   setCurrentPageCb: (currentPage: number) => void;
+  currentPageSize: number;
+  setcurrentPageSize: (currentPage: number) => void;
 };
 
 const columns: ProColumns[] = [
@@ -46,7 +52,7 @@ const defaultData = [
 ];
 
 const VariantTableContainer = (props: OwnProps) => {
-  const { setCurrentPageCb } = props;
+  const { results, setCurrentPageCb, currentPageSize, setcurrentPageSize } = props;
   const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const total = 0;
 

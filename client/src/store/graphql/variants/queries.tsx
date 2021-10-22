@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 import { ExtendedMapping } from 'components/Utils/utils';
-import { dotToUnderscore, underscoreToDot } from 'store/graphql/utils';
+import { dotToUnderscore, underscoreToDot } from '@ferlab/ui/core/data/arranger/formatting';
 import { MappingResults } from 'store/graphql/utils/actions';
 
 export const VARIANT_QUERY = gql`

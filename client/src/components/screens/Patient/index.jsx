@@ -25,6 +25,7 @@ import FamilyTab from './components/FamilyTab';
 import FilesTab from './components/FilesTab';
 import PatientHeader from './components/PatientHeader';
 import PrescriptionsTab from './components/PrescriptionsTab';
+import { GraphqlBackend } from 'store/providers';
 
 import 'style/themes/clin/dist/antd.css';
 import './style.scss';
@@ -127,7 +128,7 @@ class PatientScreen extends React.Component {
         ),
       },
       {
-        content: <ApolloProvider><PatientVariantScreen /></ApolloProvider>,
+        content: <ApolloProvider backend={GraphqlBackend.ARRANGER}><PatientVariantScreen /></ApolloProvider>,
         name: 'variant',
         title: (
           <span className="tabName">
