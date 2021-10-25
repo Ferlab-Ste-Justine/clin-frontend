@@ -130,7 +130,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
   };
 
   const formatName = (practitioner: PractitionerData, supervisor?: PractitionerData) =>
-    `${practitioner.formattedName} - ${practitioner.mrn} ${supervisor ? intl.get('screen.patient.details.resident') : ''}`;
+    `${practitioner.formattedName} - ${practitioner.mrn} ${supervisor ? '('+intl.get('screen.patient.details.resident')+')' : ''}`;
   
   const openEditPrescription = (id: string) => {
     dispatch(editPrescription(id));
@@ -316,7 +316,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                   <DetailsRow label={intl.get('screen.patient.details.prescription.submissionDate')}>
                     { prescription.date ? moment(prescription.date).format('YYYY-MM-DD') : DEFAULT_VALUE }
                   </DetailsRow>
-                  <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.practitioner')}>
                     { prescription.requester != null && prescription.requester.formattedName !== 'N/A' ? (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
                         { formatName(prescription.requester, prescription.supervisor) }
