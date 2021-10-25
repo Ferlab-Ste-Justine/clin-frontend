@@ -1,6 +1,7 @@
 import get from 'lodash/get';
 import head from 'lodash/head';
-import { Practitioner, ServiceRequest } from '../../fhir/types';
+import { ExtensionUrls } from 'store/urls'
+import { Practitioner, ServiceRequest, SupervisorsBundle } from '../../fhir/types';
 import { PractitionerData, Prescription, PrescriptionStatus } from '../types';
 import { DataExtractor } from '../extractor';
 import { Provider, Record } from '../providers';
@@ -8,16 +9,15 @@ import Api from '../../api'
 
 const IS_SUBMITTED_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const CLIN_REF_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression';
-const RESIDENT_SUPERVISOR_EXT = "http://fhir.cqgc.ferlab.bio/StructureDefinition/resident-supervisor";
 
 const ON_HOLD = 'on-hold';
 const INCOMPLETE = 'incomplete';
 
 export class ServiceRequestProvider extends Provider<ServiceRequest, Prescription> {
   
-  supervisors: any;
+  supervisors: SupervisorsBundle;
 
-  constructor(name: string, supervisors: any) {
+  constructor(name: string, supervisors: SupervisorsBundle) {
     super(name);
     this.supervisors = supervisors;
   }
@@ -39,15 +39,15 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     return get(serviceRequest, `note[${get(serviceRequest, 'note', []).length - 1}].text`, '');
   }
 
-  private getSupervisor(dataExtractor: DataExtractor, serviceRequest: ServiceRequest): PractitionerData | undefined {
-    const ext = dataExtractor.getExtension(serviceRequest, RESIDENT_SUPERVISOR_EXT);
+  private getSupervisor(dataExtractor: DataExtractor, serviceRequest: ServiceRequest): PractitionerData {
+    const ext = dataExtractor.getExtension(serviceRequest, ExtensionUrls.ResidentSupervisor);
     const ref = get(ext, 'valueReference.reference');
-    const id = ref ? ref.split('/')[1] : undefined
-    const practitioner = id ? head(this.supervisors?.entry.flatMap((e: any) => {
+    const id = ref && ref.split('/')[1]
+    const practitioner = id && head(this.supervisors?.entry.flatMap((e: any) => {
       const res = get(e, 'resource.entry[0].resource')
       return res?.id === id ? res : []
-    })) : undefined;
-    return practitioner ? dataExtractor.formatPractitioner(practitioner as Practitioner) : undefined;
+    }))
+    return practitioner && dataExtractor.formatPractitioner(practitioner as Practitioner);
   }
 
   public doProvide(dataExtractor: DataExtractor): Record<ServiceRequest, Prescription>[] {

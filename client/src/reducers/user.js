@@ -55,7 +55,7 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.profile.patientTableConfig = JSON.parse(action.payload.data.hits[0]._source.patientTableConfig);
       draft.profile.variantTableConfig = JSON.parse(action.payload.data.hits[0]._source.variantTableConfig);
       draft.practitionerData.practitionerRoles = action.payload.practitionerData.practitionerRoles;
-      draft.practitionerData.practitionerRole = head(action.payload.practitionerData.practitionerRoles); // TODO retro-compatibility to be removed
+      draft.practitionerData.practitionerRole = head(action.payload.practitionerData.practitionerRoles);
       draft.practitionerData.practitioner = action.payload.practitionerData.practitioner;
       break;
 

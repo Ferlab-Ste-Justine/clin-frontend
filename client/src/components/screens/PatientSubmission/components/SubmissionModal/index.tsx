@@ -23,7 +23,7 @@ interface Props {
   onClose: () => void;
 }
 
-const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit, onClose }) => {
+const SubmissionModal = ({ open, role, doctorOptions, onSubmit, onClose }: Props) => {
   const [form] = Form.useForm();
   const isResident = isPractitionerResident(role);
   const [supervisor, setSupervisor] = useState<PractitionerData>();
@@ -34,7 +34,7 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
   };
 
   const requireFormValidation = isResident;
-  const isSubmitAllowed = !requireFormValidation || supervisor !== undefined;
+  const isSubmitAllowed = !requireFormValidation || !!supervisor;
 
   const handleSubmit = () => {
     if (requireFormValidation) {
@@ -106,7 +106,7 @@ const SubmissionModal: React.FC<Props> = ({ open, role, doctorOptions, onSubmit,
                     const practitionerSelected = doctors.find(
                       (r) => buildPractitionerValue(r) === selectedValue,
                     );
-                    if (practitionerSelected != null) {
+                    if (practitionerSelected) {
                       handleSupervisor(practitionerSelected)
                     }
                   }}

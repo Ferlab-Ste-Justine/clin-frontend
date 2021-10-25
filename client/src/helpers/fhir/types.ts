@@ -214,6 +214,15 @@ export interface Practitioner {
   name: Name[];
 }
 
+export interface SupervisorsBundle {
+  entry: [
+    resource: {
+      entry: [
+        resource: Practitioner
+      ]
+    }
+  ]
+}
 export interface Organization {
   resourceType: ResourceType;
   id: string;

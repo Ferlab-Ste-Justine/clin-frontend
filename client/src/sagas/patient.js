@@ -1,16 +1,17 @@
 import get from 'lodash/get';
+import uniq from 'lodash/uniq';
 import { all, debounce, put, select, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 import { getExtension } from '../helpers/fhir/builder/Utils';
-import { EXTENSION_RESIDENT_SUPERVISOR } from '../helpers/fhir/builder/ServiceRequestBuilder'
 import { isAlreadyProband, makeExtensionProband } from '../helpers/fhir/patientHelper';
 import {
   getFamilyMembersFromPatientDataResponse,
   removeSpecificFamilyRelation,
 } from '../helpers/patient';
+import { ExtensionUrls } from 'store/urls'
 import { FamilyActionStatus } from '../reducers/patient';
 import { DataExtractor } from '../helpers/providers/extractor';
 
@@ -39,12 +40,12 @@ const getSupervisorIdsFromPatient = (data) => {
   try {
     const dataExtractor = new DataExtractor({ patientData: data });
     const serviceRequests = dataExtractor.extractBundle('ServiceRequest').entry.map((e) => e.resource);
-    const ids = [... new Set(serviceRequests
+    const ids = uniq(serviceRequests
       .flatMap(sr => {
-        const ext = dataExtractor.getExtension(sr, EXTENSION_RESIDENT_SUPERVISOR)
+        const ext = dataExtractor.getExtension(sr, ExtensionUrls.ResidentSupervisor)
         const ref = get(ext, 'valueReference.reference')
         return ref ? ref.split('/')[1] : []
-      }))]
+      }))
     return ids
   } catch (e) {
     console.warn('Failed to extract supervisors from patient', e)
