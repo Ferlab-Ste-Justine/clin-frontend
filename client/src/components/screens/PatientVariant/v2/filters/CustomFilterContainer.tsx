@@ -4,7 +4,7 @@ import { IFilter, IFilterGroup } from '@ferlab/ui/core/components/filters/types'
 import { getSelectedFilters, updateFilters } from '@ferlab/ui/core/data/filters/utils';
 
 import { ExtendedMapping, getFilterGroup, getFilters, Results } from 'components/Utils/utils';
-import history from 'services/history';
+import { history } from 'configureStore';
 import { underscoreToDot } from 'store/graphql/utils';
 import { MappingResults } from 'store/graphql/utils/actions';
 

@@ -8,7 +8,7 @@ import {
   updateFilters,
 } from '@ferlab/ui/core/data/filters/utils';
 
-import history from 'services/history';
+import { history } from 'configureStore';
 import { keyEnhance, keyEnhanceBooleanOnly, underscoreToDot } from 'store/graphql/utils';
 import { MappingResults } from 'store/graphql/utils/actions';
 import { VariantEntity } from 'store/graphql/variants/models';

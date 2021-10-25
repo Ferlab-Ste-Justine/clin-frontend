@@ -7,7 +7,6 @@ import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 import intl from 'react-intl-universal';
 
 import { ExtendedMapping } from 'components/Utils/utils';
-import history from 'services/history';
 //import { HitsStudiesResults } from 'store/graphql/studies/actions';
 import { dotToUnderscore } from '@ferlab/ui/core/data/arranger/formatting';
 import { MappingResults, useGetPageData } from 'store/graphql/utils/actions';
@@ -19,9 +18,9 @@ import styleThemeColors from 'style/themes/default/colors.module.scss';
 //import GenericFilters from './filters/GenericFilters';
 import { VARIANT_INDEX, VARIANT_REPO_CACHE_KEY } from './constants';
 import VariantTableContainer from './VariantTableContainer';
+import { history } from 'configureStore';
 
 import styles from './VariantPageContainer.module.scss';
-import { useParams } from 'react-router';
 
 export type VariantPageContainerData = {
   mappingResults: MappingResults;
@@ -53,6 +52,7 @@ const DEFAULT_STUDIES_SIZE = 30000;
 const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
   const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const [currentPageSize, setcurrentPageSize] = useState(DEFAULT_PAGE_SIZE);
+
   const { filters } = useFilters();
   const allSqons = getQueryBuilderCache(VARIANT_REPO_CACHE_KEY).state;
   const results = useGetPageData(
@@ -118,8 +118,8 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
       <QueryBuilder
         className="patient-variant-repo__query-builder"
         showHeader={true}
-        history={history}
         headerTitle="Variant Query"
+        history={history}
         showHeaderTools={false}
         cacheKey={VARIANT_REPO_CACHE_KEY}
         enableCombine={false}
