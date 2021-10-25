@@ -1,5 +1,3 @@
-import { computeHeadingLevel } from ".pnpm/@testing-library+dom@7.28.1/node_modules/@testing-library/dom"
-import { Organization } from "helpers/search/types"
 import { PractitionerRole } from "./types"
 
 const RESIDENT_CODE = '405277009'

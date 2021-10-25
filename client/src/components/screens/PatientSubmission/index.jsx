@@ -78,10 +78,6 @@ function PatientSubmissionScreen(props) {
     valid: false,
   });
 
-  React.useEffect(() => {
-    validate();
-  });
-
   const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
 
   const canGoNextPage = (currentPage) => {
@@ -213,6 +209,9 @@ function PatientSubmissionScreen(props) {
     validate();
   };
 
+  React.useEffect(() => {
+    validate();
+  });
   const { localStore } = props;
 
   const createCGHResourceList = (content, patientId) => {
@@ -532,15 +531,6 @@ function PatientSubmissionScreen(props) {
   };
 
   const onFormFinish = (isOnLastPage) => {
-    /*if (isOnLastPage) {
-      setState({
-        ...state,
-        isSubmitting: true,
-      });
-      saveSubmission(true);
-    } else {
-      next();
-    }*/
     setState({ ...state, isSubmissionVisible: true })
   };
 

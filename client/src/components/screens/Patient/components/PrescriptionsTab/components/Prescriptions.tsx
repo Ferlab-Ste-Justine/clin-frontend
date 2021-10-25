@@ -129,7 +129,9 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
     );
   };
 
-  const formatName = (practitioner: PractitionerData, supervisor?: PractitionerData) => `${practitioner.lastName.toUpperCase()} ${practitioner.firstName} - ${practitioner.mrn} ${supervisor ? intl.get('screen.patient.details.resident'): ''}`;
+  const formatName = (practitioner: PractitionerData, supervisor?: PractitionerData) =>
+    `${practitioner.formattedName} - ${practitioner.mrn} ${supervisor ? intl.get('screen.patient.details.resident') : ''}`;
+  
   const openEditPrescription = (id: string) => {
     dispatch(editPrescription(id));
   };

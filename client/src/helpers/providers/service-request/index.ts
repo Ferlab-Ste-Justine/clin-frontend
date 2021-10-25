@@ -1,5 +1,6 @@
 import get from 'lodash/get';
-import { ServiceRequest } from '../../fhir/types';
+import head from 'lodash/head';
+import { Practitioner, ServiceRequest } from '../../fhir/types';
 import { PractitionerData, Prescription, PrescriptionStatus } from '../types';
 import { DataExtractor } from '../extractor';
 import { Provider, Record } from '../providers';
@@ -42,14 +43,11 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     const ext = dataExtractor.getExtension(serviceRequest, RESIDENT_SUPERVISOR_EXT);
     const ref = get(ext, 'valueReference.reference');
     const id = ref ? ref.split('/')[1] : undefined
-    const practitioner = id ? this.supervisors?.entry.flatMap((e: any) => {
-      return e.resource.entry[0].resource.id === id ? e.resource.entry[0].resource : []
-    })[0] : undefined;
-    return practitioner ? {
-      mrn: get(practitioner, 'identifier[0].value', 'N/A'),
-      lastName: get(practitioner, ['name', '0', 'family'], ''),
-      firstName: get(practitioner, ['name', '0', 'given', '0'], ''),
-    } as PractitionerData : undefined;
+    const practitioner = id ? head(this.supervisors?.entry.flatMap((e: any) => {
+      const res = get(e, 'resource.entry[0].resource')
+      return res?.id === id ? res : []
+    })) : undefined;
+    return practitioner ? dataExtractor.formatPractitioner(practitioner as Practitioner) : undefined;
   }
 
   public doProvide(dataExtractor: DataExtractor): Record<ServiceRequest, Prescription>[] {
