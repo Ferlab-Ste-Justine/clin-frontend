@@ -48,6 +48,9 @@ const fr = {
   'components.variantNavigation.searchInput.resultsCount': '{count} résultats',
   'filters.__missing__': 'Manquant',
   'filters.false': 'Faux',
+  'filters.header.practitioner.lastNameFirstName': 'Médecin approbateur',
+  'filters.header.status': 'Statut',
+  'filters.header.test': 'Analyse',
   'filters.true': 'Vrai',
   'footer.navigation.primary.address':
     '3175 Chemin de la Côte-Sainte-Catherine, Montréal, QC H3T 1C5',
@@ -657,6 +660,7 @@ const fr = {
   'screen.patientsearch.status.revoked': 'Refusée',
   'screen.patientsearch.table.bloodRelationship': 'Consanguinité',
   'screen.patientsearch.table.date': 'Date',
+  'screen.patientsearch.table.dateCreation': 'Date de Création',
   'screen.patientsearch.table.dob': 'Date de naissance',
   'screen.patientsearch.table.establishment': 'Établissement',
   'screen.patientsearch.table.ethnicity': 'Ethnicité',

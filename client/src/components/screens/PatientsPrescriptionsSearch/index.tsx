@@ -1,17 +1,16 @@
 import React from 'react';
-import keycloak from 'keycloak';
 
 import Layout from 'components/Layout';
 import { GraphqlBackend } from 'store/providers';
 import ApolloProvider from 'store/providers/apollo';
 
-import PatientsPrescriptionsSearch from './SearchPrescription';
+import PatientsPrescriptions from './PatientsPrescriptions';
 
-const PatientsPrescriptionsSearchScreen = (): React.ReactElement => (
+const SearchScreen = (): React.ReactElement => (
   <Layout>
     <ApolloProvider backend={GraphqlBackend.ARRANGER}>
-      <PatientsPrescriptionsSearch />
+      <PatientsPrescriptions />
     </ApolloProvider>
   </Layout>
 )
-export default PatientsPrescriptionsSearchScreen;
+export default SearchScreen;

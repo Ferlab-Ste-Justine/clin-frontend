@@ -1,4 +1,4 @@
-import { GqlData } from '.';
+import { ArrangerNodeData } from 'store/graphql/models';
 
 export type DataCategory = {
   data_category: string;
@@ -14,7 +14,7 @@ type HitsResultsDataCategory = {
     ];
   };
 };
-export interface PrescriptionsResult extends GqlData {
+export interface PrescriptionResult extends ArrangerNodeData {
   cid: string;
   name: string;
   domain: string[];
