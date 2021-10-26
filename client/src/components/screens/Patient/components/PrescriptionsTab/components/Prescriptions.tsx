@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import get from 'lodash/get';
 import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
-import { FamilyObservation, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
+import { FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
 import Badge from '../../../../../Badge';
 import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
@@ -129,7 +129,9 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
     );
   };
 
-  const formatName = (lastName: string, firstName: string) => `${lastName.toUpperCase()} ${firstName}`;
+  const formatName = (practitioner: PractitionerData, supervisor?: PractitionerData) =>
+    `${practitioner.formattedName} - ${practitioner.mrn} ${supervisor ? '('+intl.get('screen.patient.details.resident')+')' : ''}`;
+  
   const openEditPrescription = (id: string) => {
     dispatch(editPrescription(id));
   };
@@ -314,20 +316,10 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                   <DetailsRow label={intl.get('screen.patient.details.prescription.submissionDate')}>
                     { prescription.date ? moment(prescription.date).format('YYYY-MM-DD') : DEFAULT_VALUE }
                   </DetailsRow>
-                  <DetailsRow label={intl.get('screen.patient.details.prescription.submittedBy')}>
-                    { consultation[index] != null ? (
-                      <span className="prescriptions-tab__prescriptions-section__more-info">
-                        {
-                          formatName(consultation[index].practitioner.lastName,
-                            consultation[index].practitioner.firstName)
-                        }
-                      </span>
-                    ) : DEFAULT_VALUE }
-                  </DetailsRow>
-                  <DetailsRow label={intl.get('screen.patient.details.prescription.practionner')}>
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.practitioner')}>
                     { prescription.requester != null && prescription.requester.formattedName !== 'N/A' ? (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
-                        { formatName(prescription.requester.lastName, prescription.requester.firstName) }
+                        { formatName(prescription.requester, prescription.supervisor) }
                         <Popover
                           overlayClassName="practitionerInfo"
                           placement="topRight"
@@ -337,7 +329,13 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                           <InfoCircleOutlined />
                         </Popover>
                       </span>
-                    ) : DEFAULT_VALUE }
+                    ) : DEFAULT_VALUE}
+                     { prescription.supervisor && (
+                      <span className="prescriptions-tab__prescriptions-section__more-info">
+                       <Divider type="vertical" />
+                        {formatName(prescription.supervisor) }
+                      </span>
+                    )}
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.hospital')}>
                     { consultation[index] != null ? consultation[index].practitioner.organization : DEFAULT_VALUE }

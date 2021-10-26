@@ -57,11 +57,11 @@ interface DoctorSearchFieldOptions {
   initialValue: string
 }
 
-function buildPractitionerValue(practitioner: PractitionerData) {
+export function buildPractitionerValue(practitioner: PractitionerData) {
   return `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`;
 }
 
-function mapPractitionerToOption(practitioner: PractitionerData) {
+export function mapPractitionerToOption(practitioner: PractitionerData) {
   return {
     value: buildPractitionerValue(practitioner),
     label: (

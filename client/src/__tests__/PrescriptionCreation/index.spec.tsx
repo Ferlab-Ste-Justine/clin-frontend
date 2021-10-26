@@ -82,7 +82,7 @@ describe('PrescriptionCreation', () => {
       const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
       act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
 
-      act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
+      act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
 
       await waitFor(() => screen.getByTestId('alert'));
       expect(alert).toBeDefined();
@@ -114,7 +114,7 @@ describe('PrescriptionCreation', () => {
       const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
       act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-      act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
+      act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
 
       await waitFor(() => screen.getByTestId('alert'));
       expect(alert).toBeDefined();
@@ -145,14 +145,14 @@ describe('PrescriptionCreation', () => {
       const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
       act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-      act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
+      act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
 
       await waitFor(() => screen.getByTestId('alert'));
       expect(alert).toBeDefined();
     });
   });
 
-  test('Go to next page', async () => {
+  test('Submit form + open confirmation (resident selection) modal', async () => {
     mockRptToken();
 
     server.use(buildHPORequest());
@@ -184,9 +184,9 @@ describe('PrescriptionCreation', () => {
     const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
     act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-    act(() => userEvent.click(screen.getByText(/Suivant/i).closest('button'), {}));
+    act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
 
-    await waitFor(() => screen.getByText('Médecins prescripteurs'));
-    expect(screen.getByText('Médecins prescripteurs')).toBeDefined();
+    await waitFor(() => screen.getByText('Vous êtes sur le point de soumettre cette prescription.'));
+    expect(screen.getByText('Vous êtes sur le point de soumettre cette prescription.')).toBeDefined();
   });
 });

@@ -58,6 +58,13 @@ export const saveLocalPractitioner = (practitioner) => ({
   },
 });
 
+export const saveLocalSupervisor = (supervisor) => ({
+  type: actions.PATIENT_SUBMISSION_LOCAL_SUPERVISOR,
+  payload: {
+    supervisor,
+  },
+});
+
 export const saveLocalResident = (resident) => ({
   type: actions.PATIENT_SUBMISSION_LOCAL_RESIDENT,
   payload: {

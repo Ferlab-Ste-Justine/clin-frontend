@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import get from 'lodash/get';
+import head from 'lodash/head';
 import httpClient from '../../http-client';
 
 export const getUserPractitionerData = async (response: AxiosResponse): Promise<AxiosResponse> => {
@@ -18,18 +19,21 @@ export const getUserPractitionerData = async (response: AxiosResponse): Promise<
   }
 
   const entries = get(result, 'data.entry', []);
-  if (entries.length !== 2 || entries[0].resource == null || entries[1].resource == null) {
-    return Promise.reject();
-  }
 
-  const practitionerRole = entries[0].resource;
-  const practitioner = entries[1].resource;
+  const practitionerRoles = filterByResourceType(entries, 'PractitionerRole')
+  const practitioner = findByResourceType(entries, 'Practitioner')
 
   return Promise.resolve({
     ...response,
     data: {
       ...response.data,
-      practitionerData: { practitioner, practitionerRole },
+      practitionerData: { practitioner, practitionerRoles },
     },
   });
 };
+
+const filterByResourceType = (entries: any, resourceType: string): any =>
+  entries.filter((entry: any) => entry.resource.resourceType === resourceType).map((entry: any) => entry.resource)
+
+const findByResourceType = (entries: any, resourceType: string): any =>
+  head(filterByResourceType(entries, resourceType))

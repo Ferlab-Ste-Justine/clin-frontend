@@ -158,17 +158,9 @@ export class DataExtractor {
       return PRACTITIONER_NOT_FOUND;
     }
 
-    const prefix = get(practMetadata.practitioner, ['name', '0', 'prefix', '0'], 'Dr.');
-    const lastName = get(practMetadata.practitioner, ['name', '0', 'family'], '');
-    const firstName = get(practMetadata.practitioner, ['name', '0', 'given', '0'], '');
-    const suffix = get(practMetadata.practitioner, ['name', '0', 'suffix', '0'], '');
-
     return {
+      ... this.formatPractitioner(practMetadata.practitioner),
       organization: get(practMetadata, 'organization.name', 'N/A'),
-      mrn: get(practitionerRole, 'identifier[0].value', 'N/A'),
-      firstName,
-      lastName,
-      formattedName: `${prefix} ${lastName.toUpperCase()}, ${firstName} ${suffix !== 'null' ? suffix : ''}`,
       email: this.extractEmail(practitionerRole.telecom),
       phone: this.extractPhone(practitionerRole.telecom),
       phoneExtension: this.extractPhoneExtension(practitionerRole.telecom),
@@ -197,22 +189,27 @@ export class DataExtractor {
       return PRACTITIONER_NOT_FOUND;
     }
 
-    const prefix = get(practitioner, ['name', '0', 'prefix', '0'], 'Dr.');
-    const lastName = get(practitioner, ['name', '0', 'family'], '');
-    const firstName = get(practitioner, ['name', '0', 'given', '0'], '');
-    const suffix = get(practitioner, ['name', '0', 'suffix', '0'], '');
-
     return {
+      ... this.formatPractitioner(practitioner),
       organization: get(practMetadata, 'organization.name', 'N/A'),
-      mrn: get(practitioner, 'identifier[0].value', 'N/A'),
-      firstName,
-      lastName,
-      formattedName: `${prefix} ${lastName.toUpperCase()}, ${firstName} ${suffix !== 'null' ? suffix : ''}`,
       email: practMetadata.role != null ? this.extractEmail(practMetadata.role.telecom) : 'No email.',
       phone: practMetadata.role != null
         ? `${this.extractPhone(practMetadata.role.telecom)}`
         : 'N/A',
       phoneExtension: this.extractPhoneExtension(practMetadata.role!.telecom),
     };
+  }
+
+  public formatPractitioner(practitioner?: Practitioner): PractitionerData {
+    const prefix = get(practitioner, ['name', '0', 'prefix', '0'], 'Dr.')
+    const lastName = get(practitioner, ['name', '0', 'family'], '')
+    const firstName = get(practitioner, ['name', '0', 'given', '0'], '')
+    const suffix = get(practitioner, ['name', '0', 'suffix', '0'], '')
+    return {
+      mrn: get(practitioner, 'identifier[0].value', 'N/A'),
+      firstName,
+      lastName,
+      formattedName: `${prefix} ${lastName.toUpperCase()}, ${firstName} ${suffix || ''}`
+    } as PractitionerData
   }
 }

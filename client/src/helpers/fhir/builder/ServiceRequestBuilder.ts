@@ -2,6 +2,7 @@ import { Coding, ServiceRequest } from '../types';
 import {
   formatDate, getExtension, getPractitionerReference,
 } from './Utils';
+import { ExtensionUrls } from 'store/urls'
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const EXTENSION_RESIDENT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident';
@@ -66,6 +67,25 @@ export class ServiceRequestBuilder {
               reference: `Organization/${organization}`,
             },
           }];
+      }
+      return this;
+    }
+  
+    public withSupervisor(id?: string) {
+      if (id) {
+        const ext = getExtension(this.serviceRequest, ExtensionUrls.ResidentSupervisor);
+        if (ext) {
+          ext.valueReference = {
+            reference: `Practitioner/${id}`,
+          };
+        } else {
+          this.serviceRequest.extension?.push({
+            url: ExtensionUrls.ResidentSupervisor,
+            valueReference: {
+              reference: `Practitioner/${id}`,
+            },
+          });
+        }
       }
       return this;
     }
