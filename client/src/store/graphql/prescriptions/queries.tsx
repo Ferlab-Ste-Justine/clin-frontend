@@ -77,11 +77,3 @@ export const PRESCRIPTIONS_SEARCH_QUERY = gql`
     }
   }
 `;
-
-export const INDEX_EXTENDED_MAPPING = (index: string) => gql`
-  query ExtendedMapping {
-    ${index} {
-      extended
-    }
-  }
-`;

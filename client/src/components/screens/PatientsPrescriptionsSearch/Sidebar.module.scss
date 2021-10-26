@@ -1,27 +1,8 @@
 @import 'style/themes/clin/_colors.scss';
 
-.siderWrapper {
-  overflow-y: auto;
-}
-
-.sider {
-  border-right: thin solid $gray-4;
-  min-width: 320px;
-  width: 420px;
-  max-width: 420px;
-  display: flex;
-  flex-direction: column;
-
-  &[data-collapsed='true'] {
-    min-width: 50px;
-    max-width: 50px;
-    width: 50px;
-  }
-}
-
 .siderContainer {
   margin-right: 16px;
-  overflow-y: hidden;
+  overflow: visible !important;
   max-height: 100%;
   height: calc(100% - 18px);
 
@@ -35,9 +16,16 @@
     padding-bottom: 14px;
     overflow-y: auto;
     overflow-x: hidden;
+    width: 320px;
 
     & > :not(:first-child) > div {
       margin-top: 16px;
+    }
+
+    & > .filters {
+      button {
+        font-size: 10px;
+      }
     }
   }
 

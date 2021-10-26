@@ -11,10 +11,8 @@ import {
 } from '@ferlab/ui/core/data/filters/utils';
 import * as H from 'history';
 
-import { ExtendedMappingResults } from 'store/graphql/prescriptions/actions';
-
-import { Aggregations, GqlResults } from '../prescriptions/models';
-
+import { Aggregations } from 'store/graphql/models';
+import { ExtendedMapping, ExtendedMappingResults } from 'store/graphql/models';
 export interface RangeAggs {
   stats: {
     max: number;
@@ -33,32 +31,24 @@ export interface TermAgg {
 
 export type Aggs = TermAggs | RangeAggs;
 
-const isTermAgg = (obj: any): obj is TermAggs => obj.buckets !== undefined;
-const isRangeAgg = (obj: any): obj is RangeAggs => obj.stats !== undefined;
-
-export type ExtendedMapping = {
-  displayName: string;
-  field: string;
-  isArray: boolean;
-  type: string;
-  rangeStep?: number;
-};
+const isTermAgg = (obj: TermAggs) => !!obj.buckets;
+const isRangeAgg = (obj: RangeAggs) => !!obj.stats;
 
 export const generateFilters = (
   history:  H.History<any>,
-  results: GqlResults,
+  aggregations: Aggregations,
   extendedMapping: ExtendedMappingResults,
   className = '',
   showSearchInput = false,
   useFilterSelector = false,
 ): React.ReactElement[] =>
-  Object.keys(results.aggregations || []).map((key) => {
+  Object.keys(aggregations || []).map((key) => {
     const found = (extendedMapping?.data || []).find(
       (f: any) => f.field === underscoreToDot(key),
     );
 
-    const filterGroup = getFilterGroup(found, results.aggregations[key], []);
-    const filters = getFilters(results.aggregations, key);
+    const filterGroup = getFilterGroup(found, aggregations[key], []);
+    const filters = getFilters(aggregations, key);
     const selectedFilters = getSelectedFilters(filters, filterGroup);
     const FilterComponent = useFilterSelector ? FilterSelector : FilterContainer;
 
@@ -129,7 +119,7 @@ const getFilterGroup = (
 
   return {
     field: filter?.field || '',
-    title: filter?.displayName || '',
+    title: intl.get(`filters.header.${filter?.field}`) || '',
     type: getFilterType(filter?.type || ''),
   };
 };

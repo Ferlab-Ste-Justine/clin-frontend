@@ -3,15 +3,17 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { ISqonGroupFilter } from '@ferlab/ui/core/data/sqon/types';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 
-import { ExtendedMappingResults } from 'store/graphql/prescriptions/actions';
-import { GqlResults } from 'store/graphql/prescriptions/models';
+import { Aggregations } from 'store/graphql/models';
+import { ExtendedMappingResults } from 'store/graphql/models';
+import {PrescriptionResult} from "store/graphql/prescriptions/models/Prescription";
 
 import SidebarFilters from './SidebarFilters';
 
 import styles from './Sidebar.module.scss';
 
 export type SidebarData = {
-  results: GqlResults;
+  aggregations: Aggregations;
+  results: PrescriptionResult[];
   extendedMapping: ExtendedMappingResults;
 };
 
@@ -20,6 +22,7 @@ type PrescriptionSidebarProps = SidebarData & {
 };
 
 const PrescriptionSidebar = ({
+  aggregations,
   extendedMapping,
   filters,
   results
@@ -32,16 +35,16 @@ const PrescriptionSidebar = ({
       ) : (
         <MenuFoldOutlined onClick={() => setCollapsed(!collapsed)} />
       )}
-
-      <div className={styles.scrollView}>
-        {!collapsed && (
+      {!collapsed && (
+        <div className={`${styles.scrollView} ${styles.filters}`}>
           <SidebarFilters
+            aggregations={aggregations}
             extendedMapping={extendedMapping}
             filters={filters}
             results={results}
           />
-        )}
-      </div>
+        </div>
+      )}
     </StackLayout>
   );
 };

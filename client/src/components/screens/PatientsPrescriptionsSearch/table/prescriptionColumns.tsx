@@ -4,18 +4,9 @@ import { Link } from 'react-router-dom';
 import { ISyntheticSqon } from '@ferlab/ui/core/data/sqon/types';
 import { Badge, Button } from 'antd';
 
-import './tableColumn.scss';
+import { TColumn } from './columns';
 
-export type TStudyColumn = {
-  title: string | JSX.Element;
-  dataIndex?: string | string[];
-  name?: string | string[];
-  width?: number;
-  summary?: boolean;
-  render?: (arg1: any, arg2?: any) => JSX.Element | string;
-  children?: TStudyColumn[];
-  key: string;
-};
+import './tableColumn.scss';
 
 const statusColors: Record<string, Record<string, string>> = {
   'active': {
@@ -50,12 +41,12 @@ const statusColors: Record<string, Record<string, string>> = {
 export const prescriptionsColumns = (
   sqons: ISyntheticSqon[],
   onLinkClick?: (sqons: ISyntheticSqon[]) => void,
-): TStudyColumn[] =>
+): TColumn[] =>
   [
     {
       name: 'status',
       render: (value: string) => (
-        <Badge className="badge" color={statusColors[value].color} text={intl.get(statusColors[value].key)} />
+        <Badge className="badge" color={statusColors[value]?.color} text={intl.get(statusColors[value].key)} />
       ),
       summary: false,
       title: intl.get('screen.patientsearch.table.status'),
