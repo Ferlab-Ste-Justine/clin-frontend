@@ -140,11 +140,14 @@ function* fetch(action) {
       return;
     }
 
+    const supervisorIds = getSupervisorIdsFromPatient(patientDataResponse.payload.data)
+    const supervisorsPromise = supervisorIds?.length ? Api.getPractitionerByIds(supervisorIds) : Promise.resolve()
+
     const [familyResponse, practitionersDataResponse, canEditResponse, supervisorsResponse] = yield Promise.all([
       getFamily(patientDataResponse, action.payload.uid),
       Api.getPractitionersData(patientDataResponse.payload.data),
       Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data)),
-      Api.getPractitionerByIds(getSupervisorIdsFromPatient(patientDataResponse.payload.data))
+      supervisorsPromise
     ]);
 
     yield put({
@@ -153,7 +156,7 @@ function* fetch(action) {
         family: familyResponse,
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDataResponse.payload?.data,
-        supervisors: supervisorsResponse.payload?.data
+        supervisors: supervisorsResponse?.payload?.data
       },
       type: actions.PATIENT_FETCH_SUCCEEDED,
     });
