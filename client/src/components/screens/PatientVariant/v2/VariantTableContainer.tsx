@@ -156,10 +156,12 @@ const VariantTableContainer = (props: OwnProps) => {
         showTitle: false,
         showSizeChanger: true,
         showQuickJumper: false,
-        onChange: (page) => {
-          if (currentPageNum !== page) {
+        defaultPageSize: currentPageSize,
+        onChange: (page, pageSize) => {
+          if (currentPageNum !== page || currentPageSize !== pageSize) {
             setCurrentPageNum(page);
             setCurrentPageCb(page);
+            setcurrentPageSize(pageSize || DEFAULT_PAGE_SIZE);
           }
         },
         size: 'small',

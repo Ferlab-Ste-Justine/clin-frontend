@@ -23,29 +23,19 @@ export const VARIANT_QUERY = gql`
             #rsnumber
             participant_number
 
-            consequences {
-              hits {
-                edges {
-                  node {
-                    #vep_impact
-                    symbol
-                    consequences
-                    #aa_change
-                    impact_score
-                  }
-                }
-              }
-            }
-
-            genes {
-              hits {
-                edges {
-                  node {
-                    symbol
-                  }
-                }
-              }
-            }
+            #consequences {
+            #  hits {
+            #    edges {
+            #      node {
+            #        #vep_impact
+            #        symbol
+            #        consequences
+            #        #aa_change
+            #        impact_score
+            #      }
+            #    }
+            #  }
+            #}
           }
         }
       }
