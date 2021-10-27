@@ -26,8 +26,8 @@ export type BundleMethod = 'PUT' | 'GET' | 'POST';
 
 export interface BundleEntry {
   request: {
-    method: BundleMethod,
-    url: string,
+    method: BundleMethod;
+    url: string;
   };
   fullUrl?: string;
   resource?: FhirResource;
@@ -190,7 +190,13 @@ export interface Observation {
   valueBoolean?: boolean;
 }
 
-export type FamilyGroupType = 'person' | 'animal' | 'practitioner' | 'device' | 'medication' | 'substance';
+export type FamilyGroupType =
+  | 'person'
+  | 'animal'
+  | 'practitioner'
+  | 'device'
+  | 'medication'
+  | 'substance';
 
 export interface BackboneElement {
   entity: Reference;
@@ -217,11 +223,9 @@ export interface Practitioner {
 export interface SupervisorsBundle {
   entry: [
     resource: {
-      entry: [
-        resource: Practitioner
-      ]
-    }
-  ]
+      entry: [resource: Practitioner];
+    },
+  ];
 }
 export interface Organization {
   resourceType: ResourceType;
@@ -243,38 +247,6 @@ export interface PractitionerRole {
   code: CodeableConcept[];
 }
 
-export interface PatientSearchHits {
-  id: string;
-  organization: {
-    id: string
-    name: string
-  }
-  lastName: string
-  firstName: string
-  gender: string
-  birthDate: string,
-  practitioner: {
-    id: string,
-    lastName: string,
-    firstName: string
-  },
-  mrn: string,
-  ramq: string,
-  position: string,
-  familyId: string,
-  familyType: string,
-  ethnicity: string,
-  bloodRelationship: string,
-  requests: {
-    status: string;
-    request: string,
-    test: string,
-    prescription: string,
-  }[],
-  timestamp: string,
-  submitted: boolean,
-}
-
 export interface Member {
   extension: Extension[];
   entity: Reference;
@@ -288,9 +260,9 @@ export interface Group {
 }
 
 export enum AnalysisTestCodes {
-  PG= 'MM-PG',
+  PG = 'MM-PG',
   DYST = 'MM-DYST',
-  RHAB= 'MM-RHAB',
+  RHAB = 'MM-RHAB',
   MYOP = 'MM-MYOP',
   MYAS = 'MM-MYAS',
   HYP = 'MM-HYP',
@@ -298,19 +270,26 @@ export enum AnalysisTestCodes {
 }
 
 export const AnalysisCodeToIntlKeyText = {
-  [AnalysisTestCodes.PG]: 'form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires',
-  [AnalysisTestCodes.DYST]: 'form.patientSubmission.clinicalInformation.analysis.options.dystrophiesMusculaires',
-  [AnalysisTestCodes.RHAB]: 'form.patientSubmission.clinicalInformation.analysis.options.rhabdomyolyse',
-  [AnalysisTestCodes.MYOP]: 'form.patientSubmission.clinicalInformation.analysis.options.myopathiesCongenitales',
-  [AnalysisTestCodes.MYAS]: 'form.patientSubmission.clinicalInformation.analysis.options.myastheniasCongenitales',
-  [AnalysisTestCodes.HYP]: 'form.patientSubmission.clinicalInformation.analysis.options.hyperthermieMaligne',
-  [AnalysisTestCodes.DI]: 'form.patientSubmission.clinicalInformation.analysis.options.deficienceIntellectuelle',
-}
+  [AnalysisTestCodes.PG]:
+    'form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires',
+  [AnalysisTestCodes.DYST]:
+    'form.patientSubmission.clinicalInformation.analysis.options.dystrophiesMusculaires',
+  [AnalysisTestCodes.RHAB]:
+    'form.patientSubmission.clinicalInformation.analysis.options.rhabdomyolyse',
+  [AnalysisTestCodes.MYOP]:
+    'form.patientSubmission.clinicalInformation.analysis.options.myopathiesCongenitales',
+  [AnalysisTestCodes.MYAS]:
+    'form.patientSubmission.clinicalInformation.analysis.options.myastheniasCongenitales',
+  [AnalysisTestCodes.HYP]:
+    'form.patientSubmission.clinicalInformation.analysis.options.hyperthermieMaligne',
+  [AnalysisTestCodes.DI]:
+    'form.patientSubmission.clinicalInformation.analysis.options.deficienceIntellectuelle',
+};
 
 export enum PrescriptionStatus {
-  draft= 'draft',
+  draft = 'draft',
   hold = 'on-hold',
-  active= 'active',
+  active = 'active',
   completed = 'completed',
   revoked = 'revoked',
   incomplete = 'incomplete',

@@ -1,4 +1,5 @@
 import { FamilyMember, FamilyMembersResponse, FamilyMemberType } from 'store/FamilyMemberTypes';
+import { Gender } from 'store/PatientTypes';
 
 import { getRAMQValue, GroupMemberStatusCode } from './patientHelper';
 import { Extension, Patient } from './types';
@@ -93,8 +94,8 @@ export const hasAtLeastOneFatherInMembers = (members: FamilyMember[]): boolean =
   (members || []).some((fm) => fm.relationCode && FamilyMemberType.FATHER === fm.relationCode);
 
 export const parentTypeToGender = {
-  [FamilyMemberType.FATHER.valueOf()]: 'Male',
-  [FamilyMemberType.MOTHER.valueOf()]: 'Female',
+  [FamilyMemberType.FATHER.valueOf()]: Gender.Male,
+  [FamilyMemberType.MOTHER.valueOf()]: Gender.Female,
 };
 
 export const hasAtLeastOneOtherMember = (patientId: string, members: FamilyMember[]): boolean =>
