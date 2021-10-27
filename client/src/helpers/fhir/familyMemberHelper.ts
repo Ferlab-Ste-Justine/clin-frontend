@@ -1,8 +1,8 @@
 import { FamilyMember, FamilyMembersResponse, FamilyMemberType } from 'store/FamilyMemberTypes';
+import { Gender } from 'store/PatientTypes';
 
 import { getRAMQValue, GroupMemberStatusCode } from './patientHelper';
 import { Extension, Patient } from './types';
-import { Gender } from '../../store/PatientTypes';
 
 const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
