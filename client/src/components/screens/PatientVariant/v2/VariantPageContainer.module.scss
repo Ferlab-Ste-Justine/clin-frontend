@@ -3,11 +3,16 @@
 
 .variantPagecontainer {
   position: relative;
-}
 
-.tableContainer {
-  background-color: $card-background;
-  margin-top: $default-padding;
-  border-radius: 2px;
-  border: 1px solid $gray-4;
+  .variantTabs {
+    margin-top: 24px;
+
+    div[class$='-nav-wrap'] {
+      background-color: transparent;
+
+      div[class$='-tab'] {
+        padding: 8px 16px;
+      }
+    }
+  }
 }

@@ -1,10 +1,11 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import QueryBuilder from '@ferlab/ui/core/components/QueryBuilder';
 import { IDictionary } from '@ferlab/ui/core/components/QueryBuilder/types';
 import { getQueryBuilderCache, useFilters } from '@ferlab/ui/core/data/filters/utils';
 import { resolveSyntheticSqon } from '@ferlab/ui/core/data/sqon/utils';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 import intl from 'react-intl-universal';
+import { Tabs } from 'antd';
 
 import { ExtendedMapping } from 'components/Utils/utils';
 //import { HitsStudiesResults } from 'store/graphql/studies/actions';
@@ -18,6 +19,7 @@ import styleThemeColors from 'style/themes/default/colors.module.scss';
 //import GenericFilters from './filters/GenericFilters';
 import { VARIANT_INDEX, VARIANT_REPO_CACHE_KEY } from './constants';
 import VariantTableContainer from './VariantTableContainer';
+import GeneTableContainer from './GeneTableContainer';
 import { history } from 'configureStore';
 
 import styles from './VariantPageContainer.module.scss';
@@ -28,10 +30,7 @@ export type VariantPageContainerData = {
 
 export type VariantPageResults = {
   data: {
-    studies: {
-      hits: any;
-    };
-    variants: {
+    Variants: {
       hits: {
         edges: [
           {
@@ -128,13 +127,26 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
         total={total}
         dictionary={dictionary}
       />
-      <VariantTableContainer
-        results={results}
-        filters={filters}
-        setCurrentPageCb={setCurrentPageNum}
-        currentPageSize={currentPageSize}
-        setcurrentPageSize={setcurrentPageSize}
-      />
+      <Tabs type="card" className={styles.variantTabs}>
+        <Tabs.TabPane tab={intl.get('screen.patientvariant.results.table.variants')} key="variants">
+          <VariantTableContainer
+            results={results}
+            filters={filters}
+            setCurrentPageCb={setCurrentPageNum}
+            currentPageSize={currentPageSize}
+            setcurrentPageSize={setcurrentPageSize}
+          />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={intl.get('screen.patientvariant.results.table.genes')} key="genes">
+        <GeneTableContainer
+            results={results}
+            filters={filters}
+            setCurrentPageCb={setCurrentPageNum}
+            currentPageSize={currentPageSize}
+            setcurrentPageSize={setcurrentPageSize}
+          />
+        </Tabs.TabPane>
+      </Tabs>
     </StackLayout>
   );
 };

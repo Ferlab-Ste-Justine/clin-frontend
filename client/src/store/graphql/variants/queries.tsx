@@ -12,6 +12,40 @@ export const VARIANT_QUERY = gql`
         edges {
           node {
             id
+            hgvsg
+            locus
+            #hash
+            variant_class
+            clinvar {
+              clinvar_id
+              clin_sig
+            }
+            #rsnumber
+            participant_number
+
+            consequences {
+              hits {
+                edges {
+                  node {
+                    #vep_impact
+                    symbol
+                    consequences
+                    #aa_change
+                    impact_score
+                  }
+                }
+              }
+            }
+
+            genes {
+              hits {
+                edges {
+                  node {
+                    symbol
+                  }
+                }
+              }
+            }
           }
         }
       }

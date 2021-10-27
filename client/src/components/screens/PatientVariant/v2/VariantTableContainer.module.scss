@@ -1,3 +1,5 @@
+@import 'style/themes/clin/_colors';
+
 .variantTableCell {
   min-width: 160px;
   width: 14%;
@@ -9,16 +11,13 @@
 }
 
 .variantSearchTable {
-  margin-top: 24px;
 
-  > div {
-    padding: 8px;
-  }
+  div[class$='-card-bordered'] {
+    border-top: none;
 
-  :global(.ant-table-content) {
-    overflow: scroll;
-    table {
-      min-width: 1500px;
+    > div {
+      // need !important because antd add padding-top: 0 in inline style
+      padding: 8px 24px 8px 24px !important;
     }
   }
 }
@@ -26,4 +25,5 @@
 .tabletotalTitle {
   font-size: 14px;
   font-weight: 400;
+  color: $gray-8;
 }
