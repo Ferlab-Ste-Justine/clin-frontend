@@ -113,3 +113,6 @@ export const addNewMemberStatusToFamilyMember = ({
   (members || []).map((member) =>
     member.id === memberIdToUpdate ? { ...member, code: newStatus } : { ...member },
   );
+
+export const isMemberProband = (fm: FamilyMember): boolean =>
+  !!fm && fm.isProband;
