@@ -347,10 +347,28 @@ const buildPatientEntry = (id, withIncludes = true) => (
   }
 );
 
+const buildPractitionerEntry = (id) => (
+  {
+    request: {
+      method: 'GET',
+      url: `Practitioner?_id=${id}`,
+    },
+  }
+);
+
 export const createGetMultiplePatientDataBundle = (ids, withIncludes = true) => (
   {
     entry: ids.map((id) => buildPatientEntry(id, withIncludes)),
     id: 'bundle-request-patients-data',
+    resourceType: 'Bundle',
+    type: 'batch',
+  }
+);
+
+export const createGetMultiplePractitionerDataBundle = (ids) => (
+  {
+    entry: ids.map((id) => buildPractitionerEntry(id)),
+    id: 'bundle-request-practitioner-data',
     resourceType: 'Bundle',
     type: 'batch',
   }

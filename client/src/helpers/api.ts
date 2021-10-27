@@ -1,6 +1,7 @@
 import get from 'lodash/get';
 import Http from './http-client';
 import {
+  createGetMultiplePractitionerDataBundle,
   createGetMultiplePatientDataBundle,
   createGetPatientDataBundle, createGetPractitionersDataBundle,
 } from './fhir/fhir';
@@ -45,6 +46,11 @@ const getGroupByMemberId = (id: string) => Http.secureClinAxios.get(`${window.CL
   .then(successCallback)
   .catch(errorCallback);
 
+const getPractitionerByIds = (ids: string[]) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
+  createGetMultiplePractitionerDataBundle(ids))
+  .then(successCallback)
+  .catch(errorCallback);
+  
 const getPatientDataByIds = (ids: string[], withIncludes = true) => Http.secureClinAxios.post(`${window.CLIN.fhirBaseUrl}`,
   createGetMultiplePatientDataBundle(ids, withIncludes))
   .then(successCallback)
@@ -422,6 +428,7 @@ export default {
   convertToExcelData,
   getGeneAutocomplete,
   getPatientDataById,
+  getPractitionerByIds,
   getPractitionersData,
   updateServiceRequestStatus,
   getPatientByIdentifier,

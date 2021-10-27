@@ -32,6 +32,7 @@ export type Prescription = {
   id?: string;
   date: string;
   requester?: PractitionerData;
+  supervisor?: PractitionerData;
   performer?: PractitionerData;
   test: string;
   status: PrescriptionStatus;
