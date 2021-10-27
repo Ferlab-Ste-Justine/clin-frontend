@@ -2,6 +2,7 @@ import { FamilyMember, FamilyMembersResponse, FamilyMemberType } from 'store/Fam
 
 import { getRAMQValue, GroupMemberStatusCode } from './patientHelper';
 import { Extension, Patient } from './types';
+import { Gender } from '../../store/PatientTypes';
 
 const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
@@ -93,8 +94,8 @@ export const hasAtLeastOneFatherInMembers = (members: FamilyMember[]): boolean =
   (members || []).some((fm) => fm.relationCode && FamilyMemberType.FATHER === fm.relationCode);
 
 export const parentTypeToGender = {
-  [FamilyMemberType.FATHER.valueOf()]: 'Male',
-  [FamilyMemberType.MOTHER.valueOf()]: 'Female',
+  [FamilyMemberType.FATHER.valueOf()]: Gender.Male,
+  [FamilyMemberType.MOTHER.valueOf()]: Gender.Female,
 };
 
 export const hasAtLeastOneOtherMember = (patientId: string, members: FamilyMember[]): boolean =>
