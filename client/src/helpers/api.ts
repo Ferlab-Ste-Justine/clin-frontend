@@ -345,6 +345,11 @@ const updateServiceRequestStatus = async (
 
   const editedServiceRequest = {
     ...serviceRequest,
+    performer: [
+      {
+        reference: `PractitionerRole/${user.practitionerData.practitionerRole.id}`
+      }
+    ],
     extension,
     note: notes,
     status,

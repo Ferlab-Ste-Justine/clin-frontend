@@ -386,7 +386,7 @@ function PatientSubmissionScreen(props) {
           .withSubmitted(submitted, userPractitioner.id, status)
           .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
           .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
-          .withNote(content['analysis.comments'])
+          .withNote(content.indication)
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
           .withId(get(localStore, 'clinicalImpression.id'))
