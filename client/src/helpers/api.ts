@@ -13,11 +13,8 @@ import {
   createGetPractitionersDataBundle,
 } from './fhir/fhir';
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
-import { Group, Patient, ServiceRequest } from './fhir/types';
-import {
-  PatientAutocompleteOptionalParams,
-  PatientAutoCompleteResponse,
-} from './search/types';
+import { Bundle, Group, Patient, ServiceRequest } from './fhir/types';
+import { PatientAutocompleteOptionalParams, PatientAutoCompleteResponse } from './search/types';
 import Http from './http-client';
 import { userAuthPermissions } from './keycloak-api';
 
@@ -62,7 +59,14 @@ const getGroupById = (id: string) =>
     .then(successCallback)
     .catch(errorCallback);
 
-const getGroupByMemberId = (id: string) =>
+const getGroupByMemberId = (
+  id: string,
+): Promise<{
+  payload?: {
+    data: Bundle;
+  };
+  error?: AnyError;
+}> =>
   Http.secureClinAxios
     .get(`${window.CLIN.fhirBaseUrl}/Group?member=${id}`)
     .then(successCallback)

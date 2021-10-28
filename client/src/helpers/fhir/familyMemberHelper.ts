@@ -2,7 +2,7 @@ import { FamilyMember, FamilyMembersResponse, FamilyMemberType } from 'store/Fam
 import { Gender } from 'store/PatientTypes';
 
 import { getRAMQValue, GroupMemberStatusCode } from './patientHelper';
-import { Extension, Patient } from './types';
+import { BackboneElement, Bundle, Extension, FamilyGroup, Patient } from './types';
 
 const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
@@ -114,5 +114,24 @@ export const addNewMemberStatusToFamilyMember = ({
     member.id === memberIdToUpdate ? { ...member, code: newStatus } : { ...member },
   );
 
-export const isMemberProband = (fm: FamilyMember): boolean =>
-  !!fm && fm.isProband;
+export const isMemberProband = (fm: FamilyMember): boolean => !!fm && fm.isProband;
+
+export const isMemberAloneAccordingToGroupBundle = (
+  memberId: string,
+  groupBundle: Bundle,
+): boolean => {
+  const groupResources =
+    (groupBundle?.entry || []).map((entry) => ({ ...entry.resource } as FamilyGroup)) || [];
+  /*
+   * Legacy (zombie groups):
+   * a patient can have multiple groups associated to him/her at the time of this writing.
+   * As long as this situation remains, all we need to check is that the member is alone
+   * in all of them. This check should be valid if the zombie issue is resolved.
+   * */
+  const membersFromAllGroups = groupResources
+    .map((resource) => resource.member || [])
+    .flat() as BackboneElement[];
+  return membersFromAllGroups.every(
+    (member) => member?.entity?.reference === `Patient/${memberId}`,
+  );
+};

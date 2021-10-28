@@ -82,10 +82,10 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
   };
 
   async function onSubmit() {
-    const callback = (isSuccess: boolean) => {
-      isSuccess
-        ? message.success(intl.get('screen.patient.details.family.add.success'))
-        : message.error(intl.get('screen.patient.details.family.add.error'));
+    const callback = (status: { isSuccess: boolean; messageKey: string }) => {
+      status.isSuccess
+        ? message.success(intl.get(status.messageKey))
+        : message.error(intl.get(status.messageKey));
       cleanUpBeforeClosing();
     };
     dispatch(addParentToFamily(selectedPatient?.id, parentType, affectedStatus!, callback));

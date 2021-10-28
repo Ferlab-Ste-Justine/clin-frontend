@@ -11,9 +11,10 @@ import {
   getFamilyMembersFromPatientDataResponse,
   removeSpecificFamilyRelation,
 } from '../helpers/patient';
-import { ExtensionUrls } from 'store/urls'
+import { ExtensionUrls } from 'store/urls';
 import { FamilyActionStatus } from '../reducers/patient';
 import { DataExtractor } from '../helpers/providers/extractor';
+import { isMemberAloneAccordingToGroupBundle } from '../helpers/fhir/familyMemberHelper';
 
 const getIdsFromPatient = (data) => {
   const patient = get(data, 'entry[0].resource.entry[0].resource');
@@ -39,19 +40,22 @@ const getIdsFromPatient = (data) => {
 const getSupervisorIdsFromPatient = (data) => {
   try {
     const dataExtractor = new DataExtractor({ patientData: data });
-    const serviceRequests = dataExtractor.extractBundle('ServiceRequest').entry.map((e) => e.resource);
-    const ids = uniq(serviceRequests
-      .flatMap(sr => {
-        const ext = dataExtractor.getExtension(sr, ExtensionUrls.ResidentSupervisor)
-        const ref = get(ext, 'valueReference.reference')
-        return ref ? ref.split('/')[1] : []
-      }))
-    return ids
+    const serviceRequests = dataExtractor
+      .extractBundle('ServiceRequest')
+      .entry.map((e) => e.resource);
+    const ids = uniq(
+      serviceRequests.flatMap((sr) => {
+        const ext = dataExtractor.getExtension(sr, ExtensionUrls.ResidentSupervisor);
+        const ref = get(ext, 'valueReference.reference');
+        return ref ? ref.split('/')[1] : [];
+      }),
+    );
+    return ids;
   } catch (e) {
-    console.warn('Failed to extract supervisors from patient', e)
-    return []
+    console.warn('Failed to extract supervisors from patient', e);
+    return [];
   }
-}
+};
 
 const buildPtIdToGrMemStatusCode = (rawResponse) =>
   !rawResponse || rawResponse.length === 0
@@ -156,7 +160,7 @@ function* fetch(action) {
         family: familyResponse,
         patientData: patientDataResponse.payload.data,
         practitionersData: practitionersDataResponse.payload?.data,
-        supervisors: supervisorsResponse?.payload?.data
+        supervisors: supervisorsResponse?.payload?.data,
       },
       type: actions.PATIENT_FETCH_SUCCEEDED,
     });
@@ -273,11 +277,32 @@ function* addParent(action) {
     payload: FamilyActionStatus.addMemberInProgress,
     type: actions.PATIENT_ADD_PARENT_ACTION_STATUS,
   });
+
   const { callback, parentId, parentType, status } = action.payload;
   const parsedPatient = yield select((state) => state.patient.patient.parsed);
   const originalPatient = yield select((state) => state.patient.patient.original);
-  let isSuccess = false;
+
+  let sagaStatus = {
+    isSuccess: false,
+    messageKey: 'screen.patient.details.family.add.error',
+  };
+
   try {
+    const parentGroups = yield Api.getGroupByMemberId(parentId);
+    if (parentGroups.error) {
+      return;
+    }
+
+    const canAddParent = isMemberAloneAccordingToGroupBundle(parentId, parentGroups.payload?.data);
+    if (!canAddParent) {
+      sagaStatus = {
+        ...sagaStatus,
+        isSuccess: false,
+        messageKey: 'screen.patient.details.family.add.parentIsAlreadyInAFamily',
+      };
+      return;
+    }
+
     const patientToUpdate = { ...originalPatient };
 
     patientToUpdate.extension = [
@@ -308,13 +333,17 @@ function* addParent(action) {
     yield updateParentGroup(parentId, parsedPatient.familyId);
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
 
-    isSuccess = true;
+    sagaStatus = {
+      ...sagaStatus,
+      isSuccess: true,
+      messageKey: 'screen.patient.details.family.add.success',
+    };
     yield put({ payload: { uid: parsedPatient.id }, type: actions.PATIENT_ADD_PARENT_SUCCEEDED });
   } catch (e) {
     console.error('addParent', e);
   } finally {
     if (callback) {
-      yield callback(isSuccess);
+      yield callback(sagaStatus);
     }
     yield put({ payload: null, type: actions.PATIENT_ADD_PARENT_ACTION_STATUS });
   }
