@@ -53,7 +53,14 @@ const getPatientDataById = (id: string) =>
     .then(successCallback)
     .catch(errorCallback);
 
-const getGroupById = (id: string) =>
+const getGroupById = (
+  id: string,
+): Promise<{
+  payload?: {
+    data: Bundle;
+  };
+  error?: AnyError;
+}> =>
   Http.secureClinAxios
     .get(`${window.CLIN.fhirBaseUrl}/Group?_id=${id}`)
     .then(successCallback)
@@ -69,6 +76,12 @@ const getGroupByMemberId = (
 }> =>
   Http.secureClinAxios
     .get(`${window.CLIN.fhirBaseUrl}/Group?member=${id}`)
+    .then(successCallback)
+    .catch(errorCallback);
+
+const deleteGroup = (groupId: string) =>
+  Http.secureClinAxios
+    .delete(`${window.CLIN.fhirBaseUrl}/Group/${groupId}`)
     .then(successCallback)
     .catch(errorCallback);
 
@@ -351,8 +364,8 @@ const updateServiceRequestStatus = async (
     ...serviceRequest,
     performer: [
       {
-        reference: `PractitionerRole/${user.practitionerData.practitionerRole.id}`
-      }
+        reference: `PractitionerRole/${user.practitionerData.practitionerRole.id}`,
+      },
     ],
     extension,
     note: notes,
@@ -497,6 +510,7 @@ export default {
   getGroupById,
   getPatientById,
   getGroupByMemberId,
+  deleteGroup,
   getPatientDataByIds,
   getPatientsByAutoComplete,
   getPatientsGenderAndPosition,

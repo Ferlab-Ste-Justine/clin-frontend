@@ -116,22 +116,18 @@ export const addNewMemberStatusToFamilyMember = ({
 
 export const isMemberProband = (fm: FamilyMember): boolean => !!fm && fm.isProband;
 
-export const isMemberAloneAccordingToGroupBundle = (
+export const isMemberAloneInGroupBundle = (
   memberId: string,
+  groupId: string,
   groupBundle: Bundle,
 ): boolean => {
-  const groupResources =
-    (groupBundle?.entry || []).map((entry) => ({ ...entry.resource } as FamilyGroup)) || [];
-  /*
-   * Legacy (zombie groups):
-   * a patient can have multiple groups associated to him/her at the time of this writing.
-   * As long as this situation remains, all we need to check is that the member is alone
-   * in all of them. This check should be valid if the zombie issue is resolved.
-   * */
-  const membersFromAllGroups = groupResources
-    .map((resource) => resource.member || [])
-    .flat() as BackboneElement[];
-  return membersFromAllGroups.every(
+  const foundGroupResource = (groupBundle?.entry || []).find((entry) =>
+    entry.fullUrl?.endsWith(`/Group/${groupId}`),
+  )?.resource as FamilyGroup;
+  if (!foundGroupResource) {
+    return false;
+  }
+  return !!foundGroupResource?.member?.every(
     (member) => member?.entity?.reference === `Patient/${memberId}`,
   );
 };

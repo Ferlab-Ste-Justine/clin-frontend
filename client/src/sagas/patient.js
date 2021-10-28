@@ -2,19 +2,20 @@ import get from 'lodash/get';
 import uniq from 'lodash/uniq';
 import { all, debounce, put, select, takeLatest } from 'redux-saga/effects';
 
+import { ExtensionUrls } from 'store/urls';
+
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 import { getExtension } from '../helpers/fhir/builder/Utils';
+import { isMemberAloneInGroupBundle } from '../helpers/fhir/familyMemberHelper';
 import { isAlreadyProband, makeExtensionProband } from '../helpers/fhir/patientHelper';
 import {
   getFamilyMembersFromPatientDataResponse,
   removeSpecificFamilyRelation,
 } from '../helpers/patient';
-import { ExtensionUrls } from 'store/urls';
-import { FamilyActionStatus } from '../reducers/patient';
 import { DataExtractor } from '../helpers/providers/extractor';
-import { isMemberAloneAccordingToGroupBundle } from '../helpers/fhir/familyMemberHelper';
+import { FamilyActionStatus } from '../reducers/patient';
 
 const getIdsFromPatient = (data) => {
   const patient = get(data, 'entry[0].resource.entry[0].resource');
@@ -144,15 +145,18 @@ function* fetch(action) {
       return;
     }
 
-    const supervisorIds = getSupervisorIdsFromPatient(patientDataResponse.payload.data)
-    const supervisorsPromise = supervisorIds?.length ? Api.getPractitionerByIds(supervisorIds) : Promise.resolve()
+    const supervisorIds = getSupervisorIdsFromPatient(patientDataResponse.payload.data);
+    const supervisorsPromise = supervisorIds?.length
+      ? Api.getPractitionerByIds(supervisorIds)
+      : Promise.resolve();
 
-    const [familyResponse, practitionersDataResponse, canEditResponse, supervisorsResponse] = yield Promise.all([
-      getFamily(patientDataResponse, action.payload.uid),
-      Api.getPractitionersData(patientDataResponse.payload.data),
-      Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data)),
-      supervisorsPromise
-    ]);
+    const [familyResponse, practitionersDataResponse, canEditResponse, supervisorsResponse] =
+      yield Promise.all([
+        getFamily(patientDataResponse, action.payload.uid),
+        Api.getPractitionersData(patientDataResponse.payload.data),
+        Api.canEditPatients(getIdsFromPatient(patientDataResponse.payload.data)),
+        supervisorsPromise,
+      ]);
 
     yield put({
       payload: {
@@ -278,7 +282,7 @@ function* addParent(action) {
     type: actions.PATIENT_ADD_PARENT_ACTION_STATUS,
   });
 
-  const { callback, parentId, parentType, status } = action.payload;
+  const { callback, familyId: parentFamilyId, parentId, parentType, status } = action.payload;
   const parsedPatient = yield select((state) => state.patient.patient.parsed);
   const originalPatient = yield select((state) => state.patient.patient.original);
 
@@ -288,12 +292,16 @@ function* addParent(action) {
   };
 
   try {
-    const parentGroups = yield Api.getGroupByMemberId(parentId);
+    const parentGroups = yield Api.getGroupById(parentFamilyId);
     if (parentGroups.error) {
       return;
     }
 
-    const canAddParent = isMemberAloneAccordingToGroupBundle(parentId, parentGroups.payload?.data);
+    const canAddParent = isMemberAloneInGroupBundle(
+      parentId,
+      parentFamilyId,
+      parentGroups.payload?.data,
+    );
     if (!canAddParent) {
       sagaStatus = {
         ...sagaStatus,
@@ -332,6 +340,7 @@ function* addParent(action) {
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, parsedPatient.familyId);
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
+    yield Api.deleteGroup(parentFamilyId);
 
     sagaStatus = {
       ...sagaStatus,
