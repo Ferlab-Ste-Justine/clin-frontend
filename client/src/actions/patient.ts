@@ -63,11 +63,12 @@ type familyActionCb = ((isSuccess: boolean) => Promise<void> | void) | undefined
 
 export const addParentToFamily: Action = (
   parentId: string,
+  familyId: string,
   parentType: FamilyMemberType,
   status: GroupMemberStatus,
   callback: familyActionCb,
 ) => ({
-  payload: { callback, parentId, parentType, status },
+  payload: { callback, parentId, parentType, familyId, status },
   type: actions.PATIENT_ADD_PARENT_REQUESTED,
 });
 

@@ -88,7 +88,15 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
         : message.error(intl.get(status.messageKey));
       cleanUpBeforeClosing();
     };
-    dispatch(addParentToFamily(selectedPatient?.id, parentType, affectedStatus!, callback));
+    dispatch(
+      addParentToFamily(
+        selectedPatient?.id,
+        selectedPatient?.familyId,
+        parentType,
+        affectedStatus!,
+        callback,
+      ),
+    );
   }
 
   const updateStatus = (event: RadioChangeEvent) => {
