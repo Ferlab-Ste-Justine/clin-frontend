@@ -1,6 +1,8 @@
 @import '~@ferlab/style/themes/default/theme.template';
 @import 'colors';
 
+$font-weight-semibold: 500;
+$font-weight-bold: 500;
 
 // Query Builder
 $query-default-action-hover-color: #057DB5;
