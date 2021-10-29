@@ -25076,6 +25076,57 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .ant-checkbox {
   top: 0;
 }
+.ant-tag {
+  border: none;
+  background-color: #e1e8ef;
+}
+.ant-tag:last-child {
+  margin-right: 0;
+}
+.ant-tag-red {
+  color: #820014;
+  background-color: #FFCCC7;
+}
+.ant-tag-cyan {
+  color: #00474F;
+  background-color: #B5F5EC;
+}
+.ant-tag-magenta {
+  color: #6B0547;
+  background-color: #FFD6E7;
+}
+.ant-tag-blue {
+  color: #0a5085;
+  background-color: #d6f1fb;
+}
+.ant-tag-geekblue {
+  color: #10239E;
+  background-color: #D6E4FF;
+}
+.ant-tag-gold {
+  color: #613400;
+  background-color: #FFF1B8;
+}
+.ant-tag-volcano {
+  color: #871400;
+  background-color: #FFD8BF;
+}
+.ant-tag-green {
+  color: #135200;
+  background-color: #D9F7BE;
+}
+.ant-tag-lime {
+  color: #254000;
+  background-color: #F4FFB8;
+}
+.ant-tag-orange {
+  color: #612500;
+  background-color: #FFE7BA;
+}
+.ant-tag-purple {
+  color: #531DAB;
+  background-color: #EFDBFF;
+}
 .ant-btn-link {
   color: #006aa3;
   padding: 0;
