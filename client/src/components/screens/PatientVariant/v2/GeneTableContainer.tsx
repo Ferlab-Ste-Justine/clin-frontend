@@ -24,42 +24,43 @@ type OwnProps = {
   setcurrentPageSize: (currentPage: number) => void;
 };
 
-const columns: ProColumns[] = [
-  {
-    title: intl.get('screen.patientvariant.results.gene.table.symbol'),
-    dataIndex: 'test1',
-  },
-  {
-    title: intl.get('screen.patientvariant.results.gene.table.name'),
-    dataIndex: 'test2',
-  },
-  {
-    title: intl.get('screen.patientvariant.results.gene.table.omim_id'),
-    dataIndex: 'test3',
-  },
-  {
-    title: 'test4',
-    dataIndex: 'test4',
-  },
-  {
-    title: 'test4',
-    dataIndex: 'test4',
-  },
-];
-
-const defaultData = [
-  {
-    test1: 'Allo',
-    test2: 'Allo',
-    test3: 'Allo',
-    test4: 'Allo',
-  },
-];
-
 const GeneTableContainer = (props: OwnProps) => {
   const { results, setCurrentPageCb, currentPageSize, setcurrentPageSize } = props;
   const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const total = 0;
+
+  const columns: ProColumns[] = [
+    {
+      title: intl.get('screen.patientvariant.results.gene.table.symbol'),
+      dataIndex: 'test1',
+    },
+    {
+      title: intl.get('screen.patientvariant.results.gene.table.name'),
+      dataIndex: 'test2',
+    },
+    {
+      title: intl.get('screen.patientvariant.results.gene.table.omim_id'),
+      dataIndex: 'test3',
+    },
+    {
+      title: 'test4',
+      dataIndex: 'test4',
+    },
+    {
+      title: 'test5',
+      dataIndex: 'test5',
+    },
+  ];
+  
+  const defaultData = [
+    {
+      test1: 'Allo',
+      test2: 'Allo',
+      test3: 'Allo',
+      test4: 'Allo',
+      test5: 'Allo',
+    },
+  ];
 
   return (
     <ProTable
