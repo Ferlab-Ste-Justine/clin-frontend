@@ -77,10 +77,14 @@ const fr = {
   'form.login.username.PlaceHolder': 'nom@domain.com',
   'form.login.usernameField': 'Adresse courriel',
   'form.patientSubmission.submissionModal.title': 'Soumettre la prescription ?',
-  'form.patientSubmission.submissionModal.description': 'Vous êtes sur le point de soumettre cette prescription.',
-  'form.patientSubmission.submissionModal.supervisor.text': 'Veuillez identifier votre médecin superviseur.',
-  'form.patientSubmission.submissionModal.supervisor.placeholder': 'Recherche par nom et licence ...',
-  'form.patientSubmission.submissionModal.supervisor.required': 'Vous devez selectionner un médecin superviseur',
+  'form.patientSubmission.submissionModal.description':
+    'Vous êtes sur le point de soumettre cette prescription.',
+  'form.patientSubmission.submissionModal.supervisor.text':
+    'Veuillez identifier votre médecin superviseur.',
+  'form.patientSubmission.submissionModal.supervisor.placeholder':
+    'Recherche par nom et licence ...',
+  'form.patientSubmission.submissionModal.supervisor.required':
+    'Vous devez selectionner un médecin superviseur',
   'form.patientSubmission.submissionModal.actions.cancel': 'Annuler',
   'form.patientSubmission.submissionModal.actions.submit': 'Soumettre',
   'form.patientSubmission.cancelModal.actions.cancel': 'Annuler',
@@ -406,6 +410,8 @@ const fr = {
   'screen.patient.details.family': 'Famille',
   'screen.patient.details.family.add.error':
     "Une erreur est survenue lors de l'ajout du parent. Veuillez essayer à nouveau",
+  'screen.patient.details.family.add.parentIsAlreadyInAFamily':
+    'Le patient ne peut être ajouté, car il est déjà dans une famille',
   'screen.patient.details.family.add.success': 'Le parent a été ajouté à cette famille',
   'screen.patient.details.family.addParent': 'Ajouter un parent',
   'screen.patient.details.family.empty.description':

@@ -313,6 +313,12 @@ const en = {
   'screen.patient.details.ethnicity': 'Ethnicity',
   'screen.patient.details.externalId': 'External ID',
   'screen.patient.details.family': 'Family',
+  'screen.patient.details.family.add.error':
+    "An error occurred while adding the parent. Please, try again",
+  'screen.patient.details.family.add.parentIsAlreadyInAFamily':
+    'The patient cannot be add because he/she is a member of another family',
+  'screen.patient.details.family.add.success': 'The parent has been added to the family',
+  'screen.patient.details.family.addParent': 'Add a parent',
   'screen.patient.details.family.table.relationship': 'Relationship',
   'screen.patient.details.family.table.relationshipTip': 'Relationship to the proband',
   'screen.patient.details.familyId': 'Family',

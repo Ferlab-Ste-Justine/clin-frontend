@@ -1,7 +1,8 @@
 import { FamilyMember, FamilyMembersResponse, FamilyMemberType } from 'store/FamilyMemberTypes';
+import { Gender } from 'store/PatientTypes';
 
 import { getRAMQValue, GroupMemberStatusCode } from './patientHelper';
-import { Extension, Patient } from './types';
+import { BackboneElement, Bundle, Extension, FamilyGroup, Patient } from './types';
 
 const FAMILY_RELATION_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-relation';
 const PROBAND_EXT_URL = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
@@ -93,8 +94,8 @@ export const hasAtLeastOneFatherInMembers = (members: FamilyMember[]): boolean =
   (members || []).some((fm) => fm.relationCode && FamilyMemberType.FATHER === fm.relationCode);
 
 export const parentTypeToGender = {
-  [FamilyMemberType.FATHER.valueOf()]: 'Male',
-  [FamilyMemberType.MOTHER.valueOf()]: 'Female',
+  [FamilyMemberType.FATHER.valueOf()]: Gender.Male,
+  [FamilyMemberType.MOTHER.valueOf()]: Gender.Female,
 };
 
 export const hasAtLeastOneOtherMember = (patientId: string, members: FamilyMember[]): boolean =>
@@ -112,3 +113,21 @@ export const addNewMemberStatusToFamilyMember = ({
   (members || []).map((member) =>
     member.id === memberIdToUpdate ? { ...member, code: newStatus } : { ...member },
   );
+
+export const isMemberProband = (fm: FamilyMember): boolean => !!fm && fm.isProband;
+
+export const isMemberAloneInGroupBundle = (
+  memberId: string,
+  groupId: string,
+  groupBundle: Bundle,
+): boolean => {
+  const foundGroupResource = (groupBundle?.entry || []).find((entry) =>
+    entry.fullUrl?.endsWith(`/Group/${groupId}`),
+  )?.resource as FamilyGroup;
+  if (!foundGroupResource) {
+    return false;
+  }
+  return !!foundGroupResource?.member?.every(
+    (member) => member?.entity?.reference === `Patient/${memberId}`,
+  );
+};

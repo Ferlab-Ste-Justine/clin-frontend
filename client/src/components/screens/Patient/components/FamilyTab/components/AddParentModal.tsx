@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
 import { addParentToFamily } from 'actions/patient';
-import { AutoComplete, Form, message, Radio, RadioChangeEvent, Typography } from 'antd';
+import { AutoComplete, Form, message, Modal, Radio, RadioChangeEvent, Typography } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import Modal from 'antd/lib/modal/Modal';
 import api from 'helpers/api';
 import { parentTypeToGender } from 'helpers/fhir/familyMemberHelper';
 import { GroupMemberStatusCode } from 'helpers/fhir/patientHelper';
@@ -13,6 +12,7 @@ import { State } from 'reducers';
 import { FamilyActionStatus } from 'reducers/patient';
 
 import { FamilyMemberType } from 'store/FamilyMemberTypes';
+import { Position } from 'store/PatientTypes';
 
 interface Props {
   parentType: FamilyMemberType | null;
@@ -31,37 +31,33 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
   const [form] = useForm();
   const [searchResult, setSearchResult] = useState<SearchResult[] | null>(null);
   const [selectedPatient, setSelectedPatient] = useState<PatientData | null>(null);
-  const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | undefined>(
-    undefined,
-  );
+  const [affectedStatus, setAffectedStatus] = useState<GroupMemberStatusCode | null>(null);
   const family = useSelector((state: State) => state.patient.family);
   const familyActionStatus = useSelector((state: State) => state.patient.familyActionStatus);
-  const familyMemberIds = family?.map((member) => member.id);
+  const familyMemberIds = family?.map((member) => member.id) || [];
 
-  async function search(searchTerm: string) {
-    const response: any = await api.getPatientsByAutoComplete(
-      'complete',
-      searchTerm,
-      1,
-      5,
-      parentTypeToGender[parentType!]
-    );
-    if (response.payload?.data) {
-      setSearchResult(
-        response.payload.data.data.hits
+  const search = async (searchTerm: string) => {
+    const response = await api.getPatientsByAutoComplete('complete', searchTerm, 1, 5, {
+      gender: parentTypeToGender[parentType!],
+      idsToExclude: [...familyMemberIds],
+      position: Position.Proband,
+    });
 
-          .filter((hit: any) => !familyMemberIds?.includes(hit._id) && !hit._source.fetus)
-          .map((hit: any) => ({
-            firstName: hit._source.firstName,
-            id: hit._id,
-            lastName: hit._source.lastName,
-            ramq: hit._source.ramq,
-          })),
-      );
-    } else {
+    if (response.error || !response.payload?.data) {
       setSearchResult([]);
+      return;
     }
-  }
+    setSearchResult(
+      response.payload.data.data.hits
+        .filter((hit) => !familyMemberIds?.includes(hit._id) && !hit._source.fetus)
+        .map((hit) => ({
+          firstName: hit._source.firstName,
+          id: hit._id,
+          lastName: hit._source.lastName,
+          ramq: hit._source.ramq,
+        })),
+    );
+  };
 
   async function onSelectPatient(value: string, option: any) {
     const response: any = await api.getPatientById(option.key);
@@ -71,7 +67,7 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
   const resetValues = () => {
     setSearchResult(null);
     setSelectedPatient(null);
-    setAffectedStatus(undefined);
+    setAffectedStatus(null);
     form.setFields([
       {
         name: 'patientSearch',
@@ -86,13 +82,21 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
   };
 
   async function onSubmit() {
-    const callback = (isSuccess: boolean) => {
-      isSuccess
-        ? message.success(intl.get('screen.patient.details.family.add.success'))
-        : message.error(intl.get('screen.patient.details.family.add.error'));
+    const callback = (status: { isSuccess: boolean; messageKey: string }) => {
+      status.isSuccess
+        ? message.success(intl.get(status.messageKey))
+        : message.error(intl.get(status.messageKey));
       cleanUpBeforeClosing();
     };
-    dispatch(addParentToFamily(selectedPatient?.id, parentType, affectedStatus!, callback));
+    dispatch(
+      addParentToFamily(
+        selectedPatient?.id,
+        selectedPatient?.familyId,
+        parentType,
+        affectedStatus!,
+        callback,
+      ),
+    );
   }
 
   const updateStatus = (event: RadioChangeEvent) => {
@@ -111,6 +115,7 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
       cancelButtonProps={{ disabled: isAddingParentInProgress }}
       cancelText={intl.get('screen.patient.details.family.modal.cancel')}
       className="family-tab__details__add-parent__modal"
+      closable={!isAddingParentInProgress}
       okButtonProps={{ disabled: shouldDisableOkButton, loading: isAddingParentInProgress }}
       okText={intl.get('screen.patient.details.family.modal.add')}
       onCancel={onCancel}

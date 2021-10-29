@@ -305,7 +305,7 @@ const patientSubmissionReducer = (
         const clinicalImpression = patientState.consultation.find(
           (consultation) => get(consultation, 'original.id') === get(clinRefExtension, 'valueReference.reference', '/')
             .split('/')[1],
-        ).original;
+        )?.original;
 
         if (clinicalImpression == null) {
           throw new Error(`Service Request [${serviceRequest.id}]: Clinical impression not found`);

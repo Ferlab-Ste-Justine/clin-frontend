@@ -2,6 +2,8 @@ import intl from 'react-intl-universal';
 import { AnalysisCodeToIntlKeyText,AnalysisTestCodes } from 'helpers/fhir/types';
 import get from 'lodash/get';
 
+const BUNDLE_COUNT = 100
+
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
 const OBSERVATION_INDICATION_CODE = 'INDIC';
@@ -387,14 +389,14 @@ export const createGetPatientDataBundle = (id, withIncludes = true) => (
       {
         request: {
           method: 'GET',
-          url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester&_include=ServiceRequest:performer`,
+          url: `/ServiceRequest?subject=${id}&_include=ServiceRequest:requester&_include=ServiceRequest:performer&_count=${BUNDLE_COUNT}`,
         },
       },
       {
         request: {
           method: 'GET',
           // eslint-disable-next-line max-len
-          url: `/ClinicalImpression?patient=${id}&_include=ClinicalImpression:assessor&_include=ClinicalImpression:investigation`,
+          url: `/ClinicalImpression?patient=${id}&_include=ClinicalImpression:assessor&_include=ClinicalImpression:investigation&_count=${BUNDLE_COUNT}`,
         },
       },
     ],

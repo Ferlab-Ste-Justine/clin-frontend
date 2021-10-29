@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DeleteOutlined } from '@ant-design/icons';
 import { removeParentToFamily } from 'actions/patient';
 import { Button, message, Modal } from 'antd';
-import { isNaturalMotherOfFetus } from 'helpers/fhir/familyMemberHelper';
+import { isMemberProband, isNaturalMotherOfFetus } from 'helpers/fhir/familyMemberHelper';
 import { State } from 'reducers';
 import { FamilyActionStatus } from 'reducers/patient';
 
@@ -27,7 +27,7 @@ const ActionsCell = ({ member }: Props): React.ReactElement => {
 
   return (
     <div className="family-tab__details__table__actions">
-      {isNaturalMotherOfFetus(member) ? (
+      { isMemberProband(member) || isNaturalMotherOfFetus(member) ? (
         '--'
       ) : (
         <Button
