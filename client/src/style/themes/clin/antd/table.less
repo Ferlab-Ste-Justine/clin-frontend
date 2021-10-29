@@ -7,7 +7,14 @@
 @table-header-color: @gray-8;
 @table-header-bg-sm: @gray-2;
 .@{table-prefix-cls} {
+  font-size: 14px;
 
+  &-cell {
+    a {
+      color: @blue-8
+    }
+  }
+    
   &-content {
     overflow: auto;
   }
@@ -33,8 +40,4 @@
       background-color: @gray-2;
     }
   }
-}
-
-.ant-table {
-  font-size: 14px;
 }

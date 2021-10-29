@@ -40,6 +40,7 @@ $sidebar-menu-item-active-color: #fff;
 $sidebar-menu-item-hover-color: #fff;
 $sidebar-menu-item-hover-opacity: 0.8;
 $sidebar-menu-item-border-focus: none;
+$sidebar-menu-item-border-focus-color:white;
 
 $sidebar-quick-filter-input-box-shadow-hover: 0 0 0 2px #23A4D7;
 $sidebar-quick-filter-input-box-shadow-focus: 0 0 0 2px #0A5085, 0 0 0 3px white;
@@ -49,13 +50,21 @@ $sidebar-quick-filter-input-text-color: #364A63;
 $sidebar-content-panel-padding: 16px;
 $sidebar-content-panel-width: 320px;
 $sidebar-content-panel-close-icon-color: $blue-8;
-$sidebar-content-panel-right-border: 1px solid #d7d8db;
+$sidebar-content-panel-right-border: 1px solid $gray-5;
 $sidebar-content-panel-background-color: transparent;
 $sidebar-content-panel-close-icon-width: 16px;
 
 // Filters
-$filter-input-label-color: $body-1;
+$filter-input-label-color: $blue-10;
 $filter-actions-border-color: $gray-4;
 $filter-actions-disabled-color: $gray-6;
 $filter-actions-disabled-border-color: $gray-5;
 $filter-actions-disabled-background-color: $gray-3;
+$filter-actions-border-apply-background-color: $blue-8;
+$filter-actions-border-apply-border-color: $blue-8;
+
+$checkbox-filter-types-mc-footer: $blue-8;
+$checkbox-filter-links-hover: $blue-8;
+$checkbox-filter-actions-separator-links: $blue-8;
+$checkbox-filter-actions-separator-background: $gray-6;
+

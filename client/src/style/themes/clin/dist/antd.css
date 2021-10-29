@@ -25042,6 +25042,12 @@ div.ant-typography-edit-content.ant-typography-rtl {
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/roboto/v29/KFOlCnqEu92Fr1MmEU9fBBc9.ttf) format('truetype');
 }
+.ant-table {
+  font-size: 14px;
+}
+.ant-table-cell a {
+  color: #006aa3;
+}
 .ant-table-content {
   overflow: auto;
 }
@@ -25058,8 +25064,8 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .ant-table-tbody > tr:nth-child(even) {
   background-color: #f8fafc;
 }
-.ant-table {
-  font-size: 14px;
+.ant-collapse-content {
+  border-top: 1px solid #e1e8ef;
 }
 .ant-collapse > .ant-collapse-item {
   border: none !important;

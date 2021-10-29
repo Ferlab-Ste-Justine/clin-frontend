@@ -14,4 +14,8 @@
 .expandButtonContainerVariant {
   display: grid;
   justify-content: end;
+
+  span:not(:hover) {
+    text-decoration: underline;
+  }
 }
