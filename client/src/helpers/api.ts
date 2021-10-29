@@ -79,6 +79,20 @@ const getGroupByMemberId = (
     .then(successCallback)
     .catch(errorCallback);
 
+const updateGroup = (
+  groupId: string,
+  updatedGroup: Group
+): Promise<{
+  payload?: {
+    data: Bundle;
+  };
+  error?: AnyError;
+}> =>
+  Http.secureClinAxios
+    .put(`${window.CLIN.fhirBaseUrl}/Group/${groupId}`, updatedGroup)
+    .then(successCallback)
+    .catch(errorCallback);
+
 const deleteGroup = (groupId: string) =>
   Http.secureClinAxios
     .delete(`${window.CLIN.fhirBaseUrl}/Group/${groupId}`)
@@ -412,23 +426,6 @@ const addOrUpdatePatientToGroup = async (
     .catch(errorCallback);
 };
 
-const deletePatientFromGroup = async (groupId: string, parentId: string) => {
-  const groupResult = await getGroupById(groupId);
-  const group: Group = get(groupResult, 'payload.data.entry[0].resource', null);
-  if (!group) {
-    return Promise.reject(new Error('groupId is invalid'));
-  }
-
-  const newMembers = group.member.filter((member) => !member.entity.reference.includes(parentId));
-
-  group.member = newMembers;
-
-  return Http.secureClinAxios
-    .put(`${window.CLIN.fhirBaseUrl}/Group/${groupId}`, group)
-    .then(successCallback)
-    .catch(errorCallback);
-};
-
 const createGroup = async (patientId: string) =>
   Http.secureClinAxios
     .post(`${window.CLIN.fhirBaseUrl}/Group`, {
@@ -506,11 +503,11 @@ const getFileURL = async (file: string) =>
 export default {
   addOrUpdatePatientToGroup,
   canEditPatients,
-  deletePatientFromGroup,
   getGroupById,
   getPatientById,
   getGroupByMemberId,
   deleteGroup,
+  updateGroup,
   getPatientDataByIds,
   getPatientsByAutoComplete,
   getPatientsGenderAndPosition,
