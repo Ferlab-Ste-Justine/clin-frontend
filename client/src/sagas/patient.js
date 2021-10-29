@@ -340,7 +340,6 @@ function* addParent(action) {
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, parsedPatient.familyId);
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
-    yield Api.deleteGroup(parentFamilyId);
 
     sagaStatus = {
       ...sagaStatus,
