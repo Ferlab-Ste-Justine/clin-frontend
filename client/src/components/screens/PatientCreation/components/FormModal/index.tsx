@@ -1,27 +1,28 @@
 import React, {
-  useReducer, Reducer, useState, useEffect, useRef,
+Reducer, useEffect, useReducer, useRef, useState, 
 } from 'react';
 import intl from 'react-intl-universal';
+import { connect } from 'react-redux';
+import { LoadingOutlined } from '@ant-design/icons';
+import { createPatient, createPatientFetus,fetchPatientByRamq } from 'actions/patientCreation';
 import {
   Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Spin, Typography,
 } from 'antd';
-import './styles.scss';
 import { FormItemProps } from 'antd/lib/form';
 import { FormInstance, useForm } from 'antd/lib/form/Form';
-import moment from 'moment';
 import { RadioChangeEvent } from 'antd/lib/radio';
-import get from 'lodash/get';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { LoadingOutlined } from '@ant-design/icons';
+import { isValidRamq } from 'helpers/fhir/api/PatientChecker';
+import { PatientBuilder } from 'helpers/fhir/builder/PatientBuilder';
+import { formatRamq, getDetailsFromRamq } from 'helpers/fhir/patientHelper';
+import { Patient, PractitionerRole } from 'helpers/fhir/types';
+import { isMrnUnique } from 'helpers/patient';
 import capitalize from 'lodash/capitalize';
-import { isValidRamq } from '../../../../../helpers/fhir/api/PatientChecker';
-import { PatientBuilder } from '../../../../../helpers/fhir/builder/PatientBuilder';
-import { createPatient, fetchPatientByRamq, createPatientFetus } from '../../../../../actions/patientCreation';
-import { Patient, PractitionerRole } from '../../../../../helpers/fhir/types';
-import { PatientCreationStatus } from '../../../../../reducers/patientCreation';
-import { formatRamq, getDetailsFromRamq } from '../../../../../helpers/fhir/patientHelper';
-import { isMrnUnique } from '../../../../../helpers/patient';
+import get from 'lodash/get';
+import moment from 'moment';
+import { PatientCreationStatus } from 'reducers/patientCreation';
+import { bindActionCreators } from 'redux';
+
+import './styles.scss';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 
@@ -33,7 +34,7 @@ interface Props {
   onExistingPatient: () => void
   userRole: PractitionerRole
   actions: any
-  patient: Patient
+  patient: Patient | null
   ramqChecked: boolean
   patientCreationStatus?: PatientCreationStatus
 }
@@ -143,14 +144,14 @@ const extractMrnData = (patient: Patient): MrnData | undefined => {
     return undefined;
   }
   return {
-    mrn: identifier.value,
     hospital: identifier.assigner?.reference.split('/')[1] || '',
+    mrn: identifier.value,
   };
 };
 
-const FormModal: React.FC<Props> = ({
-  open, onClose, onCreated, onError, onExistingPatient, userRole, actions, patient, ramqChecked, patientCreationStatus,
-}) => {
+const FormModal= (
+  {actions, onClose, onCreated, onError, onExistingPatient, open, patient, patientCreationStatus, ramqChecked, userRole,}: Props)
+  : React.ReactElement => {
   const [isCreating, setIsCreating] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFetusType, setIsFetusType] = useState(false);
@@ -161,7 +162,7 @@ const FormModal: React.FC<Props> = ({
   const ramqRef = useRef<Input>(null);
   const ramqConfirmRef = useRef<Input>(null);
 
-  const resetForm = (isFetus: boolean = false) => {
+  const resetForm = (isFetus = false) => {
     form.resetFields();
 
     setIsFormValid(false);
@@ -176,7 +177,7 @@ const FormModal: React.FC<Props> = ({
   };
 
   async function validateMrn(mrnFile?: string, organization?: string) {
-    form.setFields([{ name: ['mrn', 'file'], errors: [] }, { name: ['mrn', 'organization'], errors: [] }]);
+    form.setFields([{ errors: [], name: ['mrn', 'file'] }, { errors: [], name: ['mrn', 'organization'] }]);
 
     if (!mrnFile || !organization) {
       return Promise.resolve();
@@ -188,32 +189,32 @@ const FormModal: React.FC<Props> = ({
 
   useEffect(() => {
     if (ramqChecked && state.ramqStatus === RamqStatus.PROCESSING) {
-      if (patient != null) {
+      if (!!patient) {
         if (!isFetusType) {
           onExistingPatient();
         } else if (state.ramqStatus === RamqStatus.PROCESSING) {
           const mrnData = extractMrnData(patient);
           form.setFieldsValue({
-            lastname: get(patient, 'name[0].family'),
+            birthday: moment(patient.birthDate!),
             firstname: get(patient, 'name[0].given[0]'),
+            lastname: get(patient, 'name[0].family'),
             mrn: {
               file: mrnData?.mrn,
               organization: mrnData?.hospital,
             },
-            birthday: new Date(patient.birthDate!),
           });
           setIsFormValid(validateForm(form));
         }
       } else {
         const ramqDetails = getDetailsFromRamq((form.getFieldValue('ramq') as string).replace(/\s/g, ''));
-        if (ramqDetails?.birthDate && ramqDetails?.birthDate.toString() === 'Invalid Date') {
+        if (ramqDetails?.birthDate) {
           form.setFieldsValue({
-            sex: ramqDetails?.sex,
+            birthday: moment(ramqDetails.birthDate),
           });
-        } else {
+        }
+        if (!isFetusType && ramqDetails?.sex) {
           form.setFieldsValue({
-            birthday: moment(ramqDetails?.birthDate),
-            sex: ramqDetails?.sex,
+            sex: ramqDetails.sex,
           });
         }
       }
@@ -248,10 +249,11 @@ const FormModal: React.FC<Props> = ({
         .withRamq((values.ramq as string).replace(/\s/g, '').toUpperCase())
         .withGender(values.sex)
         .withActive(true)
+        .withBirthDate(new Date(values.birthday?.toDate()))
         .withGeneralPractitioner(userRole.id);
 
       if (isFetusType) {
-        if (patient != null) {
+        if (!!patient) {
           actions.createPatientFetus(patient);
         } else {
           patientBuilder.withIsProband(false);
@@ -259,7 +261,6 @@ const FormModal: React.FC<Props> = ({
         }
       } else {
         patientBuilder
-          .withBirthDate(new Date(values.birthday?.toDate()))
           .withIsProband(true);
         actions.createPatient(patientBuilder.build());
       }
@@ -269,10 +270,10 @@ const FormModal: React.FC<Props> = ({
   };
   return (
     <>
-      <Modal visible={open && isCreating} title={null} footer={null} closable={false}>
+      <Modal closable={false} footer={null} title={null} visible={open && isCreating}>
         <Row gutter={8}>
           <Col>
-            <LoadingOutlined spin size={16} />
+            <LoadingOutlined size={16} spin />
           </Col>
           <Col>
             { intl.get(`${I18N_PREFIX}creating`) }
@@ -281,7 +282,9 @@ const FormModal: React.FC<Props> = ({
       </Modal>
 
       <Modal
-        visible={open && !isCreating}
+        cancelText={intl.get(`${I18N_PREFIX}cancel`)}
+        okButtonProps={{ disabled: !isFormValid }}
+        okText={intl.get(`${I18N_PREFIX}ok`)}
         onCancel={() => {
           resetForm();
           onClose();
@@ -290,19 +293,15 @@ const FormModal: React.FC<Props> = ({
           form.submit();
         }}
         title={intl.get(`${I18N_PREFIX}title`)}
-        cancelText={intl.get(`${I18N_PREFIX}cancel`)}
-        okText={intl.get(`${I18N_PREFIX}ok`)}
+        visible={open && !isCreating}
         width={600}
-        okButtonProps={{ disabled: !isFormValid }}
       >
         <Form
-          form={form}
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
           colon={false}
-          labelAlign="left"
-          requiredMark={false}
+          form={form}
           initialValues={{ patientType: PatientType.PERSON }}
+          labelAlign="left"
+          labelCol={{ span: 8 }}
           onChange={async ({ target }) => {
             const currentElement = target as HTMLInputElement;
             if (['ramq', 'ramqConfirm'].includes(currentElement.id)) {
@@ -315,19 +314,21 @@ const FormModal: React.FC<Props> = ({
                   dispatch({ type: ActionType.RAMQ_PROCESSING });
                   actions.fetchPatientByRamq(ramqValue.replace(/\s/g, ''));
                 } catch (e) {
-                  form.setFields([{ name: 'ramq', errors: [intl.get(`${I18N_PREFIX}errors.invalidRamq`)] }]);
+                  form.setFields([{ errors: [intl.get(`${I18N_PREFIX}errors.invalidRamq`)], name: 'ramq' }]);
                 }
               }
             }
 
             setIsFormValid(validateForm(form));
           }}
-          onSubmitCapture={() => {
-            onFormSubmit(form.getFieldsValue());
-          }}
           onFinish={(values) => {
             onFormSubmit(values);
           }}
+          onSubmitCapture={() => {
+            onFormSubmit(form.getFieldsValue());
+          }}
+          requiredMark={false}
+          wrapperCol={{ span: 16 }}
 
         >
           <fieldset className="patient-creation__form__fieldset">
@@ -336,16 +337,16 @@ const FormModal: React.FC<Props> = ({
               name="patientType"
             >
               <Radio.Group
+                defaultValue={PatientType.PERSON}
+                onChange={(e: RadioChangeEvent) => {
+                  resetForm(e.target.value === PatientType.FETUS);
+                }}
+                optionType="button"
                 options={[
                   { label: intl.get(`${I18N_PREFIX}person`), value: PatientType.PERSON },
                   { label: intl.get(`${I18N_PREFIX}fetus`), value: PatientType.FETUS },
                 ]}
-                optionType="button"
-                onChange={(e: RadioChangeEvent) => {
-                  resetForm(e.target.value === PatientType.FETUS);
-                }}
                 value={form.getFieldValue('patientType')}
-                defaultValue={PatientType.PERSON}
               />
               { isFetusType && (
                 <Typography.Text className="patient-creation__form__fetus-note">
@@ -361,38 +362,37 @@ const FormModal: React.FC<Props> = ({
               name="ramq"
               rules={[
                 () => ({
-                  validator(rule, value) {
-                    return isValidRamq(value.replace(/\s/g, '')) ? Promise.resolve() : Promise.reject();
-                  },
                   message: intl.get(`${I18N_PREFIX}errors.invalidRamq`),
+                  validator: (rule, value) => isValidRamq(value.replace(/\s/g, '')) ? Promise.resolve() : Promise.reject(),
                 }),
               ]}
             >
               <Input
-                ref={ramqRef}
-                placeholder="ROYL 1234 4567"
                 onChange={(event) => {
                   const ramq = event.currentTarget.value;
                   const formattedRamq = formatRamq(ramq);
                   form.setFieldsValue({ ramq: formattedRamq });
                   updateSelection(ramqRef, ramq, formattedRamq);
                   if (form.getFieldError('ramq')) {
-                    form.setFields([{ name: 'ramq', errors: [] }]);
+                    form.setFields([{ errors: [], name: 'ramq' }]);
                   }
                 }}
                 onPaste={(event) => {
                   event.preventDefault();
                 }}
+                placeholder="ROYL 1234 4567"
+                ref={ramqRef}
               />
             </Form.Item>
             <Form.Item
               {...formInputItemProps}
               className={`${formInputItemProps.className} patient-creation__form__ramq-confirm`}
+              dependencies={['ramq']}
               label={intl.get(`${I18N_PREFIX}ramqConfirm`)}
               name="ramqConfirm"
-              dependencies={['ramq']}
               rules={[
                 ({ getFieldValue }) => ({
+                  message: intl.get(`${I18N_PREFIX}errors.invalidRamqConfirm`),
                   validator(rule, value) {
                     if (!value || getFieldValue('ramq') === value) {
                       return Promise.resolve();
@@ -400,14 +400,11 @@ const FormModal: React.FC<Props> = ({
                     setIsFormValid(false);
                     return Promise.reject();
                   },
-                  message: intl.get(`${I18N_PREFIX}errors.invalidRamqConfirm`),
                 }),
               ]}
 
             >
               <Input
-                placeholder="ROYL 1234 4567"
-                ref={ramqConfirmRef}
                 onChange={(event) => {
                   const ramq = event.currentTarget.value;
                   const formattedRamq = formatRamq(ramq);
@@ -417,6 +414,8 @@ const FormModal: React.FC<Props> = ({
                 onPaste={(event) => {
                   event.preventDefault();
                 }}
+                placeholder="ROYL 1234 4567"
+                ref={ramqConfirmRef}
               />
             </Form.Item>
           </fieldset>
@@ -432,10 +431,10 @@ const FormModal: React.FC<Props> = ({
                   {...formInputItemProps}
                   name="lastname"
                   rules={[
-                    { min: 2, message: intl.get(`${I18N_PREFIX}errors.invalidLastName`) },
+                    { message: intl.get(`${I18N_PREFIX}errors.invalidLastName`), min: 2 },
                   ]}
                 >
-                  <Input placeholder={intl.get(`${I18N_PREFIX}lastname`)} disabled={isFetusType && patient != null} />
+                  <Input disabled={isFetusType && !!patient} placeholder={intl.get(`${I18N_PREFIX}lastname`)} />
                 </Form.Item>
                 <Form.Item
                   label={
@@ -446,11 +445,11 @@ const FormModal: React.FC<Props> = ({
                   {...formInputItemProps}
                   name="firstname"
                   rules={[
-                    { min: 2, message: intl.get(`${I18N_PREFIX}errors.invalidFirstName`) },
+                    { message: intl.get(`${I18N_PREFIX}errors.invalidFirstName`), min: 2 },
                   ]}
 
                 >
-                  <Input placeholder={intl.get(`${I18N_PREFIX}firstname`)} disabled={isFetusType && patient != null} />
+                  <Input disabled={isFetusType && !!patient} placeholder={intl.get(`${I18N_PREFIX}firstname`)} />
                 </Form.Item>
                 <Form.Item
                   label={
@@ -458,56 +457,57 @@ const FormModal: React.FC<Props> = ({
                       ? `${intl.get(`${I18N_PREFIX}sex`)} (${intl.get(`${I18N_PREFIX}fetus`).toLowerCase()})`
                       : intl.get(`${I18N_PREFIX}sex`)
                   }
-                  wrapperCol={{ span: 14 }}
                   name="sex"
+                  wrapperCol={{ span: 14 }}
                 >
                   <Radio.Group
+                    optionType="button"
                     options={[
                       { label: intl.get(`${I18N_PREFIX}sex.male`), value: 'male' },
                       { label: intl.get(`${I18N_PREFIX}sex.female`), value: 'female' },
                       { label: intl.get(`${I18N_PREFIX}sex.unknown`), value: 'unknown' },
                     ]}
-                    optionType="button"
                   />
                 </Form.Item>
-                { !isFetusType && (
-                  <Form.Item
-                    label={intl.get(`${I18N_PREFIX}birthday`)}
-                    name="birthday"
-                  >
-                    <DatePicker
-                      placeholder={intl.get(`${I18N_PREFIX}birthday.placeholder`)}
-                      disabledDate={(current: any) => current && current > moment().startOf('day')}
-                    />
-                  </Form.Item>
-                ) }
+                <Form.Item
+                  label={
+                    isFetusType 
+                      ? `${intl.get(`${I18N_PREFIX}birthday`)} (${intl.get(`${I18N_PREFIX}mother`)})`
+                      : intl.get(`${I18N_PREFIX}birthday`)}
+                  name="birthday"
+                >
+                  <DatePicker
+                    disabled={isFetusType && !!patient}
+                    disabledDate={(current: any) => current && current > moment().startOf('day')}
+                    placeholder={intl.get(`${I18N_PREFIX}birthday.placeholder`)}
+                  />
+                </Form.Item>
                 <Form.Item
                   label={
                     isFetusType
                       ? `${intl.get(`${I18N_PREFIX}file`)} (${intl.get(`${I18N_PREFIX}mother`)})`
                       : intl.get(`${I18N_PREFIX}file`)
                   }
-                  wrapperCol={{ span: 14 }}
                   name="mrn"
+                  wrapperCol={{ span: 14 }}
                 >
                   <Input.Group>
                     <Row gutter={8}>
                       <Col span={14}>
                         <Form.Item
-                          noStyle
                           name={['mrn', 'file']}
+                          noStyle
                           rules={
                             [
                               {
+                                message: intl.get('screen.patient.creation.file.existing'),
                                 validator: async (r, value) => validateMrn(value,
                                   form.getFieldValue(['mrn', 'organization'])),
-                                message: intl.get('screen.patient.creation.file.existing'),
                               },
                             ]
                           }
                         >
                           <Input
-                            placeholder="MRN 12345678"
                             data-testid="mrn-file"
                             onChange={(event) => {
                               form.setFieldsValue({
@@ -516,6 +516,7 @@ const FormModal: React.FC<Props> = ({
                                 },
                               });
                             }}
+                            placeholder="MRN 12345678"
                           />
                         </Form.Item>
                       </Col>
@@ -526,21 +527,21 @@ const FormModal: React.FC<Props> = ({
                           rules={
                             [
                               {
-                                validator: async (r, value) => validateMrn(form.getFieldValue(['mrn', 'file']), value),
                                 message: intl.get('screen.patient.creation.file.existing'),
+                                validator: async (r, value) => validateMrn(form.getFieldValue(['mrn', 'file']), value),
                               },
                             ]
                           }
                         >
                           <Select
-                            data-testid="mrn-organization"
-                            placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                             className="patient-creation__form__select"
+                            data-testid="mrn-organization"
                             onChange={() => {
                               // The Select doesn't trigger the form onChange so we have to trigger the validation manually
                               // onSubmit, the value is set though
                               setIsFormValid(validateForm(form));
                             }}
+                            placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                           >
                             <Select.Option value="CHUSJ">CHUSJ</Select.Option>
                             <Select.Option value="CHUM">CHUM</Select.Option>
@@ -563,10 +564,10 @@ const FormModal: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: any) => ({
-  userRole: state.user.practitionerData.practitionerRole,
   patient: state.patientCreation.patient,
-  ramqChecked: state.patientCreation.ramqChecked,
   patientCreationStatus: state.patientCreation.status,
+  ramqChecked: state.patientCreation.ramqChecked,
+  userRole: state.user.practitionerData.practitionerRole,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
