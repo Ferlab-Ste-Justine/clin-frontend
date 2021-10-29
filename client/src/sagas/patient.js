@@ -340,6 +340,7 @@ function* addParent(action) {
     yield updatePatient(patientToUpdate);
     yield updateParentGroup(parentId, parsedPatient.familyId);
     yield Api.addOrUpdatePatientToGroup(parsedPatient.familyId, parentId, status);
+    yield Api.deleteGroup(parentFamilyId);
 
     sagaStatus = {
       ...sagaStatus,
@@ -364,20 +365,70 @@ function* removeParent(action) {
     payload: FamilyActionStatus.removeMemberInProgress,
     type: actions.PATIENT_REMOVE_PARENT_ACTION_STATUS,
   });
+
   let isSuccess = false;
   try {
     const patientParsed = yield select((state) => state.patient.patient.parsed);
+    const currentGroupId = patientParsed.familyId;
     const originalPatient = yield select((state) => state.patient.patient.original);
+    const patientToUpdate = { ...originalPatient };
 
-    const patientToUpdate = JSON.parse(JSON.stringify(originalPatient));
+    const parentCurrentData = yield Api.getPatientDataById(parentId);
+    if (parentCurrentData.error) {
+      return;
+    }
+
+    const parentCurrentPatientBundleResource =
+      (parentCurrentData?.payload?.data?.entry || [])[0]?.resource || {};
+    const parentCurrentPatientBundleEntry = (parentCurrentPatientBundleResource?.entry || []).find(
+      (entry) => entry?.fullUrl?.endsWith(`/Patient/${parentId}`),
+    );
+    const parentCurrentPatientResource = parentCurrentPatientBundleEntry?.resource || {};
+    const parentCurrentPatientExtensions = parentCurrentPatientResource?.extension || [];
+    if (isAlreadyProband(parentCurrentPatientExtensions)) {
+      return;
+    }
+
+    //we already have group data here, no need to make another server call a bit later.
+    const currentGroupResourceBundle = (parentCurrentData.payload?.data?.entry || [])[1];
+    const currentGroupResource = currentGroupResourceBundle?.resource?.entry?.find((entry) =>
+      entry?.fullUrl?.endsWith(`/Group/${currentGroupId}`),
+    )?.resource;
+
+    if (!currentGroupResource) {
+      return;
+    }
+
+    const newGroupResponseForParent = yield Api.createGroup(parentId);
+    if (newGroupResponseForParent.error) {
+      return;
+    }
+
+    const newMembers = currentGroupResource.member.filter(
+      (member) => !member.entity.reference.includes(parentId),
+    );
+    const currentGroupWithoutParent = { ...currentGroupResource, member: newMembers };
+    const updateGroupResponse = yield Api.updateGroup(currentGroupId, currentGroupWithoutParent);
+    if (updateGroupResponse.error) {
+      return;
+    }
 
     const patientToUpdateExtension = patientToUpdate.extension;
     patientToUpdate.extension = removeSpecificFamilyRelation(parentId, patientToUpdateExtension);
-    const newGroupResponse = yield Api.createGroup(parentId);
-    yield updatePatient(patientToUpdate);
-    yield updateParentGroup(parentId, newGroupResponse.payload.data.id);
-    yield Api.deletePatientFromGroup(patientParsed.familyId, parentId);
-    yield makePatientProbandIfNeeded(parentId);
+    const updatePatientResponse = yield updatePatient(patientToUpdate);
+    if (updatePatientResponse.error) {
+      return;
+    }
+
+    const updatedParentPatientToCommit = {
+      ...parentCurrentPatientResource,
+      extension: makeExtensionProband(parentCurrentPatientExtensions),
+    };
+
+    const updateParentResponse = yield updatePatient(updatedParentPatientToCommit);
+    if (updateParentResponse.error) {
+      return;
+    }
 
     isSuccess = true;
     yield put({
@@ -422,25 +473,6 @@ function* getFileURL(action) {
   } catch (e) {
     yield put({ payload: e, type: actions.PATIENT_FILE_URL_FAILED });
   }
-}
-
-function* makePatientProbandIfNeeded(id) {
-  const rawResponse = yield Api.getPatientDataById(id);
-  if (rawResponse.error) {
-    throw new ApiError(rawResponse.error);
-  }
-  const patientResource = rawResponse?.payload?.data?.entry[0]?.resource?.entry[0]?.resource;
-
-  const extensions = patientResource.extension;
-  if (isAlreadyProband(extensions)) {
-    return;
-  }
-
-  const updatedPatientToCommit = {
-    ...patientResource,
-    extension: makeExtensionProband(extensions),
-  };
-  yield updatePatient(updatedPatientToCommit);
 }
 
 function* watchAddParent() {
