@@ -55,7 +55,7 @@ const ActionDropdown = ({
       <Menu.Item key='metadata'>
           <Button
           className="link--underline"
-          download={`${metadata.task.runDate}_${metadata.aliquot.resource[0].sample[0].resource.external_id}.json`}
+          download={`${metadata.aliquot.resource[0].external_id}_${metadata.content[0].format}_META.json`}
           href={`data:text/json;charset=utf-8,${encodeURIComponent(
               JSON.stringify(metadata, null, 4)
           )}`}
