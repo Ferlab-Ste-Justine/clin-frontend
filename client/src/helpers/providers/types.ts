@@ -59,10 +59,12 @@ export type FamilyObservation = {
 };
 
 export type ConsultationSummary = {
+  clinicalImpressionRef: string;
   practitioner: PractitionerData;
   cgh: string;
   summary: string;
   hypothesis: string;
+  ageAtEvent: string;
 };
 
 export type Mrn = {

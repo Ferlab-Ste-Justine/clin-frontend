@@ -57,10 +57,11 @@ export class DataExtractor {
 
         const resource = get(this.data, `practitionersData.entry[${i}].resource`, {})
 
+        const practitionerRole = this.maybeExtractResource<PractitionerRole>(resource, 'PractitionerRole')
         const practitioner = this.maybeExtractResource<Practitioner>(resource, 'Practitioner')
         const organization = this.maybeExtractResource<Organization>(resource, 'Organization')
 
-        if (practitioner && practitioner.id === id) {
+        if (practitioner && practitionerRole && practitionerRole.id === id) {
           return {
             organization: organization,
             practitioner: practitioner,
