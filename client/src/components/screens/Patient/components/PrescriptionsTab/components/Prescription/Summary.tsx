@@ -4,7 +4,7 @@ import {
 import get from 'lodash/get';
 import React from 'react';
 import intl from 'react-intl-universal';
-import { Observation } from '../../../../../../../helpers/fhir/types';
+import { Observation } from 'helpers/fhir/types';
 import { ConsultationSummary, ParsedPatientData, Prescription } from 'helpers/providers/types';
 import DetailsRow from './DetailsRow';
 

@@ -18,21 +18,21 @@ import {
 import get from 'lodash/get';
 import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
 import { ConsultationSummary, FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from 'helpers/providers/types';
-import Badge from '../../../../../Badge';
-import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
-import { State } from '../../../../../../reducers';
-import { updateServiceRequestStatus } from '../../../../../../actions/patient';
-import StatusChangeModal, { StatusType } from '../../StatusChangeModal';
-import { editPrescription } from '../../../../../../actions/patientSubmission';
+import Badge from 'components/Badge';
+import { navigateToSubmissionWithPatient } from 'actions/router';
+import { State } from 'reducers';
+import { updateServiceRequestStatus } from 'actions/patient';
+import StatusChangeModal, { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
+import { editPrescription } from 'actions/patientSubmission';
 import Summary from './Prescription/Summary';
 import DetailsRow from './Prescription/DetailsRow';
 import FamilyHistory from './Prescription/FamilyHistory';
 import ClinicalSigns from './Prescription/ClinicalSigns';
 import StatusLegend from './StatusLegend';
-import statusColors from '../../../../../../style/statusColors';
-import { PatientRequestCreationStatus } from '../../../../../../reducers/prescriptions';
-import { resetStatus } from '../../../../../../actions/prescriptions';
-import { Observations } from '../../../../../../store/ObservationTypes';
+import statusColors from 'style/statusColors';
+import { PatientRequestCreationStatus } from 'reducers/prescriptions';
+import { resetStatus } from 'actions/prescriptions';
+import { Observations } from 'store/ObservationTypes';
 
 const DEFAULT_VALUE = '--';
 
