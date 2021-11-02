@@ -2,28 +2,23 @@ import {
   Card, Col, Divider, Row, Typography,
 } from 'antd';
 import get from 'lodash/get';
-import moment from 'moment';
 import React from 'react';
 import intl from 'react-intl-universal';
-import { Observation } from '../../../../../../../helpers/fhir/types';
-import { ParsedPatientData, Prescription } from '../../../../../../../helpers/providers/types';
+import { Observation } from 'helpers/fhir/types';
+import { ConsultationSummary, ParsedPatientData, Prescription } from 'helpers/providers/types';
 import DetailsRow from './DetailsRow';
 
-const getPatientAgeAtPrescriptionTime = (birthDate: string, prescriptionDate: string) => {
-  const years = moment(prescriptionDate).diff(birthDate, 'years');
-
+const getPatientAgeAtPrescriptionTime = (ageAtEvent: string) => {
+  const days = parseInt(ageAtEvent)
+  const years = Math.floor(days / 365)
   if (years > 0) {
     return `${years} ${intl.get(`screen.patient.details.prescriptions.summary.age.${years === 1 ? 'year' : 'years'}`)}`;
   }
-
-  const months = moment(prescriptionDate).diff(birthDate, 'months');
-
+  const months = Math.floor(days / 31)
   if (months > 0) {
     return `${months} ${intl.get(`screen.patient.details.prescriptions.summary.age.${months === 1 ? 'month' : 'months'}`)}`;
   }
-
-  const days = moment(prescriptionDate).diff(birthDate, 'days');
-  return `${days} ${intl.get(`screen.patient.details.prescriptions.summary.age.${days === 1 ? 'month' : 'days'}`)}`;
+  return `${days} ${intl.get(`screen.patient.details.prescriptions.summary.age.${days === 1 ? 'day' : 'days'}`)}`;
 };
 
 const Wrapper: React.FC = ({ children }) => (
@@ -44,9 +39,10 @@ interface Props {
   }
   patient: Partial<ParsedPatientData>
   prescription: Prescription
+  consultation: ConsultationSummary
 }
 
-const Summary: React.FC<Props> = ({ observations = undefined, patient, prescription }: Props) => {
+const Summary = ({ observations = undefined, patient, prescription, consultation }: Props) => {
   if (observations == null) {
     return (
       <Wrapper>
@@ -70,7 +66,7 @@ const Summary: React.FC<Props> = ({ observations = undefined, patient, prescript
       <DetailsRow
         label={intl.get('screen.patient.details.prescriptions.summary.age')}
       >
-        { patient.birthDate ? getPatientAgeAtPrescriptionTime(patient.birthDate, prescription.date) : '--' }
+        {consultation?.ageAtEvent ? getPatientAgeAtPrescriptionTime(consultation.ageAtEvent) : '--'}
       </DetailsRow>
       <DetailsRow
         label={intl.get('screen.patient.details.prescriptions.summary.cgh')}

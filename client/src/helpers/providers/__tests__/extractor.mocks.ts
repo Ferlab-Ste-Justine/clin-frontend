@@ -23,6 +23,7 @@ export const mockOrganization1 = {
 }
 
 export const mockPractitionerRole1 = {
+  id: "1",
   resourceType: "PractitionerRole",
   practitioner: {
     reference: "Practitioner/1"
@@ -33,6 +34,7 @@ export const mockPractitionerRole1 = {
 }
 
 export const mockPractitionerRole2 = {
+  id: "2",
   resourceType: "PractitionerRole",
   practitioner: {
     reference: "Practitioner/2"

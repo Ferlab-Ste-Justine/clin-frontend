@@ -43,9 +43,8 @@ const getSupervisorIdsFromPatient = (data) => {
     const dataExtractor = new DataExtractor({ patientData: data });
     const serviceRequests = dataExtractor
       .extractBundle('ServiceRequest')
-      .entry.map((e) => e.resource);
     const ids = uniq(
-      serviceRequests.flatMap((sr) => {
+      serviceRequests?.entry?.map((e) => e.resource).flatMap((sr) => {
         const ext = dataExtractor.getExtension(sr, ExtensionUrls.ResidentSupervisor);
         const ref = get(ext, 'valueReference.reference');
         return ref ? ref.split('/')[1] : [];
