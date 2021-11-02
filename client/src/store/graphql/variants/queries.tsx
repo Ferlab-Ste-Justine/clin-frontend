@@ -13,29 +13,32 @@ export const VARIANT_QUERY = gql`
           node {
             id
             hgvsg
-            locus
             #hash
+            locus
             variant_class
             clinvar {
               clinvar_id
               clin_sig
             }
-            #rsnumber
-            participant_number
+            rsnumber
+            #participant_number
+            #participant_frequency
+            #participant_total_number
 
-            #consequences {
-            #  hits {
-            #    edges {
-            #      node {
-            #        #vep_impact
-            #        symbol
-            #        consequences
-            #        #aa_change
-            #        impact_score
-            #      }
-            #    }
-            #  }
-            #}
+            consequences {
+              hits {
+                edges {
+                  node {
+                    symbol
+                    #canonical
+                    vep_impact
+                    consequences
+                    aa_change
+                    impact_score
+                  }
+                }
+              }
+            }
           }
         }
       }

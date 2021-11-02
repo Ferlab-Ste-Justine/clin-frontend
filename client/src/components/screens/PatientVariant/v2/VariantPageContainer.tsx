@@ -116,10 +116,12 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
     <StackLayout vertical className={styles.variantPagecontainer}>
       <QueryBuilder
         className="patient-variant-repo__query-builder"
-        showHeader={true}
-        headerTitle="Variant Query"
+        headerConfig={{
+          showHeader: true,
+          showTools: false,
+          defaultTitle: 'Variant Query',
+        }}
         history={history}
-        showHeaderTools={false}
         cacheKey={VARIANT_REPO_CACHE_KEY}
         enableCombine={false}
         currentQuery={filters?.content?.length ? filters : {}}
@@ -138,7 +140,7 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab={intl.get('screen.patientvariant.results.table.genes')} key="genes">
-        <GeneTableContainer
+          <GeneTableContainer
             results={results}
             filters={filters}
             setCurrentPageCb={setCurrentPageNum}

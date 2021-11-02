@@ -13,10 +13,10 @@ type OwnProps = {
 
 const INPUT_FILTER_LIST = [
   //'participant_frequency', //<--- not in index
-  'frequencies__gnomad_genomes_2_1__af',
+  //'frequencies__gnomad_genomes_2_1__af',
   'frequencies__gnomad_genomes_3_0__af',
   'frequencies__gnomad_genomes_3_1_1__af',
-  'frequencies__gnomad_exomes_2_1_1__af',
+  //'frequencies__gnomad_exomes_2_1__af',
   'frequencies__topmed_bravo__af',
   'frequencies__thousand_genomes__af',
 ];

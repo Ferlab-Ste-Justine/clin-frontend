@@ -25047,6 +25047,10 @@ div.ant-typography-edit-content.ant-typography-rtl {
 }
 .ant-table-cell a {
   color: #006aa3;
+  text-decoration: underline;
+}
+.ant-table-cell a:hover {
+  text-decoration: none;
 }
 .ant-table-content {
   overflow: auto;
@@ -25093,7 +25097,8 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .ant-tag:last-child {
   margin-right: 0;
 }
-.ant-tag-red {
+.ant-tag-red,
+.ant-tag-error {
   color: #820014;
   background-color: #FFCCC7;
 }
@@ -25105,7 +25110,8 @@ div.ant-typography-edit-content.ant-typography-rtl {
   color: #6B0547;
   background-color: #FFD6E7;
 }
-.ant-tag-blue {
+.ant-tag-blue,
+.ant-tag-processing {
   color: #0a5085;
   background-color: #d6f1fb;
 }
@@ -25121,7 +25127,8 @@ div.ant-typography-edit-content.ant-typography-rtl {
   color: #871400;
   background-color: #FFD8BF;
 }
-.ant-tag-green {
+.ant-tag-green,
+.ant-tag-success {
   color: #135200;
   background-color: #D9F7BE;
 }
@@ -25129,7 +25136,8 @@ div.ant-typography-edit-content.ant-typography-rtl {
   color: #254000;
   background-color: #F4FFB8;
 }
-.ant-tag-orange {
+.ant-tag-orange,
+.ant-tag-warning {
   color: #612500;
   background-color: #FFE7BA;
 }

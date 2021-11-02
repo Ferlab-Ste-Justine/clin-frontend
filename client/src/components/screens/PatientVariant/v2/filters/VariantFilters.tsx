@@ -12,7 +12,6 @@ type OwnProps = {
 };
 
 const INPUT_FILTER_LIST = [
-  // All good
   'variant_class',
   'consequences__consequences',
   'variant_external_reference',

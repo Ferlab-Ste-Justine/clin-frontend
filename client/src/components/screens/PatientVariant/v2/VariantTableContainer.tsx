@@ -11,8 +11,14 @@ import { VariantPageResults } from './VariantPageContainer';
 import intl from 'react-intl-universal';
 import { Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
-import { VariantEntity, VariantEntityNode, ClinVar } from 'store/graphql/variants/models';
+import {
+  VariantEntity,
+  VariantEntityNode,
+  ClinVar,
+  Consequence,
+} from 'store/graphql/variants/models';
 import { DISPLAY_WHEN_EMPTY_DATUM } from './Empty';
+import ConsequencesCell from './ConsequencesCell';
 
 import '../../../../../../node_modules/@ant-design/pro-table/dist/table.css';
 import style from './VariantTableContainer.module.scss';
@@ -78,6 +84,10 @@ const VariantTableContainer = (props: OwnProps) => {
       title: intl.get('screen.patientvariant.results.table.consequence'),
       dataIndex: 'consequences',
       width: 300,
+      render: (consequences) => {
+        const consequencesData = consequences as { hits: { edges: Consequence[] } };
+        return <ConsequencesCell consequences={consequencesData?.hits?.edges || []} />;
+      },
     },
     {
       title: intl.get('screen.patientvariant.results.table.clinvar'),
@@ -112,20 +122,6 @@ const VariantTableContainer = (props: OwnProps) => {
     {
       title: intl.get('screen.patientvariant.results.table.transmission'),
       dataIndex: 'test9',
-    },
-  ];
-
-  const defaultData = [
-    {
-      test1: 'Allo',
-      test2: 'Allo',
-      test3: 'Allo',
-      test4: 'Allo',
-      test5: 'Allo',
-      test6: 'Allo',
-      test7: 'Allo',
-      test8: 'Allo',
-      test9: 'Allo',
     },
   ];
 

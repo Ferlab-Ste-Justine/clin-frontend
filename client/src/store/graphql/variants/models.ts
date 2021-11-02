@@ -57,3 +57,15 @@ export type StudyInfo = {
 export type StudyNode = {
   node: Study;
 };
+
+export type Consequence = {
+  node: {
+    symbol: string;
+    //consequences: string[];
+    vep_impact: Impact;
+    aa_change: string | undefined | null;
+    impact_score: number | null;
+    [key: string]: any;
+  };
+  [key: string]: any;
+};

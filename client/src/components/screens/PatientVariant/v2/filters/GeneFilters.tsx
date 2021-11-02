@@ -12,7 +12,6 @@ type OwnProps = {
 };
 
 const INPUT_FILTER_LIST = [
-  // All Good
   'consequences__biotype',
   'gene_external_reference',
   'genes__hpo__hpo_term_label',
