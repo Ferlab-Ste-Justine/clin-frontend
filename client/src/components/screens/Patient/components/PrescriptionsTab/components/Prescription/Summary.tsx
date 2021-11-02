@@ -5,7 +5,7 @@ import get from 'lodash/get';
 import React from 'react';
 import intl from 'react-intl-universal';
 import { Observation } from '../../../../../../../helpers/fhir/types';
-import { ConsultationSummary, ParsedPatientData, Prescription } from '../../../../../../../helpers/providers/types';
+import { ConsultationSummary, ParsedPatientData, Prescription } from 'helpers/providers/types';
 import DetailsRow from './DetailsRow';
 
 const getPatientAgeAtPrescriptionTime = (ageAtEvent: string) => {
@@ -42,7 +42,7 @@ interface Props {
   consultation: ConsultationSummary
 }
 
-const Summary: React.FC<Props> = ({ observations = undefined, patient, prescription, consultation }: Props) => {
+const Summary = ({ observations = undefined, patient, prescription, consultation }: Props) => {
   if (observations == null) {
     return (
       <Wrapper>

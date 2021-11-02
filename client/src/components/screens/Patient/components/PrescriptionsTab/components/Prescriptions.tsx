@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import get from 'lodash/get';
 import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
-import { ConsultationSummary, FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
+import { ConsultationSummary, FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from 'helpers/providers/types';
 import Badge from '../../../../../Badge';
 import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
 import { State } from '../../../../../../reducers';
