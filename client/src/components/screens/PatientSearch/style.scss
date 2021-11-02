@@ -133,14 +133,15 @@ div.ant-tag {
       .ant-select-selection__placeholder{
         color: $light-text;
       }
+
       i{
         display:inline-block;
       }
 
       svg{
         color:$primary-text-disabled;
-        height: 16px;
-        width: 16px;
+        height: 12px;
+        width: 12px;
       }
 
     }
