@@ -17,22 +17,22 @@ import {
 } from '@ant-design/icons';
 import get from 'lodash/get';
 import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
-import { FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from '../../../../../../helpers/providers/types';
-import Badge from '../../../../../Badge';
-import { navigateToSubmissionWithPatient } from '../../../../../../actions/router';
-import { State } from '../../../../../../reducers';
-import { updateServiceRequestStatus } from '../../../../../../actions/patient';
-import StatusChangeModal, { StatusType } from '../../StatusChangeModal';
-import { editPrescription } from '../../../../../../actions/patientSubmission';
+import { ConsultationSummary, FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from 'helpers/providers/types';
+import Badge from 'components/Badge';
+import { navigateToSubmissionWithPatient } from 'actions/router';
+import { State } from 'reducers';
+import { updateServiceRequestStatus } from 'actions/patient';
+import StatusChangeModal, { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
+import { editPrescription } from 'actions/patientSubmission';
 import Summary from './Prescription/Summary';
 import DetailsRow from './Prescription/DetailsRow';
 import FamilyHistory from './Prescription/FamilyHistory';
 import ClinicalSigns from './Prescription/ClinicalSigns';
 import StatusLegend from './StatusLegend';
-import statusColors from '../../../../../../style/statusColors';
-import { PatientRequestCreationStatus } from '../../../../../../reducers/prescriptions';
-import { resetStatus } from '../../../../../../actions/prescriptions';
-import { Observations } from '../../../../../../store/ObservationTypes';
+import statusColors from 'style/statusColors';
+import { PatientRequestCreationStatus } from 'reducers/prescriptions';
+import { resetStatus } from 'actions/prescriptions';
+import { Observations } from 'store/ObservationTypes';
 
 const DEFAULT_VALUE = '--';
 
@@ -61,7 +61,13 @@ const findClinicalImpression = (
   prescription: Prescription,
   clinicalImpressions: ClinicalImpression[],
 ) => clinicalImpressions
-  .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
+    .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
+  
+const findConsultation = (
+  clinicalImpression: ClinicalImpression,
+  consultation: ConsultationSummary[],
+) => consultation
+  .find((c) => c.clinicalImpressionRef === clinicalImpression.id)!;
 
 const findFamilyHistories = (
   prescription: Prescription, clinicalImpressions: ClinicalImpression[], familyHistories: FamilyObservation[],
@@ -100,7 +106,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
   const [startingIndex] = useState(getPrescriptionKey(prescriptions, openedPrescriptionId));
 
-  const consultation = patientState.consultation!.map((cons) => cons.parsed);
+  const consultations = patientState.consultation!.map((cons) => cons.parsed);
   const familyHistories = patientState.fmhs!.map((fmh) => fmh.parsed);
   const hpos = patientState.hpos!.map((hpo) => hpo.parsed);
   const patient = patientState.patient.parsed;
@@ -156,6 +162,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
         {
           prescriptions.map((prescription, index) => {
             const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
+            const consultation = findConsultation(clinicalImpression, consultations)
             const editablePrescription = canEdit(prescription);
             const isDraft = prescription.status === 'draft';
             const getInitalStatus = () => {
@@ -338,7 +345,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                     )}
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.hospital')}>
-                    { consultation[index] != null ? consultation[index].practitioner.organization : DEFAULT_VALUE }
+                    { consultation!= null ? consultation.practitioner.organization : DEFAULT_VALUE }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
                     { intl.get(prescription.test) || DEFAULT_VALUE }
@@ -355,6 +362,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                   }}
                   patient={patient}
                   prescription={prescription}
+                  consultation={consultation}
                 />
                 <FamilyHistory
                   observations={{

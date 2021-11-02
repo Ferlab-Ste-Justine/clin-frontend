@@ -3,6 +3,7 @@
 import React from 'react';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
+import moment from 'moment'
 import { LeftOutlined,WarningOutlined } from '@ant-design/icons';
 import { updatePatientPractitioners } from 'actions/patientCreation';
 import {
@@ -376,6 +377,8 @@ function PatientSubmissionScreen(props) {
         fullMRN[1] = organization;
       }
 
+      const ageInDay = moment(new Date()).diff(currentPatient.birthDate, 'days');
+
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withId(get(localStore, 'serviceRequest.id'))
@@ -392,7 +395,7 @@ function PatientSubmissionScreen(props) {
           .withId(get(localStore, 'clinicalImpression.id'))
           .withSubmitted(submitted)
           .withSubject(currentPatient.id)
-          .withAge(1)
+          .withAge(ageInDay)
           .withAssessorId(userRole.id)
           .build());
       });
