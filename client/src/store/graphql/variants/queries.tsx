@@ -13,7 +13,7 @@ export const VARIANT_QUERY = gql`
           node {
             id
             hgvsg
-            #hash
+            hash
             locus
             variant_class
             clinvar {
@@ -21,10 +21,10 @@ export const VARIANT_QUERY = gql`
               clin_sig
             }
             rsnumber
-            #participant_number
+            participant_number
             #participant_frequency
             #participant_total_number
-
+            max_impact_score
             consequences {
               hits {
                 edges {
@@ -37,6 +37,18 @@ export const VARIANT_QUERY = gql`
                     impact_score
                   }
                 }
+              }
+            }
+
+            donors {
+              hits {
+                total
+              }
+            }
+
+            frequencies {
+              gnomad_exomes_2_1_1 {
+                af
               }
             }
           }

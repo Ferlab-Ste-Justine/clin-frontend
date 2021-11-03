@@ -6,23 +6,22 @@ import { resolveSyntheticSqon } from '@ferlab/ui/core/data/sqon/utils';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 import intl from 'react-intl-universal';
 import { Tabs } from 'antd';
+import { cloneDeep } from 'lodash';
 
 import { ExtendedMapping } from 'components/Utils/utils';
-//import { HitsStudiesResults } from 'store/graphql/studies/actions';
-import { dotToUnderscore } from '@ferlab/ui/core/data/arranger/formatting';
 import { MappingResults, useGetPageData } from 'store/graphql/utils/actions';
 import { VariantEntity } from 'store/graphql/variants/models';
 import { VARIANT_QUERY } from 'store/graphql/variants/queries';
-import styleThemeColors from 'style/themes/default/colors.module.scss';
 
-//import { fieldMappings } from './filters/fieldsMappings';
-//import GenericFilters from './filters/GenericFilters';
 import { VARIANT_INDEX, VARIANT_REPO_CACHE_KEY } from './constants';
 import VariantTableContainer from './VariantTableContainer';
 import GeneTableContainer from './GeneTableContainer';
 import { history } from 'configureStore';
+import { useParams } from 'react-router';
+import { dotToUnderscore } from '@ferlab/ui/core/data/arranger/formatting';
 
 import styles from './VariantPageContainer.module.scss';
+import GenericFilters from './filters/GenericFilters';
 
 export type VariantPageContainerData = {
   mappingResults: MappingResults;
@@ -51,16 +50,24 @@ const DEFAULT_STUDIES_SIZE = 30000;
 const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
   const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
   const [currentPageSize, setcurrentPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const { uid: patientID } = useParams<{ uid: string }>();
 
   const { filters } = useFilters();
   const allSqons = getQueryBuilderCache(VARIANT_REPO_CACHE_KEY).state;
+  let resolvedSqon = cloneDeep(resolveSyntheticSqon(allSqons, filters));
+  resolvedSqon.content.push({
+    content: { field: 'donors.patient_id', value: ['QA-PA-00081'] },
+    op: 'in',
+  });
+  // TODO {"content": {"field": "donors.patient_id", "value": [patientID]}, "op": "in"}
+
   const results = useGetPageData(
     {
-      sqon: resolveSyntheticSqon(allSqons, filters),
+      sqon: resolvedSqon,
       pageSize: currentPageSize,
       offset: currentPageSize * (currentPageNum - 1),
       sort: [
-        //{ field: 'max_impact_score', order: 'desc' },
+        { field: 'max_impact_score', order: 'desc' },
         { field: 'hgvsg', order: 'asc' },
       ],
       //studiesSize: DEFAULT_STUDIES_SIZE,
@@ -68,9 +75,9 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
     VARIANT_QUERY,
     VARIANT_INDEX,
   );
-  //const [selectedFilterContent, setSelectedFilterContent] = useState<ReactElement | undefined>(
-  //  undefined,
-  //);
+  const [selectedFilterContent, setSelectedFilterContent] = useState<
+    React.ReactElement | undefined
+  >(undefined);
 
   const total = results.data?.Variants.hits.total || 0;
 
@@ -128,6 +135,16 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
         loading={results.loading}
         total={total}
         dictionary={dictionary}
+        facetFilterConfig={{
+          enable: true,
+          onFacetClick: (field) => {
+            setSelectedFilterContent(
+              <GenericFilters field={dotToUnderscore(field)} mappingResults={mappingResults} />,
+            );
+          },
+          selectedFilterContent: selectedFilterContent,
+          blacklistedFacets: ['genes.symbol', 'locus'],
+        }}
       />
       <Tabs type="card" className={styles.variantTabs}>
         <Tabs.TabPane tab={intl.get('screen.patientvariant.results.table.variants')} key="variants">
@@ -139,7 +156,7 @@ const VariantPageContainer = ({ mappingResults }: VariantPageContainerData) => {
             setcurrentPageSize={setcurrentPageSize}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane tab={intl.get('screen.patientvariant.results.table.genes')} key="genes">
+        <Tabs.TabPane disabled tab={intl.get('screen.patientvariant.results.table.genes')} key="genes">
           <GeneTableContainer
             results={results}
             filters={filters}

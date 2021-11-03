@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
 import { Button, Layout } from 'antd';
 import { MappingResults } from 'store/graphql/utils/actions';
-
 import CustomFilterContainer from './CustomFilterContainer';
 import intl from 'react-intl-universal';
+import { FilterGroup } from './types';
 
 import styles from './Filters.module.scss';
 
 type OwnProps = {
   mappingResults: MappingResults;
+  filterGroups: FilterGroup[];
 };
 
-const INPUT_FILTER_LIST = [
-  //'participant_frequency', //<--- not in index
-  //'frequencies__gnomad_genomes_2_1__af',
-  'frequencies__gnomad_genomes_3_0__af',
-  'frequencies__gnomad_genomes_3_1_1__af',
-  //'frequencies__gnomad_exomes_2_1__af',
-  'frequencies__topmed_bravo__af',
-  'frequencies__thousand_genomes__af',
-];
-
-const FrequencyFilter = ({ mappingResults }: OwnProps) => {
+const FilterList = ({ mappingResults, filterGroups }: OwnProps) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
@@ -34,18 +25,25 @@ const FrequencyFilter = ({ mappingResults }: OwnProps) => {
         </Button>
       </div>
       <Layout className={styles.variantFilterWrapper}>
-        {INPUT_FILTER_LIST.map((inputFilter) => (
-          <CustomFilterContainer
-            key={inputFilter}
-            classname={styles.variantFilterContainer}
-            filterKey={inputFilter}
-            mappingResults={mappingResults}
-            filtersOpen={filtersOpen}
-          />
+        {filterGroups.map((group: FilterGroup) => (
+          <>
+            {group.title ? (
+              <div className={styles.filterGroupTitle}>{intl.get(group.title)}</div>
+            ) : null}
+            {group.fields.map((field) => (
+              <CustomFilterContainer
+                key={field}
+                classname={styles.variantFilterContainer}
+                filterKey={field}
+                mappingResults={mappingResults}
+                filtersOpen={filtersOpen}
+              />
+            ))}
+          </>
         ))}
       </Layout>
     </>
   );
 };
 
-export default FrequencyFilter;
+export default FilterList;

@@ -5,33 +5,41 @@ $font-weight-semibold: 500;
 $font-weight-bold: 500;
 
 // Query Builder
-$query-default-action-hover-color: #057DB5;
-$query-default-action-focus-color: #26436E;
+$query-default-action-default-color: $gray-8;
+$query-default-action-hover-color: $gray-8;
+$query-default-action-focus-color: $gray-8;
 
 $query-builder-bg: $white;
-$query-builder-border-color: #D8E1EB;
+$query-builder-border-color: #d8e1eb;
 $query-builder-padding: 24px 24px;
 
-$query-bar-bg: #F8FAFC;
-$query-bar-bg-active: #D6F1FB;
-$query-bar-border-color: #E1E8EF;
-$query-bar-border-color-active: #8BD7F4;
+$query-bar-bg: #f8fafc;
+$query-bar-bg-active: #d6f1fb;
+$query-bar-border-color: #e1e8ef;
+$query-bar-border-color-active: #8bd7f4;
 
-$query-bar-identifier: #B3C2D3;
-$query-bar-identifier-active: #23A4D7; 
+$query-bar-identifier: #b3c2d3;
+$query-bar-identifier-active: #23a4d7;
 
-$query-pill-bg: #E1E8EF;
-$query-pill-bg-active: #B0E4F8;
+$query-pill-bg: #e1e8ef;
+$query-pill-bg-active: #b0e4f8;
+$query-pill-button-default-color: $gray-8;
+$query-pill-button-hover-color: $gray-8;
+$query-pill-button-focus-color: $gray-8;
 
-$query-icon-operator-color: #5A77A0;
-$query-text-operator-color-hover: #63768F; 
-$query-icon-operator-color-hover: #63768F; 
-$query-icon-label-operator-color: #63768F;
+$query-icon-operator-color: $gray-8;
+$query-text-operator-color-hover: $gray-8;
+$query-icon-operator-color-hover: $gray-8;
+$query-icon-label-operator-color: $gray-8;
+
+$query-combiner-button-default-color: $gray-8;
+$query-combiner-button-hover-color: $gray-8;
+$query-combiner-button-focus-color: $gray-8;
 
 // SidebarMenu
 $sidebar-menu-width: 180px;
 $sidebar-menu-collapsed-width: 50px;
-$sidebar-menu-background-color: #0A5085;
+$sidebar-menu-background-color: #0a5085;
 $sidebar-menu-toggle-icon-size: 21px;
 
 $sidebar-menu-item-icon-size: 24px;
@@ -42,12 +50,12 @@ $sidebar-menu-item-active-color: #fff;
 $sidebar-menu-item-hover-color: #fff;
 $sidebar-menu-item-hover-opacity: 0.8;
 $sidebar-menu-item-border-focus: none;
-$sidebar-menu-item-border-focus-color:white;
+$sidebar-menu-item-border-focus-color: white;
 
-$sidebar-quick-filter-input-box-shadow-hover: 0 0 0 2px #23A4D7;
-$sidebar-quick-filter-input-box-shadow-focus: 0 0 0 2px #0A5085, 0 0 0 3px white;
-$sidebar-quick-filter-input-placeholder-color: #8B9DB2;
-$sidebar-quick-filter-input-text-color: #364A63;
+$sidebar-quick-filter-input-box-shadow-hover: 0 0 0 2px #23a4d7;
+$sidebar-quick-filter-input-box-shadow-focus: 0 0 0 2px #0a5085, 0 0 0 3px white;
+$sidebar-quick-filter-input-placeholder-color: #8b9db2;
+$sidebar-quick-filter-input-text-color: #364a63;
 
 $sidebar-content-panel-padding: 16px;
 $sidebar-content-panel-width: 320px;
@@ -69,4 +77,3 @@ $checkbox-filter-types-mc-footer: $blue-8;
 $checkbox-filter-links-hover: $blue-8;
 $checkbox-filter-actions-separator-links: $blue-8;
 $checkbox-filter-actions-separator-background: $gray-6;
-

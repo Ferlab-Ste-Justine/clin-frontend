@@ -25051,6 +25051,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
 }
 .ant-table-cell a:hover {
   text-decoration: none;
+  color: #006aa3;
 }
 .ant-table-content {
   overflow: auto;
@@ -25077,7 +25078,7 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .ant-collapse > .ant-collapse-item > .ant-collapse-header {
   display: flex;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 24px;
   padding-left: 16px;
 }

@@ -13,9 +13,12 @@ import { Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import {
   VariantEntity,
-  VariantEntityNode,
   ClinVar,
   Consequence,
+  ESResult,
+  ESResultNode,
+  FrequenciesEntity,
+  DonorsEntity,
 } from 'store/graphql/variants/models';
 import { DISPLAY_WHEN_EMPTY_DATUM } from './Empty';
 import ConsequencesCell from './ConsequencesCell';
@@ -34,16 +37,16 @@ type OwnProps = {
   setcurrentPageSize: (currentPage: number) => void;
 };
 
-const makeRows = (rows: VariantEntityNode[]) =>
-  rows.map((row: VariantEntityNode, index: number) => ({ ...row.node, key: `${index}` }));
+const makeRows = (rows: ESResultNode<VariantEntity>[]) =>
+  rows.map((row: ESResultNode<VariantEntity>, index: number) => ({ ...row.node, key: `${index}` }));
 
 const VariantTableContainer = (props: OwnProps) => {
   const { results, setCurrentPageCb, currentPageSize, setcurrentPageSize } = props;
   const [currentPageNum, setCurrentPageNum] = useState(DEFAULT_PAGE_NUM);
 
-  const nodes = results.data?.Variants?.hits?.edges || [];
-  const variants = nodes as VariantEntityNode[];
-  const total = results.data?.Variants?.hits.total || 0;
+  const variantsResults = results.data?.Variants as ESResult<VariantEntity>;
+  const variants = variantsResults?.hits?.edges || [];
+  const total = variantsResults?.hits?.total || 0;
 
   const columns: ProColumns[] = [
     {
@@ -109,11 +112,19 @@ const VariantTableContainer = (props: OwnProps) => {
     },
     {
       title: intl.get('screen.variantsearch.table.gnomAd'),
-      dataIndex: 'test6',
+      dataIndex: 'frequencies',
+      render: (frequencies) => {
+        const freq = frequencies as FrequenciesEntity;
+        return freq.gnomad_exomes_2_1_1 ? freq.gnomad_exomes_2_1_1.af : DISPLAY_WHEN_EMPTY_DATUM;
+      },
     },
     {
       title: intl.get('screen.patientvariant.results.table.rqdm'),
-      dataIndex: 'test7',
+      dataIndex: 'donors',
+      render: (donors) => {
+        const donorsData = donors as ESResult<DonorsEntity>;
+        return donorsData.hits.total;
+      },
     },
     {
       title: intl.get('screen.patientvariant.results.table.zygosity'),

@@ -5,6 +5,25 @@ export enum Impact {
   Modifier = 'MODIFIER',
 }
 
+export type ESResult<T> = {
+  hits: {
+    total?: number;
+    edges: Array<ESResultNode<T>>;
+  };
+};
+
+export type ESResultNode<T> = {
+  node: T;
+};
+
+export type FrequenciesEntity = {
+  gnomad_exomes_2_1_1: {
+    af: number
+  }
+}
+
+export type DonorsEntity = {}
+
 export type VariantEntity = {
   id: string;
   hash: string;
@@ -14,10 +33,6 @@ export type VariantEntity = {
   variant_class: string;
   rsnumber: string;
   [key: string]: any;
-};
-
-export type VariantEntityNode = {
-  node: VariantEntity;
 };
 
 type ClinVarData = string[] | undefined;
@@ -34,7 +49,6 @@ type BoundKfType = {
   heterozygotes: number;
   homozygotes: number;
 };
-
 
 export type FreqInternal = {
   lower_bound_kf: BoundKfType;
