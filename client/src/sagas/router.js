@@ -171,7 +171,7 @@ function* manualUserNavigation(action) {
   }
 
   const currentRoute = (route || location.pathname).split('#')[0];
-  const isCurrentRoute = (route) => route === currentRoute
+  const isCurrentRoute = (route) => !!currentRoute.match(new RegExp(`${route}`, 'gi'));
 
   if (isCurrentRoute(Routes.PatientSearchArranger)) {
     // do nothing
@@ -179,7 +179,7 @@ function* manualUserNavigation(action) {
     yield processPatientSearchPage();
   } else if (isCurrentRoute(Routes.Variant)) {
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
-  } else if (isCurrentRoute(Routes.Patient)) {
+  } else if (isCurrentRoute(`${Routes.Patient}\/([\\w,\\-]+)\/?`)) {
     yield processPatientPage(currentRoute, tab, forceReload);
   } else if (isCurrentRoute(Routes.AccessDenied)) {
     // Access denied
