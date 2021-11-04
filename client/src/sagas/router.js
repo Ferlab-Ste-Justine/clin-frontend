@@ -1,8 +1,13 @@
 import { LOCATION_CHANGE,push } from 'connected-react-router';
 import get from 'lodash/get';
 import {
-  all, delay, put, select, takeEvery,
-takeLatest, } from 'redux-saga/effects';
+  all,
+  delay,
+  put,
+  select,
+  takeEvery,
+  takeLatest,
+} from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
 import {
@@ -134,6 +139,9 @@ function* processPatientSearchPage() {
 }
 
 function* manualUserNavigation(action) {
+  // this is a catch all function
+  // As soon as the react-router gets and event, it will be triggered
+
   const { isFirstRendering } = action.payload;
   window.scrollTo(0, 0);
   const { referrer } = yield select((state) => state.app);
@@ -162,16 +170,20 @@ function* manualUserNavigation(action) {
     }
   }
 
-  const currentRoute = route || location.pathname;
-  if (currentRoute.startsWith(Routes.PatientSearch)) {
+  const currentRoute = (route || location.pathname).split('#')[0];
+  const isCurrentRoute = (route) => route === currentRoute
+
+  if (isCurrentRoute(Routes.PatientSearchArranger)) {
+    // do nothing
+  } else if (isCurrentRoute(Routes.PatientSearch)) {
     yield processPatientSearchPage();
-  } else if (currentRoute.startsWith(Routes.Variant)) {
+  } else if (isCurrentRoute(Routes.Variant)) {
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
-  } else if (currentRoute.startsWith(Routes.Patient)) {
+  } else if (isCurrentRoute(Routes.Patient)) {
     yield processPatientPage(currentRoute, tab, forceReload);
-  } else if (currentRoute.startsWith(Routes.AccessDenied)) {
+  } else if (isCurrentRoute(Routes.AccessDenied)) {
     // Access denied
-  } else if (currentRoute.startsWith(Routes.Submission) && !isFirstRendering) {
+  } else if (isCurrentRoute(Routes.Submission) && !isFirstRendering) {
     // ignore /submission page to not change the current flow on "normal" navigation
   } else {
     yield navigateToPatientSearchScreen();
