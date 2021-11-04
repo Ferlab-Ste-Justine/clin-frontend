@@ -1,4 +1,5 @@
 import React from 'react';
+import get from 'lodash/get'
 import IconKit from 'react-icons-kit';
 import {
   ic_email, ic_launch, ic_location_on,
@@ -9,6 +10,8 @@ import { connect } from 'react-redux';
 import { Col, Layout, Row, Typography } from 'antd';
 
 const { Text } = Typography;
+const ZEPLIN_URL = get(window, 'CLIN.zeplinUrl', process.env.REACT_APP_ZEPLIN_URL)
+const FHIR_CONSOLE_URL = get(window, 'CLIN.fhirConsoleUrl', process.env.REACT_APP_FHIR_CONSOLE_URL)
 
 const Footer = () => (
   <Layout.Footer id="footer">
@@ -63,8 +66,8 @@ const Footer = () => (
             <li><a href="#">{ intl.get('footer.navigation.secondary.access') }</a></li>
             <li><a href="#">{ intl.get('footer.navigation.secondary.confidentiality') }</a></li>
             <li><a href="#">{ intl.get('footer.navigation.secondary.about') }</a></li>
-            <li><a href="https://notebook.qa.cqdg.ferlab.bio"> Zeppelin </a></li>
-            <li><a href="https://fhir-console.qa.clin.ferlab.bio/home"> Fhir </a></li>
+            <li><a href={ZEPLIN_URL}> Zeppelin </a></li>
+            <li><a href={FHIR_CONSOLE_URL}> Fhir </a></li>
           </ul>
         </nav>
         <img alt="Saint-Justine" className="logo" src="/assets/logos/msssq.svg" />
