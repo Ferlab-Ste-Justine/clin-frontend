@@ -289,6 +289,7 @@ function PatientSubmissionScreen(props) {
   };
 
   const buildHpoObservation = (hpo) => {
+    const { currentPatient } = props;
     const observation = new ObservationBuilder('HPO')
       .withId(hpo.id)
       .withInterpretation({
@@ -297,6 +298,7 @@ function PatientSubmissionScreen(props) {
           display: hpoInterpretationValues().find((interpretation) => interpretation.value === hpo.interpretation).display,
         }],
       })
+      .withSubject(currentPatient.id)
       .withValue(hpo.code, hpo.display)
       .withNote(hpo.note)
       .build();
