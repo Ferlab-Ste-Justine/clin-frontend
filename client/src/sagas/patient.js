@@ -1,3 +1,4 @@
+import flow from 'lodash/flow';
 import get from 'lodash/get';
 import uniq from 'lodash/uniq';
 import { all, debounce, put, select, takeLatest } from 'redux-saga/effects';
@@ -9,7 +10,11 @@ import Api, { ApiError } from '../helpers/api';
 import { updatePatient } from '../helpers/fhir/api/UpdatePatient';
 import { getExtension } from '../helpers/fhir/builder/Utils';
 import { isMemberAloneInGroupBundle } from '../helpers/fhir/familyMemberHelper';
-import { isAlreadyProband, makeExtensionProband } from '../helpers/fhir/patientHelper';
+import {
+  isAlreadyProband,
+  makeExtensionProband,
+  replaceExtensionFamilyId,
+} from '../helpers/fhir/patientHelper';
 import {
   getFamilyMembersFromPatientDataResponse,
   removeSpecificFamilyRelation,
@@ -41,14 +46,15 @@ const getIdsFromPatient = (data) => {
 const getSupervisorIdsFromPatient = (data) => {
   try {
     const dataExtractor = new DataExtractor({ patientData: data });
-    const serviceRequests = dataExtractor
-      .extractBundle('ServiceRequest')
+    const serviceRequests = dataExtractor.extractBundle('ServiceRequest');
     const ids = uniq(
-      serviceRequests?.entry?.map((e) => e.resource).flatMap((sr) => {
-        const ext = dataExtractor.getExtension(sr, ExtensionUrls.ResidentSupervisor);
-        const ref = get(ext, 'valueReference.reference');
-        return ref ? ref.split('/')[1] : [];
-      }),
+      serviceRequests?.entry
+        ?.map((e) => e.resource)
+        .flatMap((sr) => {
+          const ext = dataExtractor.getExtension(sr, ExtensionUrls.ResidentSupervisor);
+          const ref = get(ext, 'valueReference.reference');
+          return ref ? ref.split('/')[1] : [];
+        }),
     );
     return ids;
   } catch (e) {
@@ -61,24 +67,24 @@ const buildPtIdToGrMemStatusCode = (rawResponse) =>
   !rawResponse || rawResponse.length === 0
     ? {}
     : rawResponse.reduce((accumulator, entityAndExtension) => {
-        const ref = entityAndExtension?.entity?.reference || '';
-        const splitRef = ref.split('/');
-        const indexOfId = 1;
-        const id = splitRef[indexOfId];
-        if (!id) {
-          return accumulator;
-        }
-        const code = (entityAndExtension?.extension || []).find((ext) =>
-          (ext?.url || '').endsWith('/group-member-status'),
-        )?.valueCoding?.code;
-        if (!code) {
-          return accumulator;
-        }
-        return {
-          ...accumulator,
-          [id]: code,
-        };
-      }, {});
+      const ref = entityAndExtension?.entity?.reference || '';
+      const splitRef = ref.split('/');
+      const indexOfId = 1;
+      const id = splitRef[indexOfId];
+      if (!id) {
+        return accumulator;
+      }
+      const code = (entityAndExtension?.extension || []).find((ext) =>
+        (ext?.url || '').endsWith('/group-member-status'),
+      )?.valueCoding?.code;
+      if (!code) {
+        return accumulator;
+      }
+      return {
+        ...accumulator,
+        [id]: code,
+      };
+    }, {});
 
 const getFamily = async (patientDataResponse) => {
   const familyMembersFromPatientResponse =
@@ -377,8 +383,9 @@ function* removeParent(action) {
       return;
     }
 
+    const indexOfEntryForPatient = 0;
     const parentCurrentPatientBundleResource =
-      (parentCurrentData?.payload?.data?.entry || [])[0]?.resource || {};
+      (parentCurrentData?.payload?.data?.entry || [])[indexOfEntryForPatient]?.resource || {};
     const parentCurrentPatientBundleEntry = (parentCurrentPatientBundleResource?.entry || []).find(
       (entry) => entry?.fullUrl?.endsWith(`/Patient/${parentId}`),
     );
@@ -388,8 +395,11 @@ function* removeParent(action) {
       return;
     }
 
+    const indexOfEntryForGroup = 1;
     //we already have group data here, no need to make another server call a bit later.
-    const currentGroupResourceBundle = (parentCurrentData.payload?.data?.entry || [])[1];
+    const currentGroupResourceBundle = (parentCurrentData.payload?.data?.entry || [])[
+      indexOfEntryForGroup
+    ];
     const currentGroupResource = currentGroupResourceBundle?.resource?.entry?.find((entry) =>
       entry?.fullUrl?.endsWith(`/Group/${currentGroupId}`),
     )?.resource;
@@ -402,7 +412,7 @@ function* removeParent(action) {
     if (newGroupResponseForParent.error) {
       return;
     }
-
+    
     const newMembers = currentGroupResource.member.filter(
       (member) => !member.entity.reference.includes(parentId),
     );
@@ -419,9 +429,16 @@ function* removeParent(action) {
       return;
     }
 
+    const updateParentExtension = flow([replaceExtensionFamilyId, makeExtensionProband]);
+
+    const newGroupIpForParent = newGroupResponseForParent?.payload.data.id;
     const updatedParentPatientToCommit = {
       ...parentCurrentPatientResource,
-      extension: makeExtensionProband(parentCurrentPatientExtensions),
+      extension: updateParentExtension(
+        parentCurrentPatientExtensions,
+        currentGroupId,
+        newGroupIpForParent,
+      ),
     };
 
     const updateParentResponse = yield updatePatient(updatedParentPatientToCommit);

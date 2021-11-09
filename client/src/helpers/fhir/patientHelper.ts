@@ -1,17 +1,17 @@
 import capitalize from 'lodash/capitalize';
 import get from 'lodash/get';
 import moment from 'moment';
+
+import { ExtensionUrls } from 'store/urls';
+
 import { isValidRamq } from './api/PatientChecker';
 import { Extension, Patient } from './types';
 
 const EXTENSION_GROUP_MEMBER_STATUS =
   'http://fhir.cqgc.ferlab.bio/StructureDefinition/group-member-status';
 
-const EXTENSION_IS_PROBAND = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband';
-
-export function getRAMQValue(patient: Patient): string | undefined {
-  return patient.identifier.find((id) => get(id, 'type.coding[0].code', '') === 'JHN')?.value;
-}
+export const getRAMQValue = (patient: Patient): string | undefined =>
+  patient.identifier.find((id) => get(id, 'type.coding[0].code', '') === 'JHN')?.value;
 
 export function formatRamq(value: string): string {
   const newValue = value.toUpperCase();
@@ -55,10 +55,10 @@ export function getDetailsFromRamq(ramq: string): RamqDetails | null {
   const birthDate = moment(birthDateString, 'YYYY/M/D').toDate();
 
   return {
+    birthDate: birthDate <= moment().toDate() ? birthDate : undefined,
+    sex: isFemale ? 'female' : 'male',
     startFirstname: ramq.slice(3, 4),
     startLastname: capitalize(ramq.slice(0, 3)),
-    sex: isFemale ? 'female' : 'male',
-    birthDate: birthDate <= moment().toDate() ? birthDate : undefined,
   };
 }
 
@@ -79,21 +79,32 @@ export const groupStatusObject = (
 
 export const generateGroupStatus = (status: GroupMemberStatusCode): Extension => {
   switch (status) {
-    case 'AFF':
-      return groupStatusObject(status, 'Affected');
-    case 'UNF':
-      return groupStatusObject(status, 'Unaffected');
-    case 'UNK':
-      return groupStatusObject(status, 'Unknown');
-    default:
-      throw new Error(`Unknown group member status [${status}]`);
+  case 'AFF':
+    return groupStatusObject(status, 'Affected');
+  case 'UNF':
+    return groupStatusObject(status, 'Unaffected');
+  case 'UNK':
+    return groupStatusObject(status, 'Unknown');
+  default:
+    throw new Error(`Unknown group member status [${status}]`);
   }
 };
 
 export const isAlreadyProband = (extensions: Extension[]): boolean =>
-  (extensions || []).some((ext) => ext.url === EXTENSION_IS_PROBAND && ext.valueBoolean);
+  (extensions || []).some((ext) => ext.url === ExtensionUrls.IsProband && ext.valueBoolean);
 
 export const makeExtensionProband = (extensions: Extension[]): Extension[] =>
   (extensions || []).map((ext) =>
-    ext.url === EXTENSION_IS_PROBAND ? { ...ext, valueBoolean: true } : { ...ext },
+    ext.url === ExtensionUrls.IsProband ? { ...ext, valueBoolean: true } : { ...ext },
+  );
+
+export const replaceExtensionFamilyId = (
+  extensions: Extension[],
+  oldId: string,
+  newId: string,
+): Extension[] =>
+  (extensions || []).map((ext) =>
+    ext.url === ExtensionUrls.FamilyId && ext.valueReference?.reference === `Group/${oldId}`
+      ? { ...ext, valueReference: { reference: `Group/${newId}` } }
+      : { ...ext },
   );
