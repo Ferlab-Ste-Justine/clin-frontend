@@ -1,19 +1,19 @@
+import get from 'lodash/get';
 import {
   all, put, select, takeLatest,
 } from 'redux-saga/effects';
 
-import get from 'lodash/get';
 import * as actions from '../actions/type';
-import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import Api, { ApiError } from '../helpers/api';
-import { addPatientMrn, updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
+import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import { isValidRamq } from '../helpers/fhir/api/PatientChecker';
+import { addPatientMrn, updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
 
 function* handleCreatePatient(action: any) {
   try {
     const response = yield createPatient(action.payload.patient);
 
-    yield put({ type: actions.CREATE_PATIENT_SUCCEEDED, payload: { ...response } });
+    yield put({ payload: { ...response }, type: actions.CREATE_PATIENT_SUCCEEDED });
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_FAILED });
   }
@@ -21,9 +21,9 @@ function* handleCreatePatient(action: any) {
 
 function* handleCreatePatientFetus(action: any) {
   try {
-    const response = yield createPatientFetus(action.payload.patient);
+    const response = yield createPatientFetus(action.payload.patient, action.payload.fetusGender);
 
-    yield put({ type: actions.CREATE_PATIENT_FETUS_SUCCEEDED, payload: { ...response } });
+    yield put({ payload: { ...response }, type: actions.CREATE_PATIENT_FETUS_SUCCEEDED });
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_FETUS_FAILED });
   }
@@ -37,7 +37,7 @@ function* handleUpdatePatientPractitioners(action: any) {
       patient, action.payload.serviceRequest, action.payload.clinicalImpression,
     );
 
-    yield put({ type: actions.UPDATE_PATIENT_PRACTITIONMERS_SUCCEEDED, payload: { ...response } });
+    yield put({ payload: { ...response }, type: actions.UPDATE_PATIENT_PRACTITIONMERS_SUCCEEDED });
   } catch (error) {
     yield put({ type: actions.UPDATE_PATIENT_PRACTITIONMERS_FAILED });
   }
@@ -63,8 +63,8 @@ function* fetchInfosByRamq(action: any) {
     }
 
     yield put({
-      type: actions.PATIENT_FETCH_INFO_BY_RAMQ_SUCCEEDED,
       payload: response.payload,
+      type: actions.PATIENT_FETCH_INFO_BY_RAMQ_SUCCEEDED,
     });
   } catch (error) {
     yield put({ type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
@@ -77,7 +77,7 @@ function* addMrn(action: any) {
 
     const updatedPatient = yield addPatientMrn(patient, action.payload.mrn, action.payload.organization);
 
-    yield put({ type: actions.PATIENT_ADD_MRN_SUCCEEDED, payload: { patient: updatedPatient } });
+    yield put({ payload: { patient: updatedPatient }, type: actions.PATIENT_ADD_MRN_SUCCEEDED });
   } catch (error) {
     yield put({ type: actions.PATIENT_ADD_MRN_FAILED });
   }
