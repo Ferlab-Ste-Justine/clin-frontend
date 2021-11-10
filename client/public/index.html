@@ -9,12 +9,7 @@
   <meta name="release-name" content="%REACT_APP_RELEASE_NAME%" />
   <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-  <script type="text/javascript">
-    // avoid browser cache for the config file
-    let scriptConfig = document.createElement("script");
-    scriptConfig.src = "%PUBLIC_URL%/config.js" + "?v=" + Date.now();
-    document.getElementsByTagName("head")[0].appendChild(scriptConfig);
-  </script>
+  <script src="%PUBLIC_URL%/config.js"></script>
   <title>%REACT_APP_TITLE%</title>
   <style>
     #root {
