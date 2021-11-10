@@ -23,7 +23,7 @@ export class ObservationBuilder {
       ],
     };
 
-    private status: Status = 'registered';
+    private status: Status = 'final';
 
     private category: CodeableConcept[];
 

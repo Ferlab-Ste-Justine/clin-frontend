@@ -230,8 +230,7 @@ function PatientSubmissionScreen(props) {
     const cghPrecision = values['cgh.precision'] ? values['cgh.precision'].trim() : undefined;
     const builder = new ObservationBuilder('CGH')
       .withSubject(patientId)
-      .withId(get(localStore, 'cgh.id'))
-      .withStatus('final');
+      .withId(get(localStore, 'cgh.id'));
 
     if (cghInterpretationValue === 'realized') {
       builder.withInterpretation({
@@ -417,7 +416,6 @@ function PatientSubmissionScreen(props) {
 
       if (get(content, 'ethnicity.value') != null) {
         const observationBuilder = new ObservationBuilder('ETH')
-          .withStatus('final')
           .withSubject(currentPatient.id)
           .withId(content.ethnicity.id)
           .withValue(content.ethnicity.value,
