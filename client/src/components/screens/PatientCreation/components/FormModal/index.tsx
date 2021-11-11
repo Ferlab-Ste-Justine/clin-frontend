@@ -267,10 +267,10 @@ const FormModal = ({
 
       if (isFetusType) {
         if (!!patient) {
-          // patient already exists
+          // patient already exists from ramq number
           actions.createPatientFetus(patient, genderFromForm);
         } else {
-          // patient is created on-the-fly
+          // patient/mother is created on-the-fly
           patientBuilder.withIsProband(false);
           actions.createPatientFetus(patientBuilder.build(), genderFromForm);
         }

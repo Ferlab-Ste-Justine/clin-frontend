@@ -1,13 +1,12 @@
 import get from 'lodash/get';
-import {
-  all, put, select, takeLatest,
-} from 'redux-saga/effects';
+import { all, put, select, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
 import Api, { ApiError } from '../helpers/api';
 import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import { isValidRamq } from '../helpers/fhir/api/PatientChecker';
 import { addPatientMrn, updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
+import { hasAtLeastOneFetusChild } from '../helpers/fhir/patientHelper';
 
 function* handleCreatePatient(action: any) {
   try {
@@ -20,9 +19,13 @@ function* handleCreatePatient(action: any) {
 }
 
 function* handleCreatePatientFetus(action: any) {
+  const { fetusGender, patient } = action.payload;
+  if (hasAtLeastOneFetusChild(patient)) {
+    yield put({ type: actions.CREATE_PATIENT_FETUS_FAILED });
+    return;
+  }
   try {
-    const response = yield createPatientFetus(action.payload.patient, action.payload.fetusGender);
-
+    const response = yield createPatientFetus(patient, fetusGender);
     yield put({ payload: { ...response }, type: actions.CREATE_PATIENT_FETUS_SUCCEEDED });
   } catch (error) {
     yield put({ type: actions.CREATE_PATIENT_FETUS_FAILED });
@@ -34,7 +37,9 @@ function* handleUpdatePatientPractitioners(action: any) {
     const patient = yield select((state) => state.patient.patient.original);
 
     const response = yield updatePatientPractitioners(
-      patient, action.payload.serviceRequest, action.payload.clinicalImpression,
+      patient,
+      action.payload.serviceRequest,
+      action.payload.clinicalImpression,
     );
 
     yield put({ payload: { ...response }, type: actions.UPDATE_PATIENT_PRACTITIONMERS_SUCCEEDED });
@@ -75,7 +80,11 @@ function* addMrn(action: any) {
   try {
     const patient = yield select((state) => state.patient.patient.original);
 
-    const updatedPatient = yield addPatientMrn(patient, action.payload.mrn, action.payload.organization);
+    const updatedPatient = yield addPatientMrn(
+      patient,
+      action.payload.mrn,
+      action.payload.organization,
+    );
 
     yield put({ payload: { patient: updatedPatient }, type: actions.PATIENT_ADD_MRN_SUCCEEDED });
   } catch (error) {
@@ -91,7 +100,10 @@ function* watchCreatePatientFetus() {
   yield takeLatest(actions.CREATE_PATIENT_FETUS_REQUESTED, handleCreatePatientFetus);
 }
 function* watchUpdatePatientPractitioners() {
-  yield takeLatest(actions.UPDATE_PATIENT_PRACTITIONMERS_REQUESTED, handleUpdatePatientPractitioners);
+  yield takeLatest(
+    actions.UPDATE_PATIENT_PRACTITIONMERS_REQUESTED,
+    handleUpdatePatientPractitioners,
+  );
 }
 
 function* watchFetchInfosByRamq() {
