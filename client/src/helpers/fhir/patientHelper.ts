@@ -79,14 +79,14 @@ export const groupStatusObject = (
 
 export const generateGroupStatus = (status: GroupMemberStatusCode): Extension => {
   switch (status) {
-  case 'AFF':
-    return groupStatusObject(status, 'Affected');
-  case 'UNF':
-    return groupStatusObject(status, 'Unaffected');
-  case 'UNK':
-    return groupStatusObject(status, 'Unknown');
-  default:
-    throw new Error(`Unknown group member status [${status}]`);
+    case 'AFF':
+      return groupStatusObject(status, 'Affected');
+    case 'UNF':
+      return groupStatusObject(status, 'Unaffected');
+    case 'UNK':
+      return groupStatusObject(status, 'Unknown');
+    default:
+      throw new Error(`Unknown group member status [${status}]`);
   }
 };
 
@@ -108,3 +108,17 @@ export const replaceExtensionFamilyId = (
       ? { ...ext, valueReference: { reference: `Group/${newId}` } }
       : { ...ext },
   );
+
+export const hasAtLeastOneFetusChild = (patient: Patient): boolean => {
+  if (patient.gender !== 'female') {
+    return false;
+  }
+  const codings = (patient?.extension || [])
+    .filter((ext) => ext.url === ExtensionUrls.FamilyRelation)
+    .map((ext) => ext?.extension || [])
+    .flat()
+    .filter((o) => Array.isArray(o?.valueCodeableConcept?.coding))
+    .map((o) => o.valueCodeableConcept?.coding)
+    .flat();
+  return codings.some((coding) => coding?.code === 'CHILD');
+};

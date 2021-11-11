@@ -12,7 +12,6 @@ export const createPatient: Action = (patient: Patient) => ({
   type: actions.CREATE_PATIENT_REQUESTED,
 });
 
-
 export const createPatientFetus: Action = (patient: Patient, fetusGender: string) => ({
   payload: {
     fetusGender,
