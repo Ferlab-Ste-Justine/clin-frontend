@@ -39,6 +39,8 @@ export class ObservationBuilder {
 
     private valueBoolean?: boolean = undefined;
 
+    private valueString?: string = undefined;
+
     public constructor(code: SupportedCodes) {
       switch (code) {
         case 'CGH':
@@ -161,6 +163,7 @@ export class ObservationBuilder {
         note: this.note,
         valueCodeableConcept: this.valueCodeableConcept,
         valueBoolean: this.valueBoolean,
+        valueString: this.valueString,
       };
     }
 
@@ -238,6 +241,11 @@ export class ObservationBuilder {
 
     public withBooleanValue(value: boolean) {
       this.valueBoolean = value;
+      return this;
+    }
+  
+    public withStringValue(value: string) {
+      this.valueString = value;
       return this;
     }
 }

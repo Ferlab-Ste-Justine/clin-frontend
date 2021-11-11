@@ -266,7 +266,7 @@ function PatientSubmissionScreen(props) {
       .withSubject(patientId)
       .withId(get(localStore, 'indic.id'));
     if (indication != null) {
-      builder.withNote(indication);
+      builder.withStringValue(indication)
     }
 
     return builder.build();
@@ -280,9 +280,9 @@ function PatientSubmissionScreen(props) {
       .withId(get(localStore, 'inves.id'));
 
     if (note == null && localStore.summary.note != null) {
-      builder.withNote(localStore.summary.note);
+      builder.withStringValue(localStore.summary.note)
     } else {
-      builder.withNote(note);
+      builder.withStringValue(note)
     }
     return builder.build();
   };

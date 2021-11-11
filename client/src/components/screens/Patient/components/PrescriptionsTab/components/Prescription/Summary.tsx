@@ -7,6 +7,7 @@ import intl from 'react-intl-universal';
 import { Observation } from 'helpers/fhir/types';
 import { ConsultationSummary, ParsedPatientData, Prescription } from 'helpers/providers/types';
 import DetailsRow from './DetailsRow';
+import { getObservationValue } from 'helpers/fhir/fhir';
 
 const getPatientAgeAtPrescriptionTime = (ageAtEvent: string) => {
   const days = parseInt(ageAtEvent)
@@ -81,7 +82,7 @@ const Summary = ({ observations = undefined, patient, prescription, consultation
                 <Divider type="vertical" style={{ height: '100%' }} />
               </Col>
               <Col>
-                { get(cgh, 'note[0].text', '--') }
+                { getObservationValue(cgh, '--') }
               </Col>
             </>
           ) }
@@ -90,12 +91,12 @@ const Summary = ({ observations = undefined, patient, prescription, consultation
       <DetailsRow
         label={intl.get('screen.patient.details.prescriptions.summary.investigationSummary')}
       >
-        { get(inves, 'note[0].text', '--') }
+        { getObservationValue(inves, '--') }
       </DetailsRow>
       <DetailsRow
         label={intl.get('screen.patient.details.prescriptions.summary.diagnosticHypothesis')}
       >
-        { get(indic, 'note[0].text', '--') }
+        { getObservationValue(indic, '--') }
       </DetailsRow>
     </Wrapper>
   );
