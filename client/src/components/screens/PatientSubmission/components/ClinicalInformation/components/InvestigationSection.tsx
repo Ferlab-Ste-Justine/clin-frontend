@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Radio, Input, Form, Row, Col, Typography,
-} from 'antd';
 import intl from 'react-intl-universal';
+import {
+  Col, Form, Input,   Radio, Row, Typography,
+} from 'antd';
+
 import ErrorText from './ErrorText';
 
 const { TextArea } = Input;
@@ -13,23 +14,26 @@ enum InterpretationValue {
 }
 
 type Props = {
-  interpretation?: string;
+  interpretation: string;
   precision?: string;
   summary?: string;
+  isEditMode:boolean;
 }
+const getInitialValueCghInterpretation = (interpretation: string) => interpretation ? InterpretationValue.REALIZED : InterpretationValue.NON_REALIZED
 
-const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summary }) => {
+const InvestigationSection = ({ interpretation, isEditMode, precision, summary }: Props): React.ReactElement => {
   const [isRealizedSelected, setIsRealizedSelected] = useState(interpretation != null);
   const [isAbnormalResult, setIsAbnormalResult] = useState(interpretation === 'A');
 
   return (
     <>
       <Form.Item
+        initialValue={isEditMode ? getInitialValueCghInterpretation(interpretation) : null}
         label={intl.get('form.patientSubmission.clinicalInformation.cgh')}
         name="cghInterpretationValue"
         rules={[{
-          required: true,
           message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
+          required: true,
         }]}
       >
         <Radio.Group
@@ -50,9 +54,9 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summ
       { isRealizedSelected && (
         <>
           <Form.Item
+            initialValue={interpretation}
             label={intl.get('form.patientSubmission.clinicalInformation.investigationResult')}
             name="cgh.result"
-            initialValue={interpretation}
           >
             <Radio.Group
               buttonStyle="solid"
@@ -75,9 +79,9 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summ
             <Row className="ant-form-item">
               <Col span={17}>
                 <Form.Item
+                  initialValue={precision}
                   label={intl.get('form.patientSubmission.clinicalInformation.precision')}
                   name="cgh.precision"
-                  initialValue={precision}
                 >
                   <Input />
                 </Form.Item>
@@ -88,9 +92,9 @@ const InvestigationSection: React.FC<Props> = ({ interpretation, precision, summ
           <Row gutter={8}>
             <Col span={17}>
               <Form.Item
+                initialValue={summary}
                 label={intl.get('form.patientSubmission.clinicalInformation.investigationSummary')}
                 name="summaryNote"
-                initialValue={summary}
               >
                 <TextArea
                   placeholder={intl.get('form.patientSubmission.clinicalInformation.analysis.comments.placeholder')}

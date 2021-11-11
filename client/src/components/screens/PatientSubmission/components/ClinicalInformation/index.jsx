@@ -31,6 +31,7 @@ import {
   hpoInterpretationValues,
   hpoOnsetValues,
 } from 'helpers/fhir/fhir';
+import { getObservationValue } from 'helpers/fhir/fhir';
 import { AnalysisTestCodes, PrescriptionStatus } from 'helpers/fhir/types';
 import findIndex from 'lodash/findIndex';
 import get from 'lodash/get';
@@ -44,7 +45,6 @@ import FamilyStorySection from './components/FamilyStorySection';
 import InvestigationSection from './components/InvestigationSection';
 import MrnItem from './components/MrnItem';
 import OntologyTree from './components/OntologyTree';
-import { getObservationValue } from 'helpers/fhir/fhir';
 
 const interpretationIcon = {
   IND: ic_help,
@@ -395,26 +395,28 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      fmhResources, form, hpoResources, localStore, observations, onChange, submitFailed, validate,
+      fmhResources, form, hpoResources, observations, onChange, serviceRequest, submitFailed, validate,
     } = this.props;
 
     const { TextArea } = Input;
-
     let cghId = null;
     if (observations.cgh != null) {
-      cghId = observations.cgh.id;
+      cghId = observations.cgh?.id;
     }
 
     const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);  
 
     const AnalysisTestCodesValues = Object.values(AnalysisTestCodes)
-
-    const initialAnalysisValue = get(localStore, 'serviceRequest.code', undefined);
-    let initialAnalysisNote = get(localStore, 'serviceRequest.note', undefined);
-    const initialInterpretation = get(localStore, 'cgh.interpretation', undefined);
-    const initialPrecision = get(localStore, 'cgh.precision', undefined);
+    const initialAnalysisValue = serviceRequest.code;
+    let initialAnalysisNote = serviceRequest.note;
+    const initialInterpretation = observations?.cgh?.interpretation?.[0]?.coding?.[0]?.code ?? null;
+    const initialPrecision =  observations?.cgh?.note?.[0]?.text ?? null;
     const initialIndicNote = getObservationValue(observations.indic, null);
     const initialSummaryNote = getObservationValue(observations.summary, null);
+    const initialConsanguinityValue = {
+      id: observations.cons?.id,
+      value:  observations.cons?.valueBoolean
+    }
 
     const isEditMode = initialAnalysisValue != null;
 
@@ -543,6 +545,7 @@ class ClinicalInformation extends React.Component {
         >
           <InvestigationSection
             interpretation={initialInterpretation}
+            isEditMode={isEditMode}
             precision={initialPrecision}
             summary={initialSummaryNote}
           />
@@ -552,7 +555,7 @@ class ClinicalInformation extends React.Component {
           className="staticCard patientContent"
           title={intl.get('screen.patient.header.familyHistory')}
         >
-          <FamilyStorySection familyHistoryResources={fmhResources} />
+          <FamilyStorySection consanguinity={initialConsanguinityValue} familyHistoryResources={fmhResources} isEditMode={isEditMode}/>
         </Card>
         <Card bordered={false} className="staticCard patientContent" title="Signes cliniques">
           <div className="separator">

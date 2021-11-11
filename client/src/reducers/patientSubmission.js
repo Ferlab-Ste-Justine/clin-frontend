@@ -36,6 +36,7 @@ export const initialPatientSubmissionState = {
     summary: null,
     fmh: [{}],
     hpos: [],
+    cons:{},
   },
   local: {
     serviceRequest: {},
@@ -364,9 +365,9 @@ const patientSubmissionReducer = (
         draft.observations.hpos = hpos;
         draft.observations.fmh = fmhs;
         draft.observations.cgh = { ...clinicalCgh };
+        draft.observations.cons = {...clinicalCons};
         draft.observations.indic = { ...clinicalIndic };
         draft.observations.summary = { ...clinicalInves };
-
         draft.local = {
           serviceRequest: {
             ...draft.serviceRequest,
