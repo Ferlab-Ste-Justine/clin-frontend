@@ -374,7 +374,7 @@ const updateServiceRequestStatus = async (
     ];
   }
 
-  let editedServiceRequest = {
+  const editedServiceRequest = {
     ...serviceRequest,
     performer: [
       {
@@ -386,10 +386,7 @@ const updateServiceRequestStatus = async (
   };
 
   if (notes && notes.length > 0) {
-    editedServiceRequest = {
-      ...editedServiceRequest,
-      note: notes
-    }
+    editedServiceRequest['note'] = notes
   }
 
   const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;
