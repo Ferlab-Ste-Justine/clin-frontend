@@ -266,7 +266,7 @@ function PatientSubmissionScreen(props) {
       .withSubject(patientId)
       .withId(get(localStore, 'indic.id'));
     if (indication != null) {
-      builder.withNote(indication);
+      builder.withStringValue(indication)
     }
 
     return builder.build();
@@ -280,9 +280,9 @@ function PatientSubmissionScreen(props) {
       .withId(get(localStore, 'inves.id'));
 
     if (note == null && localStore.summary.note != null) {
-      builder.withNote(localStore.summary.note);
+      builder.withStringValue(localStore.summary.note)
     } else {
-      builder.withNote(note);
+      builder.withStringValue(note)
     }
     return builder.build();
   };
@@ -369,6 +369,8 @@ function PatientSubmissionScreen(props) {
         return;
       }
 
+      const analysisComments = content['analysis.comments']
+
       const { mrn, organization } = content;
       let fullMRN = [];
       if (!mrn && !organization) {
@@ -390,7 +392,7 @@ function PatientSubmissionScreen(props) {
           .withSubmitted(submitted, userPractitioner.id, status)
           .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
           .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
-          .withNote(content.indication)
+          .withNote(analysisComments)
           .build());
         batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
           .withId(get(localStore, 'clinicalImpression.id'))
@@ -573,7 +575,6 @@ function PatientSubmissionScreen(props) {
     && values.cghInterpretationValue === 'non-realized'
     && get(values, 'ethnicity.value') == null
     && get(values, 'consanguinity.value') == null
-    && values.indication == null
     && get(values, 'analysis.comments') == null
     && values['full-mrn'] == null
     && values.mrn == null

@@ -361,12 +361,12 @@ const updateServiceRequestStatus = async (
 
   let notes: any[] = get(serviceRequest, 'note', []).filter((n) => n.text != null);
 
-  if (note != null) {
+  if (note && note.length > 0) {
     notes = [
       ...notes,
       {
         authorReference: {
-          reference: `Practitioner/${user.practitionerId}`,
+          reference: `Practitioner/${user.practitionerData.practitioner.id}`,
         },
         text: note,
         time: new Date(),
@@ -382,9 +382,12 @@ const updateServiceRequestStatus = async (
       },
     ],
     extension,
-    note: notes,
     status,
   };
+
+  if (notes && notes.length > 0) {
+    editedServiceRequest['note'] = notes
+  }
 
   const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;
 

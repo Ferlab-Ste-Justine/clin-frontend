@@ -44,6 +44,7 @@ import FamilyStorySection from './components/FamilyStorySection';
 import InvestigationSection from './components/InvestigationSection';
 import MrnItem from './components/MrnItem';
 import OntologyTree from './components/OntologyTree';
+import { getObservationValue } from 'helpers/fhir/fhir';
 
 const interpretationIcon = {
   IND: ic_help,
@@ -412,8 +413,8 @@ class ClinicalInformation extends React.Component {
     let initialAnalysisNote = get(localStore, 'serviceRequest.note', undefined);
     const initialInterpretation = get(localStore, 'cgh.interpretation', undefined);
     const initialPrecision = get(localStore, 'cgh.precision', undefined);
-    const initialIndicNote = observations.indic ? get(observations, 'indic.note[0].text') : null;
-    const initialSummaryNote = get(localStore, 'summary.note', undefined);
+    const initialIndicNote = getObservationValue(observations.indic, null);
+    const initialSummaryNote = getObservationValue(observations.summary, null);
 
     const isEditMode = initialAnalysisValue != null;
 

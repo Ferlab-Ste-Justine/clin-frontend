@@ -86,6 +86,10 @@ export const isHPO = (o) => getResourceCode(o) === OBSERVATION_HPO_CODE;
 export const isFamilyHistoryResource = (resource) => resource.resourceType === RESOURCE_TYPE_FAMILY_HISTORY;
 export const isIndication = (o) => getResourceCode(o) === OBSERVATION_INDICATION_CODE;
 
+export const getObservationValue = (obs, defaultValue) => (
+  get(obs, 'valueString', get(obs, 'note[0].text', defaultValue))
+)
+
 export const cghInterpretation = (cgh) => {
   if (cgh.interpretation && cgh.interpretation.length) {
     const [interpretation] = cgh.interpretation;
