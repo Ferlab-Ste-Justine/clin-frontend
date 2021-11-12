@@ -1,4 +1,4 @@
-import { Routes } from 'helpers/route';
+import { Routes } from 'navigation/route';
 
 describe('Helpers', () => {
   describe('routes url', () => {

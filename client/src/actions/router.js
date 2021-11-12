@@ -1,43 +1,36 @@
 import * as actions from './type';
 
 export const navigate = (location) => ({
-  type: actions.ROUTER_NAVIGATION_REQUESTED,
   payload: {
     location,
   },
+  type: actions.ROUTER_NAVIGATION_REQUESTED,
 });
 
-export const navigateToPatientScreen = (uid, { tab, reload, openedPrescriptionId } = {}) => ({
-  type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
+export const navigateToPatientScreen = (uid, { openedPrescriptionId, reload, tab } = {}) => ({
   payload: {
-    uid,
-    tab,
-    reload,
     openedPrescriptionId,
+    reload,
+    tab,
+    uid,
   },
+  type: actions.NAVIGATION_PATIENT_SCREEN_REQUESTED,
 });
 
 export const navigateToPatientVariantScreen = (uid, tab = null) => ({
-  type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED,
   payload: {
-    uid,
     tab,
+    uid,
   },
+  type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED,
 });
 
 export const navigateToVariantDetailsScreen = (uid, tab = null) => ({
-  type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED,
   payload: {
-    uid,
     tab,
+    uid,
   },
-});
-
-export const navigateToPatientSearchScreen = (reload = true) => ({
-  type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED,
-  payload: {
-    reload,
-  },
+  type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED,
 });
 
 export const navigateToAccessDeniedScreen = () => ({

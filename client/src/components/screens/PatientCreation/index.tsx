@@ -1,31 +1,32 @@
 import React, { useState } from 'react';
 import intl from 'react-intl-universal';
-import { PlusOutlined } from '@ant-design/icons';
-import {
-  Button,
-} from 'antd';
-import './styles.scss';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { PlusOutlined } from '@ant-design/icons';
+import { closeCreatePatient } from 'actions/patientCreation';
+import { navigateToSubmissionFromPatientCreation } from 'actions/router';
+import { Button } from 'antd';
+import { Routes } from 'navigation/route';
+
+import ErrorModal from './components/ErrorModal';
+import ExistingModal from './components/ExistingModal';
 import FormModal from './components/FormModal';
 import SuccessModal from './components/SuccessModal';
-import ExistingModal from './components/ExistingModal';
-import {
-  navigateToPatientScreen,
-  navigateToPatientSearchScreen, navigateToSubmissionFromPatientCreation,
-} from '../../../actions/router';
-import { closeCreatePatient } from '../../../actions/patientCreation';
-import ErrorModal from './components/ErrorModal';
+
+import './styles.scss';
 
 const I18N_PREFIX = 'screen.patient.creation.';
 enum SCREENS {
-  FORM, SUCCESS, EXISTING, ERROR
+  FORM,
+  SUCCESS,
+  EXISTING,
+  ERROR,
 }
 
-const PatientCreation: React.FC = () => {
+const PatientCreation = (): React.ReactElement => {
   const [openModal, setOpenModal] = useState<SCREENS | null>(null);
   const dispatch = useDispatch();
-
-  const goToPatientSearch = () => dispatch(navigateToPatientSearchScreen());
+  const history = useHistory();
 
   const onClose = (goToScreen?: () => void) => {
     setOpenModal(null);
@@ -33,7 +34,7 @@ const PatientCreation: React.FC = () => {
     if (goToScreen != null) {
       goToScreen();
     } else {
-      goToPatientSearch();
+      history.push(Routes.PatientSearch);
     }
   };
 
@@ -45,49 +46,44 @@ const PatientCreation: React.FC = () => {
   return (
     <>
       <Button
-        type="primary"
         className="patient-creation__button"
         onClick={() => setOpenModal(SCREENS.FORM)}
+        type="primary"
       >
         <PlusOutlined />
-        { intl.get(`${I18N_PREFIX}createPrescription`) }
+        {intl.get(`${I18N_PREFIX}createPrescription`)}
       </Button>
       <FormModal
-        open={openModal === SCREENS.FORM}
         onClose={onClose}
         onCreated={() => setOpenModal(SCREENS.SUCCESS)}
         onError={() => setOpenModal(SCREENS.ERROR)}
         onExistingPatient={() => setOpenModal(SCREENS.EXISTING)}
+        open={openModal === SCREENS.FORM}
       />
 
       <SuccessModal
-        open={openModal === SCREENS.SUCCESS}
         onClose={onClose}
-        onNewPatient={onCreateNew}
-        onNavigateToPatient={(patientId) => {
-          onClose(() => dispatch(navigateToPatientScreen(patientId)));
-        }}
         onCompletePrescription={() => {
           setOpenModal(null);
           dispatch(navigateToSubmissionFromPatientCreation());
           dispatch(closeCreatePatient());
         }}
+        onNavigateToPatient={(patientId) => {
+          onClose(() => history.push(Routes.getPatientPath(patientId)));
+        }}
+        onNewPatient={onCreateNew}
+        open={openModal === SCREENS.SUCCESS}
       />
 
       <ExistingModal
-        open={openModal === SCREENS.EXISTING}
         onClose={onClose}
         onNavigateToPatientCard={(patientId) => {
-          onClose(() => dispatch(navigateToPatientScreen(patientId)));
+          onClose(() => history.push(Routes.getPatientPath(patientId)));
         }}
+        open={openModal === SCREENS.EXISTING}
       />
 
-      <ErrorModal
-        open={openModal === SCREENS.ERROR}
-        onClose={onClose}
-        onRetry={onCreateNew}
-      />
-
+      <ErrorModal onClose={onClose} onRetry={onCreateNew} open={openModal === SCREENS.ERROR} />
     </>
   );
 };

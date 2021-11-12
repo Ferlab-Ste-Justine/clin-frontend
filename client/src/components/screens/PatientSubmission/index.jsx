@@ -3,18 +3,17 @@
 import React from 'react';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
-import moment from 'moment'
-import { LeftOutlined,WarningOutlined } from '@ant-design/icons';
+import { WarningOutlined } from '@ant-design/icons';
 import { updatePatientPractitioners } from 'actions/patientCreation';
 import {
   assignServiceRequestPractitioner,
   assignServiceRequestResident,
   saveLocalCgh,
   saveLocalIndic,
-  saveLocalSupervisor,
   saveLocalPractitioner,
   saveLocalResident,
   saveLocalSummary,
+  saveLocalSupervisor,
   saveObservations,
   savePatientLocal,
   savePatientSubmission,
@@ -22,14 +21,13 @@ import {
   updateConsentments,
 } from 'actions/patientSubmission';
 import { createRequest } from 'actions/prescriptions';
-import { navigateToPatientScreen,navigateToPatientSearchScreen } from 'actions/router';
+import { navigateToPatientScreen } from 'actions/router';
 import {
   Alert,Button, Card, Col, Divider, Form, Row, Spin,Steps, Typography,  } from 'antd';
 import { ClinicalImpressionBuilder } from 'helpers/fhir/builder/ClinicalImpressionBuilder';
 import { FamilyMemberHistoryBuilder } from 'helpers/fhir/builder/FMHBuilder';
 import { ObservationBuilder } from 'helpers/fhir/builder/ObservationBuilder.ts';
 import { ServiceRequestBuilder } from 'helpers/fhir/builder/ServiceRequestBuilder';
-import { findPractitionerRoleByOrganizationRef } from '../../../helpers/fhir/PractitionerRoleHelper';
 import {
   cghDisplay,
   createPractitionerResource,
@@ -43,14 +41,17 @@ import debounce from 'lodash/debounce';
 import find from 'lodash/find';
 import get from 'lodash/get';
 import has from 'lodash/has';
+import moment from 'moment'
 import { bindActionCreators } from 'redux';
 
 import Layout from 'components/Layout';
 
+import { findPractitionerRoleByOrganizationRef } from '../../../helpers/fhir/PractitionerRoleHelper';
+
 import ClinicalInformation from './components/ClinicalInformation';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
-import SubmissionModal from './components/SubmissionModal';
 import SecondPage from './components/SecondPage';
+import SubmissionModal from './components/SubmissionModal';
 
 import './style.scss';
 
@@ -72,9 +73,9 @@ function PatientSubmissionScreen(props) {
     isSubmissionVisible: false,
     isSubmitting: false,
     practitionerOptions: [],
-    selectedSupervisor: get(props, 'localStore.supervisor', undefined),
     selectedPractitioner: get(props, 'localStore.requesterId', undefined),
     selectedResident: get(props, 'localStore.residentId', undefined),
+    selectedSupervisor: get(props, 'localStore.supervisor', undefined),
     submitFailed: false,
     valid: false,
   });
@@ -86,102 +87,102 @@ function PatientSubmissionScreen(props) {
     const values = form.getFieldsValue();
     let hasError = null;
     switch (currentPage) {
-      case 0: {
-        const checkCghInterpretationValue = () => {
-          if (values.cghInterpretationValue) {
-            if (values.cghInterpretationValue !== 'A') {
-              return true;
+    case 0: {
+      const checkCghInterpretationValue = () => {
+        if (values.cghInterpretationValue) {
+          if (values.cghInterpretationValue !== 'A') {
+            return true;
+          }
+          if (values.cghPrecision !== null) {
+            return true;
+          }
+          return false;
+        }
+        return false;
+      };
+
+      const checkFamilyHistory = () => {
+        const fmh = get(values, 'fmh', []);
+        if (fmh.length > 0) {
+          const checkValue = [];
+          fmh.forEach((element) => {
+            if (get(element, 'relation.length', '') === 0 || get(element, 'note.length', '') === 0) {
+              checkValue.push(false);
             }
-            if (values.cghPrecision !== null) {
-              return true;
-            }
+          });
+          if (checkValue.includes(false)) {
             return false;
           }
-          return false;
-        };
+          return true;
+        }
+        return true;
+      };
 
-        const checkFamilyHistory = () => {
-          const fmh = get(values, 'fmh', []);
-          if (fmh.length > 0) {
-            const checkValue = [];
-            fmh.forEach((element) => {
-              if (get(element, 'relation.length', '') === 0 || get(element, 'note.length', '') === 0) {
-                checkValue.push(false);
-              }
-            });
-            if (checkValue.includes(false)) {
-              return false;
-            }
-            return true;
+      const checkHpo = () => {
+        const hpos = getValidValues(get(values, 'hpos', []));
+        if (hpos.length > 0) {
+          const checkValue = hpos.map(
+            (element) => get(element, 'interpretation') == null,
+          );
+          if (checkValue.includes(true)) {
+            return false;
           }
           return true;
-        };
+        }
+        return false;
+      };
 
-        const checkHpo = () => {
-          const hpos = getValidValues(get(values, 'hpos', []));
-          if (hpos.length > 0) {
-            const checkValue = hpos.map(
-              (element) => get(element, 'interpretation') == null,
-            );
-            if (checkValue.includes(true)) {
-              return false;
-            }
-            return true;
+      hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+
+      const checkTest = () => {
+        if (values['analysis.tests']) {
+          const allAnalysis = values['analysis.tests'].filter((item) => item != null);
+          if (allAnalysis.length === 0) {
+            return false;
           }
-          return false;
-        };
+          return true;
+        }
+        return false;
+      };
 
-        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+      const checkMRN = () => {
+        if (values['full-mrn']) {
+          return true;
+        } if (values.mrn && values.organization) {
+          return true;
+        }
+        return false;
+      };
 
-        const checkTest = () => {
-          if (values['analysis.tests']) {
-            const allAnalysis = values['analysis.tests'].filter((item) => item != null);
-            if (allAnalysis.length === 0) {
-              return false;
-            }
-            return true;
-          }
-          return false;
-        };
-
-        const checkMRN = () => {
-          if (values['full-mrn']) {
-            return true;
-          } if (values.mrn && values.organization) {
-            return true;
-          }
-          return false;
-        };
-
-        if (checkTest()
+      if (checkTest()
           && checkHpo()
           && checkCghInterpretationValue()
           && checkFamilyHistory()
           && values.indication
           && checkMRN()
           && !hasError
-        ) {
-          return false;
-        }
+      ) {
+        return false;
+      }
+      return true;
+    }
+    case 1: {
+      hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+      if (hasError) {
         return true;
       }
-      case 1: {
-        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-        if (hasError) {
-          return true;
-        }
-        const isResidentValid = values.prescribingDoctorType === 'doctor'
+      const isResidentValid = values.prescribingDoctorType === 'doctor'
           || (
             values.prescribingDoctorType === 'resident' && localStore.resident != null && localStore.resident.length > 0
           );
 
-        if (localStore.practitioner != null && localStore.practitioner.length > 0 && isResidentValid) {
-          return false;
-        }
-        return true;
-      }
-      default:
+      if (localStore.practitioner != null && localStore.practitioner.length > 0 && isResidentValid) {
         return false;
+      }
+      return true;
+    }
+    default:
+      return false;
     }
   };
 
@@ -481,7 +482,7 @@ function PatientSubmissionScreen(props) {
     const { actions } = props;
 
     if (residentSelected != null) {
-      
+
       const practitionerText = genPractitionerKey(residentSelected);
       actions.saveLocalResident(practitionerText);
       const resource = createPractitionerResource(residentSelected);
@@ -713,7 +714,7 @@ function PatientSubmissionScreen(props) {
             {
               isSubmitting ? <Spin>{pageContent}</Spin> : pageContent
             }
-            <Card className="patientSubmission__form__footer">            
+            <Card className="patientSubmission__form__footer">
               <Row gutter={8}>
                 <Col>
                   <Button
@@ -741,14 +742,14 @@ function PatientSubmissionScreen(props) {
         </div>
       </>
       <SubmissionModal
-        onClose={() => setState((prevState) => ({ ...prevState, isSubmissionVisible: false }))}
-        role={userRole}
-        onSubmit={() => handleSubmission()}
-        open={state.isSubmissionVisible}
         doctorOptions={{
           initialValue: state.selectedSupervisor,
           optionSelected: handleSupervisorSelected,
         }}
+        onClose={() => setState((prevState) => ({ ...prevState, isSubmissionVisible: false }))}
+        onSubmit={() => handleSubmission()}
+        open={state.isSubmissionVisible}
+        role={userRole}
       />
       <ConfirmCancelModal
         onClose={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: false }))}
@@ -768,13 +769,12 @@ const mapDispatchToProps = (dispatch) => ({
     assignServiceRequestResident,
     createRequest,
     navigateToPatientScreen,
-    navigateToPatientSearchScreen,
     saveLocalCgh,
     saveLocalIndic,
-    saveLocalSupervisor,
     saveLocalPractitioner,
     saveLocalResident,
     saveLocalSummary,
+    saveLocalSupervisor,
     saveObservations,
     savePatientLocal,
     savePatientSubmission,

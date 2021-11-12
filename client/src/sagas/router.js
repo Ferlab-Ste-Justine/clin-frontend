@@ -1,24 +1,17 @@
-import { LOCATION_CHANGE,push } from 'connected-react-router';
+import { LOCATION_CHANGE, push } from 'connected-react-router';
 import get from 'lodash/get';
-import {
-  all,
-  delay,
-  put,
-  select,
-  takeEvery,
-  takeLatest,
-} from 'redux-saga/effects';
+import { Routes } from 'navigation/route';
+import { all, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import * as actions from '../actions/type';
-import {
-  Routes,
-} from '../helpers/route';
 
 function* navigateToVariantDetailsScreen(action) {
   try {
     const { tab, uid } = action.payload;
     let url = Routes.getVariantPath(uid);
-    if (tab) { url += `/#${tab}`; }
+    if (tab) {
+      url += `/#${tab}`;
+    }
 
     yield put(push(url));
   } catch (e) {
@@ -107,7 +100,7 @@ function* navigateToAccessDeniedScreen() {
   }
 }
 
-function* processPatientPage(currentRoute, tab, forceReload) {
+function* processPatientPage(currentRoute, forceReload) {
   try {
     const uid = Routes.getPatientIdFromPatientPageRoute(currentRoute);
     const currentPatientId = yield select((state) => state.patient.patient.parsed.id);
@@ -118,10 +111,7 @@ function* processPatientPage(currentRoute, tab, forceReload) {
       });
       yield delay(250);
     }
-    if (tab === 'variant') {
-      yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
-    }
-    yield put({ payload: { activeKey: tab }, type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY });
+
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
   } catch (e) {
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_FAILED });
@@ -129,45 +119,27 @@ function* processPatientPage(currentRoute, tab, forceReload) {
 }
 
 function* processPatientSearchPage() {
-  try {
-    yield put({ type: actions.CLEAR_PATIENT_DATA_REQUESTED });
-    yield put({ payload: { query: null }, type: actions.PATIENT_SEARCH_REQUESTED });
-    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED });
-  } catch (e) {
-    yield put({ type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_FAILED });
-  }
+  yield put({ type: actions.CLEAR_PATIENT_DATA_REQUESTED });
+  yield put({ payload: { query: null }, type: actions.PATIENT_SEARCH_REQUESTED });
 }
 
 function* manualUserNavigation(action) {
   // this is a catch all function
   // As soon as the react-router gets and event, it will be triggered
-
   const { isFirstRendering } = action.payload;
   window.scrollTo(0, 0);
   const { referrer } = yield select((state) => state.app);
 
-  const location = !referrer.location || !isFirstRendering ? action.payload.location : referrer.location;
+  const location =
+    !referrer.location || !isFirstRendering ? action.payload.location : referrer.location;
   const { hash, pathname, search } = location;
-  const urlIsRewrite = (pathname === '/' && search.indexOf('?redirect=') !== -1);
-  const route = urlIsRewrite ? search.split('?redirect=')[1] + hash : `${pathname || ''}${hash || ''}`;
+  const urlIsRewrite = pathname === '/' && search.indexOf('?redirect=') !== -1;
+  const route = urlIsRewrite
+    ? search.split('?redirect=')[1] + hash
+    : `${pathname || ''}${hash || ''}`;
   if (urlIsRewrite) {
     yield put(push(route));
     return;
-  }
-  const forceReload = (location.search || '').includes('reload') || get(location, 'query.reload') != null;
-  let tab = '';
-  if (hash) {
-    tab = hash.replace('#', '');
-    if (tab && tab.indexOf('?') > -1) {
-      tab = tab.substring(0, tab.indexOf('?'));
-    }
-    if (tab && tab.indexOf('&') > -1) {
-      tab = tab.substring(0, tab.indexOf('&'));
-    }
-    if (tab && tab.indexOf('=') > -1) {
-      // Tab should not be formatted as a 'key=value'; it is not a param.
-      tab = '';
-    }
   }
 
   const currentRoute = (route || location.pathname).split('#')[0];
@@ -175,12 +147,16 @@ function* manualUserNavigation(action) {
 
   if (isCurrentRoute(Routes.PatientSearchArranger)) {
     // do nothing
+    return;
   } else if (isCurrentRoute(Routes.PatientSearch)) {
     yield processPatientSearchPage();
   } else if (isCurrentRoute(Routes.Variant)) {
     yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
   } else if (isCurrentRoute(`${Routes.Patient}\/([\\w,\\-]+)\/?`)) {
-    yield processPatientPage(currentRoute, tab, forceReload);
+    const forceReload =
+      (location.search || '').includes('reload') || get(location, 'query.reload') != null;
+
+    yield processPatientPage(currentRoute, forceReload);
   } else if (isCurrentRoute(Routes.AccessDenied)) {
     // Access denied
   } else if (isCurrentRoute(Routes.Submission) && !isFirstRendering) {
@@ -191,9 +167,7 @@ function* manualUserNavigation(action) {
 }
 
 function* watchManualUserNavigation() {
-  yield takeEvery([
-    LOCATION_CHANGE,
-  ], manualUserNavigation);
+  yield takeEvery([LOCATION_CHANGE], manualUserNavigation);
 }
 
 function* watchNavigateToPatientScreen() {
@@ -201,15 +175,24 @@ function* watchNavigateToPatientScreen() {
 }
 
 function* watchNavigateToPatientSearchScreen() {
-  yield takeLatest(actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED, navigateToPatientSearchScreen);
+  yield takeLatest(
+    actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED,
+    navigateToPatientSearchScreen,
+  );
 }
 
 function* watchNavigateToPatientVariantScreen() {
-  yield takeLatest(actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED, navigateToPatientVariantScreen);
+  yield takeLatest(
+    actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED,
+    navigateToPatientVariantScreen,
+  );
 }
 
 function* watchNavigateToVariantDetailsScreen() {
-  yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToVariantDetailsScreen);
+  yield takeLatest(
+    actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED,
+    navigateToVariantDetailsScreen,
+  );
 }
 
 function* watchNavigateToSubmissionScreen() {
@@ -217,12 +200,16 @@ function* watchNavigateToSubmissionScreen() {
 }
 
 function* watchNavigateToPatientScreenWithPatient() {
-  yield takeLatest(actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_REQUESTED, navigateToSubmissionScreenWithPatient);
+  yield takeLatest(
+    actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_REQUESTED,
+    navigateToSubmissionScreenWithPatient,
+  );
 }
 
 function* watchNavigateToPatientScreenFromPatientCreationt() {
   yield takeLatest(
-    actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_CREATION, navigateToSubmissionScreenFromPatientCreation,
+    actions.NAVIGATION_SUBMISSION_SCREEN_FROM_PATIENT_CREATION,
+    navigateToSubmissionScreenFromPatientCreation,
   );
 }
 

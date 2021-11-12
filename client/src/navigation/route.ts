@@ -14,13 +14,27 @@ export class Routes {
   static Variant = `${ROOT}variantDetails`;
 
   public static getPatientPath(uid?: string, tab?: string): string {
-    return uid && tab ?
-    `${Routes.Patient}/${uid}/#${tab}` :
-    uid ? `${Routes.Patient}/${uid}` : `${Routes.Patient}/:uid`
+    return uid && tab
+      ? `${Routes.Patient}/${uid}/#${tab}`
+      : uid
+        ? `${Routes.Patient}/${uid}`
+        : `${Routes.Patient}/:uid`;
   }
 
-  public static getVariantPath = (uid?: string): string =>  uid ? `${Routes.Variant}/${uid}` : `${Routes.Variant}/:uid`
+  public static getVariantPath = (uid?: string): string =>
+    uid ? `${Routes.Variant}/${uid}` : `${Routes.Variant}/:uid`;
 
   public static getPatientIdFromPatientPageRoute = (location: string): string =>
     location?.split('/')[2].split('#')[0];
+
+  public static current = (route: string, { is }: { is: string }): boolean => {
+    const currentRoute = (route || location.pathname).split('#')[0];
+
+    switch (is) {
+    case Routes.Patient:
+      return !currentRoute.match(new RegExp(`${is}\/([\\w,\\-]+)\/?`, 'gi'));
+    default:
+      return !currentRoute.match(new RegExp(`${is}`, 'gi'));
+    }
+  };
 }
