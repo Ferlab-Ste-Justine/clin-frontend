@@ -146,7 +146,6 @@ export const CGH_VALUES = () => (
 );
 
 export const cghDisplay = (code) => {
-  console.log("foo-cgh", CGH_VALUES(), code)
   const item = CGH_VALUES().find((cgh) => cgh.value === code);
   if (item) {
     return item.display;
