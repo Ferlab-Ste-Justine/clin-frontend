@@ -104,7 +104,6 @@ export class ServiceRequestBuilder {
       }
 
       if (isSubmitted) {
-        this.serviceRequest.note = this.serviceRequest.note || [];
         this.serviceRequest.status = 'on-hold';
       } else {
         this.serviceRequest.status = status || 'draft';
@@ -145,7 +144,7 @@ export class ServiceRequestBuilder {
     }
 
     public withNote(note?: string) {
-      if (note != null && note.length > 0) {
+      if (note && note.length > 0) {
         this.serviceRequest.note = this.serviceRequest.note || [];
         this.serviceRequest.note?.push({
           text: note,

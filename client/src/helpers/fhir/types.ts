@@ -188,6 +188,7 @@ export interface Observation {
   extension?: Extension[];
   valueCodeableConcept?: CodeableConcept;
   valueBoolean?: boolean;
+  valueString?: string;
 }
 
 export type FamilyGroupType =
