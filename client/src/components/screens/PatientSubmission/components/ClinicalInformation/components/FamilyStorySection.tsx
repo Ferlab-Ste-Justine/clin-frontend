@@ -3,23 +3,29 @@ import IconKit from 'react-icons-kit';
 import {
   ic_person,
 } from 'react-icons-kit/md';
+import intl from 'react-intl-universal';
+import { useSelector } from 'react-redux';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import {
-  Select, Form, Input, Radio, Col, Row, Typography, Button,
+  Button, Col, Form, Input, Radio, Row,   Select, Typography, 
 } from 'antd';
-
-import intl from 'react-intl-universal';
-import isEmpty from 'lodash/isEmpty';
+import { getFamilyRelationshipValues } from 'helpers/fhir/fhir';
+import { FamilyObservation } from 'helpers/providers/types';
 import get from 'lodash/get';
-import { useSelector } from 'react-redux';
-import { getFamilyRelationshipValues } from '../../../../../../helpers/fhir/fhir';
-import { FamilyObservation } from '../../../../../../helpers/providers/types';
-import { State } from '../../../../../../reducers';
-import { HiddenFormInput } from '../../../../../Utils/HiddenFormInput';
+import isEmpty from 'lodash/isEmpty';
+import { State } from 'reducers';
+
+import { HiddenFormInput } from 'components/Utils/HiddenFormInput';
+
 import ErrorText from './ErrorText';
 
 interface Props {
+  consanguinity: {
+    id: string | undefined,
+    value: boolean | undefined
+  },
   familyHistoryResources: Partial<FamilyObservation>[]
+  isEditMode: boolean,
 }
 
 type Ethnicity = {
@@ -29,8 +35,8 @@ type Ethnicity = {
 }
 
 type Consanguinity = {
-  id: string;
-  value: boolean;
+  id: string | undefined,
+  value: boolean | undefined
 }
 
 type FamilyStoryState = {
@@ -38,23 +44,37 @@ type FamilyStoryState = {
   consanguinity: Partial<Consanguinity>
 }
 
+enum RadioValue {
+  YES = 'yes',
+  NO = 'no'
+}
+
 const intlKeyPrefix = 'form.patientSubmission.clinicalInformation';
 
-const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
+const getInitialValueFmh = (familyHistoryResources: Partial<FamilyObservation>[]) => familyHistoryResources.length === 0 ? RadioValue.NO : RadioValue.YES
+
+const getInitialValueForConsanguinity = (consanguinity: Consanguinity) => {
+  if (!consanguinity.id) {
+    return null;
+  }
+  return consanguinity.value ?  RadioValue.YES : RadioValue.NO
+}
+
+
+const FamilyStorySection = ({ consanguinity, familyHistoryResources, isEditMode }: Props): React.ReactElement => {
   const { local } = useSelector((state: State) => state.patientSubmission);
 
   const [defaultValuesState] = useState<FamilyStoryState>({
-    ethnicity: {
-      id: get(local, 'eth.id'),
-      code: get(local, 'eth.code'),
-      note: get(local, 'eth.note'),
-    },
     consanguinity: {
-      id: get(local, 'cons.id'),
-      value: get(local, 'cons.value'),
+      id:local.cons?.id,
+      value:local.cons?.value,
+    },
+    ethnicity: {
+      code: local.eth?.code,
+      id:local.eth?.id,
+      note:local.eth?.note,
     },
   });
-
   const [isEthnicitySelected, setIsEthnicitySelected] = useState(
     defaultValuesState.ethnicity.id != null && defaultValuesState.ethnicity.code != null,
   );
@@ -65,21 +85,21 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
   return (
     <>
       <HiddenFormInput name={['ethnicity', 'id']} value={defaultValuesState.ethnicity.id} />
-      <HiddenFormInput name={['consanguinity', 'id']} value={defaultValuesState.consanguinity.id} />
+      <HiddenFormInput name={['consanguinity', 'id']} value={consanguinity.id} />
       <Row align="middle" className="clinical-information__row">
         <Col span={8}>
           <Form.Item
+            initialValue={defaultValuesState.ethnicity.code}
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity')}
             name={['ethnicity', 'value']}
-            initialValue={defaultValuesState.ethnicity.code}
           >
             <Select
-              placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity.placeholder')}
+              className="clinical-information__family-story__ethnicity"
+              defaultValue={defaultValuesState.ethnicity.code}
               onChange={(value) => {
                 setIsEthnicitySelected(!!value);
               }}
-              className="clinical-information__family-story__ethnicity"
-              defaultValue={defaultValuesState.ethnicity.code}
+              placeholder={intl.get('form.patientSubmission.clinicalInformation.familyHistory.ethnicity.placeholder')}
             >
               { ['CA-FR', 'EU', 'AFR', 'LAT-AM', 'ES-AS', 'SO-AS', 'ABOR', 'MIX', 'OTH'].map((eth) => (
                 <Select.Option key={eth} value={eth}>
@@ -100,9 +120,9 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
           <Row className="clinical-information__row">
             <Col span={12}>
               <Form.Item
+                initialValue={defaultValuesState.ethnicity.note}
                 label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.note')}
                 name={['ethnicity', 'note']}
-                initialValue={defaultValuesState.ethnicity.note}
               >
                 <Input />
               </Form.Item>
@@ -116,9 +136,10 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
         )
       }
 
-      <Row gutter={8} className="clinical-information__row">
+      <Row className="clinical-information__row" gutter={8}>
         <Col span={8}>
           <Form.Item
+            initialValue={getInitialValueForConsanguinity(consanguinity)}
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.consanguinity')}
             name={['consanguinity', 'value']}
           >
@@ -142,12 +163,13 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
       <Row>
         <Col>
           <Form.Item
+            initialValue={isEditMode ? getInitialValueFmh(familyHistoryResources) : null}
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth')}
-            rules={[{
-              required: true,
-              message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
-            }]}
             name="familyHealth"
+            rules={[{
+              message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
+              required: true,
+            }]}
           >
             <Radio.Group
               onChange={(event) => {
@@ -177,8 +199,8 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
           <Row>
             <Col span={20}>
               <Form.List
-                name="fmh"
                 initialValue={familyHistoryResources}
+                name="fmh"
               >
                 {
                   (fields, { add, remove }) => (
@@ -187,44 +209,44 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                         fields.map((field, index) => (
                           <li key={field.name}>
                             <Form.Item
-                              name={[index, 'id']}
                               className="hidden-form"
                               initialValue={get(familyHistoryResources, `[${index}].id`, '')}
+                              name={[index, 'id']}
                             >
                               <Input size="small" type="hidden" />
                             </Form.Item>
                             <Row gutter={8}>
                               <Col span={14}>
                                 <Form.Item
-                                  name={[index, 'note']}
                                   initialValue={get(familyHistoryResources, `[${index}].note`, '')}
-                                  rules={[{
-                                    required: true,
-                                    message: <ErrorText text={intl.get(`${intlKeyPrefix}.validation.requiredField`)} />,
-                                  }]}
+                                  name={[index, 'note']}
                                   noStyle
+                                  rules={[{
+                                    message: <ErrorText text={intl.get(`${intlKeyPrefix}.validation.requiredField`)} />,
+                                    required: true,
+                                  }]}
                                 >
                                   <Input
-                                    placeholder={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.healthCondition`)}
                                     aria-label={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.healthCondition`)}
+                                    placeholder={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.healthCondition`)}
                                   />
                                 </Form.Item>
                               </Col>
                               <Col span={6}>
                                 <Form.Item
-                                  name={[index, 'relation']}
                                   initialValue={get(familyHistoryResources, `[${index}].code`, null)}
+                                  name={[index, 'relation']}
                                   noStyle
                                 >
                                   <Select
-                                    suffixIcon={<IconKit className="selectIcon" size={12} icon={ic_person} />}
-                                    className="clinical-information__family-story__conditions__relation-select"
-                                    placeholder={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.familyRelation`)}
                                     aria-label={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.familyRelation`)}
+                                    className="clinical-information__family-story__conditions__relation-select"
                                     dropdownClassName="selectDropdown"
+                                    placeholder={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.familyRelation`)}
+                                    suffixIcon={<IconKit className="selectIcon" icon={ic_person} size={12} />}
                                   >
                                     { Object.values(getFamilyRelationshipValues()).map((rv) => (
-                                      <Select.Option value={rv.value} key={`relationship_${rv.value}`}>
+                                      <Select.Option key={`relationship_${rv.value}`} value={rv.value}>
                                         { rv.label }
                                       </Select.Option>
                                     )) }
@@ -246,8 +268,8 @@ const FamilyStorySection: React.FC<Props> = ({ familyHistoryResources }) => {
                       <li>
                         <Button
                           icon={<PlusOutlined />}
-                          size="small"
                           onClick={() => add()}
+                          size="small"
                         >
                           { intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth.add') }
                         </Button>
