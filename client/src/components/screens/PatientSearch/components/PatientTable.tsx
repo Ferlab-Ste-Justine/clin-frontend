@@ -75,7 +75,6 @@ const PatientTable: React.FC<Props> = ({
         birthDate: result.birthDate,
         familyId: result.familyId,
         familyComposition: '',
-        familyType: result.familyType,
         ethnicity: result.ethnicity,
         bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? 'Yes' : 'No',
         position: result.position,
@@ -156,9 +155,9 @@ const PatientTable: React.FC<Props> = ({
       renderer: createCellRenderer('text', (() => output), { key: 'birthDate' }),
     },
     {
-      key: 'familyType',
-      label: 'screen.patientsearch.table.familyType',
-      renderer: createCellRenderer('text', (() => output), { key: 'familyType' }),
+      key: 'familyId',
+      label: 'screen.patientsearch.table.familyId',
+      renderer: createCellRenderer('text', (() => output), { key: 'familyId' }),
     },
     {
       key: 'nbPrescription',
