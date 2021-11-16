@@ -6,7 +6,7 @@ import Api, { ApiError } from '../helpers/api';
 import { createPatient, createPatientFetus } from '../helpers/fhir/api/CreatePatient';
 import { isValidRamq } from '../helpers/fhir/api/PatientChecker';
 import { addPatientMrn, updatePatientPractitioners } from '../helpers/fhir/api/UpdatePatient';
-import { hasAtLeastOneFetusChild } from '../helpers/fhir/patientHelper';
+import { hasAtLeastOneOtherMember } from '../helpers/fhir/familyMemberHelper';
 
 function* handleCreatePatient(action: any) {
   try {
@@ -20,7 +20,9 @@ function* handleCreatePatient(action: any) {
 
 function* handleCreatePatientFetus(action: any) {
   const { fetusGender, patient } = action.payload;
-  if (hasAtLeastOneFetusChild(patient)) {
+
+  const patientFamily = yield select((state) => state.patient.family);
+  if (hasAtLeastOneOtherMember(patient.id, patientFamily)) {
     yield put({ type: actions.CREATE_PATIENT_FETUS_FAILED });
     return;
   }
