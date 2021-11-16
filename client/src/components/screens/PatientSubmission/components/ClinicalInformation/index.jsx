@@ -6,15 +6,6 @@ import { ic_help, ic_visibility, ic_visibility_off } from 'react-icons-kit/md';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import {
-  addEmptyFamilyHistory,
-  addFamilyHistoryResource,
-  addHpoResource,
-  setFamilyRelationshipResourceDeletionFlag,
-  setHpoResourceDeletionFlag,
-  updateFMHNote,
-  updateHpoAgeOnSet,
-  updateHpoNote,
-  updateHpoObservation,
 } from 'actions/patientSubmission';
 import {
   AutoComplete, Button, Card, Checkbox, Col, Form, Input, Popconfirm, Row, Select, Typography,
@@ -84,7 +75,6 @@ class ClinicalInformation extends React.Component {
       treeData: [],
     };
 
-    this.deleteFamilyHistory = this.deleteFamilyHistory.bind(this);
     this.handleHpoSearchTermChanged = this.handleHpoSearchTermChanged.bind(this);
     this.handleHpoOptionSelected = this.handleHpoOptionSelected.bind(this);
     this.handleHpoDeleted = this.handleHpoDeleted.bind(this);
@@ -255,51 +245,6 @@ class ClinicalInformation extends React.Component {
     return frc[index] == null || frc[index].length === 0;
   }
 
-  deleteFamilyHistory({ code }) {
-    const { actions, form } = this.props;
-    const values = form.getFieldsValue();
-    const {
-      familyRelationshipCodes,
-      familyRelationshipIds,
-      familyRelationshipNotes,
-    } = values;
-
-    const codes = [];
-    const ids = [];
-    const notes = [];
-
-    toArray(familyRelationshipCodes).forEach((c, i) => {
-      if (c !== code) {
-        codes.push(c);
-        ids.push(familyRelationshipIds[i]);
-        notes.push(familyRelationshipNotes[i]);
-      }
-    });
-
-    values.familyRelationshipCodes = codes;
-    values.familyRelationshipIds = ids;
-    values.familyRelationshipNotes = notes;
-    form.setFieldsValue(values);
-
-    const fmh = [];
-    const deleted = [];
-    const { observations } = this.props;
-
-    observations.fmh.forEach((familyHistory) => {
-      if (isEmpty(familyHistory) || familyHistory.relationship.coding[0].code !== code) {
-        fmh.push(familyHistory);
-      } else if (familyHistory.id != null) {
-        deleted.push(familyHistory);
-      }
-    });
-
-    actions.addFamilyHistoryResource(fmh);
-    actions.setFamilyRelationshipResourceDeletionFlag(deleted);
-    if (fmh.length === 0) {
-      actions.addEmptyFamilyHistory();
-    }
-  }
-
   handleHpoSearchTermChanged(term) {
     Api.searchHpos(term.toLowerCase().trim()).then((response) => {
       if (response.payload) {
@@ -377,8 +322,8 @@ class ClinicalInformation extends React.Component {
   }
 
   isStatusIncomplete() {
-    const { localStore } = this.props
-    return get(localStore, 'serviceRequest.status') === PrescriptionStatus.incomplete
+    const { serviceRequest } = this.props
+    return serviceRequest.status === PrescriptionStatus.incomplete
   }
   givenCodeIsTheOnlyOneSelected(code) {
     const { form } = this.props
@@ -638,21 +583,11 @@ class ClinicalInformation extends React.Component {
 
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
-    addEmptyFamilyHistory,
-    addFamilyHistoryResource,
-    addHpoResource,
-    setFamilyRelationshipResourceDeletionFlag,
-    setHpoResourceDeletionFlag,
-    updateFMHNote,
-    updateHpoAgeOnSet,
-    updateHpoNote,
-    updateHpoObservation,
   }, dispatch),
 });
 
 const mapStateToProps = (state) => ({
   clinicalImpression: state.patientSubmission.clinicalImpression,
-  localStore: state.patientSubmission.local,
   observations: state.patientSubmission.observations,
   serviceRequest: state.patientSubmission.serviceRequest,
 });
