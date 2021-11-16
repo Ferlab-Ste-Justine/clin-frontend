@@ -108,17 +108,3 @@ export const replaceExtensionFamilyId = (
       ? { ...ext, valueReference: { reference: `Group/${newId}` } }
       : { ...ext },
   );
-
-export const hasAtLeastOneFetusChild = (patient: Patient): boolean => {
-  if (patient.gender !== 'female') {
-    return false;
-  }
-  const codings = (patient?.extension || [])
-    .filter((ext) => ext.url === ExtensionUrls.FamilyRelation)
-    .map((ext) => ext?.extension || [])
-    .flat()
-    .filter((o) => Array.isArray(o?.valueCodeableConcept?.coding))
-    .map((o) => o.valueCodeableConcept?.coding)
-    .flat();
-  return codings.some((coding) => coding?.code === 'CHILD');
-};
