@@ -1,202 +1,196 @@
-import {
-  Button, Tooltip,
-} from 'antd';
 import React from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch } from 'react-redux';
-import { get } from 'lodash';
-import { createCellRenderer } from '../../../Table/index';
-import { navigateToPatientScreen } from '../../../../actions/router';
+import { Cell } from '@blueprintjs/table';
+import { navigateToPatientScreen } from 'actions/router';
+import { Button, Tooltip } from 'antd';
+import { Typography } from 'antd';
+import { PatientData } from 'helpers/search/types';
 
-import InteractiveTable from '../../../Table/InteractiveTable';
-import { PatientData } from '../../../../helpers/search/types';
+import InteractiveTable from 'components/Table/InteractiveTable';
+
 import { PatientsTableHeader } from './PatientTableHeader';
+
 import './style.scss';
 
 interface Props {
-  searchProps: any
-  defaultVisibleColumns: string[]
-  defaultColumnsOrder: { columnWidth: number, key: string, label: string }[]
-  pageChangeCallback: (page: number, size: number) => void
-  pageSizeChangeCallback: (size: number) => void
-  exportCallback: () => void
-  isLoading: boolean
-  columnsUpdated: (columns: string[]) => void
-  columnsOrderUpdated: (columns: any[]) => void
-  columnsReset: () => void
-  size: number
-  page: number
+  searchProps: any;
+  defaultVisibleColumns: string[];
+  defaultColumnsOrder: { columnWidth: number; key: string; label: string }[];
+  pageChangeCallback: (page: number, size: number) => void;
+  pageSizeChangeCallback: (size: number) => void;
+  exportCallback: () => void;
+  isLoading: boolean;
+  columnsUpdated: (columns: string[]) => void;
+  columnsOrderUpdated: (columns: any[]) => void;
+  columnsReset: () => void;
+  size: number;
+  page: number;
 }
 
-const PatientTable: React.FC<Props> = ({
-  searchProps,
-  defaultVisibleColumns,
-  defaultColumnsOrder,
-  pageChangeCallback,
-  pageSizeChangeCallback,
-  exportCallback,
-  isLoading,
-  columnsUpdated,
+type Row = {
+  birthDate: string;
+  familyId: string;
+  fetus: boolean;
+  firstName: string;
+  id: string;
+  lastName: string;
+  organization: string;
+  ramq: string;
+  request: string;
+  gender: string;
+};
+
+const TextCell = (value: string) => (
+  <Cell className="cellValue">
+    <Typography.Text ellipsis>{value}</Typography.Text>
+  </Cell>
+);
+
+const extractOrganization = (patient: PatientData) =>
+  patient?.organization.name || patient?.organization.id.split('/')[1];
+
+const makeRows = (rawResult: PatientData[]) =>
+  (rawResult || [])
+    .filter((currentPatientData: PatientData) => currentPatientData?.organization)
+    .map((currentPatientData: PatientData) => ({
+      birthDate: currentPatientData.birthDate ?? '--',
+      familyId: currentPatientData.familyId ?? '--',
+      fetus: currentPatientData.fetus ?? '--',
+      firstName: currentPatientData.firstName ?? '--',
+      gender: intl
+        .get(`screen.patientsearch.${currentPatientData.gender.toLowerCase()}`)
+        .defaultMessage('--'),
+      id: currentPatientData.id ?? '--',
+      lastName: currentPatientData.lastName.toUpperCase() ?? '--',
+      organization: extractOrganization(currentPatientData) ?? '--',
+      ramq: currentPatientData.ramq ?? '--',
+      request: currentPatientData?.requests?.length ? `${currentPatientData.requests.length}` : '0',
+    }));
+
+const makeColumns = (rawData: Row[], goToPatientPage: (patientId: string) => void) => [
+  {
+    key: 'patientId',
+    label: 'screen.patientsearch.table.id',
+    renderer: (rowIndex: number) => (
+      <Cell className="cellValue">
+        <Button
+          className="button link--underline"
+          onClick={() => goToPatientPage(rawData[rowIndex]?.id)}
+        >
+          {rawData[rowIndex].id}
+        </Button>
+      </Cell>
+    ),
+  },
+  {
+    key: 'ramq',
+    label: 'screen.patientsearch.table.ramq',
+    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.ramq),
+  },
+  {
+    key: 'lastName',
+    label: 'screen.patientsearch.table.lastName',
+    renderer: (rowIndex: number) => (
+      <Cell className="cellValue">
+        <div className="patients-table__cell-container">
+          <p>{rawData[rowIndex]?.lastName?.toUpperCase()}</p>
+          {rawData[rowIndex]?.fetus && (
+            <Tooltip title={intl.get('screen.patient.table.fetus')}>
+              <img
+                alt={intl.get('screen.patient.table.fetus')}
+                className="patients-table__fetus-icon"
+                src="/assets/icons/patient-fetus.svg"
+              />
+            </Tooltip>
+          )}
+        </div>
+      </Cell>
+    ),
+  },
+  {
+    key: 'firstName',
+    label: 'screen.patientsearch.table.firstName',
+    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.firstName),
+  },
+  {
+    key: 'gender',
+    label: 'screen.patientsearch.table.gender',
+    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.gender),
+  },
+  {
+    key: 'dob',
+    label: 'screen.patientsearch.table.dob',
+    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.birthDate),
+  },
+  {
+    key: 'familyId',
+    label: 'screen.patientsearch.table.familyId',
+    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.familyId),
+  },
+  {
+    key: 'nbPrescription',
+    label: 'screen.patientsearch.table.nbPrescription',
+    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.request),
+  },
+];
+
+const PatientTable = ({
   columnsOrderUpdated,
   columnsReset,
+  columnsUpdated,
+  defaultColumnsOrder,
+  defaultVisibleColumns,
+  exportCallback,
+  isLoading,
   page,
+  pageChangeCallback,
+  pageSizeChangeCallback,
+  searchProps,
   size,
-}) => {
+}: Props): React.ReactElement => {
   const dispatch = useDispatch();
+
   const { patient } = searchProps;
-  const handleGoToPatientScreen: any = (patientId: string) => {
-    dispatch(navigateToPatientScreen(patientId, {
-      tab: 'prescriptions',
-      reload: null,
-      openedPrescriptionId: null,
-    }));
+
+  const handleGoToPatientScreen = (patientId: string) => {
+    dispatch(
+      navigateToPatientScreen(patientId, {
+        openedPrescriptionId: null,
+        reload: null,
+        tab: 'prescriptions',
+      }),
+    );
   };
 
-  const results = patient.results.filter((result: any) => result != null && result.organization != null);
-  const output: any[] = [];
+  const rows = makeRows(patient.results);
 
-  if (results) {
-    results.forEach((result: PatientData) => {
-      const organizationValue = () => {
-        if (result.organization.name === '') {
-          return result.organization.id.split('/')[1];
-        }
-        return result.organization.name;
-      };
-      const value: any = {
-        status: '--',
-        id: result.id,
-        mrn: result.mrn.join(', '),
-        ramq: result.ramq,
-        organization: organizationValue(),
-        firstName: result.firstName,
-        lastName: result.lastName.toUpperCase(),
-        gender: intl.get(`screen.patientsearch.${result.gender.toLowerCase()}`),
-        birthDate: result.birthDate,
-        familyId: result.familyId,
-        familyComposition: '',
-        ethnicity: result.ethnicity,
-        bloodRelationship: (result.bloodRelationship == null) ? '--' : result.bloodRelationship ? 'Yes' : 'No',
-        position: result.position,
-        practitioner: result.id.startsWith('PA')
-          ? `${result.practitioner.lastName.toUpperCase()}, ${result.practitioner.firstName}`
-          : 'FERRETTI, Vincent',
-        request: get(result, 'requests.length', 0) === 0 ? '--' : get(result, 'requests.length', 0).toString(),
-        fetus: result.fetus,
-      };
-      Object.keys(value).forEach((key) => {
-        if (value[key] == null || value[key].length === 0) {
-          value[key] = '--';
-        }
-      });
-      output.push(value);
-    });
-  }
-  const columnPreset = [
-    {
-      key: 'patientId',
-      label: 'screen.patientsearch.table.id',
-      renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data: any) => (
-          <Button
-            onClick={() => handleGoToPatientScreen(data.id)}
-            data-id={data.request}
-            className="button link--underline"
-          >
-            { data.id }
-          </Button>
-        ),
-      }),
-    },
-    {
-      key: 'ramq',
-      label: 'screen.patientsearch.table.ramq',
-      renderer: createCellRenderer('text', (() => output), { key: 'ramq' }),
-    },
-    {
-      key: 'lastName',
-      label: 'screen.patientsearch.table.lastName',
-      renderer: createCellRenderer('custom', (() => output), {
-        renderer: (data: any) => {
-          try {
-            return (
-              <div
-                className="patients-table__cell-container"
-              >
-                <p>{ data.lastName.toUpperCase() }</p>
-                { data.fetus && (
-                  <Tooltip title={intl.get('screen.patient.table.fetus')}>
-                    <img
-                      src="/assets/icons/patient-fetus.svg"
-                      alt={intl.get('screen.patient.table.fetus')}
-                      className="patients-table__fetus-icon"
-                    />
-                  </Tooltip>
-                ) }
-              </div>
-            );
-          } catch (e) { return ''; }
-        },
-      }),
-    },
-    {
-      key: 'firstName',
-      label: 'screen.patientsearch.table.firstName',
-      renderer: createCellRenderer('text', (() => output), { key: 'firstName' }),
-    },
-    {
-      key: 'gender',
-      label: 'screen.patientsearch.table.gender',
-      renderer: createCellRenderer('text', (() => output), { key: 'gender' }),
-    },
-    {
-      key: 'dob',
-      label: 'screen.patientsearch.table.dob',
-      renderer: createCellRenderer('text', (() => output), { key: 'birthDate' }),
-    },
-    {
-      key: 'familyId',
-      label: 'screen.patientsearch.table.familyId',
-      renderer: createCellRenderer('text', (() => output), { key: 'familyId' }),
-    },
-    {
-      key: 'nbPrescription',
-      label: 'screen.patientsearch.table.nbPrescription',
-      renderer: createCellRenderer('text', (() => output), { key: 'request' }),
-    },
-  ];
   return (
     <div className="bp3-table-header">
       <div className="bp3-table-column-name">
         <InteractiveTable
-          key="patient-interactive-table"
-          size={size}
-          page={page}
-          isReorderable={false}
-          isSelectable={false}
-          total={patient.total}
-          totalLength={output.length}
-          defaultVisibleColumns={defaultVisibleColumns}
-          defaultColumnsOrder={defaultColumnsOrder}
-          schema={columnPreset}
-          pageChangeCallback={pageChangeCallback}
-          pageSizeChangeCallback={pageSizeChangeCallback}
-          exportCallback={exportCallback}
-          numFrozenColumns={0}
-          isLoading={isLoading}
-          rowHeights={Array(patient.pageSize).fill(36)}
-          columnsUpdated={columnsUpdated}
           columnsOrderUpdated={columnsOrderUpdated}
           columnsReset={columnsReset}
-          isExportable={false}
+          columnsUpdated={columnsUpdated}
+          customHeader={<PatientsTableHeader page={page} size={size} total={patient.total} />}
+          defaultColumnsOrder={defaultColumnsOrder}
+          defaultVisibleColumns={defaultVisibleColumns}
           enableRowHeader={false}
-          customHeader={(
-            <PatientsTableHeader
-              page={page}
-              size={size}
-              total={patient.total}
-            />
-          )}
+          exportCallback={exportCallback}
+          isExportable={false}
+          isLoading={isLoading}
+          isReorderable={false}
+          isSelectable={false}
+          key="patient-interactive-table"
+          numFrozenColumns={0}
+          page={page}
+          pageChangeCallback={pageChangeCallback}
+          pageSizeChangeCallback={pageSizeChangeCallback}
+          rowHeights={Array(patient.pageSize).fill(36)}
+          schema={makeColumns(rows, handleGoToPatientScreen)}
+          size={size}
+          total={patient.total}
+          totalLength={rows.length}
         />
       </div>
     </div>
