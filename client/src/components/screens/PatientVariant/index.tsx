@@ -1,10 +1,10 @@
 import React from 'react';
-import { useLocation, useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router-dom';
 import VariantPageV1 from './VariantSearchV1';
 import keycloak from 'keycloak';
+import EnvironmentVariables from 'helpers/EnvironmentVariables';
 
 import styles from './index.module.scss';
-import EnvironmentVariables from 'helpers/EnvironmentVariables';
 
 const useQuery = () => {
   return new URLSearchParams(useLocation().search);
@@ -14,7 +14,7 @@ const index = (props: any) => {
   const query = useQuery();
   const { uid } = useParams<{ uid: string }>();
 
-  if (query.get('v') == '1') {
+  if (query.get("v") == "1") {
     return <VariantPageV1 {...props} />;
   } else {
     return (
