@@ -10,7 +10,7 @@ import {
   KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS,
   KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS,
 } from 'helpers/keycloak-api/utils';
-import { Routes } from 'navigation/route';
+import { Routes } from 'helpers/route';
 import PropTypes from 'prop-types';
 
 import AccessDenied from 'components/screens/AccessDenied';
