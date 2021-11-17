@@ -4,6 +4,10 @@ import get from 'lodash/get';
 
 const BUNDLE_COUNT = 100
 
+export const EMPTY_NOTE_TEXT = '--' // FHIR doesn't allow empty string
+export const EMPTY_NOTE = { text: EMPTY_NOTE_TEXT }
+export const DEFAULT_NOTES = [ EMPTY_NOTE, EMPTY_NOTE ]
+
 const OBSERVATION_CGH_CODE = 'CGH';
 const OBSERVATION_HPO_CODE = 'PHENO';
 const OBSERVATION_INDICATION_CODE = 'INDIC';
@@ -89,6 +93,37 @@ export const isIndication = (o) => getResourceCode(o) === OBSERVATION_INDICATION
 export const getObservationValue = (obs, defaultValue) => (
   get(obs, 'valueString', get(obs, 'note[0].text', defaultValue))
 )
+
+export const getNoteComment = (serviceRequest) => {
+  const value = serviceRequest?.note?.[0]?.text;
+  return value != EMPTY_NOTE_TEXT ? value : null
+}
+export const getNoteStatus = (serviceRequest) => {
+  const value = serviceRequest?.note?.[1]?.text;
+  return value != EMPTY_NOTE_TEXT ? value : null
+}
+
+export const updateNoteComment = (notes, comment) => {
+  if (Array.isArray(notes)) {
+    if (notes.length == 0) {
+      notes.push(comment)
+    } else if (notes.length >= 1) {
+      notes[0] = comment
+    }
+  }
+}
+
+export const updateNoteStatus = (notes, status) => {
+  if (Array.isArray(notes)) {
+    if (notes.length == 0) {
+      notes.push(EMPTY_NOTE, status)
+    } else if (notes.length == 1) {
+      notes.push(status)
+    } else if (notes.length >= 2) {
+      notes[1] = status
+    }
+  }
+}
 
 export const cghInterpretation = (cgh) => {
   if (cgh.interpretation && cgh.interpretation.length) {

@@ -11,9 +11,11 @@ import {
   createGetMultiplePractitionerDataBundle,
   createGetPatientDataBundle,
   createGetPractitionersDataBundle,
+  DEFAULT_NOTES,
+  updateNoteStatus,
 } from './fhir/fhir';
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
-import { Bundle, Group, Patient, ServiceRequest } from './fhir/types';
+import { Bundle, Group, Note, Patient, ServiceRequest } from './fhir/types';
 import { PatientAutocompleteOptionalParams, PatientAutoCompleteResponse } from './search/types';
 import Http from './http-client';
 import { userAuthPermissions } from './keycloak-api';
@@ -359,19 +361,16 @@ const updateServiceRequestStatus = async (
     return ext;
   });
 
-  let notes: any[] = get(serviceRequest, 'note', []).filter((n) => n.text != null);
+  const notes: any[] = get(serviceRequest, 'note', [...DEFAULT_NOTES]).filter((n: Note) => n.text != null);
 
   if (note && note.length > 0) {
-    notes = [
-      ...notes,
-      {
-        authorReference: {
-          reference: `Practitioner/${user.practitionerData.practitioner.id}`,
-        },
-        text: note,
-        time: new Date(),
+    updateNoteStatus(notes, {
+      authorReference: {
+        reference: `Practitioner/${user.practitionerData.practitioner.id}`,
       },
-    ];
+      text: note,
+      time: new Date(),
+    });
   }
 
   const editedServiceRequest = {

@@ -294,12 +294,12 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                           </Button>
                         ) }
                       </div>
-                      { ['revoked', 'incomplete'].includes(prescription.status) && prescription.note && (
+                      { ['revoked', 'incomplete'].includes(prescription.status) && prescription.noteStatus && (
                         <div className={`${tabDetailsCNPrefix}__status-value__row`}>
                           <span
                             className={`${tabDetailsCNPrefix}__status-value__row__note ${prescription.status}`}
                           >
-                            { prescription.note }
+                            { prescription.noteStatus }
                           </span>
                         </div>
                       ) }
