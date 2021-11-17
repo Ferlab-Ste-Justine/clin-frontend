@@ -2,25 +2,25 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Switch } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
+import { getUserIdentity, getUserProfile, updateAuthPermissions } from 'actions/user';
 import { Spin } from 'antd';
 import { ConnectedRouter } from 'connected-react-router';
-import PropTypes from 'prop-types';
-
-import { getUserIdentity, getUserProfile, updateAuthPermissions } from '../actions/user';
-import AccessDenied from '../components/screens/AccessDenied';
-import PatientScreen from '../components/screens/Patient';
-import PatientSearchScreen from '../components/screens/PatientSearch';
-import PatientsPrescriptionsSearch from '../components/screens/PatientsPrescriptionsSearch';
-import PatientSubmissionScreen from '../components/screens/PatientSubmission';
-import PatientVariantScreen from '../components/screens/PatientVariant';
-import VariantDetailsScreen from '../components/screens/VariantDetails';
 import {
   KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST,
-  KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS, KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS,
-} from '../helpers/keycloak-api/utils';
-import {
-  Routes,
-} from '../helpers/route';
+  KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS,
+  KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS,
+} from 'helpers/keycloak-api/utils';
+import { Routes } from 'navigation/route';
+import PropTypes from 'prop-types';
+
+import AccessDenied from 'components/screens/AccessDenied';
+import PatientScreen from 'components/screens/Patient';
+import PatientSearchScreen from 'components/screens/PatientSearch';
+import PatientsPrescriptionsSearch from 'components/screens/PatientsPrescriptionsSearch';
+import PatientSubmissionScreen from 'components/screens/PatientSubmission';
+import PatientVariantScreen from 'components/screens/PatientVariant';
+import SearchScreen from 'components/screens/search';
+import VariantDetailsScreen from 'components/screens/VariantDetails';
 
 import AuthRoute from './AuthRoute';
 import PublicRoute from './PublicRoute';
@@ -28,7 +28,7 @@ import PublicRoute from './PublicRoute';
 const AppRouter = ({ history }) => {
   const { initialized, keycloak } = useKeycloak();
   const dispatch = useDispatch();
-  const user = useSelector((state)=> state.user);
+  const user = useSelector((state) => state.user);
 
   keycloak.onAuthSuccess = () => {
     dispatch(getUserProfile());
@@ -36,13 +36,17 @@ const AppRouter = ({ history }) => {
     dispatch(updateAuthPermissions());
   };
 
-  if (!initialized) { return <div />; }
+  if (!initialized) {
+    return <div />;
+  }
 
   if (!keycloak.authenticated) {
     keycloak.login();
   }
 
-  if (user.permissions == null) { return <div />; }
+  if (user.permissions == null) {
+    return <div />;
+  }
 
   return (
     <ConnectedRouter history={history} key="connected-router">
@@ -50,9 +54,13 @@ const AppRouter = ({ history }) => {
         <PublicRoute Component={AccessDenied} key="route-access-denied" path="/access-denied" />
         <PublicRoute
           Component={() => (
-            <div style={{
-              alignItems: 'center', display: 'flex', height: '100vh', justifyContent: 'center',
-            }}
+            <div
+              style={{
+                alignItems: 'center',
+                display: 'flex',
+                height: '100vh',
+                justifyContent: 'center',
+              }}
             >
               <Spin size="large" spinning />
             </div>
@@ -72,7 +80,16 @@ const AppRouter = ({ history }) => {
         <AuthRoute
           Component={PatientsPrescriptionsSearch}
           exact
-          key="route-patient-search"
+          key="route-patient-search-local"
+          path={`${Routes.PatientSearchArranger}/local`}
+          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST}
+          roles={[]}
+        />
+
+        <AuthRoute
+          Component={SearchScreen}
+          exact
+          key="route-patient-search-graphql"
           path={Routes.PatientSearchArranger}
           resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST}
           roles={[]}
