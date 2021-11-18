@@ -13,6 +13,8 @@ import { PatientsTableHeader } from './PatientTableHeader';
 
 import './style.scss';
 
+const DEFAULT_VALUE = '--';
+
 interface Props {
   searchProps: any;
   defaultVisibleColumns: string[];
@@ -28,60 +30,70 @@ interface Props {
   page: number;
 }
 
+type RowValue = string | number | boolean | null | undefined;
+
 type Row = {
-  birthDate: string;
-  familyId: string;
-  fetus: boolean;
-  firstName: string;
-  id: string;
-  lastName: string;
-  organization: string;
-  ramq: string;
-  request: string;
-  gender: string;
+  birthDate: RowValue;
+  familyId: RowValue;
+  fetus: RowValue;
+  firstName: RowValue;
+  id: RowValue;
+  lastName: RowValue;
+  organization: RowValue;
+  ramq: RowValue;
+  nbRequest: RowValue;
+  gender: RowValue;
 };
 
-const TextCell = (value: string) => (
+const TextCell = (value: RowValue) => (
   <Cell className="cellValue">
-    <Typography.Text ellipsis>{value}</Typography.Text>
+    <Typography.Text ellipsis>{value || DEFAULT_VALUE}</Typography.Text>
   </Cell>
 );
 
 const extractOrganization = (patient: PatientData) =>
-  patient?.organization.name || patient?.organization.id.split('/')[1];
+  patient.organization.name || patient.organization.id?.split('/')?.[1];
+
+const translateGender = (gender: string) => {
+  const genderLowered = gender?.toLowerCase();
+  return ['male', 'female'].includes(genderLowered)
+    ? intl.get(`screen.patientsearch.${genderLowered}`)
+    : null;
+};
 
 const makeRows = (rawResult: PatientData[]) =>
   (rawResult || [])
     .filter((currentPatientData: PatientData) => currentPatientData?.organization)
     .map((currentPatientData: PatientData) => ({
-      birthDate: currentPatientData.birthDate ?? '--',
-      familyId: currentPatientData.familyId ?? '--',
-      fetus: currentPatientData.fetus ?? '--',
-      firstName: currentPatientData.firstName ?? '--',
-      gender: intl
-        .get(`screen.patientsearch.${currentPatientData.gender.toLowerCase()}`)
-        .defaultMessage('--'),
-      id: currentPatientData.id ?? '--',
-      lastName: currentPatientData.lastName.toUpperCase() ?? '--',
-      organization: extractOrganization(currentPatientData) ?? '--',
-      ramq: currentPatientData.ramq ?? '--',
-      request: currentPatientData?.requests?.length ? `${currentPatientData.requests.length}` : '0',
+      birthDate: currentPatientData.birthDate,
+      familyId: currentPatientData.familyId,
+      fetus: currentPatientData.fetus,
+      firstName: currentPatientData.firstName,
+      gender: translateGender(currentPatientData.gender),
+      id: currentPatientData.id,
+      lastName: currentPatientData.lastName,
+      nbRequest: currentPatientData?.requests?.length,
+      organization: extractOrganization(currentPatientData),
+      ramq: currentPatientData.ramq,
     }));
 
 const makeColumns = (rawData: Row[], goToPatientPage: (patientId: string) => void) => [
   {
     key: 'patientId',
     label: 'screen.patientsearch.table.id',
-    renderer: (rowIndex: number) => (
-      <Cell className="cellValue">
-        <Button
-          className="button link--underline"
-          onClick={() => goToPatientPage(rawData[rowIndex]?.id)}
-        >
-          {rawData[rowIndex].id}
-        </Button>
-      </Cell>
-    ),
+    renderer: (rowIndex: number) => {
+      const { id } = rawData[rowIndex];
+      return (
+        <Cell className="cellValue">
+          <Button
+            className="button link--underline"
+            onClick={() => (id ? goToPatientPage(rawData[rowIndex].id as string) : null)}
+          >
+            {id || DEFAULT_VALUE}
+          </Button>
+        </Cell>
+      );
+    },
   },
   {
     key: 'ramq',
@@ -91,22 +103,26 @@ const makeColumns = (rawData: Row[], goToPatientPage: (patientId: string) => voi
   {
     key: 'lastName',
     label: 'screen.patientsearch.table.lastName',
-    renderer: (rowIndex: number) => (
-      <Cell className="cellValue">
-        <div className="patients-table__cell-container">
-          <p>{rawData[rowIndex]?.lastName?.toUpperCase()}</p>
-          {rawData[rowIndex]?.fetus && (
-            <Tooltip title={intl.get('screen.patient.table.fetus')}>
-              <img
-                alt={intl.get('screen.patient.table.fetus')}
-                className="patients-table__fetus-icon"
-                src="/assets/icons/patient-fetus.svg"
-              />
-            </Tooltip>
-          )}
-        </div>
-      </Cell>
-    ),
+    renderer: (rowIndex: number) => {
+      const lastName = rawData[rowIndex]?.lastName || '';
+      const showTooltip = !!lastName && !!rawData[rowIndex]?.fetus;
+      return (
+        <Cell className="cellValue">
+          <div className="patients-table__cell-container">
+            <p>{(lastName as string).toUpperCase()}</p>
+            {showTooltip && (
+              <Tooltip title={intl.get('screen.patient.table.fetus')}>
+                <img
+                  alt={intl.get('screen.patient.table.fetus')}
+                  className="patients-table__fetus-icon"
+                  src="/assets/icons/patient-fetus.svg"
+                />
+              </Tooltip>
+            )}
+          </div>
+        </Cell>
+      );
+    },
   },
   {
     key: 'firstName',
@@ -131,7 +147,7 @@ const makeColumns = (rawData: Row[], goToPatientPage: (patientId: string) => voi
   {
     key: 'nbPrescription',
     label: 'screen.patientsearch.table.nbPrescription',
-    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.request),
+    renderer: (rowIndex: number) => TextCell(`${rawData[rowIndex]?.nbRequest ?? 0}`),
   },
 ];
 
