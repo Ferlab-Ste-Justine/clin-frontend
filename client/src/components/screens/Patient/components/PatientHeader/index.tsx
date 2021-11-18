@@ -29,10 +29,9 @@ const getGenderIcon = (gender: string) => {
     return (
       <UnknowGenderIcon className="customIcon" height="23" viewBox="0 0 22 23" width="22" />
     );
-  }
-  return (
+  }else if (gender === Gender.MALE){
     <MaleIcon className="customIcon" height="22" viewBox="0 0 22 22" width="22"/>
-  );
+  }
 };
 
 const buildName = (name: {lastName: string, firstName: string}, isFetus: boolean, onNavigateToMotherFile: () => void) => {
