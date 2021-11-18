@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import EnvironmentVariables from 'helpers/EnvironmentVariables';
 import keycloak from 'keycloak';
 
