@@ -54,7 +54,7 @@ const TextCell = (value: RowValue) => (
 const extractOrganization = (patient: PatientData) =>
   patient.organization.name || patient.organization.id?.split('/')?.[1];
 
-const translateGender = (gender: string) => {
+const displayTranslatedGender = (gender: string) => {
   const genderLowered = gender?.toLowerCase();
   return ['male', 'female'].includes(genderLowered)
     ? intl.get(`screen.patientsearch.${genderLowered}`)
@@ -69,7 +69,7 @@ const makeRows = (rawResult: PatientData[]) =>
       familyId: currentPatientData.familyId,
       fetus: currentPatientData.fetus,
       firstName: currentPatientData.firstName,
-      gender: translateGender(currentPatientData.gender),
+      gender: currentPatientData.gender,
       id: currentPatientData.id,
       lastName: currentPatientData.lastName,
       nbRequest: currentPatientData?.requests?.length,
@@ -132,7 +132,7 @@ const makeColumns = (rawData: Row[], goToPatientPage: (patientId: string) => voi
   {
     key: 'gender',
     label: 'screen.patientsearch.table.gender',
-    renderer: (rowIndex: number) => TextCell(rawData[rowIndex]?.gender),
+    renderer: (rowIndex: number) => TextCell(displayTranslatedGender(rawData[rowIndex]?.gender as string)),
   },
   {
     key: 'dob',
