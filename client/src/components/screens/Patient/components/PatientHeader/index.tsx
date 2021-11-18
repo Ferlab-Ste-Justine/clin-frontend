@@ -13,12 +13,19 @@ import UnknowGenderIcon from 'components/Assets/Icons/UnknowGenderIcon'
 
 import './styles.scss';
 
+enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+  UNKNOWN = 'unknown',
+
+}
+
 const getGenderIcon = (gender: string) => {
-  if (gender === 'female') {
+  if (gender === Gender.FEMALE) {
     return (
       <FemaleIcon className="customIcon" height="22" viewBox="0 0 22 22" width="22" />
     );
-  }else if (gender === 'unknown'){
+  }else if (gender === Gender.UNKNOWN){
     return (
       <UnknowGenderIcon className="customIcon" height="23" viewBox="0 0 22 23" width="22" />
     );
