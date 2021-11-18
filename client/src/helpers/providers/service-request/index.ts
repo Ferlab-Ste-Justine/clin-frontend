@@ -5,7 +5,7 @@ import { Practitioner, ServiceRequest, SupervisorsBundle } from '../../fhir/type
 import { PractitionerData, Prescription, PrescriptionStatus } from '../types';
 import { DataExtractor } from '../extractor';
 import { Provider, Record } from '../providers';
-import { getNoteComment, getNoteStatus } from 'helpers/fhir/fhir';
+import { getNoteComment, getNoteStatus } from 'helpers/fhir/ServiceRequestNotesHelper';
 
 const IS_SUBMITTED_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const CLIN_REF_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression';

@@ -11,9 +11,11 @@ import {
   createGetMultiplePractitionerDataBundle,
   createGetPatientDataBundle,
   createGetPractitionersDataBundle,
+} from './fhir/fhir';
+import {
   DEFAULT_NOTES,
   updateNoteStatus,
-} from './fhir/fhir';
+} from 'helpers/fhir/ServiceRequestNotesHelper'
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
 import { Bundle, Group, Note, Patient, ServiceRequest } from './fhir/types';
 import { PatientAutocompleteOptionalParams, PatientAutoCompleteResponse } from './search/types';
@@ -360,18 +362,15 @@ const updateServiceRequestStatus = async (
     }
     return ext;
   });
-
-  const notes: any[] = get(serviceRequest, 'note', [...DEFAULT_NOTES]).filter((n: Note) => n.text != null);
-
-  if (note && note.length > 0) {
-    updateNoteStatus(notes, {
+  const notes: Note[] = get(serviceRequest, 'note', [...DEFAULT_NOTES]).filter((n: Note) => n.text);
+  const notesWithStatus = note && note.length > 0 ?
+    updateNoteStatus({
       authorReference: {
         reference: `Practitioner/${user.practitionerData.practitioner.id}`,
       },
       text: note,
-      time: new Date(),
-    });
-  }
+      time: new Date().toISOString(),
+    }, notes) : notes
 
   const editedServiceRequest = {
     ...serviceRequest,
@@ -384,8 +383,8 @@ const updateServiceRequestStatus = async (
     status,
   };
 
-  if (notes && notes.length > 0) {
-    editedServiceRequest['note'] = notes
+  if (notesWithStatus && notesWithStatus.length > 0) {
+    editedServiceRequest['note'] = notesWithStatus
   }
 
   const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;

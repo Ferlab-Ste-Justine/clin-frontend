@@ -3,7 +3,7 @@ import {
   formatDate, getExtension, getPractitionerReference,
 } from './Utils';
 import { ExtensionUrls } from 'store/urls'
-import { DEFAULT_NOTES, updateNoteComment } from '../fhir';
+import { updateNoteComment } from '../ServiceRequestNotesHelper';
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const EXTENSION_RESIDENT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident';
@@ -146,11 +146,10 @@ export class ServiceRequestBuilder {
 
     public withNote(note?: string) {
       if (note && note.length > 0) {
-        this.serviceRequest.note = this.serviceRequest.note || [...DEFAULT_NOTES]
-        updateNoteComment(this.serviceRequest.note, {
+        this.serviceRequest.note = updateNoteComment({
           text: note,
           time: new Date().toISOString(),
-        });
+        }, this.serviceRequest.note);
       }
       return this;
     }
