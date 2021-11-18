@@ -12,8 +12,12 @@ import {
   createGetPatientDataBundle,
   createGetPractitionersDataBundle,
 } from './fhir/fhir';
+import {
+  DEFAULT_NOTES,
+  updateNoteStatus,
+} from 'helpers/fhir/ServiceRequestNotesHelper'
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
-import { Bundle, Group, Patient, ServiceRequest } from './fhir/types';
+import { Bundle, Group, Note, Patient, ServiceRequest } from './fhir/types';
 import { PatientAutocompleteOptionalParams, PatientAutoCompleteResponse } from './search/types';
 import Http from './http-client';
 import { userAuthPermissions } from './keycloak-api';
@@ -358,21 +362,15 @@ const updateServiceRequestStatus = async (
     }
     return ext;
   });
-
-  let notes: any[] = get(serviceRequest, 'note', []).filter((n) => n.text != null);
-
-  if (note && note.length > 0) {
-    notes = [
-      ...notes,
-      {
-        authorReference: {
-          reference: `Practitioner/${user.practitionerData.practitioner.id}`,
-        },
-        text: note,
-        time: new Date(),
+  const notes: Note[] = get(serviceRequest, 'note', [...DEFAULT_NOTES]).filter((n: Note) => n.text);
+  const notesWithStatus = note && note.length > 0 ?
+    updateNoteStatus({
+      authorReference: {
+        reference: `Practitioner/${user.practitionerData.practitioner.id}`,
       },
-    ];
-  }
+      text: note,
+      time: new Date().toISOString(),
+    }, notes) : notes
 
   const editedServiceRequest = {
     ...serviceRequest,
@@ -385,8 +383,8 @@ const updateServiceRequestStatus = async (
     status,
   };
 
-  if (notes && notes.length > 0) {
-    editedServiceRequest['note'] = notes
+  if (notesWithStatus && notesWithStatus.length > 0) {
+    editedServiceRequest['note'] = notesWithStatus
   }
 
   const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;

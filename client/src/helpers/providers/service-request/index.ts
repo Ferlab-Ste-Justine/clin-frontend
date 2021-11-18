@@ -5,7 +5,7 @@ import { Practitioner, ServiceRequest, SupervisorsBundle } from '../../fhir/type
 import { PractitionerData, Prescription, PrescriptionStatus } from '../types';
 import { DataExtractor } from '../extractor';
 import { Provider, Record } from '../providers';
-import Api from '../../api'
+import { getNoteComment, getNoteStatus } from 'helpers/fhir/ServiceRequestNotesHelper';
 
 const IS_SUBMITTED_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const CLIN_REF_EXT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/ref-clin-impression';
@@ -35,10 +35,6 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
     return get(dataExtractor.getExtension(serviceRequest, CLIN_REF_EXT), 'valueReference.reference');
   }
 
-  private getLastNote(serviceRequest: ServiceRequest): string {
-    return get(serviceRequest, `note[${get(serviceRequest, 'note', []).length - 1}].text`, '');
-  }
-
   private getSupervisor(dataExtractor: DataExtractor, serviceRequest: ServiceRequest): PractitionerData {
     const ext = dataExtractor.getExtension(serviceRequest, ExtensionUrls.ResidentSupervisor);
     const ref = get(ext, 'valueReference.reference');
@@ -61,7 +57,8 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       requester: dataExtractor.getPractitionerDataFromPractitioner(serviceRequest, 'requester', serviceRequestBundle)!,
       status: this.getStatus(dataExtractor, serviceRequest) as PrescriptionStatus,
       test: get(serviceRequest, 'code.coding[0].display', 'N/A'),
-      note: this.getLastNote(serviceRequest),
+      note: getNoteComment(serviceRequest),
+      noteStatus: getNoteStatus(serviceRequest),
       clinicalImpressionRef: this.getClinicalImpressionRef(dataExtractor, serviceRequest),
       mrn: get(serviceRequest, 'identifier[0].value', '--'),
       organization: get(serviceRequest, 'identifier[0].assigner.reference', '--/--').split('/')[1],
