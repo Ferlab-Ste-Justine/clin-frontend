@@ -40,7 +40,7 @@ describe('ServiceRequest UPDATE Note Comment', () => {
 
   test('updateNoteComment - should add note comment', () => {
     const notes = []
-    const updated = updateNoteComment({text: 'new comment'}, notes)
+    const updated = updateNoteComment({ text: 'new comment' }, notes)
     expect(updated[0].text).toEqual('new comment')
   })
 
@@ -53,8 +53,9 @@ describe('ServiceRequest UPDATE Note Comment', () => {
 
   test('updateNoteComment - should be robust to missing data', () => {
     const notes = null
-    const updated = updateNoteComment({text: 'new comment'}, notes)
+    const updated = updateNoteComment({ text: 'new comment' }, notes)
     expect(updated[0].text).toEqual('new comment')
+    expect(updated[1].text).toEqual('--')
   })
 
 })
