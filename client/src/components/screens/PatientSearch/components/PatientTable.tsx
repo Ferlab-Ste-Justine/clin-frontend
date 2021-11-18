@@ -108,18 +108,22 @@ const makeColumns = (rawData: Row[], goToPatientPage: (patientId: string) => voi
       const showTooltip = !!lastName && !!rawData[rowIndex]?.fetus;
       return (
         <Cell className="cellValue">
-          <div className="patients-table__cell-container">
-            <p>{(lastName as string).toUpperCase()}</p>
-            {showTooltip && (
-              <Tooltip title={intl.get('screen.patient.table.fetus')}>
-                <img
-                  alt={intl.get('screen.patient.table.fetus')}
-                  className="patients-table__fetus-icon"
-                  src="/assets/icons/patient-fetus.svg"
-                />
-              </Tooltip>
-            )}
-          </div>
+          {lastName ? (
+            <div className="patients-table__cell-container">
+              <p>{(lastName as string).toUpperCase()}</p>
+              {showTooltip && (
+                <Tooltip title={intl.get('screen.patient.table.fetus')}>
+                  <img
+                    alt={intl.get('screen.patient.table.fetus')}
+                    className="patients-table__fetus-icon"
+                    src="/assets/icons/patient-fetus.svg"
+                  />
+                </Tooltip>
+              )}
+            </div>
+          ) : (
+            DEFAULT_VALUE
+          )}
         </Cell>
       );
     },
@@ -132,7 +136,8 @@ const makeColumns = (rawData: Row[], goToPatientPage: (patientId: string) => voi
   {
     key: 'gender',
     label: 'screen.patientsearch.table.gender',
-    renderer: (rowIndex: number) => TextCell(displayTranslatedGender(rawData[rowIndex]?.gender as string)),
+    renderer: (rowIndex: number) =>
+      TextCell(displayTranslatedGender(rawData[rowIndex]?.gender as string)),
   },
   {
     key: 'dob',
