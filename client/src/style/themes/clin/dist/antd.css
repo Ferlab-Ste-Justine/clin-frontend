@@ -25079,9 +25079,6 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .ant-tag {
   border: none;
   background-color: #e1e8ef;
-  padding: 1px 8px;
-  align-items: center;
-  margin: 0 auto 0 auto;
 }
 .ant-tag:last-child {
   margin-right: 0;
