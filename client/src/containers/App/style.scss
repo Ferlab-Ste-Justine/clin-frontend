@@ -745,16 +745,23 @@ table{
   font-weight: 500;
 }
 
-.link--underline{
-  text-decoration: underline;
-  span{
-    text-decoration: underline;
-  }
-
-  &:focus{
+.link{
+  &--underline{
     text-decoration: underline;
     span{
       text-decoration: underline;
+    }
+
+    &:focus{
+      text-decoration: underline;
+      span{
+        text-decoration: underline;
+      }
+    }
+  }
+  &--small{
+    span{
+      font-size: 12px;
     }
   }
 }
