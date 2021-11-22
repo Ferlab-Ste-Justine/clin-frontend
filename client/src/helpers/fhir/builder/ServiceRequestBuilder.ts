@@ -3,7 +3,7 @@ import {
   formatDate, getExtension, getPractitionerReference,
 } from './Utils';
 import { ExtensionUrls } from 'store/urls'
-import { updateNoteComment } from '../ServiceRequestNotesHelper';
+import { updateNoteComment, updateNoteStatus } from '../ServiceRequestNotesHelper';
 
 const EXTENSION_SUBMITTED = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 const EXTENSION_RESIDENT = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident';
@@ -35,10 +35,10 @@ export class ServiceRequestBuilder {
 
     constructor(serviceRequest: any) {
       if (serviceRequest != null) {
-        this.serviceRequest = {
+        this.serviceRequest = JSON.parse(JSON.stringify({
           ...this.serviceRequest,
           ...serviceRequest,
-        };
+        }));
       }
     }
 
@@ -91,9 +91,8 @@ export class ServiceRequestBuilder {
       return this;
     }
 
-    public withSubmitted(value: boolean | undefined, practitionerId: string, status?: string) {
+    public withSubmitted(value?: boolean) {
       const isSubmitted = value != null && value;
-
       const ext = getExtension(this.serviceRequest, EXTENSION_SUBMITTED);
       if (ext) {
         ext.valueBoolean = isSubmitted;
@@ -102,12 +101,6 @@ export class ServiceRequestBuilder {
           url: EXTENSION_SUBMITTED,
           valueBoolean: isSubmitted,
         });
-      }
-
-      if (isSubmitted) {
-        this.serviceRequest.status = 'on-hold';
-      } else {
-        this.serviceRequest.status = status || 'draft';
       }
       return this;
     }
@@ -150,6 +143,56 @@ export class ServiceRequestBuilder {
           text: note,
           time: new Date().toISOString(),
         }, this.serviceRequest.note);
+      }
+      return this;
+    }
+  
+    public withStatus(status?: string) {
+      if (status) {
+        this.serviceRequest.status = status
+      }
+      return this;
+    }
+  
+    public withNoteStatus(note?: string, practitionerId?: string) {
+      if (note && note.length > 0 && practitionerId) {
+        this.serviceRequest.note = updateNoteStatus({
+          authorReference: {
+            reference: `Practitioner/${practitionerId}`,
+          },
+          text: note,
+          time: new Date().toISOString(),
+        }, this.serviceRequest.note);
+      }
+      return this;
+    }
+  
+    public withProcedureDirectedBy(practitionerRoleId?: string) {
+      if (practitionerRoleId) {
+        const ext = getExtension(this.serviceRequest, ExtensionUrls.ProcedureDirectedBy);
+        if (ext) {
+          ext.valueReference = {
+            reference: `PractitionerRole/${practitionerRoleId}`,
+          };
+        } else {
+          this.serviceRequest.extension?.push({
+            url: ExtensionUrls.ProcedureDirectedBy,
+            valueReference: {
+              reference: `PractitionerRole/${practitionerRoleId}`,
+            },
+          });
+        }
+      }
+      return this;
+    }
+  
+    public withPerformer(practitionerRoleId?: string) {
+      if (practitionerRoleId) {
+        this.serviceRequest.performer = [
+          {
+            reference: `PractitionerRole/${practitionerRoleId}`,
+          },
+        ]
       }
       return this;
     }

@@ -372,6 +372,8 @@ function PatientSubmissionScreen(props) {
 
       const ageInDay = moment(new Date()).diff(currentPatient.birthDate, 'days');
 
+      const submittedStatus = submitted ? 'on-hold' : (status || 'draft')
+
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withId(get(localStore, 'serviceRequest.id'))
@@ -379,7 +381,8 @@ function PatientSubmissionScreen(props) {
           .withRequester(userPractitioner.id)
           .withSubject(currentPatient.id)
           .withCoding(getTestCoding(analysis))
-          .withSubmitted(submitted, userPractitioner.id, status)
+          .withSubmitted(submitted)
+          .withStatus(submittedStatus)
           .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
           .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
           .withNote(analysisComments)

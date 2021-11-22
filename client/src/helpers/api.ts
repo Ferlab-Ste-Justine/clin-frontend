@@ -12,10 +12,7 @@ import {
   createGetPatientDataBundle,
   createGetPractitionersDataBundle,
 } from './fhir/fhir';
-import {
-  DEFAULT_NOTES,
-  updateNoteStatus,
-} from 'helpers/fhir/ServiceRequestNotesHelper'
+import { ServiceRequestBuilder } from './fhir/builder/ServiceRequestBuilder';
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
 import { Bundle, Group, Note, Patient, ServiceRequest } from './fhir/types';
 import { PatientAutocompleteOptionalParams, PatientAutoCompleteResponse } from './search/types';
@@ -350,47 +347,23 @@ const updateServiceRequestStatus = async (
   status: string,
   note: string,
 ) => {
-  const extension = serviceRequest.extension.map((ext) => {
-    const isSubmittedExt =
-      ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted';
 
-    if (isSubmittedExt) {
-      return {
-        ...ext,
-        valueBoolean: status !== 'on-hold',
-      };
+  const { practitioner, practitionerRole } = user.practitionerData
+  
+  const builder = new ServiceRequestBuilder(serviceRequest)
+    .withStatus(status)
+    .withNoteStatus(note, practitioner.id)
+    .withPerformer(practitionerRole.id)
+    .withSubmitted(status !== 'on-hold')
+  
+    if (status === 'active') {
+      builder.withProcedureDirectedBy(practitionerRole.id)
     }
-    return ext;
-  });
-  const notes: Note[] = get(serviceRequest, 'note', [...DEFAULT_NOTES]).filter((n: Note) => n.text);
-  const notesWithStatus = note && note.length > 0 ?
-    updateNoteStatus({
-      authorReference: {
-        reference: `Practitioner/${user.practitionerData.practitioner.id}`,
-      },
-      text: note,
-      time: new Date().toISOString(),
-    }, notes) : notes
 
-  const editedServiceRequest = {
-    ...serviceRequest,
-    performer: [
-      {
-        reference: `PractitionerRole/${user.practitionerData.practitionerRole.id}`,
-      },
-    ],
-    extension,
-    status,
-  };
-
-  if (notesWithStatus && notesWithStatus.length > 0) {
-    editedServiceRequest['note'] = notesWithStatus
-  }
-
-  const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${editedServiceRequest.id}`;
+  const url = `${window.CLIN.fhirBaseUrl}/ServiceRequest/${serviceRequest.id}`;
 
   return Http.secureClinAxios
-    .put(url, editedServiceRequest)
+    .put(url, builder.build())
     .then(successCallback)
     .catch(errorCallback);
 };
