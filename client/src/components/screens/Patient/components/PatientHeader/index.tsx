@@ -5,8 +5,6 @@ import { ParsedPatientData } from 'helpers/providers/types';
 import FetusHeader from './components/FetusHeader';
 import ProbandHeader from './components/ProbandHeader';
 
-import './styles.scss';
-
 interface Props {
   patient: ParsedPatientData
 }
