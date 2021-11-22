@@ -7,7 +7,7 @@ import { ParsedPatientData } from 'helpers/providers/types';
 
 import UnknowGenderIcon from 'components/Assets/Icons/UnknowGenderIcon'
 
-import '../styles.scss';
+import './styles.scss';
   
 
 interface Props {
@@ -40,7 +40,7 @@ const FetusHeader= ({ patient }:Props): React.ReactElement => {
         >
           <span>{ intl.get('screen.patient.details.header.mother') } :</span> 
           <Button 
-            className="link--underline link--small" 
+            className="link--underline" 
             onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
             size='small' 
             type='link'
