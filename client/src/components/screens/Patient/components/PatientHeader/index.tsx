@@ -14,13 +14,10 @@ interface Props {
 const PatientHeader= ({ patient }:Props):React.ReactElement => (
   <div className="header__content--static">
     <Row align="bottom" className="flex-row patient-header" gutter={12}>
-      { !patient.isFetus && (
-        <ProbandHeader patient={patient}/>
-      )
+      { patient.isFetus 
+        ? (<FetusHeader patient={patient} />)
+        : (<ProbandHeader patient={patient}/>)
       }
-      { patient.isFetus && (
-        <FetusHeader patient={patient} />
-      ) }
     </Row>
   </div>
 );

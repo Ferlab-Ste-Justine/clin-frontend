@@ -16,18 +16,13 @@ UNKNOWN = 'unknown',
 }  
 
 const getGenderIcon = (gender: string) => {
-  if (gender === Gender.FEMALE) {
-    return (
-      <FemaleIcon className="customIcon" height="22" viewBox="0 0 22 22" width="22" />
-    );
-  }else if (gender === Gender.UNKNOWN){
-    return (
-      <UnknowGenderIcon className="customIcon" height="23" viewBox="0 0 22 23" width="22" />
-    );
-  }else if (gender === Gender.MALE){
-    return ( 
-      <MaleIcon className="customIcon" height="22" viewBox="0 0 22 22" width="22"/>
-    )
+  switch (gender) {
+  case Gender.MALE:
+    return <MaleIcon className="customIcon" height="22" viewBox="0 0 22 22" width="22"/>;
+  case Gender.FEMALE:
+    return <FemaleIcon className="customIcon" height="22" viewBox="0 0 22 22" width="22" />;
+  case Gender.UNKNOWN:
+    return <UnknowGenderIcon className="customIcon" height="23" viewBox="0 0 22 23" width="22" />
   }
 };
 
