@@ -14,7 +14,8 @@ export enum StatusType {
   active = 'active',
   'on-hold' = 'on-hold',
   revoked = 'revoked',
-  completed = 'completed'
+  completed = 'completed',
+  incomplete = 'incomplete',
 }
 
 const statusWithNotes = [StatusType['on-hold'], StatusType.revoked];

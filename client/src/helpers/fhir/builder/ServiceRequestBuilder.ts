@@ -3,11 +3,13 @@ import {
   formatDate, getExtension, getPractitionerReference,
 } from './Utils';
 import { ExtensionUrls } from 'store/urls'
+import cloneDeep from 'lodash/cloneDeep'
 import { updateNoteComment, updateNoteStatus } from '../ServiceRequestNotesHelper';
+import { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
 
 const defaultSR = (): Partial<ServiceRequest> => ({
   resourceType: 'ServiceRequest',
-  status: 'draft',
+  status: StatusType.draft,
   meta: {
     profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-service-request'],
   },
@@ -32,10 +34,10 @@ export class ServiceRequestBuilder {
 
     constructor(serviceRequest?: any) {
       if (serviceRequest) {
-        this.serviceRequest = JSON.parse(JSON.stringify({
+        this.serviceRequest = cloneDeep({
           ...this.serviceRequest,
           ...serviceRequest,
-        }));
+        });
       }
     }
 
@@ -89,7 +91,7 @@ export class ServiceRequestBuilder {
     }
 
     public withSubmitted(value?: boolean) {
-      const isSubmitted = value != null && value;
+      const isSubmitted = !!value;
       const ext = getExtension(this.serviceRequest, ExtensionUrls.IsSubmitted);
       if (ext) {
         ext.valueBoolean = isSubmitted;
@@ -144,7 +146,7 @@ export class ServiceRequestBuilder {
       return this;
     }
   
-    public withStatus(status?: string) {
+    public withStatus(status?: StatusType) {
       if (status) {
         this.serviceRequest.status = status
       }

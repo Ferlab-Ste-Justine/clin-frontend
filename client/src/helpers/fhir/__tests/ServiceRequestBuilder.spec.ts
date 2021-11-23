@@ -1,18 +1,23 @@
+import { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
 import { ExtensionUrls } from 'store/urls'
 import { ServiceRequestBuilder } from '../builder/ServiceRequestBuilder'
 import * as mocks from './ServiceRequestBuilder.mocks'
 
-describe('ServiceRequestBuilder - default constructor', () => {
+describe('ServiceRequestBuilder', () => {
+
+  let builder: ServiceRequestBuilder;
+
+  beforeEach(() => {
+    builder = new ServiceRequestBuilder()
+  })
 
   test('withId - should change id', () => {
-    const builder = new ServiceRequestBuilder()
     builder.withId('123')
     const result = builder.build()
     expect(result.id).toEqual('123')
   })
 
   test('withMrn - should change Mrn', () => {
-    const builder = new ServiceRequestBuilder()
     builder.withMrn('foo', 'bar')
     const result = builder.build()
     expect(result.identifier?.[0].value).toEqual('foo')
@@ -20,8 +25,6 @@ describe('ServiceRequestBuilder - default constructor', () => {
   })
 
   test('withSupervisor - should add /update extension supervisor', () => {
-    const builder = new ServiceRequestBuilder()
-
     builder.withSupervisor('foo')
     const added = builder.build()
     expect(added.extension?.[1].url).toEqual(ExtensionUrls.ResidentSupervisor)
@@ -34,8 +37,6 @@ describe('ServiceRequestBuilder - default constructor', () => {
   })
 
   test('withSubmitted - should add /update extension is-submitted', () => {
-    const builder = new ServiceRequestBuilder()
-
     builder.withSubmitted(true)
     const added = builder.build()
     expect(added.extension?.[0].url).toEqual(ExtensionUrls.IsSubmitted)
@@ -48,36 +49,30 @@ describe('ServiceRequestBuilder - default constructor', () => {
   })
 
   test('withSubject - should change subject', () => {
-    const builder = new ServiceRequestBuilder()
     builder.withSubject('123')
     const result = builder.build()
     expect(result.subject?.reference).toEqual('Patient/123')
   })
 
   test('withCoding - should change coding', () => {
-    const builder = new ServiceRequestBuilder()
     builder.withCoding({code: 'foo'})
     const result = builder.build()
     expect(result.code?.coding?.[0]).toEqual({code: 'foo'})
   })
 
   test('withRequester - should change requester', () => {
-    const builder = new ServiceRequestBuilder()
     builder.withRequester('123')
     const result = builder.build()
     expect(result.requester?.reference).toEqual('Practitioner/123')
   })
 
   test('withAuthoredOn - should change authoredOn', () => {
-    const builder = new ServiceRequestBuilder()
     builder.withAuthoredOn('2021-11-12')
     const result = builder.build()
     expect(result.authoredOn).toEqual('2021-11-12')
   })
 
   test('withNote - should add /update note', () => {
-    const builder = new ServiceRequestBuilder()
-
     builder.withNote('foo')
     const added = builder.build()
     expect(added.note?.[0].text).toEqual('foo')
@@ -88,15 +83,12 @@ describe('ServiceRequestBuilder - default constructor', () => {
   })
 
   test('withStatus - should change status', () => {
-    const builder = new ServiceRequestBuilder()
-    builder.withStatus('foo')
+    builder.withStatus(StatusType.active)
     const result = builder.build()
-    expect(result.status).toEqual('foo')
+    expect(result.status).toEqual(StatusType.active)
   })
 
   test('withNoteStatus - should add /update status note', () => {
-    const builder = new ServiceRequestBuilder()
-
     builder.withNoteStatus('foo', '123')
     const added = builder.build()
     expect(added.note?.[1].text).toEqual('foo')
@@ -109,8 +101,6 @@ describe('ServiceRequestBuilder - default constructor', () => {
   })
 
   test('withProcedureDirectedBy - should add /update extension procedure directed by', () => {
-    const builder = new ServiceRequestBuilder()
-
     builder.withProcedureDirectedBy('123')
     const added = builder.build()
     expect(added.extension?.[1].url).toEqual(ExtensionUrls.ProcedureDirectedBy)
@@ -123,15 +113,12 @@ describe('ServiceRequestBuilder - default constructor', () => {
   })
 
   test('withPerformer - should change performer', () => {
-    const builder = new ServiceRequestBuilder()
     builder.withPerformer('123')
     const result = builder.build()
     expect(result.performer?.[0].reference).toEqual('PractitionerRole/123')
   })
 
   test('withResident - should add /update extension procedure directed by', () => {
-    const builder = new ServiceRequestBuilder()
-
     builder.withResident('123')
     const added = builder.build()
     expect(added.extension?.[1].url).toEqual(ExtensionUrls.Resident)
@@ -144,7 +131,6 @@ describe('ServiceRequestBuilder - default constructor', () => {
   })
 
   test('build - should return with default fields', () => {
-    const builder = new ServiceRequestBuilder(mocks.serviceRequestMock)
     const result = builder.build()
     expect(result.resourceType).toEqual('ServiceRequest')
   })

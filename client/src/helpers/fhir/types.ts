@@ -1,3 +1,5 @@
+import { StatusType } from "components/screens/Patient/components/StatusChangeModal";
+
 export type ResourceType =
   | 'Practitioner'
   | 'Patient'
@@ -162,7 +164,7 @@ export interface ServiceRequest {
   resourceType: ResourceType;
   meta: Meta;
   extension: Extension[];
-  status: string;
+  status: StatusType;
   intent: string;
   authoredOn: string;
   identifier: Identifier[];

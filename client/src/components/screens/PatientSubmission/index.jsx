@@ -45,6 +45,7 @@ import SecondPage from './components/SecondPage';
 import SubmissionModal from './components/SubmissionModal';
 
 import './style.scss';
+import { StatusType } from "components/screens/Patient/components/StatusChangeModal";
 
 const isFetus = (patient) => patient?.extension.find(
   (ext) => ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
@@ -372,7 +373,7 @@ function PatientSubmissionScreen(props) {
 
       const ageInDay = moment(new Date()).diff(currentPatient.birthDate, 'days');
 
-      const submittedStatus = submitted ? 'on-hold' : (status || 'draft')
+      const submittedStatus = submitted ? StatusType['on-hold'] : (status || StatusType.draft)
 
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
