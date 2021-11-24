@@ -10,10 +10,10 @@ import UnknowGenderIcon from 'components/Assets/Icons/UnknowGenderIcon'
 import './styles.scss';
   
 enum Gender {
-MALE = 'male',
-FEMALE = 'female',
-UNKNOWN = 'unknown',
-}  
+  MALE = 'male',
+  FEMALE = 'female',
+  UNKNOWN = 'unknown',
+} 
 
 const getGenderIcon = (gender: string) => {
   switch (gender) {
