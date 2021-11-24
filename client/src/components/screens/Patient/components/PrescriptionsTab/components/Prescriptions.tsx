@@ -1,3 +1,13 @@
+import React, { CSSProperties, useEffect, useState } from 'react';
+import intl from 'react-intl-universal';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  DeleteOutlined, EditOutlined, FormOutlined, HistoryOutlined,
+  InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined} from '@ant-design/icons';
+import { updateServiceRequestStatus } from 'actions/patient';
+import { editPrescription } from 'actions/patientSubmission';
+import { resetStatus } from 'actions/prescriptions';
+import { navigateToSubmissionWithPatient } from 'actions/router';
 import {
   Alert,
   Button,
@@ -7,32 +17,26 @@ import {
   Popover,
   Row,
   Tabs,
+  Tag,
+  Typography,
 } from 'antd';
-import moment from 'moment';
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import intl from 'react-intl-universal';
-import {
-  DeleteOutlined, EditFilled, FormOutlined, InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined,
-} from '@ant-design/icons';
-import get from 'lodash/get';
 import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
 import { ConsultationSummary, FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from 'helpers/providers/types';
-import Badge from 'components/Badge';
-import { navigateToSubmissionWithPatient } from 'actions/router';
+import get from 'lodash/get';
+import moment from 'moment';
 import { State } from 'reducers';
-import { updateServiceRequestStatus } from 'actions/patient';
+import { PatientRequestCreationStatus } from 'reducers/prescriptions';
+
+import Badge from 'components/Badge';
 import StatusChangeModal, { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
-import { editPrescription } from 'actions/patientSubmission';
-import Summary from './Prescription/Summary';
+import { Observations } from 'store/ObservationTypes';
+import statusColors from 'style/statusColors';
+
+import ClinicalSigns from './Prescription/ClinicalSigns';
 import DetailsRow from './Prescription/DetailsRow';
 import FamilyHistory from './Prescription/FamilyHistory';
-import ClinicalSigns from './Prescription/ClinicalSigns';
+import Summary from './Prescription/Summary';
 import StatusLegend from './StatusLegend';
-import statusColors from 'style/statusColors';
-import { PatientRequestCreationStatus } from 'reducers/prescriptions';
-import { resetStatus } from 'actions/prescriptions';
-import { Observations } from 'store/ObservationTypes';
 
 const DEFAULT_VALUE = '--';
 
@@ -41,16 +45,37 @@ const tabDetailsCNPrefix = `${tabCNPrefix}__details`;
 
 const canEdit = (prescription: Prescription) => prescription.status === 'draft' || prescription.status === 'incomplete';
 
+enum StatutColors {
+  draft= 'default',
+  'on-hold'= 'gold',
+  revoked= 'red',
+  completed= 'green',
+  incomplete= 'magenta',
+  active= 'blue',
+}
+
 const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
-  <span
+  <Tag
     className={`${tabDetailsCNPrefix}__status-tag`}
-    style={{
-      '--tag-color': statusColors[status],
-    } as CSSProperties}
+    color={StatutColors[status]}
   >
     { intl.get(`screen.patient.details.status.${status}`) }
-  </span>
+  </Tag>
 );
+
+const UpdatedStatus: React.FC<{date: string}> = ({ date }) => {
+  const day = date.split('T')[0]
+  const hour = date.split('T')[1].split('.')[0]
+  return(
+    <span className={`${tabDetailsCNPrefix}__status-update`}>
+      <HistoryOutlined /> 
+      {intl.get('screen.patient.details.status.date.lastUpdated')} 
+      <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{day}</span>
+      {intl.get('screen.patient.details.status.date.time')}
+      <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{hour}</span>
+    </span>
+  )
+};
 
 interface Props {
   prescriptions: Prescription[]
@@ -61,7 +86,7 @@ const findClinicalImpression = (
   prescription: Prescription,
   clinicalImpressions: ClinicalImpression[],
 ) => clinicalImpressions
-    .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
+  .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
   
 const findConsultation = (
   clinicalImpression: ClinicalImpression,
@@ -98,7 +123,7 @@ const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId:
   return get(prescription, 'id');
 };
 
-const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) => {
+const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.ReactElement => {
   const patientState = useSelector((state: State) => state.patient);
   const { observations, openedPrescriptionId } = patientState;
 
@@ -126,7 +151,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
     const phonePart = info.phone ? info.phone.split(' ') : [];
     const phone = phonePart.length === 3 ? `(${phonePart[0]}) ${phonePart[1]}-${phonePart[2]}` : info.phone;
     return (
-      <Card title={intl.get('screen.patient.details.practitioner')} bordered={false}>
+      <Card bordered={false} title={intl.get('screen.patient.details.practitioner')}>
         <p><span className="popOverName">{ info.formattedName }</span>  | { info.mrn }</p>
         <p>{ info.organization }</p>
         <p>{ phone } poste: { info.phoneExtension }</p>
@@ -145,26 +170,25 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
   return (
     <div className={`${tabCNPrefix}`}>
       <Tabs
-        type="card"
         defaultActiveKey={startingIndex}
         tabBarExtraContent={{
           right: (
             <Button
-              type="primary"
-              onClick={() => dispatch(navigateToSubmissionWithPatient())}
               icon={<MedicineBoxOutlined />}
+              onClick={() => dispatch(navigateToSubmissionWithPatient())}
+              type="primary"
             >
               { intl.get('screen.patient.details.prescriptions.none.create') }
             </Button>
           ),
         }}
+        type="card"
       >
         {
-          prescriptions.map((prescription, index) => {
+          prescriptions.map((prescription) => {
             const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
             const consultation = findConsultation(clinicalImpression, consultations)
             const editablePrescription = canEdit(prescription);
-            const isDraft = prescription.status === 'draft';
             const getInitalStatus = () => {
               if (prescription.status === 'on-hold') {
                 return StatusType.submitted;
@@ -175,6 +199,7 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
             };
             return (
               <Tabs.TabPane
+                key={prescription.id}
                 tab={
                   (
                     <span className="prescriptions-tab__prescriptions-section__tab-label">
@@ -183,7 +208,6 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                     </span>
                   )
                 }
-                key={prescription.id}
               >
                 { prescription.status === 'draft' && (
                   <Alert
@@ -192,10 +216,9 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                       <span>
                         { intl.get('screen.patient.details.prescription.alert.message') }
                         <Button
-                          type="link"
-                          size="small"
-                          className="link--underline"
                           onClick={() => openEditPrescription(prescription.id!)}
+                          size="small"
+                          type="link"
                         >
                           { intl.get('screen.patient.details.prescription.alert.action') }
                         </Button>
@@ -207,13 +230,42 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                  && prescriptionSubmission.serviceRequestIds.includes(prescription.id || '')
                  && (
                    <Alert
-                     type="success"
-                     showIcon
                      closable
                      message={intl.get('screen.patient.details.prescription.success.message')}
+                     showIcon
+                     type="success"
                    />
                  ) }
                 <Card
+                  bordered={false}
+                  className="resume"
+                  extra={(
+                    <Row>
+                      <Col>
+                        <Button
+                          icon={<PrinterOutlined />}
+                          onClick={() => {
+                            /* eslint-disable-next-line no-alert */
+                            alert('Feature not yey implemented');
+                          }}
+                          type='text'
+                        >
+                          { intl.get('screen.patient.details.prescription.print') }
+                        </Button>
+                      </Col>
+                      <Col>
+                        <Button
+                          className={`${!editablePrescription ? 'button--disabled' : ''}`}
+                          disabled={!editablePrescription}
+                          icon={<FormOutlined />}
+                          onClick={() => openEditPrescription(prescription.id!)}
+                          type='text'
+                        >
+                          { intl.get('screen.patient.details.prescription.edit') }
+                        </Button>
+                      </Col>
+                    </Row>
+                  )}
                   title={(
                     <>
                       <span>{ intl.get('screen.patient.details.prescription.title') }</span>
@@ -221,56 +273,15 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                       <span>{ prescription.id }</span>
                     </>
                   )}
-                  className="resume"
-                  bordered={false}
-                  extra={(
-                    <Row>
-                      <Col>
-                        <Button
-                          className={`button--borderless ${!isDraft ? 'button--disabled' : ''}`}
-                          icon={<DeleteOutlined />}
-                          onClick={() => {
-                            /* eslint-disable-next-line no-alert */
-                            alert('Feature not yey implemented');
-                          }}
-                          disabled={!isDraft}
-                        >
-                          { intl.get('screen.patient.details.prescription.delete') }
-                        </Button>
-                      </Col>
-                      <Col>
-                        <Button
-                          className="button--borderless"
-                          icon={<PrinterOutlined />}
-                          onClick={() => {
-                            /* eslint-disable-next-line no-alert */
-                            alert('Feature not yey implemented');
-                          }}
-                        >
-                          { intl.get('screen.patient.details.prescription.print') }
-                        </Button>
-                      </Col>
-                      <Col>
-                        <Button
-                          className={`button--borderless ${!editablePrescription ? 'button--disabled' : ''}`}
-                          icon={<FormOutlined />}
-                          onClick={() => openEditPrescription(prescription.id!)}
-                          disabled={!editablePrescription}
-                        >
-                          { intl.get('screen.patient.details.prescription.edit') }
-                        </Button>
-                      </Col>
-                    </Row>
-                  )}
                 >
                   <DetailsRow
                     label={(
                       <span className={`${tabDetailsCNPrefix}__status-label`}>
                         { intl.get('screen.patient.details.prescription.status') }
                         <Button
-                          type="text"
                           className={`${tabDetailsCNPrefix}__status-label__info-button`}
                           onClick={() => setIsStatusLegendVisible(true)}
+                          type="text"
                         >
                           <InfoCircleOutlined />
                         </Button>
@@ -286,13 +297,14 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                           && prescription.status !== 'revoked')
                         && (
                           <Button
-                            className="button--borderless"
-                            icon={<EditFilled />}
+                            icon={<EditOutlined />}
                             onClick={() => setSelectedPrescriptionId(prescription.id)}
+                            type='text'
                           >
                             { intl.get('screen.patient.details.prescription.change') }
                           </Button>
                         ) }
+                        <UpdatedStatus date={prescription.lastUpdated}/>
                       </div>
                       { ['revoked', 'incomplete'].includes(prescription.status) && prescription.noteStatus && (
                         <div className={`${tabDetailsCNPrefix}__status-value__row`}>
@@ -304,21 +316,27 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                         </div>
                       ) }
                     </div>
+                    
                     <StatusChangeModal
+                      initialStatus={getInitalStatus()}
                       isVisible={selectedPrescriptionId === prescription.id}
+                      onCancel={() => setSelectedPrescriptionId(undefined)}
                       onOk={(newStatus, note) => {
                         dispatch(updateServiceRequestStatus(selectedPrescriptionId, newStatus, note));
                         setSelectedPrescriptionId(undefined);
                       }}
-                      onCancel={() => setSelectedPrescriptionId(undefined)}
-                      initialStatus={getInitalStatus()}
                     />
                   </DetailsRow>
+                  <div className={`${tabDetailsCNPrefix}__offsetSection`}>
+                    <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
+                      <Typography.Title level={4} >{ intl.get(prescription.test) || DEFAULT_VALUE }</Typography.Title>
+                    </DetailsRow>        
+                    <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
+                      { prescription.note || DEFAULT_VALUE }
+                    </DetailsRow>
+                  </div>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.mrn')}>
                     { prescription.mrn } | { prescription.organization }
-                  </DetailsRow>
-                  <DetailsRow label={intl.get('screen.patient.details.prescription.prescription')}>
-                    { prescription.id || DEFAULT_VALUE }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.submissionDate')}>
                     { prescription.date ? moment(prescription.date).format('YYYY-MM-DD') : DEFAULT_VALUE }
@@ -328,18 +346,18 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                       <span className="prescriptions-tab__prescriptions-section__more-info">
                         { formatName(prescription.requester, prescription.supervisor) }
                         <Popover
+                          content={practitionerPopOverText(prescription.requester)}
                           overlayClassName="practitionerInfo"
                           placement="topRight"
-                          content={practitionerPopOverText(prescription.requester)}
                           trigger="hover"
                         >
                           <InfoCircleOutlined />
                         </Popover>
                       </span>
                     ) : DEFAULT_VALUE}
-                     { prescription.supervisor && (
+                    { prescription.supervisor && (
                       <span className="prescriptions-tab__prescriptions-section__more-info">
-                       <Divider type="vertical" />
+                        <Divider type="vertical" />
                         {formatName(prescription.supervisor) }
                       </span>
                     )}
@@ -347,14 +365,12 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                   <DetailsRow label={intl.get('screen.patient.details.prescription.hospital')}>
                     { consultation!= null ? consultation.practitioner.organization : DEFAULT_VALUE }
                   </DetailsRow>
-                  <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
-                    { intl.get(prescription.test) || DEFAULT_VALUE }
-                  </DetailsRow>
-                  <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
-                    { prescription.note || DEFAULT_VALUE }
+                  <DetailsRow label={intl.get('screen.patient.details.prescription.labo')}>
+                    --
                   </DetailsRow>
                 </Card>
                 <Summary
+                  consultation={consultation}
                   observations={{
                     cgh: getClinicalObservations(observations!, clinicalImpression, 'cgh'),
                     indic: getClinicalObservations(observations!, clinicalImpression, 'indic'),
@@ -362,14 +378,13 @@ const Prescriptions: React.FC<Props> = ({ prescriptions, clinicalImpressions }) 
                   }}
                   patient={patient}
                   prescription={prescription}
-                  consultation={consultation}
                 />
                 <FamilyHistory
-                  observations={{
-                    eth: getClinicalObservations(observations!, clinicalImpression, 'eth'),
-                    cons: getClinicalObservations(observations!, clinicalImpression, 'cons'),
-                  }}
                   familyHistories={findFamilyHistories(prescription, clinicalImpressions, familyHistories)}
+                  observations={{
+                    cons: getClinicalObservations(observations!, clinicalImpression, 'cons'),
+                    eth: getClinicalObservations(observations!, clinicalImpression, 'eth'),
+                  }}
                 />
                 <ClinicalSigns
                   clinicalImpression={clinicalImpression}

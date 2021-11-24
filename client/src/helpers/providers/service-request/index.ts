@@ -49,7 +49,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
   public doProvide(dataExtractor: DataExtractor): Record<ServiceRequest, Prescription>[] {
     const serviceRequestBundle = dataExtractor.extractBundle('ServiceRequest');
     const serviceRequests = dataExtractor.extractResources<ServiceRequest>(serviceRequestBundle, 'ServiceRequest');
-
+    console.log('serviceRequests', serviceRequests)
     const prescriptions: Prescription[] = serviceRequests.map((serviceRequest: ServiceRequest) => ({
       id: serviceRequest.id,
       date: serviceRequest.authoredOn,
@@ -62,6 +62,7 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
       clinicalImpressionRef: this.getClinicalImpressionRef(dataExtractor, serviceRequest),
       mrn: get(serviceRequest, 'identifier[0].value', '--'),
       organization: get(serviceRequest, 'identifier[0].assigner.reference', '--/--').split('/')[1],
+      lastUpdated: serviceRequest.meta.lastUpdated,
     }));
 
     const output: Record<ServiceRequest, Prescription>[] = [];

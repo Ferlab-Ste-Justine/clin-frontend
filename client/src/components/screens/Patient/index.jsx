@@ -112,7 +112,7 @@ class PatientScreen extends React.Component {
         title: (
           <span className="tabName">
             <MedicineBoxFilled />
-            {intl.get('screen.patient.tab.prescriptions')}
+            {`${intl.get('screen.patient.tab.prescriptions')}  (${this.props.prescriptions.length})`}
           </span>
         ),
       },

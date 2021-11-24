@@ -371,6 +371,7 @@ const en = {
   'screen.patient.details.prescription': 'Prescription',
   'screen.patient.details.prescription.alert.action': 'Please fill in the missing information.',
   'screen.patient.details.prescription.alert.message': 'This prescription is incomplete.',
+  'screen.patient.details.prescription.labo': 'Diagnostic laboratory',
   'screen.patient.details.prescription.success.message': 'This prescription has been successfully submitted.',
   'screen.patient.details.prescription.practitioner': 'Prescribing physician',
   'screen.patient.details.prescriptions.clinicalSign.apparition': 'Apparition',
