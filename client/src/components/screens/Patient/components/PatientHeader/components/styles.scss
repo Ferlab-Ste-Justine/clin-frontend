@@ -3,6 +3,9 @@
 .patient-page {
   &__header {
     &__tags {
+      display: flex;
+      align-items: center;
+      height: 22px;
       >span {
         font-weight: 500;
         margin-right: 4px;

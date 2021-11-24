@@ -40,7 +40,6 @@ const FetusHeader= ({ patient }:Props): React.ReactElement => {
         >
           <span>{ intl.get('screen.patient.details.header.mother') } :</span> 
           <Button 
-            className="link--underline" 
             onClick={() => dispatch(navigateToPatientScreen(patient.familyRelation))}
             size='small' 
             type='link'

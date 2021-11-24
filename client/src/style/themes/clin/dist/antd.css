@@ -25192,6 +25192,9 @@ div.ant-typography-edit-content.ant-typography-rtl {
 .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
   background-color: #e1e8ef;
 }
+.ant-btn-link span {
+  text-decoration: underline;
+}
 .ant-btn-link {
   color: #006aa3;
   padding: 0;
