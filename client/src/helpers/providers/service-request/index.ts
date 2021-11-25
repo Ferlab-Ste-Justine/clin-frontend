@@ -49,7 +49,6 @@ export class ServiceRequestProvider extends Provider<ServiceRequest, Prescriptio
   public doProvide(dataExtractor: DataExtractor): Record<ServiceRequest, Prescription>[] {
     const serviceRequestBundle = dataExtractor.extractBundle('ServiceRequest');
     const serviceRequests = dataExtractor.extractResources<ServiceRequest>(serviceRequestBundle, 'ServiceRequest');
-    console.log('serviceRequests', serviceRequests)
     const prescriptions: Prescription[] = serviceRequests.map((serviceRequest: ServiceRequest) => ({
       id: serviceRequest.id,
       date: serviceRequest.authoredOn,
