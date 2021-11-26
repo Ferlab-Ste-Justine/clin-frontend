@@ -32,7 +32,7 @@ header#header {
   height: 56px;
   background: $primary-blue;
   border-radius: 0px;
-  padding:12px 0 0 40px ;
+  padding:12px 24px;
   line-height: 0;
 
   h1.ant-typography, h2.ant-typography, h3.ant-typography, h4.ant-typography {
@@ -45,8 +45,6 @@ header#header {
   };
 
   .secondaryNav{
-    padding-left:56px;
-    padding-right:40px;
     display:flex;
     align-items: center;
     margin-left: auto;
@@ -56,23 +54,22 @@ header#header {
     a, button{
       display: inline-flex;
       align-items: center;
-      color:$text-onprimary-medium;
-      padding-top: 2px;
+      color: $text-onprimary-medium;
       letter-spacing: 1.25px;
       text-transform: uppercase;
       font-family: $font;
       font-weight: 500;
       font-size: 12px;
+      padding: 0;
 
-      i{
-        padding-right: 8px;
-        position:relative;
-        top:-2px;
+      &:not(#logout-button) {
         svg{
+          fill: $text-onprimary-medium;
+          margin-right: 8px;
           width: 20px;
           height: 20px;
         }
-      };
+      }
     };
 
     .ant-dropdown-menu-item {
@@ -82,9 +79,9 @@ header#header {
     }
 
     .ant-divider{
-      height:32px;
+      height: 32px;
       background-color:rgba(255, 255, 255, 0.54);
-      margin:0 28px;
+      margin:0 24px;
 
     }
     a:hover{

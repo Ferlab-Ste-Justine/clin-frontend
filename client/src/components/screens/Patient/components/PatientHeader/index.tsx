@@ -11,7 +11,7 @@ interface Props {
 
 const PatientHeader= ({ patient }: Props): React.ReactElement => (
   <div className="header__content--static">
-    <Row align="bottom" className="flex-row patient-header" gutter={12}>
+    <Row align="middle" className="flex-row patient-header" gutter={12}>
       { patient.isFetus 
         ? (<FetusHeader patient={patient} />)
         : (<ProbandHeader patient={patient}/>)

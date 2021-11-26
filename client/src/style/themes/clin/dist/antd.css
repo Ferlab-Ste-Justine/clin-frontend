@@ -16941,11 +16941,10 @@ textarea.ant-mentions {
   line-height: 1;
 }
 .ant-page-header-back-button {
-  color: #006aa3;
   text-decoration: none;
   outline: none;
   transition: color 0.3s;
-  color: #000;
+  color: #006aa3;
   cursor: pointer;
 }
 .ant-page-header-back-button:focus,
