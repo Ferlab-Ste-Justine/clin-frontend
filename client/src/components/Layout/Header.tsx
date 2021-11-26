@@ -76,7 +76,7 @@ const Header: React.FC = () => {
           <img className="logo" alt={title} src="/assets/logos/cqgc-white.svg" />
         </Col>
         <div className="secondaryNav">
-          {user.username !== null && (
+          {user.username && (
             <>
               <div className="navigation">
                 <Row className="flex-row" justify="space-between" align="middle">
@@ -99,7 +99,7 @@ const Header: React.FC = () => {
             </>
           )}
           <Col>
-            {app.locale.lang !== null && (
+            {app.locale.lang && (
               <Dropdown
                 overlay={languageMenu()}
                 trigger={['click']}

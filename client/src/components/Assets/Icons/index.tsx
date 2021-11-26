@@ -21,24 +21,3 @@ export type BaseSvgProps = {
   style?: object;
   width?: string;
 };
-
-export const BaseSvg = ({
-  svg,
-  size = '1em',
-  height = size,
-  width = size,
-  style,
-  alt = '',
-  ...props
-}: BaseSvgProps) => (
-  <img
-    src={`data:image/svg+xml;utf8,${encodeSVG(svg)}`}
-    style={{
-      ...style,
-      width,
-      height,
-    }}
-    alt={alt}
-    {...props}
-  />
-);
