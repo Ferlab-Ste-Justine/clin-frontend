@@ -2,11 +2,10 @@
 import React from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Layout, Row, Col, Menu, Divider, Button,
-} from 'antd';
-import IconKit from 'react-icons-kit';
-import { ic_translate, ic_account_circle, ic_supervisor_account } from 'react-icons-kit/md';
+import { Layout, Row, Col, Menu, Divider, Button } from 'antd';
+import TranslateIcon from "components/Assets/Icons/TranslateIcon";
+import AccountCircleIcon from "components/Assets/Icons/AccountCircleIcon";
+import SupervisorIcon from "components/Assets/Icons/SupervisorIcon";
 import { Link } from 'react-router-dom';
 import { LogoutOutlined } from '@ant-design/icons';
 import { logoutUser } from '../../actions/user';
@@ -17,9 +16,7 @@ import Dropdown from '../Dropdown';
 const userMenu = (logoutButtonRef?: React.MutableRefObject<HTMLButtonElement | null>) => {
   const dispatch = useDispatch();
   return (
-    <Menu
-      getPopupContainer={(triggerNode: HTMLElement) => triggerNode.parentNode as HTMLElement}
-    >
+    <Menu getPopupContainer={(triggerNode: HTMLElement) => triggerNode.parentNode as HTMLElement}>
       <Menu.Item key="logout">
         <Button
           ref={logoutButtonRef}
@@ -28,7 +25,7 @@ const userMenu = (logoutButtonRef?: React.MutableRefObject<HTMLButtonElement | n
           id="logout-button"
         >
           <LogoutOutlined />
-          { `${intl.get('header.navigation.user.logout')}` }
+          {`${intl.get('header.navigation.user.logout')}`}
         </Button>
       </Menu.Item>
     </Menu>
@@ -47,7 +44,7 @@ const languageMenu = (frButtonRef?: React.MutableRefObject<HTMLButtonElement | n
             dispatch(changeLanguage('fr'));
           }}
         >
-          { intl.get('lang.fr.long') }
+          {intl.get('lang.fr.long')}
         </Button>
       </Menu.Item>
 
@@ -58,7 +55,7 @@ const languageMenu = (frButtonRef?: React.MutableRefObject<HTMLButtonElement | n
             dispatch(changeLanguage('en'));
           }}
         >
-          { intl.get('lang.en.long') }
+          {intl.get('lang.en.long')}
         </Button>
       </Menu.Item>
     </Menu>
@@ -79,51 +76,47 @@ const Header: React.FC = () => {
           <img className="logo" alt={title} src="/assets/logos/cqgc-white.svg" />
         </Col>
         <div className="secondaryNav">
-          { user.username !== null && (
+          {user.username && (
             <>
               <div className="navigation">
                 <Row className="flex-row" justify="space-between" align="middle">
                   <Col className="patientList">
-                    <Link to="/patient/search" className="ant-dropdown-link">
-                      <IconKit size={16} icon={ic_supervisor_account} />
-                      { intl.get('header.navigation.patient') }
+                    <Link to="/patient/search">
+                      <SupervisorIcon />
+                      {intl.get('header.navigation.patient')}
                     </Link>
                   </Col>
                   <Divider type="vertical" />
                 </Row>
               </div>
               <Col className="userName">
-                <Dropdown
-                  overlay={userMenu()}
-                  trigger={['click']}
-                >
-                  <Button type="text" className="ant-dropdown-link">
-                    <IconKit size={16} icon={ic_account_circle} />
-                    { ` ${user.firstName} ` }
+                <Dropdown overlay={userMenu()} trigger={['click']}>
+                  <Button type="text" icon={<AccountCircleIcon />}>
+                    {` ${user.firstName} `}
                   </Button>
                 </Dropdown>
               </Col>
             </>
-          ) }
+          )}
           <Col>
-            { app.locale.lang !== null && (
+            {app.locale.lang && (
               <Dropdown
                 overlay={languageMenu()}
                 trigger={['click']}
-                getPopupContainer={(triggerNode: HTMLElement) => triggerNode.parentNode as HTMLElement}
+                getPopupContainer={(triggerNode: HTMLElement) =>
+                  triggerNode.parentNode as HTMLElement
+                }
               >
-                <Button type="text" className="ant-dropdown-link">
-                  <IconKit size={16} icon={ic_translate} />
-                  { langText }
+                <Button type="text" icon={<TranslateIcon />}>
+                  {langText}
                 </Button>
               </Dropdown>
-            ) }
+            )}
           </Col>
         </div>
-
       </Row>
     </Layout.Header>
   );
 };
 
-export default (Header);
+export default Header;
