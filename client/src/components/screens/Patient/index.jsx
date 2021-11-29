@@ -198,7 +198,7 @@ const mapStateToProps = (state) => ({
   app: state.app,
   currentActiveKey: state.patient.currentActiveKey,
   patient: state.patient.patient.parsed,
-  prescriptions: state.patient.prescriptions?.map((prescription) => prescription.parsed) || [],
+  prescriptions:(state.patient.prescriptions || []).map((prescription) => prescription.parsed),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PatientScreen);

@@ -41,7 +41,7 @@ export type Prescription = {
   clinicalImpressionRef: string;
   mrn?: string;
   organization?: string;
-  lastUpdated: any
+  lastUpdated: string
 };
 
 export type ClinicalObservation = {
