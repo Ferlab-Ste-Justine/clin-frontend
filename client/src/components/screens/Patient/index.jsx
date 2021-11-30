@@ -112,7 +112,7 @@ class PatientScreen extends React.Component {
         title: (
           <span className="tabName">
             <MedicineBoxFilled />
-            {intl.get('screen.patient.tab.prescriptions')}
+            {`${intl.get('screen.patient.tab.prescriptions')}  (${this.props.prescriptions.length})`}
           </span>
         ),
       },
@@ -198,7 +198,7 @@ const mapStateToProps = (state) => ({
   app: state.app,
   currentActiveKey: state.patient.currentActiveKey,
   patient: state.patient.patient.parsed,
-  prescriptions: state.patient.prescriptions?.map((prescription) => prescription.parsed) || [],
+  prescriptions:(state.patient.prescriptions || []).map((prescription) => prescription.parsed),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PatientScreen);

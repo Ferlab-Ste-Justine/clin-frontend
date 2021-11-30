@@ -517,8 +517,9 @@ const fr = {
   'screen.patient.details.prescription.comments': 'Commentaire général',
   'screen.patient.details.prescription.delete': 'Supprimer',
   'screen.patient.details.prescription.edit': 'Modifier',
-  'screen.patient.details.prescription.hospital': 'Hôpital',
-  'screen.patient.details.prescription.mrn': 'Dossier',
+  'screen.patient.details.prescription.hospital': 'Etablissement prescripteur',
+  'screen.patient.details.prescription.labo': 'Laboratoire de diagnostic',
+  'screen.patient.details.prescription.mrn': 'Dossier médical',
   'screen.patient.details.prescription.practitioner': 'Médecin prescripteur',
   'screen.patient.details.prescription.prescription': 'Prescription',
   'screen.patient.details.prescription.print': 'Imprimer',
@@ -601,6 +602,8 @@ const fr = {
   'screen.patient.details.status.completed': 'Complétée',
   'screen.patient.details.status.completed.description':
     'Cette prescription a été exécutée et les résultats sont maintenant disponibles.',
+  'screen.patient.details.status.date.lastUpdated': 'Dernière mise à jour : le',
+  'screen.patient.details.status.date.time': 'à',
   'screen.patient.details.status.draft': 'Brouillon',
   'screen.patient.details.status.incomplete': 'Incomplète',
   'screen.patient.details.status.incomplete.description':

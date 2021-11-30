@@ -204,15 +204,12 @@
 
     &__details {
       &__status-tag {
-        --tag-color: #000;
-        color: #ffffff;
-        background-color: var(--tag-color);
-        line-height: 22px;
-        padding: 1px 0;
-        width: 100px;
         text-align: center;
         display: inline-block;
         border-radius: 2px;
+        font-size: 14px;
+        padding: 4px 16px;
+        line-height: 22px;
       }
       &__status-label {
         &__info-button {
@@ -248,6 +245,24 @@
             }
           }
         }
+      }
+
+      &__status-update{
+        font-size: 12px;
+        color: $gray-7;
+        margin-left: 24px;
+        svg{
+          margin-right: 8px;
+        }
+        &__textInfo{
+          color:$gray-8;
+          margin: 0 4px;
+        }
+      }
+
+      &__offsetSection{
+        margin-top: 24px;
+        margin-bottom: 36px;
       }
 
       &__row {

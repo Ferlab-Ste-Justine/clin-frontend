@@ -1,15 +1,16 @@
 import React from 'react';
-import { Card, Table, Typography } from 'antd';
-import get from 'lodash/get';
 import intl from 'react-intl-universal';
-import { Observation } from '../../../../../../../helpers/fhir/types';
-import { FamilyObservation } from '../../../../../../../helpers/providers/types';
+import { Card, Table, Typography } from 'antd';
+import { Observation } from 'helpers/fhir/types';
+import { FamilyObservation } from 'helpers/providers/types';
+import get from 'lodash/get';
+
 import DetailsRow from './DetailsRow';
 
 const Wrapper: React.FC = ({ children }) => (
   <Card
-    title={intl.get('screen.patient.details.prescriptions.family.title')}
     bordered={false}
+    title={intl.get('screen.patient.details.prescriptions.family.title')}
   >  { children }
   </Card>
 );
@@ -95,21 +96,21 @@ const FamilyHistory: React.FC<Props> = ({ familyHistories, observations }) => {
               { intl.get('screen.patient.details.prescriptions.family.familyCondition') }
             </Typography.Title>
             <Table
-              pagination={false}
               columns={[
                 {
-                  title: intl.get('screen.patient.details.prescriptions.family.familyCondition.link'),
                   dataIndex: 'link',
                   key: 'link',
+                  title: intl.get('screen.patient.details.prescriptions.family.familyCondition.link'),
                   width: 200,
                 },
                 {
-                  title: intl.get('screen.patient.details.prescriptions.family.familyCondition.notes'),
                   dataIndex: 'note',
                   key: 'note',
+                  title: intl.get('screen.patient.details.prescriptions.family.familyCondition.notes'),
                 },
               ]}
-              dataSource={familyHistories.map((fh) => ({ ...fh, note: fh.note || '--' }))}
+              dataSource={familyHistories.map((fh, index) => ({ ...fh, key: index, note: fh.note || '--' }))}
+              pagination={false}
             />
           </div>
         )
