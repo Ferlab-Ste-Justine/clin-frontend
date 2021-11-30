@@ -1,9 +1,5 @@
 {
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:jest/recommended",
-    "prettier"
-  ],
+  "extends": ["plugin:@typescript-eslint/recommended", "plugin:jest/recommended", "prettier"],
   "ignorePatterns": [".eslintrc.json"],
   "plugins": [
     "react",
@@ -20,8 +16,8 @@
     "jest": true
   },
   "globals": {
-      "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly"
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
   },
   "overrides": [
     {
@@ -33,49 +29,68 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-      "ecmaFeatures": {
-          "jsx": true
-      },
-      "ecmaVersion": 2018,
-      "sourceType": "module"
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module"
   },
   "rules": {
     "indent": ["error", 2],
     "linebreak-style": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
     "simple-import-sort/imports": [
       "error",
-      { "groups": [
-        // Side effect imports.
-        ["^\\u0000"],
-        // Packages. `react` related packages come first.
-        ["^react", "^@?\\w"],
-        // Internal packages.
-        ["^(@|@company|@ui|components|utils|config|vendored-lib|layouts|pages|providers|routes|assets|locales|services|store|style|types)(/.*|$)"],
-        // Parent imports. Put `..` last.
-        ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
-        // Other relative imports. Put same-folder imports and `.` last.
-        ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
-        // Style imports.
-        ["^.+\\.s?css$"]
-      ]
-    }],
+      {
+        "groups": [
+          // Side effect imports.
+          ["^\\u0000"],
+          // Packages. `react` related packages come first.
+          ["^react", "^@?\\w"],
+          // Internal packages.
+          [
+            "^(@|@company|@ui|components|utils|config|vendored-lib|layouts|pages|providers|routes|assets|locales|services|store|style|types)(/.*|$)"
+          ],
+          // Parent imports. Put `..` last.
+          ["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+          // Other relative imports. Put same-folder imports and `.` last.
+          ["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"],
+          // Style imports.
+          ["^.+\\.s?css$"]
+        ]
+      }
+    ],
     "simple-import-sort/exports": "error",
-    "sort-keys-fix/sort-keys-fix": ["error", "asc", {
+    "sort-keys-fix/sort-keys-fix": [
+      "error",
+      "asc",
+      {
         "caseSensitive": false,
         "natural": true
-    }],
-    "sort-destructure-keys/sort-destructure-keys": ["error", {
+      }
+    ],
+    "sort-destructure-keys/sort-destructure-keys": [
+      "error",
+      {
         "caseSensitive": false
-    }],
+      }
+    ],
     "sort-vars": "error",
     "no-nested-ternary": 0,
     "prefer-arrow/prefer-arrow-functions": [
-        "error",
-        {
-            "disallowPrototype": true,
-            "singleReturnOnly": true,
-            "classPropertiesAllowed": false
-        }
+      "error",
+      {
+        "disallowPrototype": true,
+        "singleReturnOnly": true,
+        "classPropertiesAllowed": false
+      }
     ],
     "arrow-body-style": ["error", "as-needed"],
 
@@ -83,10 +98,13 @@
     "react/jsx-sort-props": "error",
     "react/jsx-props-no-spreading": "off",
 
-    "prefer-destructuring": ["error", {
+    "prefer-destructuring": [
+      "error",
+      {
         "array": false,
         "object": true
-    }],
+      }
+    ],
     "no-console": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off"

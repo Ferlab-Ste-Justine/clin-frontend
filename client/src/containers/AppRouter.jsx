@@ -70,7 +70,7 @@ const AppRouter = ({ history }) => {
           path={Routes.Root}
         />
         <AuthRoute
-          Component={PatientSearchScreen}
+          Component={SearchScreen}
           exact
           key="route-patient-search"
           path={Routes.PatientSearch}
@@ -87,10 +87,10 @@ const AppRouter = ({ history }) => {
         />
 
         <AuthRoute
-          Component={SearchScreen}
+          Component={PatientSearchScreen}
           exact
-          key="route-patient-search-graphql"
-          path={Routes.PatientSearchArranger}
+          key="route-patient-search-old"
+          path={Routes.PatientSearchOld}
           resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST}
           roles={[]}
         />
