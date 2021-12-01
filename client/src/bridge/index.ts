@@ -6,7 +6,8 @@ type CallBackType = (e: MessageEvent) => void;
 
 /*
   This class bridges with an iframe to receive messages
-  It is possible to send message both ways, only receiving is possible at this time
+  It could be extended to support bidirectional communication
+  It only support receiving message event at this time
   
   e.g.
     const bridge = new Bridge(store, iFrame.current);
