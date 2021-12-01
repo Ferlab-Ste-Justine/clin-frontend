@@ -36,7 +36,7 @@ export const NewPrescriptionModal = ({
   const onClose = (goToScreen?: () => void) => {
     setOpenModal(Screens.None);
     dispatch(closeCreatePatient());
-    if (goToScreen != null) {
+    if (goToScreen) {
       goToScreen();
     } else {
       goToPatientSearch();

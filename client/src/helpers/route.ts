@@ -21,8 +21,7 @@ export class Routes {
         : `${Routes.Patient}/:uid`;
   }
 
-  public static getVariantPath = (uid?: string): string =>
-    uid ? `${Routes.Variant}/${uid}` : `${Routes.Variant}/:uid`;
+  public static getVariantPath = (uid?: string): string => `${Routes.Variant}/${uid || ':uid'}`;
 
   public static getPatientIdFromPatientPageRoute = (location: string): string =>
     location?.split('/')[2].split('#')[0];
