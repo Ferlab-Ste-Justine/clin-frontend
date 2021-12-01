@@ -6,10 +6,10 @@
 
 ## Available Scripts
 
-- `pnpm start` launches the app in development mode at [http://localhost:3000](http://localhost:3000)
-- `pnpm test` launches the test runner in the interactive watch mode
-- `pnpm run serve` serves the static assets from the `build` directory
-- `pnpm run build` builds the app into the `build` directory
+- `npm start` launches the app in development mode at [http://localhost:3000](http://localhost:3000)
+- `npm run test` launches the test runner in the interactive watch mode
+- `npm run serve` serves the static assets from the `build` directory
+- `npm run build` builds the app into the `build` directory
   - compatible with [these browsers](https://browserl.ist/?q=last+3+version%2C+not+op_mini+all%2C+not+%3C+1%25).<br>
   - bundles React in production mode and optimizes the build for the best performance:
     - [Code Splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
@@ -27,9 +27,8 @@ Install Node.js LTS 10.14.1 using [nvm](https://github.com/creationix/nvm/blob/m
 
 ```
 cp -p .env.development .env
-npm install -g pnpm
-pnpm install
-pnpm start
+npm install
+npm start
 ```
 
 It is assumed that the clin-proxy-services are running locally on your machine.

@@ -1,9 +1,8 @@
 FROM node:14.15.1 as builder
 ADD . /code
 WORKDIR /code
-RUN npm install -g pnpm
-RUN pnpm install
-RUN pnpm build
+RUN npm install
+RUN npm run build
 
 FROM nginx:1 as server
 
