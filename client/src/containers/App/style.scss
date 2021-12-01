@@ -365,9 +365,8 @@ div.ant-card {
         }
       }
       .ant-tabs-tab-active{
-        .tabName, i, .anticon > svg{
-          color: $blue-9;
-          fill: $blue-9;
+        .anticon > svg{
+          fill: $blue-8;
         }
       }
       .ant-tabs-tab-disabled{

@@ -265,6 +265,9 @@
         margin-bottom: 36px;
       }
 
+      &__test{
+        color: $gray-8 !important;
+      }
       &__row {
         flex-wrap: nowrap;
         &:not(:last-of-type){
@@ -275,6 +278,7 @@
           width: 200px;
           margin-right: 16px;
         }
+
         &__value{
           max-width: 800px;
           button{
