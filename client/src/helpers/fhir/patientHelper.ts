@@ -73,7 +73,7 @@ export const groupStatusObject = (
   valueCoding: {
     code,
     display,
-    system: 'http://fhir.cqgc.ferlab.bio/ValueSet/group-member-status',
+    system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/group-member-status',
   },
 });
 
