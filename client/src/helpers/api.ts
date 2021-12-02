@@ -473,11 +473,19 @@ const getFileURL = async (file: string) =>
     .then(successCallback)
     .catch(errorCallback);
 
+const fetchServiceRequestCode = () =>
+  Http.secureClinAxios
+    .get(`${window.CLIN.fhirBaseUrl}/CodeSystem/service-request-code`)
+    .then(successCallback)
+    .catch(errorCallback);
+  
+
 export default {
   addOrUpdatePatientToGroup,
   canEditPatients,
   getGroupById,
   getPatientById,
+  fetchServiceRequestCode,
   getGroupByMemberId,
   deleteGroup,
   updateGroup,

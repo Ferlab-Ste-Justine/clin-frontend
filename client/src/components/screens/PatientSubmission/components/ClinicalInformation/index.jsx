@@ -18,15 +18,13 @@ import {
   getHPOInterpretationCode,
   getHPOOnsetCode,
   getResourceId,
-  getTestCoding,
   hpoInterpretationValues,
   hpoOnsetValues,
 } from 'helpers/fhir/fhir';
 import { getObservationValue } from 'helpers/fhir/fhir';
-import { AnalysisTestCodes, PrescriptionStatus } from 'helpers/fhir/types';
+import { PrescriptionStatus } from 'helpers/fhir/types';
 import findIndex from 'lodash/findIndex';
 import get from 'lodash/get';
-import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
 import toArray from 'lodash/values';
 import { bindActionCreators } from 'redux';
@@ -340,9 +338,8 @@ class ClinicalInformation extends React.Component {
 
     const hpoOptionsLabels = map(hpoOptions, 'name');
     const {
-      fmhResources, form, hpoResources, observations, onChange, serviceRequest, submitFailed, validate,
+      fmhResources, form, hpoResources, observations, onChange, serviceRequest, serviceRequestCode, submitFailed, validate,
     } = this.props;
-
     const { TextArea } = Input;
     let cghId = null;
     if (observations.cgh != null) {
@@ -351,7 +348,6 @@ class ClinicalInformation extends React.Component {
 
     const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);  
 
-    const AnalysisTestCodesValues = Object.values(AnalysisTestCodes)
     const initialAnalysisValue = serviceRequest.code;
     let initialAnalysisNote = serviceRequest.note;
     const initialInterpretation = observations?.cgh?.interpretation?.[0]?.coding?.[0]?.code ?? null;
@@ -409,16 +405,13 @@ class ClinicalInformation extends React.Component {
                 className="clinical-information__analysis__checkbox-group"
               >
                 { 
-                  AnalysisTestCodesValues.map((code) => {
-                    const option = getTestCoding(code)
-                    return(
-                      <Checkbox
-                        key={option.code}
-                        value={option.code}
-                      >{ intl.get(option.display) }
-                      </Checkbox>
-                    )
-                  }) 
+                  serviceRequestCode.codes?.map((code) => (
+                    <Checkbox
+                      key={code.code}
+                      value={code.code}
+                    >{ code.display }
+                    </Checkbox>
+                  )) 
                 }
               </Checkbox.Group>
             </Form.Item>
@@ -442,20 +435,13 @@ class ClinicalInformation extends React.Component {
                 }}
               >
                 { 
-                  AnalysisTestCodesValues.map((code) => {
-                    const option = getTestCoding(code)
-                    return(
-                      <Checkbox
-                        disabled={
-                          this.isStatusIncomplete() || this.givenCodeIsTheOnlyOneSelected(option.code)
-                        }
-                        key={option.code}
-                        value={option.code}
-                      >
-                        { intl.get(option.display) }
-                      </Checkbox>
-                    )
-                  }) 
+                  serviceRequestCode.codes?.map((code) => (
+                    <Checkbox
+                      key={code.code}
+                      value={code.code}
+                    >{ code.display }
+                    </Checkbox>
+                  )) 
                 }
               </Checkbox.Group>
             </Form.Item>
