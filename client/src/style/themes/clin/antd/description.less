@@ -1,0 +1,18 @@
+.@{descriptions-prefix-cls} {
+  &-title {
+    font-weight: 500;
+    color: @gray-8;
+  }
+
+  &-item-label {
+    color: @gray-7;
+  }
+
+  &-row {
+    &:last-child {
+      .@{descriptions-prefix-cls}-item {
+        padding-bottom: 0;
+      }
+    }
+  }
+}

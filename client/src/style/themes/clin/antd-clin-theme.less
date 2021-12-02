@@ -1,17 +1,18 @@
-@import "../../../../../node_modules/antd/dist/antd.less";
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap");
-@import "./colors.less";
-@import "./antd/table.less";
-@import "./antd/collapse.less";
-@import "./antd/checkbox.less";
-@import "./antd/tags.less";
-@import "./antd/inputs.less";
-@import "./antd/selects.less";
-@import "./antd/button.less";
+@import '../../../../../node_modules/antd/dist/antd.less';
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+@import './colors.less';
+@import './antd/table.less';
+@import './antd/collapse.less';
+@import './antd/checkbox.less';
+@import './antd/tags.less';
+@import './antd/inputs.less';
+@import './antd/selects.less';
+@import './antd/button.less';
+@import './antd/description.less';
 
 // Text colors
-@font-family: "Roboto", BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-  "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+@font-family: 'Roboto', BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+  sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 @heading-color: @blue-9;
 @text-selection-bg: @gray-3;
 @font-size-sm: 12px;
@@ -112,7 +113,8 @@
   border-color: @radio-disabled-button-checked-bg;
 }
 .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within,
-.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
+.ant-radio-group-solid
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
   box-shadow: none;
 }
 
@@ -147,7 +149,7 @@
 @alert-message-color: @text-color;
 @alert-close-color: @text-color-secondary;
 @alert-close-hover-color: @text-color;
-@alert-warning-bg-color: #FFF1B8;
+@alert-warning-bg-color: #fff1b8;
 @alert-error-bg-color: @red-0;
 
 // Tooltip
@@ -161,8 +163,6 @@
 @menu-item-active-bg: @blue-1;
 @menu-dark-submenu-bg: #001529;
 @menu-dark-item-active-bg: @blue-6;
-
-
 
 // Badge
 @badge-dot-size: 8px;
