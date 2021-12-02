@@ -7,4 +7,7 @@ export enum ExtensionUrls {
   ProcedureDirectedBy = 'http://hl7.org/fhir/StructureDefinition/procedure-directedBy',
   IsSubmitted = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-submitted',
   Resident = 'http://fhir.cqgc.ferlab.bio/StructureDefinition/resident',
+  RequestCode = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
 }
+
+

@@ -9,6 +9,7 @@ import patientSubmissionReducer from './patientSubmission';
 import prescriptions, { PatientRequestCreationState } from './prescriptions';
 import prescriptionsGraphql, { PrescriptionState } from './prescriptionsGraphql';
 import searchReducer from './search';
+import serviceRequestCodeReducer, { ServiceRequestCodeState } from './serviceRequestCode';
 import userReducer from './user';
 import variantReducer from './variant';
 import variantDetailsReducer from './variantDetails';
@@ -23,6 +24,7 @@ const rootReducer = (history: any) => combineReducers({
   prescriptionsGraphql,
   router: connectRouter(history),
   search: searchReducer,
+  serviceRequestCode: serviceRequestCodeReducer,
   user: userReducer,
   variant: variantReducer,
   variantDetails: variantDetailsReducer,
@@ -43,4 +45,5 @@ export type State = {
   patientEdition: PatientEditionState,
   prescriptions: PatientRequestCreationState,
   prescriptionsGraphql: PrescriptionState
+  serviceRequestCode: ServiceRequestCodeState
 }

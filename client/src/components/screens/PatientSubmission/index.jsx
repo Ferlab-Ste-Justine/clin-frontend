@@ -14,6 +14,7 @@ import {
 } from 'actions/patientSubmission';
 import { createRequest } from 'actions/prescriptions';
 import { navigateToPatientScreen,navigateToPatientSearchScreen } from 'actions/router';
+import { getServiceRequestCode } from 'actions/serviceRequest';
 import {
   Alert,Button, Card, Col, Divider, Form, Row, Spin,Steps, Typography,  } from 'antd';
 import { ClinicalImpressionBuilder } from 'helpers/fhir/builder/ClinicalImpressionBuilder';
@@ -25,7 +26,6 @@ import {
   createPractitionerResource,
   genPractitionerKey,
   getFamilyRelationshipDisplayForCode,
-  getTestCoding,
   hpoInterpretationValues,
   hpoOnsetValues,
 } from 'helpers/fhir/fhir';
@@ -38,6 +38,8 @@ import moment from 'moment'
 import { bindActionCreators } from 'redux';
 
 import Layout from 'components/Layout';
+import { StatusType } from "components/screens/Patient/components/StatusChangeModal";
+import { ExtensionUrls } from 'store/urls'
 
 import ClinicalInformation from './components/ClinicalInformation';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
@@ -45,7 +47,6 @@ import SecondPage from './components/SecondPage';
 import SubmissionModal from './components/SubmissionModal';
 
 import './style.scss';
-import { StatusType } from "components/screens/Patient/components/StatusChangeModal";
 
 const isFetus = (patient) => patient?.extension.find(
   (ext) => ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
@@ -204,6 +205,10 @@ function PatientSubmissionScreen(props) {
   React.useEffect(() => {
     validate();
   });
+
+  React.useEffect(() => {
+    actions.getServiceRequestCode()
+  }, []);
   const { localStore } = props;
 
   const createCGHResourceList = (content, patientId) => {
@@ -331,16 +336,25 @@ function PatientSubmissionScreen(props) {
       .build(),
   );
 
+  const buildAnalysisFhir = ( code ) => {
+    const {serviceRequestCode} = props;
+    const concept = serviceRequestCode.concept.find((c)=> c.code === code)
+    return {
+      code: concept.code,
+      display: concept.display,
+      system: ExtensionUrls.RequestCode,
+    }
+  }
+
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
       const {
-        actions, currentPatient, userPractitioner, userRoles,
+        actions, currentPatient, userPractitioner,
       } = props;
-
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
       const { status } = localStore;
       const { selectedSupervisor } = state;
-
+      
       const batch = {
         clinicalImpressions: [],
         fmhs: [],
@@ -351,17 +365,16 @@ function PatientSubmissionScreen(props) {
         submitted,
         update: get(localStore, 'serviceRequest.id') != null,
       };
-
+      
       const allAnalysis = content['analysis.tests']?.filter((item) => item != null);
       batch.length = get(allAnalysis, 'length', 0);
-
       if (batch.length === 0 || !userRole) {
         setState((currentState) => ({ ...currentState, isSubmitting: false }));
         return;
       }
-
+      
       const analysisComments = content['analysis.comments']
-
+      
       const { mrn, organization } = content;
       let fullMRN = [];
       if (!mrn && !organization) {
@@ -370,18 +383,16 @@ function PatientSubmissionScreen(props) {
         fullMRN[0] = mrn;
         fullMRN[1] = organization;
       }
-
+      
       const ageInDay = moment(new Date()).diff(currentPatient.birthDate, 'days');
-
       const submittedStatus = submitted ? StatusType['on-hold'] : (status || StatusType.draft)
-
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(new ServiceRequestBuilder()
           .withId(get(localStore, 'serviceRequest.id'))
           .withMrn(fullMRN[0], fullMRN[1])
           .withRequester(userPractitioner.id)
           .withSubject(currentPatient.id)
-          .withCoding(getTestCoding(analysis))
+          .withCoding(buildAnalysisFhir(analysis))
           .withSubmitted(submitted)
           .withStatus(submittedStatus)
           .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
@@ -584,7 +595,7 @@ function PatientSubmissionScreen(props) {
   };
 
   const {
-    clinicalImpression, patient, userRoles,
+    actions, app, clinicalImpression, patient, serviceRequestCode, userRoles
   } = props;
   const {
     currentPageIndex, fmhResources, hpoResources, isSubmitting, submitFailed, valid,
@@ -601,11 +612,13 @@ function PatientSubmissionScreen(props) {
           fmhResources={fmhResources}
           form={form}
           hpoResources={hpoResources}
+          lang={app.locale.lang}
           onChange={onChange}
           onHpoSelected={onHpoSelected}
           onHposUpdated={onHposUpdated}
           parentForm={this}
           patient={patient}
+          serviceRequestCode={serviceRequestCode.concept}
           submitFailed={submitFailed}
           validate={validate}
         />
@@ -759,6 +772,7 @@ const mapDispatchToProps = (dispatch) => ({
     assignServiceRequestPractitioner,
     assignServiceRequestResident,
     createRequest,
+    getServiceRequestCode,
     navigateToPatientScreen,
     navigateToPatientSearchScreen,
     saveLocalPractitioner,
@@ -780,7 +794,7 @@ const mapStateToProps = (state) => ({
   practitionerId: state.patientSubmission.practitionerId,
   router: state.router,
   search: state.search,
-  serviceRequest: state.patientSubmission.serviceRequest,
+  serviceRequestCode: state.serviceRequestCode,
   userPractitioner: state.user.practitionerData.practitioner,
   userRoles: state.user.practitionerData.practitionerRoles,
 });
