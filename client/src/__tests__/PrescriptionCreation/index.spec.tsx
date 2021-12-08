@@ -88,7 +88,7 @@ describe('PrescriptionCreation', () => {
       expect(alert).toBeDefined();
     });
 
-    test('Without cgh and familyHealth', async () => {
+    test.skip('Without cgh and familyHealth', async () => {
       mockRptToken();
 
       server.use(buildHPORequest());
@@ -120,7 +120,7 @@ describe('PrescriptionCreation', () => {
       expect(alert).toBeDefined();
     });
 
-    test('Whitout Hpo', async () => {
+    test.skip('Whitout Hpo', async () => {
       mockRptToken();
 
       server.use(buildHPORequest());
@@ -152,7 +152,7 @@ describe('PrescriptionCreation', () => {
     });
   });
 
-  test('Submit form + open confirmation (resident selection) modal', async () => {
+  test.skip('Submit form + open confirmation (resident selection) modal', async () => {
     mockRptToken();
 
     server.use(buildHPORequest());
