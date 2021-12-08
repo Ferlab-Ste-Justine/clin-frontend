@@ -64,6 +64,12 @@ const HpoHiddenFields = ({
 
 export const hpoDisplayName = (key, name) => `${name} (${key})`;
 
+
+const buildCheckBoxName = (concept, lang) =>{
+  const designation = concept.designation.find(d => d.language === lang);
+  return designation ? designation.value : concept.display;
+}
+
 class ClinicalInformation extends React.Component {
   constructor(props) {
     super(props);
@@ -81,7 +87,6 @@ class ClinicalInformation extends React.Component {
     this.isAddDisabled = this.isAddDisabled.bind(this);
     this.isStatusIncomplete = this.isStatusIncomplete.bind(this);
     this.givenCodeIsTheOnlyOneSelected = this.givenCodeIsTheOnlyOneSelected.bind(this);
-    this.buildCheckBoxName = this.buildCheckBoxName.bind(this)
   }
 
   componentDidUpdate() {
@@ -332,14 +337,6 @@ class ClinicalInformation extends React.Component {
     return (hasOnlyOneSelectedTest && codeIsSelected)
   }
 
-  buildCheckBoxName = (concept) =>{
-    const { lang } = this.props;
-    const traduction = concept.designation.find( d => d.language === lang) ?
-      concept.designation.find( d => d.language === lang).value : 
-      concept.display
-    return traduction
-  }
-
   render() {
     const {
       hpoOptions, treeData,
@@ -418,7 +415,7 @@ class ClinicalInformation extends React.Component {
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
-                    >{ this.buildCheckBoxName(concept) }
+                    >{ buildCheckBoxName(concept, this.props.lang) }
                     </Checkbox>
                   )) 
                 }
@@ -448,7 +445,7 @@ class ClinicalInformation extends React.Component {
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
-                    >{ this.buildCheckBoxName(concept) }
+                    >{ buildCheckBoxName(concept, this.props.lang) }
                     </Checkbox>
                   )) 
                 }
