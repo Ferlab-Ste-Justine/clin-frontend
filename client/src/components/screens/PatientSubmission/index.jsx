@@ -342,7 +342,7 @@ function PatientSubmissionScreen(props) {
     return {
       code: concept.code,
       display: concept.display,
-      system: ExtensionUrls.RequestCode,
+      system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
     }
   }
 

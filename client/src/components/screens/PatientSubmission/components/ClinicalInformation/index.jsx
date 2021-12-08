@@ -65,7 +65,7 @@ const HpoHiddenFields = ({
 export const hpoDisplayName = (key, name) => `${name} (${key})`;
 
 
-const buildCheckBoxName = (concept, lang) =>{
+const buildAnalysisCheckBoxName = (concept, lang) =>{
   const designation = concept.designation.find(d => d.language === lang);
   return designation ? designation.value : concept.display;
 }
@@ -415,7 +415,7 @@ class ClinicalInformation extends React.Component {
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
-                    >{ buildCheckBoxName(concept, this.props.lang) }
+                    >{ buildAnalysisCheckBoxName(concept, this.props.lang) }
                     </Checkbox>
                   )) 
                 }
@@ -445,7 +445,7 @@ class ClinicalInformation extends React.Component {
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
-                    >{ buildCheckBoxName(concept, this.props.lang) }
+                    >{ buildAnalysisCheckBoxName(concept, this.props.lang) }
                     </Checkbox>
                   )) 
                 }
