@@ -1,5 +1,4 @@
 import intl from 'react-intl-universal';
-import { AnalysisCodeToIntlKeyText,AnalysisTestCodes } from 'helpers/fhir/types';
 import get from 'lodash/get';
 
 const BUNDLE_COUNT = 100
@@ -18,55 +17,6 @@ const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
 
 const HL7_CODE_SYSTEM_URL = '';
 
-const SERVICE_REQUEST_CODE_SYSTEM = 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code';
-export const getTestCoding = (code) => {
-  switch (code) {
-    case AnalysisTestCodes.PG:
-      return {
-        code: AnalysisTestCodes.PG,
-        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.PG],
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case AnalysisTestCodes.DYST:
-      return {
-        code: AnalysisTestCodes.DYST,
-        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.DYST],
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case AnalysisTestCodes.RHAB:
-      return {
-        code: AnalysisTestCodes.RHAB,
-        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.RHAB],
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case AnalysisTestCodes.MYOP:
-      return {
-        code: AnalysisTestCodes.MYOP,
-        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.MYOP],
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case AnalysisTestCodes.MYAS:
-      return {
-        code: AnalysisTestCodes.MYAS,
-        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.MYAS],
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case AnalysisTestCodes.HYP:
-      return {
-        code: AnalysisTestCodes.HYP,
-        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.HYP],
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    case AnalysisTestCodes.DI:
-      return {
-        code: AnalysisTestCodes.DI,
-        display: AnalysisCodeToIntlKeyText[AnalysisTestCodes.DI],
-        system: SERVICE_REQUEST_CODE_SYSTEM,
-      };
-    default:
-      null
-  }
-};
 
 export const genPractitionerKey = (practitioner) => (
   `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`
