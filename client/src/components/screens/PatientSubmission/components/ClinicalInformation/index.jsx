@@ -23,6 +23,7 @@ import {
 } from 'helpers/fhir/fhir';
 import { getObservationValue } from 'helpers/fhir/fhir';
 import { PrescriptionStatus } from 'helpers/fhir/types';
+import { findLocalDesignationIfExists } from 'helpers/ServiceRequestCode';
 import findIndex from 'lodash/findIndex';
 import get from 'lodash/get';
 import map from 'lodash/map';
@@ -64,11 +65,6 @@ const HpoHiddenFields = ({
 
 export const hpoDisplayName = (key, name) => `${name} (${key})`;
 
-
-const buildAnalysisCheckBoxName = (concept, lang) =>{
-  const designation = concept.designation.find(d => d.language === lang);
-  return designation ? designation.value : concept.display;
-}
 
 class ClinicalInformation extends React.Component {
   constructor(props) {
@@ -415,7 +411,7 @@ class ClinicalInformation extends React.Component {
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
-                    >{ buildAnalysisCheckBoxName(concept, this.props.lang) }
+                    >{ findLocalDesignationIfExists(concept, this.props.lang) || concept.display}
                     </Checkbox>
                   )) 
                 }
@@ -445,7 +441,7 @@ class ClinicalInformation extends React.Component {
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
-                    >{ buildAnalysisCheckBoxName(concept, this.props.lang) }
+                    >{ findLocalDesignationIfExists(concept, this.props.lang) || concept.display }
                     </Checkbox>
                   )) 
                 }
