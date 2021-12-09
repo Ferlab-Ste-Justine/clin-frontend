@@ -125,7 +125,7 @@ const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId:
   return get(prescription, 'id');
 };
 
-const getAnalysisTraduction = (display: string, concepts: Concept[], lang:string ) => {
+const translateAnalysis = (display: string, concepts: Concept[], lang:string ) => {
   const concept = concepts.find((c)=> c.display === display)
   if(concept){
     const designation = concept.designation.find(d => d.language === lang);
@@ -346,9 +346,7 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                   <div className={`${tabDetailsCNPrefix}__offsetSection`}>
                     <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
                       <Typography.Title className={`${tabDetailsCNPrefix}__test`} level={4} >
-                        { serviceRequestCodeState.length >0 
-                          ? getAnalysisTraduction(prescription.test, serviceRequestCodeState, lang) 
-                          : DEFAULT_VALUE }
+                        { translateAnalysis(prescription.test, serviceRequestCodeState, lang) }
                       </Typography.Title>
                     </DetailsRow>        
                     <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
