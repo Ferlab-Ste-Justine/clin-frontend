@@ -23,6 +23,7 @@ import {
 } from 'antd';
 import { ClinicalImpression, Observation, Reference } from 'helpers/fhir/types';
 import { ConsultationSummary, FamilyObservation, PractitionerData, Prescription, PrescriptionStatus } from 'helpers/providers/types';
+import { findLocalDesignationIfExists } from 'helpers/ServiceRequestCode';
 import get from 'lodash/get';
 import moment from 'moment';
 import { State } from 'reducers';
@@ -125,13 +126,9 @@ const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId:
   return get(prescription, 'id');
 };
 
-const translateAnalysis = (display: string, concepts: Concept[], lang:string ) => {
-  const concept = concepts.find((c)=> c.display === display)
-  if(concept){
-    const designation = concept.designation.find(d => d.language === lang);
-    return designation ? designation.value : display;
-  }
-  return DEFAULT_VALUE
+const translateAnalysis = (testName: string, concepts: Concept[], lang:'fr' | 'en' ) => {
+  const concept = concepts.find((c)=> c.display === testName)
+  return findLocalDesignationIfExists(concept, lang) || DEFAULT_VALUE
 }
 
 const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.ReactElement => {
