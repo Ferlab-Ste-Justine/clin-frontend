@@ -58,7 +58,7 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "PORT=2000 node client/scripts/start.js",
+    "start": "node client/scripts/start.js",
     "build": "node client/scripts/build.js",
     "serve-build": "npx serve -p 2000 -s client/build",
     "test": "node client/scripts/test.js",
