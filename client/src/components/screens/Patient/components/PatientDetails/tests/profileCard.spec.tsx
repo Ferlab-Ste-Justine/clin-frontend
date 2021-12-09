@@ -54,7 +54,7 @@ const patientSubState = {
                     {
                       code: 'NMTHF',
                       display: 'natural mother of fetus',
-                      system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
+                      system: 'http://terminology.hl7.org/CodeSystem/v3-RoleCode',
                     },
                   ],
                 },

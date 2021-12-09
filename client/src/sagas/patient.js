@@ -332,7 +332,7 @@ function* addParent(action) {
               coding: [
                 {
                   code: parentType,
-                  system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
+                  system: 'http://terminology.hl7.org/CodeSystem/v3-RoleCode',
                 },
               ],
             },

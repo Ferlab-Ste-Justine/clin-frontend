@@ -23,7 +23,7 @@ export const patient207347 = {
               coding: [
                 {
                   code: 'MTH',
-                  system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
+                  system: 'http://terminology.hl7.org/CodeSystem/v3-RoleCode',
                 },
               ],
             },
@@ -45,7 +45,7 @@ export const patient207347 = {
               coding: [
                 {
                   code: 'FTH',
-                  system: 'http://terminology.hl7.org/ValueSet/v3-FamilyMember',
+                  system: 'http://terminology.hl7.org/CodeSystem/v3-RoleCode',
                 },
               ],
             },
