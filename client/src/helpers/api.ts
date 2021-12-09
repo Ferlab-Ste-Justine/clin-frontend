@@ -473,7 +473,7 @@ const getFileURL = async (file: string) =>
     .then(successCallback)
     .catch(errorCallback);
 
-const fetchServiceRequestCode = () =>
+const fetchServiceRequestCode = async () =>
   Http.secureClinAxios
     .get(`${window.CLIN.fhirBaseUrl}/CodeSystem/service-request-code`)
     .then(successCallback)
