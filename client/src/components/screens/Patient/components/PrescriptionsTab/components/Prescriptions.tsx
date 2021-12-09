@@ -329,7 +329,7 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                   </DetailsRow>
                   <div className={`${tabDetailsCNPrefix}__offsetSection`}>
                     <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
-                      <Typography.Title className={`${tabDetailsCNPrefix}__test`} level={4} >{ intl.get(prescription.test) || DEFAULT_VALUE }</Typography.Title>
+                      <Typography.Title className={`${tabDetailsCNPrefix}__test`} level={4} >{ prescription.test || DEFAULT_VALUE }</Typography.Title>
                     </DetailsRow>        
                     <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
                       { prescription.note || DEFAULT_VALUE }
