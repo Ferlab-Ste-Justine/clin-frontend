@@ -8,6 +8,7 @@ import { updateServiceRequestStatus } from 'actions/patient';
 import { editPrescription } from 'actions/patientSubmission';
 import { resetStatus } from 'actions/prescriptions';
 import { navigateToSubmissionWithPatient } from 'actions/router';
+import { getServiceRequestCode } from 'actions/serviceRequest';
 import {
   Alert,
   Button,
@@ -30,6 +31,7 @@ import { PatientRequestCreationStatus } from 'reducers/prescriptions';
 import Badge from 'components/Badge';
 import StatusChangeModal, { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
 import { Observations } from 'store/ObservationTypes';
+import { Concept } from 'store/ServiceRequestCodeTypes'
 import statusColors from 'style/statusColors';
 
 import ClinicalSigns from './Prescription/ClinicalSigns';
@@ -123,10 +125,21 @@ const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId:
   return get(prescription, 'id');
 };
 
+const getAnalysisTraduction = (display: string, concepts: Concept[], lang:string ) => {
+  const concept = concepts.find((c)=> c.display === display)
+  if(concept){
+    const designation = concept.designation.find(d => d.language === lang);
+    return designation ? designation.value : display;
+  }
+  return DEFAULT_VALUE
+}
+
 const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.ReactElement => {
   const patientState = useSelector((state: State) => state.patient);
+  const serviceRequestCodeState: Concept[] | [] = useSelector((state: State) => state.serviceRequestCode.concept);
+  const lang = useSelector((state: State) => state.app.locale.lang);
+  
   const { observations, openedPrescriptionId } = patientState;
-
   const [isStatusLegendVisible, setIsStatusLegendVisible] = useState<boolean>(false);
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
   const [startingIndex] = useState(getPrescriptionKey(prescriptions, openedPrescriptionId));
@@ -145,6 +158,10 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
       // so the success banner isn't shown next time
       dispatch(resetStatus());
     }
+  }, []);
+
+  React.useEffect(() => {
+    dispatch(getServiceRequestCode())
   }, []);
 
   const practitionerPopOverText = (info: any) => {
@@ -166,7 +183,6 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
   const openEditPrescription = (id: string) => {
     dispatch(editPrescription(id));
   };
-
   return (
     <div className={`${tabCNPrefix}`}>
       <Tabs
@@ -329,7 +345,11 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                   </DetailsRow>
                   <div className={`${tabDetailsCNPrefix}__offsetSection`}>
                     <DetailsRow label={intl.get('screen.patient.details.prescription.tests')}>
-                      <Typography.Title className={`${tabDetailsCNPrefix}__test`} level={4} >{ prescription.test || DEFAULT_VALUE }</Typography.Title>
+                      <Typography.Title className={`${tabDetailsCNPrefix}__test`} level={4} >
+                        { serviceRequestCodeState.length >0 
+                          ? getAnalysisTraduction(prescription.test, serviceRequestCodeState, lang) 
+                          : DEFAULT_VALUE }
+                      </Typography.Title>
                     </DetailsRow>        
                     <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
                       { prescription.note || DEFAULT_VALUE }
