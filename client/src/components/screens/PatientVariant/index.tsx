@@ -23,16 +23,16 @@ const index = (props: any) => {
 
   if (query.get('v') == '1') {
     return <VariantPageV1 {...props} />;
-  } else {
-    return (
-      <iframe
-        className={styles.variantIframe}
-        src={`${EnvironmentVariables.configFor({
-          key: 'CLIN_UI',
-        })}/variant/${uid}?token=${rptToken}`}
-      />
-    );
   }
+
+  return (
+    <iframe
+      className={styles.variantIframe}
+      src={`${EnvironmentVariables.configFor({
+        key: 'CLIN_UI',
+      })}/variant/${uid}?token=${rptToken}`}
+    />
+  );
 };
 
 export default index;
