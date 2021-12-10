@@ -172,7 +172,7 @@ export interface ServiceRequest {
   priority: string;
   code?: CodeableConcept;
   requester?: Reference;
-  performer?: Reference[];
+  performer: Reference[];
   subject: Reference;
   note?: Note[];
 }
