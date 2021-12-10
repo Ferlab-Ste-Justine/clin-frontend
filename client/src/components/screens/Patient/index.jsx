@@ -1,6 +1,6 @@
 import React from 'react';
 import IconKit from 'react-icons-kit';
-import { ic_cloud_download, ic_people, ic_widgets } from 'react-icons-kit/md';
+import { ic_cloud_download, ic_person, ic_widgets } from 'react-icons-kit/md';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import { MedicineBoxFilled } from '@ant-design/icons';
@@ -107,22 +107,22 @@ class PatientScreen extends React.Component {
 
     const tabs = [
       {
+        content: <FamilyTab />,
+        name: 'patient',
+        title: (
+          <span className="tabName">
+            <IconKit icon={ic_person} size={18} />
+            {intl.get('screen.patient.tab.patient')}
+          </span>
+        ),
+      },
+      {
         content: <PrescriptionsTab />,
         name: 'prescriptions',
         title: (
           <span className="tabName">
             <MedicineBoxFilled />
             {`${intl.get('screen.patient.tab.prescriptions')}  (${this.props.prescriptions.length})`}
-          </span>
-        ),
-      },
-      {
-        content: <FamilyTab />,
-        name: 'family',
-        title: (
-          <span className="tabName">
-            <IconKit icon={ic_people} size={18} />
-            {intl.get('screen.patient.tab.family')}
           </span>
         ),
       },

@@ -7,7 +7,7 @@ import ProfileCard from '../ProfileCard';
 const patientSubState = {
   patient: {
     canEdit: true,
-    currentActiveKey: 'family',
+    currentActiveKey: 'patient',
     family: [
       {
         birthDate: '1954-09-21',

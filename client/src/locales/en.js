@@ -459,6 +459,7 @@ const en = {
   'screen.patient.header.requests': 'Requests',
   'screen.patient.header.samples': 'Samples',
   'screen.patient.tab.clinical': 'Clinical',
+  'screen.patient.tab.patient': 'Patient',
   'screen.patient.tab.prescriptions': 'Prescriptions',
   'screen.patient.table.fetus': 'Fetus',
   'screen.patientsearch.bloodRelationship.no': 'No',
