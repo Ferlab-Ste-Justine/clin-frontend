@@ -16,7 +16,7 @@ export type PrescriptionData = {
 };
 
 export type PatientData = {
-  id: string;
+  cid: string;
   organization: Organization;
   lastName: string;
   firstName: string;
@@ -45,7 +45,10 @@ export type PatientInformation = {
   position: string;
   fetus: boolean;
   birthDate: string;
-  organization: Organization;
+  organization: {
+    id: string;
+    name: string;
+  };
 };
 
 export type PatientNanuqInformation = {
@@ -71,7 +74,7 @@ export type FamilyGroupInfo = {
 };
 
 export type Organization = {
-  id: string;
+  cid: string;
   name: string;
 };
 

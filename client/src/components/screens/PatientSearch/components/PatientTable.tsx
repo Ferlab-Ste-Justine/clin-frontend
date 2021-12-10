@@ -52,7 +52,7 @@ const TextCell = (value: RowValue) => (
 );
 
 const extractOrganization = (patient: PatientData) =>
-  patient.organization.name || patient.organization.id?.split('/')?.[1];
+  patient.organization.name || patient.organization.cid?.split('/')?.[1];
 
 const displayTranslatedGender = (gender: string) => {
   const genderLowered = gender?.toLowerCase();
@@ -70,7 +70,7 @@ const makeRows = (rawResult: PatientData[]) =>
       fetus: currentPatientData.fetus,
       firstName: currentPatientData.firstName,
       gender: currentPatientData.gender,
-      id: currentPatientData.id,
+      id: currentPatientData.cid,
       lastName: currentPatientData.lastName,
       nbRequest: currentPatientData?.requests?.length,
       organization: extractOrganization(currentPatientData),
