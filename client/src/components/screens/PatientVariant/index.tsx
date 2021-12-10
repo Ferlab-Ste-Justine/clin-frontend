@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
+
 import VariantPageV1 from './VariantSearchV1';
 import EnvironmentVariables from 'helpers/EnvironmentVariables';
 import { RptManager } from 'helpers/keycloak-api/manager';
@@ -10,7 +12,11 @@ const useQuery = () => {
   return new URLSearchParams(useLocation().search);
 };
 
-const index = (props: any) => {
+type PatientVariantProps = {
+  app: { locale: { lang: string } };
+};
+
+const PatientVariant = ({ app, ...props }: PatientVariantProps) => {
   const query = useQuery();
   const [rptToken, setRptToken] = useState('');
   const { uid } = useParams<{ uid: string }>();
@@ -30,9 +36,13 @@ const index = (props: any) => {
       className={styles.variantIframe}
       src={`${EnvironmentVariables.configFor({
         key: 'CLIN_UI',
-      })}/variant/${uid}?token=${rptToken}`}
+      })}/variant/${uid}?token=${rptToken}&lang=${app.locale.lang}`}
     />
   );
 };
 
-export default index;
+const mapStateToProps = (state: any) => ({
+  app: state.app,
+});
+
+export default connect(mapStateToProps)(PatientVariant);

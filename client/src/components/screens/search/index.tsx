@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from 'react-redux';
+
 import { Bridge } from 'bridge';
 import EnvironmentVariables from 'helpers/EnvironmentVariables';
 import keycloak from 'keycloak';
+import { connect } from 'react-redux';
 
 import Layout from 'components/Layout';
 
@@ -10,7 +12,11 @@ import { NewPrescriptionModal, Screens } from './NewPrescriptionModal';
 
 import styles from './search.module.scss';
 
-const SearchScreen = (): React.ReactElement => {
+type SearchScreenProps = {
+  app: { locale: { lang: string } };
+};
+
+const SearchScreen = ({ app }: SearchScreenProps): React.ReactElement => {
   const iFrame = useRef<HTMLIFrameElement>(null);
   const [openModal, setOpenModal] = useState(Screens.None);
 
@@ -43,10 +49,14 @@ const SearchScreen = (): React.ReactElement => {
         ref={iFrame}
         src={`${EnvironmentVariables.configFor({ key: 'CLIN_UI' })}/search/?token=${
           keycloak.token
-        }`}
+        }&lang=${app.locale.lang}`}
       />
     </Layout>
   );
 };
 
-export default SearchScreen;
+const mapStateToProps = (state: any) => ({
+  app: state.app,
+});
+
+export default connect(mapStateToProps)(SearchScreen);
