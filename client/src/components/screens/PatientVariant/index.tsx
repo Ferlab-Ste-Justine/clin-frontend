@@ -16,10 +16,9 @@ const index = (props: any) => {
   const { uid } = useParams<{ uid: string }>();
 
   useEffect(() => {
-    const loadRpt = async () => {
+    (async () => {
       setRptToken((await RptManager.readRpt()).accessToken);
-    };
-    loadRpt();
+    })();
   }, []);
 
   if (query.get('v') == '1') {
