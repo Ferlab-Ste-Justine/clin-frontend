@@ -376,7 +376,7 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                     { consultation!= null ? consultation.practitioner.organization : DEFAULT_VALUE }
                   </DetailsRow>
                   <DetailsRow label={intl.get('screen.patient.details.prescription.labo')}>
-                    {prescription.performer?.split('/')[1] || '--'}
+                    {prescription?.performer?.split('/')[1] || '--'}
                   </DetailsRow>
                 </Card>
                 <Summary
