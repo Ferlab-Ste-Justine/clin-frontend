@@ -640,7 +640,7 @@ const fr = {
   'screen.patient.header.requests': 'Requêtes',
   'screen.patient.header.samples': 'Échantillons',
   'screen.patient.tab.clinical': 'Clinique',
-  'screen.patient.tab.family': 'Famille',
+  'screen.patient.tab.patient': 'Patient',
   'screen.patient.tab.prescriptions': 'Prescriptions',
   'screen.patient.table.fetus': 'Foetus',
   'screen.patientsearch.bloodRelationship.no': 'Non',

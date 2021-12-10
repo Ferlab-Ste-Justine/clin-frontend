@@ -56,7 +56,7 @@ export type PatientState = {
   canEdit?: boolean;
   openedPrescriptionId?: string;
   family?: FamilyMember[];
-  currentActiveKey: 'prescriptions' | 'family' | 'variant' | 'files';
+  currentActiveKey: 'prescriptions' | 'patient' | 'variant' | 'files';
   familyActionStatus?: FamilyActionStatus;
   idsOfParentUpdatingStatuses: string[];
 };
@@ -68,7 +68,7 @@ type Action = {
 
 const initialState: PatientState = {
   consultation: [],
-  currentActiveKey: 'prescriptions',
+  currentActiveKey: 'patient',
   fmhs: [],
   hpos: [],
   idsOfParentUpdatingStatuses: [],
