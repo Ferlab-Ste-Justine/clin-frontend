@@ -4,8 +4,6 @@ import { FormOutlined } from '@ant-design/icons';
 import { Button, Card } from 'antd';
 import { ParsedPatientData } from 'helpers/providers/types';
 
-import FamilyTag from '../PrescriptionsTab/components/FamilyTag';
-
 import PatientEditModal from './components/PatientEdit';
 import DetailsCol from './DetailsCol';
 import DetailsRow from './DetailsRow';
@@ -92,10 +90,6 @@ const PatientDetails = ({ canEditPatient, patient }: Props): React.ReactElement 
         </DetailsCol>
         <DetailsCol align={hasMultipleMrn ? 'top' : 'center'} isLast>
           <DetailsRow title={intl.get('screen.patient.header.family')} value={patient.familyId} />
-          <DetailsRow
-            title={intl.get('screen.patient.details.familyType')}
-            value={<FamilyTag type="solo" />}
-          />
         </DetailsCol>
       </div>
       <Button
