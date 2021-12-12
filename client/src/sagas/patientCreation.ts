@@ -52,21 +52,15 @@ function* handleUpdatePatientPractitioners(action: any) {
 
 function* fetchInfosByRamq(action: any) {
   try {
-    if (!isValidRamq(action.payload.ramq)) {
-      throw new Error('Invalid RAMQ');
-    }
-
     const response = yield Api.getPatientByIdentifier(action.payload.ramq);
-
-    if (response.error != null) {
-      throw new ApiError(response.error);
+    if (response.error) {
+      return yield put({ payload: new ApiError(response.error), type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
     }
 
     const identifiers = get(response, 'payload.data.entry[0].resource.identifier', []);
     const identifier = identifiers.find((id: any) => get(id, 'type.coding[0].code', '') === 'JHN');
-
     if (identifier == null || identifier.value !== action.payload.ramq) {
-      throw new ApiError(`Patient with RAMQ[${action.payload.ramq} not found.`);
+      return yield put({ payload:new ApiError(`Patient with RAMQ[${action.payload.ramq} not found.`), type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
     }
 
     yield put({
@@ -74,7 +68,7 @@ function* fetchInfosByRamq(action: any) {
       type: actions.PATIENT_FETCH_INFO_BY_RAMQ_SUCCEEDED,
     });
   } catch (error) {
-    yield put({ type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
+    yield put({ payload: error, type: actions.PATIENT_FETCH_INFO_BY_RAMQ_FAILED });
   }
 }
 

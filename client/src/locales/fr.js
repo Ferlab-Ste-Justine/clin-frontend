@@ -334,7 +334,7 @@ const fr = {
   'screen.patient.creation.fetus.note':
     "Dans le cas d'un foetus, veuillez utiliser la RAMQ de la mère",
   'screen.patient.creation.file': 'Dossier',
-  'screen.patient.creation.file.existing': 'Le numéro de dossier existe déjà pour cet hôpital',
+  'screen.patient.creation.file.existing': 'Le numéro de dossier doit être non-vide et unique pour cet hôpital',
   'screen.patient.creation.firstname': 'Prénom',
   'screen.patient.creation.hospital.placeholder': 'Hôpital',
   'screen.patient.creation.lastname': 'Nom de famille',
