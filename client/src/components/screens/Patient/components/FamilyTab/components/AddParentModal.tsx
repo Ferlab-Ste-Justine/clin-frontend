@@ -180,7 +180,7 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
                   <>
                     <dt>{intl.get('screen.patient.details.family.modal.file')}</dt>
                     <dd>{`${selectedPatient.mrn[0]} | ${
-                      selectedPatient.organization?.cid?.split('/')?.[1]
+                      selectedPatient.organization?.cid
                     }`}</dd>
                   </>
                 )}
