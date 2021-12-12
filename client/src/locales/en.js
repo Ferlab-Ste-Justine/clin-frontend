@@ -246,7 +246,7 @@ const en = {
   'screen.patient.creation.fetus': 'Fetus',
   'screen.patient.creation.fetus.note': "For a fetus, please use the mother's RAMQ",
   'screen.patient.creation.file': 'File',
-  'screen.patient.creation.file.existing': 'The file number already exist for this hospital',
+  'screen.patient.creation.file.existing': 'The file number must be non-empty and unique for this hospital',
   'screen.patient.creation.firstname': 'First name',
   'screen.patient.creation.hospital.placeholder': 'Hospital',
   'screen.patient.creation.lastname': 'Last name',
