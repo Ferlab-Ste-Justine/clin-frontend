@@ -5,7 +5,7 @@ import { navigateToPatientScreen } from 'actions/router';
 import { Button, Col, Tag, Typography } from 'antd';
 import { ParsedPatientData } from 'helpers/providers/types';
 
-import UnknowGenderIcon from 'components/Assets/Icons/UnknowGenderIcon'
+import { getGenderIcon } from 'components/Utils/getGenderIcon';
 
 import './styles.scss';
   
@@ -24,7 +24,7 @@ const FetusHeader= ({ patient }:Props): React.ReactElement => {
         </Typography.Title>
       </Col>
       <Col>
-        <UnknowGenderIcon className="customIcon" height="23" viewBox="0 0 22 23" width="22" />
+        {getGenderIcon(patient.gender)}
       </Col>
       <Col>
         <Tag
