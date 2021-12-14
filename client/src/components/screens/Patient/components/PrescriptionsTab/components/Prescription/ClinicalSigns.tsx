@@ -23,7 +23,7 @@ const ClinicalSigns: React.FC<Props> = ({ clinicalImpression, hpos }) => {
     category: obs.category,
     key: index,
     notes: obs.note || '--',
-    observed: (<div className='prescriptions-tab__prescriptions-section__clinical-sign__observed'>{getObservedIcon(obs.observed)}</div>),
+    observed: obs.observed,
     term: obs.term,
   }));
 
@@ -38,6 +38,11 @@ const ClinicalSigns: React.FC<Props> = ({ clinicalImpression, hpos }) => {
           {
             dataIndex: 'observed',
             key: 'observed',
+            render: (observed) => (
+              <div className='prescriptions-tab__prescriptions-section__clinical-sign__observed'>
+                {getObservedIcon(observed)}
+              </div>
+            ),
             title: intl.get('screen.patient.details.prescriptions.clinicalSign.observed'),
             width: 80,
           },
