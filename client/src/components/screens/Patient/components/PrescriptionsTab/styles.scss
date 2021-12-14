@@ -334,19 +334,8 @@
 
     &__clinical-sign {
       &__observed {
-        display: block;
-        margin:auto;
-        &--positive {
-          color: $green-6;
-        }
-
-        &--negative {
-          color: $red-5;
-        }
-
-        &--unknown {
-          color: $gray-8;
-        }
+        display: flex;
+        justify-content: center;
       }
     }
 
