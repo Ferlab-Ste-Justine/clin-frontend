@@ -2,13 +2,13 @@ import React from 'react';
 import intl from 'react-intl-universal';
 import { CheckOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-enum ObservedType {
+enum ObservedStatus {
   POS = 'POS',
   NEG = 'NEG',
 }
 
 export const getObservedIcon = (status: string): React.ReactElement => {
-  if (status === ObservedType.POS) {
+  if (status === ObservedStatus.POS) {
     return (
       <CheckOutlined
         aria-label={intl.get('screen.patient.details.prescriptions.clinicalSign.observed')}
@@ -16,7 +16,7 @@ export const getObservedIcon = (status: string): React.ReactElement => {
       />
     );
   }
-  if (status === ObservedType.NEG) {
+  if (status === ObservedStatus.NEG) {
     return (
       <CloseOutlined
         aria-label={intl.get('screen.patient.details.prescriptions.clinicalSign.negative')}
