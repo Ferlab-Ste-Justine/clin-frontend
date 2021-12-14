@@ -1,8 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import IconKit from 'react-icons-kit';
-import { ic_help, ic_visibility, ic_visibility_off } from 'react-icons-kit/md';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
 import {
@@ -30,17 +28,13 @@ import map from 'lodash/map';
 import toArray from 'lodash/values';
 import { bindActionCreators } from 'redux';
 
+import { getObservedIcon } from 'components/Utils/getObservedIcon';
+
 import ErrorText from './components/ErrorText';
 import FamilyStorySection from './components/FamilyStorySection';
 import InvestigationSection from './components/InvestigationSection';
 import MrnItem from './components/MrnItem';
 import OntologyTree from './components/OntologyTree';
-
-const interpretationIcon = {
-  IND: ic_help,
-  NEG: ic_visibility_off,
-  POS: ic_visibility,
-};
 
 const ROOT_PHENOTYPE = 'Phenotypic abnormality (HP:0000118)';
 
@@ -185,11 +179,7 @@ class ClinicalInformation extends React.Component {
                     key={`hpoInterpretation_${index}`}
                     value={interpretation.value}
                   >
-                    <IconKit
-                      className={`${interpretation.iconClass} icon`}
-                      icon={interpretationIcon[interpretation.value]}
-                      size={14}
-                    />
+                    <div className='icon'>{ getObservedIcon(interpretation.value) }</div>
                     { interpretation.display }
                   </Select.Option>
                 )) }

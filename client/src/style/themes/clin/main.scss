@@ -4,3 +4,12 @@
 html {
   font-size: 12px;
 }
+
+.observedIcon{
+  &--positive{
+    color:$green-7;
+  }
+  &--negative{
+    color:$red-8;
+  }
+}
