@@ -13,10 +13,9 @@ import {
   saveLocalSupervisor,
 } from 'actions/patientSubmission';
 import { createRequest } from 'actions/prescriptions';
-import { navigateToPatientScreen,navigateToPatientSearchScreen } from 'actions/router';
+import { navigateToPatientScreen, navigateToPatientSearchScreen } from 'actions/router';
 import { getServiceRequestCode } from 'actions/serviceRequest';
-import {
-  Alert,Button, Card, Col, Divider, Form, Row, Spin,Steps, Typography,  } from 'antd';
+import { Alert, Button, Card, Col, Divider, Form, Row, Spin, Typography } from 'antd';
 import { ClinicalImpressionBuilder } from 'helpers/fhir/builder/ClinicalImpressionBuilder';
 import { FamilyMemberHistoryBuilder } from 'helpers/fhir/builder/FMHBuilder';
 import { ObservationBuilder } from 'helpers/fhir/builder/ObservationBuilder.ts';
@@ -34,12 +33,12 @@ import debounce from 'lodash/debounce';
 import find from 'lodash/find';
 import get from 'lodash/get';
 import has from 'lodash/has';
-import moment from 'moment'
+import moment from 'moment';
 import { bindActionCreators } from 'redux';
 
 import Layout from 'components/Layout';
-import { StatusType } from "components/screens/Patient/components/StatusChangeModal";
-import { ExtensionUrls } from 'store/urls'
+import { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
+import { InterpretationCodeSystemURL } from 'store/ObservationTypes';
 
 import ClinicalInformation from './components/ClinicalInformation';
 import ConfirmCancelModal from './components/ConfirmCancelModal';
@@ -48,9 +47,10 @@ import SubmissionModal from './components/SubmissionModal';
 
 import './style.scss';
 
-const isFetus = (patient) => patient?.extension.find(
-  (ext) => ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
-)?.valueBoolean || false;
+const isFetus = (patient) =>
+  patient?.extension?.find(
+    (ext) => ext.url === 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
+  )?.valueBoolean || false;
 
 function PatientSubmissionScreen(props) {
   const [form] = Form.useForm();
@@ -71,109 +71,118 @@ function PatientSubmissionScreen(props) {
     valid: false,
   });
 
-  const getValidValues = (array) => array.filter((obj) => !Object.values(obj).every((a) => a == null));
+  const getValidValues = (array) =>
+    array.filter((obj) => !Object.values(obj).every((a) => a == null));
 
   const canGoNextPage = (currentPage) => {
     const { localStore } = props;
     const values = form.getFieldsValue();
     let hasError = null;
     switch (currentPage) {
-    case 0: {
-      const checkCghInterpretationValue = () => {
-        if (values.cghInterpretationValue) {
-          if (values.cghInterpretationValue !== 'A') {
+      case 0: {
+        const checkCghInterpretationValue = () => {
+          if (values.cghInterpretationValue) {
+            if (values.cghInterpretationValue !== 'A') {
+              return true;
+            }
+            if (values.cghPrecision !== null) {
+              return true;
+            }
+            return false;
+          }
+          return false;
+        };
+
+        const checkFamilyHistory = () => {
+          const fmh = get(values, 'fmh', []);
+          if (fmh.length > 0) {
+            const checkValue = [];
+            fmh.forEach((element) => {
+              if (
+                get(element, 'relation.length', '') === 0 ||
+                get(element, 'note.length', '') === 0
+              ) {
+                checkValue.push(false);
+              }
+            });
+            if (checkValue.includes(false)) {
+              return false;
+            }
             return true;
           }
-          if (values.cghPrecision !== null) {
+          return true;
+        };
+
+        const checkHpo = () => {
+          const hpos = getValidValues(get(values, 'hpos', []));
+          if (hpos.length > 0) {
+            const checkValue = hpos.map((element) => get(element, 'interpretation') == null);
+            if (checkValue.includes(true)) {
+              return false;
+            }
             return true;
           }
           return false;
-        }
-        return false;
-      };
+        };
 
-      const checkFamilyHistory = () => {
-        const fmh = get(values, 'fmh', []);
-        if (fmh.length > 0) {
-          const checkValue = [];
-          fmh.forEach((element) => {
-            if (get(element, 'relation.length', '') === 0 || get(element, 'note.length', '') === 0) {
-              checkValue.push(false);
+        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+
+        const checkTest = () => {
+          if (values['analysis.tests']) {
+            const allAnalysis = values['analysis.tests'].filter((item) => item != null);
+            if (allAnalysis.length === 0) {
+              return false;
             }
-          });
-          if (checkValue.includes(false)) {
-            return false;
+            return true;
           }
-          return true;
+          return false;
+        };
+
+        const checkMRN = () => {
+          if (values['full-mrn']) {
+            return true;
+          }
+          if (values.mrn && values.organization) {
+            return true;
+          }
+          return false;
+        };
+
+        if (
+          checkTest() &&
+          checkHpo() &&
+          checkCghInterpretationValue() &&
+          checkFamilyHistory() &&
+          values.indication &&
+          checkMRN() &&
+          !hasError
+        ) {
+          return false;
         }
         return true;
-      };
-
-      const checkHpo = () => {
-        const hpos = getValidValues(get(values, 'hpos', []));
-        if (hpos.length > 0) {
-          const checkValue = hpos.map(
-            (element) => get(element, 'interpretation') == null,
-          );
-          if (checkValue.includes(true)) {
-            return false;
-          }
-          return true;
-        }
-        return false;
-      };
-
-      hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-
-      const checkTest = () => {
-        if (values['analysis.tests']) {
-          const allAnalysis = values['analysis.tests'].filter((item) => item != null);
-          if (allAnalysis.length === 0) {
-            return false;
-          }
-          return true;
-        }
-        return false;
-      };
-
-      const checkMRN = () => {
-        if (values['full-mrn']) {
-          return true;
-        } if (values.mrn && values.organization) {
-          return true;
-        }
-        return false;
-      };
-
-      if (checkTest()
-          && checkHpo()
-          && checkCghInterpretationValue()
-          && checkFamilyHistory()
-          && values.indication
-          && checkMRN()
-          && !hasError
-      ) {
-        return false;
       }
-      return true;
-    }
-    case 1: {
-      hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-      if (hasError) {
+      case 1: {
+        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+        if (hasError) {
+          return true;
+        }
+        const isResidentValid =
+          values.prescribingDoctorType === 'doctor' ||
+          (values.prescribingDoctorType === 'resident' &&
+            localStore.resident != null &&
+            localStore.resident.length > 0);
+
+        if (
+          localStore.practitioner != null &&
+          localStore.practitioner.length > 0 &&
+          isResidentValid
+        ) {
+          return false;
+        }
         return true;
       }
-      const isResidentValid = values.prescribingDoctorType === 'doctor'
-          || (
-            values.prescribingDoctorType === 'resident' && localStore.resident != null && localStore.resident.length > 0
-          );
-
-      if (localStore.practitioner != null && localStore.practitioner.length > 0 && isResidentValid) {
+      default:
         return false;
-      }
-      return true;
-    }
-    default:
-      return false;
     }
   };
 
@@ -207,19 +216,20 @@ function PatientSubmissionScreen(props) {
   });
 
   React.useEffect(() => {
-    actions.getServiceRequestCode()
+    actions.getServiceRequestCode();
   }, []);
   const { localStore } = props;
 
   const createCGHResourceList = (content, patientId) => {
     const values = content;
-    if (values.cghInterpretationValue === undefined || values.cghInterpretationValue === 'non-realized') {
+    if (
+      values.cghInterpretationValue === undefined ||
+      values.cghInterpretationValue === 'non-realized'
+    ) {
       return undefined;
     }
 
-    const {
-      cghInterpretationValue,
-    } = values;
+    const { cghInterpretationValue } = values;
 
     const cghResult = values['cgh.result'];
 
@@ -230,10 +240,13 @@ function PatientSubmissionScreen(props) {
 
     if (cghInterpretationValue === 'realized') {
       builder.withInterpretation({
-        coding: [{
-          code: cghResult,
-          display: cghDisplay(cghResult),
-        }],
+        coding: [
+          {
+            code: cghResult,
+            display: cghDisplay(cghResult),
+            system: InterpretationCodeSystemURL,
+          },
+        ],
       });
     }
 
@@ -251,18 +264,14 @@ function PatientSubmissionScreen(props) {
       return [];
     }
 
-    let {
-      indication,
-    } = values;
+    let { indication } = values;
 
     indication = indication ? indication.trim() : indication;
 
     const builder = new ObservationBuilder('INDIC');
-    builder
-      .withSubject(patientId)
-      .withId(get(localStore, 'indic.id'));
+    builder.withSubject(patientId).withId(get(localStore, 'indic.id'));
     if (indication != null) {
-      builder.withStringValue(indication)
+      builder.withStringValue(indication);
     }
 
     return builder.build();
@@ -271,14 +280,12 @@ function PatientSubmissionScreen(props) {
   const createSummary = (note, patientId) => {
     // const values = getFields();
     const builder = new ObservationBuilder('INVES');
-    builder
-      .withSubject(patientId)
-      .withId(get(localStore, 'inves.id'));
+    builder.withSubject(patientId).withId(get(localStore, 'inves.id'));
 
     if (note == null && localStore.summary.note != null) {
-      builder.withStringValue(localStore.summary.note)
+      builder.withStringValue(localStore.summary.note);
     } else {
-      builder.withStringValue(note)
+      builder.withStringValue(note);
     }
     return builder.build();
   };
@@ -288,10 +295,15 @@ function PatientSubmissionScreen(props) {
     const observation = new ObservationBuilder('HPO')
       .withId(hpo.id)
       .withInterpretation({
-        coding: [{
-          code: hpo.interpretation,
-          display: hpoInterpretationValues().find((interpretation) => interpretation.value === hpo.interpretation).display,
-        }],
+        coding: [
+          {
+            code: hpo.interpretation,
+            display: hpoInterpretationValues().find(
+              (interpretation) => interpretation.value === hpo.interpretation,
+            ).display,
+            system: InterpretationCodeSystemURL,
+          },
+        ],
       })
       .withSubject(currentPatient.id)
       .withValue(hpo.code, hpo.display)
@@ -326,35 +338,37 @@ function PatientSubmissionScreen(props) {
     return observation;
   };
 
-  const buildFmhsFromValues = (values, currentPatient) => get(values, 'fmh', []).filter(
-    (fmh) => fmh.note != null && fmh.relation != null,
-  ).map(
-    (fmh) => new FamilyMemberHistoryBuilder(fmh.relation, getFamilyRelationshipDisplayForCode(fmh.relation))
-      .withId(fmh.id)
-      .withNote(fmh.note)
-      .withPatient(currentPatient.id)
-      .build(),
-  );
+  const buildFmhsFromValues = (values, currentPatient) =>
+    get(values, 'fmh', [])
+      .filter((fmh) => fmh.note != null && fmh.relation != null)
+      .map((fmh) =>
+        new FamilyMemberHistoryBuilder(
+          fmh.relation,
+          getFamilyRelationshipDisplayForCode(fmh.relation),
+        )
+          .withId(fmh.id)
+          .withNote(fmh.note)
+          .withPatient(currentPatient.id)
+          .build(),
+      );
 
-  const buildAnalysisFhir = ( code ) => {
-    const {serviceRequestCode} = props;
-    const concept = serviceRequestCode.concept.find((c)=> c.code === code)
+  const buildAnalysisFhir = (code) => {
+    const { serviceRequestCode } = props;
+    const concept = serviceRequestCode.concept.find((c) => c.code === code);
     return {
       code: concept.code,
       display: concept.display,
       system: 'http://fhir.cqgc.ferlab.bio/CodeSystem/service-request-code',
-    }
-  }
+    };
+  };
 
   const saveSubmission = (submitted = false) => {
     form.validateFields().then((data) => {
-      const {
-        actions, currentPatient, userPractitioner,
-      } = props;
+      const { actions, currentPatient, userPractitioner } = props;
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
       const { status } = localStore;
       const { selectedSupervisor } = state;
-      
+
       const batch = {
         clinicalImpressions: [],
         fmhs: [],
@@ -365,16 +379,16 @@ function PatientSubmissionScreen(props) {
         submitted,
         update: get(localStore, 'serviceRequest.id') != null,
       };
-      
+
       const allAnalysis = content['analysis.tests']?.filter((item) => item != null);
       batch.length = get(allAnalysis, 'length', 0);
       if (batch.length === 0 || !userRole) {
         setState((currentState) => ({ ...currentState, isSubmitting: false }));
         return;
       }
-      
-      const analysisComments = content['analysis.comments']
-      
+
+      const analysisComments = content['analysis.comments'];
+
       const { mrn, organization } = content;
       let fullMRN = [];
       if (!mrn && !organization) {
@@ -383,29 +397,33 @@ function PatientSubmissionScreen(props) {
         fullMRN[0] = mrn;
         fullMRN[1] = organization;
       }
-      
+
       const ageInDay = moment(new Date()).diff(currentPatient.birthDate, 'days');
-      const submittedStatus = submitted ? StatusType['on-hold'] : (status || StatusType.draft)
+      const submittedStatus = submitted ? StatusType['on-hold'] : status || StatusType.draft;
       allAnalysis.forEach((analysis) => {
-        batch.serviceRequests.push(new ServiceRequestBuilder()
-          .withId(get(localStore, 'serviceRequest.id'))
-          .withMrn(fullMRN[0], fullMRN[1])
-          .withRequester(userPractitioner.id)
-          .withSubject(currentPatient.id)
-          .withCoding(buildAnalysisFhir(analysis))
-          .withSubmitted(submitted)
-          .withStatus(submittedStatus)
-          .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
-          .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
-          .withNote(analysisComments)
-          .build());
-        batch.clinicalImpressions.push(new ClinicalImpressionBuilder()
-          .withId(get(localStore, 'clinicalImpression.id'))
-          .withSubmitted(submitted)
-          .withSubject(currentPatient.id)
-          .withAge(ageInDay)
-          .withAssessorId(userRole.id)
-          .build());
+        batch.serviceRequests.push(
+          new ServiceRequestBuilder()
+            .withId(get(localStore, 'serviceRequest.id'))
+            .withMrn(fullMRN[0], fullMRN[1])
+            .withRequester(userPractitioner.id)
+            .withSubject(currentPatient.id)
+            .withCoding(buildAnalysisFhir(analysis))
+            .withSubmitted(submitted)
+            .withStatus(submittedStatus)
+            .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
+            .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
+            .withNote(analysisComments)
+            .build(),
+        );
+        batch.clinicalImpressions.push(
+          new ClinicalImpressionBuilder()
+            .withId(get(localStore, 'clinicalImpression.id'))
+            .withSubmitted(submitted)
+            .withSubject(currentPatient.id)
+            .withAge(ageInDay)
+            .withAssessorId(userRole.id)
+            .build(),
+        );
       });
 
       batch.hpos = getValidValues(get(content, 'hpos', [])).map(buildHpoObservation);
@@ -425,9 +443,11 @@ function PatientSubmissionScreen(props) {
         const observationBuilder = new ObservationBuilder('ETH')
           .withSubject(currentPatient.id)
           .withId(content.ethnicity.id)
-          .withValue(content.ethnicity.value,
+          .withValue(
+            content.ethnicity.value,
             intl.get(`form.patientSubmission.form.ethnicity.${content.ethnicity.value}`),
-            'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity');
+            'http://fhir.cqgc.ferlab.bio/CodeSystem/qc-ethnicity',
+          );
 
         if (get(content, 'ethnicity.note') != null) {
           observationBuilder.withNote(content.ethnicity.note);
@@ -485,7 +505,6 @@ function PatientSubmissionScreen(props) {
     const { actions } = props;
 
     if (residentSelected != null) {
-      
       const practitionerText = genPractitionerKey(residentSelected);
       actions.saveLocalResident(practitionerText);
       const resource = createPractitionerResource(residentSelected);
@@ -540,13 +559,17 @@ function PatientSubmissionScreen(props) {
   };
 
   const onFormFinish = (isOnLastPage) => {
-    setState({ ...state, isSubmissionVisible: true })
+    setState({ ...state, isSubmissionVisible: true });
   };
 
   const handleSubmission = () => {
-    setState((currentState) => ({ ...currentState, isSubmissionVisible: false, isSubmitting: true }));
-    saveSubmission(true)
-  }
+    setState((currentState) => ({
+      ...currentState,
+      isSubmissionVisible: false,
+      isSubmitting: true,
+    }));
+    saveSubmission(true);
+  };
 
   const onHpoSelected = (code, display) => {
     const { hpoResources } = state;
@@ -556,34 +579,31 @@ function PatientSubmissionScreen(props) {
 
     setState({
       ...state,
-      hpoResources: [
-        ...hpoResources,
-        builder.build(),
-      ],
+      hpoResources: [...hpoResources, builder.build()],
     });
   };
 
   const onHposUpdated = (hpos) => {
     setState({
       ...state,
-      hpoResources: [
-        ...hpos,
-      ],
+      hpoResources: [...hpos],
     });
   };
 
   const isPrescriptionEmpty = () => {
     const values = form.getFieldsValue();
-    return values.cghId == null
-    && get(values, 'analysis.tests', []).filter((i) => i != null).length === 0
-    && values.cghInterpretationValue === 'non-realized'
-    && get(values, 'ethnicity.value') == null
-    && get(values, 'consanguinity.value') == null
-    && get(values, 'analysis.comments') == null
-    && values['full-mrn'] == null
-    && values.mrn == null
-    && values.organization == null
-    && values.indication == null;
+    return (
+      values.cghId == null &&
+      get(values, 'analysis.tests', []).filter((i) => i != null).length === 0 &&
+      values.cghInterpretationValue === 'non-realized' &&
+      get(values, 'ethnicity.value') == null &&
+      get(values, 'consanguinity.value') == null &&
+      get(values, 'analysis.comments') == null &&
+      values['full-mrn'] == null &&
+      values.mrn == null &&
+      values.organization == null &&
+      values.indication == null
+    );
   };
 
   const onCancelClick = () => {
@@ -594,15 +614,14 @@ function PatientSubmissionScreen(props) {
     }
   };
 
-  const {
-    actions, app, clinicalImpression, patient, serviceRequestCode, userRoles
-  } = props;
-  const {
-    currentPageIndex, fmhResources, hpoResources, isSubmitting, submitFailed, valid,
-  } = state;
+  const { actions, app, clinicalImpression, patient, serviceRequestCode, userRoles } = props;
+  const { currentPageIndex, fmhResources, hpoResources, isSubmitting, submitFailed, valid } = state;
   const initialPractitionerValue = get(localStore, 'practitioner', '');
   const initialResidentValue = get(localStore, 'resident', '');
-  const userRole = findPractitionerRoleByOrganizationRef(userRoles, form.getFieldValue('organization'))
+  const userRole = findPractitionerRoleByOrganizationRef(
+    userRoles,
+    form.getFieldValue('organization'),
+  );
 
   const pages = [
     {
@@ -671,43 +690,40 @@ function PatientSubmissionScreen(props) {
         <Row className="page_headerStaticMargin">
           <Col>
             <Title className="header__content--static" level={3}>
-              <Typography.Text
-                className="header__content--static__primary"
-              >
-                { `${intl.get('form.patientSubmission.form.title')}` }
+              <Typography.Text className="header__content--static__primary">
+                {`${intl.get('form.patientSubmission.form.title')}`}
                 <Divider className="patientSubmission__header__divider" type="vertical" />
-                { ` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}`
-              + ` ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}` }
-                { isFetus(patient) ? ` (${intl.get('screen.patient.creation.fetus')})` : '' }
+                {` ${has(patient, 'name[0].family') ? patient.name[0].family.toUpperCase() : ''}` +
+                  ` ${has(patient, 'name[0].given[0]') ? patient.name[0].given[0] : ''}`}
+                {isFetus(patient) ? ` (${intl.get('screen.patient.creation.fetus')})` : ''}
               </Typography.Text>
             </Title>
-
           </Col>
           <Col flex={1}>&nbsp;</Col>
           <Col>
-
             <Button
               danger
-              onClick={() => setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))}
+              onClick={() =>
+                setState((prevState) => ({ ...prevState, isCancelConfirmVisible: true }))
+              }
               type="text"
             >
-              { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
+              {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
             </Button>
           </Col>
         </Row>
         <div className="page-static-content">
-          { submitFailed
-            ? (
-              <Alert
-                className="patientSubmission__form__alert"
-                data-testid="alert"
-                description={intl.get('form.patientSubmission.form.alert.description')}
-                icon={<WarningOutlined />}
-                message={intl.get('form.patientSubmission.form.alert.title')}
-                showIcon
-                type="error"
-              />
-            ) : null }
+          {submitFailed ? (
+            <Alert
+              className="patientSubmission__form__alert"
+              data-testid="alert"
+              description={intl.get('form.patientSubmission.form.alert.description')}
+              icon={<WarningOutlined />}
+              message={intl.get('form.patientSubmission.form.alert.title')}
+              showIcon
+              type="error"
+            />
+          ) : null}
 
           <Form
             form={form}
@@ -715,29 +731,17 @@ function PatientSubmissionScreen(props) {
             onFinish={() => onFormFinish(isOnLastPage)}
             onFinishFailed={onFailedSubmit}
           >
-            {
-              isSubmitting ? <Spin>{pageContent}</Spin> : pageContent
-            }
-            <Card className="patientSubmission__form__footer">            
+            {isSubmitting ? <Spin>{pageContent}</Spin> : pageContent}
+            <Card className="patientSubmission__form__footer">
               <Row gutter={8}>
                 <Col>
-                  <Button
-                    disabled={isSubmitting}
-                    htmlType="submit"
-                    type="primary"
-                  >
-                    {
-                      intl.get('form.patientSubmission.form.submit')
-                    }
+                  <Button disabled={isSubmitting} htmlType="submit" type="primary">
+                    {intl.get('form.patientSubmission.form.submit')}
                   </Button>
                 </Col>
                 <Col>
-                  <Button
-                    danger
-                    onClick={onCancelClick}
-                    type="text"
-                  >
-                    { intl.get('screen.clinicalSubmission.cancelButtonTitle') }
+                  <Button danger onClick={onCancelClick} type="text">
+                    {intl.get('screen.clinicalSubmission.cancelButtonTitle')}
                   </Button>
                 </Col>
               </Row>
@@ -768,18 +772,21 @@ function PatientSubmissionScreen(props) {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  actions: bindActionCreators({
-    assignServiceRequestPractitioner,
-    assignServiceRequestResident,
-    createRequest,
-    getServiceRequestCode,
-    navigateToPatientScreen,
-    navigateToPatientSearchScreen,
-    saveLocalPractitioner,
-    saveLocalResident,
-    saveLocalSupervisor,
-    updatePatientPractitioners,
-  }, dispatch),
+  actions: bindActionCreators(
+    {
+      assignServiceRequestPractitioner,
+      assignServiceRequestResident,
+      createRequest,
+      getServiceRequestCode,
+      navigateToPatientScreen,
+      navigateToPatientSearchScreen,
+      saveLocalPractitioner,
+      saveLocalResident,
+      saveLocalSupervisor,
+      updatePatientPractitioners,
+    },
+    dispatch,
+  ),
 });
 
 const mapStateToProps = (state) => ({
@@ -799,7 +806,4 @@ const mapStateToProps = (state) => ({
   userRoles: state.user.practitionerData.practitionerRoles,
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(PatientSubmissionScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(PatientSubmissionScreen);

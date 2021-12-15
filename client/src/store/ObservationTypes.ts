@@ -9,3 +9,5 @@ export type Observations = {
   eth?: Observation[];
   cons?: Observation[];
 }
+
+export const InterpretationCodeSystemURL = "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"
