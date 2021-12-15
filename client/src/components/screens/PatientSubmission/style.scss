@@ -298,12 +298,17 @@
         &:first-child{
           margin-right: 8px;
         }
+        .icon{
+          margin-right: 4px;
+        }
       }
     }
 
     .select{
       width: 160px;
-
+      .ant-select-selection-item{
+        display: flex;
+      }
     }
   }
 
