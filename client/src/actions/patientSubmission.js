@@ -1,10 +1,5 @@
 import * as actions from './type';
 
-export const savePatientSubmission = (patientSubmission) => ({
-  payload: patientSubmission,
-  type: actions.PATIENT_SUBMISSION_SAVE_REQUESTED,
-});
-
 export const saveLocalPractitioner = (practitioner) => ({
   payload: {
     practitioner,
