@@ -5,6 +5,29 @@ html {
   font-size: 12px;
 }
 
+footer#footer {
+  padding:8px 24px;
+  font-size: 12px;
+  background: $gray-4;
+  border-top: 1px solid $gray-5;
+  ul{
+    list-style-type:none;
+    margin:0;
+    padding:0;
+    display: flex;
+    li{
+      margin-right: 24px;
+      a{
+        color: $gray-8;
+      }
+    }
+  }
+
+  .logo{
+    height: 32px;
+  }
+}
+
 .observedIcon{
   &--positive{
     color:$green-7;
