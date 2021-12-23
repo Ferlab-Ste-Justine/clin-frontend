@@ -2,18 +2,7 @@ import intl from 'react-intl-universal';
 import get from 'lodash/get';
 
 const BUNDLE_COUNT = 100
-
-const OBSERVATION_CGH_CODE = 'CGH';
-const OBSERVATION_HPO_CODE = 'PHENO';
-const OBSERVATION_INDICATION_CODE = 'INDIC';
-
-const RESOURCE_TYPE_FAMILY_HISTORY = 'FamilyMemberHistory';
-const RESOURCE_TYPE_CLINICAL_IMPRESSION = 'ClinicalImpression';
-const RESOURCE_TYPE_BUNDLE = 'Bundle';
-const RESOURCE_TYPE_OBSERVATION = 'Observation';
 const RESOURCE_TYPE_PRACTITIONER = 'Practitioner';
-
-const FERLAB_BASE_URL = 'http://fhir.cqgc.ferlab.bio';
 
 const HL7_CODE_SYSTEM_URL = '';
 
@@ -22,64 +11,9 @@ export const genPractitionerKey = (practitioner) => (
   `${practitioner.family.toUpperCase()} ${practitioner.given} – ${practitioner.license}`
 );
 
-export const getResourceCode = (r) => {
-  try {
-    return r.code.coding[0].code;
-  } catch (e) {
-    return null;
-  }
-};
-
-export const isCGH = (o) => getResourceCode(o) === OBSERVATION_CGH_CODE;
-export const isHPO = (o) => getResourceCode(o) === OBSERVATION_HPO_CODE;
-
-export const isFamilyHistoryResource = (resource) => resource.resourceType === RESOURCE_TYPE_FAMILY_HISTORY;
-export const isIndication = (o) => getResourceCode(o) === OBSERVATION_INDICATION_CODE;
-
 export const getObservationValue = (obs, defaultValue) => (
   get(obs, 'valueString', get(obs, 'note[0].text', defaultValue))
 )
-
-export const cghInterpretation = (cgh) => {
-  if (cgh.interpretation && cgh.interpretation.length) {
-    const [interpretation] = cgh.interpretation;
-    const [interpretationValue] = interpretation.coding;
-    return interpretationValue;
-  }
-  return null;
-};
-
-export const getCGHInterpretationCode = (cghResource) => {
-  try {
-    return cghResource.interpretation[0].coding[0].code;
-  } catch (e) {
-    return null;
-  }
-};
-
-export const resourceNote = (resource) => {
-  if (resource.note && resource.note.length) {
-    return resource.note[0].text;
-  }
-
-  return null;
-};
-
-export const getIndicationNote = (indication) => {
-  if (indication.note && indication.note.length) {
-    return indication.note[0].text;
-  }
-
-  return null;
-};
-
-export const getIndicationId = (indication) => {
-  try {
-    return indication.id;
-  } catch (e) {
-    return null;
-  }
-};
 
 // TODO: translate/intl
 export const CGH_CODES = {
@@ -104,12 +38,6 @@ export const cghDisplay = (code) => {
   return '';
 };
 
-export const createBundle = () => ({
-  entry: [],
-  resourceType: RESOURCE_TYPE_BUNDLE,
-  type: 'transaction',
-});
-
 export const createRequest = (resource) => {
   const {
     id,
@@ -126,128 +54,6 @@ export const createRequest = (resource) => {
     url: id ? `${resourceType}/${id}` : resourceType,
   };
 };
-
-export const createClinicalImpressionResource = ({
-  age, assessor, date, id, status,
-}) => {
-  const resource = {
-    assessor: { reference: assessor },
-    date,
-    description: 'This source refers to the consultation with the doctor',
-
-    extension: [
-      {
-        url: `${FERLAB_BASE_URL}/StructureDefinition/age-at-event`,
-        valueAge: {
-          code: 'd',
-          system: 'http://unitsofmeasure.org',
-          unit: 'days',
-          value: age,
-        },
-      },
-    ],
-
-    id,
-    investigation: [
-      {
-        code: {
-          text: 'initial-examination',
-        },
-        item: [],
-      },
-    ],
-    meta: {
-      profile: [
-        `${FERLAB_BASE_URL}/StructureDefinition/cqdg-clinical-impression`,
-      ],
-    },
-    resourceType: RESOURCE_TYPE_CLINICAL_IMPRESSION,
-    status,
-  };
-
-  return resource;
-};
-
-export const createCGHResource = ({
-  id, interpretation, note,
-}) => ({
-  category: [
-    {
-      coding: [
-        {
-          code: 'laboratory',
-          display: 'Laboratory',
-          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
-        },
-      ],
-    },
-  ],
-  code: {
-    coding: [
-      {
-        code: 'CGH',
-        display: 'cgh',
-        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
-      },
-    ],
-  },
-  id,
-  interpretation: [
-    {
-      coding: [
-        interpretation,
-      ],
-    },
-  ],
-  meta: {
-    profile: [
-      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
-    ],
-  },
-  note: [
-    {
-      text: note,
-    },
-  ],
-  resourceType: RESOURCE_TYPE_OBSERVATION,
-  status: 'final',
-});
-
-export const createIndicationResource = ({ id, note }) => ({
-  category: [
-    {
-      coding: [
-        {
-          code: 'exam',
-          display: 'Exam',
-          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
-        },
-      ],
-    },
-  ],
-  code: {
-    coding: [
-      {
-        code: 'INDIC',
-        display: 'indications',
-        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
-      },
-    ],
-  },
-  id,
-  meta: {
-    profile: [
-      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
-    ],
-  },
-  note: [
-    {
-      text: note,
-    },
-  ],
-  resourceType: RESOURCE_TYPE_OBSERVATION,
-  status: 'final',
-});
 
 export const createPractitionerResource = ({
   family,
@@ -408,183 +214,15 @@ export const createGetPractitionersDataBundle = (data) => {
   return output;
 };
 
-export const createFamilyHistoryMemberResource = ({
-  code, display, id, note, toDelete,
-}) => (
-  {
-    id,
-    meta: {
-      profile: [
-        `${FERLAB_BASE_URL}/StructureDefinition/cqgc-fmh`,
-      ],
-    },
-    note: [
-      {
-        text: note,
-      },
-    ],
-    patient: {
-      reference: 'Patient/pt-001',
-    },
-    relationship: {
-      coding: [
-        {
-          code,
-          display,
-        },
-      ],
-    },
-    resourceType: RESOURCE_TYPE_FAMILY_HISTORY,
-    status: 'completed',
-    toDelete,
-  }
-);
+export const getResourceId = (resource) => resource?.id || '' ;
 
-export const getFamilyRelationshipCode = (resource) => {
-  try {
-    const { relationship } = resource;
-    const { coding } = relationship;
-    const { code } = coding[0];
-    if (code === '') {
-      return undefined;
-    }
-    return code;
-  } catch (e) {
-    return undefined;
-  }
-};
+export const getHPOOnsetCode = (resource) => resource?.extension?.[0]?.valueCoding?.code;
 
-export const getFamilyRelationshipDisplay = (resource) => {
-  try {
-    const { relationship } = resource;
-    const { coding } = relationship;
-    const { display } = coding[0];
-    if (display === '') {
-      return undefined;
-    }
-    return display;
-  } catch (e) {
-    return undefined;
-  }
-};
+export const getHPODisplay = (resource) => resource?.valueCodeableConcept?.coding?.[0]?.display || '';
 
-export const getFamilyRelationshipNote = (resource) => {
-  try {
-    const { note } = resource;
-    const { text } = note[0];
-    return text;
-  } catch (e) {
-    return '';
-  }
-};
+export const getHPOCode = (resource) => resource?.valueCodeableConcept?.coding?.[0]?.code || '';
 
-export const createHPOResource = ({
-  category, hpoCode, id, interpretation, note, onset, toDelete,
-}) => ({
-  category: [
-    {
-      coding: [
-        {
-          code: 'exam',
-          display: 'Exam',
-          system: `${HL7_CODE_SYSTEM_URL}/observation-category`,
-        },
-      ],
-    },
-  ],
-  code: {
-    coding: [
-      {
-        code: 'PHENO',
-        display: 'phenotype',
-        system: `${FERLAB_BASE_URL}/CodeSystem/observation-code`,
-      },
-    ],
-  },
-  extension: [
-    {
-      url: `${FERLAB_BASE_URL}/StructureDefinition/age-at-onset`,
-      valueCoding: onset,
-    },
-    {
-      url: `${FERLAB_BASE_URL}/StructureDefinition/hpo-category`,
-      valueCoding: category,
-    },
-  ],
-  id,
-  interpretation: [
-    {
-      coding: [
-        {
-          system: `${HL7_CODE_SYSTEM_URL}/v3-ObservationInterpretation`,
-          ...interpretation,
-        },
-      ],
-      text: 'Observé',
-    },
-  ],
-  meta: {
-    profile: [
-      `${FERLAB_BASE_URL}/StructureDefinition/cqgc-observation`,
-    ],
-  },
-  note: [
-    {
-      text: note,
-    },
-  ],
-  resourceType: RESOURCE_TYPE_OBSERVATION,
-  status: 'final',
-  toDelete,
-  valueCodeableConcept: {
-    coding: [
-      {
-        system: 'http://purl.obolibrary.org/obo/hp.owl',
-        ...hpoCode,
-      },
-    ],
-  },
-});
-
-export const getResourceId = (resource) => {
-  try {
-    return resource.id;
-  } catch (e) {
-    return '';
-  }
-};
-
-export const getHPOOnsetCode = (resource) => {
-  try {
-    return resource.extension[0].valueCoding.code;
-  } catch (e) {
-    return undefined;
-  }
-};
-
-export const getHPODisplay = (resource) => {
-  try {
-    return resource.valueCodeableConcept.coding[0].display;
-  } catch (e) {
-    return '';
-  }
-};
-
-export const getHPOCode = (resource) => {
-  try {
-    return resource.valueCodeableConcept.coding[0].code;
-  } catch (e) {
-    return '';
-  }
-};
-
-export const getHPOInterpretationDisplay = (resource) => {
-  try {
-    return resource.interpretation[0].coding[0].display;
-  } catch (e) {
-    return '';
-  }
-};
+export const getHPOInterpretationCode = (resource) => resource?.interpretation?.[0]?.coding?.[0]?.code;
 
 export const hpoInterpretationValues = () => [
   {
@@ -603,22 +241,6 @@ export const hpoInterpretationValues = () => [
     value: 'IND',
   },
 ];
-
-export const getHPOInterpretationCode = (resource) => {
-  try {
-    return resource.interpretation[0].coding[0].code;
-  } catch (e) {
-    return undefined;
-  }
-};
-
-export const getHPONote = (resource) => {
-  try {
-    return resource.note.text;
-  } catch (e) {
-    return '';
-  }
-};
 
 export const hpoOnsetValues = [
   {
@@ -697,25 +319,6 @@ export const hpoOnsetValues = [
     ],
   },
 ];
-
-export const hpoInterpretationDisplayForCode = (code) => {
-  try {
-    return hpoInterpretationValues().find((v) => v.value === code).display;
-  } catch (e) {
-    return '';
-  }
-};
-
-export const getHPOOnsetDisplayFromCode = (code) => {
-  try {
-    return hpoOnsetValues()
-      .reduce((acc, group) => [...acc, ...group.options], [])
-      .find((option) => option.code === code)
-      .display;
-  } catch (e) {
-    return '';
-  }
-};
 
 export const getFamilyRelationshipValues = () => ({
   brother: {
@@ -816,16 +419,4 @@ export const getFamilyRelationshipValues = () => ({
   },
 });
 
-export const getFamilyRelationshipDisplayForCode = (code) => {
-  try {
-    return Object.values(getFamilyRelationshipValues()).find((v) => v.value === code).label;
-  } catch (e) {
-    return '';
-  }
-};
-
-export const STATE_CLINICAL_IMPRESSION = {
-  COMPLETED: 'completed',
-  ENTERED_IN_ERROR: 'entered-in-error',
-  IN_PROGRESS: 'in-progress',
-};
+export const getFamilyRelationshipDisplayForCode = (code) => Object.values(getFamilyRelationshipValues()).find((v) => v.value === code)?.label || '';

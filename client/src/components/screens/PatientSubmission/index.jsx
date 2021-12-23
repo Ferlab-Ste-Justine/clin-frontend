@@ -29,7 +29,6 @@ import {
   hpoOnsetValues,
 } from 'helpers/fhir/fhir';
 import { findPractitionerRoleByOrganizationRef } from 'helpers/fhir/PractitionerRoleHelper';
-import debounce from 'lodash/debounce';
 import find from 'lodash/find';
 import get from 'lodash/get';
 import has from 'lodash/has';
@@ -79,110 +78,110 @@ function PatientSubmissionScreen(props) {
     const values = form.getFieldsValue();
     let hasError = null;
     switch (currentPage) {
-      case 0: {
-        const checkCghInterpretationValue = () => {
-          if (values.cghInterpretationValue) {
-            if (values.cghInterpretationValue !== 'A') {
-              return true;
+    case 0: {
+      const checkCghInterpretationValue = () => {
+        if (values.cghInterpretationValue) {
+          if (values.cghInterpretationValue !== 'A') {
+            return true;
+          }
+          if (values.cghPrecision !== null) {
+            return true;
+          }
+          return false;
+        }
+        return false;
+      };
+
+      const checkFamilyHistory = () => {
+        const fmh = get(values, 'fmh', []);
+        if (fmh.length > 0) {
+          const checkValue = [];
+          fmh.forEach((element) => {
+            if (
+              get(element, 'relation.length', '') === 0 ||
+                get(element, 'note.length', '') === 0
+            ) {
+              checkValue.push(false);
             }
-            if (values.cghPrecision !== null) {
-              return true;
-            }
+          });
+          if (checkValue.includes(false)) {
             return false;
           }
-          return false;
-        };
+          return true;
+        }
+        return true;
+      };
 
-        const checkFamilyHistory = () => {
-          const fmh = get(values, 'fmh', []);
-          if (fmh.length > 0) {
-            const checkValue = [];
-            fmh.forEach((element) => {
-              if (
-                get(element, 'relation.length', '') === 0 ||
-                get(element, 'note.length', '') === 0
-              ) {
-                checkValue.push(false);
-              }
-            });
-            if (checkValue.includes(false)) {
-              return false;
-            }
-            return true;
+      const checkHpo = () => {
+        const hpos = getValidValues(get(values, 'hpos', []));
+        if (hpos.length > 0) {
+          const checkValue = hpos.map((element) => get(element, 'interpretation') == null);
+          if (checkValue.includes(true)) {
+            return false;
           }
           return true;
-        };
+        }
+        return false;
+      };
 
-        const checkHpo = () => {
-          const hpos = getValidValues(get(values, 'hpos', []));
-          if (hpos.length > 0) {
-            const checkValue = hpos.map((element) => get(element, 'interpretation') == null);
-            if (checkValue.includes(true)) {
-              return false;
-            }
-            return true;
+      hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+
+      const checkTest = () => {
+        if (values['analysis.tests']) {
+          const allAnalysis = values['analysis.tests'].filter((item) => item != null);
+          if (allAnalysis.length === 0) {
+            return false;
           }
-          return false;
-        };
+          return true;
+        }
+        return false;
+      };
 
-        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+      const checkMRN = () => {
+        if (values['full-mrn']) {
+          return true;
+        }
+        if (values.mrn && values.organization) {
+          return true;
+        }
+        return false;
+      };
 
-        const checkTest = () => {
-          if (values['analysis.tests']) {
-            const allAnalysis = values['analysis.tests'].filter((item) => item != null);
-            if (allAnalysis.length === 0) {
-              return false;
-            }
-            return true;
-          }
-          return false;
-        };
-
-        const checkMRN = () => {
-          if (values['full-mrn']) {
-            return true;
-          }
-          if (values.mrn && values.organization) {
-            return true;
-          }
-          return false;
-        };
-
-        if (
-          checkTest() &&
+      if (
+        checkTest() &&
           checkHpo() &&
           checkCghInterpretationValue() &&
           checkFamilyHistory() &&
           values.indication &&
           checkMRN() &&
           !hasError
-        ) {
-          return false;
-        }
+      ) {
+        return false;
+      }
+      return true;
+    }
+    case 1: {
+      hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
+      if (hasError) {
         return true;
       }
-      case 1: {
-        hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-        if (hasError) {
-          return true;
-        }
-        const isResidentValid =
+      const isResidentValid =
           values.prescribingDoctorType === 'doctor' ||
           (values.prescribingDoctorType === 'resident' &&
             localStore.resident != null &&
             localStore.resident.length > 0);
 
-        if (
-          localStore.practitioner != null &&
+      if (
+        localStore.practitioner != null &&
           localStore.practitioner.length > 0 &&
           isResidentValid
-        ) {
-          return false;
-        }
-        return true;
-      }
-      default:
+      ) {
         return false;
+      }
+      return true;
+    }
+    default:
+      return false;
     }
   };
 
@@ -469,11 +468,6 @@ function PatientSubmissionScreen(props) {
     });
   };
 
-  const isFirstPage = () => {
-    const { currentPageIndex } = state;
-    return currentPageIndex === 0;
-  };
-
   const handleSupervisorSelected = (supervisorSelected) => {
     const { actions } = props;
     if (supervisorSelected) {
@@ -524,31 +518,6 @@ function PatientSubmissionScreen(props) {
     }
   };
 
-  const next = () => {
-    const { currentPageIndex } = state;
-    const pageIndex = currentPageIndex + 1;
-    setState({ ...state, currentPageIndex: pageIndex, firstPageFields: form.getFieldsValue() });
-    debounce(validate, 500)();
-  };
-
-  const previous = () => {
-    const { currentPageIndex, firstPageFields } = state;
-    const { currentPatient } = props;
-    const pageIndex = currentPageIndex - 1;
-
-    setState({
-      ...state,
-      currentPageIndex: pageIndex,
-      firstPageFields: {
-        ...firstPageFields,
-        ...form.getFieldsValue(),
-      },
-      fmhResources: buildFmhsFromValues(firstPageFields, currentPatient),
-    });
-
-    debounce(validate, 500)();
-  };
-
   const handleCancel = () => {
     const { actions, patient } = props;
     actions.navigateToPatientScreen(patient.id, {
@@ -558,7 +527,7 @@ function PatientSubmissionScreen(props) {
     });
   };
 
-  const onFormFinish = (isOnLastPage) => {
+  const onFormFinish = () => {
     setState({ ...state, isSubmissionVisible: true });
   };
 
