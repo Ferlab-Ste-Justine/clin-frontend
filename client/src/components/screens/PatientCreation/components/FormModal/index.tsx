@@ -81,7 +81,12 @@ async function validateMrn(form: FormInstance) {
   if (!mrnFile || !organization) {
     return false;
   }
-  
+
+  const isFetus = form.getFieldValue("patientType") === PatientType.FETUS
+  if (isFetus) {
+    return true;
+  }
+
   const isUnique = await isMrnUnique(mrnFile, organization);
   if (!isUnique) {
     form.setFields([
@@ -96,10 +101,10 @@ type MrnData = {
   hospital: string;
 };
 
-const extractMrnData = (patient: Patient): MrnData | undefined => {
+const extractMrnData = (patient: Patient): MrnData | null => {
   const identifier = patient.identifier.find((id) => get(id, 'type.coding[0].code') === 'MR');
-  if (identifier == null) {
-    return undefined;
+  if (!identifier) {
+    return null;
   }
   return {
     hospital: identifier.assigner?.reference.split('/')[1] || '',
@@ -127,7 +132,9 @@ const FormModal = ({
   const [state, dispatch] = useReducer<Reducer<State, Action>>(reducer, {
     ramqStatus: RamqStatus.INVALID,
   });
-  
+
+  const isFetusWithParent = isFetusType && !!patient
+
   const resetForm = (isFetus = false) => {
     form.resetFields();
     setIsFetusType(isFetus);
@@ -296,7 +303,7 @@ const FormModal = ({
           form.submit();
         }}
         title={intl.get(`${I18N_PREFIX}title`)}
-        visible={(open && !isCreating)}
+        visible={open && !isCreating}
         width={600}
       >
         <Form
@@ -388,7 +395,7 @@ const FormModal = ({
                   ]}
                 >
                   <Input
-                    disabled={isFetusType && !!patient}
+                    disabled={isFetusWithParent}
                     placeholder={intl.get(`${I18N_PREFIX}lastname`)}
                   />
                 </Form.Item>
@@ -411,7 +418,7 @@ const FormModal = ({
                   ]}
                 >
                   <Input
-                    disabled={isFetusType && !!patient}
+                    disabled={isFetusWithParent}
                     placeholder={intl.get(`${I18N_PREFIX}firstname`)}
                   />
                 </Form.Item>
@@ -448,7 +455,7 @@ const FormModal = ({
                   rules={[{ required: true }]}
                 >
                   <DatePicker
-                    disabled={isFetusType && !!patient}
+                    disabled={isFetusWithParent}
                     disabledDate={(current: any) => current && current > moment().startOf('day')}
                     placeholder={intl.get(`${I18N_PREFIX}birthday.placeholder`)}
                   />
@@ -477,6 +484,7 @@ const FormModal = ({
                         >
                           <Input
                             data-testid="mrn-file"
+                            disabled={isFetusWithParent}
                             onChange={(event) => {
                               form.setFieldsValue({
                                 mrn: {
@@ -502,6 +510,7 @@ const FormModal = ({
                           <Select
                             className="patient-creation__form__select"
                             data-testid="mrn-organization"
+                            disabled={isFetusWithParent}
                             placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                           >
                             <Select.Option value="CHUSJ">CHUSJ</Select.Option>
