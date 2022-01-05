@@ -32,14 +32,12 @@ export class App extends React.Component {
   render() {
     const { caughtError, errorDetail } = this.state;
     if (caughtError) {
-      return (
-        <MaintenanceScreen error={errorDetail} />
-      );
+      return <MaintenanceScreen error={errorDetail} />;
     }
 
     const { app, history } = this.props;
     return (
-      <Spin key="spinner" size="large" spinning={app.showLoadingAnimation}>
+      <Spin id="main-spinner" key="spinner" size="large" spinning={app.showLoadingAnimation}>
         <ConfigProvider key="locale-antd" locale={app.locale.antd}>
           <Layout id="layout" key="layout">
             <AppRouter app={app} history={history} />
@@ -61,14 +59,14 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  actions: bindActionCreators({
-    loadApp,
-  }, dispatch),
+  actions: bindActionCreators(
+    {
+      loadApp,
+    },
+    dispatch,
+  ),
 });
 
-export const ConnectedApp = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(App);
+export const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
 
 export default hot(ConnectedApp);
