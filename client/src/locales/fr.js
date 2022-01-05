@@ -52,7 +52,8 @@ const fr = {
   'filters.header.status': 'Statut',
   'filters.header.test': 'Analyse',
   'filters.true': 'Vrai',
-  'footer.navigation.contact': 'Contact',
+  'footer.navigation.fhir': 'Fhir',
+  'footer.navigation.zepplin': 'Zeppelin',
   'form.error.isNotEmail': 'Ce champ doit être un courriel',
   'form.error.isRequired': 'Ce champ est requis',
   'form.login.connectionError.description':
