@@ -1,5 +1,5 @@
 import get from 'lodash/get';
-
+import FileDownload from 'js-file-download';
 import keycloak from '../keycloak';
 
 import { getPatientByIdentifier } from './fhir/api/PatientChecker';
@@ -473,6 +473,11 @@ const getFileURL = async (file: string) =>
     .then(successCallback)
     .catch(errorCallback);
 
+const downloadPrescriptionPDF = async (serviceRequestId: string) =>
+  Http.secureClinAxios
+    .get(`${window.CLIN.rendererBaseUrl}/${serviceRequestId}`, {responseType: 'blob'})
+    .then((response: { data: Blob }) =>  FileDownload(response.data, `${serviceRequestId}.pdf`))
+
 const fetchServiceRequestCode = async () =>
   Http.secureClinAxios
     .get(`${window.CLIN.fhirBaseUrl}/CodeSystem/service-request-code`)
@@ -493,6 +498,7 @@ export default {
   getPatientsByAutoComplete,
   getPatientsGenderAndPosition,
   getFileURL,
+  downloadPrescriptionPDF,
   getUserAuthPermissions,
   getPrescriptionsByAutoComplete,
   countVariantsForPatient,

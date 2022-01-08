@@ -10,6 +10,11 @@ export const createRequest: Action = (batch: any, openedPrescriptionId: string |
   },
 });
 
+export const downloadPrescriptionPDF = (id: string) => ({
+  payload: { id },
+  type: actions.DOWNLOAD_PRESCRIPTION_PDF_REQUEST,
+});
+
 export const resetStatus: Action = () => ({
   type: actions.CREATE_PATIENT_REQUEST_STATUS_RESET,
 });

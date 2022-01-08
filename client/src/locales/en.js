@@ -369,6 +369,7 @@ const en = {
   'screen.patient.details.prescription.practitioner': 'Médecin prescripteur',
   'screen.patient.details.prescription.practitioner': 'Prescribing physician',
   'screen.patient.details.prescription.prescription': 'Prescription',
+  'screen.patient.details.prescription.print': 'Print',
   'screen.patient.details.prescription.status': 'Statut',
   'screen.patient.details.prescription.submissionDate': 'Submission Date',
   'screen.patient.details.prescription.success.message': 'This prescription has been successfully submitted.',
