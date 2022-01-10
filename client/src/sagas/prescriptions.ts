@@ -24,7 +24,10 @@ function* handleCreateRequest(action: any) {
 function* downloadPrescriptionPDF(action: any) {
   try {
     const { id } = action.payload;
-    yield Api.downloadPrescriptionPDF(id);
+    const response = yield Api.downloadPrescriptionPDF(id);
+    if (response.error) {
+      return yield put({ payload: new ApiError(response.error), type: actions.DOWNLOAD_PRESCRIPTION_PDF_FAILED });
+    }
     yield put({ payload: { id }, type: actions.DOWNLOAD_PRESCRIPTION_PDF_SUCCEEDED });
   } catch (e) {
     yield put({ payload: e, type: actions.DOWNLOAD_PRESCRIPTION_PDF_FAILED });
