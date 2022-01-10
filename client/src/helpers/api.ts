@@ -1,5 +1,4 @@
 import get from 'lodash/get';
-
 import keycloak from '../keycloak';
 
 import { getPatientByIdentifier } from './fhir/api/PatientChecker';
@@ -19,6 +18,7 @@ import { PatientAutocompleteOptionalParams, PatientAutoCompleteResponse } from '
 import Http from './http-client';
 import { userAuthPermissions } from './keycloak-api';
 import { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
+import FileDownload from 'helpers/FileDownload';
 
 type Payload = any;
 type PayloadCb = { payload: Payload };
@@ -473,6 +473,13 @@ const getFileURL = async (file: string) =>
     .then(successCallback)
     .catch(errorCallback);
 
+const downloadPrescriptionPDF = async (serviceRequestId: string) =>
+  Http.secureClinAxios
+    .get(`${window.CLIN.rendererBaseUrl}/${serviceRequestId}`, {responseType: 'blob'})
+    .then((response: { data: Blob }) => FileDownload(response.data,`${serviceRequestId}.pdf`))
+    .then(successCallback)
+    .catch(errorCallback);
+
 const fetchServiceRequestCode = async () =>
   Http.secureClinAxios
     .get(`${window.CLIN.fhirBaseUrl}/CodeSystem/service-request-code`)
@@ -493,6 +500,7 @@ export default {
   getPatientsByAutoComplete,
   getPatientsGenderAndPosition,
   getFileURL,
+  downloadPrescriptionPDF,
   getUserAuthPermissions,
   getPrescriptionsByAutoComplete,
   countVariantsForPatient,

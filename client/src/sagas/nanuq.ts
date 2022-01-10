@@ -8,15 +8,11 @@ import {
   NANUQ_EXPORT_FAILED, NANUQ_EXPORT_INVALID, NANUQ_EXPORT_REQUESTED, NANUQ_EXPORT_SUCCEEDED,
 } from '../actions/type';
 import { generateExport } from '../helpers/nanuq/nanuq';
+import FileDownload from 'helpers/FileDownload';
 
 function downloadJSONFile(content: string, filename: string) {
   const fileBlob = new Blob([content], { type: 'text/json' });
-  const downloadLinkElement = window.document.createElement('a');
-  downloadLinkElement.href = window.URL.createObjectURL(fileBlob);
-  downloadLinkElement.download = filename;
-  document.body.appendChild(downloadLinkElement);
-  downloadLinkElement.click();
-  document.body.removeChild(downloadLinkElement);
+  FileDownload(fileBlob, filename);
 }
 
 function* generateNanuqReport(action: {type: 'NANUQ_EXPORT_REQUESTED', payload: string[]}) {

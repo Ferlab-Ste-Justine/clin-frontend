@@ -3,6 +3,7 @@ import { createRequest, CreateRequestBatch, updateRequest } from 'helpers/fhir/a
 import {
   all, put, select, takeLatest, 
 } from 'redux-saga/effects';
+import Api from '../helpers/api';
 
 function* handleCreateRequest(action: any) {
   try {
@@ -20,11 +21,30 @@ function* handleCreateRequest(action: any) {
   }
 }
 
+function* downloadPrescriptionPDF(action: any) {
+  try {
+    const { id } = action.payload;
+    const response = yield Api.downloadPrescriptionPDF(id);
+    if (response.error) {
+      return yield put({ payload: new ApiError(response.error), type: actions.DOWNLOAD_PRESCRIPTION_PDF_FAILED });
+    }
+    yield put({ payload: { id }, type: actions.DOWNLOAD_PRESCRIPTION_PDF_SUCCEEDED });
+  } catch (e) {
+    yield put({ payload: e, type: actions.DOWNLOAD_PRESCRIPTION_PDF_FAILED });
+  }
+}
+
+function* watchDownloadPrescriptionPDF() {
+  yield takeLatest(actions.DOWNLOAD_PRESCRIPTION_PDF_REQUEST, downloadPrescriptionPDF);
+}
+
 function* watchCreateRequest() {
   yield takeLatest(actions.CREATE_PATIENT_REQUEST_REQUESTED, handleCreateRequest);
 }
+
 export default function* watchedPatientSubmissionSagas() {
   yield all([
     watchCreateRequest(),
+    watchDownloadPrescriptionPDF(),
   ]);
 }
