@@ -6,7 +6,7 @@ import {
   InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined} from '@ant-design/icons';
 import { updateServiceRequestStatus } from 'actions/patient';
 import { editPrescription } from 'actions/patientSubmission';
-import { resetStatus } from 'actions/prescriptions';
+import { resetStatus, downloadPrescriptionPDF } from 'actions/prescriptions';
 import { navigateToSubmissionWithPatient } from 'actions/router';
 import { getServiceRequestCode } from 'actions/serviceRequest';
 import {
@@ -253,8 +253,7 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                         <Button
                           icon={<PrinterOutlined />}
                           onClick={() => {
-                            /* eslint-disable-next-line no-alert */
-                            alert('Feature not yey implemented');
+                            dispatch(downloadPrescriptionPDF(prescription.id!))
                           }}
                           type='text'
                         >
