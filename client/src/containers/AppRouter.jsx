@@ -16,7 +16,6 @@ import PropTypes from 'prop-types';
 import AccessDenied from 'components/screens/AccessDenied';
 import PatientScreen from 'components/screens/Patient';
 import PatientSearchScreen from 'components/screens/PatientSearch';
-import PatientsPrescriptionsSearch from 'components/screens/PatientsPrescriptionsSearch';
 import PatientSubmissionScreen from 'components/screens/PatientSubmission';
 import PatientVariantScreen from 'components/screens/PatientVariant';
 import SearchScreen from 'components/screens/search';
@@ -77,15 +76,6 @@ const AppRouter = ({ history }) => {
           resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST}
           roles={[]}
         />
-        <AuthRoute
-          Component={PatientsPrescriptionsSearch}
-          exact
-          key="route-patient-search-local"
-          path={`${Routes.PatientSearchArranger}/local`}
-          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_LIST}
-          roles={[]}
-        />
-
         <AuthRoute
           Component={PatientSearchScreen}
           exact
