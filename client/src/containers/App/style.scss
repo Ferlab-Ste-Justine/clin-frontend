@@ -13,7 +13,15 @@ body{
 
 #root {
   display: block;
-  height: 100vh;
+  height: 100%;
+}
+
+#main-spinner {
+  height: 100%;
+
+  .ant-spin-container {
+    height: 100%;
+  }
 }
 
 #spinner {
