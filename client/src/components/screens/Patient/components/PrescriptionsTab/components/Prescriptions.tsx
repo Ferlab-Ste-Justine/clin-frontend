@@ -1,12 +1,12 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  DeleteOutlined, EditOutlined, FormOutlined, HistoryOutlined,
+  EditOutlined, FormOutlined, HistoryOutlined,
   InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined} from '@ant-design/icons';
 import { updateServiceRequestStatus } from 'actions/patient';
 import { editPrescription } from 'actions/patientSubmission';
-import { resetStatus, downloadPrescriptionPDF } from 'actions/prescriptions';
+import { downloadPrescriptionPDF,resetStatus } from 'actions/prescriptions';
 import { navigateToSubmissionWithPatient } from 'actions/router';
 import { getServiceRequestCode } from 'actions/serviceRequest';
 import {
@@ -66,19 +66,21 @@ const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
   </Tag>
 );
 
-const UpdatedStatus: React.FC<{date: string}> = ({ date }) => {
-  const day = date.split('T')[0]
-  const hour = date.split('T')[1].split('.')[0]
-  return(
+const UpdatedStatus: React.FC<{ date: string }> = ({ date }) => {
+  const localDate = new Date(date).toLocaleString();
+  const day = localDate.split(',')[0].split('/').reverse().join('-');
+  const hour = localDate.split(', ')[1];
+  return (
     <span className={`${tabDetailsCNPrefix}__status-update`}>
-      <HistoryOutlined /> 
-      {intl.get('screen.patient.details.status.date.lastUpdated')} 
+      <HistoryOutlined />
+      {intl.get('screen.patient.details.status.date.lastUpdated')}
       <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{day}</span>
       {intl.get('screen.patient.details.status.date.time')}
       <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{hour}</span>
     </span>
-  )
+  );
 };
+
 
 interface Props {
   prescriptions: Prescription[]
