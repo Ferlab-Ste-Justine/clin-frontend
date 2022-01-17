@@ -68,15 +68,15 @@ const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
 
 const UpdatedStatus: React.FC<{ date: string }> = ({ date }) => {
   const localDate = new Date(date).toLocaleString();
-  const day = localDate.split(',')[0].split('/').reverse().join('-');
-  const hour = localDate.split(', ')[1];
+  const [datePart, timePart] = localDate.split(', ');
+  const formattedDate = datePart.split('/').reverse().join('-');
   return (
     <span className={`${tabDetailsCNPrefix}__status-update`}>
       <HistoryOutlined />
       {intl.get('screen.patient.details.status.date.lastUpdated')}
-      <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{day}</span>
+      <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{formattedDate}</span>
       {intl.get('screen.patient.details.status.date.time')}
-      <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{hour}</span>
+      <span className={`${tabDetailsCNPrefix}__status-update__textInfo`}>{timePart}</span>
     </span>
   );
 };
