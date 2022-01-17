@@ -477,7 +477,7 @@ const downloadPrescriptionPDF = async (serviceRequestId: string) =>
   Http.secureClinAxios
     .get(`${window.CLIN.rendererBaseUrl}/${serviceRequestId}`, {responseType: 'blob'})
     .then((response: { data: Blob, headers: any }) => {
-      const fileName = response.headers['content-disposition']?.split('filename=')[1];
+      const fileName = response.headers['content-disposition']?.split('filename=')?.[1];
       FileDownload(response.data, fileName || `${serviceRequestId}.pdf`)
     })
     .then(successCallback)
