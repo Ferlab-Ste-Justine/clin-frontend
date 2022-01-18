@@ -57,7 +57,7 @@ enum StatutColors {
   active= 'blue',
 }
 
-const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
+const StatusTag= ({ status }: {status:PrescriptionStatus}): React.ReactElement => (
   <Tag
     className={`${tabDetailsCNPrefix}__status-tag`}
     color={StatutColors[status]}
@@ -66,7 +66,7 @@ const StatusTag: React.FC<{status: PrescriptionStatus}> = ({ status }) => (
   </Tag>
 );
 
-const UpdatedStatus: React.FC<{ date: string }> = ({ date }) => {
+const UpdatedStatus= ({ date }: {date:string}): React.ReactElement => {
   const localDate = new Date(date).toLocaleString();
   const [datePart, timePart] = localDate.split(', ');
   const formattedDate = datePart.split('/').reverse().join('-');
