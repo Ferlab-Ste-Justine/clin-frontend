@@ -33,7 +33,6 @@ jobs:
           CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME}}
           CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD}}
           REACT_APP_PATIENT_SERVICE_URL: https://patient.qa.clin.ferlab.bio/patient
-          REACT_APP_VARIANT_SERVICE_URL: https://variant.qa.clin.ferlab.bio/variant
           REACT_APP_GENE_SERVICE_URL: https://gene.qa.clin.ferlab.bio/gene
           REACT_APP_META_SERVICE_URL: https://meta.qa.clin.ferlab.bio/meta
           REACT_APP_FHIR_SERVICE_URL: https://fhir.qa.clin.ferlab.bio/fhir

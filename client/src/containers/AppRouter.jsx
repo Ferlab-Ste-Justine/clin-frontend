@@ -20,7 +20,6 @@ import PatientsPrescriptionsSearch from 'components/screens/PatientsPrescription
 import PatientSubmissionScreen from 'components/screens/PatientSubmission';
 import PatientVariantScreen from 'components/screens/PatientVariant';
 import SearchScreen from 'components/screens/search';
-import VariantDetailsScreen from 'components/screens/VariantDetails';
 
 import AuthRoute from './AuthRoute';
 import PublicRoute from './PublicRoute';
@@ -107,13 +106,6 @@ const AppRouter = ({ history }) => {
           key="route-patient"
           path={Routes.getPatientPath()}
           resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS}
-        />
-        <AuthRoute
-          Component={VariantDetailsScreen}
-          exact
-          key="route-variant-details"
-          path={Routes.getVariantPath()}
-          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_VARIANTS}
         />
         <AuthRoute
           Component={PatientSubmissionScreen}

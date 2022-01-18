@@ -8,7 +8,6 @@ import { updateServiceRequestStatus } from 'actions/patient';
 import {
   navigateToPatientScreen,
   navigateToPatientSearchScreen,
-  navigateToPatientVariantScreen,
   navigateToSubmissionWithPatient,
 } from 'actions/router';
 import { Spin, Tabs } from 'antd';
@@ -38,8 +37,6 @@ class PatientScreen extends React.Component {
     this.handleNavigationToPatientScreen = this.handleNavigationToPatientScreen.bind(this);
     this.handleNavigationToPatientSearchScreen =
       this.handleNavigationToPatientSearchScreen.bind(this);
-    this.handleNavigationToPatientVariantScreen =
-      this.handleNavigationToPatientVariantScreen.bind(this);
     this.handleTabNavigation = this.handleTabNavigation.bind(this);
     this.showModal = this.showModal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -62,11 +59,6 @@ class PatientScreen extends React.Component {
   handleNavigationToPatientScreen(e) {
     const { actions } = this.props;
     actions.navigateToPatientScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
-  }
-
-  handleNavigationToPatientVariantScreen(e) {
-    const { actions } = this.props;
-    actions.navigateToPatientVariantScreen(e.currentTarget.attributes['data-patient-id'].nodeValue);
   }
 
   handleNavigationToPatientSearchScreen() {
@@ -186,7 +178,6 @@ const mapDispatchToProps = (dispatch) => ({
     {
       navigateToPatientScreen,
       navigateToPatientSearchScreen,
-      navigateToPatientVariantScreen,
       navigateToSubmissionWithPatient,
       updateServiceRequestStatus,
     },

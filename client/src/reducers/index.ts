@@ -11,8 +11,6 @@ import prescriptionsGraphql, { PrescriptionState } from './prescriptionsGraphql'
 import searchReducer from './search';
 import serviceRequestCodeReducer, { ServiceRequestCodeState } from './serviceRequestCode';
 import userReducer from './user';
-import variantReducer from './variant';
-import variantDetailsReducer from './variantDetails';
 
 const rootReducer = (history: any) => combineReducers({
   app: appReducer,
@@ -26,8 +24,6 @@ const rootReducer = (history: any) => combineReducers({
   search: searchReducer,
   serviceRequestCode: serviceRequestCodeReducer,
   user: userReducer,
-  variant: variantReducer,
-  variantDetails: variantDetailsReducer,
 });
 
 export default rootReducer;
@@ -38,8 +34,6 @@ export type State = {
   user: any,
   patient: PatientState,
   search: any,
-  variant: any,
-  variantDetails: any,
   patientSubmission: any,
   patientCreation: PatientCreationState,
   patientEdition: PatientEditionState,
