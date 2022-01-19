@@ -73,16 +73,17 @@ const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   }
 };
 
-const trimmedThenValidateRamq = (rawValue: string) => rawValue && isValidRamq(rawValue.replace(/\s/g, ''))
+const trimmedThenValidateRamq = (rawValue: string) =>
+  rawValue && isValidRamq(rawValue.replace(/\s/g, ''));
 
 async function validateMrn(form: FormInstance) {
-  const mrnFile = form.getFieldValue(['mrn', 'file'])
-  const organization = form.getFieldValue(['mrn', 'organization'])
+  const mrnFile = form.getFieldValue(['mrn', 'file']);
+  const organization = form.getFieldValue(['mrn', 'organization']);
   if (!mrnFile || !organization) {
     return false;
   }
 
-  const isFetus = form.getFieldValue("patientType") === PatientType.FETUS
+  const isFetus = form.getFieldValue('patientType') === PatientType.FETUS;
   if (isFetus) {
     return true;
   }
@@ -93,7 +94,7 @@ async function validateMrn(form: FormInstance) {
       { errors: [intl.get('screen.patient.creation.file.existing')], name: ['mrn', 'file'] },
     ]);
   }
-  return isUnique
+  return isUnique;
 }
 
 type MrnData = {
@@ -125,15 +126,16 @@ const FormModal = ({
   userRole,
 }: Props): React.ReactElement => {
   const [form] = useForm();
-  
+  const { Text } = Typography;
   const [isCreating, setIsCreating] = useState(false);
   const [isValidatingForm, setIsValidatingForm] = useState(false);
   const [isFetusType, setIsFetusType] = useState(false);
+  const [canCreateFoetus, setCanCreateFoetus] = useState(true);
   const [state, dispatch] = useReducer<Reducer<State, Action>>(reducer, {
     ramqStatus: RamqStatus.INVALID,
   });
 
-  const isFetusWithParent = isFetusType && !!patient
+  const isFetusWithParent = isFetusType && !!patient;
 
   const resetForm = (isFetus = false) => {
     form.resetFields();
@@ -147,12 +149,17 @@ const FormModal = ({
     wrapperCol: { span: 12 },
   };
 
+  useEffect(() => {
+    if (patient && patient.gender === 'male') {
+      setCanCreateFoetus(false);
+      form.submit();
+    }
+  }, [patient]);
 
   useEffect(() => {
     if (isFetchingPatientInfoByRamq || state.ramqStatus === RamqStatus.INVALID) {
       return;
     }
-
     if (patient) {
       if (isFetusType) {
         const mrnData = extractMrnData(patient);
@@ -165,6 +172,7 @@ const FormModal = ({
             organization: mrnData?.hospital,
           },
         });
+
         return;
       }
       return onExistingPatient();
@@ -202,7 +210,7 @@ const FormModal = ({
   }, [open]);
 
   async function validateForm(form: FormInstance<any>) {
-    setIsValidatingForm(true)
+    setIsValidatingForm(true);
     const formValues = form.getFieldsValue();
     if (!Object.keys(formValues).includes('lastname')) {
       // before doing the ramq part of the form, lastname (and others)
@@ -216,7 +224,6 @@ const FormModal = ({
     if (errors.length > 0) {
       return false;
     }
-
     const allValuesNonEmpty = Object.keys(formValues).every((key: string) => {
       const value = formValues[key];
       if (key === 'mrn') {
@@ -232,23 +239,22 @@ const FormModal = ({
       }
 
       return !!value;
-    })
+    });
 
     if (!allValuesNonEmpty) {
       return false;
     }
 
-    const isMrnValid = await validateMrn(form)
-    setIsValidatingForm(false)
+    const isMrnValid = await validateMrn(form);
+    setIsValidatingForm(false);
     return isMrnValid;
   }
-  
+
   const onFormSubmit: ((values: any) => void) | undefined = async (values) => {
-    const isFormValid = await validateForm(form)
-    if(!isFormValid) {
+    const isFormValid = await validateForm(form);
+    if (!isFormValid) {
       return;
     }
-
     setIsCreating(true);
     const genderFromForm = values.sex;
     try {
@@ -280,6 +286,7 @@ const FormModal = ({
       console.error(e);
     }
   };
+
   return (
     <>
       <Modal closable={false} footer={null} title={null} visible={open && isCreating}>
@@ -293,7 +300,7 @@ const FormModal = ({
 
       <Modal
         cancelText={intl.get(`${I18N_PREFIX}cancel`)}
-        okButtonProps={{disabled: isValidatingForm, loading: isValidatingForm}}
+        okButtonProps={{ disabled: isValidatingForm, loading: isValidatingForm }}
         okText={intl.get(`${I18N_PREFIX}ok`)}
         onCancel={() => {
           resetForm();
@@ -345,17 +352,21 @@ const FormModal = ({
               name="ramq"
               rules={[
                 () => ({
-                  message: intl.get(`${I18N_PREFIX}errors.invalidRamq`),
                   required: true,
                   validator: (rule, value) => {
                     const trimmedRamqValue = (value || '').replace(/\s/g, '');
+                    
+                    if (!canCreateFoetus) {
+                      return Promise.reject(intl.get(`${I18N_PREFIX}errors.invalidPatientGender`));
+                    }
+                    
                     if (isValidRamq(trimmedRamqValue)) {
                       dispatch({ type: ActionType.RAMQ_PROCESSING });
                       actions.fetchPatientByRamq(trimmedRamqValue);
                       return Promise.resolve();
                     }
                     dispatch({ type: ActionType.RAMQ_INVALID });
-                    return Promise.reject();
+                    return Promise.reject(intl.get(`${I18N_PREFIX}errors.invalidRamq`));
                   },
                 }),
               ]}
@@ -364,166 +375,168 @@ const FormModal = ({
               <Input
                 onChange={(event) => {
                   const ramq = event.currentTarget.value;
+                  setCanCreateFoetus(true);
                   form.setFieldsValue({ ramq: formatRamq(ramq) });
                 }}
                 onPaste={(event) => {
                   event.preventDefault();
                 }}
                 placeholder="ROYL 1234 4567"
+                suffix={isFetchingPatientInfoByRamq && <LoadingOutlined spin />}
               />
             </Form.Item>
           </fieldset>
-          {state.ramqStatus !== RamqStatus.INVALID && (
-            <Spin spinning={isFetchingPatientInfoByRamq}>
-              <fieldset>
-                <Form.Item
-                  label={
-                    isFetusType
-                      ? `${intl.get(`${I18N_PREFIX}lastname`)} (${intl.get(
-                        `${I18N_PREFIX}mother`,
-                      )})`
-                      : intl.get(`${I18N_PREFIX}lastname`)
-                  }
-                  {...formInputItemProps}
-                  name="lastname"
-                  rules={[
-                    {
-                      message: intl.get(`${I18N_PREFIX}errors.invalidLastName`),
-                      min: 2,
-                      required: true,
-                    },
+          {!isFetchingPatientInfoByRamq &&
+            state.ramqStatus !== RamqStatus.INVALID &&
+            canCreateFoetus && (
+            <fieldset>
+              <Form.Item
+                label={
+                  isFetusType
+                    ? `${intl.get(`${I18N_PREFIX}lastname`)} (${intl.get(
+                      `${I18N_PREFIX}mother`,
+                    )})`
+                    : intl.get(`${I18N_PREFIX}lastname`)
+                }
+                {...formInputItemProps}
+                name="lastname"
+                rules={[
+                  {
+                    message: intl.get(`${I18N_PREFIX}errors.invalidLastName`),
+                    min: 2,
+                    required: true,
+                  },
+                ]}
+              >
+                <Input
+                  disabled={isFetusWithParent}
+                  placeholder={intl.get(`${I18N_PREFIX}lastname`)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={
+                  isFetusType
+                    ? `${intl.get(`${I18N_PREFIX}firstname`)} (${intl.get(
+                      `${I18N_PREFIX}mother`,
+                    )})`
+                    : intl.get(`${I18N_PREFIX}firstname`)
+                }
+                {...formInputItemProps}
+                name="firstname"
+                rules={[
+                  {
+                    message: intl.get(`${I18N_PREFIX}errors.invalidFirstName`),
+                    min: 2,
+                    required: true,
+                  },
+                ]}
+              >
+                <Input
+                  disabled={isFetusWithParent}
+                  placeholder={intl.get(`${I18N_PREFIX}firstname`)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={
+                  isFetusType
+                    ? `${intl.get(`${I18N_PREFIX}sex`)} (${intl
+                      .get(`${I18N_PREFIX}fetus`)
+                      .toLowerCase()})`
+                    : intl.get(`${I18N_PREFIX}sex`)
+                }
+                name="sex"
+                rules={[{ required: true }]}
+                wrapperCol={{ span: 14 }}
+              >
+                <Radio.Group
+                  optionType="button"
+                  options={[
+                    { label: intl.get(`${I18N_PREFIX}sex.male`), value: 'male' },
+                    { label: intl.get(`${I18N_PREFIX}sex.female`), value: 'female' },
+                    { label: intl.get(`${I18N_PREFIX}sex.unknown`), value: 'unknown' },
                   ]}
-                >
-                  <Input
-                    disabled={isFetusWithParent}
-                    placeholder={intl.get(`${I18N_PREFIX}lastname`)}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label={
-                    isFetusType
-                      ? `${intl.get(`${I18N_PREFIX}firstname`)} (${intl.get(
-                        `${I18N_PREFIX}mother`,
-                      )})`
-                      : intl.get(`${I18N_PREFIX}firstname`)
-                  }
-                  {...formInputItemProps}
-                  name="firstname"
-                  rules={[
-                    {
-                      message: intl.get(`${I18N_PREFIX}errors.invalidFirstName`),
-                      min: 2,
-                      required: true,
-                    },
-                  ]}
-                >
-                  <Input
-                    disabled={isFetusWithParent}
-                    placeholder={intl.get(`${I18N_PREFIX}firstname`)}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label={
-                    isFetusType
-                      ? `${intl.get(`${I18N_PREFIX}sex`)} (${intl
-                        .get(`${I18N_PREFIX}fetus`)
-                        .toLowerCase()})`
-                      : intl.get(`${I18N_PREFIX}sex`)
-                  }
-                  name="sex"
-                  rules={[{ required: true }]}
-                  wrapperCol={{ span: 14 }}
-                >
-                  <Radio.Group
-                    optionType="button"
-                    options={[
-                      { label: intl.get(`${I18N_PREFIX}sex.male`), value: 'male' },
-                      { label: intl.get(`${I18N_PREFIX}sex.female`), value: 'female' },
-                      { label: intl.get(`${I18N_PREFIX}sex.unknown`), value: 'unknown' },
-                    ]}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label={
-                    isFetusType
-                      ? `${intl.get(`${I18N_PREFIX}birthday`)} (${intl.get(
-                        `${I18N_PREFIX}mother`,
-                      )})`
-                      : intl.get(`${I18N_PREFIX}birthday`)
-                  }
-                  name="birthday"
-                  rules={[{ required: true }]}
-                >
-                  <DatePicker
-                    disabled={isFetusWithParent}
-                    disabledDate={(current: any) => current && current > moment().startOf('day')}
-                    placeholder={intl.get(`${I18N_PREFIX}birthday.placeholder`)}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label={
-                    isFetusType
-                      ? `${intl.get(`${I18N_PREFIX}file`)} (${intl.get(`${I18N_PREFIX}mother`)})`
-                      : intl.get(`${I18N_PREFIX}file`)
-                  }
-                  name="mrn"
-                  wrapperCol={{ span: 14 }}
-                >
-                  <Input.Group>
-                    <Row gutter={8}>
-                      <Col span={14}>
-                        <Form.Item
-                          name={['mrn', 'file']}
-                          noStyle
-                          rules={[
-                            {
-                              min: 2,
-                              required: true,
-                            },
-                          ]}
+                />
+              </Form.Item>
+              <Form.Item
+                label={
+                  isFetusType
+                    ? `${intl.get(`${I18N_PREFIX}birthday`)} (${intl.get(
+                      `${I18N_PREFIX}mother`,
+                    )})`
+                    : intl.get(`${I18N_PREFIX}birthday`)
+                }
+                name="birthday"
+                rules={[{ required: true }]}
+              >
+                <DatePicker
+                  disabled={isFetusWithParent}
+                  disabledDate={(current: any) => current && current > moment().startOf('day')}
+                  placeholder={intl.get(`${I18N_PREFIX}birthday.placeholder`)}
+                />
+              </Form.Item>
+              <Form.Item
+                label={
+                  isFetusType
+                    ? `${intl.get(`${I18N_PREFIX}file`)} (${intl.get(`${I18N_PREFIX}mother`)})`
+                    : intl.get(`${I18N_PREFIX}file`)
+                }
+                name="mrn"
+                wrapperCol={{ span: 14 }}
+              >
+                <Input.Group>
+                  <Row gutter={8}>
+                    <Col span={14}>
+                      <Form.Item
+                        name={['mrn', 'file']}
+                        noStyle
+                        rules={[
+                          {
+                            min: 2,
+                            required: true,
+                          },
+                        ]}
+                      >
+                        <Input
+                          data-testid="mrn-file"
+                          disabled={isFetusWithParent}
+                          onChange={(event) => {
+                            form.setFieldsValue({
+                              mrn: {
+                                file: event.currentTarget.value.replace(/[^a-zA-Z0-9]/g, ''),
+                              },
+                            });
+                          }}
+                          placeholder="MRN 12345678"
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={10}>
+                      <Form.Item
+                        name={['mrn', 'organization']}
+                        noStyle
+                        rules={[
+                          {
+                            message: intl.get('form.error.isRequired'),
+                            required: true,
+                          },
+                        ]}
+                      >
+                        <Select
+                          className="patient-creation__form__select"
+                          data-testid="mrn-organization"
+                          disabled={isFetusWithParent}
+                          placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                         >
-                          <Input
-                            data-testid="mrn-file"
-                            disabled={isFetusWithParent}
-                            onChange={(event) => {
-                              form.setFieldsValue({
-                                mrn: {
-                                  file: event.currentTarget.value.replace(/[^a-zA-Z0-9]/g, ''),
-                                },
-                              });
-                            }}
-                            placeholder="MRN 12345678"
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={10}>
-                        <Form.Item
-                          name={['mrn', 'organization']}
-                          noStyle
-                          rules={[
-                            {
-                              message: intl.get('form.error.isRequired'),
-                              required: true,
-                            },
-                          ]}
-                        >
-                          <Select
-                            className="patient-creation__form__select"
-                            data-testid="mrn-organization"
-                            disabled={isFetusWithParent}
-                            placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
-                          >
-                            <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-                            <Select.Option value="CHUM">CHUM</Select.Option>
-                            <Select.Option value="CUSM">CUSM</Select.Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Input.Group>
-                </Form.Item>
-              </fieldset>
-            </Spin>
+                          <Select.Option value="CHUSJ">CHUSJ</Select.Option>
+                          <Select.Option value="CHUM">CHUM</Select.Option>
+                          <Select.Option value="CUSM">CUSM</Select.Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Input.Group>
+              </Form.Item>
+            </fieldset>
           )}
         </Form>
       </Modal>
