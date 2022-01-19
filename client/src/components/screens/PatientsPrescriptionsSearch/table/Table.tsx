@@ -1,7 +1,7 @@
 import React from 'react';
-import { Table as AntTable, TablePaginationConfig } from 'antd';
+import intl from 'react-intl-universal';
+import { Table as AntTable, TablePaginationConfig, Typography } from 'antd';
 
-import { TableItemsCount } from 'components/screens/PatientSearch/components/TableItemsCount';
 import { GqlResults } from 'store/graphql/models';
 import { PatientResult } from 'store/graphql/patients/models/Patient';
 import { PrescriptionResult } from 'store/graphql/prescriptions/models/Prescription';
@@ -9,6 +9,33 @@ import { PrescriptionResult } from 'store/graphql/prescriptions/models/Prescript
 import { TColumn } from './columns';
 
 import styles from './table.module.scss';
+
+const TableItemsCount = ({
+  className,
+  page,
+  size,
+  total,
+}: {
+  className?: string;
+  page: number;
+  size: number;
+  total: number;
+}): React.ReactElement => {
+  const from = (page - 1) * size + 1;
+  const to = from + size - 1;
+  const itemsCount = (      <>
+    <Typography.Text strong> { from }-{ to }
+    </Typography.Text>
+    <Typography.Text> { intl.get('screen.patientsearch.headers.count.of') }
+    </Typography.Text>
+    <Typography.Text strong> { total }
+    </Typography.Text>
+  </>);
+
+  return className ?
+    <div className={className}>{itemsCount}</div> :
+    itemsCount;
+};
 
 export type Props =  {
   results: GqlResults<PrescriptionResult|PatientResult> | null,

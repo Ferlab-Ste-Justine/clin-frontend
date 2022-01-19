@@ -13,30 +13,12 @@ export const getUserIdentity = () => ({
 });
 
 export const updateUserProfile = (id, defaultStatement, patientTableConfig) => ({
-  type: actions.USER_PROFILE_UPDATE_REQUESTED,
   payload: {
-    id,
     defaultStatement,
+    id,
     patientTableConfig,
   },
-});
-
-export const updateUserColumns = (columns) => ({
-  type: actions.USER_PROFILE_UPDATE_COLUMNS,
-  payload: {
-    columns,
-  },
-});
-
-export const updateUserColumnsOrder = (columnsOrder) => ({
-  type: actions.USER_PROFILE_UPDATE_COLUMNS_ORDER,
-  payload: {
-    columnsOrder,
-  },
-});
-
-export const updateUserColumnsReset = () => ({
-  type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET_REQUESTED,
+  type: actions.USER_PROFILE_UPDATE_REQUESTED,
 });
 
 export const updateAuthPermissions = () => ({

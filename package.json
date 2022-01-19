@@ -19,7 +19,6 @@
     "copy-to-clipboard": "^3.3.1",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
-    "export-to-csv": "^0.2.1",
     "file-loader": "6.1.1",
     "file-saver": "^2.0.5",
     "fs-extra": "^9.0.1",

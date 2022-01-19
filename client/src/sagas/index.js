@@ -9,7 +9,6 @@ import watchedRouterSagas from './router';
 import watchSavePatientSubmission from './patientSubmission';
 import watchPatientEdition from './patientEdition';
 import watchPatientCreation from './patientCreation';
-import watchNanuqReportSagas from './nanuq';
 import watchPrescriptions from './prescriptions';
 import watchedServiceRequestSagas from './serviceRequest.js'
 
@@ -34,7 +33,6 @@ const rootSagas = [
   watchedRouterSagas,
   watchSavePatientSubmission,
   watchPatientCreation,
-  watchNanuqReportSagas,
   watchPrescriptions,
   watchPatientEdition,
   watchedServiceRequestSagas

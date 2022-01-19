@@ -141,32 +141,6 @@ const getPatientsByAutoComplete = (
     .then(successCallback)
     .catch(errorCallback);
 
-const getPrescriptionsByAutoComplete = (type: string, query: string, page: number, size: number) =>
-  Http.secureClinAxios
-    .get(`${window.CLIN.patientServiceApiUrl}/prescriptions`, {
-      params: {
-        page,
-        query,
-        size,
-        type,
-      },
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
-const searchPatients = (query: string, page: number, size: number, type = 'patient') =>
-  Http.secureClinAxios
-    .get(`${window.CLIN.patientServiceApiUrl}/search`, {
-      params: {
-        page,
-        query,
-        size,
-        type,
-      },
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
 export class ApiError extends Error {
   constructor(message: string) {
     super(message);
@@ -396,13 +370,11 @@ export default {
   getFileURL,
   downloadPrescriptionPDF,
   getUserAuthPermissions,
-  getPrescriptionsByAutoComplete,
   searchHpoChildren,
   searchHpos,
   searchHPOByAncestorId,
   createUserProfile,
   convertToExcelData,
-  searchPatients,
   getPatientDataById,
   searchPractitioners,
   getPatientByIdentifier,
