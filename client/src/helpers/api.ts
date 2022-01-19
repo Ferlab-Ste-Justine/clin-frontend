@@ -181,12 +181,6 @@ const updateUserProfile = (
     .then(successCallback)
     .catch(errorCallback);
 
-const convertToExcelData = (data: any) =>
-  Http.secureClinAxios
-    .post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
-    .then(successCallback)
-    .catch(errorCallback);
-
 const searchHpos = async (term: string) => {
   const url = `${window.CLIN.hpoBaseUrl}/autocomplete?prefix=${term}`;
   return Http.secureClinAxios.get(url).then(successCallback).catch(errorCallback);
@@ -374,7 +368,6 @@ export default {
   searchHpos,
   searchHPOByAncestorId,
   createUserProfile,
-  convertToExcelData,
   getPatientDataById,
   searchPractitioners,
   getPatientByIdentifier,

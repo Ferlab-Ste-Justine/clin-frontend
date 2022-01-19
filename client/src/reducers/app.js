@@ -72,7 +72,6 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
     draft.showSubloadingAnimation = true;
     break;
 
-  case actions.STOP_SUBLOADING_ANIMATION:
   case actions.PATIENT_FETCH_SUCCEEDED:
   case actions.PATIENT_FETCH_FAILED:
     draft.showSubloadingAnimation = false;

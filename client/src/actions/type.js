@@ -1,6 +1,4 @@
 /* eslint-disable max-len */
-export const STOP_SUBLOADING_ANIMATION = 'STOP_SUBLOADING_ANIMATION';
-
 export const NOTIFICATION = 'NOTIFICATION';
 
 export const APP_FETCH_REQUESTED = 'APP_FETCH_REQUESTED';
