@@ -14,9 +14,6 @@ const fr = {
   'clinvar.value.Protective': 'Protecteur',
   'clinvar.value.risk_factor': 'Facteur de risque',
   'clinvar.value.Uncertain_significance': 'Signification incertaine',
-  'components.confirmationModal.cancelText': 'Annuler',
-  'components.confirmationModal.okText': 'Quitter',
-  'components.confirmationModal.title': 'Quitter sans sauvegarder les modifications?',
   'components.dataList.emptyRow': 'Aucune donnée disponible',
   'components.nanuqModal.criteria.description':
     'Votre sélection doit répondre aux critères suivants:',
