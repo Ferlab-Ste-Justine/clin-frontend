@@ -36,7 +36,6 @@ export const appShape = {
 
 const appReducer = (state = ({ ...initialAppState }), action) => produce(state, (draft) => {
   switch (action.type) {
-  case actions.START_LOADING_ANIMATION:
   case actions.APP_FETCH_REQUESTED:
   case actions.USER_LOGOUT_REQUESTED:
   case actions.ROUTER_NAVIGATION_REQUESTED:
@@ -44,12 +43,9 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
   case actions.NAVIGATION_PATIENT_SCREEN_REQUESTED:
   case actions.NAVIGATION_SUBMISSION_SCREEN_REQUESTED:
   case actions.APP_CHANGE_LANGUAGE_SUCCEEDED:
-  case actions.STOP_LOADING_ANIMATION:
   case actions.APP_FETCH_SUCCEEDED:
   case actions.APP_FETCH_FAILED:
   case actions.APP_CHANGE_LANGUAGE_FAILED:
-  case actions.ROUTER_NAVIGATION_SUCCEEDED:
-  case actions.ROUTER_NAVIGATION_FAILED:
   case actions.USER_LOGOUT_SUCCEEDED:
   case actions.USER_LOGOUT_FAILED:
   case actions.NAVIGATION_PATIENT_SEARCH_SCREEN_SUCCEEDED:
@@ -71,16 +67,12 @@ const appReducer = (state = ({ ...initialAppState }), action) => produce(state, 
     break;
   case actions.NAVIGATION_SUBMISSION_SCREEN_FAILED:
     break;
-  case actions.START_SUBLOADING_ANIMATION:
   case actions.PATIENT_SEARCH_REQUESTED:
   case actions.PATIENT_FETCH_REQUESTED:
-  case actions.CHANGE_SEARCH_TYPE_REQUESTED:
     draft.showSubloadingAnimation = true;
     break;
 
   case actions.STOP_SUBLOADING_ANIMATION:
-  case actions.PATIENT_SEARCH_SUCCEEDED:
-  case actions.PATIENT_SEARCH_FAILED:
   case actions.PATIENT_FETCH_SUCCEEDED:
   case actions.PATIENT_FETCH_FAILED:
     draft.showSubloadingAnimation = false;

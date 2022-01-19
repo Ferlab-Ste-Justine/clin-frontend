@@ -1,11 +1,7 @@
 import React from 'react';
 import intl from 'react-intl-universal';
-import { useDispatch } from 'react-redux'
 import { SearchOutlined } from '@ant-design/icons';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
-import {
-  autoCompletePatients,
-} from 'actions/patient';
 import {
   AutoComplete,
   Col,
@@ -47,8 +43,6 @@ const autoCompleteResults = (data: PatientResult[]) => data.map((result) => ({
 const ContentHeader = ({
   searchResults,
 }: PrescriptionResultsContainerProps): React.ReactElement => {
-  const dispatch = useDispatch()
-
   return (<StackLayout horizontal>
     <AutoComplete
       allowClear
@@ -56,7 +50,7 @@ const ContentHeader = ({
       className={styles.autoComplete}
       defaultActiveFirstOption={false}
       onChange={() => {
-        dispatch(autoCompletePatients());
+        console.warn('Not implemented');
       }}
       options={
         autoCompleteResults(searchResults?.data || [])
