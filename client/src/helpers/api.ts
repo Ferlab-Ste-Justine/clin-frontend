@@ -37,12 +37,6 @@ const canEditPatients = (ids: string[]) =>
     .then(successCallback)
     .catch(errorCallback);
 
-const getPatientsGenderAndPosition = (ids: string[]) =>
-  Http.secureClinAxios
-    .post(`${window.CLIN.patientServiceApiUrl}/gender-and-position`, { ids })
-    .then(successCallback)
-    .catch(errorCallback);
-
 const getPatientById = (uid: string) =>
   Http.secureClinAxios
     .get(`${window.CLIN.patientServiceApiUrl}/${uid}`)
@@ -180,93 +174,6 @@ export class ApiError extends Error {
   }
 }
 
-const getVariantDetails = (id: string) =>
-  Http.secureClinAxios
-    .get(`${window.CLIN.variantServiceApiUrl}/${id}`)
-    .then(successCallback)
-    .catch(errorCallback);
-
-const getVariantSchema = () =>
-  Http.secureClinAxios
-    .get(`${window.CLIN.variantServiceApiUrl}/schema`)
-    .then(successCallback)
-    .catch(errorCallback);
-
-const searchVariantsForPatient = (
-  patient: string,
-  statement: string,
-  query: string,
-  page: number,
-  size: number,
-  group: string,
-) =>
-  Http.secureClinAxios
-    .post(`${window.CLIN.variantServiceApiUrl}/search`, {
-      group,
-      page,
-      patient,
-      query,
-      size,
-      statement,
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
-const searchFacetsForPatient = (patient: any, statement: string, query: string) =>
-  Http.secureClinAxios
-    .post(`${window.CLIN.variantServiceApiUrl}/facet`, {
-      patient,
-      query,
-      statement,
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
-const countVariantsForPatient = (patient: any, statement: string, queries: any) =>
-  Http.secureClinAxios
-    .post(`${window.CLIN.variantServiceApiUrl}/count`, {
-      patient,
-      queries,
-      statement,
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
-const getStatements = () =>
-  Http.secureClinAxios
-    .get(`${window.CLIN.metaServiceApiUrl}/statement`, {})
-    .then(successCallback)
-    .catch(errorCallback);
-
-const createStatement = (title: string, description: string, queries: any) =>
-  Http.secureClinAxios
-    .post(`${window.CLIN.metaServiceApiUrl}/statement`, {
-      description,
-      queries,
-      title,
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
-const updateStatement = (uid: string, title: string, description: string, queries: any) =>
-  Http.secureClinAxios
-    .put(`${window.CLIN.metaServiceApiUrl}/statement`, {
-      description,
-      queries,
-      title,
-      uid,
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
-const deleteStatement = (uid: string) =>
-  Http.secureClinAxios
-    .delete(`${window.CLIN.metaServiceApiUrl}/statement`, {
-      data: { uid },
-    })
-    .then(successCallback)
-    .catch(errorCallback);
-
 const getUserProfile = () =>
   Http.secureClinAxios
     .get(`${window.CLIN.metaServiceApiUrl}/profile`, {})
@@ -277,13 +184,11 @@ const getUserProfile = () =>
 const createUserProfile = (
   defaultStatement = '',
   patientTableConfig = {},
-  variantTableConfig = {},
 ) =>
   Http.secureClinAxios
     .post(`${window.CLIN.metaServiceApiUrl}/profile`, {
       defaultStatement,
       patientTableConfig,
-      variantTableConfig,
     })
     .then(successCallback)
     .catch(errorCallback);
@@ -292,14 +197,12 @@ const updateUserProfile = (
   uid: string,
   defaultStatement: any,
   patientTableConfig = {},
-  variantTableConfig = {},
 ) =>
   Http.secureClinAxios
     .put(`${window.CLIN.metaServiceApiUrl}/profile`, {
       defaultStatement,
       patientTableConfig,
       uid,
-      variantTableConfig,
     })
     .then(successCallback)
     .catch(errorCallback);
@@ -307,17 +210,6 @@ const updateUserProfile = (
 const convertToExcelData = (data: any) =>
   Http.secureClinAxios
     .post(`${window.CLIN.variantServiceApiUrl}/xl`, data)
-    .then(successCallback)
-    .catch(errorCallback);
-
-const getGeneAutocomplete = (query: string, type: string) =>
-  Http.secureClinAxios
-    .get(`${window.CLIN.geneServiceApiUrl}/autocomplete`, {
-      params: {
-        query,
-        type,
-      },
-    })
     .then(successCallback)
     .catch(errorCallback);
 
@@ -501,34 +393,23 @@ export default {
   updateGroup,
   getPatientDataByIds,
   getPatientsByAutoComplete,
-  getPatientsGenderAndPosition,
   getFileURL,
   downloadPrescriptionPDF,
   getUserAuthPermissions,
   getPrescriptionsByAutoComplete,
-  countVariantsForPatient,
   searchHpoChildren,
-  createStatement,
   searchHpos,
-  deleteStatement,
   searchHPOByAncestorId,
   createUserProfile,
-  getVariantDetails,
   convertToExcelData,
-  getVariantSchema,
-  getGeneAutocomplete,
   searchPatients,
   getPatientDataById,
   searchPractitioners,
   getPatientByIdentifier,
-  searchFacetsForPatient,
   createGroup,
-  searchVariantsForPatient,
   getGroupMembers,
   getPractitionerByIds,
-  getStatements,
   getPractitionersData,
-  updateStatement,
   getUserProfile,
   updatePatientsGroup,
   updateServiceRequestStatus,

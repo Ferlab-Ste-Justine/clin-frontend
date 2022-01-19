@@ -14,7 +14,6 @@ export const initialUserState = {
     uid: null,
     defaultStatement: null,
     patientTableConfig: {},
-    variantTableConfig: {},
   },
   practitionerData: {
     practitioner: null,
@@ -31,7 +30,6 @@ export const userShape = {
     uid: PropTypes.string,
     defaultStatement: PropTypes.string,
     patientTableConfig: PropTypes.shape({}),
-    variantTableConfig: PropTypes.shape({}),
   }),
 };
 
@@ -53,7 +51,6 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
       draft.profile.uid = action.payload.data.hits[0]._id;
       draft.profile.defaultStatement = action.payload.data.hits[0]._source.defaultStatement;
       draft.profile.patientTableConfig = JSON.parse(action.payload.data.hits[0]._source.patientTableConfig);
-      draft.profile.variantTableConfig = JSON.parse(action.payload.data.hits[0]._source.variantTableConfig);
       draft.practitionerData.practitionerRoles = action.payload.practitionerData.practitionerRoles;
       draft.practitionerData.practitionerRole = head(action.payload.practitionerData.practitionerRoles);
       draft.practitionerData.practitioner = action.payload.practitionerData.practitioner;
@@ -62,7 +59,6 @@ const userReducer = (state = ({ ...initialUserState }), action) => produce(state
     case actions.USER_PROFILE_UPDATE_SUCCEEDED:
       draft.profile.defaultStatement = action.payload.data.defaultStatement;
       draft.profile.patientTableConfig = JSON.parse(action.payload.data.patientTableConfig);
-      draft.profile.variantTableConfig = JSON.parse(action.payload.data.variantTableConfig);
       break;
 
     case actions.UPDATE_USER_AUTH_PERMISSIONS_SUCCEEDED:

@@ -12,13 +12,12 @@ export const getUserIdentity = () => ({
   type: actions.USER_IDENTITY_REQUESTED,
 });
 
-export const updateUserProfile = (id, defaultStatement, patientTableConfig, variantTableConfig) => ({
+export const updateUserProfile = (id, defaultStatement, patientTableConfig) => ({
   type: actions.USER_PROFILE_UPDATE_REQUESTED,
   payload: {
     id,
     defaultStatement,
     patientTableConfig,
-    variantTableConfig,
   },
 });
 
