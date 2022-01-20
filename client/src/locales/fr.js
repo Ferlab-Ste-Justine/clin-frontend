@@ -311,6 +311,7 @@ const fr = {
   'screen.patient.creation.errors.invalidFirstName': 'Le prénom doit avoir plus de 2 lettres',
   'screen.patient.creation.errors.invalidLastName':
     'Le nom de famille doit avoir plus de 2 lettres',
+  'screen.patient.creation.errors.invalidPatientGender': 'La mère du fœtus doit être de sexe féminin',
   'screen.patient.creation.errors.invalidRamq': 'Le numéro de RAMQ est invalide',
   'screen.patient.creation.errors.invalidRamqConfirm': 'Les numéro de RAMQ sont différents',
   'screen.patient.creation.existing.description':
