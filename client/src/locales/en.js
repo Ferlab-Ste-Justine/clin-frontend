@@ -226,6 +226,7 @@ const en = {
   'screen.patient.creation.error.retry': 'Retry',
   'screen.patient.creation.errors.invalidFirstName': 'The first name should have more than 2 characters',
   'screen.patient.creation.errors.invalidLastName': 'The last name should have more than 2 characters',
+  'screen.patient.creation.errors.invalidPatientGender': 'Mother of fetus must be a female',
   'screen.patient.creation.errors.invalidRamq': 'The RAMQ number is invalid',
   'screen.patient.creation.errors.invalidRamqConfirm': 'The RAMQ numbers are different',
   'screen.patient.creation.existing.description': 'We found a patient with the same details.',
