@@ -17,22 +17,6 @@ export const navigateToPatientScreen = (uid, { tab, reload, openedPrescriptionId
   },
 });
 
-export const navigateToPatientVariantScreen = (uid, tab = null) => ({
-  type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED,
-  payload: {
-    uid,
-    tab,
-  },
-});
-
-export const navigateToVariantDetailsScreen = (uid, tab = null) => ({
-  type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED,
-  payload: {
-    uid,
-    tab,
-  },
-});
-
 export const navigateToPatientSearchScreen = (reload = true) => ({
   type: actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED,
   payload: {

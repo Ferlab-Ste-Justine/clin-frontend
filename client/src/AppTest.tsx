@@ -32,7 +32,6 @@ const AppTest: React.FC<Props> = ({ children, additionalStateInfo = {} }) => {
         uid: 'HljHD3IBCGmDHXNWRxX1',
         defaultStatement: 'O4OzdnYBj8387-8vzXtb',
         patientTableConfig: {},
-        variantTableConfig: {},
       },
       practitionerData: {
         practitioner: {

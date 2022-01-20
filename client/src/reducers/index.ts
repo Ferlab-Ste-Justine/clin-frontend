@@ -8,11 +8,8 @@ import patientEditionReducer, { PatientEditionState } from './patientEdition';
 import patientSubmissionReducer from './patientSubmission';
 import prescriptions, { PatientRequestCreationState } from './prescriptions';
 import prescriptionsGraphql, { PrescriptionState } from './prescriptionsGraphql';
-import searchReducer from './search';
 import serviceRequestCodeReducer, { ServiceRequestCodeState } from './serviceRequestCode';
 import userReducer from './user';
-import variantReducer from './variant';
-import variantDetailsReducer from './variantDetails';
 
 const rootReducer = (history: any) => combineReducers({
   app: appReducer,
@@ -23,11 +20,8 @@ const rootReducer = (history: any) => combineReducers({
   prescriptions,
   prescriptionsGraphql,
   router: connectRouter(history),
-  search: searchReducer,
   serviceRequestCode: serviceRequestCodeReducer,
   user: userReducer,
-  variant: variantReducer,
-  variantDetails: variantDetailsReducer,
 });
 
 export default rootReducer;
@@ -37,9 +31,6 @@ export type State = {
   app: any,
   user: any,
   patient: PatientState,
-  search: any,
-  variant: any,
-  variantDetails: any,
   patientSubmission: any,
   patientCreation: PatientCreationState,
   patientEdition: PatientEditionState,

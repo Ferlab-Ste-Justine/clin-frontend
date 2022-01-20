@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom';
-
-import VariantPageV1 from './VariantSearchV1';
+import { useParams } from 'react-router-dom';
 import EnvironmentVariables from 'helpers/EnvironmentVariables';
 import { RptManager } from 'helpers/keycloak-api/manager';
 
+import 'style/themes/clin/dist/antd.css';
 import styles from './index.module.scss';
-
-const useQuery = () => {
-  return new URLSearchParams(useLocation().search);
-};
 
 type PatientVariantProps = {
   app: { locale: { lang: string } };
 };
 
-const PatientVariant = ({ app, ...props }: PatientVariantProps) => {
-  const query = useQuery();
+const PatientVariant = ({ app }: PatientVariantProps) => {
   const [rptToken, setRptToken] = useState('');
   const { uid } = useParams<{ uid: string }>();
 
@@ -26,10 +20,6 @@ const PatientVariant = ({ app, ...props }: PatientVariantProps) => {
       setRptToken((await RptManager.readRpt()).accessToken);
     })();
   }, []);
-
-  if (query.get('v') == '1') {
-    return <VariantPageV1 {...props} />;
-  }
 
   return (
     <iframe

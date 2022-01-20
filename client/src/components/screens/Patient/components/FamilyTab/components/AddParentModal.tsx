@@ -37,6 +37,9 @@ const AddParentModal = ({ onClose, parentType }: Props): React.ReactElement => {
   const familyMemberIds = family?.map((member) => member.id) || [];
 
   const search = async (searchTerm: string) => {
+    if (!searchTerm) {
+      return;
+    }
     const response = await api.getPatientsByAutoComplete('complete', searchTerm, 1, 5, {
       gender: parentTypeToGender[parentType!],
       idsToExclude: [...familyMemberIds],

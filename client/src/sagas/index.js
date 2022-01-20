@@ -5,13 +5,10 @@ import {
 import watchedAppSagas from './app';
 import watchedUserSagas from './user';
 import watchedPatientSagas from './patient';
-import watchedVariantSagas from './variant';
-import watchedVariantDetailsSagas from './variantDetails';
 import watchedRouterSagas from './router';
 import watchSavePatientSubmission from './patientSubmission';
 import watchPatientEdition from './patientEdition';
 import watchPatientCreation from './patientCreation';
-import watchNanuqReportSagas from './nanuq';
 import watchPrescriptions from './prescriptions';
 import watchedServiceRequestSagas from './serviceRequest.js'
 
@@ -33,12 +30,9 @@ const rootSagas = [
   watchedAppSagas,
   watchedUserSagas,
   watchedPatientSagas,
-  watchedVariantSagas,
-  watchedVariantDetailsSagas,
   watchedRouterSagas,
   watchSavePatientSubmission,
   watchPatientCreation,
-  watchNanuqReportSagas,
   watchPrescriptions,
   watchPatientEdition,
   watchedServiceRequestSagas

@@ -27,10 +27,6 @@ describe('Helpers', () => {
       expect(Routes.Submission).toEqual('/submission');
     });
 
-    test('Variant', async () => {
-      expect(Routes.Variant).toEqual('/variantDetails');
-    });
-
     describe('getPatientPath', () => {
       test('return url string match for router', async () => {
         expect(Routes.getPatientPath()).toEqual('/patient/:uid');
@@ -50,13 +46,6 @@ describe('Helpers', () => {
         tab = 'variant';
         expect(Routes.getPatientPath(patientId, tab)).toEqual(`/patient/${patientId}/#${tab}`);
       });
-    });
-
-    test('getVariantPath shoud return the router string or a specific uid', async () => {
-      expect(Routes.getVariantPath()).toEqual('/variantDetails/:uid');
-      const uid = 'id23423';
-      expect(Routes.getVariantPath(uid)).toEqual(`/variantDetails/${uid}`);
-
     });
   });
 });

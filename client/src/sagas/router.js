@@ -14,18 +14,6 @@ import {
   Routes,
 } from '../helpers/route';
 
-function* navigateToVariantDetailsScreen(action) {
-  try {
-    const { tab, uid } = action.payload;
-    let url = Routes.getVariantPath(uid);
-    if (tab) { url += `/#${tab}`; }
-
-    yield put(push(url));
-  } catch (e) {
-    yield put({ message: e.message, type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_FAILED });
-  }
-}
-
 function* navigateToPatientScreen(action) {
   try {
     const { reload, tab, uid } = action.payload;
@@ -39,17 +27,6 @@ function* navigateToPatientScreen(action) {
     yield put(push(url));
   } catch (e) {
     yield put({ message: e.message, type: actions.NAVIGATION_PATIENT_SCREEN_FAILED });
-  }
-}
-
-function* navigateToPatientVariantScreen(action) {
-  try {
-    const { uid } = action.payload;
-    const url = Routes.getPatientPath(uid, 'variant');
-
-    yield put(push(url));
-  } catch (e) {
-    yield put({ message: e.message, type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_FAILED });
   }
 }
 
@@ -118,9 +95,7 @@ function* processPatientPage(currentRoute, tab, forceReload) {
       });
       yield delay(250);
     }
-    if (tab === 'variant') {
-      yield put({ type: actions.NAVIGATION_PATIENT_VARIANT_SCREEN_SUCCEEDED });
-    }
+
     yield put({ payload: { activeKey: tab }, type: actions.PATIENT_SET_CURRENT_ACTIVE_KEY });
     yield put({ type: actions.NAVIGATION_PATIENT_SCREEN_SUCCEEDED });
   } catch (e) {
@@ -177,8 +152,6 @@ function* manualUserNavigation(action) {
     // do nothing
   } else if (isCurrentRoute(Routes.PatientSearch)) {
     yield processPatientSearchPage();
-  } else if (isCurrentRoute(Routes.Variant)) {
-    yield put({ type: actions.NAVIGATION_VARIANT_DETAILS_SCREEN_SUCCEEDED });
   } else if (isCurrentRoute(`${Routes.Patient}\/([\\w,\\-]+)\/?`)) {
     yield processPatientPage(currentRoute, tab, forceReload);
   } else if (isCurrentRoute(Routes.AccessDenied)) {
@@ -202,14 +175,6 @@ function* watchNavigateToPatientScreen() {
 
 function* watchNavigateToPatientSearchScreen() {
   yield takeLatest(actions.NAVIGATION_PATIENT_SEARCH_SCREEN_REQUESTED, navigateToPatientSearchScreen);
-}
-
-function* watchNavigateToPatientVariantScreen() {
-  yield takeLatest(actions.NAVIGATION_PATIENT_VARIANT_SCREEN_REQUESTED, navigateToPatientVariantScreen);
-}
-
-function* watchNavigateToVariantDetailsScreen() {
-  yield takeLatest(actions.NAVIGATION_VARIANT_DETAILS_SCREEN_REQUESTED, navigateToVariantDetailsScreen);
 }
 
 function* watchNavigateToSubmissionScreen() {
@@ -238,8 +203,6 @@ export default function* watchedRouterSagas() {
   yield all([
     watchNavigateToPatientScreen(),
     watchNavigateToPatientSearchScreen(),
-    watchNavigateToPatientVariantScreen(),
-    watchNavigateToVariantDetailsScreen(),
     watchNavigationToAccessDeniedScreen(),
     watchManualUserNavigation(),
     watchNavigateToSubmissionScreen(),

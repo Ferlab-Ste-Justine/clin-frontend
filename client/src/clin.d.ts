@@ -27,7 +27,6 @@ export declare global {
             REACT_APP_NOSCRIPT_CONTENT: string
             REACT_APP_NAMESPACE: string
             REACT_APP_PATIENT_SERVICE_URL: string
-            REACT_APP_VARIANT_SERVICE_URL: string
             REACT_APP_GENE_SERVICE_URL: string
             REACT_APP_META_SERVICE_URL: string
             REACT_APP_FHIR_SERVICE_URL: string

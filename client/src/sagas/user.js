@@ -53,9 +53,8 @@ function* updateUserProfile(action) {
   try {
     const defaultStatement = action.payload.defaultStatement ? action.payload.defaultStatement : '';
     const patientTableConfig = action.payload.patientTableConfig ? action.payload.patientTableConfig : {};
-    const variantTableConfig = action.payload.variantTableConfig ? action.payload.variantTableConfig : {};
     const statementResponse = yield Api.updateUserProfile(
-      action.payload.id, defaultStatement, patientTableConfig, variantTableConfig,
+      action.payload.id, defaultStatement, patientTableConfig
     );
     if (statementResponse.error) {
       throw new ApiError(statementResponse.error);
@@ -64,15 +63,6 @@ function* updateUserProfile(action) {
     yield put({ type: actions.USER_PROFILE_UPDATE_SUCCEEDED, payload: statementResponse.payload.data });
   } catch (e) {
     yield put({ type: actions.USER_PROFILE_UPDATE_FAILED, payload: e });
-  }
-}
-
-function* columnsReset() {
-  try {
-    yield put({ type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET });
-    yield put({ type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET_SUCCEEDED });
-  } catch (e) {
-    yield put({ type: actions.USER_PROFILE_UPDATE_COLUMNS_RESET_FAILED });
   }
 }
 
@@ -108,10 +98,6 @@ function* watchUpdateUserProfile() {
   yield takeLatest(actions.USER_PROFILE_UPDATE_REQUESTED, updateUserProfile);
 }
 
-function* watchColumnsReset() {
-  yield takeLatest(actions.USER_PROFILE_UPDATE_COLUMNS_RESET_REQUESTED, columnsReset);
-}
-
 function* watchUpdateUserAuthPermissions() {
   yield takeLatest(actions.UPDATE_USER_AUTH_PERMISSIONS_REQUESTED, updateUserAuthPermissions);
 }
@@ -122,7 +108,6 @@ export default function* watchedUserSagas() {
     watchUserLogout(),
     watchGetUserProfile(),
     watchUpdateUserProfile(),
-    watchColumnsReset(),
     watchUpdateUserAuthPermissions(),
   ]);
 }

@@ -1,7 +1,7 @@
 import flow from 'lodash/flow';
 import get from 'lodash/get';
 import uniq from 'lodash/uniq';
-import { all, debounce, put, select, takeLatest } from 'redux-saga/effects';
+import { all, put, select, takeLatest } from 'redux-saga/effects';
 
 import { ExtensionUrls } from 'store/urls';
 
@@ -176,71 +176,6 @@ function* fetch(action) {
   } catch (e) {
     console.error('patient.fetch', e);
     yield put({ payload: e, type: actions.PATIENT_FETCH_FAILED });
-  }
-}
-
-function* autoComplete(action) {
-  const isAutocomplete = action.payload.type === 'partial';
-  try {
-    if (!isAutocomplete) {
-      yield put({ type: actions.START_SUBLOADING_ANIMATION });
-    } else if (!action.payload.query) {
-      const emptyPayload = {
-        data: {
-          data: {
-            hits: [],
-          },
-        },
-      };
-
-      yield put({ payload: emptyPayload, type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED });
-      return;
-    }
-
-    const response = yield Api.getPatientsByAutoComplete(
-      action.payload.type,
-      action.payload.query,
-      action.payload.page,
-      action.payload.size,
-    );
-
-    if (response.error) {
-      throw new ApiError(response.error);
-    }
-    if (!isAutocomplete) {
-      yield put({ payload: response.payload, type: actions.PATIENT_SEARCH_SUCCEEDED });
-    } else {
-      yield put({ payload: response.payload, type: actions.PATIENT_AUTOCOMPLETE_SUCCEEDED });
-    }
-  } catch (e) {
-    if (!isAutocomplete) {
-      yield put({ type: actions.PATIENT_SEARCH_FAILED });
-    } else {
-      yield put({ payload: e, type: actions.PATIENT_AUTOCOMPLETE_FAILED });
-    }
-  }
-}
-
-function* search(action) {
-  try {
-    let response = null;
-    const searchState = yield select((state) => state.search);
-
-    const searchType = searchState.type;
-    const page = action.payload.page || get(searchState, 'patients.page', 1);
-    const size = action.payload.size || get(searchState, 'patients.pageSize', 25);
-
-    if (!action.payload.query) {
-      response = yield Api.searchPatients(null, page, size, searchType);
-    } else {
-      response = yield Api.searchPatients(action.payload.query, page, size);
-    }
-    if (response.error) {
-      throw new ApiError(response.error);
-    }
-    yield put({ payload: response.payload, type: actions.PATIENT_SEARCH_SUCCEEDED });
-  } catch (e) {
-    yield put({ payload: e, type: actions.PATIENT_SEARCH_FAILED });
   }
 }
 
@@ -514,17 +449,6 @@ function* watchPatientFetch() {
   );
 }
 
-function* debouncePatientAutoComplete() {
-  yield debounce(250, actions.PATIENT_AUTOCOMPLETE_REQUESTED, autoComplete);
-}
-
-function* watchPatientSearch() {
-  yield takeLatest(
-    [actions.PATIENT_SEARCH_REQUESTED, actions.CHANGE_SEARCH_TYPE_REQUESTED],
-    search,
-  );
-}
-
 function* watchPrescriptionChangeStatus() {
   yield takeLatest(
     actions.PATIENT_SUBMISSION_SERVICE_REQUEST_CHANGE_STATUS_REQUESTED,
@@ -539,8 +463,6 @@ function* watchFile() {
 export default function* watchedPatientSagas() {
   yield all([
     watchPatientFetch(),
-    debouncePatientAutoComplete(),
-    watchPatientSearch(),
     watchPrescriptionChangeStatus(),
     watchAddParent(),
     watchRemoveParent(),
