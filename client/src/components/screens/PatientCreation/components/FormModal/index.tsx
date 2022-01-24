@@ -18,6 +18,8 @@ import moment from 'moment';
 import { PatientCreationStatus } from 'reducers/patientCreation';
 import { bindActionCreators } from 'redux';
 
+import { Gender } from 'components/Utils/getGenderIcon';
+
 import './styles.scss';
 
 const I18N_PREFIX = 'screen.patient.creation.';
@@ -63,6 +65,7 @@ interface RamqInvalidAction {
 }
 
 type Action = RamqProcessAction | RamqInvalidAction;
+
 
 const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   switch (action.type) {
@@ -150,9 +153,8 @@ const FormModal = ({
   };
 
   useEffect(() => {
-    if (patient && patient.gender === 'male') {
+    if (patient && patient.gender !== Gender.FEMALE) {
       setCanCreateFoetus(false);
-      form.submit();
     }
   }, [patient]);
 
@@ -353,7 +355,7 @@ const FormModal = ({
               rules={[
                 () => ({
                   required: true,
-                  validator: (rule, value) => {
+                  validator: (_, value) => {
                     const trimmedRamqValue = (value || '').replace(/\s/g, '');
                     
                     if (!canCreateFoetus) {
@@ -386,9 +388,7 @@ const FormModal = ({
               />
             </Form.Item>
           </fieldset>
-          {!isFetchingPatientInfoByRamq &&
-            state.ramqStatus !== RamqStatus.INVALID &&
-            canCreateFoetus && (
+          { state.ramqStatus !== RamqStatus.INVALID && (
             <fieldset>
               <Form.Item
                 label={
