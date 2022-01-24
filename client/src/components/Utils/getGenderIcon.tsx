@@ -4,7 +4,7 @@ import FemaleIcon from 'components/Assets/Icons/FemaleIcon';
 import MaleIcon from 'components/Assets/Icons/MaleIcon';
 import UnknowGenderIcon from 'components/Assets/Icons/UnknowGenderIcon';
 
-enum Gender {
+export enum Gender {
     MALE = 'male',
     FEMALE = 'female',
     UNKNOWN = 'unknown',
