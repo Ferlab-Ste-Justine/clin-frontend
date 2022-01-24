@@ -246,10 +246,6 @@ const FormModal = ({
       return false;
     }
 
-    if(isFetusType && patient && patient.gender !== FEMALE_GENDER){
-      return false
-    }
-
     const isMrnValid = await validateMrn(form);
     setIsValidatingForm(false);
     return isMrnValid;
