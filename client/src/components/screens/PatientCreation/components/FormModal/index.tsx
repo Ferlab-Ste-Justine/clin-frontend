@@ -64,6 +64,8 @@ interface RamqInvalidAction {
 
 type Action = RamqProcessAction | RamqInvalidAction;
 
+const FEMALE_GENDER = 'female';
+
 const reducer: Reducer<State, Action> = (state: State, action: Action) => {
   switch (action.type) {
   case ActionType.RAMQ_PROCESSING:
@@ -150,9 +152,8 @@ const FormModal = ({
   };
 
   useEffect(() => {
-    if (patient && patient.gender === 'male') {
+    if (patient && patient.gender !== FEMALE_GENDER) {
       setCanCreateFoetus(false);
-      form.submit();
     }
   }, [patient]);
 
@@ -243,6 +244,10 @@ const FormModal = ({
 
     if (!allValuesNonEmpty) {
       return false;
+    }
+
+    if(isFetusType && patient && patient.gender !== FEMALE_GENDER){
+      return false
     }
 
     const isMrnValid = await validateMrn(form);
@@ -386,9 +391,7 @@ const FormModal = ({
               />
             </Form.Item>
           </fieldset>
-          {!isFetchingPatientInfoByRamq &&
-            state.ramqStatus !== RamqStatus.INVALID &&
-            canCreateFoetus && (
+          { state.ramqStatus !== RamqStatus.INVALID && (
             <fieldset>
               <Form.Item
                 label={
