@@ -53,7 +53,7 @@ function* navigateToSubmissionScreenWithPatientProcess(patient) {
 
 function* navigateToEditSubmission() {
   try {
-    yield put(push(yield put(push(Routes.Submission))));
+    yield put(push(Routes.SubmissionEditNoValidation));
     window.scrollTo(0, 0);
     yield put({ type: actions.NAVIGATION_EDIT_SUBMISSION_SUCCEEDED });
   } catch (e) {

@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import AccessDenied from 'components/screens/AccessDenied';
 import PatientScreen from 'components/screens/Patient';
 import PatientSubmissionScreen from 'components/screens/PatientSubmission';
+import PatientSubmissionEditScreen from 'components/screens/PatientSubmissionEdit';
 import PatientVariantScreen from 'components/screens/PatientVariant';
 import SearchScreen from 'components/screens/search';
 
@@ -86,6 +87,11 @@ const AppRouter = ({ history }) => {
           exact
           key="route-patient"
           path={Routes.getPatientPath()}
+          resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS}
+        />
+        <AuthRoute
+          Component={PatientSubmissionEditScreen}
+          key="route-patient-submission-edit"
           resource={KEYCLOAK_AUTH_RESOURCE_PATIENT_PRESCRIPTIONS}
         />
         <AuthRoute
