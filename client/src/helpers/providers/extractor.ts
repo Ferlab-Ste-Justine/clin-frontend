@@ -210,7 +210,7 @@ export class DataExtractor {
       mrn: get(practitioner, 'identifier[0].value', 'N/A'),
       firstName,
       lastName,
-      formattedName: `${prefix} ${lastName.toUpperCase()}, ${firstName} ${suffix || ''}`
+      formattedName: `${prefix} ${lastName.toUpperCase()} ${firstName} ${suffix || ''}`
     } as PractitionerData
   }
 }
