@@ -152,38 +152,85 @@ describe('PrescriptionCreation', () => {
   afterAll(() => {
     server.close();
   });
-  describe('Error Alert Save Prescription Button', () => {
-    test('Withous Mrn and hypothesis', async () => {
+
+  describe('Should not be able to create a prescription', () => {
+    test('without a MRN', async () => {
       mockRptToken();
 
       server.use(buildHPORequest());
+      server.use(buildServiceRequestCodeRequest());
       render(
         <AppTest>
           <PatientSubmission />
         </AppTest>,
       );
 
-      const familyHealth = screen.getByTestId('familyHealth');
-      act(() => userEvent.click(familyHealth, {}));
+      await waitFor(() => screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']));
+
+      const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
+      act(() => userEvent.click(prescriptionTestLabel, {}));
+      await waitFor(() => screen);
 
       const cgh = screen.getByTestId('cgh');
       act(() => userEvent.click(cgh, {}));
-
       await waitFor(() => screen);
 
-      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling;
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
+
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling as Element;
       act(() => userEvent.click(clinicalSignRoot, {}));
 
       const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
       act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
 
-      act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
+      const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
+      act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
+
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
 
       await waitFor(() => screen.getByTestId('alert'));
       expect(alert).toBeDefined();
     });
 
-    test('Without cgh and familyHealth', async () => {
+    test('without a prescription test', async () => {
+      mockRptToken();
+
+      server.use(buildHPORequest());
+      server.use(buildServiceRequestCodeRequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
+
+      const mrnOptions = screen.getByTestId('mrn-organization-submission');
+      act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
+      await waitFor(() => screen);
+
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
+      await waitFor(() => screen);
+
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
+
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling as Element;
+      act(() => userEvent.click(clinicalSignRoot, {}));
+
+      const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
+      act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
+
+      const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
+      act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
+
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
+
+      await waitFor(() => screen.getByTestId('alert'));
+      expect(alert).toBeDefined();
+    });
+
+    test('without a CGH', async () => {
         
       mockRptToken();
 
@@ -194,14 +241,19 @@ describe('PrescriptionCreation', () => {
           <PatientSubmission />
         </AppTest>,
       );
+
       const mrnOptions = screen.getByTestId('mrn-organization-submission');
       act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
       await waitFor(() => screen);
+
       const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
       act(() => userEvent.click(prescriptionTestLabel, {}));
-
       await waitFor(() => screen);
-      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling;
+
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
+
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling as Element;
       act(() => userEvent.click(clinicalSignRoot, {}));
 
       const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
@@ -210,13 +262,168 @@ describe('PrescriptionCreation', () => {
       const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
       act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-      act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
 
       await waitFor(() => screen.getByTestId('alert'));
       expect(alert).toBeDefined();
     });
 
-    test('Whitout Hpo', async () => {
+    test('without a family health', async () => {
+      mockRptToken();
+
+      server.use(buildHPORequest());
+      server.use(buildServiceRequestCodeRequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
+
+      const mrnOptions = screen.getByTestId('mrn-organization-submission');
+      act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
+      await waitFor(() => screen);
+
+      const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
+      act(() => userEvent.click(prescriptionTestLabel, {}));
+      await waitFor(() => screen);
+
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
+      await waitFor(() => screen);
+
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling as Element;
+      act(() => userEvent.click(clinicalSignRoot, {}));
+
+      const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
+      act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
+
+      const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
+      act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
+
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
+
+      //L'alerte au haut de la page ne s'affiche pas
+      //await waitFor(() => screen.getByTestId('alert'));
+
+      //Le message "Ce champs est requis" s'affiche près du champ
+      await waitFor(() => screen.getByText('Ce champs est requis'));
+      expect(alert).toBeDefined();
+    });
+
+    test('whitout a HPO', async () => {
+      mockRptToken();
+
+      server.use(buildHPORequest());
+      server.use(buildServiceRequestCodeRequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
+
+      const mrnOptions = screen.getByTestId('mrn-organization-submission');
+      act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
+      await waitFor(() => screen);
+
+      const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
+      act(() => userEvent.click(prescriptionTestLabel, {}));
+      await waitFor(() => screen);
+
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
+      await waitFor(() => screen);
+
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
+
+      const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
+      act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
+
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
+
+      await waitFor(() => screen.getByTestId('alert'));
+      expect(alert).toBeDefined();
+    });
+
+    test('without a clinical interpretation', async () => {
+      mockRptToken();
+
+      server.use(buildHPORequest());
+      server.use(buildServiceRequestCodeRequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
+
+      const mrnOptions = screen.getByTestId('mrn-organization-submission');
+      act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
+      await waitFor(() => screen);
+
+      const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
+      act(() => userEvent.click(prescriptionTestLabel, {}));
+      await waitFor(() => screen);
+
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
+      await waitFor(() => screen);
+
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
+
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling as Element;
+      act(() => userEvent.click(clinicalSignRoot, {}));
+
+      const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
+      act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
+
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
+
+      await waitFor(() => screen.getByTestId('alert'));
+      expect(alert).toBeDefined();
+    });
+
+    test('without a hypothesis', async () => {
+      mockRptToken();
+
+      server.use(buildHPORequest());
+      server.use(buildServiceRequestCodeRequest());
+      render(
+        <AppTest>
+          <PatientSubmission />
+        </AppTest>,
+      );
+
+      const mrnOptions = screen.getByTestId('mrn-organization-submission');
+      act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
+      await waitFor(() => screen);
+
+      const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
+      act(() => userEvent.click(prescriptionTestLabel, {}));
+      await waitFor(() => screen);
+
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
+      await waitFor(() => screen);
+
+      const familyHealth = screen.getByTestId('familyHealth');
+      act(() => userEvent.click(familyHealth, {}));
+
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling as Element;
+      act(() => userEvent.click(clinicalSignRoot, {}));
+
+      const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
+      act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
+
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
+
+      await waitFor(() => screen.getByTestId('alert'));
+      expect(alert).toBeDefined();
+    });
+  });
+
+  describe('Should be able to create a prescription', () => {
+    test('Validate open confirmation (resident selection) modal', async () => {
       mockRptToken();
 
       server.use(buildHPORequest());
@@ -234,59 +441,26 @@ describe('PrescriptionCreation', () => {
       const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
       act(() => userEvent.click(prescriptionTestLabel, {}));
 
+      const cgh = screen.getByTestId('cgh');
+      act(() => userEvent.click(cgh, {}));
+      await waitFor(() => screen);
+
       const familyHealth = screen.getByTestId('familyHealth');
       act(() => userEvent.click(familyHealth, {}));
 
-      const cgh = screen.getByTestId('cgh');
-      act(() => userEvent.click(cgh, {}));
+      const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling as Element;
+      act(() => userEvent.click(clinicalSignRoot, {}));
+
+      const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
+      act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
 
       const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
       act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
 
-      act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
+      act(() => userEvent.click(screen.getByText(/Soumettre/i), {}));
 
-      await waitFor(() => screen.getByTestId('alert'));
-      expect(alert).toBeDefined();
+      await waitFor(() => screen.getByText('Vous êtes sur le point de soumettre cette prescription.'));
+      expect(screen.getByText('Vous êtes sur le point de soumettre cette prescription.')).toBeDefined();
     });
-  });
-
-  test('Submit form + open confirmation (resident selection) modal', async () => {
-    mockRptToken();
-
-    server.use(buildHPORequest());
-    server.use(buildServiceRequestCodeRequest());
-    render(
-      <AppTest>
-        <PatientSubmission />
-      </AppTest>,
-    );
-
-    const mrnOptions = screen.getByTestId('mrn-organization-submission');
-    act(() => userEvent.selectOptions(mrnOptions, 'MRN1 | CHUSJ'));
-
-    await waitFor(() => screen);
-    const prescriptionTestLabel = screen.getByText(fr['form.patientSubmission.clinicalInformation.analysis.options.maladiesMusculaires']);
-    act(() => userEvent.click(prescriptionTestLabel, {}));
-
-    const familyHealth = screen.getByTestId('familyHealth');
-    act(() => userEvent.click(familyHealth, {}));
-
-    const cgh = screen.getByTestId('cgh');
-    act(() => userEvent.click(cgh, {}));
-
-    await waitFor(() => screen);
-    const clinicalSignRoot = screen.getByText('Abnormal eye physiology (HP:0012373)').parentElement?.previousSibling;
-    act(() => userEvent.click(clinicalSignRoot, {}));
-
-    const clincalInterpretation = screen.getByPlaceholderText('Interprétation');
-    act(() => userEvent.selectOptions(clincalInterpretation, ['POS']));
-
-    const hypothesisTextArea = screen.getByPlaceholderText('Ajouter une hypothèse...');
-    act(() => userEvent.type(hypothesisTextArea, 'Hypothèse de la prescription.'));
-
-    act(() => userEvent.click(screen.getByText(/Soumettre/i).closest('button'), {}));
-
-    await waitFor(() => screen.getByText('Vous êtes sur le point de soumettre cette prescription.'));
-    expect(screen.getByText('Vous êtes sur le point de soumettre cette prescription.')).toBeDefined();
   });
 });
