@@ -336,7 +336,7 @@ const fr = {
   'screen.patient.creation.sex.female': 'Féminin',
   'screen.patient.creation.sex.male': 'Masculin',
   'screen.patient.creation.sex.other': 'Autre',
-  'screen.patient.creation.sex.unknown': 'Incertain',
+  'screen.patient.creation.sex.unknown': 'Indéterminé',
   'screen.patient.creation.success.completePrescription': 'Compléter cette prescription',
   'screen.patient.creation.success.description.fetus':
     'La fiche du foetus a été créée avec succès.',
@@ -392,7 +392,7 @@ const fr = {
   'screen.patient.details.edit.sex.female': 'Féminin',
   'screen.patient.details.edit.sex.male': 'Masculin',
   'screen.patient.details.edit.sex.other': 'Autre',
-  'screen.patient.details.edit.sex.unknown': 'Incertain',
+  'screen.patient.details.edit.sex.unknown': 'Indéterminé',
   'screen.patient.details.edit.submit': 'Soumettre',
   'screen.patient.details.edit.success': 'La fiche a été mise à jour',
   'screen.patient.details.ethnicity': 'Ethnicité',
@@ -445,7 +445,7 @@ const fr = {
   'screen.patient.details.family.table.sex': 'Sexe biologique',
   'screen.patient.details.family.table.sex.female': 'Féminin',
   'screen.patient.details.family.table.sex.male': 'Masculin',
-  'screen.patient.details.family.table.sex.unknown': 'Inconnu',
+  'screen.patient.details.family.table.sex.unknown': 'Indéterminé',
   'screen.patient.details.family.table.status': 'Statut',
   'screen.patient.details.family.title': 'Famille (trio seulement)',
   'screen.patient.details.family.update.error':
@@ -607,7 +607,7 @@ const fr = {
   'screen.patient.details.test': 'Test',
   'screen.patient.details.tissueType': 'Type de Tissue',
   'screen.patient.details.type': 'Type',
-  'screen.patient.details.unknown': 'Inconnu',
+  'screen.patient.details.unknown': 'Indéterminé',
   'screen.patient.details.variant.empty.description':
     "Nous n'avons pas reçu de rapport de séquençage génomique pour ce patient.",
   'screen.patient.details.variant.empty.link': 'Voir le statut de ses préscriptions.',
