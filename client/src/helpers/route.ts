@@ -10,7 +10,6 @@ export class Routes {
   static PatientVariants = `${ROOT}${ROUTE_PATIENT}/:uid/variant`;
   static Root = `${ROOT}`;
   static Submission = `${ROOT}submission`;
-  static SubmissionEditNoValidation = '/submission/edit'
 
   public static getPatientPath(uid?: string, tab?: string): string {
     return uid && tab

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  EditOutlined, FormOutlined, HistoryOutlined,
+  EditOutlined, HistoryOutlined,
   InfoCircleOutlined, MedicineBoxOutlined, PrinterOutlined} from '@ant-design/icons';
 import { updateServiceRequestStatus } from 'actions/patient';
 import { editPrescription } from 'actions/patientSubmission';
@@ -13,10 +13,8 @@ import {
   Alert,
   Button,
   Card,
-  Col,
   Divider,
   Popover,
-  Row,
   Tabs,
   Tag,
   Typography,
@@ -45,8 +43,6 @@ const DEFAULT_VALUE = '--';
 
 const tabCNPrefix = 'prescriptions-tab__prescriptions-section';
 const tabDetailsCNPrefix = `${tabCNPrefix}__details`;
-
-const canEdit = (prescription: Prescription) => prescription.status === 'draft' || prescription.status === 'incomplete';
 
 enum StatutColors {
   draft= 'default',
@@ -92,7 +88,7 @@ const findClinicalImpression = (
   clinicalImpressions: ClinicalImpression[],
 ) => clinicalImpressions
   .find((ci) => prescription.clinicalImpressionRef.indexOf(ci.id!) !== -1)!;
-  
+
 const findConsultation = (
   clinicalImpression: ClinicalImpression,
   consultation: ConsultationSummary[],
@@ -132,7 +128,7 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
   const patientState = useSelector((state: State) => state.patient);
   const serviceRequestCodeState: Concept[] | [] = useSelector((state: State) => state.serviceRequestCode.concept);
   const lang = useSelector((state: State) => state.app.locale.lang);
-  
+
   const { observations, openedPrescriptionId } = patientState;
   const [isStatusLegendVisible, setIsStatusLegendVisible] = useState<boolean>(false);
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string|undefined>(undefined);
@@ -173,10 +169,12 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
 
   const formatName = (practitioner: PractitionerData, supervisor?: PractitionerData) =>
     `${practitioner.formattedName} - ${practitioner.mrn} ${supervisor ? '('+intl.get('screen.patient.details.resident')+')' : ''}`;
-  
+
   const openEditPrescription = (id: string) => {
     dispatch(editPrescription(id));
   };
+
+
   return (
     <div className={`${tabCNPrefix}`}>
       <Tabs
@@ -198,7 +196,6 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
           prescriptions.map((prescription) => {
             const clinicalImpression = findClinicalImpression(prescription, clinicalImpressions);
             const consultation = findConsultation(clinicalImpression, consultations)
-            const editablePrescription = canEdit(prescription);
             const getInitalStatus = () => {
               if (prescription.status === 'on-hold') {
                 return StatusType.submitted;
@@ -249,32 +246,17 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                 <Card
                   bordered={false}
                   className="resume"
-                  extra={(
-                    <Row>
-                      <Col>
-                        <Button
-                          icon={<PrinterOutlined />}
-                          onClick={() => {
-                            dispatch(downloadPrescriptionPDF(prescription.id!))
-                          }}
-                          type='text'
-                        >
-                          { intl.get('screen.patient.details.prescription.print') }
-                        </Button>
-                      </Col>
-                      <Col>
-                        <Button
-                          className={`${!editablePrescription ? 'button--disabled' : ''}`}
-                          disabled={!editablePrescription}
-                          icon={<FormOutlined />}
-                          onClick={() => openEditPrescription(prescription.id!)}
-                          type='text'
-                        >
-                          { intl.get('screen.patient.details.prescription.edit') }
-                        </Button>
-                      </Col>
-                    </Row>
-                  )}
+                  extra={
+                    <Button
+                      icon={<PrinterOutlined />}
+                      onClick={() => {
+                        dispatch(downloadPrescriptionPDF(prescription.id!))
+                      }}
+                      type='text'
+                    >
+                      { intl.get('screen.patient.details.prescription.print') }
+                    </Button>
+                  }
                   title={(
                     <>
                       <span>{ intl.get('screen.patient.details.prescription.title') }</span>
@@ -325,7 +307,7 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                         </div>
                       ) }
                     </div>
-                    
+
                     <StatusChangeModal
                       initialStatus={getInitalStatus()}
                       isVisible={selectedPrescriptionId === prescription.id}
@@ -341,7 +323,7 @@ const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.Rea
                       <Typography.Title className={`${tabDetailsCNPrefix}__test`} level={4} >
                         { translateAnalysis(prescription.test, serviceRequestCodeState, lang) }
                       </Typography.Title>
-                    </DetailsRow>        
+                    </DetailsRow>
                     <DetailsRow label={intl.get('screen.patient.details.prescription.comments')}>
                       { prescription.note || DEFAULT_VALUE }
                     </DetailsRow>
