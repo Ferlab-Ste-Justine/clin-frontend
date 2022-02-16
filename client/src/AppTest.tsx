@@ -209,12 +209,12 @@ const AppTest: React.FC<Props> = ({ children, additionalStateInfo = {} }) => {
   });
   window.CLIN = {
     namespace: 'dev',
-    patientServiceApiUrl: 'https://patient.qa.clin.ferlab.bio/patient',
-    variantServiceApiUrl: 'https://variant.qa.clin.ferlab.bio/variant',
-    geneServiceApiUrl: 'https://gene.qa.clin.ferlab.bio/gene',
-    metaServiceApiUrl: 'https://meta.qa.clin.ferlab.bio/meta',
-    fhirBaseUrl: 'https://fhir.qa.clin.ferlab.bio/fhir',
-    hpoBaseUrl: 'https://hpo.qa.clin.ferlab.bio/hpo',
+    patientServiceApiUrl: 'https://patient.qa.cqgc.hsj.rtss.qc.ca/patient',
+    variantServiceApiUrl: 'https://variant.qa.cqgc.hsj.rtss.qc.ca/variant',
+    geneServiceApiUrl: 'https://gene.qa.cqgc.hsj.rtss.qc.ca/gene',
+    metaServiceApiUrl: 'https://meta.qa.cqgc.hsj.rtss.qc.ca/meta',
+    fhirBaseUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir',
+    hpoBaseUrl: 'https://hpo.qa.cqgc.hsj.rtss.qc.ca/hpo',
     // @ts-ignore
     translate: null,
     defaultUsername: '',

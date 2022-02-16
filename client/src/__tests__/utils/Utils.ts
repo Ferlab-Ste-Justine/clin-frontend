@@ -67,7 +67,7 @@ export class ResourceBuilder {
         type: 'transaction-response',
         link: [{
           relation: 'self',
-          url: 'https://fhir.qa.clin.ferlab.bio/fhir',
+          url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir',
         }],
         entry: [],
       };
@@ -106,7 +106,7 @@ export class ResourceBuilder {
 
       this.practitioners.forEach((practitioner, index) => {
         entries.push({
-          fullUrl: `https://fhir.qa.clin.ferlab.bio/fhir/Practitioner/${practitioner.id || index.toString()}`,
+          fullUrl: `https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Practitioner/${practitioner.id || index.toString()}`,
           resource: {
             resourceType: 'Practitioner',
             id: `${practitioner.id || index.toString()}`,

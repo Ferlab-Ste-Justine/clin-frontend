@@ -7,6 +7,15 @@ import FamilyTab from '../index';
 import { patientNotProbandSubState, patientProbandSubState } from './mockData';
 
 describe('Family', () => {
+
+  beforeEach(() => {
+    console.error = jest.fn(); //Pour masquer les "console.error"
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const renderComponent = (subState: Record<string, unknown>) =>
     render(
       <AppTest additionalStateInfo={{ ...subState }}>

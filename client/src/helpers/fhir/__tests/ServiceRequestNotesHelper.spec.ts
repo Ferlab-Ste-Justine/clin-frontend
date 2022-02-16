@@ -1,19 +1,20 @@
 import { getNoteComment, getNoteStatus, updateNoteComment, updateNoteStatus } from '../ServiceRequestNotesHelper'
+import { Note, ServiceRequest } from '../types';
 import * as mocks from './ServiceRequestNotesHelper.mocks'
 
 describe('ServiceRequest GET Note Comment', () => {
 
   test('getNoteComment - should return note comment', () => {
-    expect(getNoteComment(mocks.serviceRequestCommentOnly)).toEqual('foo')
+    expect(getNoteComment(mocks.serviceRequestCommentOnly as ServiceRequest)).toEqual('foo')
   })
 
   test('getNoteComment - should ignore -- string', () => {
-    expect(getNoteComment(mocks.serviceRequestEmptyComment)).toBeUndefined
+    expect(getNoteComment(mocks.serviceRequestEmptyComment as ServiceRequest)).toBeUndefined
   })
 
   test('getNoteComment - should be robust to missing data', () => {
     expect(getNoteComment(null)).toBeUndefined
-    expect(getNoteComment({})).toBeUndefined
+    expect(getNoteComment({} as ServiceRequest)).toBeUndefined
   })
 
 })
@@ -21,17 +22,17 @@ describe('ServiceRequest GET Note Comment', () => {
 describe('ServiceRequest GET Note Status', () => {
 
   test('getNoteStatus - should return note status', () => {
-    expect(getNoteStatus(mocks.serviceRequestCommentAndStatus)).toEqual('bar')
+    expect(getNoteStatus(mocks.serviceRequestCommentAndStatus as ServiceRequest)).toEqual('bar')
   })
 
   test('getNoteStatus - should ignore -- string', () => {
-    expect(getNoteComment(mocks.serviceRequestEmptyCommentAndStatus)).toBeUndefined
+    expect(getNoteComment(mocks.serviceRequestEmptyCommentAndStatus as ServiceRequest)).toBeUndefined
   })
 
   test('getNoteStatus - should be robust to missing data', () => {
-    expect(getNoteStatus(mocks.serviceRequestCommentOnly)).toBeUndefined
+    expect(getNoteStatus(mocks.serviceRequestCommentOnly as ServiceRequest)).toBeUndefined
     expect(getNoteStatus(null)).toBeUndefined
-    expect(getNoteStatus({})).toBeUndefined
+    expect(getNoteStatus({} as ServiceRequest)).toBeUndefined
   })
 
 })
@@ -39,7 +40,7 @@ describe('ServiceRequest GET Note Status', () => {
 describe('ServiceRequest UPDATE Note Comment', () => {
 
   test('updateNoteComment - should add note comment', () => {
-    const notes = []
+    const notes: Note[] | undefined = []
     const updated = updateNoteComment({ text: 'new comment' }, notes)
     expect(updated[0].text).toEqual('new comment')
   })

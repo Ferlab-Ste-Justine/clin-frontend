@@ -38,14 +38,14 @@ export const manyFilesData = {
                 "attachment": {
                     "hash": "ZmU0Mzg5NWMyNDY2ZTNiY2QyYmU3OGMyMmNhY2YzYjA=",
                     "title": "16775.hard-filtered.gvcf.gz",
-                    "url": "https://ferload.qa.clin.ferlab.bio/8ce34a42-9ec8-4a19-953b-1e1e25345cf2"
+                    "url": "https://ferload.qa.cqgc.hsj.rtss.qc.ca/8ce34a42-9ec8-4a19-953b-1e1e25345cf2"
                 },
                 "format": "VCF"
                 },
                 {
                 "attachment": {
                     "title": "16775.hard-filtered.gvcf.gz.tbi",
-                    "url": "https://ferload.qa.clin.ferlab.bio/8ce34a42-9ec8-4a19-953b-1e1e25345cf2.tbi"
+                    "url": "https://ferload.qa.cqgc.hsj.rtss.qc.ca/8ce34a42-9ec8-4a19-953b-1e1e25345cf2.tbi"
                 },
                 "format": "TBI"
                 }
@@ -101,7 +101,7 @@ export const manyFilesData = {
                 {
                 "attachment": {
                     "title": "16775.QC.tgz",
-                    "url": "https://ferload.qa.clin.ferlab.bio/48700352-aeec-4569-a053-f6fdc0baee08"
+                    "url": "https://ferload.qa.cqgc.hsj.rtss.qc.ca/48700352-aeec-4569-a053-f6fdc0baee08"
                 },
                 "format": "TGZ"
                 }
@@ -158,14 +158,14 @@ export const manyFilesData = {
                 "attachment": {
                     "hash": "MzQ5NDc5OGViM2RmMDY4MWRiMmY2YzI0ZTJiMzdiYzY=",
                     "title": "16775.cram",
-                    "url": "https://ferload.qa.clin.ferlab.bio/ad6cb890-991e-4cfe-85c8-12fb33db44ad"
+                    "url": "https://ferload.qa.cqgc.hsj.rtss.qc.ca/ad6cb890-991e-4cfe-85c8-12fb33db44ad"
                 },
                 "format": "CRAM"
                 },
                 {
                 "attachment": {
                     "title": "16775.cram.crai",
-                    "url": "https://ferload.qa.clin.ferlab.bio/ad6cb890-991e-4cfe-85c8-12fb33db44ad.crai"
+                    "url": "https://ferload.qa.cqgc.hsj.rtss.qc.ca/ad6cb890-991e-4cfe-85c8-12fb33db44ad.crai"
                 },
                 "format": "CRAI"
                 }

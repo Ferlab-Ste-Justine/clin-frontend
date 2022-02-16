@@ -8,7 +8,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 import AppTest from 'AppTest';
-//import PatientSearchScreen from 'components/screens/PatientSearch';
 import PatientCreation from '../../PatientCreation';
 import { mockRptToken } from '__tests__/mocks';
 
@@ -44,14 +43,14 @@ describe('PatientCreation', () => {
     }
 
     server.use(
-      rest.post('https://fhir.qa.clin.ferlab.bio/fhir/', (req, res, ctx) => res(
+      rest.post('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/', (req, res, ctx) => res(
         ctx.status(200),
         ctx.json({
           entry: responseEntries,
           id: 'f3d8da0f-da55-44fd-942a-6760543cec4b',
           link: [{
             relation: 'self',
-            url: 'https://fhir.qa.clin.ferlab.bio/fhir',
+            url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir',
           }],
           resourceType: 'Bundle',
           type: 'transaction-response',
@@ -60,8 +59,15 @@ describe('PatientCreation', () => {
     );
   }
 
+  beforeEach(() => {
+    console.error = jest.fn(); //Pour masquer les "console.error"
+    console.warn = jest.fn(); //Pour masquer les "console.warning"
+    console.log = jest.fn(); //Pour masquer les "console.log"
+  });
+
   afterEach(() => {
     server.resetHandlers();
+    jest.clearAllMocks();
   });
 
   afterAll(() => {
@@ -72,13 +78,13 @@ describe('PatientCreation', () => {
     test('with a new RAMQ', async () => {
       mockRptToken();
       server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+        rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
             link: [{
               relation: 'self',
-              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=DABC01010101',
+              url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=DABC01010101',
             }],
             meta: {
               lastUpdated: '2021-03-19T18:49:41.787+00:00',
@@ -129,7 +135,7 @@ describe('PatientCreation', () => {
     test("with a new mother's RAMQ", async () => {
       mockRptToken();
       server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+        rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
@@ -185,12 +191,12 @@ describe('PatientCreation', () => {
       const ramq = 'BETS00000001';
 
       server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => {
+        rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => {
           let entry;
 
           if (req.url.href.includes(ramq)) {
             entry = [{
-              fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
+              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
               resource: {
                 active: true,
                 birthDate: '2021-03-30',
@@ -316,11 +322,11 @@ describe('PatientCreation', () => {
     test('with an existing RAMQ', async () => {
       mockRptToken();
       server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+        rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
             entry: [{
-              fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
+              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
               resource: {
                 id: '54382',
                 extension: [{
@@ -393,7 +399,7 @@ describe('PatientCreation', () => {
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
             link: [{
               relation: 'self',
-              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
+              url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=BETS00000001',
             }],
             meta: {
               lastUpdated: '2021-03-19T18:49:41.787+00:00',
@@ -423,11 +429,11 @@ describe('PatientCreation', () => {
     test('with an existing MRN', async () => {
       mockRptToken();
       server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => {
+        rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => {
           let entry;
           if (req.url.href.includes('CUSM') && req.url.href.includes('010000')) {
             entry = [{
-              fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
+              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
               resource: {
                 active: true,
                 birthDate: '2021-03-30',
@@ -548,11 +554,11 @@ describe('PatientCreation', () => {
     test('when finding a patient with their RAMQ', async () => {
       mockRptToken();
       server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+        rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
             entry: [{
-              fullUrl: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient/54382',
+              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
               resource: {
                 id: '54382',
                 extension: [{
@@ -625,7 +631,7 @@ describe('PatientCreation', () => {
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
             link: [{
               relation: 'self',
-              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
+              url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=BETS00000001',
             }],
             meta: {
               lastUpdated: '2021-03-19T18:49:41.787+00:00',
@@ -662,13 +668,13 @@ describe('PatientCreation', () => {
     test('when changing the patient type', async () => {
       mockRptToken();
       server.use(
-        rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+        rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
             link: [{
               relation: 'self',
-              url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=BETS00000001',
+              url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=BETS00000001',
             }],
             meta: {
               lastUpdated: '2021-03-19T18:49:41.787+00:00',
@@ -715,13 +721,13 @@ describe('PatientCreation', () => {
     test('MRN should only accept alpha numerical charactar', async () => {
       mockRptToken();
       server.use(
-      rest.get('https://fhir.qa.clin.ferlab.bio/fhir/Patient', (req, res, ctx) => res(
+      rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
         ctx.status(200),
         ctx.json({
         id: '2acbea67-8d49-477b-bbae-7acb18430780',
         link: [{
             relation: 'self',
-            url: 'https://fhir.qa.clin.ferlab.bio/fhir/Patient?identifier=DABC01010101',
+            url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=DABC01010101',
         }],
         meta: {
             lastUpdated: '2021-03-19T18:49:41.787+00:00',
