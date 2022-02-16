@@ -1,6 +1,6 @@
 import { findPractitionerRoleByOrganizationRef, isPractitionerResident } from '../PractitionerRoleHelper'
 import * as mocks from './PractitionerRoleHelper.mocks'
-import { PractitionerRole } from "./types"
+import { PractitionerRole } from "../types"
 
 describe('PractitionerRoleHelper', () => {
 

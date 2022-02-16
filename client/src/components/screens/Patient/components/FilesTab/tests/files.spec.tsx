@@ -21,12 +21,12 @@ const renderComponents = (
 describe('PatientFiles', () => {
 
   beforeEach(() => {
-    console.error = jest.fn();
     (useFilesData as jest.Mock).mockReset();
+    console.error = jest.fn(); //Pour masquer les "console.error"
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.clearAllMocks(); //Pour masquer les "console.error"
   });
 
   test('shoud show empty page when no file', async () => {
