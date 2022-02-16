@@ -14,6 +14,7 @@ interface ClinData {
     defaultPassword: string,
     fhirEsPatientBundleId: string,
     fhirEsRequestBundleId: string,
+    clinUI: string,
 }
 
 export declare global {
@@ -31,6 +32,7 @@ export declare global {
             REACT_APP_META_SERVICE_URL: string
             REACT_APP_FHIR_SERVICE_URL: string
             REACT_APP_RENDERER_SERVICE_URL: string
+            REACT_APP_CLIN_UI: string
             REACT_APP_HPO_SERVICE_URL: string
             REACT_APP_ARRANGER_API: string
             REACT_APP_ARRANGER_PROJECT_ID: string
