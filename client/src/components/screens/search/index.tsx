@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from 'react-redux';
 import { connect } from 'react-redux';
 import { Bridge } from 'bridge';
-import EnvironmentVariables from 'helpers/EnvironmentVariables';
 
 import Layout from 'components/Layout';
 
@@ -45,7 +44,7 @@ const SearchScreen = ({ app }: SearchScreenProps): React.ReactElement => {
       <iframe
         className={styles.searchIframe}
         ref={iFrame}
-        src={`${EnvironmentVariables.configFor({ key: 'CLIN_UI' })}/search/?lang=${
+        src={`/search/?lang=${
           app.locale.lang
         }`}
       />

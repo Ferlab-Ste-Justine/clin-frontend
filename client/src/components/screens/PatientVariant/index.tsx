@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import EnvironmentVariables from 'helpers/EnvironmentVariables';
 
 import 'style/themes/clin/dist/antd.css';
 import styles from './index.module.scss';
@@ -15,9 +14,7 @@ const PatientVariant = ({ app }: PatientVariantProps) => {
   return (
     <iframe
       className={styles.variantIframe}
-      src={`${EnvironmentVariables.configFor({
-        key: 'CLIN_UI',
-      })}/variant/${uid}?lang=${app.locale.lang}`}
+      src={`/variant/${uid}?lang=${app.locale.lang}`}
     />
   );
 };
