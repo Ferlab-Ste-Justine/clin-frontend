@@ -504,7 +504,7 @@ const fr = {
   'screen.patient.details.prescription.comments': 'Commentaire général',
   'screen.patient.details.prescription.delete': 'Supprimer',
   'screen.patient.details.prescription.edit': 'Modifier',
-  'screen.patient.details.prescription.hospital': 'Etablissement prescripteur',
+  'screen.patient.details.prescription.hospital': 'Établissement prescripteur',
   'screen.patient.details.prescription.labo': 'Laboratoire de diagnostic',
   'screen.patient.details.prescription.mrn': 'Dossier médical',
   'screen.patient.details.prescription.practitioner': 'Médecin prescripteur',
@@ -546,7 +546,7 @@ const fr = {
   'screen.patient.details.prescriptions.clinicalSign.title': 'Signes cliniques',
   'screen.patient.details.prescriptions.clinicalSign.unknown': 'Inconnu',
   'screen.patient.details.prescriptions.family.blood': 'Consanguinité',
-  'screen.patient.details.prescriptions.family.empty': 'Aucun renseignement saisie',
+  'screen.patient.details.prescriptions.family.empty': 'Aucun renseignement saisi',
   'screen.patient.details.prescriptions.family.ethnicity': 'Ethnicité',
   'screen.patient.details.prescriptions.family.familyCondition':
     'Condition(s) de santé chez un membre de famille',
