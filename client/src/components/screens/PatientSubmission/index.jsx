@@ -79,53 +79,7 @@ function PatientSubmissionScreen(props) {
     let hasError = null;
     switch (currentPage) {
     case 0: {
-      const checkCghInterpretationValue = () => {
-        if (values.cghInterpretationValue) {
-          if (values.cghInterpretationValue !== 'A') {
-            return true;
-          }
-          if (values.cghPrecision !== null) {
-            return true;
-          }
-          return false;
-        }
-        return false;
-      };
-
-      const checkFamilyHistory = () => {
-        const fmh = get(values, 'fmh', []);
-        if (fmh.length > 0) {
-          const checkValue = [];
-          fmh.forEach((element) => {
-            if (
-              get(element, 'relation.length', '') === 0 ||
-                get(element, 'note.length', '') === 0
-            ) {
-              checkValue.push(false);
-            }
-          });
-          if (checkValue.includes(false)) {
-            return false;
-          }
-          return true;
-        }
-        return true;
-      };
-
-      const checkHpo = () => {
-        const hpos = getValidValues(get(values, 'hpos', []));
-        if (hpos.length > 0) {
-          const checkValue = hpos.map((element) => get(element, 'interpretation') == null);
-          if (checkValue.includes(true)) {
-            return false;
-          }
-          return true;
-        }
-        return false;
-      };
-
       hasError = find(form.getFieldsError(), (o) => o.errors.length > 0);
-
       const checkTest = () => {
         if (values['analysis.tests']) {
           const allAnalysis = values['analysis.tests'].filter((item) => item != null);
@@ -149,10 +103,6 @@ function PatientSubmissionScreen(props) {
 
       if (
         checkTest() &&
-          checkHpo() &&
-          checkCghInterpretationValue() &&
-          checkFamilyHistory() &&
-          values.indication &&
           checkMRN() &&
           !hasError
       ) {
@@ -217,6 +167,7 @@ function PatientSubmissionScreen(props) {
   React.useEffect(() => {
     actions.getServiceRequestCode();
   }, []);
+
   const { localStore } = props;
 
   const createCGHResourceList = (content, patientId) => {
@@ -365,7 +316,7 @@ function PatientSubmissionScreen(props) {
     form.validateFields().then((data) => {
       const { actions, currentPatient, userPractitioner } = props;
       const content = state.currentPageIndex === 0 ? data : state.firstPageFields;
-      const { status } = localStore;
+      const { serviceRequest, status } = localStore;
       const { selectedSupervisor } = state;
 
       const batch = {
@@ -376,12 +327,12 @@ function PatientSubmissionScreen(props) {
         observations: [],
         serviceRequests: [],
         submitted,
-        update: get(localStore, 'serviceRequest.id') != null,
+        update: serviceRequest.id != null,
       };
 
       const allAnalysis = content['analysis.tests']?.filter((item) => item != null);
       batch.length = get(allAnalysis, 'length', 0);
-      if (batch.length === 0 || !userRole) {
+      if (batch.length === 0) {
         setState((currentState) => ({ ...currentState, isSubmitting: false }));
         return;
       }
@@ -402,15 +353,15 @@ function PatientSubmissionScreen(props) {
       allAnalysis.forEach((analysis) => {
         batch.serviceRequests.push(
           new ServiceRequestBuilder()
-            .withId(get(localStore, 'serviceRequest.id'))
+            .withId(serviceRequest?.id || null)
             .withMrn(fullMRN[0], fullMRN[1])
-            .withRequester(userPractitioner.id)
-            .withSubject(currentPatient.id)
+            .withRequester(userPractitioner?.id)
+            .withSubject(currentPatient?.id)
             .withCoding(buildAnalysisFhir(analysis))
             .withSubmitted(submitted)
             .withStatus(submittedStatus)
             .withSupervisor(selectedSupervisor ? selectedSupervisor.id : null)
-            .withAuthoredOn(get(localStore, 'serviceRequest.authoredOn'))
+            .withAuthoredOn(serviceRequest?.authoredOn || null)
             .withNote(analysisComments)
             .build(),
         );
@@ -583,7 +534,7 @@ function PatientSubmissionScreen(props) {
     }
   };
 
-  const { actions, app, clinicalImpression, patient, serviceRequestCode, userRoles } = props;
+  const { app, clinicalImpression, patient, serviceRequestCode, userRoles } = props;
   const { currentPageIndex, fmhResources, hpoResources, isSubmitting, submitFailed, valid } = state;
   const initialPractitionerValue = get(localStore, 'practitioner', '');
   const initialResidentValue = get(localStore, 'resident', '');
@@ -653,6 +604,7 @@ function PatientSubmissionScreen(props) {
       submitFailed: true,
     }));
   };
+
   return (
     <Layout>
       <>

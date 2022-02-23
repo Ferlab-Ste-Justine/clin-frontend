@@ -7,7 +7,7 @@ import intl from 'react-intl-universal';
 import { useSelector } from 'react-redux';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import {
-  Button, Col, Form, Input, Radio, Row,   Select, Typography, 
+  Button, Col, Form, Input, Radio, Row,   Select, Typography,
 } from 'antd';
 import { getFamilyRelationshipValues } from 'helpers/fhir/fhir';
 import { FamilyObservation } from 'helpers/providers/types';
@@ -16,8 +16,6 @@ import isEmpty from 'lodash/isEmpty';
 import { State } from 'reducers';
 
 import { HiddenFormInput } from 'components/Utils/HiddenFormInput';
-
-import ErrorText from './ErrorText';
 
 interface Props {
   consanguinity: {
@@ -166,10 +164,6 @@ const FamilyStorySection = ({ consanguinity, familyHistoryResources, isEditMode 
             initialValue={isEditMode ? getInitialValueFmh(familyHistoryResources) : null}
             label={intl.get('form.patientSubmission.clinicalInformation.familyHistory.familyHealth')}
             name="familyHealth"
-            rules={[{
-              message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
-              required: true,
-            }]}
           >
             <Radio.Group
               onChange={(event) => {
@@ -221,10 +215,6 @@ const FamilyStorySection = ({ consanguinity, familyHistoryResources, isEditMode 
                                   initialValue={get(familyHistoryResources, `[${index}].note`, '')}
                                   name={[index, 'note']}
                                   noStyle
-                                  rules={[{
-                                    message: <ErrorText text={intl.get(`${intlKeyPrefix}.validation.requiredField`)} />,
-                                    required: true,
-                                  }]}
                                 >
                                   <Input
                                     aria-label={intl.get(`${intlKeyPrefix}.familyHistory.familyHealth.healthCondition`)}
