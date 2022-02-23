@@ -124,7 +124,7 @@ const getPrescriptionKey = (prescriptions: Prescription[], openedPrescriptionId:
   return get(prescription, 'id');
 };
 
-const Prescriptions = ({ clinicalImpressions, prescriptions }: Props): React.ReactElement => {
+const Prescriptions = ({ clinicalImpressions, prescriptions, ...props}: Props): React.ReactElement => {
   const patientState = useSelector((state: State) => state.patient);
   const serviceRequestCodeState: Concept[] | [] = useSelector((state: State) => state.serviceRequestCode.concept);
   const lang = useSelector((state: State) => state.app.locale.lang);
