@@ -164,10 +164,6 @@ function PatientSubmissionScreen(props) {
     validate();
   });
 
-  React.useEffect(() => {
-    actions.getServiceRequestCode();
-  }, []);
-
   const { localStore } = props;
 
   const createCGHResourceList = (content, patientId) => {
