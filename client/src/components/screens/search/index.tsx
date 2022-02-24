@@ -23,12 +23,12 @@ const SearchScreen = ({ app }: SearchScreenProps): React.ReactElement => {
     setOpenModal(Screens.Form);
   };
 
-  let bridge: Bridge;
-
+  const [bridge, setBridge] = useState<Bridge | null>(null)
   useEffect(() => {
     if (iFrame && iFrame.current) {
-      bridge = new Bridge(store, iFrame.current);
-      bridge.register('createNewPrescription', prescriptionModalCallback);
+      const b = new Bridge(store, iFrame.current)
+      b.register('createNewPrescription', prescriptionModalCallback);
+      setBridge(b)
     }
 
     return function cleanup() {
@@ -40,7 +40,7 @@ const SearchScreen = ({ app }: SearchScreenProps): React.ReactElement => {
 
   return (
     <Layout>
-      <NewPrescriptionModal openModal={openModal} setOpenModal={setOpenModal} />
+      <NewPrescriptionModal bridge={bridge} openModal={openModal} setOpenModal={setOpenModal} />
       <iframe
         className={styles.searchIframe}
         ref={iFrame}

@@ -6,6 +6,7 @@ import {
   navigateToPatientSearchScreen,
   navigateToSubmissionFromPatientCreation,
 } from 'actions/router';
+import { Bridge } from 'bridge';
 
 import ErrorModal from 'components/screens/PatientCreation/components/ErrorModal';
 import ExistingModal from 'components/screens/PatientCreation/components/ExistingModal';
@@ -23,9 +24,11 @@ export enum Screens {
 }
 
 export const NewPrescriptionModal = ({
+  bridge,
   openModal = Screens.None,
   setOpenModal,
 }: {
+  bridge: Bridge | null;
   openModal: Screens;
   setOpenModal: (s: Screens) => void;
 }): React.ReactElement => {
@@ -39,6 +42,7 @@ export const NewPrescriptionModal = ({
     if (goToScreen) {
       goToScreen();
     } else {
+      bridge?.closeNewPatientModal()
       goToPatientSearch();
     }
   };

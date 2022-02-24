@@ -39,6 +39,7 @@ export class Bridge {
 
   register(action: string, callback: CallBackType): void {
     this.channel.contentWindow?.parent.addEventListener('message', (e): void => {
+      console.log('**** message bridge', e)
       if (e.origin !== window.origin || action !== e.data.action) {
         return;
       }
@@ -49,4 +50,13 @@ export class Bridge {
   remove(callback: CallBackType): void {
     this.channel.contentWindow?.removeEventListener('message', callback, false);
   }
+
+
+  closeNewPatientModal = () => {
+    console.log('**** closeNewPatientModal fonction')
+    // @ts-ignore
+    window.ww = this.channel
+    this.channel.contentWindow?.parent.postMessage({ action: 'closeNewPatientModal' }, window.origin);
+  };
 }
+
