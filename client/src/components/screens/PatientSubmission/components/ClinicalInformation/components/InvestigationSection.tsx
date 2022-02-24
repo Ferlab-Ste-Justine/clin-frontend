@@ -4,8 +4,6 @@ import {
   Col, Form, Input,   Radio, Row, Typography,
 } from 'antd';
 
-import ErrorText from './ErrorText';
-
 const { TextArea } = Input;
 
 enum InterpretationValue {
@@ -31,10 +29,6 @@ const InvestigationSection = ({ interpretation, isEditMode, precision, summary }
         initialValue={isEditMode ? getInitialValueCghInterpretation(interpretation) : null}
         label={intl.get('form.patientSubmission.clinicalInformation.cgh')}
         name="cghInterpretationValue"
-        rules={[{
-          message: <ErrorText text={intl.get('form.patientSubmission.clinicalInformation.validation.requiredField')} />,
-          required: true,
-        }]}
       >
         <Radio.Group
           buttonStyle="solid"
