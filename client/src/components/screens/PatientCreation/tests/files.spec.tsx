@@ -159,9 +159,9 @@ describe('PatientCreation', () => {
 
       userEvent.click(screen.getByText('Nouvelle prescription'), {});
 
-      userEvent.click(screen.getByText(/foetus/i), {});
+      userEvent.click(screen.getByText(/fœtus/i), {});
 
-      expect(screen.getAllByText(/foetus/i)[0].parentNode).toHaveClass('ant-radio-button-wrapper-checked');
+      expect(screen.getAllByText(/fœtus/i)[0].parentNode).toHaveClass('ant-radio-button-wrapper-checked');
 
       userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
 
@@ -181,9 +181,9 @@ describe('PatientCreation', () => {
 
       await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
 
-      await waitFor(() => screen.getByText(/La fiche du foetus a été créée avec succès/i));
+      await waitFor(() => screen.getByText(/La fiche du fœtus a été créée avec succès/i));
 
-      expect(screen.getByText('SMITH Beth (foetus)')).toBeDefined();
+      expect(screen.getByText('SMITH Beth (fœtus)')).toBeDefined();
     });
 
     test("with an existing mother's RAMQ", async () => {
@@ -294,7 +294,7 @@ describe('PatientCreation', () => {
 
       userEvent.click(screen.getByText('Nouvelle prescription'), {});
 
-      userEvent.click(screen.getByText(/foetus/i), {});
+      userEvent.click(screen.getByText(/fœtus/i), {});
 
       userEvent.type(screen.getByLabelText('RAMQ'), ramq);
 
@@ -312,9 +312,9 @@ describe('PatientCreation', () => {
 
       await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
 
-      await waitFor(() => screen.getByText(/La fiche du foetus a été créée avec succès/i));
+      await waitFor(() => screen.getByText(/La fiche du fœtus a été créée avec succès/i));
 
-      expect(screen.getByText('SMITH Beth (foetus)')).toBeDefined();
+      expect(screen.getByText('SMITH Beth (fœtus)')).toBeDefined();
     });
   });
 
@@ -546,7 +546,7 @@ describe('PatientCreation', () => {
       expect(screen.getByText(/soumettre/i).closest('button')).toBeEnabled();
       userEvent.click(screen.getByText(/soumettre/i), {});
 
-      await waitFor(() => screen.getAllByText(/Le numéro de dossier doit être non-vide et unique pour cet hôpital/i));
+      await waitFor(() => screen.getAllByText(/Le numéro de dossier doit être non vide et unique pour cet hôpital./i));
     });
   });
 
@@ -710,7 +710,7 @@ describe('PatientCreation', () => {
 
       userEvent.selectOptions(screen.getByTestId('mrn-organization'), 'CHUSJ');
 
-      userEvent.click(screen.getByText(/foetus/i), {});
+      userEvent.click(screen.getByText(/fœtus/i), {});
 
       expect(screen.getByLabelText('RAMQ')).toHaveValue('');
       expect(queryByText(screen.getByRole('dialog'), 'Nom de famille')).not.toBeInTheDocument();
