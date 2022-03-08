@@ -33,6 +33,15 @@ npm start
 
 It is assumed that the clin-proxy-services are running locally on your machine.
 
+
+### Install the proxy to work with [clin-ui](https://github.com/Ferlab-Ste-Justine/clin-ui)
+
+Install the proxy in order to simulate deployment with the same origin
+[clin-ui-dev-proxy](https://github.com/Ferlab-Ste-Justine/clin-ui-dev-proxy)
+
+This is to prevent CORS error between clin-frontend and clin-ui for seemingless communication
+between them.
+
 ### With Docker
 
 Make sure you followed the instructions to have a Dockerized setup for the clin proxy api services: https://github.com/cr-ste-justine/clin-proxy-api#dockerized-version

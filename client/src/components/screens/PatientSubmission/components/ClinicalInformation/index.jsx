@@ -161,10 +161,6 @@ class ClinicalInformation extends React.Component {
             <Form.Item
               initialValue={getHPOInterpretationCode(hpoResource)}
               name={['hpos', hpoIndex, 'interpretation']}
-              rules={[{
-                message: <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.requiredField`)} />,
-                required: true,
-              }]}
             >
               <Select
                 className="select selectObserved"
@@ -338,7 +334,7 @@ class ClinicalInformation extends React.Component {
       cghId = observations.cgh?.id;
     }
 
-    const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);  
+    const hpoCodes = hpoResources.filter((r) => !r.toDelete).map(getHPOCode);
 
     const initialAnalysisValue = serviceRequest.code;
     let initialAnalysisNote = serviceRequest.note;
@@ -360,21 +356,24 @@ class ClinicalInformation extends React.Component {
     }
     return (
       <div className="clinical-information">
+
         <Card
           bordered={false}
           className="staticCard patientContent"
+          id="MedicalFileSection"
           title={intl.get(`${intlPrefixKey}.clinicalInformation.medicalFile`)}
         >
           <Form.Item label={intl.get(`${intlPrefixKey}.clinicalInformation.file`)}>
             <MrnItem form={form} onChange={() => onChange()} />
           </Form.Item>
         </Card>
+
         <Card
           bordered={false}
           className="staticCard patientContent clinical-information__analysis"
+          id="AnalysisSection"
           title={intl.get(`${intlPrefixKey}.clinicalInformation.analysis`)}
         >
-
           <Form.Item
             className="hidden-form"
             initialValue={cghId}
@@ -396,14 +395,14 @@ class ClinicalInformation extends React.Component {
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
               >
-                { 
+                {
                   serviceRequestCode.map((concept) => (
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
                     >{ findLocalDesignationIfExists(concept, this.props.lang) || concept.display}
                     </Checkbox>
-                  )) 
+                  ))
                 }
               </Checkbox.Group>
             </Form.Item>
@@ -411,6 +410,7 @@ class ClinicalInformation extends React.Component {
           { isEditMode
           && (
             <Form.Item
+              id="ValidationMrn"
               initialValue={[initialAnalysisValue]}
               label={intl.get(`${intlPrefixKey}.clinicalInformation.analysis.selection`)}
               name="analysis.tests"
@@ -426,14 +426,14 @@ class ClinicalInformation extends React.Component {
                   validate();
                 }}
               >
-                { 
+                {
                   serviceRequestCode?.map((concept) => (
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
                     >{ findLocalDesignationIfExists(concept, this.props.lang) || concept.display }
                     </Checkbox>
-                  )) 
+                  ))
                 }
               </Checkbox.Group>
             </Form.Item>
@@ -464,6 +464,7 @@ class ClinicalInformation extends React.Component {
         <Card
           bordered={false}
           className="staticCard patientContent clinical-information__investigation"
+          id="InvestigationSection"
           title={intl.get(`${intlPrefixKey}.clinicalInformation.investigation`)}
         >
           <InvestigationSection
@@ -473,9 +474,11 @@ class ClinicalInformation extends React.Component {
             summary={initialSummaryNote}
           />
         </Card>
+
         <Card
           bordered={false}
           className="staticCard patientContent"
+          id="FamilyHistorySection"
           title={intl.get('screen.patient.header.familyHistory')}
         >
           <FamilyStorySection consanguinity={initialConsanguinityValue} familyHistoryResources={fmhResources} isEditMode={isEditMode}/>
@@ -485,10 +488,6 @@ class ClinicalInformation extends React.Component {
             <div className="cardSeparator">
               <Form.Item
                 name="hposTree"
-                rules={[{
-                  message: <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.hposTree`)} />,
-                  required: true,
-                }]}
               >
                 <div className={submitFailed ? 'treeError hposTree' : 'hposTree'}>
                   <Form.Item className="searchInput searchInputFull">
@@ -539,7 +538,6 @@ class ClinicalInformation extends React.Component {
                 message: (
                   <ErrorText text={intl.get(`${intlPrefixKey}.clinicalInformation.validation.diagnosticHypothesis`)} />
                 ),
-                required: true,
               },
               {
                 message: intl.get(`${intlPrefixKey}.clinicalInformation.validation.noSpace`),
