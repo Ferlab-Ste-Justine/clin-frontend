@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FormInstance } from 'antd';
+import Api from 'helpers/api';
+
 import Practitioners, { PractitionerData } from './Practitioners';
-import Api from '../../../../helpers/api';
 
 interface Props {
   form: FormInstance
@@ -15,6 +16,39 @@ interface Props {
   }
 }
 
+type Practitioner = {
+  data?: {
+    family?: string;
+    given?: string;
+    id?: string;
+    license?: string;
+  }
+  isValid: boolean;
+}
+
+const getPractitioner = (resource: any) : Practitioner => {
+  if(
+    resource?.name?.length > 0 &&
+    resource.name[0].given?.length > 0 &&
+    resource.identifier?.length > 0  &&
+    resource.id &&
+    resource.identifier?.length > 0 &&
+    resource.identifier[0].value
+  ) {
+    return {
+      data: {
+        family: resource.name[0].family,
+        given: resource.name[0].given[0],
+        id: resource.id,
+        license: resource.identifier[0].value
+      },
+      isValid: true,
+    }
+  }
+
+  return { isValid: false }
+}
+
 export async function searchPractitioner(term: string): Promise<PractitionerData[]> {
   if (!term) {
     return [];
@@ -24,29 +58,19 @@ export async function searchPractitioner(term: string): Promise<PractitionerData
   if (normalizedTerm.length > 0 && normalizedTerm.length < 10) {
     const params = { term: normalizedTerm };
     const response: any = await Api.searchPractitioners(params);
-    if (response.payload) {
-      const { data } = response.payload;
-      if (data.entry != null) {
-        data.entry.forEach((entry: any) => {
-          const { resource } = entry;
-          if (resource != null && resource.name != null && resource.name.length > 0) {
-            result.push({
-              id: resource.id,
-              family: resource.name[0].family,
-              given: resource.name[0].given[0],
-              license: resource.identifier[0].value,
-            });
-          }
-        });
+    response?.payload?.data?.entry?.forEach((entry: any) => {
+      const practitioner = getPractitioner(entry.resource);
+      if (practitioner.isValid) {
+        result.push(practitioner.data)
       }
-    }
+    });
   }
   return result;
 }
 
 const SecondPage: React.FC<Props> = ({
-  form,
   doctorOptions,
+  form,
   residentOptions,
 }) => {
   const [doctors, setDoctors] = useState<PractitionerData[]>([]);
@@ -55,7 +79,6 @@ const SecondPage: React.FC<Props> = ({
   return (
     <div>
       <Practitioners
-        form={form}
         doctorOptions={{
           initialValue: doctorOptions.initialValue,
           optionSelected: doctorOptions.optionSelected,
@@ -64,6 +87,7 @@ const SecondPage: React.FC<Props> = ({
           },
           values: doctors,
         }}
+        form={form}
         residentOptions={{
           initialValue: residentOptions.initialValue,
           optionSelected: residentOptions.optionSelected,
