@@ -59,7 +59,7 @@
 
 .prescriptions-tab {
   padding-bottom: 24px;
-  
+
   .ant-card {
     margin-bottom: 24px;
   }
@@ -103,16 +103,16 @@
         justify-content: var(--details-col-justify);
         margin-left: 24px;
         gap: 16px;
-  
+
         &__row {
           display: flex;
           flex-direction: column;
-          
+
           &__title {
             color: $gray-7;
             font-weight: 500;
           }
-    
+
           &__info {
             &__multiple-mrn {
               ul {
@@ -128,7 +128,7 @@
             }
           }
         }
-  
+
       }
     }
 
@@ -223,7 +223,7 @@
           }
         }
       }
-      &__status-value { 
+      &__status-value {
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -233,12 +233,12 @@
             display: inline-block;
             padding: 8px;
             border-radius: 2px;
-  
+
             &.incomplete {
               color: $magenta-6;
               background-color: $magenta-1;
             }
-  
+
             &.revoked {
               color: $red-6;
               background-color: $red-0;
@@ -282,10 +282,9 @@
         &__value{
           max-width: 800px;
           button{
-            height: 22px;
             i{
               height: 16px;
-                        
+
               svg{
                 vertical-align: sub !important;
               }
@@ -297,19 +296,19 @@
           &--normal{
             color: $green-7;
           }
-        
+
         }
       }}
 
     &__summary {
       &__cgh__content {
-        &__code { 
+        &__code {
           &--abnormal{
             color: $red-6;
           }
           &--normal{
             color: $green-7;
-          } 
+          }
         }
       }
     }
