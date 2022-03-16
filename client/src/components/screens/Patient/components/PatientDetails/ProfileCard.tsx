@@ -10,7 +10,17 @@ import { ParsedPatientData } from 'helpers/providers/types';
 import { State } from 'reducers';
 
 import { FamilyMember } from 'store/FamilyMemberTypes';
+import { Position } from 'store/PatientTypes';
 
+const translate = (probandValue: string) => {
+  if (probandValue === Position.Proband) {
+    return intl.get('proband');
+  } else if (probandValue === Position.Parent) {
+    return intl.get('parent');
+  } else {
+    return probandValue;
+  }
+};
 const ProfileCard = (): React.ReactElement => {
   const dispatch = useDispatch();
   const patient = useSelector((state: State) => state.patient.patient.parsed) as ParsedPatientData;
@@ -49,8 +59,8 @@ const ProfileCard = (): React.ReactElement => {
         </>
       )}
       <div className="patient-section__name-block__tags">
-        <Tag color={patientProbandDescription === 'Proband' ? 'red' : 'geekblue'}>
-          {patientProbandDescription}
+        <Tag color={patientProbandDescription === Position.Proband ? 'red' : 'geekblue'}>
+          {translate(patientProbandDescription)}
         </Tag>
         {patient.isFetus && <Tag color="purple">{intl.get('screen.patient.details.fetus')}</Tag>}
       </div>

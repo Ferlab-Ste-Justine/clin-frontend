@@ -189,6 +189,8 @@ const en = {
   'message.error.generic': 'Failed performing action',
   'message.success.generic': 'Successfully performed action',
   'navigation.main.searchPatient': 'Patient Search',
+  'parent': 'Parent',
+  'proband': 'Proband',
   'response.error.BadRequest': 'Bad Request',
   'response.error.Created': 'Ok',
   'response.error.Forbidden': 'Forbidden',
