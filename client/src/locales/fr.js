@@ -265,6 +265,8 @@ const fr = {
   'message.error.generic': 'Action échouée... ',
   'message.success.generic': 'Action effectuée avec succès!',
   'navigation.main.searchPatient': 'Recherche de patient',
+  'parent': 'Parent',
+  'proband': 'Cas-index',
   'response.error.BadRequest': 'Requête invalide',
   'response.error.Created': 'Ok',
   'response.error.Forbidden': 'Accès interdit',

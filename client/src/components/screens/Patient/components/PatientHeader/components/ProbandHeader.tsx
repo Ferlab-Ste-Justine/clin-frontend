@@ -29,7 +29,7 @@ const ProbandHeader= ({ patient }:Props): React.ReactElement => (
         className="patient-page__header__tags"
         color={patient.proband === 'Parent' ? 'geekblue' : 'red'}
       >
-        {patient.proband}
+        {intl.get(patient.proband.toLowerCase())}
       </Tag>
     </Col>
     <Col>

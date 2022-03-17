@@ -24,7 +24,7 @@ const PositionCell = ({ familyMember }: Props): React.ReactElement => {
 
   const shouldDisplayProband = isProband && !isNaturalMotherOfFetus(familyMember);
   const positionTextToProband = shouldDisplayProband
-    ? 'Proband'
+    ? intl.get('proband')
     : translateRelationCode(familyMember.relationCode || '', relationTranslations);
 
   return <Tag color={shouldDisplayProband ? 'red' : 'geekblue'}>{positionTextToProband}</Tag>;
