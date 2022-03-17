@@ -380,9 +380,6 @@ const FormModal = ({
                   setCanCreateFoetus(true);
                   form.setFieldsValue({ ramq: formatRamq(ramq) });
                 }}
-                onPaste={(event) => {
-                  event.preventDefault();
-                }}
                 placeholder="ROYL 1234 4567"
                 suffix={isFetchingPatientInfoByRamq && <LoadingOutlined spin />}
               />
