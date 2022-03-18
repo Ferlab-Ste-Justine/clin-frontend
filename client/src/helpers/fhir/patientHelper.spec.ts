@@ -16,6 +16,11 @@ describe('Helper: PatientHelper', () => {
       expect(getDetailsFromRamq('20200101SMIM')).toBeNull();
       expect(getDetailsFromRamq('SMIM20200101')).toBeNull();
       expect(getDetailsFromRamq('SMIM20990101')).toBeNull();
+//CLIN-868 expect(getDetailsFromRamq('SMIM205901010')).toBeNull();
+      expect(getDetailsFromRamq('SMIM2059010101')).toBeNull();
+      expect(getDetailsFromRamq('SMIMM2059010')).toBeNull();
+      expect(getDetailsFromRamq('SMIMM20590101')).toBeNull();
+      expect(getDetailsFromRamq('SMI320590101')).toBeNull();
     });
 
     test('should return valid RamqDetails from valid ramq', () => {
@@ -49,7 +54,7 @@ describe('Helper: PatientHelper', () => {
       } as RamqDetails);
     });
 
-    test('should should handle 99 years old', () => {
+    test('should handle 99 years old', () => {
       const nextYear = moment().add(1, 'year');
       const expectedYear = nextYear.subtract(100, 'years');
       expect(getDetailsFromRamq(`SMIS${nextYear.format('YY')}512301`)).toEqual({
