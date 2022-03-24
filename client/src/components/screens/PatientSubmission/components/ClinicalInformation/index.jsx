@@ -3,8 +3,7 @@
 import React from 'react';
 import intl from 'react-intl-universal';
 import { connect } from 'react-redux';
-import {
-} from 'actions/patientSubmission';
+import { getServiceRequestCode } from 'actions/serviceRequest';
 import {
   AutoComplete, Button, Card, Checkbox, Col, Form, Input, Popconfirm, Row, Select, Typography,
 } from 'antd';
@@ -85,6 +84,8 @@ class ClinicalInformation extends React.Component {
   }
 
   componentDidMount() {
+    const { actions } = this.props;
+    actions.getServiceRequestCode();
     Api.searchHpoChildren(ROOT_PHENOTYPE)
       .then((res) => {
         const phenotypes = (res.payload?.data?.data.hits || [])
@@ -396,7 +397,7 @@ class ClinicalInformation extends React.Component {
                 className="clinical-information__analysis__checkbox-group"
               >
                 {
-                  serviceRequestCode.map((concept) => (
+                  serviceRequestCode?.map((concept) => (
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
@@ -559,6 +560,7 @@ class ClinicalInformation extends React.Component {
 
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators({
+    getServiceRequestCode
   }, dispatch),
 });
 
