@@ -524,8 +524,8 @@ const FormModal = ({
                           disabled={isFetusWithParent}
                           placeholder={intl.get(`${I18N_PREFIX}hospital.placeholder`)}
                         >
+                          <Select.Option value="CHUS">CHUS</Select.Option>
                           <Select.Option value="CHUSJ">CHUSJ</Select.Option>
-                          <Select.Option value="CHUM">CHUM</Select.Option>
                           <Select.Option value="CUSM">CUSM</Select.Option>
                         </Select>
                       </Form.Item>
