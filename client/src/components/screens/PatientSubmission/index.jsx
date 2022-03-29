@@ -652,7 +652,7 @@ function PatientSubmissionScreen(props) {
             <Card className="patientSubmission__form__footer">
               <Row gutter={8}>
                 <Col>
-                  <Button disabled={isSubmitting} htmlType="submit" type="primary">
+                  <Button disabled={isSubmitting} htmlType="submit" type="primary" data-testid="SubmitButton">
                     {intl.get('form.patientSubmission.form.submit')}
                   </Button>
                 </Col>

@@ -22,11 +22,11 @@ describe('PatientFiles', () => {
 
   beforeEach(() => {
     (useFilesData as jest.Mock).mockReset();
-    console.error = jest.fn(); //Pour masquer les "console.error"
+    console.error = jest.fn();
   });
 
   afterEach(() => {
-    jest.clearAllMocks(); //Pour masquer les "console.error"
+    jest.clearAllMocks();
   });
 
   test('shoud show empty page when no file', async () => {

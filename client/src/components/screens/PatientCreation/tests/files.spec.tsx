@@ -10,36 +10,16 @@ import { setupServer } from 'msw/node';
 import AppTest from 'AppTest';
 import PatientCreation from '../../PatientCreation';
 import { mockRptToken } from '__tests__/mocks';
+import * as mock from './mockData';
 
 describe('PatientCreation', () => {
   const server = setupServer();
 
   function setupValidPostmockResponse(isFetus = false) {
-    const responseEntries = [{
-      response: {
-        etag: '1',
-        lastModified: '2021-03-26T19:43:01.238+00:00',
-        location: 'Patient/51006/_history/1',
-        status: '201 Created',
-      },
-    }, {
-      response: {
-        etag: '1',
-        lastModified: '2021-03-26T19:43:01.238+00:00',
-        location: 'Group/51007/_history/1',
-        status: '201 Created',
-      },
-    }];
+    const responseEntries = mock.ResponsePatient51006;
 
     if (isFetus) {
-      responseEntries.push({
-        response: {
-          etag: '1',
-          lastModified: '2021-03-30T20:55:13.309+00:00',
-          location: 'Patient/51007/_history/1',
-          status: '201 Created',
-        },
-      });
+      responseEntries.push(mock.ResponsePatient51007);
     }
 
     server.use(
@@ -60,9 +40,9 @@ describe('PatientCreation', () => {
   }
 
   beforeEach(() => {
-    console.error = jest.fn(); //Pour masquer les "console.error"
-    console.warn = jest.fn(); //Pour masquer les "console.warning"
-    console.log = jest.fn(); //Pour masquer les "console.log"
+    console.error = jest.fn();
+    console.warn = jest.fn();
+    console.log = jest.fn();
   });
 
   afterEach(() => {
@@ -80,19 +60,7 @@ describe('PatientCreation', () => {
       server.use(
         rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
-          ctx.json({
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            link: [{
-              relation: 'self',
-              url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=DABC01010101',
-            }],
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            resourceType: 'Bundle',
-            total: 0,
-            type: 'searchset',
-          }),
+          ctx.json(mock.ResponseBundleDABC01010101),
         )),
       );
 
@@ -103,20 +71,20 @@ describe('PatientCreation', () => {
 
       render(<AppTest><PatientCreation /></AppTest>);
 
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
-      userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
+      userEvent.type(screen.getByTestId('InputRAMQ'), 'DABC01010101');
 
-      await waitFor(() => screen.getByLabelText('Nom de famille'));
+      await waitFor(() => screen.getByTestId('InputLastName'));
 
-      userEvent.type(screen.getByLabelText('Nom de famille'), 'Smith');
-      userEvent.type(screen.getByLabelText('Prénom'), 'Morty');
+      userEvent.type(screen.getByTestId('InputLastName'), 'Smith');
+      userEvent.type(screen.getByTestId('InputFirstName'), 'Morty');
 
-      expect(screen.getByLabelText('Date de naissance')).toHaveValue('2001-01-01');
+      expect(screen.getByTestId('DatePickerBirthday')).toHaveValue('2001-01-01');
 
       expect(screen.getByText(/masculin/i).previousSibling).toHaveClass('ant-radio-button-checked');
-      expect(screen.getByLabelText('Date de naissance')).toHaveValue('2001-01-01');
-      userEvent.type(screen.getByLabelText('Date de naissance'), '2020-01-01{enter}');
+      expect(screen.getByTestId('DatePickerBirthday')).toHaveValue('2001-01-01');
+      userEvent.type(screen.getByTestId('DatePickerBirthday'), '2020-01-01{enter}');
 
       userEvent.type(screen.getByTestId('mrn-file'), 'AB1234');
 
@@ -125,8 +93,8 @@ describe('PatientCreation', () => {
       expect(screen.getByText(/soumettre/i).closest('button')).toBeEnabled();
       userEvent.click(screen.getByText(/soumettre/i), {});
 
-      await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
-      await waitFor(() => screen.getByText(/la fiche du patient a été créée avec succès/i));
+      await waitFor(() => screen.getByTestId('ModalCreating'));
+      await waitFor(() => screen.getByTestId('ResultModalCreation'));
       expect(screen.getByText('SMITH Morty')).toBeDefined();
     });
   });
@@ -137,16 +105,7 @@ describe('PatientCreation', () => {
       server.use(
         rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
-          ctx.json({
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            link: [],
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            resourceType: 'Bundle',
-            total: 0,
-            type: 'searchset',
-          }),
+          ctx.json(mock.ResponseBundle200),
         )),
       );
 
@@ -157,18 +116,18 @@ describe('PatientCreation', () => {
 
       render(<AppTest><PatientCreation /></AppTest>);
 
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
       userEvent.click(screen.getByText(/fœtus/i), {});
 
       expect(screen.getAllByText(/fœtus/i)[0].parentNode).toHaveClass('ant-radio-button-wrapper-checked');
 
-      userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
+      userEvent.type(screen.getByTestId('InputRAMQ'), 'DABC01010101');
 
-      await waitFor(() => screen.getByLabelText('Nom de famille (mère)'));
+      await waitFor(() => screen.getByTestId('InputLastName'));
 
-      userEvent.type(screen.getByLabelText('Nom de famille (mère)'), 'Smith');
-      userEvent.type(screen.getByLabelText('Prénom (mère)'), 'Beth');
+      userEvent.type(screen.getByTestId('InputLastName'), 'Smith');
+      userEvent.type(screen.getByTestId('InputFirstName'), 'Beth');
 
       userEvent.click(screen.getByText(/masculin/i), {});
 
@@ -179,9 +138,9 @@ describe('PatientCreation', () => {
       expect(screen.getByText(/soumettre/i).closest('button')).toBeEnabled();
       userEvent.click(screen.getByText(/soumettre/i), {});
 
-      await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
+      await waitFor(() => screen.getByTestId('ModalCreating'));
 
-      await waitFor(() => screen.getByText(/La fiche du fœtus a été créée avec succès/i));
+      await waitFor(() => screen.getByTestId('ResultModalCreation'));
 
       expect(screen.getByText('SMITH Beth (fœtus)')).toBeDefined();
     });
@@ -195,77 +154,7 @@ describe('PatientCreation', () => {
           let entry;
 
           if (req.url.href.includes(ramq)) {
-            entry = [{
-              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
-              resource: {
-                active: true,
-                birthDate: '2021-03-30',
-                extension: [{
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
-                  valueBoolean: true,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
-                  valueBoolean: false,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
-                  valueReference: {
-                    reference: 'Group/38410',
-                  },
-                }],
-                gender: 'female',
-                generalPractitioner: [{
-                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
-                }, {
-                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
-                }],
-                id: '54382',
-                identifier: [{
-                  assigner: {
-                    reference: 'Organization/CUSM',
-                  },
-                  type: {
-                    coding: [{
-                      code: 'MR',
-                      display: 'Medical record number',
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: '010000',
-                }, {
-                  type: {
-                    coding: [{
-                      code: 'JHN',
-                      display: 'Jurisdictional health number (Canada)',
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: 'BETS00000001',
-                }],
-                managingOrganization: {
-                  reference: 'Organization/CUSM',
-                },
-                meta: {
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                  versionId: '2',
-                  source: '#5987279aae2ec2ca',
-                },
-                name: [{
-                  family: 'Smith',
-                  given: ['Beth'],
-                }],
-                resourceType: 'Patient',
-                text: {
-                  div: '',
-                  status: 'generated',
-                },
-              },
-              search: {
-                mode: 'match',
-              },
-            }];
+            entry = mock.EntryPatient54382;
           }
 
           return res(
@@ -292,16 +181,16 @@ describe('PatientCreation', () => {
 
       render(<AppTest><PatientCreation /></AppTest>);
 
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
       userEvent.click(screen.getByText(/fœtus/i), {});
 
-      userEvent.type(screen.getByLabelText('RAMQ'), ramq);
+      userEvent.type(screen.getByTestId('InputRAMQ'), ramq);
 
-      await waitFor(() => screen.getByLabelText('Nom de famille (mère)'));
+      await waitFor(() => screen.getByTestId('InputLastName'));
 
-      expect(screen.getByLabelText('Nom de famille (mère)')).toBeDisabled();
-      expect(screen.getByLabelText('Prénom (mère)')).toBeDisabled();
+      expect(screen.getByTestId('InputLastName')).toBeDisabled();
+      expect(screen.getByTestId('InputFirstName')).toBeDisabled();
       expect(screen.getByTestId('mrn-file')).toHaveValue('010000');
       expect(screen.getByTestId('mrn-organization')).toHaveValue('CUSM');
 
@@ -310,9 +199,9 @@ describe('PatientCreation', () => {
       expect(screen.getByText(/soumettre/i).closest('button')).toBeEnabled();
       userEvent.click(screen.getByText(/soumettre/i), {});
 
-      await waitFor(() => screen.getByText(/Sauvegarde de données en cours/i));
+      await waitFor(() => screen.getByTestId('ModalCreating'));
 
-      await waitFor(() => screen.getByText(/La fiche du fœtus a été créée avec succès/i));
+      await waitFor(() => screen.getByTestId('ResultModalCreation'));
 
       expect(screen.getByText('SMITH Beth (fœtus)')).toBeDefined();
     });
@@ -324,90 +213,7 @@ describe('PatientCreation', () => {
       server.use(
         rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
-          ctx.json({
-            entry: [{
-              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
-              resource: {
-                id: '54382',
-                extension: [{
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
-                  valueBoolean: true,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
-                  valueBoolean: false,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
-                  valueReference: {
-                    reference: 'Group/38410',
-                  },
-                }],
-                meta: {
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                  versionId: '2',
-                  source: '#5987279aae2ec2ca',
-                },
-                active: true,
-                resourceType: 'Patient',
-                gender: 'female',
-                birthDate: '2021-03-30',
-                text: {
-                  status: 'generated',
-                  div: '',
-                },
-                generalPractitioner: [{
-                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
-                }, {
-                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
-                }],
-                identifier: [{
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'MR',
-                      display: 'Medical record number',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: '010000',
-                  assigner: {
-                    reference: 'Organization/CUSM',
-                  },
-                }, {
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'JHN',
-                      display: 'Jurisdictional health number (Canada)',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: 'BETS00000001',
-                }],
-                managingOrganization: {
-                  reference: 'Organization/CUSM',
-                },
-                name: [{
-                  family: 'Smith',
-                  given: ['Beth'],
-                }],
-              },
-              search: {
-                mode: 'match',
-              },
-            }],
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            link: [{
-              relation: 'self',
-              url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=BETS00000001',
-            }],
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            resourceType: 'Bundle',
-            total: 0,
-            type: 'searchset',
-          }),
+          ctx.json(mock.EntryPatient54383),
         )),
       );
 
@@ -418,9 +224,9 @@ describe('PatientCreation', () => {
 
       render(<AppTest><PatientCreation /></AppTest>);
 
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
-      userEvent.type(screen.getByLabelText('RAMQ'), 'BETS00000001');
+      userEvent.type(screen.getByTestId('InputRAMQ'), 'BETS00000001');
 
       await waitFor(() => screen.getByText(/Nous avons trouvé une fiche avec les mêmes identifiants./i));
       expect(screen.getByText('SMITH Beth')).toBeDefined();
@@ -432,77 +238,7 @@ describe('PatientCreation', () => {
         rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => {
           let entry;
           if (req.url.href.includes('CUSM') && req.url.href.includes('010000')) {
-            entry = [{
-              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
-              resource: {
-                active: true,
-                birthDate: '2021-03-30',
-                extension: [{
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
-                  valueBoolean: true,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
-                  valueBoolean: false,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
-                  valueReference: {
-                    reference: 'Group/38410',
-                  },
-                }],
-                gender: 'female',
-                generalPractitioner: [{
-                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
-                }, {
-                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
-                }],
-                id: '54382',
-                identifier: [{
-                  assigner: {
-                    reference: 'Organization/CUSM',
-                  },
-                  type: {
-                    coding: [{
-                      code: 'MR',
-                      display: 'Medical record number',
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: '010000',
-                }, {
-                  type: {
-                    coding: [{
-                      code: 'JHN',
-                      display: 'Jurisdictional health number (Canada)',
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: 'BETS00000001',
-                }],
-                managingOrganization: {
-                  reference: 'Organization/CUSM',
-                },
-                meta: {
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                  versionId: '2',
-                  source: '#5987279aae2ec2ca',
-                },
-                name: [{
-                  family: 'Smith',
-                  given: ['Beth'],
-                }],
-                resourceType: 'Patient',
-                text: {
-                  div: '',
-                  status: 'generated',
-                },
-              },
-              search: {
-                mode: 'match',
-              },
-            }];
+            entry = mock.EntryPatient54382;
           }
           return res(
             ctx.status(200),
@@ -526,18 +262,17 @@ describe('PatientCreation', () => {
 
       render(<AppTest><PatientCreation /></AppTest>);
 
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
+      userEvent.type(screen.getByTestId('InputRAMQ'), 'DABC01010101');
 
-      userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
+      await waitFor(() => screen.getByTestId('InputLastName'));
 
-      await waitFor(() => screen.getByLabelText('Nom de famille'));
-
-      userEvent.type(screen.getByLabelText('Nom de famille'), 'Smith');
-      userEvent.type(screen.getByLabelText('Prénom'), 'Morty');
+      userEvent.type(screen.getByTestId('InputLastName'), 'Smith');
+      userEvent.type(screen.getByTestId('InputFirstName'), 'Morty');
 
       userEvent.click(screen.getByText(/masculin/i), {});
-      userEvent.type(screen.getByLabelText('Date de naissance'), '2020-01-01{enter}');
+      userEvent.type(screen.getByTestId('DatePickerBirthday'), '2020-01-01{enter}');
 
       userEvent.type(screen.getByTestId('mrn-file'), '010000');
 
@@ -557,77 +292,7 @@ describe('PatientCreation', () => {
         rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
           ctx.json({
-            entry: [{
-              fullUrl: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient/54382',
-              resource: {
-                id: '54382',
-                extension: [{
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-proband',
-                  valueBoolean: true,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/is-fetus',
-                  valueBoolean: false,
-                }, {
-                  url: 'http://fhir.cqgc.ferlab.bio/StructureDefinition/family-id',
-                  valueReference: {
-                    reference: 'Group/38410',
-                  },
-                }],
-                meta: {
-                  lastUpdated: '2021-03-30T17:16:35.931+00:00',
-                  profile: ['http://fhir.cqgc.ferlab.bio/StructureDefinition/cqgc-patient'],
-                  versionId: '2',
-                  source: '#5987279aae2ec2ca',
-                },
-                active: true,
-                resourceType: 'Patient',
-                gender: 'female',
-                birthDate: '2021-03-30',
-                text: {
-                  status: 'generated',
-                  div: '',
-                },
-                generalPractitioner: [{
-                  reference: 'PractitionerRole/PROLE-40998dab-554d-402d-b245-39187b14cdf8',
-                }, {
-                  reference: 'PractitionerRole/PROLE-c4becdcf-87e1-4fa7-ae87-9bbf555b1c4f',
-                }],
-                identifier: [{
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'MR',
-                      display: 'Medical record number',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: '010000',
-                  assigner: {
-                    reference: 'Organization/CUSM',
-                  },
-                }, {
-                  type: {
-                    coding: [{
-                      system: 'http://terminology.hl7.org/CodeSystem/v2-0203',
-                      code: 'JHN',
-                      display: 'Jurisdictional health number (Canada)',
-                    }],
-                    text: 'Numéro du dossier médical',
-                  },
-                  value: 'BETS00000001',
-                }],
-                managingOrganization: {
-                  reference: 'Organization/CUSM',
-                },
-                name: [{
-                  family: 'Smith',
-                  given: ['Beth'],
-                }],
-              },
-              search: {
-                mode: 'match',
-              },
-            }],
+            entry: mock.EntryPatient54382,
             id: '2acbea67-8d49-477b-bbae-7acb18430780',
             link: [{
               relation: 'self',
@@ -650,17 +315,17 @@ describe('PatientCreation', () => {
 
       render(<AppTest><PatientCreation /></AppTest>);
 
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
-      userEvent.type(screen.getByLabelText('RAMQ'), 'BETS00000001');
+      userEvent.type(screen.getByTestId('InputRAMQ'), 'BETS00000001');
 
-      await waitFor(() => screen.getByText(/Nous avons trouvé une fiche avec les mêmes identifiants./i));
+      await waitFor(() => screen.getByTestId('ResultModalExistingPatient'));
       expect(screen.getByText('SMITH Beth')).toBeDefined();
 
-      userEvent.click(screen.getByText(/Fermer/i), {});
-      userEvent.click(screen.getAllByText('Nouvelle prescription')[0], {});
+      userEvent.click(screen.getByTestId('CloseButton'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
-      expect(screen.getByLabelText('RAMQ')).toHaveValue('');
+      expect(screen.getByTestId('InputRAMQ')).toHaveValue('');
     });
   });
 
@@ -670,19 +335,7 @@ describe('PatientCreation', () => {
       server.use(
         rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
           ctx.status(200),
-          ctx.json({
-            id: '2acbea67-8d49-477b-bbae-7acb18430780',
-            link: [{
-              relation: 'self',
-              url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=BETS00000001',
-            }],
-            meta: {
-              lastUpdated: '2021-03-19T18:49:41.787+00:00',
-            },
-            resourceType: 'Bundle',
-            total: 0,
-            type: 'searchset',
-          }),
+          ctx.json(mock.ResponseBundleBETS00000001),
         )),
       );
 
@@ -693,18 +346,18 @@ describe('PatientCreation', () => {
 
       render(<AppTest><PatientCreation /></AppTest>);
 
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
       // Fill the form
-      userEvent.type(screen.getByLabelText('RAMQ'), 'BETS00000001');
+      userEvent.type(screen.getByTestId('InputRAMQ'), 'BETS00000001');
 
-      await waitFor(() => screen.getByLabelText('Nom de famille'));
+      await waitFor(() => screen.getByTestId('InputLastName'));
 
-      userEvent.type(screen.getByLabelText('Nom de famille'), 'Smith');
-      userEvent.type(screen.getByLabelText('Prénom'), 'Morty');
+      userEvent.type(screen.getByTestId('InputLastName'), 'Smith');
+      userEvent.type(screen.getByTestId('InputFirstName'), 'Morty');
 
       userEvent.click(screen.getByText(/masculin/i), {});
-      userEvent.type(screen.getByLabelText('Date de naissance'), '2020-01-01{enter}');
+      userEvent.type(screen.getByTestId('DatePickerBirthday'), '2020-01-01{enter}');
 
       userEvent.type(screen.getByTestId('mrn-file'), 'AB1234');
 
@@ -712,7 +365,7 @@ describe('PatientCreation', () => {
 
       userEvent.click(screen.getByText(/fœtus/i), {});
 
-      expect(screen.getByLabelText('RAMQ')).toHaveValue('');
+      expect(screen.getByTestId('InputRAMQ')).toHaveValue('');
       expect(queryByText(screen.getByRole('dialog'), 'Nom de famille')).not.toBeInTheDocument();
     });
   });
@@ -723,33 +376,29 @@ describe('PatientCreation', () => {
       server.use(
       rest.get('https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient', (req, res, ctx) => res(
         ctx.status(200),
-        ctx.json({
-        id: '2acbea67-8d49-477b-bbae-7acb18430780',
-        link: [{
-            relation: 'self',
-            url: 'https://fhir.qa.cqgc.hsj.rtss.qc.ca/fhir/Patient?identifier=DABC01010101',
-        }],
-        meta: {
-            lastUpdated: '2021-03-19T18:49:41.787+00:00',
-        },
-        resourceType: 'Bundle',
-        total: 0,
-        type: 'searchset',
-        }),
+        ctx.json(mock.ResponseBundleDABC01010101),
       )),
       );
 
       server.listen({ onUnhandledRequest: 'error' });
 
       render(<AppTest><PatientCreation /></AppTest>);
-      userEvent.click(screen.getByText('Nouvelle prescription'), {});
+      userEvent.click(screen.getByTestId('PatientCreationButton'), {});
 
-      userEvent.type(screen.getByLabelText('RAMQ'), 'DABC01010101');
+      userEvent.type(screen.getByTestId('InputRAMQ'), 'DABC01010101');
 
-      await waitFor(() => screen.getByLabelText('Nom de famille'));
+      await waitFor(() => screen.getByTestId('InputLastName'));
 
-      userEvent.type(screen.getByTestId('mrn-file'), 'abc-123()/é');
-      expect(screen.getByTestId('mrn-file')).toHaveValue('abc123');
+      userEvent.type(screen.getByTestId('InputLastName'), 'Smith');
+      userEvent.type(screen.getByTestId('InputFirstName'), 'Morty');
+
+      userEvent.click(screen.getByText(/masculin/i), {});
+      userEvent.type(screen.getByTestId('DatePickerBirthday'), '2020-01-01{enter}');
+
+        await waitFor(() => screen.getByTestId('InputLastName'));
+
+        userEvent.type(screen.getByTestId('mrn-file'), 'abc-123()/é');
+        expect(screen.getByTestId('mrn-file')).toHaveValue('abc123');
     });
   });
 });

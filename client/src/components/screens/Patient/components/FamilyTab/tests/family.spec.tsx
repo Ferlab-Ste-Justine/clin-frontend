@@ -9,7 +9,7 @@ import { patientNotProbandSubState, patientProbandSubState } from './mockData';
 describe('Family', () => {
 
   beforeEach(() => {
-    console.error = jest.fn(); //Pour masquer les "console.error"
+    console.error = jest.fn();
   });
 
   afterEach(() => {

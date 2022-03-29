@@ -60,6 +60,7 @@ const SubmissionModal = ({ open, role, doctorOptions, onSubmit, onClose }: Props
       visible={open}
       onCancel={onClose}
       title={intl.get('form.patientSubmission.submissionModal.title')}
+      data-testid="submissionModal"
       footer={
         <Row gutter={8} justify="end">
           <Col>

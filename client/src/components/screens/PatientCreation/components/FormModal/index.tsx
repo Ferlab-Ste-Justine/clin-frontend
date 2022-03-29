@@ -291,7 +291,7 @@ const FormModal = ({
 
   return (
     <>
-      <Modal closable={false} footer={null} title={null} visible={open && isCreating}>
+      <Modal closable={false} footer={null} title={null} visible={open && isCreating} data-testid="ModalCreating">
         <Row gutter={8}>
           <Col>
             <LoadingOutlined size={16} spin />
@@ -382,6 +382,7 @@ const FormModal = ({
                 }}
                 placeholder="ROYL 1234 4567"
                 suffix={isFetchingPatientInfoByRamq && <LoadingOutlined spin />}
+                data-testid="InputRAMQ"
               />
             </Form.Item>
           </fieldset>
@@ -408,6 +409,7 @@ const FormModal = ({
                 <Input
                   disabled={isFetusWithParent}
                   placeholder={intl.get(`${I18N_PREFIX}lastname`)}
+                  data-testid="InputLastName"
                 />
               </Form.Item>
               <Form.Item
@@ -431,6 +433,7 @@ const FormModal = ({
                 <Input
                   disabled={isFetusWithParent}
                   placeholder={intl.get(`${I18N_PREFIX}firstname`)}
+                  data-testid="InputFirstName"
                 />
               </Form.Item>
               <Form.Item
@@ -469,6 +472,7 @@ const FormModal = ({
                   disabled={isFetusWithParent}
                   disabledDate={(current: any) => current && current > moment().startOf('day')}
                   placeholder={intl.get(`${I18N_PREFIX}birthday.placeholder`)}
+                  data-testid="DatePickerBirthday"
                 />
               </Form.Item>
               <Form.Item

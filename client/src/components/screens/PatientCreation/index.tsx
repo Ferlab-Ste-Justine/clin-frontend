@@ -53,6 +53,7 @@ const PatientCreation: React.FC = () => {
         className="patient-creation__button"
         onClick={() => setOpenModal(SCREENS.FORM)}
         type="primary"
+        data-testid="PatientCreationButton"
       >
         <PlusOutlined />
         {intl.get(`${I18N_PREFIX}createPrescription`)}
