@@ -43,6 +43,7 @@ const fr = {
   'components.variantNavigation.searchInput.moreResults':
     "Précisez votre recherche pour voir d'autres résultats.",
   'components.variantNavigation.searchInput.resultsCount': '{count} résultats',
+  'download.error': 'erreur de téléchargement',
   'filters.__missing__': 'Manquant',
   'filters.false': 'Faux',
   'filters.header.practitioner.lastNameFirstName': 'Médecin approbateur',
