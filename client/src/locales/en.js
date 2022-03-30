@@ -39,6 +39,7 @@ const en = {
   'components.table.action.search': 'Search',
   'components.variantNavigation.moreResults': 'Refine your search to see other results',
   'components.variantNavigation.searchInput.resultsCount': '{count} results',
+  'download.error': 'download error',
   'filters.__missing__': 'Missing',
   'filters.false': 'False',
   'filters.header.practitioner.lastNameFirstName': 'Approver',

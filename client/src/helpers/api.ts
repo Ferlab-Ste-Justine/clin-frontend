@@ -1,9 +1,14 @@
+import FileDownload from 'helpers/FileDownload';
 import get from 'lodash/get';
+
+import { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
+
 import keycloak from '../keycloak';
 
 import { getPatientByIdentifier } from './fhir/api/PatientChecker';
 import { getUserPractitionerData } from './fhir/api/UserResources';
 import { BundleBuilder } from './fhir/builder/BundleBuilder';
+import { ServiceRequestBuilder } from './fhir/builder/ServiceRequestBuilder';
 import { getExtension } from './fhir/builder/Utils';
 import {
   createGetMultiplePatientDataBundle,
@@ -11,14 +16,11 @@ import {
   createGetPatientDataBundle,
   createGetPractitionersDataBundle,
 } from './fhir/fhir';
-import { ServiceRequestBuilder } from './fhir/builder/ServiceRequestBuilder';
 import { generateGroupStatus, GroupMemberStatusCode } from './fhir/patientHelper';
 import { Bundle, Group, Patient, ServiceRequest } from './fhir/types';
 import { PatientAutocompleteOptionalParams, PatientAutoCompleteResponse } from './search/types';
 import Http from './http-client';
 import { userAuthPermissions } from './keycloak-api';
-import { StatusType } from 'components/screens/Patient/components/StatusChangeModal';
-import FileDownload from 'helpers/FileDownload';
 
 type Payload = any;
 type PayloadCb = { payload: Payload };
@@ -77,7 +79,7 @@ const getGroupByMemberId = (
 
 const updateGroup = (
   groupId: string,
-  updatedGroup: Group
+  updatedGroup: Group,
 ): Promise<{
   payload?: {
     data: Bundle;
@@ -155,10 +157,7 @@ const getUserProfile = () =>
     .then(successCallback)
     .catch(errorCallback);
 
-const createUserProfile = (
-  defaultStatement = '',
-  patientTableConfig = {},
-) =>
+const createUserProfile = (defaultStatement = '', patientTableConfig = {}) =>
   Http.secureClinAxios
     .post(`${window.CLIN.metaServiceApiUrl}/profile`, {
       defaultStatement,
@@ -167,11 +166,7 @@ const createUserProfile = (
     .then(successCallback)
     .catch(errorCallback);
 
-const updateUserProfile = (
-  uid: string,
-  defaultStatement: any,
-  patientTableConfig = {},
-) =>
+const updateUserProfile = (uid: string, defaultStatement: any, patientTableConfig = {}) =>
   Http.secureClinAxios
     .put(`${window.CLIN.metaServiceApiUrl}/profile`, {
       defaultStatement,
@@ -208,19 +203,18 @@ const updateServiceRequestStatus = async (
   status: StatusType,
   note: string,
 ) => {
+  const { practitioner, practitionerRole } = user.practitionerData;
 
-  const { practitioner, practitionerRole } = user.practitionerData
-  
   const builder = new ServiceRequestBuilder(serviceRequest)
     .withStatus(status)
     .withNoteStatus(note, practitioner.id)
     .withPerformer(practitionerRole.id)
-    .withSubmitted(status !== StatusType['on-hold'])
-  
-    if (status === StatusType.active) {
-      builder.withProcedureDirectedBy(practitionerRole.id)
-    }
-  
+    .withSubmitted(status !== StatusType['on-hold']);
+
+  if (status === StatusType.active) {
+    builder.withProcedureDirectedBy(practitionerRole.id);
+  }
+
   return Http.secureClinAxios
     .put(`${window.CLIN.fhirBaseUrl}/ServiceRequest/${serviceRequest.id}`, builder.build())
     .then(successCallback)
@@ -335,10 +329,10 @@ const getFileURL = async (file: string) =>
 
 const downloadPrescriptionPDF = async (serviceRequestId: string) =>
   Http.secureClinAxios
-    .get(`${window.CLIN.rendererBaseUrl}/${serviceRequestId}`, {responseType: 'blob'})
-    .then((response: { data: Blob, headers: any }) => {
+    .get(`${window.CLIN.rendererBaseUrl}/${serviceRequestId}`, { responseType: 'blob' })
+    .then((response: { data: Blob; headers: any }) => {
       const fileName = response.headers['content-disposition']?.split('filename=')?.[1];
-      FileDownload(response.data, fileName || `${serviceRequestId}.pdf`)
+      FileDownload(response.data, fileName || `${serviceRequestId}.pdf`);
     })
     .then(successCallback)
     .catch(errorCallback);
@@ -348,7 +342,18 @@ const fetchServiceRequestCode = async () =>
     .get(`${window.CLIN.fhirBaseUrl}/CodeSystem/service-request-code`)
     .then(successCallback)
     .catch(errorCallback);
-  
+
+const downloadFileMetadata = (taskId: string, filename: string) =>
+  Http.secureClinAxios
+    .get(
+      `${window.CLIN.fhirBaseUrl}/Task?_id=${taskId}&_include=Task:input_specimen&_include=Task:output-documentreference&_pretty=true`,
+      { responseType: 'blob' },
+    )
+    .then((response: { data: Blob }) => {
+      FileDownload(response.data, filename);
+    })
+    .then(successCallback)
+    .catch(errorCallback);
 
 export default {
   addOrUpdatePatientToGroup,
@@ -379,4 +384,5 @@ export default {
   updatePatientsGroup,
   updateServiceRequestStatus,
   updateUserProfile,
+  downloadFileMetadata,
 };
