@@ -2,14 +2,17 @@
 import React from 'react';
 import intl from 'react-intl-universal';
 import { useDispatch, useSelector } from 'react-redux';
-import { Layout, Row, Col, Menu, Divider, Button } from 'antd';
-import TranslateIcon from "components/Assets/Icons/TranslateIcon";
-import AccountCircleIcon from "components/Assets/Icons/AccountCircleIcon";
-import SupervisorIcon from "components/Assets/Icons/SupervisorIcon";
 import { Link } from 'react-router-dom';
 import { LogoutOutlined } from '@ant-design/icons';
-import { logoutUser } from '../../actions/user';
+import { Button, Col, Divider, Layout, Menu, Row } from 'antd';
+import { showTranslationBtn } from 'helpers/toggleFeature';
+
+import AccountCircleIcon from 'components/Assets/Icons/AccountCircleIcon';
+import SupervisorIcon from 'components/Assets/Icons/SupervisorIcon';
+import TranslateIcon from 'components/Assets/Icons/TranslateIcon';
+
 import { changeLanguage } from '../../actions/app';
+import { logoutUser } from '../../actions/user';
 import { State } from '../../reducers';
 import Dropdown from '../Dropdown';
 
@@ -19,10 +22,10 @@ const userMenu = (logoutButtonRef?: React.MutableRefObject<HTMLButtonElement | n
     <Menu getPopupContainer={(triggerNode: HTMLElement) => triggerNode.parentNode as HTMLElement}>
       <Menu.Item key="logout">
         <Button
-          ref={logoutButtonRef}
-          onClick={() => dispatch(logoutUser())}
-          type="text"
           id="logout-button"
+          onClick={() => dispatch(logoutUser())}
+          ref={logoutButtonRef}
+          type="text"
         >
           <LogoutOutlined />
           {`${intl.get('header.navigation.user.logout')}`}
@@ -38,11 +41,11 @@ const languageMenu = (frButtonRef?: React.MutableRefObject<HTMLButtonElement | n
     <Menu getPopupContainer={(triggerNode: HTMLElement) => triggerNode.parentNode as HTMLElement}>
       <Menu.Item>
         <Button
-          ref={frButtonRef}
-          type="text"
           onClick={() => {
             dispatch(changeLanguage('fr'));
           }}
+          ref={frButtonRef}
+          type="text"
         >
           {intl.get('lang.fr.long')}
         </Button>
@@ -50,10 +53,10 @@ const languageMenu = (frButtonRef?: React.MutableRefObject<HTMLButtonElement | n
 
       <Menu.Item>
         <Button
-          type="text"
           onClick={() => {
             dispatch(changeLanguage('en'));
           }}
+          type="text"
         >
           {intl.get('lang.en.long')}
         </Button>
@@ -73,13 +76,13 @@ const Header: React.FC = () => {
     <Layout.Header id="header">
       <Row className="flex-row">
         <Col>
-          <img className="logo" alt={title} src="/assets/logos/cqgc-white.svg" />
+          <img alt={title} className="logo" src="/assets/logos/cqgc-white.svg" />
         </Col>
         <div className="secondaryNav">
           {user.username && (
             <>
               <div className="navigation">
-                <Row className="flex-row" justify="space-between" align="middle">
+                <Row align="middle" className="flex-row" justify="space-between">
                   <Col className="patientList">
                     <Link to="/patient/search">
                       <SupervisorIcon />
@@ -89,30 +92,32 @@ const Header: React.FC = () => {
                   <Divider type="vertical" />
                 </Row>
               </div>
-              <Col className="userName">
+              <Col>
                 <Dropdown overlay={userMenu()} trigger={['click']}>
-                  <Button type="text" icon={<AccountCircleIcon />}>
+                  <Button icon={<AccountCircleIcon />} type="text">
                     {` ${user.firstName} `}
                   </Button>
                 </Dropdown>
               </Col>
             </>
           )}
-          <Col>
-            {app.locale.lang && (
-              <Dropdown
-                overlay={languageMenu()}
-                trigger={['click']}
-                getPopupContainer={(triggerNode: HTMLElement) =>
-                  triggerNode.parentNode as HTMLElement
-                }
-              >
-                <Button type="text" icon={<TranslateIcon />}>
-                  {langText}
-                </Button>
-              </Dropdown>
-            )}
-          </Col>
+          {showTranslationBtn ? (
+            <Col className="translateBtn">
+              {app.locale.lang && (
+                <Dropdown
+                  getPopupContainer={(triggerNode: HTMLElement) =>
+                    triggerNode.parentNode as HTMLElement
+                  }
+                  overlay={languageMenu()}
+                  trigger={['click']}
+                >
+                  <Button icon={<TranslateIcon />} type="text">
+                    {langText}
+                  </Button>
+                </Dropdown>
+              )}
+            </Col>
+          ) : null}
         </div>
       </Row>
     </Layout.Header>
