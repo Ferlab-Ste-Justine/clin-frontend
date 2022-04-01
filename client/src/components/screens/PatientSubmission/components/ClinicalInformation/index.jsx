@@ -170,6 +170,7 @@ class ClinicalInformation extends React.Component {
                 onChange={onChangeInterpretation}
                 placeholder={intl.get(`${intlPrefixKey}.form.hpo.interpretation`)}
                 size="small"
+                data-testid="InterpretationDropdown"
               >
                 { hpoInterpretationValues().map((interpretation, index) => (
                   <Select.Option
@@ -395,12 +396,14 @@ class ClinicalInformation extends React.Component {
             >
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
+                data-testid="clinical-information-analysis-checkbox-group"
               >
                 {
                   serviceRequestCode?.map((concept) => (
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
+                      data-testid={concept.code}
                     >{ findLocalDesignationIfExists(concept, this.props.lang) || concept.display}
                     </Checkbox>
                   ))
@@ -422,6 +425,7 @@ class ClinicalInformation extends React.Component {
             >
               <Checkbox.Group
                 className="clinical-information__analysis__checkbox-group"
+                data-testid="clinical-information-analysis-checkbox-group"
                 onChange={() => {
                   this.setState({});
                   validate();
@@ -432,6 +436,7 @@ class ClinicalInformation extends React.Component {
                     <Checkbox
                       key={concept.code}
                       value={concept.code}
+                      data-testid={concept.code}
                     >{ findLocalDesignationIfExists(concept, this.props.lang) || concept.display }
                     </Checkbox>
                   ))
@@ -550,6 +555,7 @@ class ClinicalInformation extends React.Component {
               className="input note"
               placeholder={intl.get(`${intlPrefixKey}.clinicalInformation.hypothesis.placeholder`)}
               rows={4}
+              data-testid="hypothesis-placeholder"
             />
           </Form.Item>
         </Card>

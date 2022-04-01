@@ -49,7 +49,7 @@ const ResultModal: React.FC<Props> = ({
           { actions }
         </div>
         <span>
-          <Button type="link" onClick={() => onClose()} className="patient-creation__modal__content__close-button">
+          <Button type="link" onClick={() => onClose()} className="patient-creation__modal__content__close-button" data-testid="CloseButton">
             { intl.get(`${I18N_PREFIX}close`) }
           </Button>
         </span>

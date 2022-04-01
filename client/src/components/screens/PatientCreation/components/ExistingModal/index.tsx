@@ -28,6 +28,7 @@ const ExistingModal: React.FC<Props> = ({ open, onClose, onNavigateToPatientCard
         <Button
           type="primary"
           onClick={() => onNavigateToPatientCard(patient.id)}
+          data-testid="ResultModalExistingPatient"
         >
           { intl.get(`${I18N_PREFIX}patientCard`) }
           <ArrowRightOutlined />

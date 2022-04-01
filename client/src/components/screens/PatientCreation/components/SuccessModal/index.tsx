@@ -31,6 +31,7 @@ const SuccessModal: React.FC<Props> = ({
   return (
     <ResultModal
       icon={<CheckCircleFilled style={{ color: '#52C41A', fontSize: 63 }} />}
+      data-testid="ResultModalCreation"
       actions={(
         <>
           <Button onClick={onNewPatient}>
@@ -49,6 +50,7 @@ const SuccessModal: React.FC<Props> = ({
             type="link"
             className="link--underline"
             onClick={() => onNavigateToPatient(patient.id!)}
+            data-testid="ResultModalCreation"
           >
             { intl.get(`${I18N_PREFIX}patientCard`) }
           </Button>
