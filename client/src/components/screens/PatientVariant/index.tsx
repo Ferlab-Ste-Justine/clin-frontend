@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import 'style/themes/clin/dist/antd.css';
+import './styles.scss';
 import styles from './index.module.scss';
 
 type PatientVariantProps = {
