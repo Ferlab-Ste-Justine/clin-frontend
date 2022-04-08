@@ -33,7 +33,7 @@ const MetadataButton = ({ filename, taskId }: Props): React.ReactElement => {
       }}
       type="link"
     >
-      Metadata
+      {intl.get('metadata')}
     </Button>
   );
 };
