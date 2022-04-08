@@ -265,6 +265,7 @@ const fr = {
   'lang.fr.short': 'FR',
   'message.error.generic': 'Action échouée... ',
   'message.success.generic': 'Action effectuée avec succès!',
+  'metadata': 'Métadonnées',
   'navigation.main.searchPatient': 'Recherche de patient',
   'parent': 'Parent',
   'proband': 'Cas-index',

@@ -189,6 +189,7 @@ const en = {
   'lang.fr.short': 'FR',
   'message.error.generic': 'Failed performing action',
   'message.success.generic': 'Successfully performed action',
+  'metadata': 'Metadata',
   'navigation.main.searchPatient': 'Patient Search',
   'parent': 'Parent',
   'proband': 'Proband',
