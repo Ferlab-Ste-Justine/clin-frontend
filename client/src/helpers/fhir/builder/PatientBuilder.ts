@@ -155,7 +155,7 @@ export class PatientBuilder {
     return this
       .withId(patient.id)
       .withFamily(get(patient, 'name[0].family'))
-      .withGiven(get(patient, '.name[0].given[0]'))
+      .withGiven(get(patient, 'name[0].given[0]'))
       .withActive(patient.active)
       .withBirthDate(moment(patient.birthDate).toDate())
       .withGender(patient.gender)
