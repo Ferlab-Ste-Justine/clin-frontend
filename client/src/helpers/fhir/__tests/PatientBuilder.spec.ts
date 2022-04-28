@@ -224,8 +224,7 @@ describe('PatientBuilder', () => {
     })
   })
 
-  //En attente de la correction de CLIN-795
-  describe.skip('withPatient', () => {
+  describe('withPatient', () => {
     test('should build partial patient', () => {
         const builder = new PatientBuilder()
         const patient = mocks.PartialPatientMock as Partial<Patient>;
