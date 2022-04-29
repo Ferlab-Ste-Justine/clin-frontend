@@ -1,11 +1,12 @@
 import React from 'react';
 import intl from 'react-intl-universal';
+import { useSelector } from 'react-redux';
 import {
   Button, Modal, Typography,
 } from 'antd';
+import { Patient } from 'helpers/fhir/types';
+
 import './styles.scss';
-import { useSelector } from 'react-redux';
-import { Patient } from '../../../../../helpers/fhir/types';
 
 interface Props {
   open: boolean
@@ -19,7 +20,7 @@ interface Props {
 const I18N_PREFIX = 'screen.patient.creation.modal.';
 
 const ResultModal: React.FC<Props> = ({
-  open, onClose, icon, description, actions, title,
+  actions, description, icon, onClose, open, title,
 }) => {
   const patient = useSelector((state: any) => state.patientCreation.patient) as Patient;
 
@@ -33,7 +34,7 @@ const ResultModal: React.FC<Props> = ({
     displayedTitle += ` (${intl.get('screen.patient.creation.fetus').toLowerCase()})`;
   }
   return (
-    <Modal visible={open} footer={null} width={815} onCancel={() => onClose()}>
+    <Modal footer={null} onCancel={() => onClose()} visible={open} width={815}>
       <div className="patient-creation__modal__content">
         { icon }
 
@@ -49,7 +50,7 @@ const ResultModal: React.FC<Props> = ({
           { actions }
         </div>
         <span>
-          <Button type="link" onClick={() => onClose()} className="patient-creation__modal__content__close-button" data-testid="CloseButton">
+          <Button className="patient-creation__modal__content__close-button" data-testid="CloseButton" onClick={() => onClose()} type="link">
             { intl.get(`${I18N_PREFIX}close`) }
           </Button>
         </span>

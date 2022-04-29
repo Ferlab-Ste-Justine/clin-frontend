@@ -29,6 +29,7 @@ const SearchScreen = ({ app }: SearchScreenProps): React.ReactElement => {
     if (iFrame && iFrame.current) {
       bridge = new Bridge(store, iFrame.current);
       bridge.register('createNewPrescription', prescriptionModalCallback);
+      Bridge.setMainChannel(iFrame.current)
     }
 
     return function cleanup() {

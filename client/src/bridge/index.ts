@@ -1,5 +1,3 @@
-import { channel } from 'redux-saga';
-
 import { StoreType } from 'store';
 
 type CallBackType = (e: MessageEvent) => void;
@@ -28,6 +26,7 @@ type CallBackType = (e: MessageEvent) => void;
       }, [iFrame])
 */
 
+let clinUIChannel: HTMLIFrameElement;
 export class Bridge {
   private store: StoreType;
   private channel: HTMLIFrameElement;
@@ -48,5 +47,13 @@ export class Bridge {
 
   remove(callback: CallBackType): void {
     this.channel.contentWindow?.removeEventListener('message', callback, false);
+  }
+
+  static setMainChannel(ref: HTMLIFrameElement): void {
+    clinUIChannel = ref;
+  }
+
+  static broadcastMessage(msg: string): void  {
+    clinUIChannel?.contentWindow?.postMessage(msg, `http://${window.location.host}`);
   }
 }
