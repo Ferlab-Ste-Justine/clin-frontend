@@ -1,7 +1,10 @@
 .occurenceDrawer{
-    .description {
-        span[class$="-item-label"] {
-          width: 250px;
-        }
+  .description {
+      span[class$="-item-label"] {
+        width: 250px;
       }
+      .hcCountLink{
+        height: 22px;
+      }
+    }
 }
