@@ -1,3 +1,4 @@
+import { Bridge } from 'bridge';
 import { LOCATION_CHANGE,push } from 'connected-react-router';
 import get from 'lodash/get';
 import {
@@ -72,6 +73,7 @@ function* navigateToSubmissionScreenWithPatient() {
 }
 
 function* navigateToPatientSearchScreen() {
+  Bridge.broadcastMessage('clinFrontend:modalClose')
   yield put(push(Routes.PatientSearch));
 }
 
