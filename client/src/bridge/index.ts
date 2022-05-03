@@ -54,6 +54,6 @@ export class Bridge {
   }
 
   static broadcastMessage(msg: string): void  {
-    clinUIChannel?.contentWindow?.postMessage(msg, `http://${window.location.host}`);
+    clinUIChannel?.contentWindow?.postMessage(msg, window.origin);
   }
 }
