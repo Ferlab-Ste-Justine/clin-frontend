@@ -4,7 +4,7 @@ WORKDIR /code
 RUN npm install
 RUN npm run build
 
-FROM nginx:1 as server
+FROM nginx:stable as server
 
 COPY --from=builder /code/client/build /usr/share/nginx/html/
 COPY --from=builder /code/client/build /var/www/html/
