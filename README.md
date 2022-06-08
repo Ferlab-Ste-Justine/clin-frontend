@@ -2,6 +2,10 @@
 ![](https://github.com/Ferlab-Ste-Justine/clin-frontend/workflows/Publish%20Image%20Using%20Commit%20Hash/badge.svg)
 ![](https://github.com/Ferlab-Ste-Justine/clin-frontend/workflows/Publish%20Image%20Using%20Tag/badge.svg)
 
+# Deprecation
+
+This service has been deprecated and will no longer be maintained.
+
 # CLIN Frontend
 
 ## Available Scripts
